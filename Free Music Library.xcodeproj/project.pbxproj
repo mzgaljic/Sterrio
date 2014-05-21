@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		87138659192C439600F706FC /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87138658192C439600F706FC /* FirstViewController.m */; };
 		87480DA9192C1FBD005CC0A4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DA8192C1FBD005CC0A4 /* Foundation.framework */; };
 		87480DAB192C1FBD005CC0A4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DAA192C1FBD005CC0A4 /* CoreGraphics.framework */; };
 		87480DAD192C1FBD005CC0A4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DAC192C1FBD005CC0A4 /* UIKit.framework */; };
@@ -14,8 +15,8 @@
 		87480DB5192C1FBD005CC0A4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 87480DB4192C1FBD005CC0A4 /* main.m */; };
 		87480DB9192C1FBD005CC0A4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87480DB8192C1FBD005CC0A4 /* AppDelegate.m */; };
 		87480DBC192C1FBD005CC0A4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 87480DBA192C1FBD005CC0A4 /* Main.storyboard */; };
-		87480DBF192C1FBD005CC0A4 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87480DBE192C1FBD005CC0A4 /* FirstViewController.m */; };
-		87480DC2192C1FBD005CC0A4 /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87480DC1192C1FBD005CC0A4 /* SecondViewController.m */; };
+		87480DBF192C1FBD005CC0A4 /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87480DBE192C1FBD005CC0A4 /* SecondViewController.m */; };
+		87480DC2192C1FBD005CC0A4 /* ThirdViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87480DC1192C1FBD005CC0A4 /* ThirdViewController.m */; };
 		87480DC4192C1FBD005CC0A4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 87480DC3192C1FBD005CC0A4 /* Images.xcassets */; };
 		87480DCB192C1FBD005CC0A4 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DCA192C1FBD005CC0A4 /* XCTest.framework */; };
 		87480DCC192C1FBD005CC0A4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DA8192C1FBD005CC0A4 /* Foundation.framework */; };
@@ -35,6 +36,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		87138657192C439600F706FC /* FirstViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstViewController.h; sourceTree = "<group>"; };
+		87138658192C439600F706FC /* FirstViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstViewController.m; sourceTree = "<group>"; };
 		87480DA5192C1FBD005CC0A4 /* Free Music Library.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Free Music Library.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		87480DA8192C1FBD005CC0A4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		87480DAA192C1FBD005CC0A4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -46,10 +49,10 @@
 		87480DB7192C1FBD005CC0A4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		87480DB8192C1FBD005CC0A4 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		87480DBB192C1FBD005CC0A4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		87480DBD192C1FBD005CC0A4 /* FirstViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FirstViewController.h; sourceTree = "<group>"; };
-		87480DBE192C1FBD005CC0A4 /* FirstViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FirstViewController.m; sourceTree = "<group>"; };
-		87480DC0192C1FBD005CC0A4 /* SecondViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
-		87480DC1192C1FBD005CC0A4 /* SecondViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
+		87480DBD192C1FBD005CC0A4 /* SecondViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
+		87480DBE192C1FBD005CC0A4 /* SecondViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
+		87480DC0192C1FBD005CC0A4 /* ThirdViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThirdViewController.h; sourceTree = "<group>"; };
+		87480DC1192C1FBD005CC0A4 /* ThirdViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdViewController.m; sourceTree = "<group>"; };
 		87480DC3192C1FBD005CC0A4 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		87480DC9192C1FBD005CC0A4 /* Free Music LibraryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Free Music LibraryTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		87480DCA192C1FBD005CC0A4 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -118,10 +121,12 @@
 				87480DB7192C1FBD005CC0A4 /* AppDelegate.h */,
 				87480DB8192C1FBD005CC0A4 /* AppDelegate.m */,
 				87480DBA192C1FBD005CC0A4 /* Main.storyboard */,
-				87480DBD192C1FBD005CC0A4 /* FirstViewController.h */,
-				87480DBE192C1FBD005CC0A4 /* FirstViewController.m */,
-				87480DC0192C1FBD005CC0A4 /* SecondViewController.h */,
-				87480DC1192C1FBD005CC0A4 /* SecondViewController.m */,
+				87138657192C439600F706FC /* FirstViewController.h */,
+				87138658192C439600F706FC /* FirstViewController.m */,
+				87480DBD192C1FBD005CC0A4 /* SecondViewController.h */,
+				87480DBE192C1FBD005CC0A4 /* SecondViewController.m */,
+				87480DC0192C1FBD005CC0A4 /* ThirdViewController.h */,
+				87480DC1192C1FBD005CC0A4 /* ThirdViewController.m */,
 				87480DC3192C1FBD005CC0A4 /* Images.xcassets */,
 				87480DAF192C1FBD005CC0A4 /* Supporting Files */,
 			);
@@ -261,9 +266,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				87480DC2192C1FBD005CC0A4 /* SecondViewController.m in Sources */,
+				87480DC2192C1FBD005CC0A4 /* ThirdViewController.m in Sources */,
 				87480DB9192C1FBD005CC0A4 /* AppDelegate.m in Sources */,
-				87480DBF192C1FBD005CC0A4 /* FirstViewController.m in Sources */,
+				87138659192C439600F706FC /* FirstViewController.m in Sources */,
+				87480DBF192C1FBD005CC0A4 /* SecondViewController.m in Sources */,
 				87480DB5192C1FBD005CC0A4 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
