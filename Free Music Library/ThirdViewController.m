@@ -1,18 +1,18 @@
 //
-//  FirstViewController.m
+//  ThirdViewController.m
 //  Free Music Library
 //
-//  Created by Mark Zgaljic on 5/20/14.
+//  Created by Mark Zgaljic on 5/21/14.
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
 
-#import "SecondViewController.h"
+#import "ThirdViewController.h"
 
-@interface SecondViewController ()
+@interface ThirdViewController ()
 
 @end
 
-@implementation SecondViewController
+@implementation ThirdViewController
 
 - (void)viewDidLoad
 {

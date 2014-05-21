@@ -1,18 +1,18 @@
 //
-//  FirstViewController.m
+//  FourthViewController.m
 //  Free Music Library
 //
-//  Created by Mark Zgaljic on 5/20/14.
+//  Created by Mark Zgaljic on 5/21/14.
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
 
-#import "SecondViewController.h"
+#import "FourthViewController.h"
 
-@interface SecondViewController ()
+@interface FourthViewController ()
 
 @end
 
-@implementation SecondViewController
+@implementation FourthViewController
 
 - (void)viewDidLoad
 {
