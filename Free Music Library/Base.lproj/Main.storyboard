@@ -4,7 +4,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
     <scenes>
-        <!--Master Songs Table View Controller - Library - My Songs-->
+        <!--Master Songs Table View Controller - My Songs-->
         <scene sceneID="JxM-OT-aUc">
             <objects>
                 <tableViewController id="C05-aT-A4x" customClass="MasterSongsTableViewController" sceneMemberID="viewController">
@@ -39,7 +39,7 @@
                             <outlet property="delegate" destination="C05-aT-A4x" id="bks-iV-BkC"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Library - My Songs" id="Oyd-HO-iMf"/>
+                    <navigationItem key="navigationItem" title="My Songs" id="Oyd-HO-iMf"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="YCe-C6-ZmT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -48,7 +48,7 @@
         <!--Song Item View Controller - 1/203-->
         <scene sceneID="aB0-HZ-Jc6">
             <objects>
-                <viewController id="PBb-rQ-7sq" customClass="SongItemViewController" sceneMemberID="viewController">
+                <viewController hidesBottomBarWhenPushed="YES" id="PBb-rQ-7sq" customClass="SongItemViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="sQf-nE-KoN"/>
                         <viewControllerLayoutGuide type="bottom" id="vje-sk-lDV"/>
@@ -56,9 +56,30 @@
                     <view key="view" contentMode="scaleToFill" id="4qq-iL-gTX">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Song" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z6k-XV-kY5">
+                                <rect key="frame" x="15" y="273" width="285" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Artist - Album" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eFP-nt-etd">
+                                <rect key="frame" x="15" y="302" width="285" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" title="1/203" id="B6K-mw-sf0"/>
+                    <connections>
+                        <outlet property="Artist_AlbumLabel" destination="eFP-nt-etd" id="CHq-hf-30N"/>
+                        <outlet property="artist_AlbumLabel" destination="eFP-nt-etd" id="Z1P-rf-GDD"/>
+                        <outlet property="songLabel" destination="z6k-XV-kY5" id="3ud-HS-Zse"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="shW-Aa-q3b" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -102,7 +123,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="NHp-3G-eAS">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SongItemCell" id="NHp-3G-eAS">
                                 <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="NHp-3G-eAS" id="icD-Ls-30p">

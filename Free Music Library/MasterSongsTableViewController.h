@@ -12,5 +12,6 @@
 
 @property (nonatomic, strong) NSMutableArray *songItemsArray;
 @property (nonatomic, strong) NSMutableArray *results;  //for searching tableView?
+@property (nonatomic, assign) int selectedRowIndexValue;
 
 @end
