@@ -36,7 +36,9 @@
     [super viewDidLoad];
     
     //initialize TableView from memory (loading list w/ song names) - using fake names for now!
-    [self.songItemsArray addObject:@"sample"];
+    [self.songItemsArray addObject:@"Let it go"];
+    [self.songItemsArray addObject:@"For the First Time in Forever"];
+    [self.songItemsArray addObject:@"Do You Want To Build A Snowman?"];
 }
 
 - (void)didReceiveMemoryWarning
