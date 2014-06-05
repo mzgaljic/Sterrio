@@ -31,6 +31,7 @@ static MusicModel *modelPointer = nil;
 + (int)newAlbumWithName:(NSString *)albumName
 {
     [self createMusicModelSingletonIfNotAlreadyCreated];
+    
 }
 
 //adding existing content to other content/categories in the music library
