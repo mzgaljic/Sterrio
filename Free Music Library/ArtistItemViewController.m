@@ -1,17 +1,17 @@
 //
-//  SongItemViewController.m
+//  ArtistItemViewController.m
 //  Free Music Library
 //
 //  Created by Mark Zgaljic on 5/21/14.
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
 
-#import "SongItemViewController.h"
+#import "ArtistItemViewController.h"
 
-@interface SongItemViewController ()
+@interface ArtistItemViewController ()
 @end
 
-@implementation SongItemViewController
+@implementation ArtistItemViewController
 - (void)viewDidLoad
 {
     [super viewDidLoad];

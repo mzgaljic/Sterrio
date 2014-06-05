@@ -14,9 +14,11 @@
 
 @property (strong, nonatomic) NSString *songLabelValue;
 @property (strong, nonatomic) NSString *artist_AlbumLabelValue;
+//@property (strong, nonatomic) NSString *uri;
 
 //GUI vars
 @property (weak, nonatomic) IBOutlet UILabel *songLabel;
 @property (weak, nonatomic) IBOutlet UILabel *artist_AlbumLabel;
+@property (weak, nonatomic) IBOutlet UILabel *testDiscogs;
 
 @end

@@ -1,20 +1,20 @@
 //
-//  MasterSongsTableViewController.m
+//  MasterArtistsTableViewController.m
 //  Free Music Library
 //
 //  Created by Mark Zgaljic on 5/21/14.
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
 
-#import "MasterSongsTableViewController.h"
+#import "MasterArtistsTableViewController.h"
 #import "SongItemViewController.h"
-#import "Albums.h"  //import songs!!
+#import "Album.h"  //import songs!!
 
-@interface MasterSongsTableViewController ()
+@interface MasterArtistsTableViewController ()
 @property(nonatomic, strong) NSMutableArray* allSongsInLibrary;
 @end
 
-@implementation MasterSongsTableViewController
+@implementation MasterArtistsTableViewController
 @synthesize allSongsInLibrary = _allSongsInLibrary;
 
 - (NSMutableArray *) results

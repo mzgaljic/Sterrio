@@ -1,20 +1,20 @@
 //
-//  MasterSongsTableViewController.m
+//  MasterPlaylistTableViewController.m
 //  Free Music Library
 //
 //  Created by Mark Zgaljic on 5/21/14.
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
 
-#import "MasterSongsTableViewController.h"
-#import "SongItemViewController.h"
+#import "MasterPlaylistTableViewController.h"
+#import "AlbumItemViewController.h"
 #import "Albums.h"  //import songs!!
 
-@interface MasterSongsTableViewController ()
+@interface MasterPlaylistTableViewController ()
 @property(nonatomic, strong) NSMutableArray* allSongsInLibrary;
 @end
 
-@implementation MasterSongsTableViewController
+@implementation MasterPlaylistTableViewController
 @synthesize allSongsInLibrary = _allSongsInLibrary;
 
 - (NSMutableArray *) results
@@ -64,10 +64,10 @@
     
     // Configure the cell...
     //change to song class later!
-    Album *album = [self.allSongsInLibrary objectAtIndex: indexPath.row];
+   // Album *album = [self.allSongsInLibrary objectAtIndex: indexPath.row];
    // cell.imageView.image = album.albumImage;
-    cell.textLabel.text = album.albumName;
-    cell.detailTextLabel.text = album.artist.artistName;
+  //  cell.textLabel.text = album.albumName;
+  //  cell.detailTextLabel.text = album.artist.artistName;
     return cell;
 }
 
@@ -76,8 +76,8 @@
     if([[segue identifier] isEqualToString: @"ShowAndPlaySongContents"]){        
         [[segue destinationViewController] setSongNumberInSongCollection: self.selectedRowIndexValue];
         [[segue destinationViewController] setTotalSongsInCollection: (int) _allSongsInLibrary.count];
-        [[segue destinationViewController] setSongLabelValue:@"some Song"];
-        [[segue destinationViewController] setArtist_AlbumLabelValue:@"an Artist - some Album"];
+       // [[segue destinationViewController] setSongLabelValue:@"some Song"];
+       // [[segue destinationViewController] setArtist_AlbumLabelValue:@"an Artist - some Album"];
     }
 }
 

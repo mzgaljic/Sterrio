@@ -7,12 +7,30 @@
 //
 
 #import "AppDelegate.h"
+#import "GenreConstants.h"
+
+
+@interface AppDelegate()
+{
+@private
+//private variables
+    NSString* User_Agent;
+}
+@end
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+
+    GenreConstants *genres = [GenreConstants createSingleton];
+
+    //initialize the NSDictionary containing genre strings and codes.
+    NSArray *keysArray = [GenreConstants keysForGenreSingleton];
+    NSArray *objectsArray = [GenreConstants objectsForGenreSingleton];
+    genres.singletonGenreDictionary = [[NSDictionary alloc] initWithObjects: objectsArray forKeys: keysArray];
+    
     return YES;
 }
 							

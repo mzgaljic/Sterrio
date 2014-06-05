@@ -1,5 +1,5 @@
 //
-//  MasterSongsTableViewController.h
+//  MasterAlbumsTableViewController.h
 //  Free Music Library
 //
 //  Created by Mark Zgaljic on 5/21/14.
@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MasterSongsTableViewController : UITableViewController
+@interface MasterAlbumsTableViewController : UITableViewController
 
 @property (nonatomic, strong) NSMutableArray *results;  //for searching tableView?
 @property (nonatomic, assign) int selectedRowIndexValue;
