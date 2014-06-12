@@ -8,8 +8,7 @@
 
 #import "AppDelegate.h"
 #import "GenreConstants.h"
-#import "MusicModel.h"
-
+#import "FileIOConstants.h"
 
 @implementation AppDelegate
 
@@ -18,12 +17,14 @@
     // Override point for customization after application launch.
 
     GenreConstants *genres = [GenreConstants createSingleton];
-
     //initialize the NSDictionary containing genre strings and codes (genre constants).
     NSArray *keysArray = [GenreConstants keysForGenreSingleton];
     NSArray *objectsArray = [GenreConstants objectsForGenreSingleton];
     genres.singletonGenreDictionary = [[NSDictionary alloc] initWithObjects: objectsArray forKeys: keysArray];
     
+    //find documents directory within this apps home directory
+    NSArray *urls = [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
+    [[FileIOConstants createSingleton] setLibraryFileURL:[[urls lastObject] URLByAppendingPathComponent:@"MusicLibraryContents.data"]];
 
     return YES;
 }

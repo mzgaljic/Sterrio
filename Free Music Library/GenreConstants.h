@@ -12,7 +12,7 @@
 
 @property (nonatomic, copy) NSDictionary *singletonGenreDictionary;
 //initialization
-+ (instancetype)createSingleton;  //change instancetype
++ (instancetype)createSingleton;
 + (NSArray *)keysForGenreSingleton;
 + (NSArray *)objectsForGenreSingleton;
 
