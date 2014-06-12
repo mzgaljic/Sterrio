@@ -8,15 +8,8 @@
 
 #import "AppDelegate.h"
 #import "GenreConstants.h"
+#import "MusicModel.h"
 
-
-@interface AppDelegate()
-{
-@private
-//private variables
-    NSString* User_Agent;
-}
-@end
 
 @implementation AppDelegate
 
@@ -26,11 +19,12 @@
 
     GenreConstants *genres = [GenreConstants createSingleton];
 
-    //initialize the NSDictionary containing genre strings and codes.
+    //initialize the NSDictionary containing genre strings and codes (genre constants).
     NSArray *keysArray = [GenreConstants keysForGenreSingleton];
     NSArray *objectsArray = [GenreConstants objectsForGenreSingleton];
     genres.singletonGenreDictionary = [[NSDictionary alloc] initWithObjects: objectsArray forKeys: keysArray];
     
+
     return YES;
 }
 							

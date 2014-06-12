@@ -19,6 +19,6 @@
 //GUI vars
 @property (weak, nonatomic) IBOutlet UILabel *songLabel;
 @property (weak, nonatomic) IBOutlet UILabel *artist_AlbumLabel;
-@property (weak, nonatomic) IBOutlet UILabel *testDiscogs;
+@property (weak, nonatomic) IBOutlet UILabel *extraStuff;
 
 @end

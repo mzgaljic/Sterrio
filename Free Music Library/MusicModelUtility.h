@@ -8,14 +8,17 @@
 
 #import <Foundation/Foundation.h>
 #import "MusicModel.h"
+#import "SyncedSQLMusicModelUtility.h"
+#import "MusicModel.h"
+#import "GenreConstants.h"
 
 @interface MusicModelUtility : NSObject //generate singletons inside of these class methods to update the properties in MusicModel.m
 
 //creating new songs, albums, artists, and playlists. All returns their respective ID's
-+ (int)newSongWithName:(NSString *)songName withLink:(NSString *)aLink;
-+ (int)newPlaylistWithName:(NSString *)playlistName;
-+ (int)newArtistWithName:(NSString *)artistName;
-+ (int)newAlbumWithName:(NSString *)albumName;
++ (unsigned int)newSongWithName:(NSString *)songName withLink:(NSString *)aLink;
++ (unsigned int)newPlaylistWithName:(NSString *)playlistName;
++ (unsigned int)newArtistWithName:(NSString *)artistName;
++ (unsigned int)newAlbumWithName:(NSString *)albumName;
 
 //adding existing content to other content/categories in the music library
 + (BOOL)addExistingSongWithID:(int)songID
@@ -52,6 +55,6 @@
 + (NSString *)convertAlbumIDToAlbumName:(int)albumID;
 + (NSString *)convertArtistIDToArtistName:(int)artistID;
 + (NSString *)convertPlaylistIDToPlaylistName:(int)playlistID;
-+ (NSString *)convertGenreIDToGenreName:(int)GenreID;
++ (NSString *)convertGenreIDToGenreName:(int)genreID;
 
 @end

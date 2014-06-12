@@ -17,8 +17,9 @@
 @end
 
 
-
 @implementation SQLiteManager
+
+const char *limitCacheSize = "PRAGMA cache_size = 100";
 
 #pragma mark Init & Dealloc
 
@@ -59,11 +60,17 @@
     
 	const char *dbpath = [databasePath UTF8String];
 	int result = sqlite3_open(dbpath, &db);
-	if (result != SQLITE_OK) {
+	if (result != SQLITE_OK) {  //error
         const char *errorMsg = sqlite3_errmsg(db);
         NSString *errorStr = [NSString stringWithFormat:@"The database could not be opened: %@",[NSString stringWithCString:errorMsg encoding:NSUTF8StringEncoding]];
         error = [self createDBErrorWithDescription:errorStr	andCode:kDBFailAtOpen];
 	}
+    else //no problems, lets limit cache!
+    {
+        if (sqlite3_exec(db, limitCacheSize, NULL, NULL, NULL) != SQLITE_OK) {
+            NSAssert1(0, @"Limiting DB cache error: '%s'.", sqlite3_errmsg(db));
+        }
+    }
 	
 	return error;
 }
@@ -107,6 +114,29 @@
 	}
     
 	return errorQuery;
+}
+
+- (BOOL)isTableCreated:(NSString *)tableName
+{
+    //create query string...
+    NSMutableString  *tempString = [NSMutableString stringWithCapacity:70];
+    tempString = [[NSMutableString alloc] initWithFormat:@"SELECT name FROM sqlite_master WHERE type='table' AND name='"];
+    [tempString appendString:tableName];
+    [tempString appendString:@"';"];
+    NSString *query = [NSString stringWithString:tempString];
+    tempString = nil;
+
+    sqlite3_stmt *statementChk;
+    
+    sqlite3_prepare_v2(db, [query UTF8String], -1, &statementChk, nil);
+    
+    BOOL result = FALSE;
+    
+    if (sqlite3_step(statementChk) == SQLITE_ROW) {
+        result = TRUE;
+    }
+    sqlite3_finalize(statementChk);
+    return result;
 }
 
 /**

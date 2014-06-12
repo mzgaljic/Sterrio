@@ -32,13 +32,13 @@
 		87D47D991934289F0057D49B /* MasterGenreTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47D961934289F0057D49B /* MasterGenreTableViewController.m */; };
 		87D47DA419345D8E0057D49B /* MasterArtistsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47DA019345D8E0057D49B /* MasterArtistsTableViewController.m */; };
 		87D47DA519345D8E0057D49B /* ArtistItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47DA219345D8E0057D49B /* ArtistItemViewController.m */; };
+		87D5DA2819410F5B00DAFC83 /* SyncedSQLMusicModelUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D5DA2719410F5B00DAFC83 /* SyncedSQLMusicModelUtility.m */; };
 		87D9EB9A19392DFF004F3885 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 87D9EB9919392DFF004F3885 /* libsqlite3.dylib */; };
 		87D9EB9E19393D7C004F3885 /* SQLiteManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D9EB9D19393D7C004F3885 /* SQLiteManager.m */; };
 		87E1C5A0193A5E8B009AE399 /* GenreConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E1C59F193A5E8B009AE399 /* GenreConstants.m */; };
 		87E1C5A3193D1123009AE399 /* MusicModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E1C5A2193D1123009AE399 /* MusicModel.m */; };
 		87E1C5A6193D3C6F009AE399 /* MusicModelUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E1C5A5193D3C6F009AE399 /* MusicModelUtility.m */; };
 		87FE09F11933ED84001A5FB7 /* MusicStoreService.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FE09F01933ED84001A5FB7 /* MusicStoreService.m */; };
-		87FEBB2B19357FD20088EF41 /* DBWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FEBB2A19357FD20088EF41 /* DBWrapper.m */; };
 		87FEBB38193587610088EF41 /* SongQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FEBB37193587610088EF41 /* SongQueue.m */; };
 		87FEBB3B19358FBE0088EF41 /* NowPlaying.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FEBB3A19358FBE0088EF41 /* NowPlaying.m */; };
 /* End PBXBuildFile section */
@@ -89,11 +89,12 @@
 		87D47D951934289F0057D49B /* MasterGenreTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterGenreTableViewController.h; sourceTree = "<group>"; };
 		87D47D961934289F0057D49B /* MasterGenreTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterGenreTableViewController.m; sourceTree = "<group>"; };
 		87D47D971934289F0057D49B /* GenreItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenreItemViewController.h; sourceTree = "<group>"; };
-		87D47D9B19342FAC0057D49B /* DBWrapperProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBWrapperProtocol.h; sourceTree = "<group>"; };
 		87D47DA019345D8E0057D49B /* MasterArtistsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterArtistsTableViewController.m; sourceTree = "<group>"; };
 		87D47DA119345D8E0057D49B /* MasterArtistsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterArtistsTableViewController.h; sourceTree = "<group>"; };
 		87D47DA219345D8E0057D49B /* ArtistItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArtistItemViewController.m; sourceTree = "<group>"; };
 		87D47DA319345D8E0057D49B /* ArtistItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArtistItemViewController.h; sourceTree = "<group>"; };
+		87D5DA2619410F5B00DAFC83 /* SyncedSQLMusicModelUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncedSQLMusicModelUtility.h; sourceTree = "<group>"; };
+		87D5DA2719410F5B00DAFC83 /* SyncedSQLMusicModelUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncedSQLMusicModelUtility.m; sourceTree = "<group>"; };
 		87D9EB9919392DFF004F3885 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		87D9EB9C19393D7C004F3885 /* SQLiteManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SQLiteManager.h; sourceTree = "<group>"; };
 		87D9EB9D19393D7C004F3885 /* SQLiteManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SQLiteManager.m; sourceTree = "<group>"; };
@@ -108,8 +109,6 @@
 		87FEBB1F193568330088EF41 /* Free Music Library.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Free Music Library.entitlements"; sourceTree = "<group>"; };
 		87FEBB20193576120088EF41 /* iCloud */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = iCloud; path = ../../../../Desktop/iCloud.framework/iCloud; sourceTree = "<group>"; };
 		87FEBB22193576AD0088EF41 /* iCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iCloud.framework; path = "Manually Added Frameworks/iCloud.framework"; sourceTree = "<group>"; };
-		87FEBB2919357FD20088EF41 /* DBWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBWrapper.h; sourceTree = "<group>"; };
-		87FEBB2A19357FD20088EF41 /* DBWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBWrapper.m; sourceTree = "<group>"; };
 		87FEBB36193587610088EF41 /* SongQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SongQueue.h; sourceTree = "<group>"; };
 		87FEBB37193587610088EF41 /* SongQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SongQueue.m; sourceTree = "<group>"; };
 		87FEBB3919358FBE0088EF41 /* NowPlaying.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NowPlaying.h; sourceTree = "<group>"; };
@@ -274,16 +273,6 @@
 			name = "Genres tab";
 			sourceTree = "<group>";
 		};
-		87D47D9A19342F620057D49B /* Database -sqlite */ = {
-			isa = PBXGroup;
-			children = (
-				87FEBB2919357FD20088EF41 /* DBWrapper.h */,
-				87FEBB2A19357FD20088EF41 /* DBWrapper.m */,
-				87D47D9B19342FAC0057D49B /* DBWrapperProtocol.h */,
-			);
-			name = "Database -sqlite";
-			sourceTree = "<group>";
-		};
 		87D47D9F19345BC00057D49B /* Artists tab */ = {
 			isa = PBXGroup;
 			children = (
@@ -295,11 +284,38 @@
 			name = "Artists tab";
 			sourceTree = "<group>";
 		};
-		87D9EB9B19393D64004F3885 /* Manually Added libs */ = {
+		87D5DA2419410EC700DAFC83 /* Model Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				87E1C5A4193D3C6F009AE399 /* MusicModelUtility.h */,
+				87E1C5A5193D3C6F009AE399 /* MusicModelUtility.m */,
+				87D5DA2919411BFA00DAFC83 /* Sqlite3 */,
+			);
+			name = "Model Utilities";
+			sourceTree = "<group>";
+		};
+		87D5DA2519410ED700DAFC83 /* SQLiteManager4iOS */ = {
 			isa = PBXGroup;
 			children = (
 				87D9EB9C19393D7C004F3885 /* SQLiteManager.h */,
 				87D9EB9D19393D7C004F3885 /* SQLiteManager.m */,
+			);
+			name = SQLiteManager4iOS;
+			sourceTree = "<group>";
+		};
+		87D5DA2919411BFA00DAFC83 /* Sqlite3 */ = {
+			isa = PBXGroup;
+			children = (
+				87D5DA2619410F5B00DAFC83 /* SyncedSQLMusicModelUtility.h */,
+				87D5DA2719410F5B00DAFC83 /* SyncedSQLMusicModelUtility.m */,
+			);
+			name = Sqlite3;
+			sourceTree = "<group>";
+		};
+		87D9EB9B19393D64004F3885 /* Manually Added libs */ = {
+			isa = PBXGroup;
+			children = (
+				87D5DA2519410ED700DAFC83 /* SQLiteManager4iOS */,
 			);
 			name = "Manually Added libs";
 			sourceTree = "<group>";
@@ -320,9 +336,7 @@
 				87E1C59F193A5E8B009AE399 /* GenreConstants.m */,
 				87E1C5A1193D1123009AE399 /* MusicModel.h */,
 				87E1C5A2193D1123009AE399 /* MusicModel.m */,
-				87E1C5A4193D3C6F009AE399 /* MusicModelUtility.h */,
-				87E1C5A5193D3C6F009AE399 /* MusicModelUtility.m */,
-				87D47D9A19342F620057D49B /* Database -sqlite */,
+				87D5DA2419410EC700DAFC83 /* Model Utilities */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -482,7 +496,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				87FEBB2B19357FD20088EF41 /* DBWrapper.m in Sources */,
 				87D47D93193428350057D49B /* MasterPlaylistTableViewController.m in Sources */,
 				878ACD6A192D532D005938F5 /* SongItemViewController.m in Sources */,
 				87D47D92193428350057D49B /* PlaylistItemViewController.m in Sources */,
@@ -496,6 +509,7 @@
 				87D47DA519345D8E0057D49B /* ArtistItemViewController.m in Sources */,
 				87E1C5A6193D3C6F009AE399 /* MusicModelUtility.m in Sources */,
 				87E1C5A3193D1123009AE399 /* MusicModel.m in Sources */,
+				87D5DA2819410F5B00DAFC83 /* SyncedSQLMusicModelUtility.m in Sources */,
 				87D47D981934289F0057D49B /* GenreItemViewController.m in Sources */,
 				87480DB5192C1FBD005CC0A4 /* main.m in Sources */,
 				87FEBB3B19358FBE0088EF41 /* NowPlaying.m in Sources */,

@@ -9,8 +9,8 @@
 #import "MusicModel.h"
 
 @implementation MusicModel
-@synthesize albumArray = _albumArray, songArray = _songArray, genreArray = _genreArray,
-playlistArray = _playlistArray, artistArray = _artistArray;
+@synthesize albumDictionary = _albumDictionary, songDictionary = _songDictionary, genreDictionary = _genreDictionary,
+playlistDictionary = _playlistDictionary, artistDictionary = _artistDictionary, NO_ID_VALUE = _NO_ID_VALUE;
 
 + (instancetype)createSingleton
 {
@@ -18,8 +18,14 @@ playlistArray = _playlistArray, artistArray = _artistArray;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedMyModel = [[self alloc] init];
+        [sharedMyModel setConstantHelper:-1];  //initialize this singletons constant
     });
     return sharedMyModel;
+}
+
+- (void)setConstantHelper:(int)value
+{
+    _NO_ID_VALUE = value;
 }
 
 @end
