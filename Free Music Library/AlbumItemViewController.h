@@ -9,8 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface AlbumItemViewController : UIViewController
-@property (assign, nonatomic) int songNumberInSongCollection;
-@property (assign, nonatomic) int totalSongsInCollection;
 
 //GUI vars
 

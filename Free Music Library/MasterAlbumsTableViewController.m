@@ -8,16 +8,12 @@
 
 #import "MasterAlbumsTableViewController.h"
 #import "AlbumItemViewController.h"
-#import "Album.h"  //import songs!!
-
-@interface MasterAlbumsTableViewController ()
-@property(nonatomic, strong) NSMutableArray* allSongsInLibrary;
-@end
+#import "Album.h"
 
 @implementation MasterAlbumsTableViewController
-@synthesize allSongsInLibrary = _allSongsInLibrary;
+@synthesize albums;
 
-- (NSMutableArray *) results
+- (NSMutableArray *) results  //for searching tableview?
 {
     if(! _results){
         _results = [[NSMutableArray alloc] init];
@@ -28,18 +24,13 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-                                              //change this to load from songs class!
-    self.allSongsInLibrary = [NSMutableArray arrayWithArray:[Album allLibraryAlbums]];
+    
+    self.albums = [Album loadAll];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    //initialize TableView from memory (loading list w/ song names) - using fake names for now!
-    [self.allSongsInLibrary addObject:@"Let it go"];
-    [self.allSongsInLibrary addObject:@"For the First Time in Forever"];
-    [self.allSongsInLibrary addObject:@"Do You Want To Build A Snowman?"];
 }
 
 - (void)didReceiveMemoryWarning
@@ -55,30 +46,37 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.allSongsInLibrary.count;
+    return self.albums.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SongItemCell" forIndexPath:indexPath];
-    
     // Configure the cell...
-    //change to song class later!
-    Album *album = [self.allSongsInLibrary objectAtIndex: indexPath.row];
-   // cell.imageView.image = album.albumImage;
+
+    Album *album = [self.albums objectAtIndex: indexPath.row];  //get album at this index
+    
+    //init cell fields
     cell.textLabel.text = album.albumName;
     cell.detailTextLabel.text = album.artist.artistName;
+    cell.imageView.image = [self albumArtFileNameToUiImage: album.albumArtFileName];
+    
     return cell;
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if([[segue identifier] isEqualToString: @"ShowAndPlaySongContents"]){        
-        [[segue destinationViewController] setSongNumberInSongCollection: self.selectedRowIndexValue];
-        [[segue destinationViewController] setTotalSongsInCollection: (int) _allSongsInLibrary.count];
-        [[segue destinationViewController] setSongLabelValue:@"some Song"];
-        [[segue destinationViewController] setArtist_AlbumLabelValue:@"an Artist - some Album"];
+    if([[segue identifier] isEqualToString: @"AlbumItemSegue"]){
+          //[[segue destinationViewController] setSongLabelValue:@"some Song"];
     }
+}
+
+- (UIImage *)albumArtFileNameToUiImage:(NSString *)albumArtFileName
+{
+    NSString *docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                    NSUserDomainMask, YES) objectAtIndex:0];
+    NSString* path = [docDir stringByAppendingPathComponent: albumArtFileName];
+    return [UIImage imageWithContentsOfFile:path];
 }
 
 @end

@@ -13,9 +13,12 @@
 
 @property(atomic, strong) NSString *albumName;
 @property(atomic, strong) NSDate *releaseDate;
-@property(atomic, strong) NSString *albumArtPath;  //overrides individual song album arts when displaying in GUI.
+@property(atomic, strong) NSString *albumArtFileName;  //overrides individual song album arts when displaying in GUI.
 @property(atomic, strong) Artist *artist;
-//overrides all songs genre codes within this album...this is the 'master genre code' for this album.
-@property(atomic, assign) int genreCode;
+@property(atomic, strong) NSMutableArray *albumSongs;
+@property(atomic, assign) int genreCode;  //overrides song genre codes within album
+
++ (NSArray *)loadAll;
+- (BOOL)save;
 
 @end

@@ -7,29 +7,10 @@
 //
 
 #import "MusicLibraryFileIO.h"
-#import "FileIOConstants.h"
 
 @implementation MusicLibraryFileIO
 
-- (BOOL)writeAllLibraryContents
-{    
-    NSMutableArray *items = [NSMutableArray array];
-    NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:items];
-    
-    //[items addObject:<#(id)#>];   add objects to be saved
-    
-    [fileData writeToURL: [[FileIOConstants createSingleton] libraryFileURL] atomically:YES];
-    
-    return NO;
-}
 
-- (BOOL)readAllLibraryContents
-{
-    NSData *data = [NSData dataWithContentsOfURL:[[FileIOConstants createSingleton] libraryFileURL]];
-    NSMutableArray *items = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-    NSLog(@"%@", items);
-    return NO;
-}
 
 - (NSString *)documentsPathForFileName:(NSString *)name
 {

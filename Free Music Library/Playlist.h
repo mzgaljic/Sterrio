@@ -13,4 +13,7 @@
 @property(atomic, strong) NSString *playlistName;
 @property(atomic, strong) NSMutableArray *songsInThisPlaylist;
 
++ (NSArray *)loadAll;
+- (BOOL)save;
+
 @end

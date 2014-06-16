@@ -7,10 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "FileIOConstants.h"
 
 @interface MusicLibraryFileIO : NSObject
 
-- (BOOL)writeAllLibraryContents;
 - (NSString *)documentsPathForFileName:(NSString *)name;
 
 @end

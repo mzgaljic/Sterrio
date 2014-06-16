@@ -17,7 +17,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    //set song/album details for currently selected song
+    //set album details for now playing
     //self.songLabel.text = self.songLabelValue;
     //self.artist_AlbumLabel.text = self.artist_AlbumLabelValue;
 }

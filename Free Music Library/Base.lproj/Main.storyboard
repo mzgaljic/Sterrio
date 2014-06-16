@@ -37,7 +37,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="PBb-rQ-7sq" kind="push" identifier="ShowAndPlaySongContents" id="67D-Z1-nmK"/>
+                                    <segue destination="PBb-rQ-7sq" kind="push" identifier="songItemSegue" id="67D-Z1-nmK"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -271,7 +271,7 @@
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" title="Albums" id="Koe-dd-BbI"/>
                     <connections>
-                        <segue destination="G0K-FY-YuF" kind="push" id="UYP-Hy-RgL"/>
+                        <segue destination="G0K-FY-YuF" kind="push" identifier="AlbumItemSegue" id="UYP-Hy-RgL"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="el1-qp-blA" userLabel="First Responder" sceneMemberID="firstResponder"/>

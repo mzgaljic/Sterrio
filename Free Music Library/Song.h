@@ -19,4 +19,7 @@
 @property(atomic, strong) Artist *artist;
 @property(atomic, assign) int genreCode;  //album genre will override this value if this song belongs to an album!
 
++ (NSArray *)loadAll;
+- (BOOL)save;
+
 @end

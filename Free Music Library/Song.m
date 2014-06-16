@@ -7,6 +7,7 @@
 //
 
 #import "Song.h"
+#import "FileIOConstants.h"
 #define SONG_NAME_KEY @"songName"
 #define YOUTUBE_LINK_KEY @"youtubeLink"
 #define ALBUM_ART_PATH_KEY @"albumArtPath"
@@ -39,6 +40,36 @@
     [aCoder encodeObject:self.album forKey:ALBUM_KEY];
     [aCoder encodeObject:self.artist forKey:ARTIST_KEY];
     [aCoder encodeInteger:self.genreCode forKey:GENRE_CODE_KEY];
+}
+
++ (NSArray *)loadAll  //loads array containing all of the saved songs
+{
+    NSData *data = [NSData dataWithContentsOfURL:[FileIOConstants createSingleton].libraryFileURL];
+    if(!data){
+        //if no songs exist yet (file not yet written to disk), return empty array
+        return [NSMutableArray array];
+    }
+    return [NSKeyedUnarchiver unarchiveObjectWithData:data];  //decode loaded data
+}
+
+- (BOOL)save  //saves the current song (instance of this class) to the list of all songs on disk
+{
+    NSMutableArray *songs = (NSMutableArray *)[Song loadAll];
+    
+    //should sort this array based on alphabetical order!
+    [songs insertObject:self atIndex:0];  //new songs added to array will appear at top of 'list'
+    NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:songs];  //encode songs
+    return [fileData writeToURL:[FileIOConstants createSingleton].libraryFileURL atomically:YES];
+}
+
+- (NSMutableArray *)sortExistingArrayAlphabetically:(NSMutableArray *)unsortedArray
+{
+    return nil;
+}
+
+- (NSMutableArray *)insertNewSongIntoAlphabeticalArray:(Song *)unInsertedSong
+{
+    return nil;
 }
 
 

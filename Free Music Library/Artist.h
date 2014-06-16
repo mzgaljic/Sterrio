@@ -10,6 +10,9 @@
 
 @interface Artist : NSObject <NSCoding>
 
-@property(atomic, strong) NSString *artistName;
+@property(atomic, strong) NSString *artistName;  //Artists with the same name are NOT allowed in the library!
+
++ (NSArray *)loadAll;
+- (BOOL)save;
 
 @end
