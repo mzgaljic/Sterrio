@@ -10,9 +10,11 @@
 
 @interface Artist : NSObject <NSCoding>
 
-@property(atomic, strong) NSString *artistName;  //Artists with the same name are NOT allowed in the library!
+@property(nonatomic, strong) NSString *artistName;  //Artists with the same name are NOT allowed in the library!
 
 + (NSArray *)loadAll;
+//should be saved upon Artists creation
 - (BOOL)save;
+- (BOOL)deleteAlbum;
 
 @end

@@ -8,7 +8,7 @@
 
 #import "MasterGenreTableViewController.h"
 #import "AlbumItemViewController.h"
-#import "Albums.h"  //import songs!!
+#import "Album.h"  //import songs!!
 
 @interface MasterGenreTableViewController ()
 @property(nonatomic, strong) NSMutableArray* allSongsInLibrary;
@@ -29,7 +29,7 @@
 {
     [super viewWillAppear:animated];
                                               //change this to load from songs class!
-    self.allSongsInLibrary = [NSMutableArray arrayWithArray:[Album allLibraryAlbums]];
+   // self.allSongsInLibrary = [NSMutableArray arrayWithArray:[Album allLibraryAlbums]];
 }
 
 - (void)viewDidLoad
@@ -74,10 +74,7 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if([[segue identifier] isEqualToString: @"ShowAndPlaySongContents"]){        
-        [[segue destinationViewController] setSongNumberInSongCollection: self.selectedRowIndexValue];
-        [[segue destinationViewController] setTotalSongsInCollection: (int) _allSongsInLibrary.count];
-        [[segue destinationViewController] setSongLabelValue:@"some Song"];
-        [[segue destinationViewController] setArtist_AlbumLabelValue:@"an Artist - some Album"];
+     //   [[segue destinationViewController] setSongNumberInSongCollection: self.selectedRowIndexValue];
     }
 }
 

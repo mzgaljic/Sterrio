@@ -50,6 +50,11 @@
     return [fileData writeToURL:[FileIOConstants createSingleton].libraryFileURL atomically:YES];
 }
 
+- (BOOL)deleteAlbum
+{
+    return NO;
+}
+
 - (NSMutableArray *)sortExistingArrayAlphabetically:(NSMutableArray *)unsortedArray
 {
     return nil;

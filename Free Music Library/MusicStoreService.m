@@ -11,6 +11,9 @@
 
 @implementation MusicStoreService
 
-
+-(void)findArtistByArtistName:(NSString*) artistName completionBlock:(ServiceCompletionBlock)completionBlock
+{
+    
+}
 
 @end

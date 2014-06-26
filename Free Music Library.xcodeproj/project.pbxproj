@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		03D3A29591F748308F7121DE /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C84B413EAF4C57BC10A21B /* libPods.a */; };
+		03D3A29591F748308F7121DE /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C84B413EAF4C57BC10A21B /* libPods.a */; settings = {ATTRIBUTES = (Weak, ); }; };
 		8728B782194959B300565BDA /* Song.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B781194959B300565BDA /* Song.m */; };
 		8728B785194959C200565BDA /* Album.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B784194959C200565BDA /* Album.m */; };
 		8728B788194959CE00565BDA /* Playlist.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B787194959CE00565BDA /* Playlist.m */; };
@@ -194,7 +194,6 @@
 		87480D9C192C1FBD005CC0A4 = {
 			isa = PBXGroup;
 			children = (
-				87480DAE192C1FBD005CC0A4 /* Free Music Library */,
 				87FEBB1F193568330088EF41 /* Free Music Library.entitlements */,
 				87480DBA192C1FBD005CC0A4 /* Main.storyboard */,
 				87480DB7192C1FBD005CC0A4 /* AppDelegate.h */,
@@ -235,13 +234,6 @@
 				97C84B413EAF4C57BC10A21B /* libPods.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		87480DAE192C1FBD005CC0A4 /* Free Music Library */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "Free Music Library";
 			sourceTree = "<group>";
 		};
 		87480DAF192C1FBD005CC0A4 /* Supporting Files */ = {

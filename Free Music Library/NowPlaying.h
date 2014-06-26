@@ -14,9 +14,10 @@
 @property(atomic, readonly) BOOL playing;
 @property(atomic, readonly) BOOL paused;
 
-//Both can be nil!
-@property(atomic, strong, readonly) Song *aSong;  //nil if no songs played yet
-@property(atomic, strong, readonly) Playlist *originatingPlaylist;  //playlist this song is being played from (if any). Nil if not from a playlist.
+///nil if no songs played/chosen yet.
+@property(atomic, strong, readonly) Song *aSong;
+///Nil if the now playing song isn't from a playlist!
+@property(atomic, strong, readonly) Playlist *originatingPlaylist;
 
 - (void)updateNowPlayingWithSong:(Song *)nextSong fromOptionalPlaylist:(Playlist *)newOrSamePlaylist;
 - (void)ResumeNowPlaying;

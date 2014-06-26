@@ -12,14 +12,16 @@
 
 @interface Song : NSObject <NSCoding>
 
-@property(atomic, strong) NSString *songName;
-@property(atomic, strong) NSString *youtubeLink;
-@property(atomic, strong) NSString *albumArtPath;  //used only when this song isn't associated with an album.
-@property(atomic, strong) Album *album;
-@property(atomic, strong) Artist *artist;
-@property(atomic, assign) int genreCode;  //album genre will override this value if this song belongs to an album!
+@property(nonatomic, strong) NSString *songName;
+@property(nonatomic, strong) NSString *youtubeLink;
+@property(nonatomic, strong) NSString *albumArtPath;  //used only when this song isn't associated with an album.
+@property(nonatomic, strong) Album *album;
+@property(nonatomic, strong) Artist *artist;
+@property(nonatomic, assign) int genreCode;  //album genre will override this value if this song belongs to an album!
 
 + (NSArray *)loadAll;
+//should be saved upon songs creation
 - (BOOL)save;
+- (BOOL)deleteAlbum;
 
 @end

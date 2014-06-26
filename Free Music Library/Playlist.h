@@ -14,6 +14,8 @@
 @property(atomic, strong) NSMutableArray *songsInThisPlaylist;
 
 + (NSArray *)loadAll;
+//should be saved upon Playlists creation
 - (BOOL)save;
+- (BOOL)deleteAlbum;
 
 @end

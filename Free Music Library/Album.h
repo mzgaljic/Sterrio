@@ -11,14 +11,17 @@
 
 @interface Album : NSObject <NSCoding>
 
-@property(atomic, strong) NSString *albumName;
-@property(atomic, strong) NSDate *releaseDate;
-@property(atomic, strong) NSString *albumArtFileName;  //overrides individual song album arts when displaying in GUI.
-@property(atomic, strong) Artist *artist;
-@property(atomic, strong) NSMutableArray *albumSongs;
-@property(atomic, assign) int genreCode;  //overrides song genre codes within album
+@property(nonatomic, strong) NSString *albumName;
+@property(nonatomic, strong) NSDate *releaseDate;
+@property(nonatomic, strong) NSString *albumArtFileName;  //overrides individual song album arts when displaying in GUI.
+@property(nonatomic, strong) Artist *artist;
+@property(nonatomic, strong) NSMutableArray *albumSongs;
+@property(nonatomic, assign) int genreCode;  //overrides song genre codes within album
 
 + (NSArray *)loadAll;
-- (BOOL)save;
+//should be saved upon Albums creation
+- (BOOL)saveAlbum;
+- (BOOL)deleteAlbum;
+- (BOOL)updateExistingAlbum;
 
 @end

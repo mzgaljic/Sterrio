@@ -29,7 +29,7 @@
 {
     [super viewWillAppear:animated];
                                               //change this to load from songs class!
-    self.allSongsInLibrary = [NSMutableArray arrayWithArray:[Album allLibraryAlbums]];
+   // self.allSongsInLibrary = [NSMutableArray arrayWithArray:[Album allLibraryAlbums]];
 }
 
 - (void)viewDidLoad

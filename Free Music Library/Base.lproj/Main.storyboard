@@ -13,11 +13,11 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SongItemCell" textLabel="lGf-wg-9qc" detailTextLabel="Ydb-9i-DyK" style="IBUITableViewCellStyleSubtitle" id="1zB-MX-OxD">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SongItemCell" textLabel="lGf-wg-9qc" detailTextLabel="Ydb-9i-DyK" style="IBUITableViewCellStyleSubtitle" id="1zB-MX-OxD">
                                 <rect key="frame" x="0.0" y="22" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1zB-MX-OxD" id="rBH-N0-rGS">
-                                    <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="lGf-wg-9qc">
@@ -110,11 +110,11 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="GenreItemCell" textLabel="UDy-kh-iHv" detailTextLabel="mv1-76-vf4" style="IBUITableViewCellStyleSubtitle" id="NHp-3G-eAS">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="GenreItemCell" textLabel="UDy-kh-iHv" detailTextLabel="mv1-76-vf4" style="IBUITableViewCellStyleSubtitle" id="NHp-3G-eAS">
                                 <rect key="frame" x="0.0" y="22" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="NHp-3G-eAS" id="icD-Ls-30p">
-                                    <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="UDy-kh-iHv">
@@ -143,7 +143,7 @@
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" title="Genres" id="Umh-11-Hbi"/>
                     <connections>
-                        <segue destination="ThK-N8-DvG" kind="push" id="fal-BX-jHz"/>
+                        <segue destination="ThK-N8-DvG" kind="push" identifier="genreItemSegue" id="fal-BX-jHz"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9Lv-U9-Zx7" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -210,7 +210,7 @@
             </objects>
             <point key="canvasLocation" x="981" y="1289"/>
         </scene>
-        <!--Album Item View Controller - playlist name here-->
+        <!--Album Item View Controller - album name here-->
         <scene sceneID="COP-Ij-JKb">
             <objects>
                 <viewController hidesBottomBarWhenPushed="YES" id="G0K-FY-YuF" customClass="AlbumItemViewController" sceneMemberID="viewController">
@@ -223,7 +223,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" title="playlist name here" id="GSd-xq-T5s"/>
+                    <navigationItem key="navigationItem" title="album name here" id="GSd-xq-T5s"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F17-Uc-yQa" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -238,11 +238,11 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="AlbumItemCell" textLabel="YzQ-eI-Jqz" detailTextLabel="jXp-8J-zfn" style="IBUITableViewCellStyleSubtitle" id="aJf-1s-5nP">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="AlbumItemCell" textLabel="YzQ-eI-Jqz" detailTextLabel="jXp-8J-zfn" style="IBUITableViewCellStyleSubtitle" id="aJf-1s-5nP">
                                 <rect key="frame" x="0.0" y="22" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="aJf-1s-5nP" id="gU6-cq-bGW">
-                                    <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="YzQ-eI-Jqz">
@@ -306,11 +306,11 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="PlaylistItemCell" textLabel="KOW-W9-8mQ" detailTextLabel="Rwj-30-loF" style="IBUITableViewCellStyleSubtitle" id="1mq-zg-KI2">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="PlaylistItemCell" textLabel="KOW-W9-8mQ" detailTextLabel="Rwj-30-loF" style="IBUITableViewCellStyleSubtitle" id="1mq-zg-KI2">
                                 <rect key="frame" x="0.0" y="22" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1mq-zg-KI2" id="pLb-Hd-4hy">
-                                    <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="KOW-W9-8mQ">
@@ -339,7 +339,7 @@
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" title="Playlists" id="XaG-qV-nzD"/>
                     <connections>
-                        <segue destination="sel-NA-lsq" kind="push" id="bkl-HM-g9n"/>
+                        <segue destination="sel-NA-lsq" kind="push" identifier="playlistItemSegue" id="bkl-HM-g9n"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SXe-kT-CqM" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -365,7 +365,7 @@
             </objects>
             <point key="canvasLocation" x="981" y="601"/>
         </scene>
-        <!--Playlist Item View Controller - 1/203-->
+        <!--Playlist Item View Controller - playlist name here-->
         <scene sceneID="wu8-Lh-coA">
             <objects>
                 <viewController hidesBottomBarWhenPushed="YES" id="sel-NA-lsq" customClass="PlaylistItemViewController" sceneMemberID="viewController">
@@ -378,13 +378,13 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" title="1/203" id="6S4-ao-oiN"/>
+                    <navigationItem key="navigationItem" title="playlist name here" id="6S4-ao-oiN"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Fsr-cH-5sX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1970" y="601"/>
         </scene>
-        <!--Genre Item View Controller - 1/203-->
+        <!--Genre Item View Controller - genre stuff here-->
         <scene sceneID="79n-1B-Uvt">
             <objects>
                 <viewController hidesBottomBarWhenPushed="YES" id="ThK-N8-DvG" customClass="GenreItemViewController" sceneMemberID="viewController">
@@ -397,7 +397,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" title="1/203" id="oav-bt-glQ"/>
+                    <navigationItem key="navigationItem" title="genre stuff here" id="oav-bt-glQ"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nl6-hk-4jn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -412,11 +412,11 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ArtistItemCell" id="aYk-Cp-Pdu">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ArtistItemCell" id="aYk-Cp-Pdu">
                                 <rect key="frame" x="0.0" y="22" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="aYk-Cp-Pdu" id="n83-eg-ItB">
-                                    <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableViewCellContentView>
                             </tableViewCell>
@@ -428,6 +428,9 @@
                     </tableView>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" title="Artists" id="Y7c-Np-suQ"/>
+                    <connections>
+                        <segue destination="kan-nw-IVP" kind="push" identifier="artistItemSegue" id="dVa-rY-5MO"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DgJ-kO-zQg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -451,6 +454,25 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZOY-BY-bJK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="981" y="2021"/>
+        </scene>
+        <!--Artist Item View Controller - 1/203-->
+        <scene sceneID="ayP-5N-4eZ">
+            <objects>
+                <viewController hidesBottomBarWhenPushed="YES" id="kan-nw-IVP" customClass="ArtistItemViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="qy3-pI-54s"/>
+                        <viewControllerLayoutGuide type="bottom" id="sPq-CH-jYR"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="han-vZ-nCW">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="1/203" id="94I-TB-Xhd"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="y7u-Z8-8XN" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1970" y="2021"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
