@@ -12,6 +12,7 @@
 @end
 
 @implementation SongItemViewController
+@synthesize aNewSong, aNewAlbum, aNewArtist, aNewPlaylist;
 - (void)viewDidLoad
 {
     [super viewDidLoad];

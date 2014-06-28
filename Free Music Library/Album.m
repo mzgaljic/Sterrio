@@ -7,6 +7,7 @@
 //
 
 #import "Album.h"
+#import "Song.h"
 #import "FileIOConstants.h"
 #define ALBUM_NAME_KEY @"albumName"
 #define RELEASE_DATE_KEY @"releaseDate"
@@ -48,7 +49,7 @@ static int const UPDATE_ALBUM = 2;
 
 + (NSArray *)loadAll  //loads array containing all of the saved albums
 {
-    NSData *data = [NSData dataWithContentsOfURL:[FileIOConstants createSingleton].libraryFileURL];
+    NSData *data = [NSData dataWithContentsOfURL:[FileIOConstants createSingleton].albumsFileURL];
     if(!data){
         //if no albums exist yet (file not yet written to disk), return empty array
         return [NSMutableArray array];
@@ -81,8 +82,19 @@ static int const UPDATE_ALBUM = 2;
             break;
             
         case DELETE_ALBUM:
+        {
+            //delete the songs
+            NSArray *mySongs = [self albumSongs];
+            while(mySongs.count != 0){
+                [[mySongs lastObject] deleteSong];
+            }
+            
+            //remove album songs from any playlists?
+            
+            //delete the album itself
             [albums removeObject:self];  //implemented custom isEqual and hash methods, so this works!
             break;
+        }
             
         case UPDATE_ALBUM:
             //replace the old object saved in the array with the current object
@@ -98,7 +110,7 @@ static int const UPDATE_ALBUM = 2;
     
     //save changes to model on disk
     NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:albums];  //encode albums
-    return [fileData writeToURL:[FileIOConstants createSingleton].libraryFileURL atomically:YES];
+    return [fileData writeToURL:[FileIOConstants createSingleton].albumsFileURL atomically:YES];
 }
 
 - (NSMutableArray *)sortExistingArrayAlphabetically:(NSMutableArray *)unsortedArray

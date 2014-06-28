@@ -9,7 +9,11 @@
 #import "FileIOConstants.h"
 
 @implementation FileIOConstants
-static NSURL *url = nil;
+static NSURL *songsUrl = nil;
+static NSURL *albumsUrl = nil;
+static NSURL *artistsUrl = nil;
+static NSURL *playlistsUrl = nil;
+static NSURL *genresUrl = nil;
 
 + (instancetype)createSingleton
 {
@@ -21,14 +25,55 @@ static NSURL *url = nil;
     return sharedMyModel;
 }
 
-- (NSURL *)libraryFileURL
+- (void)setSongsFileURL:(NSURL *)aUrl
 {
-    return url;
+    songsUrl = aUrl;
 }
 
-- (void)setLibraryFileURL:(NSURL *)aUrl
+- (void)setAlbumsFileURL:(NSURL *)aUrl
 {
-    url = aUrl;
+    albumsUrl = aUrl;
+}
+
+- (void)setArtistsFileURL:(NSURL *)aUrl
+{
+    artistsUrl = aUrl;
+}
+
+- (void)setPlaylistsFileURL:(NSURL *)aUrl
+{
+    playlistsUrl = aUrl;
+}
+
+- (void)setGenresFileURL:(NSURL *)aUrl
+{
+    genresUrl = aUrl;
+}
+
+
+- (NSURL *)songsFileURL
+{
+    return songsUrl;
+}
+
+- (NSURL *)albumsFileURL
+{
+    return albumsUrl;
+}
+
+- (NSURL *)artistsFileURL
+{
+    return artistsUrl;
+}
+
+- (NSURL *)playlistsFileURL
+{
+    return playlistsUrl;
+}
+
+- (NSURL *)genresFileURL
+{
+    return genresUrl;
 }
 
 @end

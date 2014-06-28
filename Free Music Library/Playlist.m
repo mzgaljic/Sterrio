@@ -32,7 +32,7 @@
 
 + (NSArray *)loadAll  //loads array containing all of the saved playlists
 {
-    NSData *data = [NSData dataWithContentsOfURL:[FileIOConstants createSingleton].libraryFileURL];
+    NSData *data = [NSData dataWithContentsOfURL:[FileIOConstants createSingleton].playlistsFileURL];
     if(!data){
         //if no playlists exist yet (file not yet written to disk), return empty array
         return [NSMutableArray array];
@@ -47,7 +47,7 @@
     //should sort this array based on alphabetical order!
     [playlists insertObject:self atIndex:0];  //new playlists added to array will appear at top of 'list'
     NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:playlists];  //encode playlists
-    return [fileData writeToURL:[FileIOConstants createSingleton].libraryFileURL atomically:YES];
+    return [fileData writeToURL:[FileIOConstants createSingleton].playlistsFileURL atomically:YES];
 }
 
 - (BOOL)deleteAlbum

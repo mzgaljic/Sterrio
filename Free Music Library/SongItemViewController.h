@@ -7,18 +7,27 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Song.h"
+#import "Album.h"
+#import "Artist.h"
+#import "Playlist.h"
 
 @interface SongItemViewController : UIViewController
+///only applicable when picking songs from lists (not making music queue's on the fly)
 @property (assign, nonatomic) int songNumberInSongCollection;
+///only applicable when picking songs from lists (not making music queue's on the fly)
 @property (assign, nonatomic) int totalSongsInCollection;
 
-@property (strong, nonatomic) NSString *songLabelValue;
-@property (strong, nonatomic) NSString *artist_AlbumLabelValue;
-//@property (strong, nonatomic) NSString *uri;
+///new item played by the user, thereby erasing any queue's. Nil when value is no longer 'current'.
+@property (strong, nonatomic) Song *aNewSong;
+///new item played by the user, thereby erasing any queue's. Nil when value is no longer 'current'.
+@property (strong, nonatomic) Album *aNewAlbum;
+///new item played by the user, thereby erasing any queue's. Nil when value is no longer 'current'.
+@property (strong, nonatomic) Artist *aNewArtist;
+///new item played by the user, thereby erasing any queue's. Nil when value is no longer 'current'.
+@property (strong, nonatomic) Playlist *aNewPlaylist;
 
 //GUI vars
-@property (weak, nonatomic) IBOutlet UILabel *songLabel;
-@property (weak, nonatomic) IBOutlet UILabel *artist_AlbumLabel;
-@property (weak, nonatomic) IBOutlet UILabel *extraStuff;
+
 
 @end

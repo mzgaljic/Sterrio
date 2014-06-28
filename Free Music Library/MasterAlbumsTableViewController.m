@@ -13,77 +13,9 @@
 @interface MasterAlbumsTableViewController ()
 @property (nonatomic, strong) NSMutableArray *albums;
 @end
+
 @implementation MasterAlbumsTableViewController
 @synthesize albums;
-
-static const BOOL PRODUCTION_MODE = NO;
-
-- (void)makeFakeTestAlbums
-{
-    Artist *artist1 = [[Artist alloc] init];
-    artist1.artistName = @"Leona Lewis";
-    
-    Album *album1 = [[Album alloc] init];
-    album1.albumName = @"Echo (Deluxe Version)";
-    album1.artist = artist1;
-    album1.albumArtFileName = @"Echo (Deluxe Version).png";
-    [album1 saveAlbum];
-    //-----------------
-    Artist *artist2 = [[Artist alloc] init];
-    artist2.artistName = @"Colbie Caillat";
-    
-    Album *album2 = [[Album alloc] init];
-    album2.albumName = @"Hold On - Single";
-    album2.artist = artist2;
-    album2.albumArtFileName = @"Hold On - Single.png";
-    [album2 saveAlbum];
-    //-----------------
-    Artist *artist3 = [[Artist alloc] init];
-    artist3.artistName = @"Betty Who";
-    
-    Album *album3 = [[Album alloc] init];
-    album3.albumName = @"The Movement - EP";
-    album3.artist = artist3;
-    album3.albumArtFileName = @"The Movement - EP.png";
-    [album3 saveAlbum];
-    //-----------------
-    Artist *artist4 = [[Artist alloc] init];
-    artist4.artistName = @"Lionel Richie";
-    
-    Album *album4 = [[Album alloc] init];
-    album4.albumName = @"20th Century Masters - The Millennium Collection- The Best of Lionel Richie";
-    album4.artist = artist4;
-    album4.albumArtFileName = @"20th Century Masters - The Millennium Collection- The Best of Lionel Richie.png";
-    [album4 saveAlbum];
-    //-----------------
-    Artist *artist5 = [[Artist alloc] init];
-    artist4.artistName = @"The Cab";
-    
-    Album *album5 = [[Album alloc] init];
-    album5.albumName = @"Whisper War";
-    album5.artist = artist5;
-    album5.albumArtFileName = @"Whisper War.png";
-    [album5 saveAlbum];
-    //-----------------
-    Artist *artist6 = [[Artist alloc] init];
-    artist6.artistName = @"Various Artists";
-    
-    Album *album6 = [[Album alloc] init];
-    album6.albumName = @"Frozen (Original Motion Picture Soundtrack)";
-    album6.artist = artist6;
-    album6.albumArtFileName = @"Frozen (Original Motion Picture Soundtrack).png";
-    [album6 saveAlbum];
-    //-----------------
-    Artist *artist7 = [[Artist alloc] init];
-    artist7.artistName = @"Paper Route";
-    
-    Album *album7 = [[Album alloc] init];
-    album7.albumName = @"You and I - Single";
-    album7.artist = artist7;
-    album7.albumArtFileName = @"You and I - Single.png";
-    [album7 saveAlbum];
-}
-
 
 - (NSMutableArray *) results  //for searching tableview?
 {
@@ -98,10 +30,6 @@ static const BOOL PRODUCTION_MODE = NO;
     [super viewWillAppear:animated];
     
     self.albums = [NSMutableArray arrayWithArray:[Album loadAll]];
-    if(self.albums.count == 0 && !PRODUCTION_MODE){
-        [self makeFakeTestAlbums];
-        self.albums = [NSMutableArray arrayWithArray:[Album loadAll]];
-    }
 }
 
 - (void)viewDidLoad
@@ -167,8 +95,10 @@ static const BOOL PRODUCTION_MODE = NO;
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
+    Album *selectedAlbum = self.albums[self.selectedRowIndexValue];
     if([[segue identifier] isEqualToString: @"AlbumItemSegue"]){
-          //[[segue destinationViewController] setSongLabelValue:@"some Song"];
+        [[segue destinationViewController] setAlbumNameTitle: selectedAlbum.albumName];
+        [[segue destinationViewController] setAlbumImage:[self albumArtFileNameToUiImage: selectedAlbum.albumArtFileName]];
     }
 }
 

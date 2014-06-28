@@ -14,14 +14,16 @@
 
 @property(nonatomic, strong) NSString *songName;
 @property(nonatomic, strong) NSString *youtubeLink;
-@property(nonatomic, strong) NSString *albumArtPath;  //used only when this song isn't associated with an album.
+@property(nonatomic, strong) NSString *albumArtFileName;  //used only when this song isn't associated with an album.
 @property(nonatomic, strong) Album *album;
 @property(nonatomic, strong) Artist *artist;
 @property(nonatomic, assign) int genreCode;  //album genre will override this value if this song belongs to an album!
+@property(nonatomic, assign) BOOL associatedWithAlbum;
 
 + (NSArray *)loadAll;
 //should be saved upon songs creation
-- (BOOL)save;
-- (BOOL)deleteAlbum;
+- (BOOL)saveSong;
+- (BOOL)deleteSong;
+- (BOOL)updateExistingSong;
 
 @end

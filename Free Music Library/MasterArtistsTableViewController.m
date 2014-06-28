@@ -73,12 +73,7 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if([[segue identifier] isEqualToString: @"ShowAndPlaySongContents"]){        
-        [[segue destinationViewController] setSongNumberInSongCollection: self.selectedRowIndexValue];
-        [[segue destinationViewController] setTotalSongsInCollection: (int) _allSongsInLibrary.count];
-        [[segue destinationViewController] setSongLabelValue:@"some Song"];
-        [[segue destinationViewController] setArtist_AlbumLabelValue:@"an Artist - some Album"];
-    }
+
 }
 
 @end

@@ -29,7 +29,7 @@
 
 + (NSArray *)loadAll  //loads array containing all of the saved artists
 {
-    NSData *data = [NSData dataWithContentsOfURL:[FileIOConstants createSingleton].libraryFileURL];
+    NSData *data = [NSData dataWithContentsOfURL:[FileIOConstants createSingleton].artistsFileURL];
     if(!data){
         //if no artists exist yet (file not yet written to disk), return empty array
         return [NSMutableArray array];
@@ -44,7 +44,7 @@
     //should sort this array based on alphabetical order!
     [artists insertObject:self atIndex:0];  //new artists added to array will appear at top of 'list'
     NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:artists];  //encode artists
-    return [fileData writeToURL:[FileIOConstants createSingleton].libraryFileURL atomically:YES];
+    return [fileData writeToURL:[FileIOConstants createSingleton].artistsFileURL atomically:YES];
 }
 
 - (BOOL)deleteAlbum

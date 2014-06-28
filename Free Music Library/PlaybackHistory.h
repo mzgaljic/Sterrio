@@ -14,5 +14,4 @@
 + (NSArray *)listOfRecentlyPlayedSongs;
 + (void)addSongToHistory:(Song *)playedSong;
 
-//add code to save history when app is quit?
 @end

@@ -12,9 +12,18 @@
 
 //initialization
 + (instancetype)createSingleton;
+- (void)setSongsFileURL:(NSURL *)aUrl;
+- (void)setAlbumsFileURL:(NSURL *)aUrl;
+- (void)setArtistsFileURL:(NSURL *)aUrl;
+- (void)setPlaylistsFileURL:(NSURL *)aUrl;
+- (void)setGenresFileURL:(NSURL *)aUrl;
 
-//using initialized singleton
-- (NSURL *)libraryFileURL;
-- (void)setLibraryFileURL:(NSURL *)aUrl;
+//using the initialized singletons
+- (NSURL *)songsFileURL;
+- (NSURL *)albumsFileURL;
+- (NSURL *)artistsFileURL;
+- (NSURL *)playlistsFileURL;
+- (NSURL *)genresFileURL;
+
 
 @end

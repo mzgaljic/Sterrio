@@ -1,5 +1,5 @@
 //
-//  GenreItemViewController.h
+//  ArtistItemAlbumViewController.h
 //  Free Music Library
 //
 //  Created by Mark Zgaljic on 5/21/14.
@@ -8,9 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface GenreItemViewController : UIViewController
+@interface ArtistItemAlbumViewController : UIViewController
 @property (assign, nonatomic) int songNumberInSongCollection;
 @property (assign, nonatomic) int totalSongsInCollection;
+
 
 //GUI vars
 
