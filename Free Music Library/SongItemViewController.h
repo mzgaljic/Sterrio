@@ -28,6 +28,8 @@
 @property (strong, nonatomic) Playlist *aNewPlaylist;
 
 //GUI vars
+@property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
+@property (weak, nonatomic) IBOutlet UILabel *songNameLabel;
 
 
 @end

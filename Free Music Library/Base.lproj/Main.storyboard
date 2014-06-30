@@ -7,14 +7,14 @@
         <!--Master Songs Table View Controller - Songs-->
         <scene sceneID="JxM-OT-aUc">
             <objects>
-                <tableViewController id="C05-aT-A4x" customClass="MasterSongsTableViewController" sceneMemberID="viewController">
+                <tableViewController extendedLayoutIncludesOpaqueBars="YES" id="C05-aT-A4x" customClass="MasterSongsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="b07-O9-4Xg">
-                        <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SongItemCell" textLabel="lGf-wg-9qc" detailTextLabel="Ydb-9i-DyK" style="IBUITableViewCellStyleSubtitle" id="1zB-MX-OxD">
-                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="SongItemCell" editingAccessoryType="disclosureIndicator" textLabel="lGf-wg-9qc" detailTextLabel="Ydb-9i-DyK" style="IBUITableViewCellStyleSubtitle" id="1zB-MX-OxD">
+                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1zB-MX-OxD" id="rBH-N0-rGS">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -36,8 +36,9 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <connections>
-                                    <segue destination="PBb-rQ-7sq" kind="push" identifier="songItemSegue" id="67D-Z1-nmK"/>
+                                    <segue destination="PBb-rQ-7sq" kind="push" identifier="songItemSegue" id="HXl-i5-Nrk"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -46,8 +47,13 @@
                             <outlet property="delegate" destination="C05-aT-A4x" id="bks-iV-BkC"/>
                         </connections>
                     </tableView>
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
-                    <navigationItem key="navigationItem" title="Songs" id="Oyd-HO-iMf"/>
+                    <navigationItem key="navigationItem" title="Songs" id="Oyd-HO-iMf">
+                        <barButtonItem key="leftBarButtonItem" image="expandable Buttons" id="ClS-Ot-g7o">
+                            <connections>
+                                <action selector="expandableMenuSelected:" destination="C05-aT-A4x" id="34Q-pX-eVb"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="YCe-C6-ZmT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -56,7 +62,7 @@
         <!--Song Item View Controller - 1/203-->
         <scene sceneID="aB0-HZ-Jc6">
             <objects>
-                <viewController hidesBottomBarWhenPushed="YES" id="PBb-rQ-7sq" customClass="SongItemViewController" sceneMemberID="viewController">
+                <viewController extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" id="PBb-rQ-7sq" customClass="SongItemViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="sQf-nE-KoN"/>
                         <viewControllerLayoutGuide type="bottom" id="vje-sk-lDV"/>
@@ -76,6 +82,10 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" title="1/203" id="B6K-mw-sf0"/>
+                    <connections>
+                        <outlet property="navBar" destination="B6K-mw-sf0" id="xnq-2a-haq"/>
+                        <outlet property="songNameLabel" destination="sY3-DC-Geg" id="yh7-1u-qph"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="shW-Aa-q3b" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -84,14 +94,14 @@
         <!--Master Genre Table View Controller - Genres-->
         <scene sceneID="Vww-o9-vR9">
             <objects>
-                <tableViewController id="RD8-Q5-Icz" customClass="MasterGenreTableViewController" sceneMemberID="viewController">
+                <tableViewController extendedLayoutIncludesOpaqueBars="YES" id="RD8-Q5-Icz" customClass="MasterGenreTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="z1P-sU-O3n">
-                        <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="GenreItemCell" textLabel="UDy-kh-iHv" detailTextLabel="mv1-76-vf4" style="IBUITableViewCellStyleSubtitle" id="NHp-3G-eAS">
-                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="GenreItemCell" editingAccessoryType="disclosureIndicator" textLabel="UDy-kh-iHv" detailTextLabel="mv1-76-vf4" style="IBUITableViewCellStyleSubtitle" id="NHp-3G-eAS">
+                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="NHp-3G-eAS" id="icD-Ls-30p">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -113,6 +123,10 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <connections>
+                                    <segue destination="epC-52-2Pl" kind="push" identifier="genreItemSegue" id="XzC-NX-y81"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -120,11 +134,7 @@
                             <outlet property="delegate" destination="RD8-Q5-Icz" id="6Cg-OM-4Gk"/>
                         </connections>
                     </tableView>
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" title="Genres" id="Umh-11-Hbi"/>
-                    <connections>
-                        <segue destination="epC-52-2Pl" kind="push" identifier="GenreItemSegue" id="xV4-iH-dP0"/>
-                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9Lv-U9-Zx7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -142,10 +152,10 @@
                     </tabBar>
                     <connections>
                         <segue destination="ZWq-Z9-URc" kind="relationship" relationship="viewControllers" id="rCj-c0-oBV"/>
-                        <segue destination="rUd-Wq-cn2" kind="relationship" relationship="viewControllers" id="llf-ie-tjI"/>
                         <segue destination="N8U-tP-Z8r" kind="relationship" relationship="viewControllers" id="GuD-o3-FnD"/>
-                        <segue destination="d6y-Vn-oTB" kind="relationship" relationship="viewControllers" id="nQ6-JS-CKW"/>
                         <segue destination="CtG-eT-64A" kind="relationship" relationship="viewControllers" id="vVJ-bq-V8p"/>
+                        <segue destination="d6y-Vn-oTB" kind="relationship" relationship="viewControllers" id="nQ6-JS-CKW"/>
+                        <segue destination="rUd-Wq-cn2" kind="relationship" relationship="viewControllers" id="llf-ie-tjI"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FNP-y4-bzi" sceneMemberID="firstResponder"/>
@@ -156,7 +166,8 @@
         <scene sceneID="ckA-Oq-9Mg">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="ZWq-Z9-URc" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Songs" id="FbW-ae-jfH"/>
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <tabBarItem key="tabBarItem" title="Songs" image="songs" id="FbW-ae-jfH"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="aX3-lk-F3P">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -171,11 +182,11 @@
             </objects>
             <point key="canvasLocation" x="981" y="-825"/>
         </scene>
-        <!--Navigation Controller - Genre-->
+        <!--Navigation Controller - Genres-->
         <scene sceneID="vUt-9J-pjQ">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="rUd-Wq-cn2" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Genre" id="eBh-gD-zW0"/>
+                    <tabBarItem key="tabBarItem" title="Genres" image="genres" id="eBh-gD-zW0"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="lB5-Mk-1Ul">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -193,7 +204,7 @@
         <!--Album Item View Controller - album name-->
         <scene sceneID="COP-Ij-JKb">
             <objects>
-                <viewController hidesBottomBarWhenPushed="YES" id="G0K-FY-YuF" customClass="AlbumItemViewController" sceneMemberID="viewController">
+                <viewController extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" id="G0K-FY-YuF" customClass="AlbumItemViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="0u3-1W-60B"/>
                         <viewControllerLayoutGuide type="bottom" id="7xR-I0-FET"/>
@@ -203,7 +214,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SB8-zB-QoY">
-                                <rect key="frame" x="20" y="67" width="206" height="75"/>
+                                <rect key="frame" x="2" y="66" width="238" height="74"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <attributedString key="attributedText">
                                     <fragment content="Album name">
@@ -217,13 +228,40 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3oG-fh-DZ9">
-                                <rect key="frame" x="239" y="67" width="81" height="75"/>
+                                <rect key="frame" x="245" y="65" width="75" height="75"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="qgS-OQ-SCE">
-                                <rect key="frame" x="0.0" y="143" width="320" height="425"/>
+                                <rect key="frame" x="1" y="147" width="320" height="421"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="albumSongItemCell" editingAccessoryType="disclosureIndicator" textLabel="Cak-bT-570" detailTextLabel="P8C-sH-l77" style="IBUITableViewCellStyleValue1" id="swu-yq-Qee">
+                                        <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="swu-yq-Qee" id="bYM-Om-gbm">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Cak-bT-570">
+                                                    <rect key="frame" x="15" y="11" width="33" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="P8C-sH-l77">
+                                                    <rect key="frame" x="261" y="11" width="44" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
                             </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -231,8 +269,8 @@
                     <navigationItem key="navigationItem" title="album name" id="GSd-xq-T5s"/>
                     <connections>
                         <outlet property="albumNameTitleLabel" destination="SB8-zB-QoY" id="F2Z-v2-k1t"/>
-                        <outlet property="albumSongsTableView" destination="qgS-OQ-SCE" id="KeA-gI-oKr"/>
-                        <outlet property="albumUiImage" destination="3oG-fh-DZ9" id="p4a-Ge-qao"/>
+                        <outlet property="albumUiImageView" destination="3oG-fh-DZ9" id="Tfp-nf-8a7"/>
+                        <outlet property="navBar" destination="GSd-xq-T5s" id="htQ-fI-HqV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F17-Uc-yQa" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -242,14 +280,14 @@
         <!--Master Albums Table View Controller - Albums-->
         <scene sceneID="op1-aV-4gz">
             <objects>
-                <tableViewController id="6rZ-IE-7YV" customClass="MasterAlbumsTableViewController" sceneMemberID="viewController">
+                <tableViewController extendedLayoutIncludesOpaqueBars="YES" id="6rZ-IE-7YV" customClass="MasterAlbumsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="3K2-UW-vww">
-                        <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="AlbumItemCell" textLabel="YzQ-eI-Jqz" detailTextLabel="jXp-8J-zfn" style="IBUITableViewCellStyleSubtitle" id="aJf-1s-5nP">
-                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="AlbumItemCell" editingAccessoryType="disclosureIndicator" textLabel="YzQ-eI-Jqz" detailTextLabel="jXp-8J-zfn" style="IBUITableViewCellStyleSubtitle" id="aJf-1s-5nP">
+                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="aJf-1s-5nP" id="gU6-cq-bGW">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -271,6 +309,10 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <connections>
+                                    <segue destination="G0K-FY-YuF" kind="push" identifier="albumItemSegue" id="cH1-YS-JvU"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -278,11 +320,7 @@
                             <outlet property="delegate" destination="6rZ-IE-7YV" id="Joz-IH-cb9"/>
                         </connections>
                     </tableView>
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" title="Albums" id="Koe-dd-BbI"/>
-                    <connections>
-                        <segue destination="G0K-FY-YuF" kind="push" identifier="AlbumItemSegue" id="UYP-Hy-RgL"/>
-                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="el1-qp-blA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -292,7 +330,7 @@
         <scene sceneID="1id-C4-d81">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="N8U-tP-Z8r" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Albums" id="M5K-hl-duo"/>
+                    <tabBarItem key="tabBarItem" title="Albums" image="albums" id="M5K-hl-duo"/>
                     <toolbarItems/>
                     <size key="freeformSize" width="320" height="568"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="5D3-H1-wzj">
@@ -311,14 +349,14 @@
         <!--Master Playlist Table View Controller - Playlists-->
         <scene sceneID="GRy-Te-h4a">
             <objects>
-                <tableViewController id="eYp-4z-EJP" customClass="MasterPlaylistTableViewController" sceneMemberID="viewController">
+                <tableViewController extendedLayoutIncludesOpaqueBars="YES" id="eYp-4z-EJP" customClass="MasterPlaylistTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="VXf-hO-vEK">
-                        <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="PlaylistItemCell" textLabel="KOW-W9-8mQ" detailTextLabel="Rwj-30-loF" style="IBUITableViewCellStyleSubtitle" id="1mq-zg-KI2">
-                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="PlaylistItemCell" editingAccessoryType="disclosureIndicator" textLabel="KOW-W9-8mQ" detailTextLabel="Rwj-30-loF" style="IBUITableViewCellStyleSubtitle" id="1mq-zg-KI2">
+                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1mq-zg-KI2" id="pLb-Hd-4hy">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -340,6 +378,10 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <connections>
+                                    <segue destination="zmX-nC-18m" kind="push" identifier="playlistItemSegue" id="mMi-br-wtb"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -347,11 +389,7 @@
                             <outlet property="delegate" destination="eYp-4z-EJP" id="Ma6-NH-1zm"/>
                         </connections>
                     </tableView>
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" title="Playlists" id="XaG-qV-nzD"/>
-                    <connections>
-                        <segue destination="zmX-nC-18m" kind="push" identifier="PlaylistItemSegue" id="S3z-OU-SoU"/>
-                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SXe-kT-CqM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -360,19 +398,20 @@
         <!--Playlist Item View Controller-->
         <scene sceneID="JTw-3d-KD7">
             <objects>
-                <tableViewController hidesBottomBarWhenPushed="YES" id="zmX-nC-18m" customClass="PlaylistItemViewController" sceneMemberID="viewController">
+                <tableViewController extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" id="zmX-nC-18m" customClass="PlaylistItemViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="f3I-FZ-c6Q">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="lxG-Kv-GeX">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="playlistSongItemCell" editingAccessoryType="disclosureIndicator" id="lxG-Kv-GeX">
                                 <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="lxG-Kv-GeX" id="Rci-gm-btp">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableViewCellContentView>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -386,11 +425,11 @@
             </objects>
             <point key="canvasLocation" x="1970" y="601"/>
         </scene>
-        <!--Navigation Controller - Playlist-->
+        <!--Navigation Controller - Playlists-->
         <scene sceneID="hcm-bu-jM1">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="d6y-Vn-oTB" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Playlist" id="cs5-2U-up7"/>
+                    <tabBarItem key="tabBarItem" title="Playlists" image="playlists" id="cs5-2U-up7"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="sDe-3g-qcK">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -408,19 +447,23 @@
         <!--Master Genre Table View Controller - Artists-->
         <scene sceneID="Lre-IJ-5W8">
             <objects>
-                <tableViewController id="0K4-5L-WBH" customClass="MasterGenreTableViewController" sceneMemberID="viewController">
+                <tableViewController extendedLayoutIncludesOpaqueBars="YES" id="0K4-5L-WBH" customClass="MasterGenreTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="zJA-7B-zxA">
-                        <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ArtistItemCell" id="aYk-Cp-Pdu">
-                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ArtistItemCell" editingAccessoryType="disclosureIndicator" id="aYk-Cp-Pdu">
+                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="aYk-Cp-Pdu" id="n83-eg-ItB">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableViewCellContentView>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <connections>
+                                    <segue destination="kan-nw-IVP" kind="push" identifier="artistItemSegue" id="Nma-01-AXF"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -428,11 +471,7 @@
                             <outlet property="delegate" destination="0K4-5L-WBH" id="MO8-Nk-xLV"/>
                         </connections>
                     </tableView>
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" title="Artists" id="Y7c-Np-suQ"/>
-                    <connections>
-                        <segue destination="kan-nw-IVP" kind="push" identifier="artistItemSegue" id="dVa-rY-5MO"/>
-                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DgJ-kO-zQg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -442,7 +481,7 @@
         <scene sceneID="9tt-32-52e">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="CtG-eT-64A" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Artists" id="ovr-1s-uuP"/>
+                    <tabBarItem key="tabBarItem" title="Artists" image="artists" id="ovr-1s-uuP"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="knB-LI-fXi">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -460,7 +499,7 @@
         <!--Artist Item Album View Controller - 1/203-->
         <scene sceneID="ayP-5N-4eZ">
             <objects>
-                <viewController hidesBottomBarWhenPushed="YES" id="kan-nw-IVP" customClass="ArtistItemAlbumViewController" sceneMemberID="viewController">
+                <viewController extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" id="kan-nw-IVP" customClass="ArtistItemAlbumViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="qy3-pI-54s"/>
                         <viewControllerLayoutGuide type="bottom" id="sPq-CH-jYR"/>
@@ -479,19 +518,20 @@
         <!--Genre Item View Controller-->
         <scene sceneID="xOu-gs-Vat">
             <objects>
-                <tableViewController hidesBottomBarWhenPushed="YES" id="epC-52-2Pl" customClass="GenreItemViewController" sceneMemberID="viewController">
+                <tableViewController extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" id="epC-52-2Pl" customClass="GenreItemViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="nx9-8v-Snj">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="gsJ-Xk-rWb">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="genreSongItemCell" editingAccessoryType="disclosureIndicator" id="gsJ-Xk-rWb">
                                 <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gsJ-Xk-rWb" id="fyR-MA-M6U">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableViewCellContentView>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -506,6 +546,14 @@
             <point key="canvasLocation" x="1970" y="1289"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="albums" width="62" height="56"/>
+        <image name="artists" width="79" height="64"/>
+        <image name="expandable Buttons" width="57" height="18"/>
+        <image name="genres" width="72" height="67"/>
+        <image name="playlists" width="75" height="65"/>
+        <image name="songs" width="121" height="135"/>
+    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

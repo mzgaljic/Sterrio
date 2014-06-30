@@ -118,7 +118,6 @@
 		87FE09EF1933ED84001A5FB7 /* MusicStoreService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MusicStoreService.h; sourceTree = "<group>"; };
 		87FE09F01933ED84001A5FB7 /* MusicStoreService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MusicStoreService.m; sourceTree = "<group>"; };
 		87FEBB1F193568330088EF41 /* Free Music Library.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = "Free Music Library.entitlements"; path = "Free Music Library/Free Music Library.entitlements"; sourceTree = "<group>"; };
-		87FEBB20193576120088EF41 /* iCloud */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = iCloud; path = ../../../../Desktop/iCloud.framework/iCloud; sourceTree = "<group>"; };
 		87FEBB22193576AD0088EF41 /* iCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iCloud.framework; path = "Manually Added Frameworks/iCloud.framework"; sourceTree = "<group>"; };
 		87FEBB36193587610088EF41 /* UpNextSongQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpNextSongQueue.h; sourceTree = "<group>"; };
 		87FEBB37193587610088EF41 /* UpNextSongQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpNextSongQueue.m; sourceTree = "<group>"; };
@@ -223,7 +222,6 @@
 			children = (
 				87D9EB9919392DFF004F3885 /* libsqlite3.dylib */,
 				87FEBB22193576AD0088EF41 /* iCloud.framework */,
-				87FEBB20193576120088EF41 /* iCloud */,
 				87480DA8192C1FBD005CC0A4 /* Foundation.framework */,
 				87480DAA192C1FBD005CC0A4 /* CoreGraphics.framework */,
 				87480DAC192C1FBD005CC0A4 /* UIKit.framework */,

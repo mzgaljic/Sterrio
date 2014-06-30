@@ -29,12 +29,28 @@
 {
     [super viewWillAppear:animated];
     
+    //init tableView model
     self.albums = [NSMutableArray arrayWithArray:[Album loadAll]];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self setUpNavBarItems];
+}
+
+- (void)setUpNavBarItems
+{
+    //edit button
+    UIBarButtonItem *editButton = self.editButtonItem;
+    
+    //+ sign...also wire it up to the ibAction "addButtonPressed"
+    UIBarButtonItem *addButton = [[UIBarButtonItem alloc]
+                                  initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                  target:self action:@selector(addButtonPressed)];
+    NSArray *rightBarButtonItems = [NSArray arrayWithObjects:editButton, addButton, nil];
+    self.navigationItem.rightBarButtonItems = rightBarButtonItems;  //place both buttons on the nav bar
 }
 
 - (void)didReceiveMemoryWarning
@@ -95,10 +111,18 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    Album *selectedAlbum = self.albums[self.selectedRowIndexValue];
-    if([[segue identifier] isEqualToString: @"AlbumItemSegue"]){
-        [[segue destinationViewController] setAlbumNameTitle: selectedAlbum.albumName];
-        [[segue destinationViewController] setAlbumImage:[self albumArtFileNameToUiImage: selectedAlbum.albumArtFileName]];
+    //get the index of the tapped album
+    UITableView *tableView = self.tableView;
+    for(int i = 0; i < self.albums.count; i++){
+        UITableViewCell *cell =[tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+        if(cell.selected){
+            self.selectedRowIndexValue = i;
+            break;
+        }
+    }
+    
+    if([[segue identifier] isEqualToString: @"albumItemSegue"]){
+        [[segue destinationViewController] setAlbum:self.albums[self.selectedRowIndexValue]];
     }
 }
 
@@ -108,6 +132,18 @@
                                                     NSUserDomainMask, YES) objectAtIndex:0];
     NSString* path = [docDir stringByAppendingPathComponent: albumArtFileName];
     return [UIImage imageWithContentsOfFile:path];
+}
+
+//called when + sign is tapped - selector defined in editSongsMode method!
+- (void)addButtonPressed
+{
+    NSLog(@"+ tapped");
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"'+' Tapped"
+                                                    message:@"This is how you add songs to the library!  :)"
+                                                   delegate:nil
+                                          cancelButtonTitle:@"Got it"
+                                          otherButtonTitles:nil];
+    [alert show];
 }
 
 @end

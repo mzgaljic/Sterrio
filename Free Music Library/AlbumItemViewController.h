@@ -7,14 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Album.h"
+#import "Song.h"
 
 @interface AlbumItemViewController : UIViewController
-@property (strong, nonatomic) NSString *albumNameTitle;
-@property (strong, nonatomic) UIImage *albumImage;
+@property (strong, nonatomic) Album *album;
 
 //GUI vars
 @property (weak, nonatomic) IBOutlet UILabel *albumNameTitleLabel;
-@property (weak, nonatomic) IBOutlet UIImageView *albumUiImage;
-@property (weak, nonatomic) IBOutlet UITableView *albumSongsTableView;
+@property (weak, nonatomic) IBOutlet UIImageView *albumUiImageView;
+@property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
 
 @end

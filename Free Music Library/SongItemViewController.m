@@ -12,15 +12,22 @@
 @end
 
 @implementation SongItemViewController
-@synthesize aNewSong, aNewAlbum, aNewArtist, aNewPlaylist;
+@synthesize aNewSong, aNewAlbum, aNewArtist, aNewPlaylist, navBar;
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
     //set song/album details for currently selected song
-    //self.songLabel.text = self.songLabelValue;
-    //self.artist_AlbumLabel.text = self.artist_AlbumLabelValue;
+    NSString *navBarTitle;
+    if(self.songNumberInSongCollection == -1){  //could not figure out song #
+        navBarTitle = [NSString stringWithFormat:@"%@/%d", @"?", self.totalSongsInCollection];
+    } else{
+        navBarTitle = [NSString stringWithFormat:@"%d/%d", self.songNumberInSongCollection, self.totalSongsInCollection];
+    }
+    self.navBar.title = navBarTitle;
+    self.songNameLabel.text = self.aNewSong.songName;
 }
 
 

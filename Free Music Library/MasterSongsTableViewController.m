@@ -9,7 +9,7 @@
 #import "MasterSongsTableViewController.h"
 #import "MasterAlbumsTableViewController.h"
 #import "SongItemViewController.h"
-#import "Song.h"  //import songs!!
+#import "Song.h"
 
 @interface MasterSongsTableViewController ()
 @property(nonatomic, strong) NSMutableArray *allSongsInLibrary;
@@ -30,12 +30,28 @@
 {
     [super viewWillAppear:animated];
 
+    //init tableView model
     self.allSongsInLibrary = [NSMutableArray arrayWithArray:[Song loadAll]];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self setUpNavBarItems];
+}
+
+- (void)setUpNavBarItems
+{
+    //edit button
+    UIBarButtonItem *editButton = self.editButtonItem;
+    
+    //+ sign...also wire it up to the ibAction "addButtonPressed"
+    UIBarButtonItem *addButton = [[UIBarButtonItem alloc]
+                                  initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                  target:self action:@selector(addButtonPressed)];
+    NSArray *rightBarButtonItems = [NSArray arrayWithObjects:editButton, addButton, nil];
+    self.navigationItem.rightBarButtonItems = rightBarButtonItems;  //place both buttons on the nav bar
 }
 
 - (void)didReceiveMemoryWarning
@@ -65,11 +81,11 @@
     cell.textLabel.text = song.songName;
     NSString *detailStringLabel = [NSString stringWithFormat:@"%@-%@", song.artist.artistName, song.album.albumName];
     cell.detailTextLabel.text = detailStringLabel;
+    
     if(! cell.imageView.image)  //image not already set
         cell.imageView.image = [self albumArtFileNameToUiImage: song.albumArtFileName];
     
     return cell;
-
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -96,29 +112,67 @@
     }
 }
 
-
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    //determine what was selected, make the rest nil.
-    Song *selectedSong;
-    Album *selectedAlbum;
-    Artist *selectedArtist;
+    //get the index of the tapped song
+    UITableView *tableView = self.tableView;
+    for(int i = 0; i < self.allSongsInLibrary.count; i++){
+        UITableViewCell *cell =[tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+        if(cell.selected){
+            self.selectedRowIndexValue = i;
+            break;
+        }
+    }
+    
+    //retrieve the song objects
+    Song *selectedSong = [self.allSongsInLibrary objectAtIndex:self.selectedRowIndexValue];
+    Album *selectedAlbum = selectedSong.album;
+    Artist *selectedArtist = selectedSong.artist;
     Playlist *selectedPlaylist;
     
-    if([[segue identifier] isEqualToString: @"SongItemSegue"]){
+    //setup properties in songItemViewController.h
+    if([[segue identifier] isEqualToString: @"songItemSegue"]){
         [[segue destinationViewController] setANewSong:selectedSong];
         [[segue destinationViewController] setANewAlbum:selectedAlbum];
         [[segue destinationViewController] setANewArtist:selectedArtist];
         [[segue destinationViewController] setANewPlaylist:selectedPlaylist];
+        
+        int songNumber = self.selectedRowIndexValue + 1;  //remember, for loop started at 0!
+        if(songNumber < 0 || songNumber == 0)  //object not found in song model
+            songNumber = -1;
+        [[segue destinationViewController] setSongNumberInSongCollection:songNumber];
+        [[segue destinationViewController] setTotalSongsInCollection:(int)self.allSongsInLibrary.count];
     }
 }
 
 - (UIImage *)albumArtFileNameToUiImage:(NSString *)albumArtFileName
 {
-    NSString *docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
-                                                            NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString* path = [docDir stringByAppendingPathComponent: albumArtFileName];
     return [UIImage imageWithContentsOfFile:path];
 }
 
+//called when + sign is tapped - selector defined in editSongsMode method!
+- (void)addButtonPressed
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"'+' Tapped"
+                                                    message:@"This is how you add songs to the library!  :)"
+                                                   delegate:nil
+                                          cancelButtonTitle:@"Got it"
+                                          otherButtonTitles:nil];
+    [alert show];
+}
+
+- (IBAction)expandableMenuSelected:(id)sender
+{
+    //frosted side bar library code here? look in safari bookmarks!
+    
+    //temp code...
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Expanded Options"
+                                                    message:@"Side bar with options should happen now."
+                                                   delegate:nil
+                                          cancelButtonTitle:@"Ok"
+                                          otherButtonTitles:nil];
+    [alert show];
+}
 @end
