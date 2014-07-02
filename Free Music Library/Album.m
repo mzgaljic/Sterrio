@@ -83,16 +83,15 @@ static int const UPDATE_ALBUM = 2;
             
         case DELETE_ALBUM:
         {
-            //delete the songs
-            NSArray *mySongs = [self albumSongs];
-            while(mySongs.count != 0){
-                [[mySongs lastObject] deleteSong];
-            }
+            //If the last song in this album is to be deleted, Song.m will delete the song and delegate control to this class, while it waits for the album to be deleted.
+            if(self.albumSongs == 0)
+                [albums removeObject:self];
             
-            //remove album songs from any playlists?
+            //delete the album AND the albums songs from our model on disk
+            Album *thisAlbum = albums[[albums indexOfObject:self]];
+            [thisAlbum.albumSongs removeAllObjects];
+            [albums removeObject:self];
             
-            //delete the album itself
-            [albums removeObject:self];  //implemented custom isEqual and hash methods, so this works!
             break;
         }
             

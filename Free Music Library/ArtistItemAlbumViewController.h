@@ -7,12 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Artist.h"
 
 @interface ArtistItemAlbumViewController : UIViewController
-@property (assign, nonatomic) int songNumberInSongCollection;
-@property (assign, nonatomic) int totalSongsInCollection;
-
+@property (strong, nonatomic) Artist *artist;
 
 //GUI vars
+@property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
 
 @end

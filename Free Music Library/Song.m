@@ -27,11 +27,25 @@ static int const UPDATE_SONG = 2;
 //custom property setter
 - (void)setAlbum:(Album *)album
 {
-    //when this song is associated w/ an album, add this song to its albumSongs array
-    _album = album;
-    if(!album.albumSongs)
-        album.albumSongs = [NSMutableArray array];
-    [_album.albumSongs addObject:self];
+    if(album == nil){  //unAssociating this song from an album
+        [_album.albumSongs removeObject:self];
+        self.associatedWithAlbum = NO;
+        
+    }else{  //associating the album with this song
+        
+        //when this song is associated w/ an album, add this song to its albumSongs array
+        _album = album;
+        if(!_album.albumSongs)
+            _album.albumSongs = [NSMutableArray array];
+        
+        for(Song *aSong in _album.albumSongs){  //don't want to add duplicates to the list of songs (checking just in case)
+            if([aSong isEqual:self])
+                return;
+        }
+        
+        [_album.albumSongs addObject:self];
+        self.associatedWithAlbum = YES;
+    }
 }
 
 /**
@@ -100,23 +114,40 @@ static int const UPDATE_SONG = 2;
             [songs insertObject:self atIndex:0]; //new songs added to array will appear at top of 'list'
             break;
             
-        case DELETE_SONG:
+        case DELETE_SONG:  //This class is responsible for deleting songs from albums
         {
-            //is this the last song in an album? If so, delete the album too.
-          //  if(self.album.albumSongs.count == 1)  //BROKEN CODE
-            //    [self.album deleteAlbum];
+            BOOL deletedAlbum = NO;
+            Song *thisSong = songs[[songs indexOfObject:self]];
+            Album *thisSongsAlbum = thisSong.album;
             
-            //remove songs from any playlists?
-            
-            //remove the actual song from model on disk and from albums list of songs
-            [songs removeObject:self];
-            [self.album.albumSongs removeObject:self];
-            break;
+            if(thisSong.associatedWithAlbum){
+                //is this the last song in an album? If so, we need to delete the album too.
+                if(thisSongsAlbum.albumSongs.count == 1){
+                    [songs removeObject:self];  //delete the song
+                    [thisSongsAlbum.albumSongs removeObject:self];
+                    [thisSongsAlbum deleteAlbum];  //deleting album also deletes songs
+                    deletedAlbum = YES;
+                }
+                
+                if(! deletedAlbum){
+                    //each song has its own album object, so we need to enforce the change across all songs
+                    for(Song *aSong in songs){  //#Inefficient
+                        if([aSong.album isEqual:self.album]){  //is this song part of same album?
+                            [aSong.album.albumSongs removeObject:self];
+                            [aSong.album updateExistingAlbum];
+                        }
+                    }
+                    [songs removeObject:self];
+                }
 
+            } else{  //song not associated with an album
+                [songs removeObject:self];
+            }
+            break;
         }
     
         case UPDATE_SONG:
-            //replace the old object saved in the array with the current object
+            //replace the old object saved in the array (the model) with the current object
             if(songs.count > 0){
                 [songs replaceObjectAtIndex:[songs indexOfObject:self] withObject:self];
             }
@@ -149,19 +180,21 @@ static int const UPDATE_SONG = 2;
     if(!object || ![object isMemberOfClass:[self class]])  //object is nil or not an album object
         return NO;
     
-    return ([self customSmartAlbumComparison:(Song *)object]) ? YES : NO;
+    return ([self customSmartSongComparison:(Song *)object]) ? YES : NO;
 }
 
-- (BOOL)customSmartAlbumComparison:(Song *)mysterySong
+- (BOOL)customSmartSongComparison:(Song *)mysterySong
 {
-    BOOL sameSongName = NO, sameAlbumName = YES;
+    BOOL sameSongName = NO, sameAlbumName = NO, sameArtistName = NO;
     //check if album names are equal -remember, every album name needs to be unique.
     if([self.album.albumName isEqualToString:mysterySong.album.albumName])
         sameAlbumName = YES;
     if([self.songName isEqualToString:mysterySong.songName])
         sameSongName = YES;
+    if([self.artist.artistName isEqualToString:mysterySong.artist.artistName])
+        sameArtistName = YES;
     
-    return (sameAlbumName && sameSongName) ? YES : NO;
+    return (sameSongName && (sameAlbumName || sameArtistName)) ? YES : NO;
 }
 
 -(NSUInteger)hash {

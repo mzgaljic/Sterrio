@@ -130,7 +130,7 @@
     Artist *selectedArtist = selectedSong.artist;
     Playlist *selectedPlaylist;
     
-    //setup properties in songItemViewController.h
+    //setup properties in SongItemViewController.h
     if([[segue identifier] isEqualToString: @"songItemSegue"]){
         [[segue destinationViewController] setANewSong:selectedSong];
         [[segue destinationViewController] setANewAlbum:selectedAlbum];
@@ -156,7 +156,7 @@
 - (void)addButtonPressed
 {
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"'+' Tapped"
-                                                    message:@"This is how you add songs to the library!  :)"
+                                                    message:@"This is how you add music to the library!  :)"
                                                    delegate:nil
                                           cancelButtonTitle:@"Got it"
                                           otherButtonTitles:nil];

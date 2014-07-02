@@ -17,9 +17,12 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    //set song/album details for currently selected song
-    //self.songLabel.text = self.songLabelValue;
-    //self.artist_AlbumLabel.text = self.artist_AlbumLabelValue;
+    NSString *navBarTitle;
+    if(self.artist)
+        navBarTitle = self.artist.artistName;
+    else
+        navBarTitle = @"";
+    self.navBar.title = navBarTitle;
 }
 
 
