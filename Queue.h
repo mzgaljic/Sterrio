@@ -1,31 +1,26 @@
 //
-//  Deque.h
+//  Queue.h
 //  Free Music Library
 //
-//  Created by Mark Zgaljic on 5/27/14.
+//  Created by Mark Zgaljic on 7/3/14.
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 
-@interface Deque : NSObject
+@interface Queue : NSObject <NSCoding>
 {
     NSMutableArray* internalArray;
 }
 
 //main operations
 - (void)enqueue:(id)anObject;
-- (void)enqueueObjectAtHead:(id)anObject;
 - (id)dequeue;
 - (void)clear;
-- (id)peekAtHead;
-- (id)peekAtTail;
-- (void)newOrderOfQueue:(NSArray *)anArray;
+- (id)peek;
 
 //helper methods
-- (id)initWithArray:(NSArray *)anArray;
 - (NSArray *)enqueueObjectsFromArray:(NSArray *)anArray;
-- (NSArray *)enqueueObjectsFromArrayToHead:(NSArray *)anArray;  //shoves new items in front
 - (NSArray *)allQueueObjectsAsArray;
 
 @property (atomic, readonly) NSUInteger count;

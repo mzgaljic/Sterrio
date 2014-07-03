@@ -8,7 +8,7 @@
 
 #import "MasterAlbumsTableViewController.h"
 
-@interface MasterAlbumsTableViewController ()
+@interface MasterAlbumsTableViewController()
 @property (nonatomic, strong) NSMutableArray *albums;
 @end
 
@@ -35,6 +35,7 @@ static BOOL PRODUCTION_MODE;
     
     //init tableView model
     self.albums = [NSMutableArray arrayWithArray:[Album loadAll]];
+    [self.tableView reloadData];
 }
 
 - (void)viewDidLoad
@@ -84,12 +85,12 @@ static BOOL PRODUCTION_MODE;
     //init cell fields
     cell.textLabel.text = album.albumName;
     cell.detailTextLabel.text = album.artist.artistName;
-    if(! cell.imageView.image){  //image not already set
-        if(PRODUCTION_MODE)
-            cell.imageView.image = [AlbumArtUtilities albumArtFileNameToUiImage: album.albumArtFileName];
-        else
-            cell.imageView.image = [UIImage imageNamed:album.albumName];
-    }
+    
+    //could only update images for the cells that changed if i want to make this more efficient
+    if(PRODUCTION_MODE)
+        cell.imageView.image = [AlbumArtUtilities albumArtFileNameToUiImage: album.albumArtFileName];
+    else
+        cell.imageView.image = [UIImage imageNamed:album.albumName];
     return cell;
 }
 
@@ -137,13 +138,17 @@ static BOOL PRODUCTION_MODE;
 //called when + sign is tapped - selector defined in editSongsMode method!
 - (void)addButtonPressed
 {
-    NSLog(@"+ tapped");
+    /**
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"'+' Tapped"
                                                     message:@"This is how you add songs to the library!  :)"
                                                    delegate:nil
                                           cancelButtonTitle:@"Got it"
                                           otherButtonTitles:nil];
     [alert show];
+     */
+    
+    NSArray *indexes = @[[NSIndexPath indexPathWithIndex:3]];
+    [self.tableView deleteRowsAtIndexPaths:indexes withRowAnimation:UITableViewRowAnimationFade];
 }
 
 - (IBAction)expandableMenuSelected:(id)sender
@@ -157,16 +162,6 @@ static BOOL PRODUCTION_MODE;
     RNFrostedSidebar *callout = [[RNFrostedSidebar alloc] initWithImages:images];
     callout.delegate = self;
     [callout show];
-    
-    /**
-     //temp code...
-     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Expanded Options"
-     message:@"Side bar with options should happen now."
-     delegate:nil
-     cancelButtonTitle:@"Ok"
-     otherButtonTitles:nil];
-     [alert show];
-     */
 }
 
 @end

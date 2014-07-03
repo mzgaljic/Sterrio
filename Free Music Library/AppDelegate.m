@@ -21,6 +21,8 @@ static BOOL PRODUCTION_MODE;
     [[FileIOConstants createSingleton] setArtistsFileURL:[[urls lastObject] URLByAppendingPathComponent:@"Lib_Artists.data"]];
     [[FileIOConstants createSingleton] setPlaylistsFileURL:[[urls lastObject] URLByAppendingPathComponent:@"Lib_Playlists.data"]];
     [[FileIOConstants createSingleton] setGenresFileURL:[[urls lastObject] URLByAppendingPathComponent:@"Lib_Genres.data"]];
+    
+    [[FileIOConstants createSingleton] setModelAlteredStateFileUrl:[[urls lastObject] URLByAppendingPathComponent:@"Altered_Model_State.data"]];
 }
 
 - (void)setUpGenreConstants
@@ -160,6 +162,27 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
+- (void)restoreModelAlteredStateSingletons
+{
+    ModelAlteredStatus *tryToLoad1 = [ModelAlteredStatus loadDataFromDisk];
+    if(tryToLoad1 == nil)  //object not loaded from disk
+        //create the object
+        [ModelAlteredStatus createSingleton];  //bool values for this are initialized to NO by default.
+    //else the singleton was loaded into memory
+    
+    //------------------AlteredModelQueue singletons--------------
+    //now make sure the other singletons are loaded from disk
+    AlteredModelSongQueue *tryToLoad2 = [AlteredModelSongQueue loadDataFromDisk];
+    if(tryToLoad2 == nil)
+        [AlteredModelSongQueue createSingleton];
+    AlteredModelAlbumQueue *tryToLoad3 = [AlteredModelAlbumQueue loadDataFromDisk];
+    if(tryToLoad3 == nil)
+        [AlteredModelAlbumQueue createSingleton];
+    AlteredModelArtistQueue *tryToLoad4 = [AlteredModelArtistQueue loadDataFromDisk];
+    if(tryToLoad4 == nil)
+        [AlteredModelArtistQueue createSingleton];
+}
+
 - (void)setProductionModeValue
 {
     PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
@@ -173,6 +196,7 @@ static BOOL PRODUCTION_MODE;
     [self setUpGenreConstants];
     [self setUpNSCodingFilePaths];
     [self setUpFakeLibraryContent];
+    [self restoreModelAlteredStateSingletons];  //may not need here, check app lifecycle
     
     return YES;
 }
@@ -190,14 +214,23 @@ static BOOL PRODUCTION_MODE;
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     
+    //save all required singletons
+    [[ModelAlteredStatus createSingleton] saveDataToDisk];
+    [[AlteredModelSongQueue createSingleton] saveDataToDisk];
+    [[AlteredModelAlbumQueue createSingleton] saveDataToDisk];
+    [[AlteredModelArtistQueue createSingleton] saveDataToDisk];
     
-    //do not need to save model class data, they are saved upon creation to disk (and resaved when altered).
-    //Save now playing song, playbackqueue to disk, etc. Release all model objects!
+    //do not need to save model class data, saved upon creation to disk (and resaved when altered).
+    //Save now playing song, etc.
+    
+    //Release all possible objects!
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    
+    [self restoreModelAlteredStateSingletons];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application

@@ -32,9 +32,10 @@ static BOOL PRODUCTION_MODE;
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
+    
     //init tableView model
     self.allSongsInLibrary = [NSMutableArray arrayWithArray:[Song loadAll]];
+    [self.tableView reloadData];
 }
 
 - (void)viewDidLoad
