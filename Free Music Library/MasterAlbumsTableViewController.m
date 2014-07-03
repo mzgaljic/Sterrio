@@ -7,8 +7,6 @@
 //
 
 #import "MasterAlbumsTableViewController.h"
-#import "AlbumItemViewController.h"
-#import "Album.h"
 
 @interface MasterAlbumsTableViewController ()
 @property (nonatomic, strong) NSMutableArray *albums;
@@ -16,6 +14,7 @@
 
 @implementation MasterAlbumsTableViewController
 @synthesize albums;
+static BOOL PRODUCTION_MODE;
 
 - (NSMutableArray *) results  //for searching tableview?
 {
@@ -23,6 +22,11 @@
         _results = [[NSMutableArray alloc] init];
     }
     return _results;
+}
+
+- (void)setProductionModeValue
+{
+    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -37,6 +41,7 @@
 {
     [super viewDidLoad];
     
+    [self setProductionModeValue];
     [self setUpNavBarItems];
 }
 
@@ -79,9 +84,12 @@
     //init cell fields
     cell.textLabel.text = album.albumName;
     cell.detailTextLabel.text = album.artist.artistName;
-    if(! cell.imageView.image)  //image not already set
-        cell.imageView.image = [self albumArtFileNameToUiImage: album.albumArtFileName];
-    
+    if(! cell.imageView.image){  //image not already set
+        if(PRODUCTION_MODE)
+            cell.imageView.image = [AlbumArtUtilities albumArtFileNameToUiImage: album.albumArtFileName];
+        else
+            cell.imageView.image = [UIImage imageNamed:album.albumName];
+    }
     return cell;
 }
 
@@ -126,14 +134,6 @@
     }
 }
 
-- (UIImage *)albumArtFileNameToUiImage:(NSString *)albumArtFileName
-{
-    NSString *docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
-                                                    NSUserDomainMask, YES) objectAtIndex:0];
-    NSString* path = [docDir stringByAppendingPathComponent: albumArtFileName];
-    return [UIImage imageWithContentsOfFile:path];
-}
-
 //called when + sign is tapped - selector defined in editSongsMode method!
 - (void)addButtonPressed
 {
@@ -144,6 +144,29 @@
                                           cancelButtonTitle:@"Got it"
                                           otherButtonTitles:nil];
     [alert show];
+}
+
+- (IBAction)expandableMenuSelected:(id)sender
+{
+    //frosted side bar library code here? look in safari bookmarks!
+    NSArray *images = @[
+                        [UIImage imageNamed:@"playlists"],
+                        [UIImage imageNamed:@"artists"], [UIImage imageNamed:@"genres"],
+                        [UIImage imageNamed:@"songs"]];
+    
+    RNFrostedSidebar *callout = [[RNFrostedSidebar alloc] initWithImages:images];
+    callout.delegate = self;
+    [callout show];
+    
+    /**
+     //temp code...
+     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Expanded Options"
+     message:@"Side bar with options should happen now."
+     delegate:nil
+     cancelButtonTitle:@"Ok"
+     otherButtonTitles:nil];
+     [alert show];
+     */
 }
 
 @end

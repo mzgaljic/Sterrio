@@ -1,14 +1,9 @@
 # Acknowledgements
 This application makes use of the following third party libraries:
 
-## FMDB
+## RNFrostedSidebar
 
-If you are using fmdb in your project, I'd love to hear about it.  Let me 
-know at gus@flyingmeat.com.
-
-In short, this is the MIT License.
-
-Copyright (c) 2008 Flying Meat Inc.
+Copyright (c) 2013 Ryan Nystrom (http://whoisryannystrom.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

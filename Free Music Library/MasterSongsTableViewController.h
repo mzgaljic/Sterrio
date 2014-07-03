@@ -7,6 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RNFrostedSideBar.h"
+#import "AppEnvironmentConstants.h"
+#import "AlbumArtUtilities.h"
+#import "SongItemViewController.h"
+#import "Song.h"
 
 @interface MasterSongsTableViewController : UITableViewController
 

@@ -323,7 +323,11 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Albums" id="Koe-dd-BbI">
-                        <barButtonItem key="leftBarButtonItem" image="expandable Buttons" id="LMp-Aa-2Bn"/>
+                        <barButtonItem key="leftBarButtonItem" image="expandable Buttons" id="LMp-Aa-2Bn">
+                            <connections>
+                                <action selector="expandableMenuSelected:" destination="6rZ-IE-7YV" id="4Vm-CE-aQs"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="el1-qp-blA" userLabel="First Responder" sceneMemberID="firstResponder"/>

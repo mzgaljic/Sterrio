@@ -7,8 +7,6 @@
 //
 
 #import "Album.h"
-#import "Song.h"
-#import "FileIOConstants.h"
 #define ALBUM_NAME_KEY @"albumName"
 #define RELEASE_DATE_KEY @"releaseDate"
 #define ALBUM_ART_FILE_NAME_KEY @"albumArtFileName"
@@ -17,7 +15,7 @@
 #define GENRE_CODE_KEY @"albumGenreCode"
 
 @implementation Album
-@synthesize albumName, releaseDate, albumArtFileName, artist, albumSongs, genreCode;
+@synthesize albumName, releaseDate, albumArtFileName = _albumArtFileName, artist, albumSongs, genreCode;
 
 static  int const SAVE_ALBUM = 0;
 static int const DELETE_ALBUM = 1;
@@ -29,7 +27,7 @@ static int const UPDATE_ALBUM = 2;
     if(self){
         self.albumName = [aDecoder decodeObjectForKey:ALBUM_NAME_KEY];
         self.releaseDate = [aDecoder decodeObjectForKey:RELEASE_DATE_KEY];
-        self.albumArtFileName = [aDecoder decodeObjectForKey:ALBUM_ART_FILE_NAME_KEY];
+        _albumArtFileName = [aDecoder decodeObjectForKey:ALBUM_ART_FILE_NAME_KEY];
         self.artist = [aDecoder decodeObjectForKey:ARTIST_KEY];
         self.albumSongs = [aDecoder decodeObjectForKey:ALBUM_SONGS_KEY];
         self.genreCode = [aDecoder decodeIntForKey:GENRE_CODE_KEY];
@@ -110,6 +108,26 @@ static int const UPDATE_ALBUM = 2;
     //save changes to model on disk
     NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:albums];  //encode albums
     return [fileData writeToURL:[FileIOConstants createSingleton].albumsFileURL atomically:YES];
+}
+
+- (void)setAlbumArt:(UIImage *)image
+{
+    //compress the UIImage
+    
+    //save the UIImage to disk
+    
+    //assign value for the albumArtFileName property
+    NSString *artFileName = [NSString stringWithFormat:@"%@.png", self.albumName];
+    _albumArtFileName = artFileName;
+}
+
+- (BOOL)removeAlbumArt
+{
+    //made albumArtFileName property nil
+    _albumArtFileName = nil;
+    
+    //remove file from disk
+    return NO;
 }
 
 - (NSMutableArray *)sortExistingArrayAlphabetically:(NSMutableArray *)unsortedArray

@@ -7,8 +7,6 @@
 //
 
 #import "Song.h"
-#import "Album.h"
-#import "FileIOConstants.h"
 #define SONG_NAME_KEY @"songName"
 #define YOUTUBE_LINK_KEY @"youtubeLink"
 #define ALBUM_ART_FILE_NAME_KEY @"albumArtFileName"
@@ -18,7 +16,7 @@
 #define ASSOCIATED_WITH_ALBUM_KEY @"associatedWithAlbum"
 
 @implementation Song
-@synthesize songName, youtubeLink, albumArtFileName, album = _album, artist, genreCode, associatedWithAlbum;
+@synthesize songName, youtubeLink, albumArtFileName = _albumArtFileName, album = _album, artist, genreCode, associatedWithAlbum = _associatedWithAlbum;
 
 static  int const SAVE_SONG = 0;
 static int const DELETE_SONG = 1;
@@ -29,7 +27,7 @@ static int const UPDATE_SONG = 2;
 {
     if(album == nil){  //unAssociating this song from an album
         [_album.albumSongs removeObject:self];
-        self.associatedWithAlbum = NO;
+        _associatedWithAlbum = NO;
         
     }else{  //associating the album with this song
         
@@ -44,7 +42,7 @@ static int const UPDATE_SONG = 2;
         }
         
         [_album.albumSongs addObject:self];
-        self.associatedWithAlbum = YES;
+        _associatedWithAlbum = YES;
     }
 }
 
@@ -61,11 +59,11 @@ static int const UPDATE_SONG = 2;
     if(self){
         self.songName = [aDecoder decodeObjectForKey:SONG_NAME_KEY];
         self.youtubeLink = [aDecoder decodeObjectForKey:YOUTUBE_LINK_KEY];
-        self.albumArtFileName = [aDecoder decodeObjectForKey:ALBUM_ART_FILE_NAME_KEY];
+        _albumArtFileName = [aDecoder decodeObjectForKey:ALBUM_ART_FILE_NAME_KEY];
         self.album = [aDecoder decodeObjectForKey:ALBUM_KEY];
         self.artist = [aDecoder decodeObjectForKey:ARTIST_KEY];
         self.genreCode = [aDecoder decodeIntForKey:GENRE_CODE_KEY];
-        self.associatedWithAlbum = [aDecoder decodeBoolForKey:ASSOCIATED_WITH_ALBUM_KEY];
+        _associatedWithAlbum = [aDecoder decodeBoolForKey:ASSOCIATED_WITH_ALBUM_KEY];
     }
     return self;
 }
@@ -78,7 +76,7 @@ static int const UPDATE_SONG = 2;
     [aCoder encodeObject:self.album forKey:ALBUM_KEY];
     [aCoder encodeObject:self.artist forKey:ARTIST_KEY];
     [aCoder encodeInteger:self.genreCode forKey:GENRE_CODE_KEY];
-    [aCoder encodeBool:self.associatedWithAlbum forKey:ASSOCIATED_WITH_ALBUM_KEY];
+    [aCoder encodeBool:_associatedWithAlbum forKey:ASSOCIATED_WITH_ALBUM_KEY];
 }
 
 + (NSArray *)loadAll  //loads array containing all of the saved songs
@@ -161,6 +159,25 @@ static int const UPDATE_SONG = 2;
     //save changes to model on disk
     NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:songs];  //encode songs
     return [fileData writeToURL:[FileIOConstants createSingleton].songsFileURL atomically:YES];
+}
+
+- (void)setAlbumArt:(UIImage *)image
+{
+    //compress the UIImage
+    
+    //save the UIImage to disk
+    
+    NSString *artFileName = [NSString stringWithFormat:@"%@.png", self.songName];
+    _albumArtFileName = artFileName;
+}
+
+- (BOOL)removeAlbumArt
+{
+    //made albumArtFileName property nil
+    _albumArtFileName = nil;
+    
+    //remove file from disk
+    return NO;
 }
 
 - (NSMutableArray *)sortExistingArrayAlphabetically:(NSMutableArray *)unsortedArray

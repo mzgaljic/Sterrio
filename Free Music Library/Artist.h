@@ -15,7 +15,7 @@
 @property(nonatomic, strong) NSMutableArray *allAlbums;
 
 + (NSArray *)loadAll;
-//should be saved upon Artists creation
+///should be saved upon Artists creation
 - (BOOL)saveArtist;
 - (BOOL)deleteArtist;
 - (BOOL)updateExistingArtist;

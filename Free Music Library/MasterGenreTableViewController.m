@@ -7,7 +7,6 @@
 //
 
 #import "MasterGenreTableViewController.h"
-#import "AlbumItemViewController.h"
 #import "Album.h"  //import songs!!
 
 @interface MasterGenreTableViewController ()
@@ -16,6 +15,7 @@
 
 @implementation MasterGenreTableViewController
 @synthesize allSongsInLibrary = _allSongsInLibrary;
+static BOOL PRODUCTION_MODE;
 
 - (NSMutableArray *) results
 {
@@ -23,6 +23,11 @@
         _results = [[NSMutableArray alloc] init];
     }
     return _results;
+}
+
+- (void)setProductionModeValue
+{
+    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -36,6 +41,7 @@
 {
     [super viewDidLoad];
     
+    [self setProductionModeValue];
     //initialize TableView from memory (loading list w/ song names) - using fake names for now!
     [self.allSongsInLibrary addObject:@"Let it go"];
     [self.allSongsInLibrary addObject:@"For the First Time in Forever"];

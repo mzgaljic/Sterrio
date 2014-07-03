@@ -7,6 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RNFrostedSideBar.h"
+#import "AppEnvironmentConstants.h"
+#import "Album.h"
 
 @interface MasterArtistsTableViewController : UITableViewController
 

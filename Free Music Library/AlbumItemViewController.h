@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "AlbumArtUtilities.h"
 #import "Album.h"
 #import "Song.h"
 

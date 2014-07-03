@@ -2,3 +2,5 @@
 #pod 'Discogs-ObjC'  --> some Discogs wrapper. Probably not needed.
 
 #pod 'FMDB'     --> some advanced database wrapper. probably too complicated.
+
+pod 'RNFrostedSidebar', '~> 0.2.0'

@@ -7,10 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RNFrostedSideBar.h"
+#import "AppEnvironmentConstants.h"
+#import "AlbumArtUtilities.h"
+#import "AlbumItemViewController.h"
+#import "Album.h"
 
 @interface MasterAlbumsTableViewController : UITableViewController
 
 @property (nonatomic, strong) NSMutableArray *results;  //for searching tableView?
 @property (nonatomic, assign) int selectedRowIndexValue;
 
+- (IBAction)expandableMenuSelected:(id)sender;
 @end

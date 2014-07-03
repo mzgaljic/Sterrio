@@ -7,16 +7,10 @@
 //
 
 #import "AppDelegate.h"
-#import "Song.h"
-#import "Album.h"
-#import "Artist.h"
-#import "Playlist.h"
-#import "GenreConstants.h"
-#import "FileIOConstants.h"
 
 @implementation AppDelegate
 
-static const BOOL PRODUCTION_MODE = NO;
+static BOOL PRODUCTION_MODE;
 
 - (void)setUpNSCodingFilePaths
 {
@@ -27,7 +21,6 @@ static const BOOL PRODUCTION_MODE = NO;
     [[FileIOConstants createSingleton] setArtistsFileURL:[[urls lastObject] URLByAppendingPathComponent:@"Lib_Artists.data"]];
     [[FileIOConstants createSingleton] setPlaylistsFileURL:[[urls lastObject] URLByAppendingPathComponent:@"Lib_Playlists.data"]];
     [[FileIOConstants createSingleton] setGenresFileURL:[[urls lastObject] URLByAppendingPathComponent:@"Lib_Genres.data"]];
-
 }
 
 - (void)setUpGenreConstants
@@ -51,13 +44,14 @@ static const BOOL PRODUCTION_MODE = NO;
         Album *album1 = [[Album alloc] init];
         album1.albumName = @"Echo (Deluxe Version)";
         album1.artist = artist1;
-        album1.albumArtFileName = @"Echo (Deluxe Version).png";
+        [album1 setAlbumArt:[UIImage imageNamed:@"Echo (Deluxe Version)"]];
+        //in real code...
+        //[album1 setAlbumArt:[AlbumArtUtilities albumArtFileNameToUiImage:@"Echo (Deluxe Version).png"]];
         Song *song1 = [[Song alloc] init];
         song1.songName = @"Bleeding Love";
         song1.artist = artist1;
         song1.album = album1;
-        song1.albumArtFileName = @"Echo (Deluxe Version).png";
-        song1.associatedWithAlbum = YES;
+        [song1 setAlbumArt:[UIImage imageNamed:@"Echo (Deluxe Version)"]];
         [artist1 saveArtist];
         [album1 saveAlbum];
         [song1 saveSong];
@@ -67,13 +61,12 @@ static const BOOL PRODUCTION_MODE = NO;
         Album *album2 = [[Album alloc] init];
         album2.albumName = @"Hold On - Single";
         album2.artist = artist2;
-        album2.albumArtFileName = @"Hold On - Single.png";
+        [album2 setAlbumArt:[UIImage imageNamed:@"Hold On - Single"]];
         Song *song2 = [[Song alloc] init];
         song2.songName = @"Hold On";
         song2.artist = artist2;
         song2.album = album2;
-        song2.albumArtFileName = @"Hold On - Single.png";
-        song2.associatedWithAlbum = YES;
+        [song2 setAlbumArt:[UIImage imageNamed:@"Hold On - Single"]];
         [artist2 saveArtist];
         [album2 saveAlbum];
         [song2 saveSong];
@@ -83,13 +76,12 @@ static const BOOL PRODUCTION_MODE = NO;
         Album *album3 = [[Album alloc] init];
         album3.albumName = @"The Movement - EP";
         album3.artist = artist3;
-        album3.albumArtFileName = @"The Movement - EP.png";
+        [album3 setAlbumArt:[UIImage imageNamed:@"The Movement - EP"]];
         Song *song3 = [[Song alloc] init];
         song3.songName = @"Somebody Loves You";
         song3.artist = artist3;
         song3.album = album3;
-        song3.albumArtFileName = @"The Movement - EP.png";
-        song3.associatedWithAlbum = YES;
+        [song3 setAlbumArt:[UIImage imageNamed:@"The Movement - EP"]];
         [artist3 saveArtist];
         [album3 saveAlbum];
         [song3 saveSong];
@@ -99,13 +91,12 @@ static const BOOL PRODUCTION_MODE = NO;
         Album *album4 = [[Album alloc] init];
         album4.albumName = @"20th Century Masters - The Millennium Collection- The Best of Lionel Richie";
         album4.artist = artist4;
-        album4.albumArtFileName = @"20th Century Masters - The Millennium Collection- The Best of Lionel Richie.png";
+        [album4 setAlbumArt:[UIImage imageNamed:@"20th Century Masters - The Millennium Collection- The Best of Lionel Richie"]];
         Song *song4 = [[Song alloc] init];
         song4.songName = @"You Are";
         song4.artist = artist4;
         song4.album = album4;
-        song4.albumArtFileName = @"20th Century Masters - The Millennium Collection- The Best of Lionel Richie.png";
-        song4.associatedWithAlbum = YES;
+        [song4 setAlbumArt:[UIImage imageNamed:@"20th Century Masters - The Millennium Collection- The Best of Lionel Richie"]];
         [artist4 saveArtist];
         [album4 saveAlbum];
         [song4 saveSong];
@@ -115,19 +106,17 @@ static const BOOL PRODUCTION_MODE = NO;
         Album *album5 = [[Album alloc] init];
         album5.albumName = @"Whisper War";
         album5.artist = artist5;
-        album5.albumArtFileName = @"Whisper War.png";
+        [album5 setAlbumArt:[UIImage imageNamed:@"Whisper War"]];
         Song *song5 = [[Song alloc] init];
         song5.songName = @"Risky Business";
         song5.artist = artist5;
         song5.album = album5;
-        song5.albumArtFileName = @"Whisper War.png";
-        song5.associatedWithAlbum = YES;
+        [song5 setAlbumArt:[UIImage imageNamed:@"Whisper War"]];
         Song *song6 = [[Song alloc] init];
         song6.songName = @"That '70s Song";
         song6.artist = artist5;
         song6.album = album5;
-        song6.albumArtFileName = @"Whisper War.png";
-        song6.associatedWithAlbum = YES;
+        [song6 setAlbumArt:[UIImage imageNamed:@"Whisper War"]];
         [artist5 saveArtist];
         [album5 saveAlbum];
         [song5 saveSong];
@@ -138,19 +127,17 @@ static const BOOL PRODUCTION_MODE = NO;
         Album *album6 = [[Album alloc] init];
         album6.albumName = @"Frozen (Original Motion Picture Soundtrack)";
         album6.artist = artist6;
-        album6.albumArtFileName = @"Frozen (Original Motion Picture Soundtrack).png";
+        [album6 setAlbumArt:[UIImage imageNamed:@"Frozen (Original Motion Picture Soundtrack)"]];
         Song *song7 = [[Song alloc] init];
         song7.songName = @"Do You Want To Build A Snowman?";
         song7.artist = artist6;
         song7.album = album6;
-        song7.albumArtFileName = @"Frozen (Original Motion Picture Soundtrack).png";
-        song7.associatedWithAlbum = YES;
+        [song7 setAlbumArt:[UIImage imageNamed:@"Frozen (Original Motion Picture Soundtrack)"]];
         Song *song8 = [[Song alloc] init];
         song8.songName = @"Let It Go";
         song8.artist = artist6;
         song8.album = album6;
-        song8.albumArtFileName = @"Frozen (Original Motion Picture Soundtrack).png";
-        song8.associatedWithAlbum = YES;
+        [song8 setAlbumArt:[UIImage imageNamed:@"Frozen (Original Motion Picture Soundtrack)"]];
         [artist6 saveArtist];
         [album6 saveAlbum];
         [song7 saveSong];
@@ -161,23 +148,28 @@ static const BOOL PRODUCTION_MODE = NO;
         Album *album7 = [[Album alloc] init];
         album7.albumName = @"You and I - Single";
         album7.artist = artist7;
-        album7.albumArtFileName = @"You and I - Single.png";
+        [album7 setAlbumArt:[UIImage imageNamed:@"You and I - Single"]];
         Song *song9 = [[Song alloc] init];
         song9.songName = @"You And I";
         song9.artist = artist7;
         song9.album = album7;
-        song9.albumArtFileName = @"You and I - Single.png";
-        song9.associatedWithAlbum = YES;
+        [song9 setAlbumArt:[UIImage imageNamed:@"You and I - Single"]];
         [artist7 saveArtist];
         [album7 saveAlbum];
         [song9 saveSong];
     }
 }
 
+- (void)setProductionModeValue
+{
+    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
 
+    [self setProductionModeValue];
     [self setUpGenreConstants];
     [self setUpNSCodingFilePaths];
     [self setUpFakeLibraryContent];
@@ -189,6 +181,8 @@ static const BOOL PRODUCTION_MODE = NO;
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+    
+    //Pause music playback??
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -198,6 +192,7 @@ static const BOOL PRODUCTION_MODE = NO;
     
     
     //do not need to save model class data, they are saved upon creation to disk (and resaved when altered).
+    //Save now playing song, playbackqueue to disk, etc. Release all model objects!
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -208,11 +203,6 @@ static const BOOL PRODUCTION_MODE = NO;
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application
-{
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
 @end

@@ -14,6 +14,10 @@
 @implementation Playlist
 @synthesize playlistName, songsInThisPlaylist;
 
+static  int const SAVE_PLAYLIST = 0;
+static int const DELETE_PLAYLIST = 1;
+static int const UPDATE_PLAYLIST = 2;
+
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super init];
@@ -40,20 +44,54 @@
     return [NSKeyedUnarchiver unarchiveObjectWithData:data];  //decode loaded data
 }
 
-- (BOOL)save  //saves the current playlist (instance of this class) to the list of all playlists on disk
+///saves the current playlist (instance of this class) to the list of all playlists on disk
+- (BOOL)savePlaylist
+{
+    return [self performModelAction:SAVE_PLAYLIST];
+}
+
+- (BOOL)deletePlaylist
+{
+    return [self performModelAction:DELETE_PLAYLIST];
+}
+
+- (BOOL)updateExistingPlaylist
+{
+    return [self performModelAction:UPDATE_PLAYLIST];
+}
+
+- (BOOL)performModelAction:(int)desiredActionConst  //does the 'hard work' of altering the model.
 {
     NSMutableArray *playlists = (NSMutableArray *)[Playlist loadAll];
+    switch (desiredActionConst) {
+        case SAVE_PLAYLIST:
+            [playlists insertObject:self atIndex:0];  //new playlists will appear at top of 'list'
+            break;
+            
+        case DELETE_PLAYLIST:
+        {
+            //delete the playlists object
+            [playlists removeObject:self];
+            break;
+        }
+            
+        case UPDATE_PLAYLIST:
+            //replace the old object saved in the array with the current object
+            if(playlists.count > 0){
+                [playlists replaceObjectAtIndex:[playlists indexOfObject:self] withObject:self];
+            }
+            break;
+            
+        default:
+            return NO;
+            
+    } //end of swtich
     
-    //should sort this array based on alphabetical order!
-    [playlists insertObject:self atIndex:0];  //new playlists added to array will appear at top of 'list'
+    //save changes to model on disk
     NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:playlists];  //encode playlists
     return [fileData writeToURL:[FileIOConstants createSingleton].playlistsFileURL atomically:YES];
 }
 
-- (BOOL)deleteAlbum
-{
-    return NO;
-}
 
 - (NSMutableArray *)sortExistingArrayAlphabetically:(NSMutableArray *)unsortedArray
 {
@@ -64,5 +102,46 @@
 {
     return nil;
 }
+
+- (BOOL)isEqual:(id)object
+{
+    if(self == object)  //same object instance
+        return YES;
+    if(!object || ![object isMemberOfClass:[self class]])  //object is nil or not a playlist object
+        return NO;
+    
+    return ([self customSmartArtistComparison:(Playlist *)object]) ? YES : NO;
+}
+
+//each playlist must have a unique name
+- (BOOL)customSmartArtistComparison:(Playlist *)mysteryPlaylist
+{
+    BOOL sameName = NO;
+    
+    if([self.playlistName isEqualToString:mysteryPlaylist.playlistName])
+        sameName = YES;
+    
+    return (sameName) ? YES : NO;
+}
+
+-(NSUInteger)hash {
+    NSUInteger result = 1;
+    NSUInteger prime = 31;
+    //NSUInteger yesPrime = 1231;
+    //NSUInteger noPrime = 1237;
+    
+    // Add any object that already has a hash function (NSString)
+    result = prime * result + [self.playlistName hash];
+    result = prime * result + [self.songsInThisPlaylist hash];
+    
+    // Add primitive variables (int)
+    //result = prime * result + self.genreCode;
+    
+    // Boolean values (BOOL)
+    //result = prime * result + self.isSelected ? yesPrime : noPrime;
+    
+    return result;
+}
+
 
 @end

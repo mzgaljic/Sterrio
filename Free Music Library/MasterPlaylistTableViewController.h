@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RNFrostedSideBar.h"
+#import "AppEnvironmentConstants.h"
 
 @interface MasterPlaylistTableViewController : UITableViewController
 

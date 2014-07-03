@@ -7,7 +7,6 @@
 //
 
 #import "MasterArtistsTableViewController.h"
-#import "Album.h"
 
 @interface MasterArtistsTableViewController ()
 @property(nonatomic, strong) NSMutableArray *allArtists;
@@ -15,6 +14,7 @@
 
 @implementation MasterArtistsTableViewController
 @synthesize allArtists;
+static BOOL PRODUCTION_MODE;
 
 - (NSMutableArray *) results
 {
@@ -22,6 +22,11 @@
         _results = [[NSMutableArray alloc] init];
     }
     return _results;
+}
+
+- (void)setProductionModeValue
+{
+    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -36,6 +41,7 @@
 {
     [super viewDidLoad];
     
+    [self setProductionModeValue];
     [self setUpNavBarItems];
 }
 
@@ -132,13 +138,6 @@
     }
 }
 
-- (UIImage *)albumArtFileNameToUiImage:(NSString *)albumArtFileName
-{
-    NSString *docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    NSString* path = [docDir stringByAppendingPathComponent: albumArtFileName];
-    return [UIImage imageWithContentsOfFile:path];
-}
-
 //called when + sign is tapped - selector defined in editSongsMode method!
 - (void)addButtonPressed
 {
@@ -153,7 +152,16 @@
 - (IBAction)expandableMenuSelected:(id)sender
 {
     //frosted side bar library code here? look in safari bookmarks!
+    NSArray *images = @[
+                        [UIImage imageNamed:@"playlists"],
+                        [UIImage imageNamed:@"artists"], [UIImage imageNamed:@"genres"],
+                        [UIImage imageNamed:@"songs"]];
     
+    RNFrostedSidebar *callout = [[RNFrostedSidebar alloc] initWithImages:images];
+    callout.delegate = self;
+    [callout show];
+    
+    /**
     //temp code...
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Expanded Options"
                                                     message:@"Side bar with options should happen now."
@@ -161,5 +169,6 @@
                                           cancelButtonTitle:@"Ok"
                                           otherButtonTitles:nil];
     [alert show];
+     */
 }
 @end

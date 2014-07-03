@@ -19,7 +19,6 @@
 - (void)setGenresFileURL:(NSURL *)aUrl;
 
 //using the initialized singletons
-- (NSURL *)FileURL;
 - (NSURL *)songsFileURL;
 - (NSURL *)albumsFileURL;
 - (NSURL *)artistsFileURL;

@@ -7,8 +7,7 @@
 //
 
 #import "MasterPlaylistTableViewController.h"
-#import "AlbumItemViewController.h"
-#import "Album.h"  //import songs!!
+#import "Playlist.h"  //import songs!!
 
 @interface MasterPlaylistTableViewController ()
 @property(nonatomic, strong) NSMutableArray* allSongsInLibrary;
@@ -16,13 +15,18 @@
 
 @implementation MasterPlaylistTableViewController
 @synthesize allSongsInLibrary = _allSongsInLibrary;
-
+static BOOL PRODUCTION_MODE;
 - (NSMutableArray *) results
 {
     if(! _results){
         _results = [[NSMutableArray alloc] init];
     }
     return _results;
+}
+
+- (void)setProductionModeValue
+{
+    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -35,11 +39,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    //initialize TableView from memory (loading list w/ song names) - using fake names for now!
-    [self.allSongsInLibrary addObject:@"Let it go"];
-    [self.allSongsInLibrary addObject:@"For the First Time in Forever"];
-    [self.allSongsInLibrary addObject:@"Do You Want To Build A Snowman?"];
+    [self setProductionModeValue];
 }
 
 - (void)didReceiveMemoryWarning

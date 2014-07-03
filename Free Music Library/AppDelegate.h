@@ -7,6 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Song.h"
+#import "Album.h"
+#import "Artist.h"
+#import "Playlist.h"
+#import "GenreConstants.h"
+#import "FileIOConstants.h"
+#import "AlbumArtUtilities.h"
+#import "AppEnvironmentConstants.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 

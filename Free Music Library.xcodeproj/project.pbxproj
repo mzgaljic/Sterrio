@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		03D3A29591F748308F7121DE /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C84B413EAF4C57BC10A21B /* libPods.a */; settings = {ATTRIBUTES = (Weak, ); }; };
-		8728B782194959B300565BDA /* Song.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B781194959B300565BDA /* Song.m */; };
-		8728B785194959C200565BDA /* Album.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B784194959C200565BDA /* Album.m */; };
 		8728B788194959CE00565BDA /* Playlist.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B787194959CE00565BDA /* Playlist.m */; };
 		8728B78B194959E500565BDA /* Artist.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B78A194959E500565BDA /* Artist.m */; };
 		8728B794194964AB00565BDA /* FileIOConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B793194964AB00565BDA /* FileIOConstants.m */; };
@@ -31,8 +29,12 @@
 		87480DD7192C1FBD005CC0A4 /* Free_Music_LibraryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 87480DD6192C1FBD005CC0A4 /* Free_Music_LibraryTests.m */; };
 		875984A5195D764700015243 /* PlaylistItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875984A4195D764700015243 /* PlaylistItemTableViewController.m */; };
 		875984A8195D775500015243 /* GenreItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875984A7195D775500015243 /* GenreItemTableViewController.m */; };
+		876EC5F01965C9F6006B3C29 /* AppEnvironmentConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 876EC5EF1965C9F6006B3C29 /* AppEnvironmentConstants.m */; };
+		876EDE6019648AA300795767 /* AlbumArtUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 876EDE5F19648AA300795767 /* AlbumArtUtilities.m */; };
 		878ACD64192D48EF005938F5 /* MasterSongsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878ACD63192D48EF005938F5 /* MasterSongsTableViewController.m */; };
 		878ACD6A192D532D005938F5 /* SongItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878ACD69192D532D005938F5 /* SongItemViewController.m */; };
+		87A110561964A5EA00270528 /* Album.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A110541964A5EA00270528 /* Album.m */; };
+		87A110591964A67000270528 /* Song.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A110571964A67000270528 /* Song.m */; };
 		87D16D621931B7EE00DB6A34 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 87D16D611931B7EE00DB6A34 /* Podfile */; };
 		87D47D8C19340F8B0057D49B /* AlbumItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47D8919340F8B0057D49B /* AlbumItemViewController.m */; };
 		87D47D8D19340F8B0057D49B /* MasterAlbumsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47D8B19340F8B0057D49B /* MasterAlbumsTableViewController.m */; };
@@ -58,10 +60,6 @@
 
 /* Begin PBXFileReference section */
 		566689BB153A40D889AD1CB3 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
-		8728B780194959B300565BDA /* Song.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Song.h; sourceTree = "<group>"; };
-		8728B781194959B300565BDA /* Song.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Song.m; sourceTree = "<group>"; };
-		8728B783194959C200565BDA /* Album.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Album.h; sourceTree = "<group>"; };
-		8728B784194959C200565BDA /* Album.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Album.m; sourceTree = "<group>"; };
 		8728B786194959CE00565BDA /* Playlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Playlist.h; sourceTree = "<group>"; };
 		8728B787194959CE00565BDA /* Playlist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Playlist.m; sourceTree = "<group>"; };
 		8728B789194959E500565BDA /* Artist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Artist.h; sourceTree = "<group>"; };
@@ -95,10 +93,18 @@
 		875984A4195D764700015243 /* PlaylistItemTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistItemTableViewController.m; sourceTree = "<group>"; };
 		875984A6195D775500015243 /* GenreItemTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenreItemTableViewController.h; sourceTree = "<group>"; };
 		875984A7195D775500015243 /* GenreItemTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenreItemTableViewController.m; sourceTree = "<group>"; };
+		876EC5EE1965C9F6006B3C29 /* AppEnvironmentConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppEnvironmentConstants.h; path = "Free Music Library/AppEnvironmentConstants.h"; sourceTree = "<group>"; };
+		876EC5EF1965C9F6006B3C29 /* AppEnvironmentConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppEnvironmentConstants.m; path = "Free Music Library/AppEnvironmentConstants.m"; sourceTree = "<group>"; };
+		876EDE5E19648AA300795767 /* AlbumArtUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumArtUtilities.h; sourceTree = "<group>"; };
+		876EDE5F19648AA300795767 /* AlbumArtUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumArtUtilities.m; sourceTree = "<group>"; };
 		878ACD62192D48EF005938F5 /* MasterSongsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterSongsTableViewController.h; sourceTree = "<group>"; };
 		878ACD63192D48EF005938F5 /* MasterSongsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterSongsTableViewController.m; sourceTree = "<group>"; };
 		878ACD68192D532D005938F5 /* SongItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SongItemViewController.h; sourceTree = "<group>"; };
 		878ACD69192D532D005938F5 /* SongItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SongItemViewController.m; sourceTree = "<group>"; };
+		87A110541964A5EA00270528 /* Album.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Album.m; sourceTree = "<group>"; };
+		87A110551964A5EA00270528 /* Album.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Album.h; sourceTree = "<group>"; };
+		87A110571964A67000270528 /* Song.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Song.m; sourceTree = "<group>"; };
+		87A110581964A67000270528 /* Song.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Song.h; sourceTree = "<group>"; };
 		87D16D611931B7EE00DB6A34 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
 		87D47D8819340F8B0057D49B /* AlbumItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumItemViewController.h; sourceTree = "<group>"; };
 		87D47D8919340F8B0057D49B /* AlbumItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumItemViewController.m; sourceTree = "<group>"; };
@@ -179,8 +185,8 @@
 			isa = PBXGroup;
 			children = (
 				878ACD5E192D38B6005938F5 /* Songs tab */,
-				87D47D9F19345BC00057D49B /* Artists tab */,
 				878ACD5F192D38ED005938F5 /* Albums tab */,
+				87D47D9F19345BC00057D49B /* Artists tab */,
 				878ACD60192D391E005938F5 /* Playlists tab */,
 				878ACD61192D3931005938F5 /* Genres tab */,
 			);
@@ -194,6 +200,8 @@
 				87480DBA192C1FBD005CC0A4 /* Main.storyboard */,
 				87480DB7192C1FBD005CC0A4 /* AppDelegate.h */,
 				87480DB8192C1FBD005CC0A4 /* AppDelegate.m */,
+				876EC5EE1965C9F6006B3C29 /* AppEnvironmentConstants.h */,
+				876EC5EF1965C9F6006B3C29 /* AppEnvironmentConstants.m */,
 				87FE09F21933ED9B001A5FB7 /* Services */,
 				87362AF6194E3B41004DB544 /* Data Structures */,
 				87FE09F31933F39B001A5FB7 /* Models */,
@@ -288,8 +296,8 @@
 		878ACD60192D391E005938F5 /* Playlists tab */ = {
 			isa = PBXGroup;
 			children = (
-				87D47D8F193428350057D49B /* MasterPlaylistTableViewController.m */,
 				87D47D90193428350057D49B /* MasterPlaylistTableViewController.h */,
+				87D47D8F193428350057D49B /* MasterPlaylistTableViewController.m */,
 				875984A3195D764700015243 /* PlaylistItemTableViewController.h */,
 				875984A4195D764700015243 /* PlaylistItemTableViewController.m */,
 			);
@@ -326,6 +334,8 @@
 			children = (
 				8728B792194964AB00565BDA /* FileIOConstants.h */,
 				8728B793194964AB00565BDA /* FileIOConstants.m */,
+				876EDE5E19648AA300795767 /* AlbumArtUtilities.h */,
+				876EDE5F19648AA300795767 /* AlbumArtUtilities.m */,
 			);
 			name = "Model Utilities";
 			sourceTree = "<group>";
@@ -346,10 +356,10 @@
 				87362AF4194E3819004DB544 /* Music Playback */,
 				87E1C59E193A5E8B009AE399 /* GenreConstants.h */,
 				87E1C59F193A5E8B009AE399 /* GenreConstants.m */,
-				8728B780194959B300565BDA /* Song.h */,
-				8728B781194959B300565BDA /* Song.m */,
-				8728B783194959C200565BDA /* Album.h */,
-				8728B784194959C200565BDA /* Album.m */,
+				87A110581964A67000270528 /* Song.h */,
+				87A110571964A67000270528 /* Song.m */,
+				87A110551964A5EA00270528 /* Album.h */,
+				87A110541964A5EA00270528 /* Album.m */,
 				8728B789194959E500565BDA /* Artist.h */,
 				8728B78A194959E500565BDA /* Artist.m */,
 				8728B786194959CE00565BDA /* Playlist.h */,
@@ -504,6 +514,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87A110591964A67000270528 /* Song.m in Sources */,
 				87D47D93193428350057D49B /* MasterPlaylistTableViewController.m in Sources */,
 				878ACD6A192D532D005938F5 /* SongItemViewController.m in Sources */,
 				875984A5195D764700015243 /* PlaylistItemTableViewController.m in Sources */,
@@ -517,6 +528,9 @@
 				8728B788194959CE00565BDA /* Playlist.m in Sources */,
 				87D47D8C19340F8B0057D49B /* AlbumItemViewController.m in Sources */,
 				87362AFD194E68A5004DB544 /* Deque.m in Sources */,
+				87A110561964A5EA00270528 /* Album.m in Sources */,
+				876EC5F01965C9F6006B3C29 /* AppEnvironmentConstants.m in Sources */,
+				876EDE6019648AA300795767 /* AlbumArtUtilities.m in Sources */,
 				87FE09F11933ED84001A5FB7 /* MusicStoreService.m in Sources */,
 				875984A8195D775500015243 /* GenreItemTableViewController.m in Sources */,
 				87D47DA519345D8E0057D49B /* ArtistItemAlbumViewController.m in Sources */,
@@ -525,8 +539,6 @@
 				8728B78B194959E500565BDA /* Artist.m in Sources */,
 				87FEBB3B19358FBE0088EF41 /* NowPlaying.m in Sources */,
 				87D47D8D19340F8B0057D49B /* MasterAlbumsTableViewController.m in Sources */,
-				8728B785194959C200565BDA /* Album.m in Sources */,
-				8728B782194959B300565BDA /* Song.m in Sources */,
 				878ACD64192D48EF005938F5 /* MasterSongsTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
