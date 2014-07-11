@@ -81,12 +81,25 @@ static int const UPDATE_ALBUM = 2;
             
         case DELETE_ALBUM:
         {
-            //If the last song in this album is to be deleted, Song.m will delete the song and delegate control to this class, while it waits for the album to be deleted.
+            [self removeAlbumArt]; //delete album art from disk
+            
+            //If the last song in this album is to be deleted, Song.m will delete the song and delegate control to this class while it waits for the album to be deleted.
             if(self.albumSongs == 0)
                 [albums removeObject:self];
             
             //delete the album AND the albums songs from our model on disk
             Album *thisAlbum = albums[[albums indexOfObject:self]];
+            if(self.albumSongs.count > 0){
+                NSMutableArray *songs = (NSMutableArray *)[Song loadAll];
+                for(Song *librarySong in songs){  //for each song (in the entire library)
+                    for(Song *thisAlbumsSong in thisAlbum.albumSongs){  //check if it is one of the songs within this album
+                        if([librarySong isEqual:thisAlbumsSong]){  //if it's a match, delete the song!
+                            [librarySong deleteSong];
+                        }
+                    }
+                }
+            }
+                
             [thisAlbum.albumSongs removeAllObjects];
             [albums removeObject:self];
             
@@ -110,24 +123,33 @@ static int const UPDATE_ALBUM = 2;
     return [fileData writeToURL:[FileIOConstants createSingleton].albumsFileURL atomically:YES];
 }
 
-- (void)setAlbumArt:(UIImage *)image
+- (BOOL)setAlbumArt:(UIImage *)image
 {
-    //compress the UIImage
-    
-    //save the UIImage to disk
-    
-    //assign value for the albumArtFileName property
+    BOOL success = NO;
     NSString *artFileName = [NSString stringWithFormat:@"%@.png", self.albumName];
+    
+    //save and compress the UIImage to disk
+    if([AlbumArtUtilities isAlbumArtAlreadySavedOnDisk:artFileName])
+        success = YES;
+    else
+        [AlbumArtUtilities saveAlbumArtFileWithName:artFileName andImage:image];
+    
     _albumArtFileName = artFileName;
+    return success;
 }
 
 - (BOOL)removeAlbumArt
 {
-    //made albumArtFileName property nil
-    _albumArtFileName = nil;
+    BOOL success = NO;
+    if(_albumArtFileName){
+        //remove file from disk
+        [AlbumArtUtilities deleteAlbumArtFileWithName:_albumArtFileName];
+        
+        //made albumArtFileName property nil
+        _albumArtFileName = nil;
+    }
     
-    //remove file from disk
-    return NO;
+    return success;
 }
 
 - (NSMutableArray *)sortExistingArrayAlphabetically:(NSMutableArray *)unsortedArray

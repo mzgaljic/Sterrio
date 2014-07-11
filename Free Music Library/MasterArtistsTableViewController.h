@@ -10,6 +10,8 @@
 #import "RNFrostedSideBar.h"
 #import "AppEnvironmentConstants.h"
 #import "Album.h"
+#import "AlteredModelItem.h"
+#import "AlteredModelArtistQueue.h"
 
 @interface MasterArtistsTableViewController : UITableViewController
 

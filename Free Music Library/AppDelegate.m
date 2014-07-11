@@ -23,6 +23,11 @@ static BOOL PRODUCTION_MODE;
     [[FileIOConstants createSingleton] setGenresFileURL:[[urls lastObject] URLByAppendingPathComponent:@"Lib_Genres.data"]];
     
     [[FileIOConstants createSingleton] setModelAlteredStateFileUrl:[[urls lastObject] URLByAppendingPathComponent:@"Altered_Model_State.data"]];
+    [[FileIOConstants createSingleton] setAlteredModelSongQueueFileUrl:[[urls lastObject] URLByAppendingPathComponent:@"Altered_Model_Song_Queue.data"]];
+    [[FileIOConstants createSingleton] setAlteredModelAlbumQueueFileUrl:[[urls lastObject] URLByAppendingPathComponent:@"Altered_Model_Album_Queue.data"]];
+    [[FileIOConstants createSingleton] setAlteredModelArtistQueueFileUrl:[[urls lastObject] URLByAppendingPathComponent:@"Altered_Model_Artist_Queue.data"]];
+    
+    //create url's for now playing queue!
 }
 
 - (void)setUpGenreConstants
@@ -50,7 +55,7 @@ static BOOL PRODUCTION_MODE;
         //in real code...
         //[album1 setAlbumArt:[AlbumArtUtilities albumArtFileNameToUiImage:@"Echo (Deluxe Version).png"]];
         Song *song1 = [[Song alloc] init];
-        song1.songName = @"Bleeding Love";
+        song1.songName = @"I Got You";
         song1.artist = artist1;
         song1.album = album1;
         [song1 setAlbumArt:[UIImage imageNamed:@"Echo (Deluxe Version)"]];

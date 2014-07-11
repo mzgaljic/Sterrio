@@ -24,9 +24,9 @@
 }
 
 //main operations
-- (void)enqueue:(Artist *)anArtist
+- (void)enqueue:(AlteredModelItem *)theArtistItem
 {
-    [internalQueue enqueue:[[AlteredModelItem alloc] initWithAddedArtist: anArtist]];
+    [internalQueue enqueue:theArtistItem];
     count = internalQueue.count;
 }
 
@@ -48,14 +48,9 @@
 }
 
 //helper methods
-- (AlteredModelArtistQueue *)enqueueArtistsFromArray:(NSArray *)anArray
+- (AlteredModelArtistQueue *)enqueueArtistModelItemsFromArray:(NSArray *)anArray
 {
-    //parameter contains Song objects! gotta be careful here...
-    NSMutableArray *tempArray = [NSMutableArray arrayWithCapacity:anArray.count];
-    for(Artist *someArtist in anArray){
-        [tempArray addObject:[[AlteredModelItem alloc] initWithAddedArtist: someArtist]];
-    }
-    [internalQueue enqueueObjectsFromArray:tempArray];
+    [internalQueue enqueueObjectsFromArray:anArray];
     count = internalQueue.count;
     return self;
 }

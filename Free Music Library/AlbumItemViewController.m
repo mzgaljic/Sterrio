@@ -12,6 +12,7 @@
 @end
 
 @implementation AlbumItemViewController
+static BOOL PRODUCTION_MODE;
 
 - (void)viewDidLoad
 {
@@ -21,10 +22,21 @@
     [self setUpAlbumView];
 }
 
+- (void)setProductionModeValue
+{
+    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
+}
+
 - (void)setUpAlbumView
 {
     self.albumNameTitleLabel.text = self.album.albumName;
-    self.albumUiImageView.image = [AlbumArtUtilities albumArtFileNameToUiImage:self.album.albumArtFileName];
+    
+    if(PRODUCTION_MODE)
+        self.albumUiImageView.image = [AlbumArtUtilities albumArtFileNameToUiImage: self.album.albumArtFileName];
+    else
+        self.albumUiImageView.image = [UIImage imageNamed:self.album.albumName];
+    
+    
     self.navBar.title = self.album.albumName;
 }
 

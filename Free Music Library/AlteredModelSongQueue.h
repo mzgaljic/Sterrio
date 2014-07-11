@@ -19,13 +19,13 @@
 + (instancetype)createSingleton;
 
 //main operations
-- (void)enqueue:(Song *)aSong;
+- (void)enqueue:(AlteredModelItem *)theSongItem;
 - (AlteredModelItem *)dequeue;
 - (void)clear;
 - (AlteredModelItem *)peek;
 
 //helper methods
-- (AlteredModelSongQueue *)enqueueSongsFromArray:(NSArray *)anArray;
+- (AlteredModelSongQueue *)enqueueSongModelItemsFromArray:(NSArray *)anArray;
 - (NSArray *)allQueueAlteredItemsAsArray;
 
 //NSCoding stuff

@@ -12,7 +12,7 @@
 #define SONGS_IN_THIS_PLAYLIST_KEY @"songsInThisPlaylist"
 
 @implementation Playlist
-@synthesize playlistName, songsInThisPlaylist;
+@synthesize playlistName = _playlistName, songsInThisPlaylist = _songsInThisPlaylist;
 
 static  int const SAVE_PLAYLIST = 0;
 static int const DELETE_PLAYLIST = 1;
@@ -22,16 +22,16 @@ static int const UPDATE_PLAYLIST = 2;
 {
     self = [super init];
     if(self){
-        self.playlistName = [aDecoder decodeObjectForKey:PLAYLIST_NAME_KEY];
-        self.songsInThisPlaylist = [aDecoder decodeObjectForKey:SONGS_IN_THIS_PLAYLIST_KEY];
+        _playlistName = [aDecoder decodeObjectForKey:PLAYLIST_NAME_KEY];
+        _songsInThisPlaylist = [aDecoder decodeObjectForKey:SONGS_IN_THIS_PLAYLIST_KEY];
     }
     return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    [aCoder encodeObject:self.playlistName forKey:PLAYLIST_NAME_KEY];
-    [aCoder encodeObject:self.songsInThisPlaylist forKey:SONGS_IN_THIS_PLAYLIST_KEY];
+    [aCoder encodeObject:_playlistName forKey:PLAYLIST_NAME_KEY];
+    [aCoder encodeObject:_songsInThisPlaylist forKey:SONGS_IN_THIS_PLAYLIST_KEY];
 }
 
 + (NSArray *)loadAll  //loads array containing all of the saved playlists
@@ -118,7 +118,7 @@ static int const UPDATE_PLAYLIST = 2;
 {
     BOOL sameName = NO;
     
-    if([self.playlistName isEqualToString:mysteryPlaylist.playlistName])
+    if([_playlistName isEqualToString:mysteryPlaylist.playlistName])
         sameName = YES;
     
     return (sameName) ? YES : NO;
@@ -131,8 +131,8 @@ static int const UPDATE_PLAYLIST = 2;
     //NSUInteger noPrime = 1237;
     
     // Add any object that already has a hash function (NSString)
-    result = prime * result + [self.playlistName hash];
-    result = prime * result + [self.songsInThisPlaylist hash];
+    result = prime * result + [_playlistName hash];
+    result = prime * result + [_songsInThisPlaylist hash];
     
     // Add primitive variables (int)
     //result = prime * result + self.genreCode;
@@ -142,6 +142,5 @@ static int const UPDATE_PLAYLIST = 2;
     
     return result;
 }
-
 
 @end

@@ -102,6 +102,8 @@ static BOOL PRODUCTION_MODE;
         //obtain object for the deleted artist
         Artist *artist = [self.allArtists objectAtIndex:indexPath.row];
         
+        [[AlteredModelArtistQueue createSingleton] enqueue:[[AlteredModelItem alloc] initWithRemovedArtist:artist]];
+        
         //delete the object from our data model (which is saved to disk).
         [artist deleteArtist];
         
@@ -138,7 +140,7 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
-//called when + sign is tapped - selector defined in editSongsMode method!
+//called when + sign is tapped - selector defined in setUpNavBarItems method!
 - (void)addButtonPressed
 {
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"'+' Tapped"
@@ -160,15 +162,5 @@ static BOOL PRODUCTION_MODE;
     RNFrostedSidebar *callout = [[RNFrostedSidebar alloc] initWithImages:images];
     callout.delegate = self;
     [callout show];
-    
-    /**
-    //temp code...
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Expanded Options"
-                                                    message:@"Side bar with options should happen now."
-                                                   delegate:nil
-                                          cancelButtonTitle:@"Ok"
-                                          otherButtonTitles:nil];
-    [alert show];
-     */
 }
 @end

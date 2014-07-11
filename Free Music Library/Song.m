@@ -43,15 +43,24 @@ static int const UPDATE_SONG = 2;
         
         [_album.albumSongs addObject:self];
         _associatedWithAlbum = YES;
+        
+        //finally, override old album art file name...possibly deleting the old album art if the two vary.
+        //check if album has album art already. if not, make this the default for the album!
+        if(_album.albumArtFileName){
+            BOOL onDisk = [AlbumArtUtilities isAlbumArtAlreadySavedOnDisk:[NSString stringWithFormat:@"%@.png", self.songName]];
+            //old album art is on disk
+            if(onDisk)
+                [self removeAlbumArt];
+        }else{
+            //reuse the album art as the new art for the album. Rename the file one disk though!
+            [AlbumArtUtilities renameAlbumArtFileFrom:[NSString stringWithFormat:@"%@.png", self.songName]
+                                                   to:[NSString stringWithFormat:@"%@.png", _album.albumName]];
+            [_album setAlbumArt:[AlbumArtUtilities albumArtFileNameToUiImage:[NSString stringWithFormat:@"%@.png", _album.albumName]]];
+        }
+        _albumArtFileName = _album.albumArtFileName;
     }
 }
-
-/**
--(id)init
-{
-    //set associted with album boolean value?
-}
- */
+//end of custom setters
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
@@ -114,6 +123,8 @@ static int const UPDATE_SONG = 2;
             
         case DELETE_SONG:  //This class is responsible for deleting songs from albums
         {
+            [self removeAlbumArt]; //delete album art from disk if we need to
+            
             BOOL deletedAlbum = NO;
             Song *thisSong = songs[[songs indexOfObject:self]];
             Album *thisSongsAlbum = thisSong.album;
@@ -161,23 +172,51 @@ static int const UPDATE_SONG = 2;
     return [fileData writeToURL:[FileIOConstants createSingleton].songsFileURL atomically:YES];
 }
 
-- (void)setAlbumArt:(UIImage *)image
+- (BOOL)setAlbumArt:(UIImage *)image
 {
-    //compress the UIImage
+    BOOL success = NO;
+    NSString *artFileName;
     
-    //save the UIImage to disk
+    if(! _associatedWithAlbum)
+        artFileName = [NSString stringWithFormat:@"%@.png", self.songName];
+    else
+        artFileName = [NSString stringWithFormat:@"%@.png", _album.albumName];
     
-    NSString *artFileName = [NSString stringWithFormat:@"%@.png", self.songName];
+    //save and compress the UIImage to disk
+    if([AlbumArtUtilities isAlbumArtAlreadySavedOnDisk: artFileName])
+        success = YES;
+    else
+        success = [AlbumArtUtilities saveAlbumArtFileWithName:artFileName andImage:image];
+    
     _albumArtFileName = artFileName;
+    return success;
 }
 
 - (BOOL)removeAlbumArt
 {
-    //made albumArtFileName property nil
-    _albumArtFileName = nil;
+    BOOL success = NO;
+    if(_albumArtFileName){
+        if(! _associatedWithAlbum){  //can definitely remove the image
+            //remove file from disk
+            [AlbumArtUtilities deleteAlbumArtFileWithName:_albumArtFileName];
+            
+            //made albumArtFileName property nil
+            _albumArtFileName = nil;
+        }
+        else{
+            //album wont exist much longer, is being deleted now. can erase album art...
+            if(_album.albumSongs.count == 1){
+                //remove file from disk
+                [AlbumArtUtilities deleteAlbumArtFileWithName:_albumArtFileName];
+                
+                //made albumArtFileName property nil
+                _albumArtFileName = nil;
+
+            }
+        }
+    }
     
-    //remove file from disk
-    return NO;
+    return success;
 }
 
 - (NSMutableArray *)sortExistingArrayAlphabetically:(NSMutableArray *)unsortedArray

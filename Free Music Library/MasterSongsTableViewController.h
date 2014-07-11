@@ -11,6 +11,8 @@
 #import "AppEnvironmentConstants.h"
 #import "AlbumArtUtilities.h"
 #import "SongItemViewController.h"
+#import "AlteredModelItem.h"
+#import "AlteredModelSongQueue.h"
 #import "Song.h"
 
 @interface MasterSongsTableViewController : UITableViewController

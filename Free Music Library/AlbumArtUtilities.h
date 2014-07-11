@@ -13,10 +13,10 @@
 //file IO
 + (UIImage *)albumArtFileNameToUiImage:(NSString *)albumArtFileName;
 + (BOOL)deleteAlbumArtFileWithName:(NSString *)fileName;
-+ (BOOL)saveAlbumArtFileWithName:(NSString *)fileName;
++ (BOOL)saveAlbumArtFileWithName:(NSString *)fileName andImage:(UIImage *)albumArtImage;
++ (BOOL)isAlbumArtAlreadySavedOnDisk:(NSString *)albumArtFileName;
 
-//In-memory image manipulation
-///Returns a compressed UIImage object which is the appropriate size for use with this app.
-+ (UIImage *)compressAlbumArtUiImage:(UIImage *)albumArt;
+//rarely used
++ (BOOL)renameAlbumArtFileFrom:(NSString *)original to:(NSString *)newName;
 
 @end

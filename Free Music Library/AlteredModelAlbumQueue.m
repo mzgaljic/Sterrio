@@ -24,9 +24,9 @@
 }
 
 //main operations
-- (void)enqueue:(Album *)anAlbum
+- (void)enqueue:(AlteredModelItem *)theAlbumItem
 {
-    [internalQueue enqueue:[[AlteredModelItem alloc] initWithAddedAlbum:anAlbum]];
+    [internalQueue enqueue:theAlbumItem];
     count = internalQueue.count;
 }
 
@@ -48,14 +48,9 @@
 }
 
 //helper methods
-- (AlteredModelAlbumQueue *)enqueueAlbumsFromArray:(NSArray *)anArray
+- (AlteredModelAlbumQueue *)enqueueAlbumModelItemsFromArray:(NSArray *)anArray
 {
-    //parameter contains Album objects! gotta be careful here...
-    NSMutableArray *tempArray = [NSMutableArray arrayWithCapacity:anArray.count];
-    for(Album *someAlbum in anArray){
-        [tempArray addObject:[[AlteredModelItem alloc] initWithAddedAlbum: someAlbum]];
-    }
-    [internalQueue enqueueObjectsFromArray:tempArray];
+    [internalQueue enqueueObjectsFromArray:anArray];
     count = internalQueue.count;
     return self;
 }

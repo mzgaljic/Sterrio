@@ -12,24 +12,79 @@
 
 + (UIImage *)albumArtFileNameToUiImage:(NSString *)albumArtFileName
 {
-    NSString *docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    NSString* path = [docDir stringByAppendingPathComponent: albumArtFileName];
+    NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    
+    NSString *artDirPath = [documentsPath stringByAppendingPathComponent:@"Album Art"];
+    
+    NSString* path = [artDirPath stringByAppendingPathComponent: albumArtFileName];
     return [UIImage imageWithContentsOfFile:path];
 }
 
 + (BOOL)deleteAlbumArtFileWithName:(NSString *)fileName
 {
-    return NO;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    
+    NSString *artDirPath = [documentsPath stringByAppendingPathComponent:@"Album Art"];
+    
+    NSString *filePath = [artDirPath stringByAppendingPathComponent:fileName];
+    
+    return [fileManager removeItemAtPath:filePath error:nil];
 }
 
-+ (BOOL)saveAlbumArtFileWithName:(NSString *)fileName
++ (BOOL)saveAlbumArtFileWithName:(NSString *)fileName andImage:(UIImage *)albumArtImage
 {
-    return NO;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    
+    NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
+    
+    NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"Album Art"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    if (![fileManager fileExistsAtPath:dataPath])
+        //Create folder
+        [fileManager createDirectoryAtPath:dataPath
+               withIntermediateDirectories:NO attributes:nil
+                                     error:nil];
+    
+    NSString *filePath = [dataPath stringByAppendingPathComponent:fileName];
+    
+    NSData * data = UIImagePNGRepresentation(albumArtImage);
+    
+    return [[NSFileManager defaultManager] createFileAtPath:filePath contents:data attributes:nil];
 }
 
-+ (UIImage *)compressAlbumArtUiImage:(UIImage *)albumArt
++ (BOOL)isAlbumArtAlreadySavedOnDisk:(NSString *)albumArtFileName
 {
-    return nil;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    
+    NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
+    
+    NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"Album Art"];
+    dataPath = [documentsDirectory stringByAppendingPathComponent:albumArtFileName];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    return [fileManager fileExistsAtPath:dataPath];
+}
+
+//rarely used
++ (BOOL)renameAlbumArtFileFrom:(NSString *)original to:(NSString *)newName
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    
+    NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
+    
+    NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"Album Art"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    if (![fileManager fileExistsAtPath:dataPath])
+        //file doesnt exist, operation failed
+        return NO;
+    
+    NSString *originalFilePath = [dataPath stringByAppendingPathComponent:original];
+    NSString *newFilePath = [dataPath stringByAppendingPathComponent:newName];
+    
+    return [[NSFileManager defaultManager] moveItemAtPath:originalFilePath toPath:newFilePath error:nil];
 }
 
 @end

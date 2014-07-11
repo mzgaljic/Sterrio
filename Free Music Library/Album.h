@@ -27,7 +27,7 @@
 - (BOOL)deleteAlbum;
 - (BOOL)updateExistingAlbum;
 
-- (void)setAlbumArt:(UIImage *)image;
+- (BOOL)setAlbumArt:(UIImage *)image;
 - (BOOL)removeAlbumArt;
 
 @end

@@ -82,6 +82,8 @@ static BOOL PRODUCTION_MODE;
     
     Album *album = [self.albums objectAtIndex: indexPath.row];  //get album instance at this index
     
+    [[AlteredModelAlbumQueue createSingleton] enqueue:[[AlteredModelItem alloc] initWithRemovedAlbum:album]];
+    
     //init cell fields
     cell.textLabel.text = album.albumName;
     cell.detailTextLabel.text = album.artist.artistName;
@@ -135,33 +137,39 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
-//called when + sign is tapped - selector defined in editSongsMode method!
+//called when + sign is tapped - selector defined in setUpNavBarItems method!
 - (void)addButtonPressed
 {
-    /**
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"'+' Tapped"
                                                     message:@"This is how you add songs to the library!  :)"
                                                    delegate:nil
                                           cancelButtonTitle:@"Got it"
                                           otherButtonTitles:nil];
     [alert show];
-     */
     
-    NSArray *indexes = @[[NSIndexPath indexPathWithIndex:3]];
-    [self.tableView deleteRowsAtIndexPaths:indexes withRowAnimation:UITableViewRowAnimationFade];
+    Album *someFakeAlbum = nil;
+    [[AlteredModelAlbumQueue createSingleton] enqueue:[[AlteredModelItem alloc] initWithAddedAlbum:someFakeAlbum]];
 }
 
 - (IBAction)expandableMenuSelected:(id)sender
 {
-    //frosted side bar library code here? look in safari bookmarks!
-    NSArray *images = @[
-                        [UIImage imageNamed:@"playlists"],
-                        [UIImage imageNamed:@"artists"], [UIImage imageNamed:@"genres"],
-                        [UIImage imageNamed:@"songs"]];
+    NSArray *images = @[[UIImage imageNamed:@"playlists"],[UIImage imageNamed:@"artists"],
+                        [UIImage imageNamed:@"genres"],[UIImage imageNamed:@"songs"]];
     
-    RNFrostedSidebar *callout = [[RNFrostedSidebar alloc] initWithImages:images];
+    NSArray *colors =@[[UIColor blueColor],[UIColor redColor],[UIColor greenColor],[UIColor purpleColor]];
+    
+    NSRange range;
+    range.length = 4;
+    range.location = 0;
+    
+    NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:range];
+    
+    RNFrostedSidebar *callout = [[RNFrostedSidebar alloc] initWithImages:images selectedIndices:indexSet borderColors:colors];
+    callout.animationDuration = .3;
+    callout.borderWidth = 1;
     callout.delegate = self;
     [callout show];
+
 }
 
 @end
