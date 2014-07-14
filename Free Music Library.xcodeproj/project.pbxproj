@@ -42,6 +42,7 @@
 		87A110561964A5EA00270528 /* Album.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A110541964A5EA00270528 /* Album.m */; };
 		87A110591964A67000270528 /* Song.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A110571964A67000270528 /* Song.m */; };
 		87C4D5741970932A0082D781 /* BackupFileHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C4D5731970932A0082D781 /* BackupFileHelper.m */; };
+		87CEDC6519731EF000780D57 /* PlaylistSongItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87CEDC6419731EF000780D57 /* PlaylistSongItemTableViewController.m */; };
 		87D16D621931B7EE00DB6A34 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 87D16D611931B7EE00DB6A34 /* Podfile */; };
 		87D47D8C19340F8B0057D49B /* AlbumItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47D8919340F8B0057D49B /* AlbumItemViewController.m */; };
 		87D47D8D19340F8B0057D49B /* MasterAlbumsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47D8B19340F8B0057D49B /* MasterAlbumsTableViewController.m */; };
@@ -127,6 +128,8 @@
 		87A110581964A67000270528 /* Song.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Song.h; sourceTree = "<group>"; };
 		87C4D5721970932A0082D781 /* BackupFileHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupFileHelper.h; sourceTree = "<group>"; };
 		87C4D5731970932A0082D781 /* BackupFileHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupFileHelper.m; sourceTree = "<group>"; };
+		87CEDC6319731EF000780D57 /* PlaylistSongItemTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistSongItemTableViewController.h; sourceTree = "<group>"; };
+		87CEDC6419731EF000780D57 /* PlaylistSongItemTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistSongItemTableViewController.m; sourceTree = "<group>"; };
 		87D16D611931B7EE00DB6A34 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
 		87D47D8819340F8B0057D49B /* AlbumItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumItemViewController.h; sourceTree = "<group>"; };
 		87D47D8919340F8B0057D49B /* AlbumItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumItemViewController.m; sourceTree = "<group>"; };
@@ -344,6 +347,8 @@
 				87D47D8F193428350057D49B /* MasterPlaylistTableViewController.m */,
 				875984A3195D764700015243 /* PlaylistItemTableViewController.h */,
 				875984A4195D764700015243 /* PlaylistItemTableViewController.m */,
+				87CEDC6319731EF000780D57 /* PlaylistSongItemTableViewController.h */,
+				87CEDC6419731EF000780D57 /* PlaylistSongItemTableViewController.m */,
 			);
 			name = "Playlists tab";
 			path = "Free Music Library";
@@ -586,6 +591,7 @@
 				8728B788194959CE00565BDA /* Playlist.m in Sources */,
 				87D47D8C19340F8B0057D49B /* AlbumItemViewController.m in Sources */,
 				87362AFD194E68A5004DB544 /* Deque.m in Sources */,
+				87CEDC6519731EF000780D57 /* PlaylistSongItemTableViewController.m in Sources */,
 				87A110561964A5EA00270528 /* Album.m in Sources */,
 				876EC5F01965C9F6006B3C29 /* AppEnvironmentConstants.m in Sources */,
 				876EDE6019648AA300795767 /* AlbumArtUtilities.m in Sources */,

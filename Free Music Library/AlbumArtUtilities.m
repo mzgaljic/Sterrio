@@ -51,7 +51,7 @@
     
     NSData * data = UIImagePNGRepresentation(albumArtImage);
     
-    return [[NSFileManager defaultManager] createFileAtPath:filePath contents:data attributes:nil];
+    return [fileManager createFileAtPath:filePath contents:data attributes:nil];
 }
 
 + (BOOL)isAlbumArtAlreadySavedOnDisk:(NSString *)albumArtFileName
@@ -84,7 +84,26 @@
     NSString *originalFilePath = [dataPath stringByAppendingPathComponent:original];
     NSString *newFilePath = [dataPath stringByAppendingPathComponent:newName];
     
-    return [[NSFileManager defaultManager] moveItemAtPath:originalFilePath toPath:newFilePath error:nil];
+    return [fileManager moveItemAtPath:originalFilePath toPath:newFilePath error:nil];
+}
+
++ (BOOL)makeCopyOfArtWithName:(NSString *)fileName andNameIt:(NSString *)newName
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    
+    NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
+    
+    NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"Album Art"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    if (![fileManager fileExistsAtPath:dataPath])
+        //file doesnt exist, operation failed
+        return NO;
+
+    NSString *originalFilePath = [dataPath stringByAppendingPathComponent:fileName];
+    NSString *newFilePath = [dataPath stringByAppendingPathComponent:newName];
+    
+    return [fileManager copyItemAtPath:originalFilePath toPath:newFilePath error:nil];
 }
 
 @end

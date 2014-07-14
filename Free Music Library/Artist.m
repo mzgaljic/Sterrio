@@ -20,6 +20,31 @@ static  int const SAVE_ARTIST = 0;
 static int const DELETE_ARTIST = 1;
 static int const UPDATE_ARTIST = 2;
 
+//custom property setters
+- (void)setAllAlbums:(NSMutableArray *)allAlbums
+{
+    _allAlbums = allAlbums;
+    if(_allAlbums.count == 0 && _allSongs == 0)
+        [self deleteArtist];
+}
+- (void)setAllSongs:(NSMutableArray *)allSongs
+{
+    _allSongs = allSongs;
+    if(_allSongs == 0 && _allAlbums.count == 0)
+        [self deleteArtist];
+}
+//end of custom property setters
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        _allAlbums = [NSMutableArray array];
+        _allSongs = [NSMutableArray array];
+    }
+    return self;
+}
+
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super init];
@@ -73,13 +98,16 @@ static int const UPDATE_ARTIST = 2;
             
         case DELETE_ARTIST:
         {
-            //delete all the songs by this artist (which should erase any existing albums as well)
+            //delete all the songs by this artist (songs not part of albums)
             NSArray *mySongs = _allSongs;
             while(mySongs.count != 0){
                 [[mySongs lastObject] deleteSong];
             }
-            
-            //remove artist songs from any playlists?
+            //now remove the albums too (and the underlying songs)
+            NSArray *myAlbums = _allAlbums;
+            while(myAlbums.count != 0){
+                [[myAlbums lastObject] deleteAlbum];
+            }
             
             //delete the artist object itself
             [artists removeObject:self];
@@ -98,14 +126,17 @@ static int const UPDATE_ARTIST = 2;
             
     } //end of swtich
     
+    [Artist sortExistingArtistsAlphabetically:&artists];
+    
     //save changes to model on disk
     NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:artists];  //encode artists
     return [fileData writeToURL:[FileIOConstants createSingleton].artistsFileURL atomically:YES];
 }
 
-- (NSMutableArray *)sortExistingArrayAlphabetically:(NSMutableArray *)unsortedArray
++ (void)sortExistingArtistsAlphabetically:(NSMutableArray **)artistModel
 {
-    return nil;
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"artistName" ascending:YES selector:@selector(caseInsensitiveCompare:)];
+    [*artistModel sortUsingDescriptors:[NSArray arrayWithObject:sort]];
 }
 
 - (NSMutableArray *)insertNewArtistIntoAlphabeticalArray:(Artist *)unInsertedArtist
@@ -126,7 +157,7 @@ static int const UPDATE_ARTIST = 2;
 //each artist must ‘own’ a unique set of songs or albums
 - (BOOL)customSmartArtistComparison:(Artist *)mysteryArtist
 {
-    BOOL sameName = NO, uniqueSongs = NO, uniqueAlbums = NO;
+    BOOL sameName = NO, sameSongs = NO, sameAlbums = NO;
     
     if([self.artistName isEqualToString:mysteryArtist.artistName])
         sameName = YES;
@@ -137,9 +168,9 @@ static int const UPDATE_ARTIST = 2;
             numEqualSongs++;
     }
     if(_allSongs.count == numEqualSongs)
-        uniqueSongs = NO;
+        sameSongs = YES;
     else
-        uniqueSongs = YES;
+        sameSongs = NO;
     
     int numEqualAlbums = 0;
     for(int i = 0; i < _allAlbums.count; i++){
@@ -147,11 +178,11 @@ static int const UPDATE_ARTIST = 2;
             numEqualAlbums++;
     }
     if(_allAlbums.count == numEqualAlbums)
-        uniqueAlbums = NO;
+        sameAlbums = YES;
     else
-        uniqueAlbums = YES;
+        sameAlbums = NO;
 
-    return (sameName && (uniqueSongs || uniqueAlbums)) ? YES : NO;
+    return (sameName && sameSongs && sameAlbums) ? YES : NO;
 }
 
 -(NSUInteger)hash {

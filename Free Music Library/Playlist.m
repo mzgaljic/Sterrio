@@ -18,6 +18,15 @@ static  int const SAVE_PLAYLIST = 0;
 static int const DELETE_PLAYLIST = 1;
 static int const UPDATE_PLAYLIST = 2;
 
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        _songsInThisPlaylist = [NSMutableArray array];
+    }
+    return self;
+}
+
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super init];
@@ -87,15 +96,18 @@ static int const UPDATE_PLAYLIST = 2;
             
     } //end of swtich
     
+    [Playlist sortExistingArtistsAlphabetically:&playlists];
+    
     //save changes to model on disk
     NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:playlists];  //encode playlists
     return [fileData writeToURL:[FileIOConstants createSingleton].playlistsFileURL atomically:YES];
 }
 
 
-- (NSMutableArray *)sortExistingArrayAlphabetically:(NSMutableArray *)unsortedArray
++ (void)sortExistingArtistsAlphabetically:(NSMutableArray **)playlistModel
 {
-    return nil;
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"playlistName" ascending:YES selector:@selector(caseInsensitiveCompare:)];
+    [*playlistModel sortUsingDescriptors:[NSArray arrayWithObject:sort]];
 }
 
 - (NSMutableArray *)insertNewPlaylistIntoAlphabeticalArray:(Playlist *)unInsertedPlaylist

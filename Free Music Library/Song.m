@@ -16,7 +16,7 @@
 #define ASSOCIATED_WITH_ALBUM_KEY @"associatedWithAlbum"
 
 @implementation Song
-@synthesize songName, youtubeLink, albumArtFileName = _albumArtFileName, album = _album, artist, genreCode, associatedWithAlbum = _associatedWithAlbum;
+@synthesize songName, youtubeLink, albumArtFileName = _albumArtFileName, album = _album, artist = _artist, genreCode, associatedWithAlbum = _associatedWithAlbum;
 
 static  int const SAVE_SONG = 0;
 static int const DELETE_SONG = 1;
@@ -26,8 +26,21 @@ static int const UPDATE_SONG = 2;
 - (void)setAlbum:(Album *)album
 {
     if(album == nil){  //unAssociating this song from an album
+        //needed so that when the old associated album is deleted, this song still has its art.
+        [self makeCopyOfArtAndRename];
+        
         [_album.albumSongs removeObject:self];
         _associatedWithAlbum = NO;
+        
+        if(_album.albumSongs.count == 0){  //if we just made the album empty
+            if(self.artist)
+                [[_artist allAlbums] removeObject:self.album];
+            
+            [_album deleteAlbum];
+        }else if(self.artist)
+            [[_artist allSongs] addObject:self];
+        
+        _album = nil;
         
     }else{  //associating the album with this song
         
@@ -58,7 +71,32 @@ static int const UPDATE_SONG = 2;
             [_album setAlbumArt:[AlbumArtUtilities albumArtFileNameToUiImage:[NSString stringWithFormat:@"%@.png", _album.albumName]]];
         }
         _albumArtFileName = _album.albumArtFileName;
+        
+        if(self.artist)
+            [[_artist allSongs] removeObject:self];
     }
+}
+
+- (void)setArtist:(Artist *)artist
+{
+    if([_artist isEqual:artist])
+        return;
+    else{
+        if(_associatedWithAlbum){
+            [_artist.allAlbums removeObject:_album];
+            [_artist.allSongs removeObject:self];
+            if(_artist.allSongs.count == 0 && _artist.allAlbums.count ==0)
+                [_artist deleteArtist];
+        }else{
+            [[_artist allSongs] removeObject:self];
+            if(! [artist.allSongs containsObject:self])
+                [[artist allSongs] addObject:self];
+            if(_artist.allSongs.count == 0 && _artist.allAlbums.count ==0)
+                [_artist deleteArtist];
+        }
+    }
+    
+    _artist = artist;
 }
 //end of custom setters
 
@@ -116,14 +154,33 @@ static int const UPDATE_SONG = 2;
 - (BOOL)performModelAction:(int)desiredActionConst  //does the 'hard work' of altering the model.
 {
     NSMutableArray *songs = (NSMutableArray *)[Song loadAll];
+    
     switch (desiredActionConst) {
         case SAVE_SONG:
             [songs insertObject:self atIndex:0]; //new songs added to array will appear at top of 'list'
+            
+            //update the artist details for this song
+            if(_artist){
+                [_artist.allSongs addObject:self];
+            }
+            
             break;
             
         case DELETE_SONG:  //This class is responsible for deleting songs from albums
         {
             [self removeAlbumArt]; //delete album art from disk if we need to
+            
+            self.artist = nil;
+            
+            if(_album){
+                if(_album.albumSongs.count == 1){  //last song in album, album about to become empty
+                    [[_artist allAlbums] removeObject:_album];
+                }
+                //if album continues to exist, no action needed
+            } else{
+                //if not part of album, just remove this song from list of artist songs
+                [[_artist allSongs] removeObject:self];
+            }
             
             BOOL deletedAlbum = NO;
             Song *thisSong = songs[[songs indexOfObject:self]];
@@ -152,6 +209,7 @@ static int const UPDATE_SONG = 2;
             } else{  //song not associated with an album
                 [songs removeObject:self];
             }
+            
             break;
         }
     
@@ -160,12 +218,15 @@ static int const UPDATE_SONG = 2;
             if(songs.count > 0){
                 [songs replaceObjectAtIndex:[songs indexOfObject:self] withObject:self];
             }
+            
             break;
             
         default:
             return NO;
             
     } //end of swtich
+    
+    [Song sortExistingSongsAlphabetically: &songs];
     
     //save changes to model on disk
     NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:songs];  //encode songs
@@ -211,7 +272,6 @@ static int const UPDATE_SONG = 2;
                 
                 //made albumArtFileName property nil
                 _albumArtFileName = nil;
-
             }
         }
     }
@@ -219,9 +279,15 @@ static int const UPDATE_SONG = 2;
     return success;
 }
 
-- (NSMutableArray *)sortExistingArrayAlphabetically:(NSMutableArray *)unsortedArray
+- (BOOL)makeCopyOfArtAndRename
 {
-    return nil;
+    return [AlbumArtUtilities makeCopyOfArtWithName:[NSString stringWithFormat:@"%@.png", _album.albumName] andNameIt:[NSString stringWithFormat:@"%@.png", self.songName]];
+}
+
++ (void)sortExistingSongsAlphabetically:(NSMutableArray **)songModel
+{
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"songName" ascending:YES selector:@selector(caseInsensitiveCompare:)];
+    [*songModel sortUsingDescriptors:[NSArray arrayWithObject:sort]];
 }
 
 - (NSMutableArray *)insertNewSongIntoAlphabeticalArray:(Song *)unInsertedSong

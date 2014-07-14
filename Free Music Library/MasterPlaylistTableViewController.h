@@ -10,7 +10,8 @@
 #import "Playlist.h"
 #import "RNFrostedSideBar.h"
 #import "AlteredModelItem.h"
-#import "PlaylistItemTableViewController.h"
+#import "PlaylistItemTableViewController.h"  //tableview controller that shows the songs in the playlist
+#import "PlaylistSongItemTableViewController.h"  //song picker
 #import "AlteredModelAlbumQueue.h"
 #import "AppEnvironmentConstants.h"
 

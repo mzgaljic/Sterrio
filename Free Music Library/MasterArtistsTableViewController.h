@@ -12,6 +12,8 @@
 #import "Album.h"
 #import "AlteredModelItem.h"
 #import "AlteredModelArtistQueue.h"
+#import "AlteredModelAlbumQueue.h"
+#import "AlteredModelSongQueue.h"
 
 @interface MasterArtistsTableViewController : UITableViewController
 

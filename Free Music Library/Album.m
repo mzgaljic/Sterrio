@@ -15,11 +15,27 @@
 #define GENRE_CODE_KEY @"albumGenreCode"
 
 @implementation Album
-@synthesize albumName, releaseDate, albumArtFileName = _albumArtFileName, artist, albumSongs, genreCode;
+@synthesize albumName, releaseDate, albumArtFileName = _albumArtFileName, artist = _artist, albumSongs, genreCode;
 
 static  int const SAVE_ALBUM = 0;
 static int const DELETE_ALBUM = 1;
 static int const UPDATE_ALBUM = 2;
+
+//custom setter method
+- (void)setArtist:(Artist *)artist
+{
+    if([_artist isEqual:artist])
+        return;
+    else{
+        [[_artist allAlbums] removeObject:self];
+        if(! [artist.allAlbums containsObject:self])
+            [[artist allAlbums] addObject:self];
+        if(_artist.allSongs.count == 0 && _artist.allAlbums.count ==0)
+            [_artist deleteArtist];
+    }
+
+    _artist = artist;
+}
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
@@ -77,11 +93,18 @@ static int const UPDATE_ALBUM = 2;
         case SAVE_ALBUM:
             [albums insertObject:self atIndex:0];  //should sort this array based on alphabetical order!
             //new albums added to array will appear at top of 'list'
+            
+            //update the artist details for this album
+            if(self.artist)
+                [[self.artist allAlbums] removeObject:self];
+            
             break;
             
         case DELETE_ALBUM:
         {
             [self removeAlbumArt]; //delete album art from disk
+            
+            self.artist = nil;
             
             //If the last song in this album is to be deleted, Song.m will delete the song and delegate control to this class while it waits for the album to be deleted.
             if(self.albumSongs == 0)
@@ -118,6 +141,8 @@ static int const UPDATE_ALBUM = 2;
             
     } //end of swtich
     
+    [Album sortExistingAlbumsAlphabetically: &albums];
+    
     //save changes to model on disk
     NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:albums];  //encode albums
     return [fileData writeToURL:[FileIOConstants createSingleton].albumsFileURL atomically:YES];
@@ -152,9 +177,10 @@ static int const UPDATE_ALBUM = 2;
     return success;
 }
 
-- (NSMutableArray *)sortExistingArrayAlphabetically:(NSMutableArray *)unsortedArray
++ (void)sortExistingAlbumsAlphabetically:(NSMutableArray **)albumModel
 {
-    return nil;
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"albumName" ascending:YES selector:@selector(caseInsensitiveCompare:)];
+    [*albumModel sortUsingDescriptors:[NSArray arrayWithObject:sort]];
 }
 
 - (NSMutableArray *)insertNewAlbumIntoAlphabeticalArray:(Album *)unInsertedAlbum

@@ -13,7 +13,7 @@
 @end
 
 @implementation MasterArtistsTableViewController
-@synthesize allArtists;
+@synthesize allArtists = _allArtists;
 static BOOL PRODUCTION_MODE;
 
 - (NSMutableArray *) results
@@ -34,7 +34,8 @@ static BOOL PRODUCTION_MODE;
     [super viewWillAppear:animated];
     
     //init tableView model
-    self.allArtists = [NSMutableArray arrayWithArray:[Artist loadAll]];
+    _allArtists = [NSMutableArray arrayWithArray:[Artist loadAll]];
+    [self.tableView reloadData];
 }
 
 - (void)viewDidLoad
@@ -50,11 +51,7 @@ static BOOL PRODUCTION_MODE;
     //edit button
     UIBarButtonItem *editButton = self.editButtonItem;
     
-    //+ sign...also wire it up to the ibAction "addButtonPressed"
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc]
-                                  initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                  target:self action:@selector(addButtonPressed)];
-    NSArray *rightBarButtonItems = [NSArray arrayWithObjects:editButton, addButton, nil];
+    NSArray *rightBarButtonItems = [NSArray arrayWithObjects:editButton, nil];
     self.navigationItem.rightBarButtonItems = rightBarButtonItems;  //place both buttons on the nav bar
 }
 
@@ -83,7 +80,16 @@ static BOOL PRODUCTION_MODE;
     
     //init cell fields
     cell.textLabel.text = artist.artistName;
-    NSString *detailStringLabel = [NSString stringWithFormat:@"%dAlbums, %dSongs", (int)artist.allAlbums.count, (int)artist.allSongs.count];  //may be a small bug here (with the counting)!
+    
+    int songsInAlbumsCount = 0;
+    //count all the songs that are associated with albums for this artist
+    for(int i = 0; i < artist.allAlbums.count; i++){
+        Album *anAlbum = artist.allAlbums[i];
+        for(int k = 0; k < anAlbum.albumSongs.count; k++){
+            songsInAlbumsCount++;
+        }
+    }
+    NSString *detailStringLabel = [NSString stringWithFormat:@"%d Albums, %d Songs", (int)artist.allAlbums.count, (int)artist.allSongs.count + songsInAlbumsCount];
     cell.detailTextLabel.text = detailStringLabel;
     
     return cell;
@@ -140,26 +146,22 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
-//called when + sign is tapped - selector defined in setUpNavBarItems method!
-- (void)addButtonPressed
-{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"'+' Tapped"
-                                                    message:@"This is how you add music to the library!  :)"
-                                                   delegate:nil
-                                          cancelButtonTitle:@"Got it"
-                                          otherButtonTitles:nil];
-    [alert show];
-}
-
 - (IBAction)expandableMenuSelected:(id)sender
 {
-    //frosted side bar library code here? look in safari bookmarks!
-    NSArray *images = @[
-                        [UIImage imageNamed:@"playlists"],
-                        [UIImage imageNamed:@"artists"], [UIImage imageNamed:@"genres"],
-                        [UIImage imageNamed:@"songs"]];
+    NSArray *images = @[[UIImage imageNamed:@"playlists"],[UIImage imageNamed:@"artists"],
+                        [UIImage imageNamed:@"genres"],[UIImage imageNamed:@"songs"]];
     
-    RNFrostedSidebar *callout = [[RNFrostedSidebar alloc] initWithImages:images];
+    NSArray *colors =@[[UIColor blueColor],[UIColor redColor],[UIColor greenColor],[UIColor purpleColor]];
+    
+    NSRange range;
+    range.length = 4;
+    range.location = 0;
+    
+    NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:range];
+    
+    RNFrostedSidebar *callout = [[RNFrostedSidebar alloc] initWithImages:images selectedIndices:indexSet borderColors:colors];
+    callout.animationDuration = .3;
+    callout.borderWidth = 1;
     callout.delegate = self;
     [callout show];
 }

@@ -11,7 +11,5 @@
 @interface AppEnvironmentConstants : NSObject
 
 + (BOOL)isAppInProductionMode;
-+ (void)setAppTintColor:(UIColor *)color;
-+ (UIColor *)appTintColor;
 
 @end

@@ -147,14 +147,21 @@ static BOOL PRODUCTION_MODE;
 {
     if(alertView == _createPlaylistAlert){
         if(buttonIndex == 1){  //create playlist
-            Playlist *newPlaylist = [[Playlist alloc] init];
-            newPlaylist.playlistName = [alertView textFieldAtIndex:0].text;
+            NSString *playlistName = [alertView textFieldAtIndex:0].text;
+            if(playlistName.length == 0)
+                return;
+            int numSpaces = 0;
+            for(int i = 0; i < playlistName.length; i++){
+                if([playlistName characterAtIndex:i] == ' ')
+                    numSpaces++;
+            }
+            if(numSpaces == playlistName.length)
+                return;  //playlist can't be all whitespace.
             
-            //segue to song picker, then save the playlist. allow option to "skip" adding songs for now.
+            [self writeNewPlaylistNameToTempFile: playlistName];
             
-            [newPlaylist savePlaylist];
-            _allPlaylists = [NSMutableArray arrayWithArray:[Playlist loadAll]];
-            [self.tableView reloadData];
+            //now segue to modal view where user can pick songs for this playlist
+            [self performSegueWithIdentifier:@"playlistSongItemPickerSegue" sender:self];
         }
         else  //canceled
             return;
@@ -181,4 +188,15 @@ static BOOL PRODUCTION_MODE;
     [callout show];
 
 }
+
+- (BOOL)writeNewPlaylistNameToTempFile:(NSString *)newPlaylistName
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
+    NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"temp file"];
+    
+    NSString *myString = newPlaylistName;
+    return [myString writeToFile:dataPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
+}
+
 @end

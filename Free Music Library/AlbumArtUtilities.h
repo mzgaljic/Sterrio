@@ -18,5 +18,6 @@
 
 //rarely used
 + (BOOL)renameAlbumArtFileFrom:(NSString *)original to:(NSString *)newName;
++ (BOOL)makeCopyOfArtWithName:(NSString *)fileName andNameIt:(NSString *)newName;
 
 @end
