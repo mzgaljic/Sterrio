@@ -18,6 +18,10 @@
 @implementation PlaylistSongItemTableViewController
 @synthesize songsSelected = _songsSelected, receiverPlaylist = _receiverPlaylist, allSongs = _allSongs;
 static BOOL PRODUCTION_MODE;
+//playlist status codes
+static const short IN_CREATION = 0;
+static const short CREATED_BUT_EMPTY = 1;
+static const short NORMAL_PLAYLIST = -1;
 
 - (NSMutableArray *) results
 {
@@ -38,14 +42,20 @@ static BOOL PRODUCTION_MODE;
     
     _songsSelected = [NSMutableArray array];
     
-    self.tableView.allowsMultipleSelection = YES;
-    
     //init tableView model
-    NSString *newPlaylistName = [self obtainPlaylistNameFromTempFile];
-    _receiverPlaylist = [[Playlist alloc] init];
-    _receiverPlaylist.playlistName = newPlaylistName;
-    
+    _receiverPlaylist = [Playlist loadTempPlaylistFromDisk];
     _allSongs = [NSMutableArray arrayWithArray:[Song loadAll]];
+    
+    if(_receiverPlaylist.status == IN_CREATION){  //creating new playlist
+        self.rightBarButton.title = AddLater_String;
+    } else if(_receiverPlaylist.status == NORMAL_PLAYLIST){  //adding songs to existing playlist
+        [_allSongs removeObjectsInArray:_receiverPlaylist.songsInThisPlaylist];
+        self.rightBarButton.title = @"";
+    } else if(_receiverPlaylist.status == CREATED_BUT_EMPTY){  //possibly adding songs to existing playlist
+        self.rightBarButton.title = @"";
+        [_allSongs removeObjectsInArray:_receiverPlaylist.songsInThisPlaylist];
+    }
+    
     [self.tableView reloadData];
 }
 
@@ -54,6 +64,7 @@ static BOOL PRODUCTION_MODE;
     [super viewDidLoad];
     
     [self setProductionModeValue];
+    self.tableView.allowsMultipleSelection = YES;
 }
 
 - (void)didReceiveMemoryWarning
@@ -75,6 +86,15 @@ static BOOL PRODUCTION_MODE;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"playlistSongItemPickerCell" forIndexPath:indexPath];
+    
+    [cell setAccessoryType:UITableViewCellAccessoryNone];
+    for(int i = 0; i < _songsSelected.count; i++){
+        NSUInteger num = [[_songsSelected objectAtIndex:i] intValue];
+        if(num == indexPath.row){
+            [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
+            break;  //found the match
+        }
+    }
     
     // Configure the cell...
     Song *song = [_allSongs objectAtIndex:indexPath.row];  //get song object at this index
@@ -98,57 +118,72 @@ static BOOL PRODUCTION_MODE;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //obtain object for the tapped song
-    Song *song = [_allSongs objectAtIndex:indexPath.row];
-    
-    if([_songsSelected containsObject:song]){  //deselect song
-        if(_songsSelected.count == 1)
-            self.rightBarButton.title = AddLater_String;
-        
-        [self.songsSelected removeObject:song];
-    }
-    else{  //select song
+    UITableViewCell *selectedCell = [tableView cellForRowAtIndexPath:indexPath];
+    if([selectedCell accessoryType] == UITableViewCellAccessoryNone){  //selected row
         if(_songsSelected.count == 0)
             self.rightBarButton.title = Done_String;
+        [selectedCell setAccessoryType:UITableViewCellAccessoryCheckmark];
+        [_songsSelected addObject:[NSNumber numberWithInt:(int)indexPath.row]];
         
-        [self.songsSelected addObject:song];
+    } else{  //deselected row
+        if(_songsSelected.count == 1 && _receiverPlaylist.status == IN_CREATION)
+            self.rightBarButton.title = AddLater_String;  //only happens when playlist created from scratch
+        
+        else if(_songsSelected.count == 1 && _receiverPlaylist.status == CREATED_BUT_EMPTY)
+            self.rightBarButton.title = @"";
+        
+        else if(_songsSelected.count == 1 && _receiverPlaylist.status == NORMAL_PLAYLIST)
+            self.rightBarButton.title = @"";
+        
+        [selectedCell setAccessoryType:UITableViewCellAccessoryNone];
+        [_songsSelected removeObject:[NSNumber numberWithInt:(int)indexPath.row]];
     }
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
 - (IBAction)rightBarButtonTapped:(id)sender
 {
-    if([self.rightBarButton.title isEqualToString:Done_String]){
+    NSString *title = self.rightBarButton.title;
+    if([title isEqualToString:Done_String]){
+        _receiverPlaylist.status = NORMAL_PLAYLIST;
+        
         //add all selected songs to the playlists songs array (the model on disk), "pop" modal view
-        [_receiverPlaylist.songsInThisPlaylist addObjectsFromArray:self.songsSelected];
-        [_receiverPlaylist savePlaylist];
+        for(NSNumber *someIndex in _songsSelected){
+            [_receiverPlaylist.songsInThisPlaylist addObject:[_allSongs objectAtIndex:[someIndex intValue]]];
+        }
+        
+        [Playlist reInsertTempPlaylist:_receiverPlaylist];
         [self dismissViewControllerAnimated:YES completion:nil];
         
-    } else if([self.rightBarButton.title isEqualToString:AddLater_String]){
+    } else if([title isEqualToString:AddLater_String]){
         //leave playlist empty and "pop" this modal view off the screen
-        [_receiverPlaylist savePlaylist];
+        _receiverPlaylist.status = CREATED_BUT_EMPTY;
+        [Playlist reInsertTempPlaylist:_receiverPlaylist];
         [self dismissViewControllerAnimated:YES completion:nil];
     }
+    //must be at end, since the playlist needs to be reinserted into the model first.
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"song picker dismissed" object:self];
 }
 
 - (IBAction)leftBarButtonTapped:(id)sender
 {
-    if([self.leftBarButton.title isEqualToString:Cancel_String]){
+    NSString *title = self.leftBarButton.title;
+    if([title isEqualToString:Cancel_String] && _receiverPlaylist.status == CREATED_BUT_EMPTY){
+        //cancel adding songs to this playlist, and "pop" this modal view off the screen.
+        [Playlist reInsertTempPlaylist:_receiverPlaylist];  //deletes the temp playlist on disk
+        [self dismissViewControllerAnimated:YES completion:nil];
+        
+    } else if([title isEqualToString:Cancel_String] && _receiverPlaylist.status == IN_CREATION){
         //cancel the creation of the playlist and "pop" this modal view off the screen.
         [_receiverPlaylist deletePlaylist];
+        [Playlist reInsertTempPlaylist:nil];
+        [self dismissViewControllerAnimated:YES completion:nil];
+    } else if([title isEqualToString:Cancel_String] && _receiverPlaylist.status == NORMAL_PLAYLIST){
+        //don't add the checked songs to the playlist, and "pop" this modal view off the screen.
+        [Playlist reInsertTempPlaylist:_receiverPlaylist];  //deletes the temp playlist on disk
         [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
 
-- (NSString *)obtainPlaylistNameFromTempFile
-{
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
-    NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"temp file"];
-    
-    NSString *returnString = [NSString stringWithContentsOfFile:dataPath encoding:NSUTF8StringEncoding error:nil];
-    //delete the file
-    [[NSFileManager defaultManager] removeItemAtPath:dataPath error:nil];
-    
-    return returnString;
-}
 @end

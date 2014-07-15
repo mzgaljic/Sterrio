@@ -20,6 +20,7 @@ static BOOL PRODUCTION_MODE;
     [[FileIOConstants createSingleton] setAlbumsFileURL:[[urls lastObject] URLByAppendingPathComponent:@"Lib_Albums.data"]];
     [[FileIOConstants createSingleton] setArtistsFileURL:[[urls lastObject] URLByAppendingPathComponent:@"Lib_Artists.data"]];
     [[FileIOConstants createSingleton] setPlaylistsFileURL:[[urls lastObject] URLByAppendingPathComponent:@"Lib_Playlists.data"]];
+    [[FileIOConstants createSingleton] setTempPlaylistsFileURL:[[urls lastObject] URLByAppendingPathComponent:@"Lib_TempPlaylist.data"]];
     [[FileIOConstants createSingleton] setGenresFileURL:[[urls lastObject] URLByAppendingPathComponent:@"Lib_Genres.data"]];
     
     [[FileIOConstants createSingleton] setModelAlteredStateFileUrl:[[urls lastObject] URLByAppendingPathComponent:@"Altered_Model_State.data"]];

@@ -44,20 +44,6 @@ static BOOL PRODUCTION_MODE;
     [super viewDidLoad];
     
     [self setProductionModeValue];
-    [self setUpNavBarItems];
-}
-
-- (void)setUpNavBarItems
-{
-    //edit button
-    UIBarButtonItem *editButton = self.editButtonItem;
-    
-    //+ sign...also wire it up to the ibAction "addButtonPressed"
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc]
-                                  initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                  target:self action:@selector(addButtonPressed)];
-    NSArray *rightBarButtonItems = [NSArray arrayWithObjects:editButton, addButton, nil];
-    self.navigationItem.rightBarButtonItems = rightBarButtonItems;  //place both buttons on the nav bar
 }
 
 - (void)didReceiveMemoryWarning
@@ -85,6 +71,7 @@ static BOOL PRODUCTION_MODE;
     
     //init cell fields
     cell.textLabel.text = playlist.playlistName;
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%i songs",(int)playlist.songsInThisPlaylist.count];
     
     return cell;
 }
@@ -113,25 +100,22 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //get the index of the tapped playlist
-    UITableView *tableView = self.tableView;
-    for(int i = 0; i < _allPlaylists.count; i++){
-        UITableViewCell *cell =[tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-        if(cell.selected){
-            self.selectedRowIndexValue = i;
-            break;
-        }
-    }
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
     
+    //now segue to push view where user can view the tapped playlist
+   [self performSegueWithIdentifier:@"playlistItemSegue" sender:[_allPlaylists objectAtIndex:(int)indexPath.row]];
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{    
     if([[segue identifier] isEqualToString: @"playlistItemSegue"]){
-        [[segue destinationViewController] setPlaylist:[_allPlaylists objectAtIndex:self.selectedRowIndexValue]];
+        [[segue destinationViewController] setPlaylist:sender];
     }
 }
 
-//called when + sign is tapped - selector defined in setUpNavBarItems method!
-- (void)addButtonPressed
+- (IBAction)addButtonPressed:(id)sender
 {
     _createPlaylistAlert = [[UIAlertView alloc] init];
     _createPlaylistAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
@@ -141,12 +125,13 @@ static BOOL PRODUCTION_MODE;
     [_createPlaylistAlert addButtonWithTitle:@"Create"];
     
     [_createPlaylistAlert show];
+
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if(alertView == _createPlaylistAlert){
-        if(buttonIndex == 1){  //create playlist
+        if(buttonIndex == 1){
             NSString *playlistName = [alertView textFieldAtIndex:0].text;
             if(playlistName.length == 0)
                 return;
@@ -158,7 +143,10 @@ static BOOL PRODUCTION_MODE;
             if(numSpaces == playlistName.length)
                 return;  //playlist can't be all whitespace.
             
-            [self writeNewPlaylistNameToTempFile: playlistName];
+            //create the playlist
+            Playlist *newPlaylist = [[Playlist alloc] init];
+            newPlaylist.playlistName = playlistName;
+            [newPlaylist saveTempPlaylistOnDisk];
             
             //now segue to modal view where user can pick songs for this playlist
             [self performSegueWithIdentifier:@"playlistSongItemPickerSegue" sender:self];
@@ -186,17 +174,6 @@ static BOOL PRODUCTION_MODE;
     callout.borderWidth = 1;
     callout.delegate = self;
     [callout show];
-
-}
-
-- (BOOL)writeNewPlaylistNameToTempFile:(NSString *)newPlaylistName
-{
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
-    NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"temp file"];
-    
-    NSString *myString = newPlaylistName;
-    return [myString writeToFile:dataPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
 }
 
 @end

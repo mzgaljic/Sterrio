@@ -10,6 +10,7 @@
 #import "FileIOConstants.h"
 #define PLAYLIST_NAME_KEY @"playlistName"
 #define SONGS_IN_THIS_PLAYLIST_KEY @"songsInThisPlaylist"
+#define STATUS_KEY @"status"
 
 @implementation Playlist
 @synthesize playlistName = _playlistName, songsInThisPlaylist = _songsInThisPlaylist;
@@ -17,12 +18,14 @@
 static  int const SAVE_PLAYLIST = 0;
 static int const DELETE_PLAYLIST = 1;
 static int const UPDATE_PLAYLIST = 2;
+static int const TEMP_SAVE_PLAYLIST_TO_DISK = 3;
 
 - (id)init
 {
     self = [super init];
     if (self) {
         _songsInThisPlaylist = [NSMutableArray array];
+        _status = 0;  //code for playlist "in creation" mode
     }
     return self;
 }
@@ -33,6 +36,7 @@ static int const UPDATE_PLAYLIST = 2;
     if(self){
         _playlistName = [aDecoder decodeObjectForKey:PLAYLIST_NAME_KEY];
         _songsInThisPlaylist = [aDecoder decodeObjectForKey:SONGS_IN_THIS_PLAYLIST_KEY];
+        _status = [aDecoder decodeBoolForKey:STATUS_KEY];
     }
     return self;
 }
@@ -41,6 +45,7 @@ static int const UPDATE_PLAYLIST = 2;
 {
     [aCoder encodeObject:_playlistName forKey:PLAYLIST_NAME_KEY];
     [aCoder encodeObject:_songsInThisPlaylist forKey:SONGS_IN_THIS_PLAYLIST_KEY];
+    [aCoder encodeBool:_status forKey:STATUS_KEY];
 }
 
 + (NSArray *)loadAll  //loads array containing all of the saved playlists
@@ -57,6 +62,50 @@ static int const UPDATE_PLAYLIST = 2;
 - (BOOL)savePlaylist
 {
     return [self performModelAction:SAVE_PLAYLIST];
+}
+
+- (BOOL)saveTempPlaylistOnDisk
+{
+    return [self performModelAction:TEMP_SAVE_PLAYLIST_TO_DISK];
+}
+
++ (Playlist *)loadTempPlaylistFromDisk
+{
+    //load the playlist object
+    NSData *data = [NSData dataWithContentsOfURL:[FileIOConstants createSingleton].tempPlaylistsFileURL];
+    if(!data){
+        //if no data, no playlist object was actually archived.
+        return [[Playlist alloc] init];
+    }
+    return [NSKeyedUnarchiver unarchiveObjectWithData:data];  //decode loaded playlist object
+}
+
+/**
+ Send an argument of nil if you'd like the temporary playlist on disk to be deleted. Otherwise, pass a
+ non-nil playlist object to be inserted into the playlist model.
+ */
++ (BOOL)reInsertTempPlaylist:(Playlist *)playlistToInsert
+{
+    if(playlistToInsert){
+        //add the loaded playlist back into the main model on disk. Re-sort the model.
+        NSMutableArray *playlists = (NSMutableArray *)[Playlist loadAll];
+        if([playlists containsObject:playlistToInsert]){
+            [playlists removeObject:playlistToInsert];
+            [playlists addObject:playlistToInsert];
+        }
+        else
+            [playlists addObject:playlistToInsert];
+        [Playlist sortExistingArtistsAlphabetically:&playlists];
+        
+        //save changes to model on disk
+        NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:playlists];  //encode playlists
+        [fileData writeToURL:[FileIOConstants createSingleton].playlistsFileURL atomically:YES];
+    }
+    
+    //delete temp playlist file on disk
+    [[NSFileManager defaultManager] removeItemAtURL:[FileIOConstants createSingleton].tempPlaylistsFileURL error:nil];
+    
+    return YES;
 }
 
 - (BOOL)deletePlaylist
@@ -90,6 +139,16 @@ static int const UPDATE_PLAYLIST = 2;
                 [playlists replaceObjectAtIndex:[playlists indexOfObject:self] withObject:self];
             }
             break;
+            
+        case TEMP_SAVE_PLAYLIST_TO_DISK:
+        {
+            if(_songsInThisPlaylist.count > 0)  //we are adding songs to an existing playlist in the model
+                [self deletePlaylist];  //temporarily delete it
+            
+            //save changes to model on disk
+            NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:self];  //encode it
+            return [fileData writeToURL:[FileIOConstants createSingleton].tempPlaylistsFileURL atomically:YES];
+        }
             
         default:
             return NO;
@@ -147,10 +206,10 @@ static int const UPDATE_PLAYLIST = 2;
     result = prime * result + [_songsInThisPlaylist hash];
     
     // Add primitive variables (int)
-    //result = prime * result + self.genreCode;
+    result = prime * result + _status;
     
     // Boolean values (BOOL)
-    //result = prime * result + self.isSelected ? yesPrime : noPrime;
+    //result = (prime * result + _fullyCreated) ? yesPrime : noPrime;
     
     return result;
 }

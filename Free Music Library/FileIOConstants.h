@@ -16,6 +16,7 @@
 - (void)setAlbumsFileURL:(NSURL *)aUrl;
 - (void)setArtistsFileURL:(NSURL *)aUrl;
 - (void)setPlaylistsFileURL:(NSURL *)aUrl;
+- (void)setTempPlaylistsFileURL:(NSURL *)aUrl;
 - (void)setGenresFileURL:(NSURL *)aUrl;
 - (void)setModelAlteredStateFileUrl:(NSURL *)aUrl;
 - (void)setAlteredModelSongQueueFileUrl:(NSURL *)aUrl;
@@ -27,6 +28,7 @@
 - (NSURL *)albumsFileURL;
 - (NSURL *)artistsFileURL;
 - (NSURL *)playlistsFileURL;
+- (NSURL *)tempPlaylistsFileURL;
 - (NSURL *)genresFileURL;
 - (NSURL *)ModelAlteredStateFileUrl;
 - (NSURL *)AlteredModelSongQueueFileUrl;

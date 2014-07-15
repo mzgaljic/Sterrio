@@ -8,9 +8,18 @@
 
 #import "PlaylistItemTableViewController.h"
 
+@interface PlaylistItemTableViewController()
+@property (nonatomic, assign) int lastTableViewModelCount;
+@end
+
 @implementation PlaylistItemTableViewController
-@synthesize playlist = _playlist;
+@synthesize playlist = _playlist, numSongsNotAddedYet = _numSongsNotAddedYet;
 static BOOL PRODUCTION_MODE;
+
+- (void) dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (NSMutableArray *) results
 {
@@ -28,6 +37,12 @@ static BOOL PRODUCTION_MODE;
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+
+    _numSongsNotAddedYet = (int)([Song loadAll].count - _playlist.songsInThisPlaylist.count);
+    _lastTableViewModelCount = (int)_playlist.songsInThisPlaylist.count;
+    
+    if(_numSongsNotAddedYet == 0)
+        _addBarButton.enabled = NO;
     
     //set song/album details for currently selected song
     NSString *navBarTitle = _playlist.playlistName;
@@ -44,13 +59,9 @@ static BOOL PRODUCTION_MODE;
 
 - (void)setUpNavBarItems
 {
-    //edit button
     UIBarButtonItem *editButton = self.editButtonItem;
+    UIBarButtonItem *addButton = self.addBarButton;
     
-    //+ sign...also wire it up to the ibAction "addButtonPressed"
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc]
-                                  initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                  target:self action:@selector(addButtonPressed)];
     NSArray *rightBarButtonItems = [NSArray arrayWithObjects:editButton, addButton, nil];
     self.navigationItem.rightBarButtonItems = rightBarButtonItems;  //place both buttons on the nav bar
 }
@@ -73,7 +84,7 @@ static BOOL PRODUCTION_MODE;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SongItemCell" forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"playlistSongItemCell" forIndexPath:indexPath];
     
     // Configure the cell...
     Song *song = [_playlist.songsInThisPlaylist objectAtIndex: indexPath.row];  //get song object at this index
@@ -93,7 +104,10 @@ static BOOL PRODUCTION_MODE;
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //could also selectively choose which rows may be deleted here.
-    return YES;
+    if(_lastTableViewModelCount == 0)
+        return NO;
+    else
+        return YES;
 }
 
 //editing the tableView items
@@ -108,42 +122,82 @@ static BOOL PRODUCTION_MODE;
         
         //delete row from tableView (just the gui)
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        
+        _numSongsNotAddedYet++;
+        _lastTableViewModelCount--;
+        
+        if(_numSongsNotAddedYet == 0)
+            _addBarButton.enabled = NO;
+        else
+            _addBarButton.enabled = YES;
     }
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    
+    [self performSegueWithIdentifier:@"playlistSongItemPlayingSegue" sender:[NSNumber numberWithInt:(int)indexPath.row]];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     //song was tapped
-    if([[segue identifier] isEqualToString: @"stuff"]){
+    if([[segue identifier] isEqualToString: @"playlistSongItemPlayingSegue"]){
+        int row = [(NSNumber *)sender intValue];
         
-    }
-    //settings button tapped from side bar
-    else if([[segue identifier] isEqualToString: @"settingsSegue"]){
-        //do i need this?
+        //retrieve the song objects
+        Song *selectedSong = [_playlist.songsInThisPlaylist objectAtIndex:row];
+        Album *selectedAlbum = selectedSong.album;
+        Artist *selectedArtist = selectedSong.artist;
+        Playlist *selectedPlaylist;
+        
+        //setup properties in SongItemViewController.h
+        [[segue destinationViewController] setANewSong:selectedSong];
+        [[segue destinationViewController] setANewAlbum:selectedAlbum];
+        [[segue destinationViewController] setANewArtist:selectedArtist];
+        [[segue destinationViewController] setANewPlaylist:selectedPlaylist];
+        
+        int songNumber = row + 1;  //remember, for loop started at 0!
+        if(songNumber < 0 || songNumber == 0)  //object not found in song model
+            songNumber = -1;
+        [[segue destinationViewController]setSongNumberInSongCollection:songNumber];
+        [[segue destinationViewController]setTotalSongsInCollection:(int)_playlist.songsInThisPlaylist.count];
     }
 }
 
-- (void)sidebar:(RNFrostedSidebar *)sidebar didTapItemAtIndex:(NSUInteger)index
+- (IBAction)addButtonPressed:(id)sender
 {
-    if (1){
-        [sidebar dismissAnimated:YES];
-        /**
-         //push settings view controller on top of navigation controller!
-         UIViewController *vCtrler = [self.storyboard instantiateViewControllerWithIdentifier:@"Settings"];
-         [self.navigationController pushViewController:vCtrler animated:YES];
-         */
-    }
+    //get ready to hand off the playlist object to the song picker
+    [_playlist saveTempPlaylistOnDisk];
+    
+    //start listening for notifications (so we know when the modal song picker dissapears)
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(songPickerWasDismissed:) name:@"song picker dismissed" object:nil];
+    
+    //now segue to modal view where user can pick songs for this playlist
+    [self performSegueWithIdentifier:@"addMoreSongsToPlaylist" sender:self];
 }
 
-//called when + sign is tapped - selector defined in setUpNavBarItems method!
-- (void)addButtonPressed
+- (void)songPickerWasDismissed:(NSNotification *)someNSNotification
 {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"'+' Tapped"
-                                                    message:@"This is how you add more songs to this playlist"
-                                                   delegate:nil
-                                          cancelButtonTitle:@"Ok"
-                                          otherButtonTitles:nil];
-    [alert show];
+    if([someNSNotification.name isEqualToString:@"song picker dismissed"]){
+        NSArray *allPlaylists = [Playlist loadAll];
+        //Update variable for model, if it changed...remember, playlists are only compared by name
+        _playlist = [allPlaylists objectAtIndex:[allPlaylists indexOfObject:_playlist]];
+        
+        [self.tableView reloadData];
+        
+        if(_lastTableViewModelCount < _playlist.songsInThisPlaylist.count){  //songs added
+            int x = (int)(_playlist.songsInThisPlaylist.count - _lastTableViewModelCount);
+            _numSongsNotAddedYet = _numSongsNotAddedYet - x;
+            _lastTableViewModelCount = _lastTableViewModelCount + x;
+        }//else nothing changed (remember, we can't remove songs from the song picker)
+        
+        if(_numSongsNotAddedYet == 0)
+            _addBarButton.enabled = NO;
+        else
+            _addBarButton.enabled = YES;
+    }
 }
 
 @end

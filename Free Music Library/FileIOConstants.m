@@ -14,6 +14,7 @@ static NSURL *songsUrl = nil;
 static NSURL *albumsUrl = nil;
 static NSURL *artistsUrl = nil;
 static NSURL *playlistsUrl = nil;
+static NSURL *tempPlaylistsUrl = nil;
 static NSURL *genresUrl = nil;
 
 //Other stuff
@@ -50,6 +51,11 @@ static NSURL *alteredModelArtistQueueFileUrl = nil;
 - (void)setPlaylistsFileURL:(NSURL *)aUrl
 {
     playlistsUrl = aUrl;
+}
+
+- (void)setTempPlaylistsFileURL:(NSURL *)aUrl
+{
+    tempPlaylistsUrl = aUrl;
 }
 
 - (void)setGenresFileURL:(NSURL *)aUrl
@@ -96,6 +102,11 @@ static NSURL *alteredModelArtistQueueFileUrl = nil;
 - (NSURL *)playlistsFileURL
 {
     return playlistsUrl;
+}
+
+- (NSURL *)tempPlaylistsFileURL
+{
+    return tempPlaylistsUrl;
 }
 
 - (NSURL *)genresFileURL
