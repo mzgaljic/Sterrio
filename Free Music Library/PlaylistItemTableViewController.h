@@ -12,6 +12,7 @@
 #import "RNFrostedSideBar.h"
 #import "SongItemViewController.h"
 #import "AppEnvironmentConstants.h"
+#import "SongTableViewFormatter.h"
 
 @interface PlaylistItemTableViewController : UITableViewController
 

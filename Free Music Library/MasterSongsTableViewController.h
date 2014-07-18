@@ -11,9 +11,9 @@
 #import "AppEnvironmentConstants.h"
 #import "AlbumArtUtilities.h"
 #import "SongItemViewController.h"
-#import "UIImage+scalingAdditions.h"
 #import "MasterEditingSongTableViewController.h"
 #import "Song.h"
+#import "SongTableViewFormatter.h"
 
 @interface MasterSongsTableViewController : UITableViewController
 

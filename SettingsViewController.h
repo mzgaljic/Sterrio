@@ -8,6 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SettingsViewController : UITableViewController
+@interface SettingsViewController : UIViewController
 
 @end

@@ -90,11 +90,13 @@ static BOOL PRODUCTION_MODE;
     Song *song = [_playlist.songsInThisPlaylist objectAtIndex: indexPath.row];  //get song object at this index
     
     //init cell fields
-    cell.textLabel.text = song.songName;
-    cell.textLabel.font = cell.detailTextLabel.font = [UIFont systemFontOfSize:19.0];
-    //cell.textLabel.attributedText = [self BoldAttributedStringWithString:song.songName withFontSize:17.0];
-    cell.detailTextLabel.font = [UIFont systemFontOfSize:15.0];
-    cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringWithArtistName:song.artist.artistName andAlbumName:song.album.albumName];
+    if([SongTableViewFormatter songNameIsBold])
+        cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
+    else{
+        cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
+        cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter songLabelFontSize]];
+    }
+    [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
     UIImage *image;
     if(PRODUCTION_MODE)
@@ -102,7 +104,7 @@ static BOOL PRODUCTION_MODE;
     else
         image = [UIImage imageNamed:song.album.albumName];
     
-    image = [AlbumArtUtilities imageWithImage:image scaledToSize:CGSizeMake(55, 55)];
+    image = [AlbumArtUtilities imageWithImage:image scaledToSize:[SongTableViewFormatter preferredSongAlbumArtSize]];
     cell.imageView.image = image;
     return cell;
 
@@ -119,7 +121,7 @@ static BOOL PRODUCTION_MODE;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 65.0;
+    return [SongTableViewFormatter preferredSongCellHeight];
 }
 
 //editing the tableView items

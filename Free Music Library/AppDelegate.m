@@ -184,6 +184,8 @@ static BOOL PRODUCTION_MODE;
     [self setUpNSCodingFilePaths];
     [self setUpFakeLibraryContent];
     
+    [AppEnvironmentConstants setPreferredSizeSetting:3];
+    
     return YES;
 }
 							

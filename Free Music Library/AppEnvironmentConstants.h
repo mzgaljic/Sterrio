@@ -12,4 +12,8 @@
 
 + (BOOL)isAppInProductionMode;
 
+//app settings
++ (short)preferredSizeSetting;
++ (void)setPreferredSizeSetting:(short)numUpToFive;
+
 @end

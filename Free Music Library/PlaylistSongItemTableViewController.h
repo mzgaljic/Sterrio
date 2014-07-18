@@ -12,6 +12,7 @@
 #import "Playlist.h"
 #import "AppEnvironmentConstants.h"
 #import "MasterSongsTableViewController.h"
+#import "SongTableViewFormatter.h"
 
 @interface PlaylistSongItemTableViewController : UITableViewController
 

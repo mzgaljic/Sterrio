@@ -89,11 +89,13 @@ static BOOL PRODUCTION_MODE;
     Song *song = [self.allSongsInLibrary objectAtIndex: indexPath.row];  //get song object at this index
    
     //init cell fields
-    cell.textLabel.text = song.songName;
-    cell.textLabel.font = cell.detailTextLabel.font = [UIFont systemFontOfSize:19.0];
-    //cell.textLabel.attributedText = [self BoldAttributedStringWithString:song.songName withFontSize:17.0];
-    cell.detailTextLabel.font = [UIFont systemFontOfSize:15.0];
-    cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringWithArtistName:song.artist.artistName andAlbumName:song.album.albumName];
+    if([SongTableViewFormatter songNameIsBold])
+        cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
+    else{
+        cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
+        cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter songLabelFontSize]];
+    }
+    [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
     UIImage *image;
     if(PRODUCTION_MODE)
@@ -101,7 +103,7 @@ static BOOL PRODUCTION_MODE;
     else
         image = [UIImage imageNamed:song.album.albumName];
     
-    image = [AlbumArtUtilities imageWithImage:image scaledToSize:CGSizeMake(55, 55)];
+    image = [AlbumArtUtilities imageWithImage:image scaledToSize:[SongTableViewFormatter preferredSongAlbumArtSize]];
     cell.imageView.image = image;
     return cell;
 }
@@ -114,7 +116,7 @@ static BOOL PRODUCTION_MODE;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 65.0;
+    return [SongTableViewFormatter preferredSongCellHeight];
 }
 
 //editing the tableView items
@@ -195,50 +197,12 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
-- (NSAttributedString *)BoldAttributedStringWithString:(NSString *)aString withFontSize:(float)fontSize
-{
-    if(! aString)
-        return nil;
-    
-    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:aString];
-    [attributedText addAttribute: NSFontAttributeName value:[UIFont boldSystemFontOfSize:fontSize] range:NSMakeRange(0, [aString length])];
-    return attributedText;
-}
-
-//adds a space to the artist string, then it just changes the album string to grey.
-- (NSAttributedString *)generateDetailLabelAttrStringWithArtistName:(NSString *)artistString andAlbumName:(NSString *)albumString
-{
-    if(artistString == nil || albumString == nil)
-        return nil;
-    NSMutableString *newArtistString = [NSMutableString stringWithString:artistString];
-    [newArtistString appendString:@" "];
-    
-    NSMutableString *entireString = [NSMutableString stringWithString:newArtistString];
-    [entireString appendString:albumString];
-    
-    NSArray *components = @[newArtistString, albumString];
-    //NSRange untouchedRange = [entireString rangeOfString:[components objectAtIndex:0]];
-    NSRange grayRange = [entireString rangeOfString:[components objectAtIndex:1]];
-    
-    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
-    
-    [attrString beginEditing];
-    [attrString addAttribute: NSForegroundColorAttributeName
-                       value:[UIColor grayColor]
-                       range:grayRange];
-    [attrString endEditing];
-    return attrString;
-}
-
 - (void)sidebar:(RNFrostedSidebar *)sidebar didTapItemAtIndex:(NSUInteger)index
 {
    if (1){
         [sidebar dismissAnimated:YES];
-       /**
-       //push settings view controller on top of navigation controller!
-       UIViewController *vCtrler = [self.storyboard instantiateViewControllerWithIdentifier:@"Settings"];
-       [self.navigationController pushViewController:vCtrler animated:YES];
-        */
+       if(index == 3)  //settings button
+           [self performSegueWithIdentifier:@"settingsSegue" sender:self];
    }
 }
 
@@ -257,7 +221,7 @@ static BOOL PRODUCTION_MODE;
 - (IBAction)expandableMenuSelected:(id)sender
 {
     NSArray *images = @[[UIImage imageNamed:@"playlists"],[UIImage imageNamed:@"artists"],
-                        [UIImage imageNamed:@"genres"],[UIImage imageNamed:@"songs"]];
+                        [UIImage imageNamed:@"genres"],[UIImage imageNamed:@"Gear Icon"]];
     
     NSArray *colors =@[[UIColor blueColor],[UIColor redColor],[UIColor greenColor],[UIColor purpleColor]];
     

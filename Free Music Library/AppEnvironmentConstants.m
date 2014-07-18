@@ -11,10 +11,21 @@
 @implementation AppEnvironmentConstants
 
 static const BOOL PRODUCTION_MODE = NO;
+static short preferredSizeValue;
 
 + (BOOL)isAppInProductionMode
 {
     return PRODUCTION_MODE;
 }
 
+//app settings
++ (short)preferredSizeSetting
+{
+    return preferredSizeValue;
+}
+
++ (void)setPreferredSizeSetting:(short)numUpToFive
+{
+    preferredSizeValue = numUpToFive;
+}
 @end
