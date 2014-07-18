@@ -8,18 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		03D3A29591F748308F7121DE /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C84B413EAF4C57BC10A21B /* libPods.a */; settings = {ATTRIBUTES = (Weak, ); }; };
+		87081F421976AF7900EE8218 /* UIImage+scalingAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 87081F411976AF7900EE8218 /* UIImage+scalingAdditions.m */; };
 		8728B788194959CE00565BDA /* Playlist.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B787194959CE00565BDA /* Playlist.m */; };
 		8728B78B194959E500565BDA /* Artist.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B78A194959E500565BDA /* Artist.m */; };
 		8728B794194964AB00565BDA /* FileIOConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B793194964AB00565BDA /* FileIOConstants.m */; };
 		87362AFD194E68A5004DB544 /* Deque.m in Sources */ = {isa = PBXBuildFile; fileRef = 87362AFC194E68A5004DB544 /* Deque.m */; };
 		87362B00194E70B4004DB544 /* PlaybackHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 87362AFF194E70B4004DB544 /* PlaybackHistory.m */; };
 		87362B03194E9CDF004DB544 /* Stack.m in Sources */ = {isa = PBXBuildFile; fileRef = 87362B01194E9CDF004DB544 /* Stack.m */; };
-		87394BD11965ED8400E750B1 /* AlteredModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 87394BD01965ED8400E750B1 /* AlteredModelItem.m */; };
-		87394BD41965F16E00E750B1 /* ModelAlteredStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 87394BD31965F16E00E750B1 /* ModelAlteredStatus.m */; };
-		87394BD71965F20300E750B1 /* AlteredModelSongQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87394BD61965F20300E750B1 /* AlteredModelSongQueue.m */; };
-		87394BDA1965F21100E750B1 /* AlteredModelAlbumQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87394BD91965F21100E750B1 /* AlteredModelAlbumQueue.m */; };
 		87394BE31965FFE100E750B1 /* Queue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87394BE21965FFE100E750B1 /* Queue.m */; };
-		87394BE61966018E00E750B1 /* AlteredModelArtistQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87394BE51966018E00E750B1 /* AlteredModelArtistQueue.m */; };
 		87480DA9192C1FBD005CC0A4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DA8192C1FBD005CC0A4 /* Foundation.framework */; };
 		87480DAB192C1FBD005CC0A4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DAA192C1FBD005CC0A4 /* CoreGraphics.framework */; };
 		87480DAD192C1FBD005CC0A4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DAC192C1FBD005CC0A4 /* UIKit.framework */; };
@@ -41,6 +37,7 @@
 		878ACD6A192D532D005938F5 /* SongItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878ACD69192D532D005938F5 /* SongItemViewController.m */; };
 		87A110561964A5EA00270528 /* Album.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A110541964A5EA00270528 /* Album.m */; };
 		87A110591964A67000270528 /* Song.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A110571964A67000270528 /* Song.m */; };
+		87A43E7E1978C413001B4367 /* MasterEditingSongTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A43E7D1978C413001B4367 /* MasterEditingSongTableViewController.m */; };
 		87C4D5741970932A0082D781 /* BackupFileHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C4D5731970932A0082D781 /* BackupFileHelper.m */; };
 		87CEDC6519731EF000780D57 /* PlaylistSongItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87CEDC6419731EF000780D57 /* PlaylistSongItemTableViewController.m */; };
 		87D16D621931B7EE00DB6A34 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 87D16D611931B7EE00DB6A34 /* Podfile */; };
@@ -69,6 +66,8 @@
 
 /* Begin PBXFileReference section */
 		566689BB153A40D889AD1CB3 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		87081F401976AF7900EE8218 /* UIImage+scalingAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+scalingAdditions.h"; sourceTree = "<group>"; };
+		87081F411976AF7900EE8218 /* UIImage+scalingAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+scalingAdditions.m"; sourceTree = "<group>"; };
 		8728B786194959CE00565BDA /* Playlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Playlist.h; sourceTree = "<group>"; };
 		8728B787194959CE00565BDA /* Playlist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Playlist.m; sourceTree = "<group>"; };
 		8728B789194959E500565BDA /* Artist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Artist.h; sourceTree = "<group>"; };
@@ -81,18 +80,8 @@
 		87362AFF194E70B4004DB544 /* PlaybackHistory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaybackHistory.m; sourceTree = "<group>"; };
 		87362B01194E9CDF004DB544 /* Stack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Stack.m; sourceTree = "<group>"; };
 		87362B02194E9CDF004DB544 /* Stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stack.h; sourceTree = "<group>"; };
-		87394BCF1965ED8400E750B1 /* AlteredModelItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlteredModelItem.h; sourceTree = "<group>"; };
-		87394BD01965ED8400E750B1 /* AlteredModelItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlteredModelItem.m; sourceTree = "<group>"; };
-		87394BD21965F16E00E750B1 /* ModelAlteredStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModelAlteredStatus.h; sourceTree = "<group>"; };
-		87394BD31965F16E00E750B1 /* ModelAlteredStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModelAlteredStatus.m; sourceTree = "<group>"; };
-		87394BD51965F20300E750B1 /* AlteredModelSongQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlteredModelSongQueue.h; sourceTree = "<group>"; };
-		87394BD61965F20300E750B1 /* AlteredModelSongQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlteredModelSongQueue.m; sourceTree = "<group>"; };
-		87394BD81965F21100E750B1 /* AlteredModelAlbumQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlteredModelAlbumQueue.h; sourceTree = "<group>"; };
-		87394BD91965F21100E750B1 /* AlteredModelAlbumQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlteredModelAlbumQueue.m; sourceTree = "<group>"; };
 		87394BE11965FFE100E750B1 /* Queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Queue.h; sourceTree = "<group>"; };
 		87394BE21965FFE100E750B1 /* Queue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Queue.m; sourceTree = "<group>"; };
-		87394BE41966018E00E750B1 /* AlteredModelArtistQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlteredModelArtistQueue.h; sourceTree = "<group>"; };
-		87394BE51966018E00E750B1 /* AlteredModelArtistQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlteredModelArtistQueue.m; sourceTree = "<group>"; };
 		87480DA5192C1FBD005CC0A4 /* Free Music Library.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Free Music Library.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		87480DA8192C1FBD005CC0A4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		87480DAA192C1FBD005CC0A4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -126,6 +115,8 @@
 		87A110551964A5EA00270528 /* Album.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Album.h; sourceTree = "<group>"; };
 		87A110571964A67000270528 /* Song.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Song.m; sourceTree = "<group>"; };
 		87A110581964A67000270528 /* Song.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Song.h; sourceTree = "<group>"; };
+		87A43E7C1978C413001B4367 /* MasterEditingSongTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterEditingSongTableViewController.h; sourceTree = "<group>"; };
+		87A43E7D1978C413001B4367 /* MasterEditingSongTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterEditingSongTableViewController.m; sourceTree = "<group>"; };
 		87C4D5721970932A0082D781 /* BackupFileHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupFileHelper.h; sourceTree = "<group>"; };
 		87C4D5731970932A0082D781 /* BackupFileHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupFileHelper.m; sourceTree = "<group>"; };
 		87CEDC6319731EF000780D57 /* PlaylistSongItemTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistSongItemTableViewController.h; sourceTree = "<group>"; };
@@ -223,23 +214,6 @@
 			name = GUI;
 			sourceTree = "<group>";
 		};
-		87394BE719660B0000E750B1 /* Altered Model Helpers */ = {
-			isa = PBXGroup;
-			children = (
-				87394BCF1965ED8400E750B1 /* AlteredModelItem.h */,
-				87394BD01965ED8400E750B1 /* AlteredModelItem.m */,
-				87394BD51965F20300E750B1 /* AlteredModelSongQueue.h */,
-				87394BD61965F20300E750B1 /* AlteredModelSongQueue.m */,
-				87394BD81965F21100E750B1 /* AlteredModelAlbumQueue.h */,
-				87394BD91965F21100E750B1 /* AlteredModelAlbumQueue.m */,
-				87394BE41966018E00E750B1 /* AlteredModelArtistQueue.h */,
-				87394BE51966018E00E750B1 /* AlteredModelArtistQueue.m */,
-				87394BD21965F16E00E750B1 /* ModelAlteredStatus.h */,
-				87394BD31965F16E00E750B1 /* ModelAlteredStatus.m */,
-			);
-			name = "Altered Model Helpers";
-			sourceTree = "<group>";
-		};
 		87480D9C192C1FBD005CC0A4 = {
 			isa = PBXGroup;
 			children = (
@@ -323,6 +297,7 @@
 				878ACD63192D48EF005938F5 /* MasterSongsTableViewController.m */,
 				878ACD68192D532D005938F5 /* SongItemViewController.h */,
 				878ACD69192D532D005938F5 /* SongItemViewController.m */,
+				87A43E7F1978C418001B4367 /* Editing Songs */,
 			);
 			name = "Songs tab";
 			path = "Free Music Library";
@@ -366,6 +341,15 @@
 			path = "Free Music Library";
 			sourceTree = "<group>";
 		};
+		87A43E7F1978C418001B4367 /* Editing Songs */ = {
+			isa = PBXGroup;
+			children = (
+				87A43E7C1978C413001B4367 /* MasterEditingSongTableViewController.h */,
+				87A43E7D1978C413001B4367 /* MasterEditingSongTableViewController.m */,
+			);
+			name = "Editing Songs";
+			sourceTree = "<group>";
+		};
 		87D47D9F19345BC00057D49B /* Artists tab */ = {
 			isa = PBXGroup;
 			children = (
@@ -383,11 +367,12 @@
 			children = (
 				8728B792194964AB00565BDA /* FileIOConstants.h */,
 				8728B793194964AB00565BDA /* FileIOConstants.m */,
+				87081F401976AF7900EE8218 /* UIImage+scalingAdditions.h */,
+				87081F411976AF7900EE8218 /* UIImage+scalingAdditions.m */,
 				876EDE5E19648AA300795767 /* AlbumArtUtilities.h */,
 				876EDE5F19648AA300795767 /* AlbumArtUtilities.m */,
 				87C4D5721970932A0082D781 /* BackupFileHelper.h */,
 				87C4D5731970932A0082D781 /* BackupFileHelper.m */,
-				87394BE719660B0000E750B1 /* Altered Model Helpers */,
 			);
 			name = "Model Utilities";
 			sourceTree = "<group>";
@@ -576,12 +561,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				87A110591964A67000270528 /* Song.m in Sources */,
-				87394BD41965F16E00E750B1 /* ModelAlteredStatus.m in Sources */,
-				87394BE61966018E00E750B1 /* AlteredModelArtistQueue.m in Sources */,
 				87D47D93193428350057D49B /* MasterPlaylistTableViewController.m in Sources */,
 				878ACD6A192D532D005938F5 /* SongItemViewController.m in Sources */,
 				875984A5195D764700015243 /* PlaylistItemTableViewController.m in Sources */,
 				87FEBB38193587610088EF41 /* UpNextSongQueue.m in Sources */,
+				87081F421976AF7900EE8218 /* UIImage+scalingAdditions.m in Sources */,
 				87D47D991934289F0057D49B /* MasterGenreTableViewController.m in Sources */,
 				87362B00194E70B4004DB544 /* PlaybackHistory.m in Sources */,
 				87E1C5A0193A5E8B009AE399 /* GenreConstants.m in Sources */,
@@ -591,18 +575,16 @@
 				8728B788194959CE00565BDA /* Playlist.m in Sources */,
 				87D47D8C19340F8B0057D49B /* AlbumItemViewController.m in Sources */,
 				87362AFD194E68A5004DB544 /* Deque.m in Sources */,
+				87A43E7E1978C413001B4367 /* MasterEditingSongTableViewController.m in Sources */,
 				87CEDC6519731EF000780D57 /* PlaylistSongItemTableViewController.m in Sources */,
 				87A110561964A5EA00270528 /* Album.m in Sources */,
 				876EC5F01965C9F6006B3C29 /* AppEnvironmentConstants.m in Sources */,
 				876EDE6019648AA300795767 /* AlbumArtUtilities.m in Sources */,
 				87FE09F11933ED84001A5FB7 /* MusicStoreService.m in Sources */,
 				875984A8195D775500015243 /* GenreItemTableViewController.m in Sources */,
-				87394BD71965F20300E750B1 /* AlteredModelSongQueue.m in Sources */,
-				87394BDA1965F21100E750B1 /* AlteredModelAlbumQueue.m in Sources */,
 				87D47DA519345D8E0057D49B /* ArtistItemAlbumViewController.m in Sources */,
 				87480DB5192C1FBD005CC0A4 /* main.m in Sources */,
 				87C4D5741970932A0082D781 /* BackupFileHelper.m in Sources */,
-				87394BD11965ED8400E750B1 /* AlteredModelItem.m in Sources */,
 				87362B03194E9CDF004DB544 /* Stack.m in Sources */,
 				8728B78B194959E500565BDA /* Artist.m in Sources */,
 				87FEBB3B19358FBE0088EF41 /* NowPlaying.m in Sources */,

@@ -101,13 +101,19 @@ static const short NORMAL_PLAYLIST = -1;
     
     //init cell fields
     cell.textLabel.text = song.songName;
-    NSString *detailStringLabel = [NSString stringWithFormat:@"%@-%@", song.artist.artistName, song.album.albumName];
-    cell.detailTextLabel.text = detailStringLabel;
+    cell.textLabel.font = cell.detailTextLabel.font = [UIFont systemFontOfSize:19.0];
+    //cell.textLabel.attributedText = [self BoldAttributedStringWithString:song.songName withFontSize:17.0];
+    cell.detailTextLabel.font = [UIFont systemFontOfSize:15.0];
+    cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringWithArtistName:song.artist.artistName andAlbumName:song.album.albumName];
     
+    UIImage *image;
     if(PRODUCTION_MODE)
-        cell.imageView.image = [AlbumArtUtilities albumArtFileNameToUiImage: song.albumArtFileName];
+        image = [AlbumArtUtilities albumArtFileNameToUiImage: song.albumArtFileName];
     else
-        cell.imageView.image = [UIImage imageNamed:song.album.albumName];
+        image = [UIImage imageNamed:song.album.albumName];
+    
+    image = [AlbumArtUtilities imageWithImage:image scaledToSize:CGSizeMake(55, 55)];
+    cell.imageView.image = image;
     return cell;
 }
 
@@ -120,8 +126,10 @@ static const short NORMAL_PLAYLIST = -1;
 {
     UITableViewCell *selectedCell = [tableView cellForRowAtIndexPath:indexPath];
     if([selectedCell accessoryType] == UITableViewCellAccessoryNone){  //selected row
-        if(_songsSelected.count == 0)
-            self.rightBarButton.title = Done_String;
+        if(_songsSelected.count == 0){
+             self.rightBarButton.title = Done_String;
+            [self.rightBarButton setStyle:UIBarButtonItemStyleDone];
+        }
         [selectedCell setAccessoryType:UITableViewCellAccessoryCheckmark];
         [_songsSelected addObject:[NSNumber numberWithInt:(int)indexPath.row]];
         
@@ -140,6 +148,46 @@ static const short NORMAL_PLAYLIST = -1;
     }
     
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 65.0;
+}
+
+- (NSAttributedString *)BoldAttributedStringWithString:(NSString *)aString withFontSize:(float)fontSize
+{
+    if(! aString)
+        return nil;
+    
+    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:aString];
+    [attributedText addAttribute: NSFontAttributeName value:[UIFont boldSystemFontOfSize:fontSize] range:NSMakeRange(0, [aString length])];
+    return attributedText;
+}
+
+//adds a space to the artist string, then it just changes the album string to grey.
+- (NSAttributedString *)generateDetailLabelAttrStringWithArtistName:(NSString *)artistString andAlbumName:(NSString *)albumString
+{
+    if(artistString == nil || albumString == nil)
+        return nil;
+    NSMutableString *newArtistString = [NSMutableString stringWithString:artistString];
+    [newArtistString appendString:@" "];
+    
+    NSMutableString *entireString = [NSMutableString stringWithString:newArtistString];
+    [entireString appendString:albumString];
+    
+    NSArray *components = @[newArtistString, albumString];
+    //NSRange untouchedRange = [entireString rangeOfString:[components objectAtIndex:0]];
+    NSRange grayRange = [entireString rangeOfString:[components objectAtIndex:1]];
+    
+    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
+    
+    [attrString beginEditing];
+    [attrString addAttribute: NSForegroundColorAttributeName
+                       value:[UIColor grayColor]
+                       range:grayRange];
+    [attrString endEditing];
+    return attrString;
 }
 
 - (IBAction)rightBarButtonTapped:(id)sender

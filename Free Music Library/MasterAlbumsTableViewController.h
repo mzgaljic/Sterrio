@@ -11,8 +11,6 @@
 #import "AppEnvironmentConstants.h"
 #import "AlbumArtUtilities.h"
 #import "AlbumItemViewController.h"
-#import "AlteredModelItem.h"
-#import "AlteredModelAlbumQueue.h"
 #import "Album.h"
 
 @interface MasterAlbumsTableViewController : UITableViewController

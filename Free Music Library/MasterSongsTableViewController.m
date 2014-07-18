@@ -16,6 +16,11 @@
 @synthesize allSongsInLibrary;
 static BOOL PRODUCTION_MODE;
 
+-(void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (NSMutableArray *) results
 {
     if(! _results){
@@ -44,6 +49,7 @@ static BOOL PRODUCTION_MODE;
     
     [self setProductionModeValue];
     [self setUpNavBarItems];
+    self.tableView.allowsSelectionDuringEditing = YES;
 }
 
 - (void)setUpNavBarItems
@@ -84,13 +90,19 @@ static BOOL PRODUCTION_MODE;
    
     //init cell fields
     cell.textLabel.text = song.songName;
-    NSString *detailStringLabel = [NSString stringWithFormat:@"%@-%@", song.artist.artistName, song.album.albumName];
-    cell.detailTextLabel.text = detailStringLabel;
+    cell.textLabel.font = cell.detailTextLabel.font = [UIFont systemFontOfSize:19.0];
+    //cell.textLabel.attributedText = [self BoldAttributedStringWithString:song.songName withFontSize:17.0];
+    cell.detailTextLabel.font = [UIFont systemFontOfSize:15.0];
+    cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringWithArtistName:song.artist.artistName andAlbumName:song.album.albumName];
     
+    UIImage *image;
     if(PRODUCTION_MODE)
-        cell.imageView.image = [AlbumArtUtilities albumArtFileNameToUiImage: song.albumArtFileName];
+        image = [AlbumArtUtilities albumArtFileNameToUiImage: song.albumArtFileName];
     else
-        cell.imageView.image = [UIImage imageNamed:song.album.albumName];
+        image = [UIImage imageNamed:song.album.albumName];
+    
+    image = [AlbumArtUtilities imageWithImage:image scaledToSize:CGSizeMake(55, 55)];
+    cell.imageView.image = image;
     return cell;
 }
 
@@ -100,14 +112,17 @@ static BOOL PRODUCTION_MODE;
     return YES;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 65.0;
+}
+
 //editing the tableView items
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
         //obtain object for the deleted song
         Song *song = [self.allSongsInLibrary objectAtIndex:indexPath.row];
-        
-        [[AlteredModelSongQueue createSingleton] enqueue:[[AlteredModelItem alloc] initWithRemovedSong:song]];
         
         //delete the object from our data model (which is saved to disk).
         [song deleteSong];
@@ -120,20 +135,29 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    
+    //get song for the tapped row
+    self.selectedRowIndexValue = (int)indexPath.row;
+    UIBarButtonItem *editButton = self.navigationItem.rightBarButtonItem;
+    
+    if([editButton.title isEqualToString:@"Edit"]){  //tapping song plays the song
+        [self performSegueWithIdentifier:@"songItemSegue" sender:self];
+        
+    } else if([editButton.title isEqualToString:@"Done"]){  //tapping song triggers edit segue
+        //send song object via NSNotificationCenter
+        
+        //now segue to modal view where user can edit the tapped song
+        [self performSegueWithIdentifier:@"editingSongMasterSegue" sender:self];
+    }
+}
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     //song was tapped
     if([[segue identifier] isEqualToString: @"songItemSegue"]){
-        //get the index of the tapped song
-        UITableView *tableView = self.tableView;
-        for(int i = 0; i < self.allSongsInLibrary.count; i++){
-            UITableViewCell *cell =[tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-            if(cell.selected){
-                self.selectedRowIndexValue = i;
-                break;
-            }
-        }
-        
         //retrieve the song objects
         Song *selectedSong = [self.allSongsInLibrary objectAtIndex:self.selectedRowIndexValue];
         Album *selectedAlbum = selectedSong.album;
@@ -151,11 +175,59 @@ static BOOL PRODUCTION_MODE;
             songNumber = -1;
         [[segue destinationViewController] setSongNumberInSongCollection:songNumber];
         [[segue destinationViewController] setTotalSongsInCollection:(int)self.allSongsInLibrary.count];
+    } else if([[segue identifier] isEqualToString:@"editingSongMasterSegue"]){
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(editingModeCompleted:) name:@"SongEditDone" object:nil];
+        
+        //set the songIAmEditing property in the modal view controller
+        MasterEditingSongTableViewController* controller = (MasterEditingSongTableViewController*)[[segue destinationViewController] topViewController];
+        [controller setSongIAmEditing:[self.allSongsInLibrary objectAtIndex:self.selectedRowIndexValue]];
     }
-    //settings button tapped from side bar
-    else if([[segue identifier] isEqualToString: @"settingsSegue"]){
+    else if([[segue identifier] isEqualToString: @"settingsSegue"]){  //settings button tapped from side bar
         //do i need this?
     }
+}
+
+- (void)editingModeCompleted:(NSNotification *)notification
+{
+    if([notification.name isEqualToString:@"SongEditDone"]){
+        //leave editing mode
+        [self setEditing:NO animated:NO];
+    }
+}
+
+- (NSAttributedString *)BoldAttributedStringWithString:(NSString *)aString withFontSize:(float)fontSize
+{
+    if(! aString)
+        return nil;
+    
+    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:aString];
+    [attributedText addAttribute: NSFontAttributeName value:[UIFont boldSystemFontOfSize:fontSize] range:NSMakeRange(0, [aString length])];
+    return attributedText;
+}
+
+//adds a space to the artist string, then it just changes the album string to grey.
+- (NSAttributedString *)generateDetailLabelAttrStringWithArtistName:(NSString *)artistString andAlbumName:(NSString *)albumString
+{
+    if(artistString == nil || albumString == nil)
+        return nil;
+    NSMutableString *newArtistString = [NSMutableString stringWithString:artistString];
+    [newArtistString appendString:@" "];
+    
+    NSMutableString *entireString = [NSMutableString stringWithString:newArtistString];
+    [entireString appendString:albumString];
+    
+    NSArray *components = @[newArtistString, albumString];
+    //NSRange untouchedRange = [entireString rangeOfString:[components objectAtIndex:0]];
+    NSRange grayRange = [entireString rangeOfString:[components objectAtIndex:1]];
+    
+    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
+    
+    [attrString beginEditing];
+    [attrString addAttribute: NSForegroundColorAttributeName
+                       value:[UIColor grayColor]
+                       range:grayRange];
+    [attrString endEditing];
+    return attrString;
 }
 
 - (void)sidebar:(RNFrostedSidebar *)sidebar didTapItemAtIndex:(NSUInteger)index
@@ -179,10 +251,8 @@ static BOOL PRODUCTION_MODE;
                                           cancelButtonTitle:@"Got it"
                                           otherButtonTitles:nil];
     [alert show];
-    
-    Song *someFakeSong = nil;
-    [[AlteredModelSongQueue createSingleton] enqueue:[[AlteredModelItem alloc] initWithAddedSong:someFakeSong]];
 }
+
 
 - (IBAction)expandableMenuSelected:(id)sender
 {
@@ -203,4 +273,5 @@ static BOOL PRODUCTION_MODE;
     callout.delegate = self;
     [callout show];
 }
+
 @end

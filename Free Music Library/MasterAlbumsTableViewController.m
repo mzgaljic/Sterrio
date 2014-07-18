@@ -82,17 +82,20 @@ static BOOL PRODUCTION_MODE;
     
     Album *album = [self.albums objectAtIndex: indexPath.row];  //get album instance at this index
     
-    [[AlteredModelAlbumQueue createSingleton] enqueue:[[AlteredModelItem alloc] initWithRemovedAlbum:album]];
-    
     //init cell fields
+    cell.textLabel.font = [UIFont systemFontOfSize:19];
     cell.textLabel.text = album.albumName;
     cell.detailTextLabel.text = album.artist.artistName;
     
     //could only update images for the cells that changed if i want to make this more efficient
+    UIImage *image;
     if(PRODUCTION_MODE)
-        cell.imageView.image = [AlbumArtUtilities albumArtFileNameToUiImage: album.albumArtFileName];
+        image = [AlbumArtUtilities albumArtFileNameToUiImage: album.albumArtFileName];
     else
-        cell.imageView.image = [UIImage imageNamed:album.albumName];
+        image = [UIImage imageNamed:album.albumName];
+    
+    image = [AlbumArtUtilities imageWithImage:image scaledToSize:CGSizeMake(72, 72)];
+    cell.imageView.image = image;
     return cell;
 }
 
@@ -120,6 +123,11 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 78.0;
+}
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     //get the index of the tapped album
@@ -137,6 +145,16 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
+- (NSAttributedString *)BoldAttributedStringWithString:(NSString *)aString withFontSize:(float)fontSize
+{
+    if(! aString)
+        return nil;
+    
+    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:aString];
+    [attributedText addAttribute: NSFontAttributeName value:[UIFont boldSystemFontOfSize:fontSize] range:NSMakeRange(0, [aString length])];
+    return attributedText;
+}
+
 //called when + sign is tapped - selector defined in setUpNavBarItems method!
 - (void)addButtonPressed
 {
@@ -146,9 +164,6 @@ static BOOL PRODUCTION_MODE;
                                           cancelButtonTitle:@"Got it"
                                           otherButtonTitles:nil];
     [alert show];
-    
-    Album *someFakeAlbum = nil;
-    [[AlteredModelAlbumQueue createSingleton] enqueue:[[AlteredModelItem alloc] initWithAddedAlbum:someFakeAlbum]];
 }
 
 - (IBAction)expandableMenuSelected:(id)sender

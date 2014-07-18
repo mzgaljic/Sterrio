@@ -79,7 +79,9 @@ static BOOL PRODUCTION_MODE;
     Artist *artist = [self.allArtists objectAtIndex: indexPath.row];  //get artist object at this index
     
     //init cell fields
+    cell.textLabel.font = [UIFont systemFontOfSize:20.0];
     cell.textLabel.text = artist.artistName;
+    //cell.textLabel.attributedText = [self BoldAttributedStringWithString:artist.artistName withFontSize:18.0];
     
     int songsInAlbumsCount = 0;
     //count all the songs that are associated with albums for this artist
@@ -89,8 +91,22 @@ static BOOL PRODUCTION_MODE;
             songsInAlbumsCount++;
         }
     }
-    NSString *detailStringLabel = [NSString stringWithFormat:@"%d Albums, %d Songs", (int)artist.allAlbums.count, (int)artist.allSongs.count + songsInAlbumsCount];
-    cell.detailTextLabel.text = detailStringLabel;
+    
+    NSString *albumPart, *songPart;
+    if((int)artist.allAlbums.count == 1)
+        albumPart = @"1 Album";
+    else
+        albumPart = [NSString stringWithFormat:@"%d Albums", (int)artist.allAlbums.count];
+    
+    if((int)artist.allSongs.count + songsInAlbumsCount == 1)
+        songPart = @"1 Song";
+    else
+        songPart = [NSString stringWithFormat:@"%d Songs", (int)artist.allSongs.count + songsInAlbumsCount];
+    
+    NSMutableString *finalDetailLabel = [NSMutableString stringWithString:albumPart];
+    [finalDetailLabel appendString:@" "];
+    [finalDetailLabel appendString:songPart];
+    cell.detailTextLabel.text = finalDetailLabel;
     
     return cell;
 }
@@ -108,8 +124,6 @@ static BOOL PRODUCTION_MODE;
         //obtain object for the deleted artist
         Artist *artist = [self.allArtists objectAtIndex:indexPath.row];
         
-        [[AlteredModelArtistQueue createSingleton] enqueue:[[AlteredModelItem alloc] initWithRemovedArtist:artist]];
-        
         //delete the object from our data model (which is saved to disk).
         [artist deleteArtist];
         
@@ -119,6 +133,11 @@ static BOOL PRODUCTION_MODE;
         //delete row from tableView (just the gui)
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
     }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 55.0;
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -144,6 +163,16 @@ static BOOL PRODUCTION_MODE;
         if(artistNumber < 0 || artistNumber == 0)  //object not found in artist model
             artistNumber = -1;
     }
+}
+
+- (NSAttributedString *)BoldAttributedStringWithString:(NSString *)aString withFontSize:(float)fontSize
+{
+    if(! aString)
+        return nil;
+    
+    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:aString];
+    [attributedText addAttribute: NSFontAttributeName value:[UIFont boldSystemFontOfSize:fontSize] range:NSMakeRange(0, [aString length])];
+    return attributedText;
 }
 
 - (IBAction)expandableMenuSelected:(id)sender

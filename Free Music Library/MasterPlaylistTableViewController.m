@@ -71,6 +71,7 @@ static BOOL PRODUCTION_MODE;
     
     //init cell fields
     cell.textLabel.text = playlist.playlistName;
+    cell.textLabel.font = [UIFont systemFontOfSize:21.0];
     cell.detailTextLabel.text = [NSString stringWithFormat:@"%i songs",(int)playlist.songsInThisPlaylist.count];
     
     return cell;
@@ -106,6 +107,11 @@ static BOOL PRODUCTION_MODE;
     
     //now segue to push view where user can view the tapped playlist
    [self performSegueWithIdentifier:@"playlistItemSegue" sender:[_allPlaylists objectAtIndex:(int)indexPath.row]];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 55.0;
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender

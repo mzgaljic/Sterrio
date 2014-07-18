@@ -15,11 +15,6 @@
 #import "FileIOConstants.h"
 #import "BackupFileHelper.h"
 #import "AlbumArtUtilities.h"
-#import "ModelAlteredStatus.h"
-#import "ModelAlteredStatus.h"
-#import "AlteredModelSongQueue.h"
-#import "AlteredModelAlbumQueue.h"
-#import "AlteredModelArtistQueue.h"
 #import "AppEnvironmentConstants.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
