@@ -11,13 +11,12 @@
 //[UIFont systemFontOfSize:19.0];
 //[self generateDetailLabelAttrStringWithArtistName:song.artist.artistName andAlbumName:song.album.albumName];
 @implementation SongTableViewFormatter
-static const bool SONG_NAME_SHOULD_BE_BOLD = YES;
 
 + (NSAttributedString *)formatSongLabelUsingSong:(Song *)aSongInstance
 {
     short size = [AppEnvironmentConstants preferredSizeSetting];
     
-    if(SONG_NAME_SHOULD_BE_BOLD){
+    if([AppEnvironmentConstants boldSongNames]){
         switch (size)
         {
             case 1:
@@ -33,6 +32,8 @@ static const bool SONG_NAME_SHOULD_BE_BOLD = YES;
                 
             case 5:
                 return [SongTableViewFormatter boldAttributedStringWithString:aSongInstance.songName withFontSize:24.0];
+            case 6:
+                return [SongTableViewFormatter boldAttributedStringWithString:aSongInstance.songName withFontSize:30.0];
                 
             default:
                 return nil;
@@ -44,7 +45,7 @@ static const bool SONG_NAME_SHOULD_BE_BOLD = YES;
 
 + (BOOL)songNameIsBold
 {
-    return SONG_NAME_SHOULD_BE_BOLD;
+    return [AppEnvironmentConstants boldSongNames];
 }
 
 + (void)formatSongDetailLabelUsingSong:(Song *)aSongInstance andCell:(UITableViewCell **)aCell
@@ -77,6 +78,9 @@ static const bool SONG_NAME_SHOULD_BE_BOLD = YES;
         case 5:
             return 26.0;
             
+        case 6:
+            return 31.0;
+            
         default:
             return -1;
     }
@@ -103,6 +107,8 @@ static const bool SONG_NAME_SHOULD_BE_BOLD = YES;
         case 5:
             return 19.0;
             
+        case 6:
+            return 23.0;
         default:
             return -1;
     }
@@ -129,6 +135,9 @@ static const bool SONG_NAME_SHOULD_BE_BOLD = YES;
         case 5:
             return 95.0;
             
+        case 6:
+            return 120.0;
+            
         default:
             return -1;
     }
@@ -153,6 +162,10 @@ static const bool SONG_NAME_SHOULD_BE_BOLD = YES;
             return CGSizeMake(70, 70);
             
         case 5:
+            return CGSizeMake(70, 70);
+            
+            
+        case 6:
             return CGSizeMake(70, 70);
             
         default:

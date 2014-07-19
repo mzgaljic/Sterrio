@@ -7,6 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Song.h"
+#import "FileIOConstants.h"
+#import "AppEnvironmentConstants.h"
 
 @interface Artist : NSObject <NSCoding>
 

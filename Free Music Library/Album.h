@@ -11,6 +11,9 @@
 #import "Song.h"
 #import "FileIOConstants.h"
 #import "AlbumArtUtilities.h"
+#import "AppEnvironmentConstants.h"
+
+@class Artist;
 
 @interface Album : NSObject <NSCoding>
 

@@ -31,6 +31,10 @@
 		87480DD7192C1FBD005CC0A4 /* Free_Music_LibraryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 87480DD6192C1FBD005CC0A4 /* Free_Music_LibraryTests.m */; };
 		875984A5195D764700015243 /* PlaylistItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875984A4195D764700015243 /* PlaylistItemTableViewController.m */; };
 		875984A8195D775500015243 /* GenreItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875984A7195D775500015243 /* GenreItemTableViewController.m */; };
+		875B381A197ACB7A008B4409 /* CustomIOS7AlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B3819197ACB7A008B4409 /* CustomIOS7AlertView.m */; };
+		875B381C197ACB8B008B4409 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 875B381B197ACB8B008B4409 /* README.md */; };
+		875B3820197ACBC0008B4409 /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B381F197ACBC0008B4409 /* SettingsTableViewController.m */; };
+		875B3826197AFF29008B4409 /* NSString+smartSort.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B3825197AFF29008B4409 /* NSString+smartSort.m */; };
 		876EC5F01965C9F6006B3C29 /* AppEnvironmentConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 876EC5EF1965C9F6006B3C29 /* AppEnvironmentConstants.m */; };
 		876EDE6019648AA300795767 /* AlbumArtUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 876EDE5F19648AA300795767 /* AlbumArtUtilities.m */; };
 		878ACD64192D48EF005938F5 /* MasterSongsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878ACD63192D48EF005938F5 /* MasterSongsTableViewController.m */; };
@@ -48,7 +52,6 @@
 		87D47DA419345D8E0057D49B /* MasterArtistsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47DA019345D8E0057D49B /* MasterArtistsTableViewController.m */; };
 		87D47DA519345D8E0057D49B /* ArtistItemAlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47DA219345D8E0057D49B /* ArtistItemAlbumViewController.m */; };
 		87E1C5A0193A5E8B009AE399 /* GenreConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E1C59F193A5E8B009AE399 /* GenreConstants.m */; };
-		87F10BCE19682EDA003EDFB2 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F10BCD19682EDA003EDFB2 /* SettingsViewController.m */; };
 		87FE09F11933ED84001A5FB7 /* MusicStoreService.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FE09F01933ED84001A5FB7 /* MusicStoreService.m */; };
 		87FEBB38193587610088EF41 /* UpNextSongQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FEBB37193587610088EF41 /* UpNextSongQueue.m */; };
 		87FEBB3B19358FBE0088EF41 /* NowPlaying.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FEBB3A19358FBE0088EF41 /* NowPlaying.m */; };
@@ -103,6 +106,13 @@
 		875984A4195D764700015243 /* PlaylistItemTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistItemTableViewController.m; sourceTree = "<group>"; };
 		875984A6195D775500015243 /* GenreItemTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenreItemTableViewController.h; sourceTree = "<group>"; };
 		875984A7195D775500015243 /* GenreItemTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenreItemTableViewController.m; sourceTree = "<group>"; };
+		875B3818197ACB7A008B4409 /* CustomIOS7AlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomIOS7AlertView.h; sourceTree = "<group>"; };
+		875B3819197ACB7A008B4409 /* CustomIOS7AlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomIOS7AlertView.m; sourceTree = "<group>"; };
+		875B381B197ACB8B008B4409 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		875B381E197ACBC0008B4409 /* SettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsTableViewController.h; sourceTree = "<group>"; };
+		875B381F197ACBC0008B4409 /* SettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTableViewController.m; sourceTree = "<group>"; };
+		875B3824197AFF29008B4409 /* NSString+smartSort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+smartSort.h"; sourceTree = "<group>"; };
+		875B3825197AFF29008B4409 /* NSString+smartSort.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+smartSort.m"; sourceTree = "<group>"; };
 		876EC5EE1965C9F6006B3C29 /* AppEnvironmentConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppEnvironmentConstants.h; path = "Free Music Library/AppEnvironmentConstants.h"; sourceTree = "<group>"; };
 		876EC5EF1965C9F6006B3C29 /* AppEnvironmentConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppEnvironmentConstants.m; path = "Free Music Library/AppEnvironmentConstants.m"; sourceTree = "<group>"; };
 		876EDE5E19648AA300795767 /* AlbumArtUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumArtUtilities.h; sourceTree = "<group>"; };
@@ -137,8 +147,6 @@
 		87D9EB9919392DFF004F3885 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		87E1C59E193A5E8B009AE399 /* GenreConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenreConstants.h; sourceTree = "<group>"; };
 		87E1C59F193A5E8B009AE399 /* GenreConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenreConstants.m; sourceTree = "<group>"; };
-		87F10BCC19682EDA003EDFB2 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
-		87F10BCD19682EDA003EDFB2 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		87FE09EF1933ED84001A5FB7 /* MusicStoreService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MusicStoreService.h; sourceTree = "<group>"; };
 		87FE09F01933ED84001A5FB7 /* MusicStoreService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MusicStoreService.m; sourceTree = "<group>"; };
 		87FEBB1F193568330088EF41 /* Free Music Library.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = "Free Music Library.entitlements"; path = "Free Music Library/Free Music Library.entitlements"; sourceTree = "<group>"; };
@@ -237,6 +245,7 @@
 				87362AF6194E3B41004DB544 /* Data Structures */,
 				87FE09F31933F39B001A5FB7 /* Models */,
 				87362AFA194E3F27004DB544 /* GUI */,
+				875B3817197ACB6D008B4409 /* GUI Libraries */,
 				87480DC3192C1FBD005CC0A4 /* Images.xcassets */,
 				87480DAF192C1FBD005CC0A4 /* Supporting Files */,
 				87480DD0192C1FBD005CC0A4 /* Free Music LibraryTests */,
@@ -298,6 +307,24 @@
 				87480DD3192C1FBD005CC0A4 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		875B3817197ACB6D008B4409 /* GUI Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				875B381D197ACB90008B4409 /* Custom ios7 AlertView */,
+			);
+			name = "GUI Libraries";
+			sourceTree = "<group>";
+		};
+		875B381D197ACB90008B4409 /* Custom ios7 AlertView */ = {
+			isa = PBXGroup;
+			children = (
+				875B381B197ACB8B008B4409 /* README.md */,
+				875B3818197ACB7A008B4409 /* CustomIOS7AlertView.h */,
+				875B3819197ACB7A008B4409 /* CustomIOS7AlertView.m */,
+			);
+			name = "Custom ios7 AlertView";
 			sourceTree = "<group>";
 		};
 		878ACD5E192D38B6005938F5 /* Songs tab */ = {
@@ -381,6 +408,8 @@
 				876EDE5F19648AA300795767 /* AlbumArtUtilities.m */,
 				87C4D5721970932A0082D781 /* BackupFileHelper.h */,
 				87C4D5731970932A0082D781 /* BackupFileHelper.m */,
+				875B3824197AFF29008B4409 /* NSString+smartSort.h */,
+				875B3825197AFF29008B4409 /* NSString+smartSort.m */,
 			);
 			name = "Model Utilities";
 			sourceTree = "<group>";
@@ -388,8 +417,8 @@
 		87F10BCF19682EDF003EDFB2 /* Settings View */ = {
 			isa = PBXGroup;
 			children = (
-				87F10BCC19682EDA003EDFB2 /* SettingsViewController.h */,
-				87F10BCD19682EDA003EDFB2 /* SettingsViewController.m */,
+				875B381E197ACBC0008B4409 /* SettingsTableViewController.h */,
+				875B381F197ACBC0008B4409 /* SettingsTableViewController.m */,
 			);
 			name = "Settings View";
 			sourceTree = "<group>";
@@ -479,6 +508,9 @@
 							com.apple.BackgroundModes = {
 								enabled = 1;
 							};
+							com.apple.DataProtection = {
+								enabled = 1;
+							};
 							com.apple.iCloud = {
 								enabled = 1;
 							};
@@ -515,6 +547,7 @@
 			files = (
 				87480DC4192C1FBD005CC0A4 /* Images.xcassets in Resources */,
 				87480DB3192C1FBD005CC0A4 /* InfoPlist.strings in Resources */,
+				875B381C197ACB8B008B4409 /* README.md in Resources */,
 				87D16D621931B7EE00DB6A34 /* Podfile in Resources */,
 				87480DBC192C1FBD005CC0A4 /* Main.storyboard in Resources */,
 			);
@@ -568,6 +601,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				875B381A197ACB7A008B4409 /* CustomIOS7AlertView.m in Sources */,
 				87A110591964A67000270528 /* Song.m in Sources */,
 				87D47D93193428350057D49B /* MasterPlaylistTableViewController.m in Sources */,
 				878ACD6A192D532D005938F5 /* SongItemViewController.m in Sources */,
@@ -576,6 +610,7 @@
 				87D47D991934289F0057D49B /* MasterGenreTableViewController.m in Sources */,
 				87362B00194E70B4004DB544 /* PlaybackHistory.m in Sources */,
 				8740723F19798129004C5C57 /* SongTableViewFormatter.m in Sources */,
+				875B3820197ACBC0008B4409 /* SettingsTableViewController.m in Sources */,
 				87E1C5A0193A5E8B009AE399 /* GenreConstants.m in Sources */,
 				87480DB9192C1FBD005CC0A4 /* AppDelegate.m in Sources */,
 				8728B794194964AB00565BDA /* FileIOConstants.m in Sources */,
@@ -587,6 +622,7 @@
 				87CEDC6519731EF000780D57 /* PlaylistSongItemTableViewController.m in Sources */,
 				87A110561964A5EA00270528 /* Album.m in Sources */,
 				876EC5F01965C9F6006B3C29 /* AppEnvironmentConstants.m in Sources */,
+				875B3826197AFF29008B4409 /* NSString+smartSort.m in Sources */,
 				876EDE6019648AA300795767 /* AlbumArtUtilities.m in Sources */,
 				87FE09F11933ED84001A5FB7 /* MusicStoreService.m in Sources */,
 				875984A8195D775500015243 /* GenreItemTableViewController.m in Sources */,
@@ -597,7 +633,6 @@
 				8728B78B194959E500565BDA /* Artist.m in Sources */,
 				87FEBB3B19358FBE0088EF41 /* NowPlaying.m in Sources */,
 				87D47D8D19340F8B0057D49B /* MasterAlbumsTableViewController.m in Sources */,
-				87F10BCE19682EDA003EDFB2 /* SettingsViewController.m in Sources */,
 				87394BE31965FFE100E750B1 /* Queue.m in Sources */,
 				878ACD64192D48EF005938F5 /* MasterSongsTableViewController.m in Sources */,
 			);

@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "AppEnvironmentConstants.h"
 
 @interface Playlist : NSObject <NSCoding>
 

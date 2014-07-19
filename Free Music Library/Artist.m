@@ -7,8 +7,6 @@
 //
 
 #import "Artist.h"
-#import "Song.h"
-#import "FileIOConstants.h"
 #define ARTIST_NAME_KEY @"artistName"
 #define ALL_ARTIST_SONGS_KEY @"allSongs"
 #define ALL_ARTIST_ALBUMS_KEY @"allAlbums"

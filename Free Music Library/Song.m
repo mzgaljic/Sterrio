@@ -226,7 +226,10 @@ static int const UPDATE_SONG = 2;
             
     } //end of swtich
     
-    [Song sortExistingSongsAlphabetically: &songs];
+    if([AppEnvironmentConstants smartAlphabeticalSort])
+        [Song sortExistingSongsWithSmartSort: &songs];
+    else
+        [Song sortExistingSongsAlphabetically: &songs];
     
     //save changes to model on disk
     NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:songs];  //encode songs
@@ -287,6 +290,12 @@ static int const UPDATE_SONG = 2;
 + (void)sortExistingSongsAlphabetically:(NSMutableArray **)songModel
 {
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"songName" ascending:YES selector:@selector(caseInsensitiveCompare:)];
+    [*songModel sortUsingDescriptors:[NSArray arrayWithObject:sort]];
+}
+
++ (void)sortExistingSongsWithSmartSort:(NSMutableArray **)songModel
+{
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"songName" ascending:YES selector:@selector(smartSort:)];
     [*songModel sortUsingDescriptors:[NSArray arrayWithObject:sort]];
 }
 

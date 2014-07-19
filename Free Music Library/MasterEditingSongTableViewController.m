@@ -56,7 +56,7 @@ static BOOL PRODUCTION_MODE;
         return 5;
     if(section == 1)
         return 0;
-    if(section == 2)  //row to delete thid song
+    if(section == 2)  //row to delete this song
         return 1;
     else
         return -1;

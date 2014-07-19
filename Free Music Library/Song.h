@@ -10,7 +10,11 @@
 #import "Album.h"
 #import "Artist.h"
 #import "FileIOConstants.h"
+#import "NSString+smartSort.h"
+#import "AppEnvironmentConstants.h"
+
 @class Album;
+@class Artist;
 
 @interface Song : NSObject <NSCoding>
 

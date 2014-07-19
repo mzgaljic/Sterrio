@@ -17,12 +17,6 @@ static NSURL *playlistsUrl = nil;
 static NSURL *tempPlaylistsUrl = nil;
 static NSURL *genresUrl = nil;
 
-//Other stuff
-static NSURL *modelAlteredStateUrl = nil;
-static NSURL *alteredModelSongQueueFileUrl = nil;
-static NSURL *alteredModelAlbumQueueFileUrl = nil;
-static NSURL *alteredModelArtistQueueFileUrl = nil;
-
 + (instancetype)createSingleton
 {
     static id sharedMyModel = nil;
@@ -63,26 +57,6 @@ static NSURL *alteredModelArtistQueueFileUrl = nil;
     genresUrl = aUrl;
 }
 
-- (void)setModelAlteredStateFileUrl:(NSURL *)aUrl
-{
-    modelAlteredStateUrl = aUrl;
-}
-
-- (void)setAlteredModelSongQueueFileUrl:(NSURL *)aUrl
-{
-    alteredModelSongQueueFileUrl = aUrl;
-}
-
-- (void)setAlteredModelAlbumQueueFileUrl:(NSURL *)aUrl
-{
-    alteredModelAlbumQueueFileUrl = aUrl;
-}
-
-- (void)setAlteredModelArtistQueueFileUrl:(NSURL *)aUrl
-{
-    alteredModelArtistQueueFileUrl = aUrl;
-}
-
 
 - (NSURL *)songsFileURL
 {
@@ -112,26 +86,6 @@ static NSURL *alteredModelArtistQueueFileUrl = nil;
 - (NSURL *)genresFileURL
 {
     return genresUrl;
-}
-
-- (NSURL *)ModelAlteredStateFileUrl
-{
-    return modelAlteredStateUrl;
-}
-
-- (NSURL *)AlteredModelSongQueueFileUrl
-{
-    return alteredModelSongQueueFileUrl;
-}
-
-- (NSURL *)AlteredModelAlbumQueueFileUrl
-{
-    return alteredModelAlbumQueueFileUrl;
-}
-
-- (NSURL *)AlteredModelArtistQueueFileUrl
-{
-    return alteredModelArtistQueueFileUrl;
 }
 
 @end

@@ -23,11 +23,6 @@ static BOOL PRODUCTION_MODE;
     [[FileIOConstants createSingleton] setTempPlaylistsFileURL:[[urls lastObject] URLByAppendingPathComponent:@"Lib_TempPlaylist.data"]];
     [[FileIOConstants createSingleton] setGenresFileURL:[[urls lastObject] URLByAppendingPathComponent:@"Lib_Genres.data"]];
     
-    [[FileIOConstants createSingleton] setModelAlteredStateFileUrl:[[urls lastObject] URLByAppendingPathComponent:@"Altered_Model_State.data"]];
-    [[FileIOConstants createSingleton] setAlteredModelSongQueueFileUrl:[[urls lastObject] URLByAppendingPathComponent:@"Altered_Model_Song_Queue.data"]];
-    [[FileIOConstants createSingleton] setAlteredModelAlbumQueueFileUrl:[[urls lastObject] URLByAppendingPathComponent:@"Altered_Model_Album_Queue.data"]];
-    [[FileIOConstants createSingleton] setAlteredModelArtistQueueFileUrl:[[urls lastObject] URLByAppendingPathComponent:@"Altered_Model_Artist_Queue.data"]];
-    
     //create url's for now playing queue!
 }
 
@@ -167,12 +162,41 @@ static BOOL PRODUCTION_MODE;
         [artist7 saveArtist];
         [album7 saveAlbum];
         [song9 saveSong];
+        //-----------------
+        Artist *artist8 = [[Artist alloc] init];
+        artist8.artistName = @"Angels & Airwaves";
+        Album *album8 = [[Album alloc] init];
+        album8.albumName = @"We Don't Need to Whisper";
+        album8.artist = artist8;
+        [album7 setAlbumArt:[UIImage imageNamed:@"We Don't Need to Whisper"]];
+        Song *song10 = [[Song alloc] init];
+        song10.songName = @"The Adventure";
+        song10.artist = artist8;
+        song10.album = album8;
+        [song10 setAlbumArt:[UIImage imageNamed:@"We Don't Need to Whisper"]];
+        [artist8 saveArtist];
+        [album8 saveAlbum];
+        [song10 saveSong];
     }
 }
 
 - (void)setProductionModeValue
 {
     PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
+}
+
+- (void)setDefaultAppSettings
+{
+    if(!PRODUCTION_MODE){
+        [AppEnvironmentConstants setPreferredSizeSetting:3];
+        [AppEnvironmentConstants setBoldSongNames:YES];
+        //[AppEnvironmentConstants setPreferredCellularStreamSetting:<#(short)#>];
+        //[AppEnvironmentConstants setPreferredWifiStreamSetting:<#(short)#>];
+        [AppEnvironmentConstants setSmartAlphabeticalSort:YES];
+        [AppEnvironmentConstants setPreferredSizeSetting:3];
+    } else{
+        //load real settings from disk when setting these values.
+    }
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -183,8 +207,7 @@ static BOOL PRODUCTION_MODE;
     [self setUpGenreConstants];
     [self setUpNSCodingFilePaths];
     [self setUpFakeLibraryContent];
-    
-    [AppEnvironmentConstants setPreferredSizeSetting:3];
+    [self setDefaultAppSettings];
     
     return YES;
 }

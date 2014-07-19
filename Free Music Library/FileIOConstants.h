@@ -18,10 +18,6 @@
 - (void)setPlaylistsFileURL:(NSURL *)aUrl;
 - (void)setTempPlaylistsFileURL:(NSURL *)aUrl;
 - (void)setGenresFileURL:(NSURL *)aUrl;
-- (void)setModelAlteredStateFileUrl:(NSURL *)aUrl;
-- (void)setAlteredModelSongQueueFileUrl:(NSURL *)aUrl;
-- (void)setAlteredModelAlbumQueueFileUrl:(NSURL *)aUrl;
-- (void)setAlteredModelArtistQueueFileUrl:(NSURL *)aUrl;
 
 //using the initialized singletons
 - (NSURL *)songsFileURL;
@@ -30,9 +26,5 @@
 - (NSURL *)playlistsFileURL;
 - (NSURL *)tempPlaylistsFileURL;
 - (NSURL *)genresFileURL;
-- (NSURL *)ModelAlteredStateFileUrl;
-- (NSURL *)AlteredModelSongQueueFileUrl;
-- (NSURL *)AlteredModelAlbumQueueFileUrl;
-- (NSURL *)AlteredModelArtistQueueFileUrl;
 
 @end
