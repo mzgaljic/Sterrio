@@ -29,6 +29,10 @@
 
 #import <Accelerate/Accelerate.h>
 
+@interface RNFrostedSidebar ()
+@property(nonatomic, assign) BOOL returningFromUpsideDown;
+@end
+
 @implementation UIImage (rn_Blur)
 
 - (UIImage *)applyBlurWithRadius:(CGFloat)blurRadius tintColor:(UIColor *)tintColor saturationDeltaFactor:(CGFloat)saturationDeltaFactor maskImage:(UIImage *)maskImage
@@ -251,6 +255,12 @@ static RNFrostedSidebar *rn_frostedMenu;
 }
 
 - (instancetype)initWithImages:(NSArray *)images selectedIndices:(NSIndexSet *)selectedIndices borderColors:(NSArray *)colors {
+    [[NSNotificationCenter defaultCenter]
+     addObserver:self
+     selector:@selector(deviceOrientationDidChangeNotification:)
+     name:UIDeviceOrientationDidChangeNotification
+     object:nil];
+    
     if (self = [super init]) {
         _contentView = [[UIScrollView alloc] init];
         _contentView.alwaysBounceHorizontal = NO;
@@ -297,11 +307,34 @@ static RNFrostedSidebar *rn_frostedMenu;
     return self;
 }
 
+//Mark was here, orientation change code
+- (void)deviceOrientationDidChangeNotification:(NSNotification*)note
+{
+    if(_sideBarIsOnScreen){
+        BOOL upsideDown = ([[UIDevice currentDevice] orientation] == UIInterfaceOrientationPortraitUpsideDown);
+        if(upsideDown)
+            _returningFromUpsideDown = YES;
+        else if(! _returningFromUpsideDown)
+        {
+            [self dismissAnimated:NO];
+            _returningFromUpsideDown = NO;
+        }
+        else if(_returningFromUpsideDown)
+        {
+            _returningFromUpsideDown = NO;
+        }
+    }
+}
+
 - (instancetype)initWithImages:(NSArray *)images selectedIndices:(NSIndexSet *)selectedIndices {
+    UIDevice *currDevice = [UIDevice currentDevice];
+    [currDevice beginGeneratingDeviceOrientationNotifications];
     return [self initWithImages:images selectedIndices:selectedIndices borderColors:nil];
 }
 
 - (instancetype)initWithImages:(NSArray *)images {
+    UIDevice *currDevice = [UIDevice currentDevice];
+    [currDevice beginGeneratingDeviceOrientationNotifications];
     return [self initWithImages:images selectedIndices:nil borderColors:nil];
 }
 
@@ -316,6 +349,15 @@ static RNFrostedSidebar *rn_frostedMenu;
     [self.view addSubview:self.contentView];
     self.tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
     [self.view addGestureRecognizer:self.tapGesture];
+    
+    _gestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeHandler:)];
+    [_gestureRecognizer setDirection:(UISwipeGestureRecognizerDirectionLeft)];
+    [self.view addGestureRecognizer:_gestureRecognizer];
+}
+
+-(void)swipeHandler:(UISwipeGestureRecognizer *)recognizer
+{
+    [self dismissAnimated:YES];
 }
 
 - (BOOL)shouldAutorotate {
@@ -374,7 +416,7 @@ static RNFrostedSidebar *rn_frostedMenu;
 
 - (void)showInViewController:(UIViewController *)controller animated:(BOOL)animated {
     if (rn_frostedMenu != nil) {
-        [rn_frostedMenu dismissAnimated:NO];
+        //[rn_frostedMenu dismissAnimated:NO];
     }
     
     if ([self.delegate respondsToSelector:@selector(sidebar:willShowOnScreenAnimated:)]) {
@@ -452,6 +494,7 @@ static RNFrostedSidebar *rn_frostedMenu;
 }
 
 - (void)showAnimated:(BOOL)animated {
+    _sideBarIsOnScreen = YES;
     UIViewController *controller = [UIApplication sharedApplication].keyWindow.rootViewController;
     while (controller.presentedViewController != nil) {
         controller = controller.presentedViewController;
@@ -470,6 +513,8 @@ static RNFrostedSidebar *rn_frostedMenu;
 }
 
 - (void)dismissAnimated:(BOOL)animated {
+    _sideBarIsOnScreen = NO;
+    [self.view removeGestureRecognizer:_gestureRecognizer];
     void (^completion)(BOOL) = ^(BOOL finished){
         [self rn_removeFromParentViewControllerCallingAppearanceMethods:YES];
         

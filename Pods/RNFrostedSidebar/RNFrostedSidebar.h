@@ -60,7 +60,10 @@
 @property (nonatomic, assign) NSUInteger borderWidth;
 
 // An optional delegate to respond to interaction events
-@property (nonatomic, weak) id <RNFrostedSidebarDelegate> delegate;
+@property (nonatomic, weak) id delegate;
+
+@property (nonatomic, assign) BOOL sideBarIsOnScreen;
+@property (nonatomic, strong) UISwipeGestureRecognizer *gestureRecognizer;
 
 - (instancetype)initWithImages:(NSArray *)images selectedIndices:(NSIndexSet *)selectedIndices borderColors:(NSArray *)colors;
 - (instancetype)initWithImages:(NSArray *)images selectedIndices:(NSIndexSet *)selectedIndices;

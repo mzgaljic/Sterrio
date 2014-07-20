@@ -136,6 +136,19 @@ static int const UPDATE_SONG = 2;
     return [NSKeyedUnarchiver unarchiveObjectWithData:data];  //decode loaded data
 }
 
++ (void)reSortModel
+{
+    NSMutableArray *songs = (NSMutableArray *)[Song loadAll];
+    if([AppEnvironmentConstants smartAlphabeticalSort])
+        [Song sortExistingSongsWithSmartSort: &songs];
+    else
+        [Song sortExistingSongsAlphabetically: &songs];
+    
+    //save changes to model on disk
+    NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:songs];  //encode songs
+    [fileData writeToURL:[FileIOConstants createSingleton].songsFileURL atomically:YES];
+}
+
 - (BOOL)saveSong  //saves the current song (instance of this class) to the list of all songs on disk
 {
     return [self performModelAction:SAVE_SONG];

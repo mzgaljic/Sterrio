@@ -5,6 +5,14 @@
 //  Created by Mark Zgaljic on 7/3/14.
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
+#define APP_ALREADY_LAUNCHED_KEY @"AppLaunchedAlready"
+//settings keys
+#define PREFERRED_SIZE_KEY @"preferredSizeValue"
+#define PREFERRED_WIFI_VALUE_KEY @"preferredWifiStreamValue"
+#define PREFERRED_CELL_VALUE_KEY @"preferredCellularStreamValue"
+#define BOLD_SONG_NAME @"boldSongName"
+#define SMART_SORT @"smartAlphabeticalSort"
+#define ICLOUD_SYNC @"icloudSettingsSync"
 
 #import <Foundation/Foundation.h>
 

@@ -13,8 +13,13 @@
 // This method can be exposed in a header
 - (NSComparisonResult)smartSort:(NSString*)aString;
 {
-   [self removeArticles];
-    return [self compare:aString];
+    //original, clean code...
+    //NSString* selfTrimmed = [self removeArticles];
+    //NSString *compareStringTrimmed = [aString removeArticles];
+    //return [selfTrimmed compare:compareStringTrimmed];
+    
+    //efficient code
+    return [[self removeArticles] compare:[aString removeArticles]];
 }
 
 - (NSString*)removeArticles  //makes sure to resort strings that START with the specified prefixes.
@@ -23,12 +28,18 @@
     
     if ([self hasPrefix:@"a "])
         range = [self rangeOfString:@"a "];
+    else if ([self hasPrefix:@"A "])
+        range = [self rangeOfString:@"A "];
     
     else if ([self hasPrefix:@"an "])
         range = [self rangeOfString:@"an "];
+    else if ([self hasPrefix:@"An "])
+        range = [self rangeOfString:@"An "];
     
     else if ([self hasPrefix:@"the "])
         range = [self rangeOfString:@"the "];
+    else if ([self hasPrefix:@"The "])
+        range = [self rangeOfString:@"The "];
     
     if (range.location != NSNotFound)
         return [self substringFromIndex:range.length];

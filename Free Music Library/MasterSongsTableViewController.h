@@ -19,6 +19,7 @@
 
 @property (nonatomic, strong) NSMutableArray *results;  //for searching tableView?
 @property (nonatomic, assign) int selectedRowIndexValue;
+@property (nonatomic, strong) RNFrostedSidebar *sideBar;
 
 - (IBAction)expandableMenuSelected:(id)sender;
 @end

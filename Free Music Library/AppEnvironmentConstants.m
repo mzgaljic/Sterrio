@@ -31,10 +31,12 @@ static BOOL icloudSettingsSync;
 
 + (void)setPreferredSizeSetting:(short)numUpToSix
 {
+    [[NSUserDefaults standardUserDefaults] setInteger:numUpToSix forKey:PREFERRED_SIZE_KEY];
     if(numUpToSix <= 6 && numUpToSix > 0)
         preferredSizeValue = numUpToSix;
     else{
-        NSLog(@"Font Size setting problem, received an invalid size value!");
+        NSLog(@"Font Size setting problem, received an invalid size value! Will set to default.");
+        preferredSizeValue = 3;
         return;
     }
 }
@@ -51,11 +53,13 @@ static BOOL icloudSettingsSync;
 
 + (void)setPreferredWifiStreamSetting:(short)resolutionValue
 {
+    [[NSUserDefaults standardUserDefaults] setInteger:resolutionValue forKey:PREFERRED_WIFI_VALUE_KEY];
     preferredWifiStreamValue = resolutionValue;
 }
 
 + (void)setPreferredCellularStreamSetting:(short)resolutionValue
 {
+    [[NSUserDefaults standardUserDefaults] setInteger:resolutionValue forKey:PREFERRED_CELL_VALUE_KEY];
     preferredCellularStreamValue = resolutionValue;
 }
 
@@ -66,6 +70,7 @@ static BOOL icloudSettingsSync;
 
 + (void)setBoldSongNames:(BOOL)yesOrNo
 {
+    [[NSUserDefaults standardUserDefaults] setBool:yesOrNo forKey:BOLD_SONG_NAME];
     boldSongName = yesOrNo;
 }
 
@@ -76,6 +81,7 @@ static BOOL icloudSettingsSync;
 
 + (void)setSmartAlphabeticalSort:(BOOL)yesOrNo
 {
+    [[NSUserDefaults standardUserDefaults] setBool:yesOrNo forKey:SMART_SORT];
     smartAlphabeticalSort = yesOrNo;
 }
 
@@ -86,6 +92,7 @@ static BOOL icloudSettingsSync;
 
 + (void)set_iCloudSettingsSync:(BOOL)yesOrNo
 {
+    [[NSUserDefaults standardUserDefaults] setBool:yesOrNo forKey:ICLOUD_SYNC];
     icloudSettingsSync = yesOrNo;
 }
 

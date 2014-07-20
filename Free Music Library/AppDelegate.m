@@ -11,6 +11,9 @@
 @implementation AppDelegate
 
 static BOOL PRODUCTION_MODE;
+//app launched first time?
+static const int APP_LAUNCHED_FIRST_TIME = 0;
+static const int APP_LAUNCHED_ALREADY = 1;
 
 - (void)setUpNSCodingFilePaths
 {
@@ -39,7 +42,7 @@ static BOOL PRODUCTION_MODE;
 {
     NSArray *songs = [NSMutableArray arrayWithArray:[Song loadAll]];
     NSArray *albums = [NSMutableArray arrayWithArray:[Album loadAll]];
-    if(songs.count == 0 && albums.count == 0 && !PRODUCTION_MODE){
+    if(!PRODUCTION_MODE){
         songs = nil;
         albums = nil;
         
@@ -185,31 +188,56 @@ static BOOL PRODUCTION_MODE;
     PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
 }
 
-- (void)setDefaultAppSettings
+- (void)setAppSettings
 {
-    if(!PRODUCTION_MODE){
+    if([self appLaunchedFirstTime]){
         [AppEnvironmentConstants setPreferredSizeSetting:3];
         [AppEnvironmentConstants setBoldSongNames:YES];
-        //[AppEnvironmentConstants setPreferredCellularStreamSetting:<#(short)#>];
-        //[AppEnvironmentConstants setPreferredWifiStreamSetting:<#(short)#>];
+        [AppEnvironmentConstants setPreferredWifiStreamSetting:720];
+        [AppEnvironmentConstants setPreferredCellularStreamSetting:360];
         [AppEnvironmentConstants setSmartAlphabeticalSort:YES];
-        [AppEnvironmentConstants setPreferredSizeSetting:3];
+        [AppEnvironmentConstants set_iCloudSettingsSync:NO];
+        
+        [[NSUserDefaults standardUserDefaults] setInteger:3 forKey:PREFERRED_SIZE_KEY];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:BOLD_SONG_NAME];
+        [[NSUserDefaults standardUserDefaults] setInteger:720 forKey:PREFERRED_WIFI_VALUE_KEY];
+        [[NSUserDefaults standardUserDefaults] setInteger:360 forKey:PREFERRED_CELL_VALUE_KEY];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:SMART_SORT];
+        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:ICLOUD_SYNC];
     } else{
-        //load real settings from disk when setting these values.
+        //load users last settings from disk before setting these values.
+        [AppEnvironmentConstants setPreferredSizeSetting:[[NSUserDefaults standardUserDefaults] integerForKey:PREFERRED_SIZE_KEY]];
+        [AppEnvironmentConstants setBoldSongNames:[[NSUserDefaults standardUserDefaults] boolForKey:BOLD_SONG_NAME]];
+        [AppEnvironmentConstants setPreferredWifiStreamSetting:[[NSUserDefaults standardUserDefaults] integerForKey:PREFERRED_WIFI_VALUE_KEY]];
+        [AppEnvironmentConstants setPreferredCellularStreamSetting:[[NSUserDefaults standardUserDefaults] integerForKey:PREFERRED_CELL_VALUE_KEY]];
+        [AppEnvironmentConstants setSmartAlphabeticalSort:[[NSUserDefaults standardUserDefaults] boolForKey:SMART_SORT]];
+        [AppEnvironmentConstants set_iCloudSettingsSync:[[NSUserDefaults standardUserDefaults] boolForKey:ICLOUD_SYNC]];
     }
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
-
     [self setProductionModeValue];
     [self setUpGenreConstants];
     [self setUpNSCodingFilePaths];
-    [self setUpFakeLibraryContent];
-    [self setDefaultAppSettings];
     
+    [self setAppSettings];
+    if([self appLaunchedFirstTime]){
+        [self setUpFakeLibraryContent];
+    }
+    
+    [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY forKey:APP_ALREADY_LAUNCHED_KEY];
     return YES;
+}
+
+- (BOOL)appLaunchedFirstTime
+{
+    NSInteger code = [[NSUserDefaults standardUserDefaults] integerForKey:APP_ALREADY_LAUNCHED_KEY];
+    if(code == APP_LAUNCHED_FIRST_TIME)
+        return YES;
+    else
+        return NO;
 }
 							
 - (void)applicationWillResignActive:(UIApplication *)application

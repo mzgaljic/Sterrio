@@ -231,11 +231,21 @@ static BOOL PRODUCTION_MODE;
     
     NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:range];
     
-    RNFrostedSidebar *callout = [[RNFrostedSidebar alloc] initWithImages:images selectedIndices:indexSet borderColors:colors];
-    callout.animationDuration = .3;
-    callout.borderWidth = 1;
-    callout.delegate = self;
-    [callout show];
+    _sideBar = [[RNFrostedSidebar alloc] initWithImages:images selectedIndices:indexSet borderColors:colors];
+    _sideBar.animationDuration = .3;
+    _sideBar.borderWidth = 1;
+    _sideBar.delegate = self;
+    [_sideBar show];
 }
+
+/**
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    if(_sideBar.sideBarIsOnScreen){
+        _sideBar.animationDuration = .3;
+        [_sideBar dismissAnimated:YES];
+    }
+}
+ */
 
 @end

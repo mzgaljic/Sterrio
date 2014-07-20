@@ -769,6 +769,7 @@
 					"$(PROJECT_DIR)/Manually",
 					Added,
 					Frameworks,
+					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Free Music Library/Free Music Library-Prefix.pch";
@@ -799,6 +800,7 @@
 					"$(PROJECT_DIR)/Manually",
 					Added,
 					Frameworks,
+					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Free Music Library/Free Music Library-Prefix.pch";

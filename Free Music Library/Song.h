@@ -28,6 +28,8 @@
 @property(nonatomic, assign, readonly) BOOL associatedWithAlbum;
 
 + (NSArray *)loadAll;
++ (void)reSortModel;
+
 ///should be saved upon songs creation
 - (BOOL)saveSong;
 - (BOOL)deleteSong;
