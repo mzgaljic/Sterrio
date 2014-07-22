@@ -14,7 +14,7 @@ static const BOOL PRODUCTION_MODE = NO;
 static short preferredSizeValue;
 static short preferredWifiStreamValue;
 static short preferredCellularStreamValue;
-static BOOL boldSongName;
+static BOOL boldName;
 static BOOL smartAlphabeticalSort;
 static BOOL icloudSettingsSync;
 
@@ -63,15 +63,15 @@ static BOOL icloudSettingsSync;
     preferredCellularStreamValue = resolutionValue;
 }
 
-+ (BOOL)boldSongNames
++ (BOOL)boldNames
 {
-    return boldSongName;
+    return boldName;
 }
 
-+ (void)setBoldSongNames:(BOOL)yesOrNo
++ (void)setBoldNames:(BOOL)yesOrNo
 {
-    [[NSUserDefaults standardUserDefaults] setBool:yesOrNo forKey:BOLD_SONG_NAME];
-    boldSongName = yesOrNo;
+    [[NSUserDefaults standardUserDefaults] setBool:yesOrNo forKey:BOLD_NAME];
+    boldName = yesOrNo;
 }
 
 + (BOOL)smartAlphabeticalSort

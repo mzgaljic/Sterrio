@@ -46,6 +46,16 @@ static BOOL PRODUCTION_MODE;
     [self setProductionModeValue];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    self.navigationController.navigationBar.translucent = YES;
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    self.navigationController.navigationBar.translucent = NO;
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -125,11 +135,11 @@ static BOOL PRODUCTION_MODE;
 {
     _createPlaylistAlert = [[UIAlertView alloc] init];
     _createPlaylistAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
-    _createPlaylistAlert.message = @"Enter a name for your new playlist.";
+    _createPlaylistAlert.title = @"New Playlist";
+    [_createPlaylistAlert textFieldAtIndex:0].placeholder = @"Name your new playlist";
     _createPlaylistAlert.delegate = self;
     [_createPlaylistAlert addButtonWithTitle:@"Cancel"];
     [_createPlaylistAlert addButtonWithTitle:@"Create"];
-    
     [_createPlaylistAlert show];
 
 }
@@ -146,8 +156,9 @@ static BOOL PRODUCTION_MODE;
                 if([playlistName characterAtIndex:i] == ' ')
                     numSpaces++;
             }
-            if(numSpaces == playlistName.length)
+            if(numSpaces == playlistName.length){
                 return;  //playlist can't be all whitespace.
+            }
             
             //create the playlist
             Playlist *newPlaylist = [[Playlist alloc] init];
@@ -162,24 +173,18 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
+- (void)sidebar:(RNFrostedSidebar *)sidebar didTapItemAtIndex:(NSUInteger)index
+{
+    if (1){
+        [sidebar dismissAnimated:YES];
+        if(index == 3)  //settings button
+            [self performSegueWithIdentifier:@"settingsSegue" sender:self];
+    }
+}
+
 - (IBAction)expandableMenuSelected:(id)sender
 {
-    NSArray *images = @[[UIImage imageNamed:@"playlists"],[UIImage imageNamed:@"artists"],
-                        [UIImage imageNamed:@"genres"],[UIImage imageNamed:@"songs"]];
-    
-    NSArray *colors =@[[UIColor blueColor],[UIColor redColor],[UIColor greenColor],[UIColor purpleColor]];
-    
-    NSRange range;
-    range.length = 4;
-    range.location = 0;
-    
-    NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:range];
-    
-    RNFrostedSidebar *callout = [[RNFrostedSidebar alloc] initWithImages:images selectedIndices:indexSet borderColors:colors];
-    callout.animationDuration = .3;
-    callout.borderWidth = 1;
-    callout.delegate = self;
-    [callout show];
+    [FrostedSideBarHelper setupAndShowSlideOutMenuUsingdelegate:self];
 }
 
 @end

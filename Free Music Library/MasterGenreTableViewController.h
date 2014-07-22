@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "RNFrostedSideBar.h"
+#import "FrostedSideBarHelper.h"
 #import "AppEnvironmentConstants.h"
 
 @interface MasterGenreTableViewController : UITableViewController
@@ -15,4 +15,5 @@
 @property (nonatomic, strong) NSMutableArray *results;  //for searching tableView?
 @property (nonatomic, assign) int selectedRowIndexValue;
 
+- (IBAction)expandableMenuSelected:(id)sender;
 @end

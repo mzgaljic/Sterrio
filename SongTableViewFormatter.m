@@ -8,44 +8,45 @@
 
 #import "SongTableViewFormatter.h"
 
-//[UIFont systemFontOfSize:19.0];
-//[self generateDetailLabelAttrStringWithArtistName:song.artist.artistName andAlbumName:song.album.albumName];
 @implementation SongTableViewFormatter
 
 + (NSAttributedString *)formatSongLabelUsingSong:(Song *)aSongInstance
 {
-    short size = [AppEnvironmentConstants preferredSizeSetting];
-    
-    if([AppEnvironmentConstants boldSongNames]){
-        switch (size)
+    if([AppEnvironmentConstants boldNames]){
+        switch ([AppEnvironmentConstants preferredSizeSetting])
         {
             case 1:
-                return [SongTableViewFormatter boldAttributedStringWithString:aSongInstance.songName withFontSize:14.0];
+                return [SongTableViewFormatter boldAttributedStringWithString:aSongInstance.songName
+                                                                 withFontSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
             case 2:
-                return [SongTableViewFormatter boldAttributedStringWithString:aSongInstance.songName withFontSize:15.0];
+                return [SongTableViewFormatter boldAttributedStringWithString:aSongInstance.songName
+                                                                 withFontSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
                 
             case 3:  //default app setting when app launched for the first time.
-                return [SongTableViewFormatter boldAttributedStringWithString:aSongInstance.songName withFontSize:16.0];
+                return [SongTableViewFormatter boldAttributedStringWithString:aSongInstance.songName
+                                                                 withFontSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
                 
             case 4:
-                return [SongTableViewFormatter boldAttributedStringWithString:aSongInstance.songName withFontSize:19.0];
+                return [SongTableViewFormatter boldAttributedStringWithString:aSongInstance.songName
+                                                                 withFontSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
                 
             case 5:
-                return [SongTableViewFormatter boldAttributedStringWithString:aSongInstance.songName withFontSize:24.0];
+                return [SongTableViewFormatter boldAttributedStringWithString:aSongInstance.songName
+                                                                 withFontSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
             case 6:
-                return [SongTableViewFormatter boldAttributedStringWithString:aSongInstance.songName withFontSize:30.0];
-                
+                return [SongTableViewFormatter boldAttributedStringWithString:aSongInstance.songName
+                                                                 withFontSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
             default:
                 return nil;
         }
     } else{
-        return [[NSAttributedString alloc] initWithString:aSongInstance.songName];
+        return [[NSAttributedString alloc] initWithString:aSongInstance.songName];  //in this case, the caller must set the size themselves
     }
 }
 
 + (BOOL)songNameIsBold
 {
-    return [AppEnvironmentConstants boldSongNames];
+    return [AppEnvironmentConstants boldNames];
 }
 
 + (void)formatSongDetailLabelUsingSong:(Song *)aSongInstance andCell:(UITableViewCell **)aCell
@@ -53,124 +54,23 @@
     //now change the detail label
     [*aCell detailTextLabel].attributedText = [SongTableViewFormatter generateDetailLabelAttrStringWithArtistName:aSongInstance.artist.artistName
                                                                                                      andAlbumName:aSongInstance.album.albumName];
-    [*aCell detailTextLabel].font = [UIFont systemFontOfSize:[SongTableViewFormatter songDetailLabelfontSize]];
-
+    [*aCell detailTextLabel].font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
 }
 
-+ (float)songLabelFontSize
+//used when formatting for non-bold names
++ (float)nonBoldSongLabelFontSize
 {
-    short size = [AppEnvironmentConstants preferredSizeSetting];
-    
-    switch (size)
-    {
-        case 1:
-            return 15.0;
-            
-        case 2:
-            return 17.0;
-            
-        case 3:  //default app setting when app launched for the first time.
-            return 19.0;
-            
-        case 4:
-            return 20.0;
-            
-        case 5:
-            return 26.0;
-            
-        case 6:
-            return 31.0;
-            
-        default:
-            return -1;
-    }
-}
-
-+ (float)songDetailLabelfontSize
-{
-    short size = [AppEnvironmentConstants preferredSizeSetting];
-    
-    switch (size)
-    {
-        case 1:
-            return 12.0;
-            
-        case 2:
-            return 14.0;
-            
-        case 3:  //default app setting when app launched for the first time.
-            return 15.0;
-            
-        case 4:
-            return 17.0;
-            
-        case 5:
-            return 19.0;
-            
-        case 6:
-            return 23.0;
-        default:
-            return -1;
-    }
+    return [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
 }
 
 + (float)preferredSongCellHeight
 {
-    short size = [AppEnvironmentConstants preferredSizeSetting];
-    
-    switch (size)
-    {
-        case 1:
-            return 45.0;
-            
-        case 2:
-            return 50.0;
-            
-        case 3:  //default app setting when app launched for the first time.
-            return 65.0;
-            
-        case 4:
-            return 80.0;
-            
-        case 5:
-            return 95.0;
-            
-        case 6:
-            return 120.0;
-            
-        default:
-            return -1;
-    }
+    return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
 }
 
 + (CGSize)preferredSongAlbumArtSize
 {
-    short size = [AppEnvironmentConstants preferredSizeSetting];
-    
-    switch (size)
-    {
-        case 1:
-            return CGSizeMake(40, 40);
-            
-        case 2:
-            return CGSizeMake(40, 40);
-            
-        case 3:  //default app setting when app launched for the first time.
-            return CGSizeMake(55, 55);
-            
-        case 4:
-            return CGSizeMake(70, 70);
-            
-        case 5:
-            return CGSizeMake(70, 70);
-            
-            
-        case 6:
-            return CGSizeMake(70, 70);
-            
-        default:
-            return CGSizeMake(-1, -1);
-    }
+    return [PreferredFontSizeUtility actualAlbumArtSizeFromCurrentPreferredSize];
 }
 
 //private methods

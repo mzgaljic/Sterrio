@@ -34,13 +34,24 @@ static BOOL PRODUCTION_MODE;
     PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
 }
 
--(void)viewWillAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
     //init tableView model
     self.allSongsInLibrary = [NSMutableArray arrayWithArray:[Song loadAll]];
     [self.tableView reloadData];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    self.navigationController.navigationBar.translucent = NO;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    self.navigationController.navigationBar.translucent = YES;
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (void)viewDidLoad
@@ -50,6 +61,8 @@ static BOOL PRODUCTION_MODE;
     [self setProductionModeValue];
     [self setUpNavBarItems];
     self.tableView.allowsSelectionDuringEditing = YES;
+    
+    self.tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
 }
 
 - (void)setUpNavBarItems
@@ -89,12 +102,9 @@ static BOOL PRODUCTION_MODE;
     Song *song = [self.allSongsInLibrary objectAtIndex: indexPath.row];  //get song object at this index
    
     //init cell fields
-    if([SongTableViewFormatter songNameIsBold])
-        cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
-    else{
-        cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
-        cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter songLabelFontSize]];
-    }
+    cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
+    if(! [SongTableViewFormatter songNameIsBold])
+        cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
     UIImage *image;
@@ -220,32 +230,60 @@ static BOOL PRODUCTION_MODE;
 
 - (IBAction)expandableMenuSelected:(id)sender
 {
-    NSArray *images = @[[UIImage imageNamed:@"playlists"],[UIImage imageNamed:@"artists"],
-                        [UIImage imageNamed:@"genres"],[UIImage imageNamed:@"Gear Icon"]];
-    
-    NSArray *colors =@[[UIColor blueColor],[UIColor redColor],[UIColor greenColor],[UIColor purpleColor]];
-    
-    NSRange range;
-    range.length = 4;
-    range.location = 0;
-    
-    NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:range];
-    
-    _sideBar = [[RNFrostedSidebar alloc] initWithImages:images selectedIndices:indexSet borderColors:colors];
-    _sideBar.animationDuration = .3;
-    _sideBar.borderWidth = 1;
-    _sideBar.delegate = self;
-    [_sideBar show];
+    [FrostedSideBarHelper setupAndShowSlideOutMenuUsingdelegate:self];
 }
 
-/**
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+#pragma mark - Rotation status bar methods
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    if(_sideBar.sideBarIsOnScreen){
-        _sideBar.animationDuration = .3;
-        [_sideBar dismissAnimated:YES];
+    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
+        [self prefersStatusBarHidden];
+        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+    }else {
+        // iOS 6 code only here...checking if we are now going into landscape mode
+        if((toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft) ||(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight))
+            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+        else
+            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
+    }
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+        [self setTabBarVisible:NO animated:NO];
+        return YES;
+    }
+    else{
+        [self setTabBarVisible:YES animated:NO];
+        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
     }
 }
- */
+
+#pragma mark - Rotation tab bar methods
+- (void)setTabBarVisible:(BOOL)visible animated:(BOOL)animated {
+    
+    // bail if the current state matches the desired state
+    if ([self tabBarIsVisible] == visible) return;
+    
+    // get a frame calculation ready
+    CGRect frame = self.tabBarController.tabBar.frame;
+    CGFloat height = frame.size.height;
+    CGFloat offsetY = (visible)? -height : height;
+    
+    // zero duration means no animation
+    CGFloat duration = (animated)? 0.3 : 0.0;
+    
+    [UIView animateWithDuration:duration animations:^{
+        self.tabBarController.tabBar.frame = CGRectOffset(frame, 0, offsetY);
+    }];
+}
+
+- (BOOL)tabBarIsVisible {
+    return self.tabBarController.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame);
+}
 
 @end

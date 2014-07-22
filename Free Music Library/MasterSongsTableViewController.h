@@ -7,19 +7,18 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "RNFrostedSideBar.h"
 #import "AppEnvironmentConstants.h"
 #import "AlbumArtUtilities.h"
 #import "SongItemViewController.h"
 #import "MasterEditingSongTableViewController.h"
 #import "Song.h"
 #import "SongTableViewFormatter.h"
+#import "FrostedSideBarHelper.h"
 
 @interface MasterSongsTableViewController : UITableViewController
 
 @property (nonatomic, strong) NSMutableArray *results;  //for searching tableView?
 @property (nonatomic, assign) int selectedRowIndexValue;
-@property (nonatomic, strong) RNFrostedSidebar *sideBar;
 
 - (IBAction)expandableMenuSelected:(id)sender;
 @end

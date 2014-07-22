@@ -30,6 +30,15 @@
     self.songNameLabel.text = self.aNewSong.songName;
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    self.navigationController.navigationBar.translucent = NO;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    self.navigationController.navigationBar.translucent = YES;
+}
 
 - (void)didReceiveMemoryWarning
 {

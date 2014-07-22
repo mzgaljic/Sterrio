@@ -81,9 +81,9 @@ static const int CELL_STREAM_PICKER_TAG = 107;
 {
     switch (section)
     {
-        case 0:     return nil;
+        case 0:     return @"Sync settings to your remaining Apple devices.";
         case 1:     return @"The preferred playback quality for each connection type.";
-        case 2:     return @"Changing 'Font Size' increases or decreases the font used in the library. 'Bold Song Names' is enabled by default.";
+        case 2:     return @"'Bold Names' changes song, album, artist, playlist, and genre names wherever possible. (enabled by default)";
         case 3:     return @"Enabling \"Smart\" Alphabetical Sort changes the way library content is sorted. The words (a/an/the) are ignored.";
         default:    return nil;
     }
@@ -143,10 +143,10 @@ static const int CELL_STREAM_PICKER_TAG = 107;
                 cell.detailTextLabel.text = [self convertFontSizeToString];
                 break;
             case 1:
-                cell.textLabel.text = @"Bold Song Names";
+                cell.textLabel.text = @"Bold Names";
                 //setup toggle switch
                 _boldSongSwitch = [[UISwitch alloc] init];
-                [_boldSongSwitch setOn:[AppEnvironmentConstants boldSongNames] animated:NO];
+                [_boldSongSwitch setOn:[AppEnvironmentConstants boldNames] animated:NO];
                 cell.accessoryView = [[UIView alloc] initWithFrame:_boldSongSwitch.frame];
                 [cell.accessoryView addSubview:_boldSongSwitch];
                 cell.detailTextLabel.text = @"";
@@ -196,13 +196,6 @@ static const int CELL_STREAM_PICKER_TAG = 107;
         }
     }
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
-}
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
 }
 
 #pragma mark - AlertView with embedded pickerView
@@ -376,7 +369,7 @@ NSArray *CellStreamOptions;
 - (IBAction)boldSongsSwitchToggled:(id)sender
 {
     //update settings
-    [AppEnvironmentConstants setBoldSongNames:_boldSongSwitch.on];
+    [AppEnvironmentConstants setBoldNames:_boldSongSwitch.on];
 }
 
 - (IBAction)smartSortSwitchToggled:(id)sender

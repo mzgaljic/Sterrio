@@ -46,6 +46,16 @@ static BOOL PRODUCTION_MODE;
     [self setUpNavBarItems];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    self.navigationController.navigationBar.translucent = YES;
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    self.navigationController.navigationBar.translucent = NO;
+}
+
 - (void)setUpNavBarItems
 {
     //edit button
@@ -77,36 +87,12 @@ static BOOL PRODUCTION_MODE;
     
     // Configure the cell...
     Artist *artist = [self.allArtists objectAtIndex: indexPath.row];  //get artist object at this index
-    
-    //init cell fields
-    cell.textLabel.font = [UIFont systemFontOfSize:20.0];
-    cell.textLabel.text = artist.artistName;
-    //cell.textLabel.attributedText = [self BoldAttributedStringWithString:artist.artistName withFontSize:18.0];
-    
-    int songsInAlbumsCount = 0;
-    //count all the songs that are associated with albums for this artist
-    for(int i = 0; i < artist.allAlbums.count; i++){
-        Album *anAlbum = artist.allAlbums[i];
-        for(int k = 0; k < anAlbum.albumSongs.count; k++){
-            songsInAlbumsCount++;
-        }
-    }
-    
-    NSString *albumPart, *songPart;
-    if((int)artist.allAlbums.count == 1)
-        albumPart = @"1 Album";
-    else
-        albumPart = [NSString stringWithFormat:@"%d Albums", (int)artist.allAlbums.count];
-    
-    if((int)artist.allSongs.count + songsInAlbumsCount == 1)
-        songPart = @"1 Song";
-    else
-        songPart = [NSString stringWithFormat:@"%d Songs", (int)artist.allSongs.count + songsInAlbumsCount];
-    
-    NSMutableString *finalDetailLabel = [NSMutableString stringWithString:albumPart];
-    [finalDetailLabel appendString:@" "];
-    [finalDetailLabel appendString:songPart];
-    cell.detailTextLabel.text = finalDetailLabel;
+
+    // init cell fields
+    cell.textLabel.attributedText = [ArtistTableViewFormatter formatArtistLabelUsingArtist:artist];
+    if(! [ArtistTableViewFormatter artistNameIsBold])
+        cell.textLabel.font = [UIFont systemFontOfSize:[ArtistTableViewFormatter nonBoldArtistLabelFontSize]];
+    [ArtistTableViewFormatter formatArtistDetailLabelUsingArtist:artist andCell:&cell];
     
     return cell;
 }
@@ -137,7 +123,7 @@ static BOOL PRODUCTION_MODE;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 55.0;
+    return [ArtistTableViewFormatter preferredArtistCellHeight];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -165,33 +151,17 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
-- (NSAttributedString *)BoldAttributedStringWithString:(NSString *)aString withFontSize:(float)fontSize
+- (void)sidebar:(RNFrostedSidebar *)sidebar didTapItemAtIndex:(NSUInteger)index
 {
-    if(! aString)
-        return nil;
-    
-    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:aString];
-    [attributedText addAttribute: NSFontAttributeName value:[UIFont boldSystemFontOfSize:fontSize] range:NSMakeRange(0, [aString length])];
-    return attributedText;
+    if (1){
+        [sidebar dismissAnimated:YES];
+        if(index == 3)  //settings button
+            [self performSegueWithIdentifier:@"settingsSegue" sender:self];
+    }
 }
 
 - (IBAction)expandableMenuSelected:(id)sender
 {
-    NSArray *images = @[[UIImage imageNamed:@"playlists"],[UIImage imageNamed:@"artists"],
-                        [UIImage imageNamed:@"genres"],[UIImage imageNamed:@"songs"]];
-    
-    NSArray *colors =@[[UIColor blueColor],[UIColor redColor],[UIColor greenColor],[UIColor purpleColor]];
-    
-    NSRange range;
-    range.length = 4;
-    range.location = 0;
-    
-    NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:range];
-    
-    RNFrostedSidebar *callout = [[RNFrostedSidebar alloc] initWithImages:images selectedIndices:indexSet borderColors:colors];
-    callout.animationDuration = .3;
-    callout.borderWidth = 1;
-    callout.delegate = self;
-    [callout show];
+    [FrostedSideBarHelper setupAndShowSlideOutMenuUsingdelegate:self];
 }
 @end

@@ -46,6 +46,16 @@ static BOOL PRODUCTION_MODE;
     [self setUpNavBarItems];
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    self.navigationController.navigationBar.translucent = NO;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    self.navigationController.navigationBar.translucent = YES;
+}
+
 - (void)setUpNavBarItems
 {
     //edit button
@@ -83,9 +93,10 @@ static BOOL PRODUCTION_MODE;
     Album *album = [self.albums objectAtIndex: indexPath.row];  //get album instance at this index
     
     //init cell fields
-    cell.textLabel.font = [UIFont systemFontOfSize:19];
-    cell.textLabel.text = album.albumName;
-    cell.detailTextLabel.text = album.artist.artistName;
+    cell.textLabel.attributedText = [AlbumTableViewFormatter formatAlbumLabelUsingAlbum:album];
+    if(! [AlbumTableViewFormatter albumNameIsBold])
+        cell.textLabel.font = [UIFont systemFontOfSize:[AlbumTableViewFormatter nonBoldAlbumLabelFontSize]];
+    [AlbumTableViewFormatter formatAlbumDetailLabelUsingAlbum:album andCell:&cell];
     
     //could only update images for the cells that changed if i want to make this more efficient
     UIImage *image;
@@ -94,7 +105,7 @@ static BOOL PRODUCTION_MODE;
     else
         image = [UIImage imageNamed:album.albumName];
     
-    image = [AlbumArtUtilities imageWithImage:image scaledToSize:CGSizeMake(72, 72)];
+    image = [AlbumArtUtilities imageWithImage:image scaledToSize:[AlbumTableViewFormatter preferredAlbumAlbumArtSize]];
     cell.imageView.image = image;
     return cell;
 }
@@ -125,7 +136,7 @@ static BOOL PRODUCTION_MODE;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 78.0;
+    return [AlbumTableViewFormatter preferredAlbumCellHeight];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -166,25 +177,18 @@ static BOOL PRODUCTION_MODE;
     [alert show];
 }
 
+- (void)sidebar:(RNFrostedSidebar *)sidebar didTapItemAtIndex:(NSUInteger)index
+{
+    if (1){
+        [sidebar dismissAnimated:YES];
+        if(index == 3)  //settings button
+            [self performSegueWithIdentifier:@"settingsSegue" sender:self];
+    }
+}
+
 - (IBAction)expandableMenuSelected:(id)sender
 {
-    NSArray *images = @[[UIImage imageNamed:@"playlists"],[UIImage imageNamed:@"artists"],
-                        [UIImage imageNamed:@"genres"],[UIImage imageNamed:@"songs"]];
-    
-    NSArray *colors =@[[UIColor blueColor],[UIColor redColor],[UIColor greenColor],[UIColor purpleColor]];
-    
-    NSRange range;
-    range.length = 4;
-    range.location = 0;
-    
-    NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:range];
-    
-    RNFrostedSidebar *callout = [[RNFrostedSidebar alloc] initWithImages:images selectedIndices:indexSet borderColors:colors];
-    callout.animationDuration = .3;
-    callout.borderWidth = 1;
-    callout.delegate = self;
-    [callout show];
-
+    [FrostedSideBarHelper setupAndShowSlideOutMenuUsingdelegate:self];
 }
 
 @end

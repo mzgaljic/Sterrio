@@ -57,9 +57,20 @@ static BOOL PRODUCTION_MODE;
     [self setUpNavBarItems];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    self.navigationController.navigationBar.translucent = YES;
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    self.navigationController.navigationBar.translucent = NO;
+}
+
 - (void)setUpNavBarItems
 {
     UIBarButtonItem *editButton = self.editButtonItem;
+    //editButton.action = @selector(editTapped:);
     UIBarButtonItem *addButton = self.addBarButton;
     
     NSArray *rightBarButtonItems = [NSArray arrayWithObjects:editButton, addButton, nil];
@@ -90,12 +101,9 @@ static BOOL PRODUCTION_MODE;
     Song *song = [_playlist.songsInThisPlaylist objectAtIndex: indexPath.row];  //get song object at this index
     
     //init cell fields
-    if([SongTableViewFormatter songNameIsBold])
-        cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
-    else{
-        cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
-        cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter songLabelFontSize]];
-    }
+    cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
+    if(! [SongTableViewFormatter songNameIsBold])
+        cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
     UIImage *image;
@@ -145,6 +153,39 @@ static BOOL PRODUCTION_MODE;
         else
             _addBarButton.enabled = YES;
     }
+}
+
+- (void)editTapped:(id)sender
+{
+    if(self.editing)
+    {
+        [super setEditing:NO animated:NO];
+        [self.tableView setEditing:NO animated:NO];
+        [self.tableView reloadData];
+        //[self.navigationItem.rightBarButtonItem setTitle:@"Edit"];
+        //[self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStylePlain];
+    }
+    else
+    {
+        [super setEditing:YES animated:YES];
+        [self.tableView setEditing:YES animated:YES];
+        [self.tableView reloadData];
+        //[self.navigationItem.rightBarButtonItem setTitle:@"Done"];
+        //[self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStyleDone];
+    }
+}
+
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
+{
+    Song *item = [_playlist.songsInThisPlaylist objectAtIndex:fromIndexPath.row];
+    [_playlist.songsInThisPlaylist removeObject:item];
+    [_playlist.songsInThisPlaylist insertObject:item atIndex:toIndexPath.row];
+    [_playlist updateExistingPlaylist];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

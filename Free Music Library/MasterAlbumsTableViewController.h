@@ -7,11 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "RNFrostedSideBar.h"
+#import "FrostedSideBarHelper.h"
 #import "AppEnvironmentConstants.h"
 #import "AlbumArtUtilities.h"
 #import "AlbumItemViewController.h"
 #import "Album.h"
+#import "AlbumTableViewFormatter.h"
 
 @interface MasterAlbumsTableViewController : UITableViewController
 

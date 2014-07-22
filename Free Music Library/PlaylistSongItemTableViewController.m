@@ -67,6 +67,16 @@ static const short NORMAL_PLAYLIST = -1;
     self.tableView.allowsMultipleSelection = YES;
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    self.navigationController.navigationBar.translucent = YES;
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    self.navigationController.navigationBar.translucent = NO;
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -100,12 +110,9 @@ static const short NORMAL_PLAYLIST = -1;
     Song *song = [_allSongs objectAtIndex:indexPath.row];  //get song object at this index
     
     //init cell fields
-    if([SongTableViewFormatter songNameIsBold])
-        cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
-    else{
-        cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
-        cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter songLabelFontSize]];
-    }
+    cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
+    if(! [SongTableViewFormatter songNameIsBold])
+        cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
     UIImage *image;

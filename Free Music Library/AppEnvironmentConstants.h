@@ -10,7 +10,7 @@
 #define PREFERRED_SIZE_KEY @"preferredSizeValue"
 #define PREFERRED_WIFI_VALUE_KEY @"preferredWifiStreamValue"
 #define PREFERRED_CELL_VALUE_KEY @"preferredCellularStreamValue"
-#define BOLD_SONG_NAME @"boldSongName"
+#define BOLD_NAME @"boldName"
 #define SMART_SORT @"smartAlphabeticalSort"
 #define ICLOUD_SYNC @"icloudSettingsSync"
 
@@ -29,8 +29,8 @@
 + (void)setPreferredWifiStreamSetting:(short)resolutionValue;
 + (void)setPreferredCellularStreamSetting:(short)resolutionValue;
 
-+ (BOOL)boldSongNames;
-+ (void)setBoldSongNames:(BOOL)yesOrNo;
++ (BOOL)boldNames;
++ (void)setBoldNames:(BOOL)yesOrNo;
 
 + (BOOL)smartAlphabeticalSort;
 + (void)setSmartAlphabeticalSort:(BOOL)yesOrNo;

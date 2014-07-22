@@ -48,6 +48,16 @@ static BOOL PRODUCTION_MODE;
     [self.allSongsInLibrary addObject:@"Do You Want To Build A Snowman?"];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    self.navigationController.navigationBar.translucent = YES;
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    self.navigationController.navigationBar.translucent = NO;
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -84,4 +94,17 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
+- (void)sidebar:(RNFrostedSidebar *)sidebar didTapItemAtIndex:(NSUInteger)index
+{
+    if (1){
+        [sidebar dismissAnimated:YES];
+        if(index == 3)  //settings button
+            [self performSegueWithIdentifier:@"settingsSegue" sender:self];
+    }
+}
+
+- (IBAction)expandableMenuSelected:(id)sender
+{
+    [FrostedSideBarHelper setupAndShowSlideOutMenuUsingdelegate:self];
+}
 @end

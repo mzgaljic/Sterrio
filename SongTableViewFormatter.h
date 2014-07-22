@@ -9,18 +9,17 @@
 #import <Foundation/Foundation.h>
 #import "Song.h"
 #import "AppEnvironmentConstants.h"
+#import "PreferredFontSizeUtility.h"
 
 @interface SongTableViewFormatter : NSObject
 
 + (NSAttributedString *)formatSongLabelUsingSong:(Song *)aSongInstance;
 + (void)formatSongDetailLabelUsingSong:(Song *)aSongInstance andCell:(UITableViewCell **)aCell;
 
-
-+ (BOOL)songNameIsBold;
 + (float)preferredSongCellHeight;
 + (CGSize)preferredSongAlbumArtSize;
 
-+ (float)songLabelFontSize;
++ (float)nonBoldSongLabelFontSize;
 + (BOOL)songNameIsBold;
 
 @end

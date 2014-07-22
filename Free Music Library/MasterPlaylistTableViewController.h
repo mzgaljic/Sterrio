@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "Playlist.h"
-#import "RNFrostedSideBar.h"
+#import "FrostedSideBarHelper.h"
 #import "PlaylistItemTableViewController.h"  //tableview controller that shows the songs in the playlist
 #import "PlaylistSongItemTableViewController.h"  //song picker
 #import "AppEnvironmentConstants.h"

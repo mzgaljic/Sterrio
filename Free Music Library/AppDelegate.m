@@ -192,14 +192,14 @@ static const int APP_LAUNCHED_ALREADY = 1;
 {
     if([self appLaunchedFirstTime]){
         [AppEnvironmentConstants setPreferredSizeSetting:3];
-        [AppEnvironmentConstants setBoldSongNames:YES];
+        [AppEnvironmentConstants setBoldNames:YES];
         [AppEnvironmentConstants setPreferredWifiStreamSetting:720];
         [AppEnvironmentConstants setPreferredCellularStreamSetting:360];
         [AppEnvironmentConstants setSmartAlphabeticalSort:YES];
         [AppEnvironmentConstants set_iCloudSettingsSync:NO];
         
         [[NSUserDefaults standardUserDefaults] setInteger:3 forKey:PREFERRED_SIZE_KEY];
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:BOLD_SONG_NAME];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:BOLD_NAME];
         [[NSUserDefaults standardUserDefaults] setInteger:720 forKey:PREFERRED_WIFI_VALUE_KEY];
         [[NSUserDefaults standardUserDefaults] setInteger:360 forKey:PREFERRED_CELL_VALUE_KEY];
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:SMART_SORT];
@@ -207,7 +207,7 @@ static const int APP_LAUNCHED_ALREADY = 1;
     } else{
         //load users last settings from disk before setting these values.
         [AppEnvironmentConstants setPreferredSizeSetting:[[NSUserDefaults standardUserDefaults] integerForKey:PREFERRED_SIZE_KEY]];
-        [AppEnvironmentConstants setBoldSongNames:[[NSUserDefaults standardUserDefaults] boolForKey:BOLD_SONG_NAME]];
+        [AppEnvironmentConstants setBoldNames:[[NSUserDefaults standardUserDefaults] boolForKey:BOLD_NAME]];
         [AppEnvironmentConstants setPreferredWifiStreamSetting:[[NSUserDefaults standardUserDefaults] integerForKey:PREFERRED_WIFI_VALUE_KEY]];
         [AppEnvironmentConstants setPreferredCellularStreamSetting:[[NSUserDefaults standardUserDefaults] integerForKey:PREFERRED_CELL_VALUE_KEY]];
         [AppEnvironmentConstants setSmartAlphabeticalSort:[[NSUserDefaults standardUserDefaults] boolForKey:SMART_SORT]];

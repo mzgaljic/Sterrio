@@ -270,6 +270,13 @@ static RNFrostedSidebar *rn_frostedMenu;
         _contentView.showsHorizontalScrollIndicator = NO;
         _contentView.showsVerticalScrollIndicator = NO;
         
+        //Mark was here...scrolling disabled now
+        UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+        if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+            [_contentView setScrollEnabled:YES];
+        else
+            [_contentView setScrollEnabled:NO];
+        
         _width = 150;
         _animationDuration = 0.25f;
         _itemSize = CGSizeMake(_width/2, _width/2);
@@ -350,14 +357,19 @@ static RNFrostedSidebar *rn_frostedMenu;
     self.tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
     [self.view addGestureRecognizer:self.tapGesture];
     
+    //Mark was here...
     _gestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeHandler:)];
     [_gestureRecognizer setDirection:(UISwipeGestureRecognizerDirectionLeft)];
     [self.view addGestureRecognizer:_gestureRecognizer];
 }
 
+//Mark was here...
 -(void)swipeHandler:(UISwipeGestureRecognizer *)recognizer
 {
-    [self dismissAnimated:YES];
+    float temp = _animationDuration;
+    _animationDuration = .3;
+    [self dismissAnimated:YES];  //want the slide off screen to look more natural
+    _animationDuration = temp;
 }
 
 - (BOOL)shouldAutorotate {
