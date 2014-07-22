@@ -65,7 +65,21 @@
 
 + (float)preferredSongCellHeight
 {
-    return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
+    //customized cell heights for songs (very similar to albums...only case 6 differs)
+    switch ([AppEnvironmentConstants preferredSizeSetting])
+    {
+        case 2:
+            return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize] + 3.0;
+            
+            //make rows smaller when the font is this huge (5 & 6), to fit as much content as possible
+        case 5:
+            return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize] - 15.0;
+        case 6:
+            return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize] - 35.0;
+            
+        default:
+            return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
+    }
 }
 
 + (CGSize)preferredSongAlbumArtSize

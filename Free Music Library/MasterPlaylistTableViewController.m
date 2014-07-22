@@ -80,9 +80,10 @@ static BOOL PRODUCTION_MODE;
     Playlist *playlist = [_allPlaylists objectAtIndex: indexPath.row];  //get playlist instance at this index
     
     //init cell fields
-    cell.textLabel.text = playlist.playlistName;
-    cell.textLabel.font = [UIFont systemFontOfSize:21.0];
-    cell.detailTextLabel.text = [NSString stringWithFormat:@"%i songs",(int)playlist.songsInThisPlaylist.count];
+    cell.textLabel.attributedText = [PlaylistTableViewFormatter formatPlaylistLabelUsingPlaylist:playlist];
+    if(! [PlaylistTableViewFormatter playlistNameIsBold])
+        cell.textLabel.font = [UIFont systemFontOfSize:[PlaylistTableViewFormatter nonBoldPlaylistLabelFontSize]];
+    [PlaylistTableViewFormatter formatPlaylistDetailLabelUsingPlaylist:playlist andCell:&cell];
     
     return cell;
 }
@@ -121,7 +122,7 @@ static BOOL PRODUCTION_MODE;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 55.0;
+    return [PlaylistTableViewFormatter preferredPlaylistCellHeight];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender

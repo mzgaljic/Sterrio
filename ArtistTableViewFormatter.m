@@ -12,31 +12,25 @@
 
 + (NSAttributedString *)formatArtistLabelUsingArtist:(Artist *)anArtistInstance
 {
+    float size = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize] + 1.0;
     if([AppEnvironmentConstants boldNames]){
         switch ([AppEnvironmentConstants preferredSizeSetting])
         {
             case 1:
-                return [ArtistTableViewFormatter boldAttributedStringWithString:anArtistInstance.artistName
-                                                                  withFontSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+                return [ArtistTableViewFormatter boldAttributedStringWithString:anArtistInstance.artistName withFontSize:size];
             case 2:
-                return [ArtistTableViewFormatter boldAttributedStringWithString:anArtistInstance.artistName
-                                                                  withFontSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+                return [ArtistTableViewFormatter boldAttributedStringWithString:anArtistInstance.artistName withFontSize:size];
                 
             case 3:  //default app setting when app launched for the first time.
-                return [ArtistTableViewFormatter boldAttributedStringWithString:anArtistInstance.artistName
-                                                                  withFontSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+                return [ArtistTableViewFormatter boldAttributedStringWithString:anArtistInstance.artistName withFontSize:size];
                 
             case 4:
-                return [ArtistTableViewFormatter boldAttributedStringWithString:anArtistInstance.artistName
-                                                                  withFontSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+                return [ArtistTableViewFormatter boldAttributedStringWithString:anArtistInstance.artistName withFontSize:size];
                 
             case 5:
-                return [ArtistTableViewFormatter boldAttributedStringWithString:anArtistInstance.artistName
-                                                                  withFontSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+                return [ArtistTableViewFormatter boldAttributedStringWithString:anArtistInstance.artistName withFontSize:size];
             case 6:
-                return [ArtistTableViewFormatter boldAttributedStringWithString:anArtistInstance.artistName
-                                                                  withFontSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-                
+                return [ArtistTableViewFormatter boldAttributedStringWithString:anArtistInstance.artistName withFontSize:size];
             default:
                 return nil;
         }
@@ -74,19 +68,37 @@
     
     //now change the detail label
     [*aCell detailTextLabel].text = finalDetailLabel;
-    [*aCell detailTextLabel].font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
+    [*aCell detailTextLabel].font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize] -2.0];
 }
 
 
 + (float)preferredArtistCellHeight
 {
-    return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
+    //customized cell heights for artists
+    switch ([AppEnvironmentConstants preferredSizeSetting])
+    {
+        case 1:
+            return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize] - 3.0;
+        case 2:
+            return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize] - 5.0;
+        case 3:
+            return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize] - 16.0;
+        case 4:
+            return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize] - 25.0;
+        case 5:
+            return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize] - 26.0;
+        case 6:
+            return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize] - 45.0;
+            
+        default:
+            return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
+    }
 }
 
 
 + (float)nonBoldArtistLabelFontSize
 {
-    return [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+    return [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize] + 1.0;
 }
 
 + (BOOL)artistNameIsBold
@@ -104,6 +116,5 @@
     [attributedText addAttribute: NSFontAttributeName value:[UIFont boldSystemFontOfSize:fontSize] range:NSMakeRange(0, [aString length])];
     return attributedText;
 }
-
 
 @end

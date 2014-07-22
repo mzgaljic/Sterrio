@@ -220,36 +220,51 @@ NSArray *CellStreamOptions;
     UIPickerView *picker=[UIPickerView alloc];
     
     int row = -1;
+    NSString *findMeInArray;
+    
+    //presetting the "lastSelected____" properties in case they don't change (user doesnt move uipickerview at all and just taps done)
     switch (_lastTappedPickerCell)
     {
         case FONT_SIZE_PICKER_TAG:
-            picker = [picker initWithFrame:CGRectMake(0, 0, 200, 250)];
+            picker = [picker initWithFrame:CGRectMake(0, 0, 260, 400)];
             fontOptions = @[@"1",@"2",@"3 (default)",@"4",@"5",@"6"];
             row = ([AppEnvironmentConstants preferredSizeSetting] -1);
+            
+            _lastSelectedFontSize = row + 1;
             break;
         case WIFI_STREAM_PICKER_TAG:
         {
             picker = [picker initWithFrame:CGRectMake(0, 0, 230, 300)];
             WifiStreamOptions = @[@"240p",@"360p", @"480p",@"720p (default)",@"1080p"];
             short wifiSetting = [AppEnvironmentConstants preferredWifiStreamSetting];
-            NSString *findMeInArray;
             if(wifiSetting == 720)
                 findMeInArray = [NSString stringWithFormat:@"%hup (default)",wifiSetting];
             else
                 findMeInArray = [NSString stringWithFormat:@"%hup",wifiSetting];
             row = (int)[WifiStreamOptions indexOfObject:findMeInArray];
+            
+            NSString *resolution = [WifiStreamOptions objectAtIndex:row];
+            if([resolution isEqualToString:@"720p (default)"])
+                _lastSelectedWifiQuality = 720;
+            else                                   //this one liner removes the last char (the 'p' after the resolution value)
+                _lastSelectedWifiQuality = (short)[[resolution substringToIndex:resolution.length-(resolution.length>0)] intValue];
             break;
         }
         case CELL_STREAM_PICKER_TAG:
             picker = [picker initWithFrame:CGRectMake(0, 0, 230, 300)];
             CellStreamOptions = @[@"240p",@"360p (default)", @"480p",@"720p"];
             short cellSetting = [AppEnvironmentConstants preferredCellularStreamSetting];
-            NSString *findMeInArray;
             if(cellSetting == 360)
                 findMeInArray = [NSString stringWithFormat:@"%hup (default)",cellSetting];
             else
                 findMeInArray = [NSString stringWithFormat:@"%hup",cellSetting];
             row = (int)[CellStreamOptions indexOfObject:findMeInArray];
+            
+            NSString *resolution = [CellStreamOptions objectAtIndex:row];
+            if([resolution isEqualToString:@"360p (default)"])
+                _lastSelectedCellQuality = 360;
+            else
+                _lastSelectedCellQuality = (short)[[resolution substringToIndex:resolution.length-(resolution.length>0)] intValue];
             break;
     }
     picker.dataSource = self;
@@ -305,8 +320,10 @@ NSArray *CellStreamOptions;
     switch (_lastTappedPickerCell)
     {
         case FONT_SIZE_PICKER_TAG:
+        {
             _lastSelectedFontSize = (short)[[fontOptions objectAtIndex:row] intValue];
             break;
+        }
         case WIFI_STREAM_PICKER_TAG:
         {
             NSString *resolution = [WifiStreamOptions objectAtIndex:row];
@@ -334,13 +351,20 @@ NSArray *CellStreamOptions;
     if (!textView){
         textView = [[UILabel alloc] init];
         [textView setTextAlignment:NSTextAlignmentCenter];
-        textView.font = [UIFont systemFontOfSize:26];
+        //textView.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
         textView.adjustsFontSizeToFitWidth = YES;
     }
     switch (_lastTappedPickerCell)
     {
         case FONT_SIZE_PICKER_TAG:
-            textView.text = [fontOptions objectAtIndex:row];
+            if([AppEnvironmentConstants boldNames])
+                textView.attributedText = [self boldAttributedStringWithString:[fontOptions objectAtIndex:row]
+                                                                withFontSize:[PreferredFontSizeUtility
+                                   hypotheticalLabelFontSizeForPreferredSize:(int)row+1] + 1.0];
+            else{
+                textView.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:(int)row + 1] + 1.0];
+                textView.text = [fontOptions objectAtIndex:row];
+            }
             break;
         case WIFI_STREAM_PICKER_TAG:
             textView.text = [WifiStreamOptions objectAtIndex:row];
@@ -356,6 +380,17 @@ NSArray *CellStreamOptions;
 - (CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component
 {
     return 40.0;
+}
+
+//private methods
+- (NSAttributedString *)boldAttributedStringWithString:(NSString *)aString withFontSize:(float)fontSize
+{
+    if(! aString)
+        return nil;
+    
+    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:aString];
+    [attributedText addAttribute: NSFontAttributeName value:[UIFont boldSystemFontOfSize:fontSize] range:NSMakeRange(0, [aString length])];
+    return attributedText;
 }
 
 

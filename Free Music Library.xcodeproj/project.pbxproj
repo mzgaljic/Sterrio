@@ -39,6 +39,7 @@
 		876EDE6019648AA300795767 /* AlbumArtUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 876EDE5F19648AA300795767 /* AlbumArtUtilities.m */; };
 		878ACD64192D48EF005938F5 /* MasterSongsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878ACD63192D48EF005938F5 /* MasterSongsTableViewController.m */; };
 		878ACD6A192D532D005938F5 /* SongItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878ACD69192D532D005938F5 /* SongItemViewController.m */; };
+		879112FF197EF90E00DFC2DB /* PlaylistTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 879112FE197EF90E00DFC2DB /* PlaylistTableViewFormatter.m */; };
 		87A0FD87197DC595008FBBF7 /* FrostedSideBarHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FD86197DC595008FBBF7 /* FrostedSideBarHelper.m */; };
 		87A0FD8A197DCEDF008FBBF7 /* AlbumTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FD89197DCEDF008FBBF7 /* AlbumTableViewFormatter.m */; };
 		87A0FD91197DD594008FBBF7 /* PreferredFontSizeUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FD90197DD594008FBBF7 /* PreferredFontSizeUtility.m */; };
@@ -125,6 +126,8 @@
 		878ACD63192D48EF005938F5 /* MasterSongsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterSongsTableViewController.m; sourceTree = "<group>"; };
 		878ACD68192D532D005938F5 /* SongItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SongItemViewController.h; sourceTree = "<group>"; };
 		878ACD69192D532D005938F5 /* SongItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SongItemViewController.m; sourceTree = "<group>"; };
+		879112FD197EF90E00DFC2DB /* PlaylistTableViewFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistTableViewFormatter.h; sourceTree = "<group>"; };
+		879112FE197EF90E00DFC2DB /* PlaylistTableViewFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistTableViewFormatter.m; sourceTree = "<group>"; };
 		87A0FD85197DC595008FBBF7 /* FrostedSideBarHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrostedSideBarHelper.h; sourceTree = "<group>"; };
 		87A0FD86197DC595008FBBF7 /* FrostedSideBarHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FrostedSideBarHelper.m; sourceTree = "<group>"; };
 		87A0FD88197DCEDF008FBBF7 /* AlbumTableViewFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumTableViewFormatter.h; sourceTree = "<group>"; };
@@ -241,6 +244,7 @@
 				87A0FD93197DD932008FBBF7 /* Song Formatter */,
 				87A0FD94197DD93A008FBBF7 /* Album Formatter */,
 				87A0FDD3197DFA34008FBBF7 /* Artist Formatter */,
+				87911300197EF91200DFC2DB /* Playlist Formatter */,
 				87A0FD92197DD923008FBBF7 /* Side Bar Menu */,
 				87A0FD8F197DD594008FBBF7 /* PreferredFontSizeUtility.h */,
 				87A0FD90197DD594008FBBF7 /* PreferredFontSizeUtility.m */,
@@ -392,6 +396,15 @@
 			);
 			name = "Genres tab";
 			path = "Free Music Library";
+			sourceTree = "<group>";
+		};
+		87911300197EF91200DFC2DB /* Playlist Formatter */ = {
+			isa = PBXGroup;
+			children = (
+				879112FD197EF90E00DFC2DB /* PlaylistTableViewFormatter.h */,
+				879112FE197EF90E00DFC2DB /* PlaylistTableViewFormatter.m */,
+			);
+			name = "Playlist Formatter";
 			sourceTree = "<group>";
 		};
 		87A0FD92197DD923008FBBF7 /* Side Bar Menu */ = {
@@ -667,6 +680,7 @@
 				87480DB9192C1FBD005CC0A4 /* AppDelegate.m in Sources */,
 				8728B794194964AB00565BDA /* FileIOConstants.m in Sources */,
 				87D47DA419345D8E0057D49B /* MasterArtistsTableViewController.m in Sources */,
+				879112FF197EF90E00DFC2DB /* PlaylistTableViewFormatter.m in Sources */,
 				8728B788194959CE00565BDA /* Playlist.m in Sources */,
 				87D47D8C19340F8B0057D49B /* AlbumItemViewController.m in Sources */,
 				87A0FD8A197DCEDF008FBBF7 /* AlbumTableViewFormatter.m in Sources */,

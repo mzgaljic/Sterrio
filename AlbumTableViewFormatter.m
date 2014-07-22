@@ -56,7 +56,21 @@
 
 + (float)preferredAlbumCellHeight
 {
-    return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
+    //customized cell heights for albums
+    switch ([AppEnvironmentConstants preferredSizeSetting])
+    {
+        case 2:
+            return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize] + 3.0;
+          
+            //make rows extra smaller when the font is this huge (5 & 6), to fit as much content as possible
+        case 5:
+            return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize] - 15.0;
+        case 6:
+            return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize] - 23.0;
+            
+        default:
+            return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
+    }
 }
 
 + (CGSize)preferredAlbumAlbumArtSize
@@ -103,20 +117,28 @@
     const CGFloat fontSize = [PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize];
     UIFont *regularFont = [UIFont systemFontOfSize:fontSize];
     
-    //make entire string
-    NSMutableString *entireString = [NSMutableString stringWithString:artistString];  //artist name
-    [entireString appendString:@"\n"];  //make new line
-    [entireString appendString:songString];  //add songs string under artist name
-    
-    // Create the attributes
-    NSDictionary *regAttribute = [NSDictionary dictionaryWithObjectsAndKeys: regularFont, NSFontAttributeName, nil];
-    const NSRange range = NSMakeRange(artistString.length +1, songString.length);  //specify range of second line
-    
-    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:entireString attributes:regAttribute];
-    //change font size of the entire second line
-    [attributedText addAttribute:NSFontAttributeName
-                  value:[UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize] - 2]
-                  range:range];
+    NSMutableAttributedString *attributedText;
+    if([AppEnvironmentConstants preferredSizeSetting] != 1){  //at size 1, we don't include the number of songs. font size too small lol.
+        
+        //make entire string
+        NSMutableString *entireString = [NSMutableString stringWithString:artistString];  //artist name
+        [entireString appendString:@"\n"];  //make new line
+        [entireString appendString:songString];  //add songs string under artist name
+        
+        // Create the attributes
+        NSDictionary *regAttribute = [NSDictionary dictionaryWithObjectsAndKeys: regularFont, NSFontAttributeName, nil];
+        const NSRange range = NSMakeRange(artistString.length +1, songString.length);  //specify range of second line
+        
+        attributedText = [[NSMutableAttributedString alloc] initWithString:entireString attributes:regAttribute];
+        //change font size of the entire second line
+        [attributedText addAttribute:NSFontAttributeName
+                               value:[UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize] - 2]
+                               range:range];
+    } else{  //size 1, don't include song count
+        NSMutableString *entireString = [NSMutableString stringWithString:artistString];  //artist name
+        NSDictionary *regAttribute = [NSDictionary dictionaryWithObjectsAndKeys: regularFont, NSFontAttributeName, nil];
+        attributedText = [[NSMutableAttributedString alloc] initWithString:entireString attributes:regAttribute];
+    }
     
     return attributedText;
 }

@@ -61,6 +61,57 @@
     }
 }
 
++ (float)hypotheticalLabelFontSizeForPreferredSize:(int)aSize
+{
+    if([AppEnvironmentConstants boldNames]){
+        switch (aSize)
+        {
+            case 1:
+                return 14.0;
+                
+            case 2:
+                return 15.0;
+                
+            case 3:  //default app setting when app launched for the first time.
+                return 16.0;
+                
+            case 4:
+                return 19.0;
+                
+            case 5:
+                return 24.0;
+                
+            case 6:
+                return 30.0;
+            default:
+                return 16.0;
+        }
+    } else{
+        switch (aSize)
+        {
+            case 1:
+                return 15.0;
+                
+            case 2:
+                return 17.0;
+                
+            case 3:  //default app setting when app launched for the first time.
+                return 19.0;
+                
+            case 4:
+                return 20.0;
+                
+            case 5:
+                return 26.0;
+                
+            case 6:
+                return 31.0;
+            default:
+                return 19.0;
+        }
+    }
+}
+
 + (float)actualDetailLabelFontSizeFromCurrentPreferredSize
 {
     switch ([AppEnvironmentConstants preferredSizeSetting])

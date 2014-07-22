@@ -12,6 +12,7 @@
 #import "PlaylistItemTableViewController.h"  //tableview controller that shows the songs in the playlist
 #import "PlaylistSongItemTableViewController.h"  //song picker
 #import "AppEnvironmentConstants.h"
+#import "PlayListTableViewFormatter.h"
 
 @interface MasterPlaylistTableViewController : UITableViewController
 

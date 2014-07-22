@@ -10,6 +10,7 @@
 #import "Song.h"
 #import "AppEnvironmentConstants.h"
 #import "CustomIOS7AlertView.h"
+#import "PreferredFontSizeUtility.h"
 
 @interface SettingsTableViewController : UITableViewController <UIPickerViewDelegate,UIPickerViewDataSource>
 
