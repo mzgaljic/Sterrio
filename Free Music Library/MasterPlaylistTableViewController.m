@@ -83,7 +83,7 @@ static BOOL PRODUCTION_MODE;
     cell.textLabel.attributedText = [PlaylistTableViewFormatter formatPlaylistLabelUsingPlaylist:playlist];
     if(! [PlaylistTableViewFormatter playlistNameIsBold])
         cell.textLabel.font = [UIFont systemFontOfSize:[PlaylistTableViewFormatter nonBoldPlaylistLabelFontSize]];
-    [PlaylistTableViewFormatter formatPlaylistDetailLabelUsingPlaylist:playlist andCell:&cell];
+    //playlist doesnt have detail label  :)
     
     return cell;
 }

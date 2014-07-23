@@ -13,7 +13,6 @@
 @interface PlaylistTableViewFormatter : NSObject
 
 + (NSAttributedString *)formatPlaylistLabelUsingPlaylist:(Playlist *)aPlaylistInstance;
-+ (void)formatPlaylistDetailLabelUsingPlaylist:(Playlist *)aPlaylistInstance andCell:(UITableViewCell **)aCell;
 
 + (float)preferredPlaylistCellHeight;
 

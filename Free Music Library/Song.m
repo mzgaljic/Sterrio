@@ -164,6 +164,11 @@ static int const UPDATE_SONG = 2;
     return [self performModelAction:UPDATE_SONG];
 }
 
+- (BOOL)updateExistingSongUsingOldSong
+{
+    return [self performModelAction:UPDATE_SONG];
+}
+
 - (BOOL)performModelAction:(int)desiredActionConst  //does the 'hard work' of altering the model.
 {
     NSMutableArray *songs = (NSMutableArray *)[Song loadAll];
@@ -341,7 +346,8 @@ static int const UPDATE_SONG = 2;
     return (sameSongName && (sameAlbumName || sameArtistName)) ? YES : NO;
 }
 
--(NSUInteger)hash {
+-(NSUInteger)hash
+{
     NSUInteger result = 1;
     NSUInteger prime = 31;
     NSUInteger yesPrime = 1231;

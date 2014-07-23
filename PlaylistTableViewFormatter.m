@@ -39,14 +39,6 @@
     }
 }
 
-+ (void)formatPlaylistDetailLabelUsingPlaylist:(Playlist *)aPlaylistInstance andCell:(UITableViewCell **)aCell
-{
-    //now change the detail label
-    [*aCell detailTextLabel].attributedText = [PlaylistTableViewFormatter generateDetailLabelAttrStringWithPlaylistSongCount:
-                                               (int)aPlaylistInstance.songsInThisPlaylist.count];
-    [*aCell detailTextLabel].font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
-}
-
 
 + (float)preferredPlaylistCellHeight
 {
@@ -92,19 +84,5 @@
     [attributedText addAttribute: NSFontAttributeName value:[UIFont boldSystemFontOfSize:fontSize] range:NSMakeRange(0, [aString length])];
     return attributedText;
 }
-
-+ (NSAttributedString *)generateDetailLabelAttrStringWithPlaylistSongCount:(int)songsInThisPlaylist
-{
-    if(songsInThisPlaylist < 0)
-        return nil;
-    
-    NSString *entireString;
-    if(songsInThisPlaylist == 1)
-        entireString = @"1 song";
-    else
-        entireString = [NSString stringWithFormat:@"%i songs",songsInThisPlaylist];
-    return [[NSMutableAttributedString alloc] initWithString:entireString];
-}
-
 
 @end

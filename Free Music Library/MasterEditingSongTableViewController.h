@@ -10,12 +10,14 @@
 #import "Song.h"
 #import "AppEnvironmentConstants.h"
 #import "AlbumArtUtilities.h"
+#import "EditableCellTableViewController.h"
 
 @interface MasterEditingSongTableViewController : UITableViewController
 
 @property (nonatomic, strong) Song *songIAmEditing;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *leftBarButton;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *rightBarButton;
+@property (nonatomic, assign) NSInteger lastTappedRow;  //only used for section 0
 
 - (IBAction)leftBarButtonTapped:(id)sender;
 - (IBAction)rightBarButtonTapped:(id)sender;

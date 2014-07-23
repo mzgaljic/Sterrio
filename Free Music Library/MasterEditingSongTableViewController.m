@@ -31,6 +31,10 @@ static BOOL PRODUCTION_MODE;
     //change background color of tableview
     self.tableView.backgroundColor = [UIColor clearColor];
     self.parentViewController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    
+    //remove header gap at top of table, and remove some scrolling space under the delete button (update scroll insets too)
+    [self.tableView setContentInset:UIEdgeInsetsMake(-32,0,-30,0)];
+    [self.tableView setScrollIndicatorInsets:UIEdgeInsetsMake(-32,0,-30,0)];
 }
 
 - (void)viewDidLoad
@@ -47,6 +51,7 @@ static BOOL PRODUCTION_MODE;
 - (void)viewDidAppear:(BOOL)animated
 {
     self.navigationController.navigationBar.translucent = YES;
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -64,9 +69,7 @@ static BOOL PRODUCTION_MODE;
 {
     if(section == 0)  //rows for editing
         return 5;
-    if(section == 1)
-        return 0;
-    if(section == 2)  //row to delete this song
+    if(section == 1)  //row to delete this song
         return 1;
     else
         return -1;
@@ -112,10 +115,7 @@ static BOOL PRODUCTION_MODE;
         } else
             return nil;
     }
-    
-    //section 1 is used for padding, has no content
-    
-    if(indexPath.section == 2){
+    if(indexPath.section == 1){
         cell = [tableView dequeueReusableCellWithIdentifier:@"editingSongCellItemBasic"];
         if (cell == nil)
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"editingSongCellItemBasic"];
@@ -165,8 +165,35 @@ static BOOL PRODUCTION_MODE;
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     
     //segue to other areas
+    if(indexPath.section == 0){
+        switch (indexPath.row)
+        {
+            case 0:
+            {
+                _lastTappedRow = 0;
+                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(songEditingComplete:)
+                                                             name:@"editableCellFinishedEditing" object:nil];
+                
+                EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:_songIAmEditing.songName];
+                [self.navigationController pushViewController:vc animated:YES];
+                //[self performSegueWithIdentifier:@"editFieldSegue" sender:self];
+                break;
+
+            }
+            case 1:
+                _lastTappedRow = 1;
+                break;
+            case 2:
+                _lastTappedRow = 2;
+            case 3:
+                _lastTappedRow = 3;
+                break;
+            case 4:
+                _lastTappedRow = 4;
+        }
+    }
     
-    if(indexPath.section == 2){
+    if(indexPath.section == 1){
         if(indexPath.row == 0){
             [_songIAmEditing deleteSong];
             [self dismissViewControllerAnimated:YES completion:nil];
@@ -175,50 +202,73 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (void)songEditingComplete:(NSNotification *)notification
 {
-    /**
-    //song was tapped
-    if([[segue identifier] isEqualToString: @"songItemSegue"]){
-        //retrieve the song objects
-        Song *selectedSong = [self.allSongsInLibrary objectAtIndex:self.selectedRowIndexValue];
-        Album *selectedAlbum = selectedSong.album;
-        Artist *selectedArtist = selectedSong.artist;
-        Playlist *selectedPlaylist;
-        
-        //setup properties in SongItemViewController.h
-        [[segue destinationViewController] setANewSong:selectedSong];
-        [[segue destinationViewController] setANewAlbum:selectedAlbum];
-        [[segue destinationViewController] setANewArtist:selectedArtist];
-        [[segue destinationViewController] setANewPlaylist:selectedPlaylist];
-        
-        int songNumber = self.selectedRowIndexValue + 1;  //remember, for loop started at 0!
-        if(songNumber < 0 || songNumber == 0)  //object not found in song model
-            songNumber = -1;
-        [[segue destinationViewController] setSongNumberInSongCollection:songNumber];
-        [[segue destinationViewController] setTotalSongsInCollection:(int)self.allSongsInLibrary.count];
-    } else if([[segue identifier] isEqualToString:@"editingSongMasterSegue"]){
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(editingModeCompleted:) name:@"SongEditDone" object:nil];
-        
-        //set the songIAmEditing property in the modal view controller
-        MasterEditingSongTableViewController* controller = (MasterEditingSongTableViewController*)[[segue destinationViewController] topViewController];
-        [controller setSongIAmEditing:[self.allSongsInLibrary objectAtIndex:self.selectedRowIndexValue]];
-    }
-    else if([[segue identifier] isEqualToString: @"settingsSegue"]){  //settings button tapped from side bar
-        //do i need this?
-    }
-     */
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"editableCellFinishedEditing" object:nil];
+    
+    _songIAmEditing.songName = (NSString *)notification.object;
+    [self.tableView reloadData];
 }
 
-
-- (IBAction)leftBarButtonTapped:(id)sender
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:_songIAmEditing];
+    if([[segue identifier] isEqualToString: @"editFieldSegue"]){
+        //setup properties in destination view controller
+        switch (_lastTappedRow)
+        {
+            case 0:
+            {
+                [[segue destinationViewController] setStringUserIsEditing:_songIAmEditing.songName];
+                break;
+            }
+                
+            default:
+                break;
+        }
+    }
+}
+
+- (IBAction)leftBarButtonTapped:(id)sender  //cancel
+{
+    //tell MasterSongsTableViewController that it should leave editing mode since song editing has completed.
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (IBAction)rightBarButtonTapped:(id)sender
+- (IBAction)rightBarButtonTapped:(id)sender  //save
 {
-    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SongSavedDuringEdit" object:_songIAmEditing];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
+
+
+#pragma mark - Rotation status bar methods
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
+        [self prefersStatusBarHidden];
+        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+    }else {
+        // iOS 6 code only here...checking if we are now going into landscape mode
+        if((toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft) ||(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight))
+            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+        else
+            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
+    }
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+        return YES;
+    }
+    else{
+        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
+    }
+}
+
 @end

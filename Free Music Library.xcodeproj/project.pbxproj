@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		03D3A29591F748308F7121DE /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C84B413EAF4C57BC10A21B /* libPods.a */; settings = {ATTRIBUTES = (Weak, ); }; };
+		870EDAE6197F4EAD001901B9 /* EditableCellTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 870EDAE5197F4EAD001901B9 /* EditableCellTableViewController.m */; };
 		8728B788194959CE00565BDA /* Playlist.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B787194959CE00565BDA /* Playlist.m */; };
 		8728B78B194959E500565BDA /* Artist.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B78A194959E500565BDA /* Artist.m */; };
 		8728B794194964AB00565BDA /* FileIOConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B793194964AB00565BDA /* FileIOConstants.m */; };
@@ -74,6 +75,8 @@
 
 /* Begin PBXFileReference section */
 		566689BB153A40D889AD1CB3 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		870EDAE4197F4EAD001901B9 /* EditableCellTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditableCellTableViewController.h; sourceTree = "<group>"; };
+		870EDAE5197F4EAD001901B9 /* EditableCellTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditableCellTableViewController.m; sourceTree = "<group>"; };
 		8728B786194959CE00565BDA /* Playlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Playlist.h; sourceTree = "<group>"; };
 		8728B787194959CE00565BDA /* Playlist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Playlist.m; sourceTree = "<group>"; };
 		8728B789194959E500565BDA /* Artist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Artist.h; sourceTree = "<group>"; };
@@ -198,6 +201,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		870EDAE7197F4EB0001901B9 /* Editing Field In Cell */ = {
+			isa = PBXGroup;
+			children = (
+				870EDAE4197F4EAD001901B9 /* EditableCellTableViewController.h */,
+				870EDAE5197F4EAD001901B9 /* EditableCellTableViewController.m */,
+			);
+			name = "Editing Field In Cell";
+			sourceTree = "<group>";
+		};
 		87362AF4194E3819004DB544 /* Music Playback */ = {
 			isa = PBXGroup;
 			children = (
@@ -245,6 +257,7 @@
 				87A0FD94197DD93A008FBBF7 /* Album Formatter */,
 				87A0FDD3197DFA34008FBBF7 /* Artist Formatter */,
 				87911300197EF91200DFC2DB /* Playlist Formatter */,
+				870EDAE7197F4EB0001901B9 /* Editing Field In Cell */,
 				87A0FD92197DD923008FBBF7 /* Side Bar Menu */,
 				87A0FD8F197DD594008FBBF7 /* PreferredFontSizeUtility.h */,
 				87A0FD90197DD594008FBBF7 /* PreferredFontSizeUtility.m */,
@@ -697,6 +710,7 @@
 				87D47DA519345D8E0057D49B /* ArtistItemAlbumViewController.m in Sources */,
 				87480DB5192C1FBD005CC0A4 /* main.m in Sources */,
 				87A0FDD2197DFA2C008FBBF7 /* ArtistTableViewFormatter.m in Sources */,
+				870EDAE6197F4EAD001901B9 /* EditableCellTableViewController.m in Sources */,
 				87C4D5741970932A0082D781 /* BackupFileHelper.m in Sources */,
 				87A0FD87197DC595008FBBF7 /* FrostedSideBarHelper.m in Sources */,
 				87362B03194E9CDF004DB544 /* Stack.m in Sources */,

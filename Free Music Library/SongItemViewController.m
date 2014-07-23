@@ -38,12 +38,42 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     self.navigationController.navigationBar.translucent = YES;
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+
+#pragma mark - Rotation status bar methods
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
+        [self prefersStatusBarHidden];
+        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+    }else {
+        // iOS 6 code only here...checking if we are now going into landscape mode
+        if((toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft) ||(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight))
+            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+        else
+            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
+    }
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+        return YES;
+    }
+    else{
+        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
+    }
 }
 
 @end

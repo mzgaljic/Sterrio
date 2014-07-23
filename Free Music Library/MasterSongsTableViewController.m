@@ -52,6 +52,9 @@ static BOOL PRODUCTION_MODE;
 {
     self.navigationController.navigationBar.translucent = YES;
     [[NSNotificationCenter defaultCenter]removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+    
+    //need to check because when user presses back button, tab bar isnt always hidden
+    [self prefersStatusBarHidden];
 }
 
 - (void)viewDidLoad
@@ -61,8 +64,6 @@ static BOOL PRODUCTION_MODE;
     [self setProductionModeValue];
     [self setUpNavBarItems];
     self.tableView.allowsSelectionDuringEditing = YES;
-    
-    self.tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
 }
 
 - (void)setUpNavBarItems
@@ -159,7 +160,6 @@ static BOOL PRODUCTION_MODE;
         [self performSegueWithIdentifier:@"songItemSegue" sender:self];
         
     } else if([editButton.title isEqualToString:@"Done"]){  //tapping song triggers edit segue
-        //send song object via NSNotificationCenter
         
         //now segue to modal view where user can edit the tapped song
         [self performSegueWithIdentifier:@"editingSongMasterSegue" sender:self];
@@ -189,10 +189,12 @@ static BOOL PRODUCTION_MODE;
         [[segue destinationViewController] setTotalSongsInCollection:(int)self.allSongsInLibrary.count];
     } else if([[segue identifier] isEqualToString:@"editingSongMasterSegue"]){
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(editingModeCompleted:) name:@"SongEditDone" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(songWasSavedDuringEditing:) name:@"SongSavedDuringEdit" object:nil];
         
         //set the songIAmEditing property in the modal view controller
         MasterEditingSongTableViewController* controller = (MasterEditingSongTableViewController*)[[segue destinationViewController] topViewController];
         [controller setSongIAmEditing:[self.allSongsInLibrary objectAtIndex:self.selectedRowIndexValue]];
+        self.indexOfEditingSong = self.selectedRowIndexValue;
     }
     else if([[segue identifier] isEqualToString: @"settingsSegue"]){  //settings button tapped from side bar
         //do i need this?
@@ -204,6 +206,20 @@ static BOOL PRODUCTION_MODE;
     if([notification.name isEqualToString:@"SongEditDone"]){
         //leave editing mode
         [self setEditing:NO animated:NO];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:@"SongEditDone" object:nil];
+    }
+}
+
+- (void)songWasSavedDuringEditing:(NSNotification *)notification
+{
+    if([notification.name isEqualToString:@"SongSavedDuringEdit"]){
+        Song *savedSong = (Song *)notification.object;
+        //THIS line fails due to the song changing (song can't tell where it was in the original model on disk, since it changed)
+        [savedSong updateExistingSong];  //update model on disk
+        [self.allSongsInLibrary replaceObjectAtIndex:self.indexOfEditingSong withObject:savedSong];  //update this class's model
+        self.indexOfEditingSong = -1;
+        [self.tableView reloadData];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:@"SongSavedDuringEdit" object:nil];
     }
 }
 
@@ -264,8 +280,8 @@ static BOOL PRODUCTION_MODE;
 }
 
 #pragma mark - Rotation tab bar methods
-- (void)setTabBarVisible:(BOOL)visible animated:(BOOL)animated {
-    
+- (void)setTabBarVisible:(BOOL)visible animated:(BOOL)animated
+{
     // bail if the current state matches the desired state
     if ([self tabBarIsVisible] == visible) return;
     
@@ -282,7 +298,8 @@ static BOOL PRODUCTION_MODE;
     }];
 }
 
-- (BOOL)tabBarIsVisible {
+- (BOOL)tabBarIsVisible
+{
     return self.tabBarController.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame);
 }
 
