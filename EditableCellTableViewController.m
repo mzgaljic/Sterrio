@@ -8,8 +8,8 @@
 
 #import "EditableCellTableViewController.h"
 
-@interface EditableCellTableViewController ()
 
+@interface EditableCellTableViewController ()
 @end
 
 @implementation EditableCellTableViewController
@@ -27,19 +27,13 @@
     return self;
 }
 
-
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+        [self setLandscapeTableViewContentValues];
+    else
+        [self setPortraitTableViewContentValues];
 }
 
 - (void)didReceiveMemoryWarning
@@ -67,41 +61,93 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"editMeCell" forIndexPath:indexPath];
     
     // Configure the cell...
-    UITextField * txtField=[[UITextField alloc]initWithFrame:CGRectMake(5, 5, 320, 39)];
-    txtField.autoresizingMask=UIViewAutoresizingFlexibleHeight;
-    txtField.autoresizesSubviews=YES;
-    txtField.layer.cornerRadius=10.0;
+    UITextField * txtField = [[UITextField alloc]initWithFrame:CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height)];
+    txtField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    txtField.autoresizesSubviews = YES;
+    txtField.layer.cornerRadius = 10.0;
     [txtField setBorderStyle:UITextBorderStyleRoundedRect];
     if(_stringUserIsEditing == nil)
         [txtField setPlaceholder:@"Tap me"];
     else{
         txtField.text = [txtField.text stringByAppendingString:_stringUserIsEditing];
     }
+    txtField.font = [UIFont systemFontOfSize:20.0];
     txtField.returnKeyType = UIReturnKeyDone;
     txtField.clearButtonMode = UITextFieldViewModeWhileEditing;
     [txtField becomeFirstResponder];
     [txtField setDelegate:self];
     
-    //cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
     cell.accessoryType = UITableViewCellAccessoryNone;
     [cell addSubview:txtField];
     
-    
     return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 50.0;
 }
 
 #pragma mark - UITextField methods
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"editableCellFinishedEditing" object:textField.text];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"DoneEditingTextField" object:textField.text];
     [self.navigationController popViewControllerAnimated:YES];
     return YES;
 }
 
 - (BOOL)textFieldShouldClear:(UITextField *)textField
 {
-    NSLog(@"3");
     return YES;
 }
+
+
+#pragma mark - Rotation code
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
+        [self prefersStatusBarHidden];
+        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+    }else {
+        // iOS 6 code only here...checking if we are now going into landscape mode
+        if((toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft) ||(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight))
+            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+        else
+            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
+    }
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+        [self setLandscapeTableViewContentValues];
+        return YES;
+    }
+    else{
+        [self setPortraitTableViewContentValues];
+        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
+    }
+}
+
+- (void)setLandscapeTableViewContentValues
+{
+    //remove header gap at top of table, and remove some scrolling space under the delete button (update scroll insets too)
+    [self.tableView setContentInset:UIEdgeInsetsMake(0,0,0,0)];
+    [self.tableView setScrollIndicatorInsets:UIEdgeInsetsMake(0,0,0,0)];
+    
+    //[self.tableView reloadData];
+}
+- (void)setPortraitTableViewContentValues
+{
+    //remove header gap at top of table, and remove some scrolling space under the delete button (update scroll insets too)
+    [self.tableView setContentInset:UIEdgeInsetsMake(68,0,-68,0)];
+    [self.tableView setScrollIndicatorInsets:UIEdgeInsetsMake(68,0,-68,0)];
+    
+    //[self.tableView reloadData];
+}
+
 
 @end

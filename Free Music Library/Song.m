@@ -14,13 +14,22 @@
 #define ARTIST_KEY @"artist"
 #define GENRE_CODE_KEY @"songGenreCode"
 #define ASSOCIATED_WITH_ALBUM_KEY @"associatedWithAlbum"
+#define SONG_ID_KEY @"songID"
 
 @implementation Song
-@synthesize songName, youtubeLink, albumArtFileName = _albumArtFileName, album = _album, artist = _artist, genreCode, associatedWithAlbum = _associatedWithAlbum;
+@synthesize songName = _songName, youtubeLink = _youtubeLink, albumArtFileName = _albumArtFileName, album = _album, artist = _artist, genreCode = _genreCode, associatedWithAlbum = _associatedWithAlbum, songID = _songID;
 
 static  int const SAVE_SONG = 0;
 static int const DELETE_SONG = 1;
 static int const UPDATE_SONG = 2;
+
+- (id)init
+{
+    if(self = [super init]){
+        _songID = [[NSObject UUID] copy];
+    }
+    return self;
+}
 
 //custom property setter
 - (void)setAlbum:(Album *)album
@@ -104,12 +113,13 @@ static int const UPDATE_SONG = 2;
 {
     self = [super init];
     if(self){
-        self.songName = [aDecoder decodeObjectForKey:SONG_NAME_KEY];
-        self.youtubeLink = [aDecoder decodeObjectForKey:YOUTUBE_LINK_KEY];
+        _songID = [aDecoder decodeObjectForKey:SONG_ID_KEY];
+        _songName = [aDecoder decodeObjectForKey:SONG_NAME_KEY];
+        _youtubeLink = [aDecoder decodeObjectForKey:YOUTUBE_LINK_KEY];
         _albumArtFileName = [aDecoder decodeObjectForKey:ALBUM_ART_FILE_NAME_KEY];
-        self.album = [aDecoder decodeObjectForKey:ALBUM_KEY];
-        self.artist = [aDecoder decodeObjectForKey:ARTIST_KEY];
-        self.genreCode = [aDecoder decodeIntForKey:GENRE_CODE_KEY];
+        _album = [aDecoder decodeObjectForKey:ALBUM_KEY];
+        _artist = [aDecoder decodeObjectForKey:ARTIST_KEY];
+        _genreCode = [aDecoder decodeIntForKey:GENRE_CODE_KEY];
         _associatedWithAlbum = [aDecoder decodeBoolForKey:ASSOCIATED_WITH_ALBUM_KEY];
     }
     return self;
@@ -117,12 +127,13 @@ static int const UPDATE_SONG = 2;
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    [aCoder encodeObject:self.songName forKey:SONG_NAME_KEY];
-    [aCoder encodeObject:self.youtubeLink forKey:YOUTUBE_LINK_KEY];
-    [aCoder encodeObject:self.albumArtFileName forKey:ALBUM_ART_FILE_NAME_KEY];
-    [aCoder encodeObject:self.album forKey:ALBUM_KEY];
-    [aCoder encodeObject:self.artist forKey:ARTIST_KEY];
-    [aCoder encodeInteger:self.genreCode forKey:GENRE_CODE_KEY];
+    [aCoder encodeObject:_songID forKey:SONG_ID_KEY];
+    [aCoder encodeObject:_songName forKey:SONG_NAME_KEY];
+    [aCoder encodeObject:_youtubeLink forKey:YOUTUBE_LINK_KEY];
+    [aCoder encodeObject:_albumArtFileName forKey:ALBUM_ART_FILE_NAME_KEY];
+    [aCoder encodeObject:_album forKey:ALBUM_KEY];
+    [aCoder encodeObject:_artist forKey:ARTIST_KEY];
+    [aCoder encodeInteger:_genreCode forKey:GENRE_CODE_KEY];
     [aCoder encodeBool:_associatedWithAlbum forKey:ASSOCIATED_WITH_ALBUM_KEY];
 }
 
@@ -160,11 +171,6 @@ static int const UPDATE_SONG = 2;
 }
 
 - (BOOL)updateExistingSong
-{
-    return [self performModelAction:UPDATE_SONG];
-}
-
-- (BOOL)updateExistingSongUsingOldSong
 {
     return [self performModelAction:UPDATE_SONG];
 }
@@ -209,7 +215,7 @@ static int const UPDATE_SONG = 2;
                 if(thisSongsAlbum.albumSongs.count == 1){
                     [songs removeObject:self];  //delete the song
                     [thisSongsAlbum.albumSongs removeObject:self];
-                    [thisSongsAlbum deleteAlbum];  //deleting album also deletes songs
+                    [thisSongsAlbum deleteAlbum];  //deleting album also deletes songs    CRASH when changing song name
                     deletedAlbum = YES;
                 }
                 
@@ -258,25 +264,29 @@ static int const UPDATE_SONG = 2;
 {
     BOOL success = NO;
     NSString *artFileName;
+    if(image == nil){
+        _albumArtFileName = nil;
+        return YES;
+    }
     
-    if(! _associatedWithAlbum)
+    if(! _associatedWithAlbum){
         artFileName = [NSString stringWithFormat:@"%@.png", self.songName];
+        
+        //save the UIImage to disk
+        if([AlbumArtUtilities isAlbumArtAlreadySavedOnDisk: artFileName])
+            success = YES;
+        else
+            success = [AlbumArtUtilities saveAlbumArtFileWithName:artFileName andImage:image];
+    }
     else
-        artFileName = [NSString stringWithFormat:@"%@.png", _album.albumName];
-    
-    //save and compress the UIImage to disk
-    if([AlbumArtUtilities isAlbumArtAlreadySavedOnDisk: artFileName])
-        success = YES;
-    else
-        success = [AlbumArtUtilities saveAlbumArtFileWithName:artFileName andImage:image];
+        artFileName = _album.albumArtFileName;
     
     _albumArtFileName = artFileName;
     return success;
 }
 
-- (BOOL)removeAlbumArt
+- (void)removeAlbumArt
 {
-    BOOL success = NO;
     if(_albumArtFileName){
         if(! _associatedWithAlbum){  //can definitely remove the image
             //remove file from disk
@@ -286,20 +296,12 @@ static int const UPDATE_SONG = 2;
             _albumArtFileName = nil;
         }
         else{
-            //album wont exist much longer, is being deleted now. can erase album art...
-            if(_album.albumSongs.count == 1){
-                //remove file from disk
-                [AlbumArtUtilities deleteAlbumArtFileWithName:_albumArtFileName];
-                
-                //made albumArtFileName property nil
-                _albumArtFileName = nil;
-            }
+            //we don't want to touch the album artwork if this song is part of an album.
         }
     }
-    
-    return success;
 }
 
+//private method
 - (BOOL)makeCopyOfArtAndRename
 {
     return [AlbumArtUtilities makeCopyOfArtWithName:[NSString stringWithFormat:@"%@.png", _album.albumName] andNameIt:[NSString stringWithFormat:@"%@.png", self.songName]];
@@ -329,9 +331,11 @@ static int const UPDATE_SONG = 2;
     if(!object || ![object isMemberOfClass:[self class]])  //object is nil or not an album object
         return NO;
     
-    return ([self customSmartSongComparison:(Song *)object]) ? YES : NO;
+    //return ([self customSmartSongComparison:(Song *)object]) ? YES : NO;
+    return ([_songID isEqualToString:((Song *)object).songID]) ? YES : NO;
 }
 
+/**
 - (BOOL)customSmartSongComparison:(Song *)mysterySong
 {
     BOOL sameSongName = NO, sameAlbumName = NO, sameArtistName = NO;
@@ -345,32 +349,34 @@ static int const UPDATE_SONG = 2;
     
     return (sameSongName && (sameAlbumName || sameArtistName)) ? YES : NO;
 }
+ */
 
--(NSUInteger)hash
+- (NSUInteger)hash
 {
     NSUInteger result = 1;
     NSUInteger prime = 31;
-    NSUInteger yesPrime = 1231;
-    NSUInteger noPrime = 1237;
+    //NSUInteger yesPrime = 1231;
+    //NSUInteger noPrime = 1237;
     
     // Add any object that already has a hash function (NSString)
-    result = prime * result + [self.songName hash];
-    result = prime * result + [self.youtubeLink hash];
-    result = prime * result + [self.albumArtFileName hash];
+    //result = prime * result + [self.songName hash];
+    //result = prime * result + [self.youtubeLink hash];
+    //result = prime * result + [self.albumArtFileName hash];
     
-    result = prime * result + [self.album.albumName hash];
-    result = prime * result + [self.album.releaseDate hash];
-    result = prime * result + [self.album.albumArtFileName hash];
-    result = prime * result + [self.album.albumSongs hash];
+    //result = prime * result + [self.album.albumName hash];
+    //result = prime * result + [self.album.releaseDate hash];
+    //result = prime * result + [self.album.albumArtFileName hash];
+    //result = prime * result + [self.album.albumSongs hash];
     
-    result = prime * result + [self.artist.artistName hash];
-    
+    //result = prime * result + [self.artist.artistName hash];
+    //result = prime * result + [_songID hash];
+    return prime * result + [_songID hash];
     //Add primitive variables (int)
-    result = prime * result + self.genreCode;
-    result = prime * result + self.album.genreCode;
+    //result = prime * result + self.genreCode;
+    //result = prime * result + self.album.genreCode;
     
     //Boolean values (BOOL)
-    result = (prime * result + self.associatedWithAlbum) ? yesPrime : noPrime;
+    //result = (prime * result + self.associatedWithAlbum) ? yesPrime : noPrime;
     
     return result;
 }

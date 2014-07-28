@@ -9,7 +9,6 @@
 #import "MasterEditingSongTableViewController.h"
 
 @interface MasterEditingSongTableViewController ()
-
 @end
 
 @implementation MasterEditingSongTableViewController
@@ -31,16 +30,16 @@ static BOOL PRODUCTION_MODE;
     //change background color of tableview
     self.tableView.backgroundColor = [UIColor clearColor];
     self.parentViewController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    
-    //remove header gap at top of table, and remove some scrolling space under the delete button (update scroll insets too)
-    [self.tableView setContentInset:UIEdgeInsetsMake(-32,0,-30,0)];
-    [self.tableView setScrollIndicatorInsets:UIEdgeInsetsMake(-32,0,-30,0)];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     [self setProductionModeValue];
+    
+    //remove header gap at top of table, and remove some scrolling space under the delete button (update scroll insets too)
+    [self.tableView setContentInset:UIEdgeInsetsMake(-32,0,-30,0)];
+    [self.tableView setScrollIndicatorInsets:UIEdgeInsetsMake(-32,0,-30,0)];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -101,12 +100,13 @@ static BOOL PRODUCTION_MODE;
             UIImage *image;
             if(PRODUCTION_MODE)
                 image = [AlbumArtUtilities albumArtFileNameToUiImage: _songIAmEditing.albumArtFileName];
-            else
-                image = [UIImage imageNamed:_songIAmEditing.album.albumName];
+            else{
+                if(_songIAmEditing.albumArtFileName)
+                    image = [UIImage imageNamed:_songIAmEditing.album.albumName];
+            }
             image = [AlbumArtUtilities imageWithImage:image scaledToSize:CGSizeMake(60, 60)];
             cell.accessoryView = [[ UIImageView alloc ] initWithImage:image];
             cell.detailTextLabel.text = @"";
-            
         } else if(indexPath.row == 4){  //Genre
             cell.textLabel.text = @"Genre";
             //int genreCode = _songIAmEditing.genreCode;
@@ -168,27 +168,64 @@ static BOOL PRODUCTION_MODE;
     if(indexPath.section == 0){
         switch (indexPath.row)
         {
-            case 0:
+            case 0:  //editing song name
             {
                 _lastTappedRow = 0;
-                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(songEditingComplete:)
-                                                             name:@"editableCellFinishedEditing" object:nil];
+                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(songNameEditingComplete:)
+                                                             name:@"DoneEditingTextField" object:nil];
                 
                 EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:_songIAmEditing.songName];
                 [self.navigationController pushViewController:vc animated:YES];
-                //[self performSegueWithIdentifier:@"editFieldSegue" sender:self];
                 break;
-
             }
-            case 1:
+            case 1:  //editing artist
+            {
+                UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel"
+                                                     destructiveButtonTitle:nil otherButtonTitles:@"Choose From Existing Artist",
+                                                                                                    @"Create New Artist", nil];
+                popup.tag = 1;
+                [popup showInView:[UIApplication sharedApplication].keyWindow];
                 _lastTappedRow = 1;
                 break;
-            case 2:
+            }
+            case 2:  //editing album
+            {
+                if(_songIAmEditing.associatedWithAlbum){
+                    UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel"
+                                                         destructiveButtonTitle:nil otherButtonTitles: @"", @"Remove Art", nil];
+                    popup.tag = 2;
+                    [popup showInView:[UIApplication sharedApplication].keyWindow];
+                } else{
+                    //album picker
+                }
                 _lastTappedRow = 2;
-            case 3:
+            }
+            case 3:  //editing album art
+            {
+                if(! _songIAmEditing.associatedWithAlbum)
+                {  //can only edit album art w/ a song that is part of an album IF you edit the album itself.
+                    if(_songIAmEditing.albumArtFileName)
+                    {
+                        UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel"
+                                                             destructiveButtonTitle:nil otherButtonTitles: @"Delete Art", @"Choose New Art", nil];
+                        popup.tag = 46872596;
+                        popup.actionSheetStyle = UIActionSheetStyleBlackTranslucent;
+                        [popup showInView:[self.navigationController view]];
+                        
+                    }
+                    else
+                    {
+                        [self pickNewAlbumArtFromPhotos];
+                    }
+                }
+                else
+                    //custom alertview
+                    [self launchAlertViewWithDialog];
+                
                 _lastTappedRow = 3;
                 break;
-            case 4:
+            }
+            case 4:  //editing genre
                 _lastTappedRow = 4;
         }
     }
@@ -202,30 +239,30 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
-- (void)songEditingComplete:(NSNotification *)notification
+- (void)songNameEditingComplete:(NSNotification *)notification
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"editableCellFinishedEditing" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"DoneEditingTextField" object:nil];
+    NSString *newName = (NSString *)notification.object;
+    newName = [newName removeIrrelevantWhitespace];
     
-    _songIAmEditing.songName = (NSString *)notification.object;
+    if([_songIAmEditing.songName isEqualToString:newName])
+        return;
+    if(newName.length == 0)  //was all whitespace, or user gave us an empty string
+        return;
+    
+    //changing song name in this case will break link between song and album art file. This is how i keep it in sync...
+    if(! _songIAmEditing.associatedWithAlbum){
+        UIImage *albumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.albumArtFileName];
+        [_songIAmEditing removeAlbumArt];
+        [_songIAmEditing setAlbumArt:nil];
+        _songIAmEditing.songName = newName;
+        
+        //after song name is changed, NOW we can create the image file on disk, so it has the correct name.
+        [_songIAmEditing setAlbumArt:albumArt];  //this creates the image file, names it, and saves it on disk.
+    } else
+        _songIAmEditing.songName = (NSString *)notification.object;
+    
     [self.tableView reloadData];
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    if([[segue identifier] isEqualToString: @"editFieldSegue"]){
-        //setup properties in destination view controller
-        switch (_lastTappedRow)
-        {
-            case 0:
-            {
-                [[segue destinationViewController] setStringUserIsEditing:_songIAmEditing.songName];
-                break;
-            }
-                
-            default:
-                break;
-        }
-    }
 }
 
 - (IBAction)leftBarButtonTapped:(id)sender  //cancel
@@ -240,6 +277,74 @@ static BOOL PRODUCTION_MODE;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongSavedDuringEdit" object:_songIAmEditing];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - UIActionSheet methods
+- (void)actionSheet:(UIActionSheet *)popup clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if(popup.tag == 1){
+        switch (buttonIndex)
+        {
+            case 0:
+                //do stuff
+                break;
+            case 1:
+                //do stuff
+                break;
+            default:
+                break;
+        }
+    }else if(popup.tag == 2){
+        switch (buttonIndex)
+        {
+            case 0:
+                [self removeAlbumArtFromSongAndDisk];
+                break;
+            case 1:
+                [self pickNewAlbumArtFromPhotos];
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+- (void)willPresentActionSheet:(UIActionSheet *)actionSheet
+{
+    for (UIView *subview in actionSheet.subviews) {
+        if ([subview isKindOfClass:[UIButton class]]) {
+            UIButton *button = (UIButton *)subview;
+            UILabel *label = button.titleLabel;
+            if([label.text isEqualToString:@"Delete Art"])
+                [button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+        }
+    }
+}
+
+
+#pragma mark - Album Art Methods
+- (void)pickNewAlbumArtFromPhotos
+{
+    UIImagePickerController *photoPickerController = [[UIImagePickerController alloc] init];
+    photoPickerController.delegate = self;
+    [self presentViewController:photoPickerController animated:YES completion:nil];
+}
+
+- (void)removeAlbumArtFromSongAndDisk
+{
+    [_songIAmEditing removeAlbumArt];
+    [self.tableView reloadData];
+}
+
+- (void) imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(NSDictionary *)editingInfo
+{
+    [self dismissModalViewControllerAnimated:YES];
+    
+    //try to delete the album art on disk (if we are replacing it), otherwise this does nothing.
+    [_songIAmEditing setAlbumArt:nil];
+    [_songIAmEditing setAlbumArt:image];
+    
+    [self.tableView reloadData];
 }
 
 
@@ -269,6 +374,28 @@ static BOOL PRODUCTION_MODE;
     else{
         return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
     }
+}
+
+#pragma mark - AlertView
+- (void)launchAlertViewWithDialog
+{
+    NSString * msg = @"This song is part of an album in your library. For this reason, you may only edit this artwork when editing the album itself.";
+    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Cannot Edit Album Art"
+                                                      message:msg
+                                                     delegate:self
+                                            cancelButtonTitle:@"OK"
+                                            otherButtonTitles:@"Go to Album", nil];
+    
+    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
+    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    [alert show];
+}
+
+- (void)alertView:(SDCAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if(buttonIndex == 1)  //segue to album edit (user wants to change album art i guess?)
+        NSLog(@"going to album.");
 }
 
 @end

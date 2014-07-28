@@ -13,13 +13,22 @@
 #define ARTIST_KEY @"artist"
 #define ALBUM_SONGS_KEY @"albumSongs"
 #define GENRE_CODE_KEY @"albumGenreCode"
+#define ALBUM_ID_KEY @"albumID"
 
 @implementation Album
-@synthesize albumName, releaseDate, albumArtFileName = _albumArtFileName, artist = _artist, albumSongs, genreCode;
+@synthesize albumName = _albumName, releaseDate = _releaseDate, albumArtFileName = _albumArtFileName, artist = _artist, albumSongs = _albumSongs, genreCode = _genreCode, albumID = _albumID;
 
 static  int const SAVE_ALBUM = 0;
 static int const DELETE_ALBUM = 1;
 static int const UPDATE_ALBUM = 2;
+
+- (id)init
+{
+    if(self = [super init]){
+        _albumID = [[NSObject UUID] copy];
+    }
+    return self;
+}
 
 //custom setter method
 - (void)setArtist:(Artist *)artist
@@ -36,29 +45,32 @@ static int const UPDATE_ALBUM = 2;
 
     _artist = artist;
 }
+//end of custom setters
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super init];
     if(self){
-        self.albumName = [aDecoder decodeObjectForKey:ALBUM_NAME_KEY];
-        self.releaseDate = [aDecoder decodeObjectForKey:RELEASE_DATE_KEY];
+        _albumID = [aDecoder decodeObjectForKey:ALBUM_ID_KEY];
+        _albumName = [aDecoder decodeObjectForKey:ALBUM_NAME_KEY];
+        _releaseDate = [aDecoder decodeObjectForKey:RELEASE_DATE_KEY];
         _albumArtFileName = [aDecoder decodeObjectForKey:ALBUM_ART_FILE_NAME_KEY];
-        self.artist = [aDecoder decodeObjectForKey:ARTIST_KEY];
-        self.albumSongs = [aDecoder decodeObjectForKey:ALBUM_SONGS_KEY];
-        self.genreCode = [aDecoder decodeIntForKey:GENRE_CODE_KEY];
+        _artist = [aDecoder decodeObjectForKey:ARTIST_KEY];
+        _albumSongs = [aDecoder decodeObjectForKey:ALBUM_SONGS_KEY];
+        _genreCode = [aDecoder decodeIntForKey:GENRE_CODE_KEY];
     }
     return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    [aCoder encodeObject:self.albumName forKey:ALBUM_NAME_KEY];
-    [aCoder encodeObject:self.releaseDate forKey:RELEASE_DATE_KEY];
-    [aCoder encodeObject:self.albumArtFileName forKey:ALBUM_ART_FILE_NAME_KEY];
-    [aCoder encodeObject:self.artist forKey:ARTIST_KEY];
-    [aCoder encodeObject:self.albumSongs forKey:ALBUM_SONGS_KEY];
-    [aCoder encodeInteger:self.genreCode forKey:GENRE_CODE_KEY];
+    [aCoder encodeObject:_albumID forKey:ALBUM_ID_KEY];
+    [aCoder encodeObject:_albumName forKey:ALBUM_NAME_KEY];
+    [aCoder encodeObject:_releaseDate forKey:RELEASE_DATE_KEY];
+    [aCoder encodeObject:_albumArtFileName forKey:ALBUM_ART_FILE_NAME_KEY];
+    [aCoder encodeObject:_artist forKey:ARTIST_KEY];
+    [aCoder encodeObject:_albumSongs forKey:ALBUM_SONGS_KEY];
+    [aCoder encodeInteger:_genreCode forKey:GENRE_CODE_KEY];
 }
 
 + (NSArray *)loadAll  //loads array containing all of the saved albums
@@ -141,7 +153,10 @@ static int const UPDATE_ALBUM = 2;
             
     } //end of swtich
     
-    [Album sortExistingAlbumsAlphabetically: &albums];
+    if([AppEnvironmentConstants smartAlphabeticalSort])
+        [Album sortExistingAlbumsWithSmartSort: &albums];
+    else
+        [Album sortExistingAlbumsAlphabetically: &albums];
     
     //save changes to model on disk
     NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:albums];  //encode albums
@@ -151,35 +166,51 @@ static int const UPDATE_ALBUM = 2;
 - (BOOL)setAlbumArt:(UIImage *)image
 {
     BOOL success = NO;
+    
+    if(image == nil){
+        _albumArtFileName = nil;
+        return YES;
+    }
+    
     NSString *artFileName = [NSString stringWithFormat:@"%@.png", self.albumName];
     
-    //save and compress the UIImage to disk
+    //save the UIImage to disk
     if([AlbumArtUtilities isAlbumArtAlreadySavedOnDisk:artFileName])
         success = YES;
-    else
-        [AlbumArtUtilities saveAlbumArtFileWithName:artFileName andImage:image];
+    else{
+        success = [AlbumArtUtilities saveAlbumArtFileWithName:artFileName andImage:image];
+    }
     
     _albumArtFileName = artFileName;
     return success;
 }
 
-- (BOOL)removeAlbumArt
+- (void)removeAlbumArt
 {
-    BOOL success = NO;
     if(_albumArtFileName){
         //remove file from disk
         [AlbumArtUtilities deleteAlbumArtFileWithName:_albumArtFileName];
         
         //made albumArtFileName property nil
         _albumArtFileName = nil;
+        
+        //set this change to all songs in this album as well
+        for(Song *albumSong in self.albumSongs){
+            [albumSong setAlbumArt:nil];
+            [albumSong updateExistingSong];
+        }
     }
-    
-    return success;
 }
 
 + (void)sortExistingAlbumsAlphabetically:(NSMutableArray **)albumModel
 {
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"albumName" ascending:YES selector:@selector(caseInsensitiveCompare:)];
+    [*albumModel sortUsingDescriptors:[NSArray arrayWithObject:sort]];
+}
+
++ (void)sortExistingAlbumsWithSmartSort:(NSMutableArray **)albumModel
+{
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"albumName" ascending:YES selector:@selector(smartSort:)];
     [*albumModel sortUsingDescriptors:[NSArray arrayWithObject:sort]];
 }
 
@@ -195,9 +226,11 @@ static int const UPDATE_ALBUM = 2;
     if(!object || ![object isMemberOfClass:[self class]])  //object is nil or not an album object
         return NO;
     
-    return ([self customSmartAlbumComparison:(Album *)object]) ? YES : NO;
+    //return ([self customSmartAlbumComparison:(Album *)object]) ? YES : NO;
+    return ([_albumID isEqualToString:((Album *)object).albumID]) ? YES : NO;
 }
 
+/**
 - (BOOL)customSmartAlbumComparison:(Album *)mysteryAlbum
 {
     BOOL sameName = NO;
@@ -207,22 +240,25 @@ static int const UPDATE_ALBUM = 2;
     
     return (sameName) ? YES : NO;
 }
+ */
 
--(NSUInteger)hash {
+- (NSUInteger)hash
+{
     NSUInteger result = 1;
     NSUInteger prime = 31;
     //NSUInteger yesPrime = 1231;
     //NSUInteger noPrime = 1237;
     
     // Add any object that already has a hash function (NSString)
-    result = prime * result + [self.albumName hash];
-    result = prime * result + [self.releaseDate hash];
-    result = prime * result + [self.albumArtFileName hash];
-    result = prime * result + [self.artist.artistName hash];
-    result = prime * result + [self.albumSongs hash];
+    //result = prime * result + [self.albumName hash];
+    //result = prime * result + [self.releaseDate hash];
+    //result = prime * result + [self.albumArtFileName hash];
+    //result = prime * result + [self.artist.artistName hash];
+    //result = prime * result + [self.albumSongs hash];
+    return prime * result + [_albumID hash];
     
     // Add primitive variables (int)
-    result = prime * result + self.genreCode;
+    //result = prime * result + self.genreCode;
     
     // Boolean values (BOOL)
     //result = prime * result + self.isSelected ? yesPrime : noPrime;

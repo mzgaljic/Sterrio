@@ -10,6 +10,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PreferredFontSizeUtility.h"
+#import "AppEnvironmentConstants.h"
 
 @protocol CustomIOS7AlertViewDelegate
 

@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "NSString+WhiteSpace_Utility.h"
 
 @interface NSString (smartSort)
 

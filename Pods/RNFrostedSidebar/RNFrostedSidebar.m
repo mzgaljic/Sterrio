@@ -317,19 +317,33 @@ static RNFrostedSidebar *rn_frostedMenu;
 //Mark was here, orientation change code
 - (void)deviceOrientationDidChangeNotification:(NSNotification*)note
 {
-    if(_sideBarIsOnScreen){
-        BOOL upsideDown = ([[UIDevice currentDevice] orientation] == UIInterfaceOrientationPortraitUpsideDown);
-        if(upsideDown)
-            _returningFromUpsideDown = YES;
-        else if(! _returningFromUpsideDown)
-        {
-            [self dismissAnimated:NO];
-            _returningFromUpsideDown = NO;
+    //first if statement solves a problem where this notification was sent multiple times...even if the device didn't rotate
+    int orientation = [[UIDevice currentDevice] orientation];
+    if(orientation > 4 || orientation < 1)  //bad practice, would like to change this eventually.
+        return;
+    if(orientation == _lastOrientation)
+        return;
+    else{
+        if(_sideBarIsOnScreen){
+            BOOL upsideDown = ([[UIDevice currentDevice] orientation] == UIInterfaceOrientationPortraitUpsideDown);
+            if(upsideDown)
+                _returningFromUpsideDown = YES;
+            else if(! _returningFromUpsideDown)
+            {
+                //keep sidebar on screen if going from landscapre right to landscape left (or vise versa). Here i am checking if that case doesnt occur.
+                if(! ((_lastOrientation == UIInterfaceOrientationLandscapeLeft || _lastOrientation == UIInterfaceOrientationLandscapeRight)
+                   && (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)))
+                    [self dismissAnimated:NO];
+                //else we went from one landscape to the other landscape
+                
+                _returningFromUpsideDown = NO;
+            }
+            else if(_returningFromUpsideDown)
+            {
+                _returningFromUpsideDown = NO;
+            }
         }
-        else if(_returningFromUpsideDown)
-        {
-            _returningFromUpsideDown = NO;
-        }
+        _lastOrientation = orientation;
     }
 }
 
@@ -507,6 +521,7 @@ static RNFrostedSidebar *rn_frostedMenu;
 
 - (void)showAnimated:(BOOL)animated {
     _sideBarIsOnScreen = YES;
+    _lastOrientation = [[UIDevice currentDevice] orientation];
     UIViewController *controller = [UIApplication sharedApplication].keyWindow.rootViewController;
     while (controller.presentedViewController != nil) {
         controller = controller.presentedViewController;

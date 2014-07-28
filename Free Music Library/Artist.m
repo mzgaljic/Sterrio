@@ -10,13 +10,25 @@
 #define ARTIST_NAME_KEY @"artistName"
 #define ALL_ARTIST_SONGS_KEY @"allSongs"
 #define ALL_ARTIST_ALBUMS_KEY @"allAlbums"
+#define ARTIST_ID_KEY @"artistID"
 
 @implementation Artist
-@synthesize artistName, allAlbums = _allAlbums, allSongs = _allSongs;
+@synthesize artistName = _artistName, allAlbums = _allAlbums, allSongs = _allSongs, artistID = _artistID;
 
 static  int const SAVE_ARTIST = 0;
 static int const DELETE_ARTIST = 1;
 static int const UPDATE_ARTIST = 2;
+
+- (id)init
+{
+    if (self = [super init])
+    {
+        _artistID = [[NSObject UUID] copy];
+        _allAlbums = [NSMutableArray array];
+        _allSongs = [NSMutableArray array];
+    }
+    return self;
+}
 
 //custom property setters
 - (void)setAllAlbums:(NSMutableArray *)allAlbums
@@ -33,21 +45,12 @@ static int const UPDATE_ARTIST = 2;
 }
 //end of custom property setters
 
-- (id)init
-{
-    self = [super init];
-    if (self) {
-        _allAlbums = [NSMutableArray array];
-        _allSongs = [NSMutableArray array];
-    }
-    return self;
-}
-
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super init];
     if(self){
-        self.artistName = [aDecoder decodeObjectForKey:ARTIST_NAME_KEY];
+        _artistID = [aDecoder decodeObjectForKey:ARTIST_ID_KEY];
+        _artistName = [aDecoder decodeObjectForKey:ARTIST_NAME_KEY];
         _allSongs = [aDecoder decodeObjectForKey:ALL_ARTIST_SONGS_KEY];
         _allAlbums = [aDecoder decodeObjectForKey:ALL_ARTIST_ALBUMS_KEY];
     }
@@ -56,7 +59,8 @@ static int const UPDATE_ARTIST = 2;
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    [aCoder encodeObject:self.artistName forKey:ARTIST_NAME_KEY];
+    [aCoder encodeObject:_artistID forKey:ARTIST_ID_KEY];
+    [aCoder encodeObject:_artistName forKey:ARTIST_NAME_KEY];
     [aCoder encodeObject:_allSongs forKey:ALL_ARTIST_SONGS_KEY];
     [aCoder encodeObject:_allAlbums forKey:ALL_ARTIST_ALBUMS_KEY];
 }
@@ -124,7 +128,10 @@ static int const UPDATE_ARTIST = 2;
             
     } //end of swtich
     
-    [Artist sortExistingArtistsAlphabetically:&artists];
+    if([AppEnvironmentConstants smartAlphabeticalSort])
+        [Artist sortExistingArtistsWithSmartSort: &artists];
+    else
+        [Artist sortExistingArtistsAlphabetically: &artists];
     
     //save changes to model on disk
     NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:artists];  //encode artists
@@ -134,6 +141,12 @@ static int const UPDATE_ARTIST = 2;
 + (void)sortExistingArtistsAlphabetically:(NSMutableArray **)artistModel
 {
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"artistName" ascending:YES selector:@selector(caseInsensitiveCompare:)];
+    [*artistModel sortUsingDescriptors:[NSArray arrayWithObject:sort]];
+}
+
++ (void)sortExistingArtistsWithSmartSort:(NSMutableArray **)artistModel
+{
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"artistName" ascending:YES selector:@selector(smartSort:)];
     [*artistModel sortUsingDescriptors:[NSArray arrayWithObject:sort]];
 }
 
@@ -149,9 +162,11 @@ static int const UPDATE_ARTIST = 2;
     if(!object || ![object isMemberOfClass:[self class]])  //object is nil or not an artist object
         return NO;
     
-    return ([self customSmartArtistComparison:(Artist *)object]) ? YES : NO;
+    //return ([self customSmartArtistComparison:(Artist *)object]) ? YES : NO;
+    return ([_artistID isEqualToString:((Artist *)object).artistID]) ? YES : NO;
 }
 
+/**
 //each artist must ‘own’ a unique set of songs or albums
 - (BOOL)customSmartArtistComparison:(Artist *)mysteryArtist
 {
@@ -182,18 +197,20 @@ static int const UPDATE_ARTIST = 2;
 
     return (sameName && sameSongs && sameAlbums) ? YES : NO;
 }
+ */
 
--(NSUInteger)hash {
+- (NSUInteger)hash
+{
     NSUInteger result = 1;
     NSUInteger prime = 31;
     //NSUInteger yesPrime = 1231;
     //NSUInteger noPrime = 1237;
     
     // Add any object that already has a hash function (NSString)
-    result = prime * result + [self.artistName hash];
-    result = prime * result + [_allSongs hash];
-    result = prime * result + [_allAlbums hash];
-    
+    //result = prime * result + [self.artistName hash];
+    //result = prime * result + [_allSongs hash];
+    //result = prime * result + [_allAlbums hash];
+    return prime * result + [_artistID hash];
     // Add primitive variables (int)
     //result = prime * result + self.genreCode;
     

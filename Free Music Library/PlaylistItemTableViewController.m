@@ -10,10 +10,11 @@
 
 @interface PlaylistItemTableViewController()
 @property (nonatomic, assign) int lastTableViewModelCount;
+@property (nonatomic, strong) UITextField *txtField;
 @end
 
 @implementation PlaylistItemTableViewController
-@synthesize playlist = _playlist, numSongsNotAddedYet = _numSongsNotAddedYet;
+@synthesize playlist = _playlist, numSongsNotAddedYet = _numSongsNotAddedYet, txtField = _txtField;
 static BOOL PRODUCTION_MODE;
 
 - (void) dealloc
@@ -53,6 +54,9 @@ static BOOL PRODUCTION_MODE;
 {
     [super viewDidLoad];
     
+    // This will remove extra separators from tableview
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
     [self setProductionModeValue];
     [self setUpNavBarItems];
 }
@@ -70,7 +74,7 @@ static BOOL PRODUCTION_MODE;
 - (void)setUpNavBarItems
 {
     UIBarButtonItem *editButton = self.editButtonItem;
-    //editButton.action = @selector(editTapped:);
+    editButton.action = @selector(editTapped:);
     UIBarButtonItem *addButton = self.addBarButton;
     
     NSArray *rightBarButtonItems = [NSArray arrayWithObjects:editButton, addButton, nil];
@@ -159,19 +163,22 @@ static BOOL PRODUCTION_MODE;
 {
     if(self.editing)
     {
-        [super setEditing:NO animated:NO];
-        [self.tableView setEditing:NO animated:NO];
-        [self.tableView reloadData];
-        //[self.navigationItem.rightBarButtonItem setTitle:@"Edit"];
-        //[self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStylePlain];
+        [self.navBar setRightBarButtonItems:_originalRightBarButtonItems animated:YES];
+        [self.navBar setLeftBarButtonItems:_originalLeftBarButtonItems animated:YES];
+        [self.navigationItem setHidesBackButton:NO animated:YES];
+        self.navBar.titleView = nil;
+        self.navBar.title = _playlist.playlistName;
+        _originalLeftBarButtonItems = nil;
+        _originalRightBarButtonItems = nil;
+        
+        [super setEditing:NO animated:YES];
     }
     else
     {
         [super setEditing:YES animated:YES];
-        [self.tableView setEditing:YES animated:YES];
-        [self.tableView reloadData];
-        //[self.navigationItem.rightBarButtonItem setTitle:@"Done"];
-        //[self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStyleDone];
+        
+        //allows for renaming the playlist
+        [self setUpUITextField];
     }
 }
 
@@ -289,5 +296,128 @@ static BOOL PRODUCTION_MODE;
             _addBarButton.enabled = YES;
     }
 }
+
+#pragma mark - UITextField methods
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    NSString *newName = textField.text;
+    if([newName isEqualToString:_playlist.playlistName]){
+        [textField resignFirstResponder];
+        [self userTappedCancel];
+        return YES;
+    }
+        
+    NSArray *allPlaylists = [Playlist loadAll];
+    BOOL duplicate = NO;
+    for(Playlist *somePlaylist in allPlaylists){
+        if([somePlaylist.playlistName isEqualToString:newName]){
+            duplicate = YES;
+            break;
+        }
+    }
+    allPlaylists = nil;
+    
+    if(duplicate){
+        //show uialertview with problem
+        return NO;
+    } else{
+        [textField resignFirstResponder];
+        [self commitNewPlaylistName:newName];
+        return YES;
+    }
+    
+    return YES;
+}
+
+- (BOOL)textFieldShouldClear:(UITextField *)textField
+{
+    return YES;
+}
+
+- (void)setUpUITextField
+{
+    //so we can restore their state afterwards
+    _originalLeftBarButtonItems = self.navBar.leftBarButtonItems;
+    _originalRightBarButtonItems = self.navBar.rightBarButtonItems;
+    
+    _txtField = [[UITextField alloc] initWithFrame :CGRectMake(15, 100, 320, 30)];
+    [_txtField addTarget:self action:@selector(userTappedUITextField) forControlEvents:UIControlEventEditingDidBegin];
+    
+    _txtField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    _txtField.autoresizesSubviews = YES;
+    _txtField.layer.cornerRadius = 5.0;
+    [_txtField setBorderStyle:UITextBorderStyleRoundedRect];
+    _txtField.text = _playlist.playlistName;
+    if([AppEnvironmentConstants boldNames])
+        _txtField.font = [UIFont boldSystemFontOfSize:20];
+    else
+        _txtField.font = [UIFont systemFontOfSize:20];
+    //_txtField.returnKeyType = UIReturnKeyDone;  better if it looks like we're not leaving editing mode when return is hit
+    _txtField.clearButtonMode = UITextFieldViewModeWhileEditing;
+    
+    _txtField.backgroundColor = [UIColor whiteColor];
+    [[[[[_txtField.backgroundColor darkerColor] darkerColor]darkerColor] darkerColor] darkerColor];
+    _txtField.textColor = [UIColor blackColor];
+    [_txtField setDelegate:self];
+    
+    UIBarButtonItem *editButton = self.editButtonItem;
+    editButton.action = @selector(editTapped:);
+    
+    [self.navigationItem setHidesBackButton:YES animated:NO];
+    [self.navBar setRightBarButtonItems:@[editButton] animated:YES];
+    [self.navBar setLeftBarButtonItems:nil animated:YES];
+    self.navBar.titleView = _txtField;  //works?
+}
+
+- (void)userTappedCancel
+{
+    UIBarButtonItem *editButton = self.editButtonItem;
+    editButton.action = @selector(editTapped:);
+    [self.navBar setRightBarButtonItem:editButton animated:YES];
+    _txtField.text = _playlist.playlistName;  //restore original playlist name
+    
+    [_txtField resignFirstResponder];
+}
+
+- (void)commitNewPlaylistName:(NSString *)newName
+{
+    [_playlist saveUnderNewName:newName];
+    
+    [self userTappedCancel];
+}
+
+- (void)userTappedUITextField
+{
+    [self.navBar setRightBarButtonItem:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                                     target:self action:@selector(userTappedCancel)] animated:YES];
+}
+
+
+#pragma mark - Rotation status bar methods
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
+        [self prefersStatusBarHidden];
+        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+    }else {
+        // iOS 6 code only here...checking if we are now going into landscape mode
+        if((toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft) ||(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight))
+            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+        else
+            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
+    }
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+        return YES;
+    else
+        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
+}
+
 
 @end

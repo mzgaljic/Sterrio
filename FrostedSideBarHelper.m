@@ -12,8 +12,12 @@
 
 + (void)setupAndShowSlideOutMenuUsingdelegate:(id)delegate;
 {
-    NSArray *images = @[[UIImage imageNamed:@"playlists"],[UIImage imageNamed:@"artists"],
-                        [UIImage imageNamed:@"genres"],[UIImage imageNamed:@"Gear Icon"]];
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(36, 36), NO, 0.0);
+    UIImage *blankImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    NSArray *images = @[blankImage,blankImage,
+                        blankImage,[UIImage imageNamed:@"Gear Icon"]];
     
     NSArray *colors =@[[UIColor blueColor],[UIColor redColor],[UIColor greenColor],[UIColor purpleColor]];
     

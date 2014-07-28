@@ -1,10 +1,19 @@
 PODS:
+  - RBBAnimation (0.3.0)
   - RNFrostedSidebar (0.2.0)
+  - SDCAlertView (1.4):
+    - RBBAnimation (~> 0.3)
+    - SDCAutoLayout (~> 2.0)
+  - SDCAutoLayout (2.0)
 
 DEPENDENCIES:
   - RNFrostedSidebar (~> 0.2.0)
+  - SDCAlertView
 
 SPEC CHECKSUMS:
+  RBBAnimation: 243d73be1a526f1b51d266b182e4aa0cfe9cbf64
   RNFrostedSidebar: f1d95d9b2627f13cc10e75d36e751a623eec079c
+  SDCAlertView: 9d75ea96555ff4b68e09e856b913d0549e3ba8d3
+  SDCAutoLayout: 6acad78fe6a09278a064ac71609e8f484a7249fc
 
 COCOAPODS: 0.33.1

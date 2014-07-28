@@ -95,7 +95,6 @@ static int const TEMP_SAVE_PLAYLIST_TO_DISK = 3;
         }
         else
             [playlists addObject:playlistToInsert];
-        [Playlist sortExistingArtistsAlphabetically:&playlists];
         
         //save changes to model on disk
         NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:playlists];  //encode playlists
@@ -116,6 +115,22 @@ static int const TEMP_SAVE_PLAYLIST_TO_DISK = 3;
 - (BOOL)updateExistingPlaylist
 {
     return [self performModelAction:UPDATE_PLAYLIST];
+}
+
+- (BOOL)saveUnderNewName:(NSString *)newName
+{
+    NSMutableArray *playlists = (NSMutableArray *)[Playlist loadAll];
+    if(playlists.count > 0){
+        int index = (int)[playlists indexOfObject:self];
+        _playlistName = newName;
+        [playlists replaceObjectAtIndex:index withObject:self];
+        
+        //save changes to model on disk
+        NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:playlists];  //encode playlists
+        return [fileData writeToURL:[FileIOConstants createSingleton].playlistsFileURL atomically:YES];
+    }
+    else
+        return NO;
 }
 
 - (BOOL)performModelAction:(int)desiredActionConst  //does the 'hard work' of altering the model.
@@ -155,18 +170,9 @@ static int const TEMP_SAVE_PLAYLIST_TO_DISK = 3;
             
     } //end of swtich
     
-    [Playlist sortExistingArtistsAlphabetically:&playlists];
-    
     //save changes to model on disk
     NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:playlists];  //encode playlists
     return [fileData writeToURL:[FileIOConstants createSingleton].playlistsFileURL atomically:YES];
-}
-
-
-+ (void)sortExistingArtistsAlphabetically:(NSMutableArray **)playlistModel
-{
-    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"playlistName" ascending:YES selector:@selector(caseInsensitiveCompare:)];
-    [*playlistModel sortUsingDescriptors:[NSArray arrayWithObject:sort]];
 }
 
 - (NSMutableArray *)insertNewPlaylistIntoAlphabeticalArray:(Playlist *)unInsertedPlaylist
@@ -181,9 +187,10 @@ static int const TEMP_SAVE_PLAYLIST_TO_DISK = 3;
     if(!object || ![object isMemberOfClass:[self class]])  //object is nil or not a playlist object
         return NO;
     
-    return ([self customSmartArtistComparison:(Playlist *)object]) ? YES : NO;
+    return ([_playlistName isEqualToString:((Playlist *)object).playlistName]) ? YES : NO;
 }
 
+/**
 //each playlist must have a unique name
 - (BOOL)customSmartArtistComparison:(Playlist *)mysteryPlaylist
 {
@@ -194,8 +201,10 @@ static int const TEMP_SAVE_PLAYLIST_TO_DISK = 3;
     
     return (sameName) ? YES : NO;
 }
+ */
 
--(NSUInteger)hash {
+- (NSUInteger)hash
+{
     NSUInteger result = 1;
     NSUInteger prime = 31;
     //NSUInteger yesPrime = 1231;

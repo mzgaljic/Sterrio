@@ -10,15 +10,18 @@
 #import "Song.h"
 #import "FileIOConstants.h"
 #import "AppEnvironmentConstants.h"
+#import "NSString+smartSort.h"
+#import "NSObject+ObjectUUID.h"
 
 @interface Artist : NSObject <NSCoding>
 
 @property(nonatomic, strong) NSString *artistName;  //note: naming conventions are restricted
 @property(nonatomic, strong) NSMutableArray *allSongs;  //songs NOT associated w/ albums
 @property(nonatomic, strong) NSMutableArray *allAlbums;
+@property(nonatomic, strong, readonly) NSString *artistID;
 
 + (NSArray *)loadAll;
-///should be saved upon Artists creation
+/**Artist objects need to be saved after being created if they are to appear in the model.*/
 - (BOOL)saveArtist;
 - (BOOL)deleteArtist;
 - (BOOL)updateExistingArtist;

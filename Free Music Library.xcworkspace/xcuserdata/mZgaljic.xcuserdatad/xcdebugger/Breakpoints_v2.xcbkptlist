@@ -6,32 +6,32 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Free Music Library/MasterSongsTableViewController.m"
-            timestampString = "427784460.172813"
+            filePath = "Pods/RNFrostedSidebar/RNFrostedSidebar.m"
+            timestampString = "427833356.525907"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "214"
-            endingLineNumber = "214"
-            landmarkName = "-songWasSavedDuringEditing:"
+            startingLineNumber = "319"
+            endingLineNumber = "319"
+            landmarkName = "-deviceOrientationDidChangeNotification:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Free Music Library/Song.m"
-            timestampString = "427785780.301701"
+            filePath = "Pods/SDCAlertView/SDCAlertView/Source/SDCAlertViewContentView.m"
+            timestampString = "428011385.207177"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "234"
-            endingLineNumber = "234"
-            landmarkName = "-performModelAction:"
+            startingLineNumber = "521"
+            endingLineNumber = "521"
+            landmarkName = "-positionContentScrollView"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

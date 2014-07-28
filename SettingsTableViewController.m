@@ -9,10 +9,15 @@
 #import "SettingsTableViewController.h"
 
 @interface SettingsTableViewController ()
+@property (nonatomic, strong) SDCAlertView *alertView;
+@property (nonatomic, strong) UIImage *attachmentImage;
+@property (nonatomic, assign) BOOL showEmailAlertView;
+@property (nonatomic, strong) UIImagePickerController *photoPicker;
 @end
 
 @implementation SettingsTableViewController
-@synthesize boldSongSwitch = _boldSongSwitch, smartSortSwitch = _smartSortSwitch, syncSettingViaIcloudSwitch = _syncSettingViaIcloudSwitch;
+@synthesize boldSongSwitch = _boldSongSwitch, smartSortSwitch = _smartSortSwitch, syncSettingViaIcloudSwitch = _syncSettingViaIcloudSwitch, attachmentImage = _attachmentImage, showEmailAlertView = _showEmailAlertView, photoPicker = _photoPicker;
+
 static BOOL PRODUCTION_MODE;
 static short const TOP_INSET_OF_TABLE = -20;
 
@@ -20,6 +25,8 @@ static const int FONT_SIZE_PICKER_TAG = 105;
 static const int WIFI_STREAM_PICKER_TAG = 106;
 static const int CELL_STREAM_PICKER_TAG = 107;
 
+//could go in AppEnvironmentConstants...
+static NSString *BUG_REPORT_EMAIL;
 
 - (void)setProductionModeValue
 {
@@ -30,6 +37,11 @@ static const int CELL_STREAM_PICKER_TAG = 107;
 {
     [self setProductionModeValue];
     [super viewDidLoad];
+    
+    if(PRODUCTION_MODE)
+        BUG_REPORT_EMAIL = @"example@example.com";
+    else
+        BUG_REPORT_EMAIL = @"mzgaljic@me.com";
     
     //remove extra padding placed between first cell and navigation bar
     if ([[UIDevice currentDevice].systemVersion floatValue] >= 7){
@@ -62,17 +74,19 @@ static const int CELL_STREAM_PICKER_TAG = 107;
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    return 4;  //4 sections used for actual content
+    return 5;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     switch (section)
     {
+            #pragma mark - Table Section Titles
         case 0:     return @"";
         case 1:     return @"Media Quality";
         case 2:     return @"Presentation";
         case 3:     return @"Sorting";
+        case 4:     return @"Help";
         default:    return @"";
     }
 }
@@ -81,10 +95,12 @@ static const int CELL_STREAM_PICKER_TAG = 107;
 {
     switch (section)
     {
+            #pragma mark - Table Section Descriptions/Footers
         case 0:     return @"Sync settings to your remaining Apple devices.";
-        case 1:     return @"The preferred playback quality for each connection type.";
-        case 2:     return @"'Bold Names' changes song, album, artist, playlist, and genre names wherever possible. (enabled by default)";
-        case 3:     return @"Enabling \"Smart\" Alphabetical Sort changes the way library content is sorted. The words (a/an/the) are ignored.";
+        case 1:     return @"The preferred music video playback quality for each connection type.";
+        case 2:     return @"'Bold Names' changes song, album, artist, playlist, and genre names to bold wherever possible. (enabled by default)";
+        case 3:     return @"Enabling \"Smart\" Alphabetical Sort changes the way library content is sorted. The words (a/an/the) are ignored. When disabled, library content is sorted in true alphabetical order.";
+        case 4:     return @"A Software 'Bug' is unexpected app behavior.";
         default:    return nil;
     }
 }
@@ -97,6 +113,7 @@ static const int CELL_STREAM_PICKER_TAG = 107;
         case 1:     return 2;
         case 2:     return 2;
         case 3:     return 1;
+        case 4:     return 1;
         default:    return -1;
     }
 }
@@ -171,6 +188,16 @@ static const int CELL_STREAM_PICKER_TAG = 107;
                 [_smartSortSwitch addTarget:self action:@selector(smartSortSwitchToggled:)forControlEvents:UIControlEventValueChanged];
                 break;
         }
+    } else if(indexPath.section == 4){
+        switch (indexPath.row)
+        {
+            case 0:
+                cell.textLabel.text = @"Report a Bug";
+                cell.detailTextLabel.text = @"🐞";
+                cell.accessoryView = nil;
+                cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+                break;
+        }
     }
     return cell;
 }
@@ -182,33 +209,55 @@ static const int CELL_STREAM_PICKER_TAG = 107;
         {
             case 0:
                 _lastTappedPickerCell = WIFI_STREAM_PICKER_TAG;
-                [self launchAlertViewWithPicker];
+                [self launchAlertViewWithPicker:WIFI_STREAM_PICKER_TAG];
                 break;
             case 1:
                 _lastTappedPickerCell = CELL_STREAM_PICKER_TAG;
-                [self launchAlertViewWithPicker];
+                [self launchAlertViewWithPicker:CELL_STREAM_PICKER_TAG];
                 break;
         }
     } else if(indexPath.section == 2){
         if(indexPath.row == 0){
             _lastTappedPickerCell = FONT_SIZE_PICKER_TAG;
-            [self launchAlertViewWithPicker];
+            [self launchAlertViewWithPicker:FONT_SIZE_PICKER_TAG];
         }
+    } else if(indexPath.section == 4){
+        UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:@"Compose Email" delegate:self cancelButtonTitle:@"Cancel"
+                                             destructiveButtonTitle:nil otherButtonTitles:@"Attach a Screenshot",
+                                @"Regular Email", nil];
+        popup.tag = 1;
+        [popup showInView:[UIApplication sharedApplication].keyWindow];
     }
-    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - AlertView with embedded pickerView
-- (void)launchAlertViewWithPicker
+- (void)launchAlertViewWithPicker:(short)tag
 {
-    // Here we need to pass a full frame
-    CustomIOS7AlertView *alertView = [[CustomIOS7AlertView alloc] init];
-    [alertView setContainerView:[self createPickerView]];
-    // Modify the parameters
-    [alertView setButtonTitles:[NSMutableArray arrayWithObjects:@"Done", nil]];
-    [alertView setDelegate:self];
-    [alertView setUseMotionEffects:true];
-    [alertView show];  //launch dialog
+    if(tag == FONT_SIZE_PICKER_TAG){
+        _alertView = [[SDCAlertView alloc] initWithTitle:@"Font Size"
+                                                 message:nil
+                                                delegate:self
+                                       cancelButtonTitle:nil
+                                       otherButtonTitles:@"Done", nil];
+        [_alertView.contentView addSubview:[self createPickerView]];
+        _alertView.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        _alertView.suggestedButtonFont = [UIFont boldSystemFontOfSize:16];
+    } else{
+        
+        _alertView = [[SDCAlertView alloc] init];
+        if(tag == CELL_STREAM_PICKER_TAG)
+            _alertView.title = @"Cellular Stream Quality";
+        else if(tag == WIFI_STREAM_PICKER_TAG)
+            _alertView.title = @"Wifi Stream Quality";
+        
+        _alertView.delegate = self;
+        [_alertView addButtonWithTitle:@"Done"];
+        [_alertView.contentView addSubview:[self createPickerView]];
+        _alertView.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        _alertView.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    }
+    [_alertView show];
 }
 
 NSArray *fontOptions;
@@ -217,7 +266,7 @@ NSArray *CellStreamOptions;
 
 - (UIView *)createPickerView
 {
-    UIPickerView *picker=[UIPickerView alloc];
+    UIPickerView *picker = [UIPickerView alloc];
     
     int row = -1;
     NSString *findMeInArray;
@@ -234,7 +283,7 @@ NSArray *CellStreamOptions;
             break;
         case WIFI_STREAM_PICKER_TAG:
         {
-            picker = [picker initWithFrame:CGRectMake(0, 0, 230, 300)];
+            picker = [picker initWithFrame:CGRectMake(0, 0, 260, 400)];
             WifiStreamOptions = @[@"240p",@"360p", @"480p",@"720p (default)",@"1080p"];
             short wifiSetting = [AppEnvironmentConstants preferredWifiStreamSetting];
             if(wifiSetting == 720)
@@ -251,7 +300,7 @@ NSArray *CellStreamOptions;
             break;
         }
         case CELL_STREAM_PICKER_TAG:
-            picker = [picker initWithFrame:CGRectMake(0, 0, 230, 300)];
+            picker = [picker initWithFrame:CGRectMake(0, 0, 260, 400)];
             CellStreamOptions = @[@"240p",@"360p (default)", @"480p",@"720p"];
             short cellSetting = [AppEnvironmentConstants preferredCellularStreamSetting];
             if(cellSetting == 360)
@@ -273,7 +322,7 @@ NSArray *CellStreamOptions;
     return picker;
 }
 
-- (void)customIOS7dialogButtonTouchUpInside:(CustomIOS7AlertView *)alertView clickedButtonAtIndex: (NSInteger)buttonIndex
+- (void)alertView:(SDCAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if(buttonIndex == 0){
         switch (_lastTappedPickerCell)
@@ -293,7 +342,7 @@ NSArray *CellStreamOptions;
                 break;
         }
     }
-    [alertView close];
+    //[alertView close];
     [self.tableView reloadData];
 }
 
@@ -322,6 +371,10 @@ NSArray *CellStreamOptions;
         case FONT_SIZE_PICKER_TAG:
         {
             _lastSelectedFontSize = (short)[[fontOptions objectAtIndex:row] intValue];
+            _alertView.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility
+                                                                      hypotheticalLabelFontSizeForPreferredSize:_lastSelectedFontSize]];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"settingFontPickerScrolled" object:nil];
             break;
         }
         case WIFI_STREAM_PICKER_TAG:
@@ -368,9 +421,14 @@ NSArray *CellStreamOptions;
             break;
         case WIFI_STREAM_PICKER_TAG:
             textView.text = [WifiStreamOptions objectAtIndex:row];
+            textView.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
             break;
         case CELL_STREAM_PICKER_TAG:
             textView.text = [CellStreamOptions objectAtIndex:row];
+            if([AppEnvironmentConstants preferredSizeSetting] >= 4)
+                textView.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+            else
+                textView.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:4]];
             break;
         default: textView.text = @"An error has occured. :(";
     }
@@ -382,7 +440,6 @@ NSArray *CellStreamOptions;
     return 40.0;
 }
 
-//private methods
 - (NSAttributedString *)boldAttributedStringWithString:(NSString *)aString withFontSize:(float)fontSize
 {
     if(! aString)
@@ -412,6 +469,197 @@ NSArray *CellStreamOptions;
     //update settings
     [AppEnvironmentConstants setSmartAlphabeticalSort:_smartSortSwitch.on];
     [Song reSortModel];
+}
+
+
+#pragma mark - Rotation status bar methods
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
+        [self prefersStatusBarHidden];
+        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+    }else {
+        // iOS 6 code only here...checking if we are now going into landscape mode
+        if((toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft) ||(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight))
+            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+        else
+            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
+    }
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+        return YES;
+    }
+    else{
+        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
+    }
+}
+
+#pragma mark - BUG REPORT/EMAIL logic
+- (void)launchEmailPicker
+{
+    _showEmailAlertView = NO;
+    [self callMailComposer];
+}
+
+- (void)callMailComposer
+{
+    Class mailClass = (NSClassFromString(@"MFMailComposeViewController"));
+    if (mailClass != nil){
+        // We must always check whether the current device is configured for sending emails
+        if ([mailClass canSendMail])
+            [self displayComposerModalView];
+        else
+            [self launchMailAppOnDevice];
+    }
+    else
+        [self launchMailAppOnDevice];
+}
+
+// Displays an email composition interface inside the application. Populates all the Mail fields.
+-(void)displayComposerModalView
+{
+    MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
+    picker.mailComposeDelegate = self;
+    NSString *emailSubject = @"Bug Report [F M L]";
+    [picker setSubject:emailSubject];
+
+    // Set up recipients
+    //[picker setCcRecipients:nil];
+    //[picker setBccRecipients:nil];
+    [picker setToRecipients:@[BUG_REPORT_EMAIL]];
+    [picker setMessageBody:[self buildEmailBodyString] isHTML:NO];
+    if(_attachmentImage)
+        [picker addAttachmentData:UIImagePNGRepresentation(_attachmentImage) mimeType:@"image/png" fileName:@"screenshot.png"];
+    if(_attachmentImage)
+        //completion block dismisses the photo picker only AFTER mail popup is dismissed
+        //if dismissed before, it looks jump/laggy if a large pic was selected by user.
+        //remember, _photoPicker presents mail since it is now on top of the stack
+        [_photoPicker presentViewController:picker animated:YES completion: nil];
+    else
+        //in this case, SettingsTableViewController is on top of stack. So it presents mail popup.
+        [self presentViewController:picker animated:YES completion: nil];
+    
+    if(picker)
+        picker = nil;
+}
+
+- (NSString *)buildEmailBodyString
+{
+    //\u2022 is Unicode for a bullet
+    NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"];
+    NSString *body;
+    if(_attachmentImage)
+        body = @"Try to provide as much information as possible.\n\nName the bug:\n\nLocation of issue:\n\nSeverity: (High/Medium/Low)\n\nReported By:\n\n=============\nDescription\n\u2022\n\nSteps To Reproduce Bug\n\u2022\n\nExpected result\n\u2022\n=============\ntime&date\n\nVersion: version#\n[End of bug report]\nScreenshot:";
+    else
+        body = @"Try to provide as much information as possible. Attaching screenshots is optional (but encouraged).\n\nName the bug:\n\nLocation of issue:\n\nSeverity: (High/Medium/Low)\n\nReported By:\n\n=============\nDescription\n\u2022\n\nSteps To Reproduce Bug\n\u2022\n\nExpected result\n\u2022\n=============\ntime&date\n\nVersion: version#\n[End of bug report]";
+    body = [body stringByReplacingOccurrencesOfString:@"version#" withString:version];
+    body = [body stringByReplacingOccurrencesOfString:@"time&date" withString:[self buildCurrentEstTimeString]];
+    return body;
+}
+
+- (NSString *)buildCurrentEstTimeString
+{
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateFormat = @"MM/dd/yy, hh:mmaa";
+    [dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
+    NSString *dateString = [dateFormatter stringFromDate:[NSDate date]];
+    NSDate *date = [dateFormatter dateFromString:dateString];  //right now date is in GMT +0:00
+    
+    // converts date to proper time zone, returns a string
+    NSMutableString *returnMe = [NSMutableString stringWithString: [dateFormatter stringFromDate:date]];
+    [returnMe appendString:@" EST"];
+    return returnMe;
+}
+
+// Dismisses the email composition interface when users tap Cancel or Send. Then it updates the message field with the result of the operation.
+- (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error
+{
+    NSString* alertMessage;
+    // Notifies users about errors associated with the interface
+    switch (result)
+    {
+        case MFMailComposeResultCancelled:
+            break;
+        case MFMailComposeResultSaved:
+            break;
+        case MFMailComposeResultSent:
+            alertMessage = @"Your email is now being sent.\nThank You 😀";
+            _showEmailAlertView = YES;
+            break;
+        case MFMailComposeResultFailed:
+            alertMessage = @"Failed to send email.";
+            _showEmailAlertView = YES;
+            break;
+        default:
+            alertMessage = @"Could not send your email, please try again.";
+            _showEmailAlertView = YES;
+            break;
+    }
+    _attachmentImage = nil;
+    
+    _alertView = [[SDCAlertView alloc] initWithTitle:@"Bug Report"
+                                             message:alertMessage
+                                            delegate:self
+                                   cancelButtonTitle:@"OK"
+                                   otherButtonTitles: nil];
+    _alertView.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    _alertView.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    _alertView.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    
+    //dismissed both modal view controllers (photo picker and mail)
+    [self dismissViewControllerAnimated:YES completion:^void ()
+                                                {
+                                                    if(_showEmailAlertView)
+                                                        [_alertView show];
+                                                }];
+}
+
+// Launches the Mail application on the device (when does this occur?)
+-(void)launchMailAppOnDevice
+{
+    NSMutableString *recipients = [NSMutableString stringWithString: @"mailto:"];
+    [recipients appendString:BUG_REPORT_EMAIL];
+    [recipients appendString:@"?cc=&subject="];
+    NSString *body = @"&body=";
+    NSString *email = [NSString stringWithFormat:@"%@%@", recipients, body];
+    email = [email stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:email]];
+}
+
+#pragma mark - UIActionSheet methods (and UIImagePicker stuff)
+- (void)actionSheet:(UIActionSheet *)popup clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    _photoPicker = nil;
+    if(popup.tag == 1){
+        switch (buttonIndex)
+        {
+            case 0:
+            {
+                _photoPicker = [[UIImagePickerController alloc] init];
+                _photoPicker.delegate = self;
+                [self presentViewController:_photoPicker animated:YES completion:nil];
+                break;
+            }
+            case 1:
+                [self launchEmailPicker];
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+- (void) imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(NSDictionary *)editingInfo
+{
+    _attachmentImage = image;
+    [self launchEmailPicker];
+    //photo picker is dismissed after mail popup is dismissed (both modal views are dismiseed at same time)
 }
 
 @end

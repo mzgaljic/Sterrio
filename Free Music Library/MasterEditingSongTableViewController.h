@@ -11,8 +11,13 @@
 #import "AppEnvironmentConstants.h"
 #import "AlbumArtUtilities.h"
 #import "EditableCellTableViewController.h"
+#import "SDCAlertView.h"
+#import "PreferredFontSizeUtility.h"
+#import "NSString+WhiteSpace_Utility.h"
 
-@interface MasterEditingSongTableViewController : UITableViewController
+@interface MasterEditingSongTableViewController : UITableViewController <UIActionSheetDelegate,
+                                                                        UINavigationControllerDelegate,
+                                                                        UIImagePickerControllerDelegate>
 
 @property (nonatomic, strong) Song *songIAmEditing;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *leftBarButton;

@@ -13,8 +13,10 @@
 #import "PlaylistSongItemTableViewController.h"  //song picker
 #import "AppEnvironmentConstants.h"
 #import "PlayListTableViewFormatter.h"
+#import "SDCAlertView.h"
+#import "NSString+WhiteSpace_Utility.h"
 
-@interface MasterPlaylistTableViewController : UITableViewController
+@interface MasterPlaylistTableViewController : UITableViewController <UITextFieldDelegate>
 
 @property (nonatomic, strong) NSMutableArray *results;  //for searching tableView?
 @property (nonatomic, assign) int selectedRowIndexValue;

@@ -12,6 +12,7 @@
 #import "FileIOConstants.h"
 #import "NSString+smartSort.h"
 #import "AppEnvironmentConstants.h"
+#import "NSObject+ObjectUUID.h"
 
 @class Album;
 @class Artist;
@@ -26,16 +27,17 @@
 @property(nonatomic, strong) Album *album;
 @property(nonatomic, assign) int genreCode;  //album genre will override this value if this song belongs to an album!
 @property(nonatomic, assign, readonly) BOOL associatedWithAlbum;
+@property(nonatomic, strong, readonly) NSString *songID;
 
 + (NSArray *)loadAll;
 + (void)reSortModel;
 
-///should be saved upon songs creation
+/**Song objects need to be saved after being created if they are to appear in the model.*/
 - (BOOL)saveSong;
 - (BOOL)deleteSong;
 - (BOOL)updateExistingSong;
 
 - (BOOL)setAlbumArt:(UIImage *)image;
-- (BOOL)removeAlbumArt;
+- (void)removeAlbumArt;
 
 @end

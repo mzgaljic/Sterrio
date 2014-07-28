@@ -16,7 +16,7 @@
 @synthesize allSongsInLibrary;
 static BOOL PRODUCTION_MODE;
 
--(void)dealloc
+- (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -41,6 +41,15 @@ static BOOL PRODUCTION_MODE;
     //init tableView model
     self.allSongsInLibrary = [NSMutableArray arrayWithArray:[Song loadAll]];
     [self.tableView reloadData];
+    
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight
+                                                          || orientation == UIInterfaceOrientationPortraitUpsideDown)
+    {
+        self.tabBarController.tabBar.hidden = YES;
+    }
+    else
+        self.tabBarController.tabBar.hidden = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -61,6 +70,9 @@ static BOOL PRODUCTION_MODE;
 {
     [super viewDidLoad];
     
+    // This will remove extra separators from tableview
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
     [self setProductionModeValue];
     [self setUpNavBarItems];
     self.tableView.allowsSelectionDuringEditing = YES;
@@ -70,6 +82,7 @@ static BOOL PRODUCTION_MODE;
 {
     //edit button
     UIBarButtonItem *editButton = self.editButtonItem;
+    editButton.action = @selector(editTapped:);
     
     //+ sign...also wire it up to the ibAction "addButtonPressed"
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc]
@@ -77,6 +90,34 @@ static BOOL PRODUCTION_MODE;
                                   target:self action:@selector(addButtonPressed)];
     NSArray *rightBarButtonItems = [NSArray arrayWithObjects:editButton, addButton, nil];
     self.navigationItem.rightBarButtonItems = rightBarButtonItems;  //place both buttons on the nav bar
+}
+
+- (void)editTapped:(id)sender
+{
+    if(self.editing)
+    {
+        //leaving editing mode now
+        [super setEditing:NO animated:YES];
+        [self makeBarButtonGrey:[self.navigationItem.rightBarButtonItems objectAtIndex:1] yes:YES];
+    }
+    else
+    {
+        //entering editing mode now
+        [super setEditing:YES animated:YES];
+        [self makeBarButtonGrey:[self.navigationItem.rightBarButtonItems objectAtIndex:1] yes:NO];
+    }
+}
+
+-(void)makeBarButtonGrey:(UIBarButtonItem *)barButton yes:(BOOL)show
+{
+    if (show) {
+        barButton.style = UIBarButtonItemStyleBordered;
+        barButton.enabled = true;
+    } else {
+        barButton.style = UIBarButtonItemStylePlain;
+        barButton.enabled = false;
+        barButton.title = nil;
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -157,7 +198,7 @@ static BOOL PRODUCTION_MODE;
     UIBarButtonItem *editButton = self.navigationItem.rightBarButtonItem;
     
     if([editButton.title isEqualToString:@"Edit"]){  //tapping song plays the song
-        [self performSegueWithIdentifier:@"songItemSegue" sender:self];
+       [self performSegueWithIdentifier:@"songItemSegue" sender:self];
         
     } else if([editButton.title isEqualToString:@"Done"]){  //tapping song triggers edit segue
         
@@ -213,10 +254,16 @@ static BOOL PRODUCTION_MODE;
 - (void)songWasSavedDuringEditing:(NSNotification *)notification
 {
     if([notification.name isEqualToString:@"SongSavedDuringEdit"]){
-        Song *savedSong = (Song *)notification.object;
-        //THIS line fails due to the song changing (song can't tell where it was in the original model on disk, since it changed)
-        [savedSong updateExistingSong];  //update model on disk
-        [self.allSongsInLibrary replaceObjectAtIndex:self.indexOfEditingSong withObject:savedSong];  //update this class's model
+        [self commitNewSongChanges:(Song *)notification.object];
+    }
+}
+
+- (void)commitNewSongChanges:(Song *)changedSong
+{
+    if(changedSong){
+        [changedSong updateExistingSong];
+        
+        self.allSongsInLibrary = [NSMutableArray arrayWithArray:[Song loadAll]];
         self.indexOfEditingSong = -1;
         [self.tableView reloadData];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:@"SongSavedDuringEdit" object:nil];
@@ -242,7 +289,6 @@ static BOOL PRODUCTION_MODE;
                                           otherButtonTitles:nil];
     [alert show];
 }
-
 
 - (IBAction)expandableMenuSelected:(id)sender
 {
@@ -275,6 +321,8 @@ static BOOL PRODUCTION_MODE;
     }
     else{
         [self setTabBarVisible:YES animated:NO];
+        //fixes a bug when using another viewController with all these "hiding" nav bar features...and returning to this viewController
+        self.tabBarController.tabBar.hidden = NO;
         return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
     }
 }

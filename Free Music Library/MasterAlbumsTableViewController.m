@@ -36,11 +36,23 @@ static BOOL PRODUCTION_MODE;
     //init tableView model
     self.albums = [NSMutableArray arrayWithArray:[Album loadAll]];
     [self.tableView reloadData];
+    
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight
+       || orientation == UIInterfaceOrientationPortraitUpsideDown)
+    {
+        self.tabBarController.tabBar.hidden = YES;
+    }
+    else
+        self.tabBarController.tabBar.hidden = NO;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    // This will remove extra separators from tableview
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
     [self setProductionModeValue];
     [self setUpNavBarItems];
@@ -60,6 +72,7 @@ static BOOL PRODUCTION_MODE;
 {
     //edit button
     UIBarButtonItem *editButton = self.editButtonItem;
+    editButton.action = @selector(editTapped:);
     
     //+ sign...also wire it up to the ibAction "addButtonPressed"
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc]
@@ -68,6 +81,35 @@ static BOOL PRODUCTION_MODE;
     NSArray *rightBarButtonItems = [NSArray arrayWithObjects:editButton, addButton, nil];
     self.navigationItem.rightBarButtonItems = rightBarButtonItems;  //place both buttons on the nav bar
 }
+
+- (void)editTapped:(id)sender
+{
+    if(self.editing)
+    {
+        //leaving editing mode now
+        [super setEditing:NO animated:YES];
+        [self makeBarButtonGrey:[self.navigationItem.rightBarButtonItems objectAtIndex:1] yes:YES];
+    }
+    else
+    {
+        //entering editing mode now
+        [super setEditing:YES animated:YES];
+        [self makeBarButtonGrey:[self.navigationItem.rightBarButtonItems objectAtIndex:1] yes:NO];
+    }
+}
+
+-(void)makeBarButtonGrey:(UIBarButtonItem *)barButton yes:(BOOL)show
+{
+    if (show) {
+        barButton.style = UIBarButtonItemStyleBordered;
+        barButton.enabled = true;
+    } else {
+        barButton.style = UIBarButtonItemStylePlain;
+        barButton.enabled = false;
+        barButton.title = nil;
+    }
+}
+
 
 - (void)didReceiveMemoryWarning
 {
@@ -190,5 +232,63 @@ static BOOL PRODUCTION_MODE;
 {
     [FrostedSideBarHelper setupAndShowSlideOutMenuUsingdelegate:self];
 }
+
+
+#pragma mark - Rotation status bar methods
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
+        [self prefersStatusBarHidden];
+        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+    }else {
+        // iOS 6 code only here...checking if we are now going into landscape mode
+        if((toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft) ||(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight))
+            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+        else
+            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
+    }
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+        [self setTabBarVisible:NO animated:NO];
+        return YES;
+    }
+    else{
+        [self setTabBarVisible:YES animated:NO];
+        //fixes a bug when using another viewController with all these "hiding" nav bar features...and returning to this viewController
+        self.tabBarController.tabBar.hidden = NO;
+        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
+    }
+}
+
+#pragma mark - Rotation tab bar methods
+- (void)setTabBarVisible:(BOOL)visible animated:(BOOL)animated
+{
+    // bail if the current state matches the desired state
+    if ([self tabBarIsVisible] == visible) return;
+    
+    // get a frame calculation ready
+    CGRect frame = self.tabBarController.tabBar.frame;
+    CGFloat height = frame.size.height;
+    CGFloat offsetY = (visible)? -height : height;
+    
+    // zero duration means no animation
+    CGFloat duration = (animated)? 0.3 : 0.0;
+    
+    [UIView animateWithDuration:duration animations:^{
+        self.tabBarController.tabBar.frame = CGRectOffset(frame, 0, offsetY);
+    }];
+}
+
+- (BOOL)tabBarIsVisible
+{
+    return self.tabBarController.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame);
+}
+
 
 @end

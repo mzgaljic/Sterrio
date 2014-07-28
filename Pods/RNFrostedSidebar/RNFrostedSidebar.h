@@ -62,8 +62,10 @@
 // An optional delegate to respond to interaction events
 @property (nonatomic, weak) id delegate;
 
+//marks properties
 @property (nonatomic, assign) BOOL sideBarIsOnScreen;
 @property (nonatomic, strong) UISwipeGestureRecognizer *gestureRecognizer;
+@property (nonatomic, assign) int lastOrientation;
 
 - (instancetype)initWithImages:(NSArray *)images selectedIndices:(NSIndexSet *)selectedIndices borderColors:(NSArray *)colors;
 - (instancetype)initWithImages:(NSArray *)images selectedIndices:(NSIndexSet *)selectedIndices;

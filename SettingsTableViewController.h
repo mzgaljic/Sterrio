@@ -7,12 +7,20 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MessageUI/MessageUI.h>
 #import "Song.h"
 #import "AppEnvironmentConstants.h"
-#import "CustomIOS7AlertView.h"
+#import "SDCAlertView.h"
 #import "PreferredFontSizeUtility.h"
 
-@interface SettingsTableViewController : UITableViewController <UIPickerViewDelegate,UIPickerViewDataSource>
+
+@interface SettingsTableViewController : UITableViewController <UIPickerViewDelegate,
+                                                                UIPickerViewDataSource,
+                                                                SDCAlertViewDelegate,
+                                                                MFMailComposeViewControllerDelegate,
+                                                                UIImagePickerControllerDelegate,
+                                                                UINavigationControllerDelegate,
+                                                                UIActionSheetDelegate>
 
 @property (nonatomic, strong) UISwitch *syncSettingViaIcloudSwitch;
 @property (nonatomic, strong) UISwitch *boldSongSwitch;

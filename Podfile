@@ -3,3 +3,4 @@
 #pod 'FMDB'     --> some advanced database wrapper. probably too complicated.
 
 pod 'RNFrostedSidebar', '~> 0.2.0'
+pod 'SDCAlertView'

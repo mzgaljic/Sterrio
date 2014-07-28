@@ -9,8 +9,9 @@
 #import "NSString+smartSort.h"
 
 @implementation NSString (smartSort)
+static NSString *myself;
 
-// This method can be exposed in a header
+// This method can be exposed in header
 - (NSComparisonResult)smartSort:(NSString*)aString;
 {
     //original, clean code...
@@ -18,12 +19,14 @@
     //NSString *compareStringTrimmed = [aString removeArticles];
     //return [selfTrimmed compare:compareStringTrimmed];
     
-    //efficient code
-    return [[self removeArticles] compare:[aString removeArticles]];
+    return [[self removeArticles] compare:[aString removeArticles]];  //equivalent one-liner
 }
 
 - (NSString*)removeArticles  //makes sure to resort strings that START with the specified prefixes.
 {
+    myself = self;
+    myself = [myself removeIrrelevantWhitespace];
+    
     NSRange range = NSMakeRange(NSNotFound, 0);
     
     if ([self hasPrefix:@"a "])

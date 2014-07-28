@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		03D3A29591F748308F7121DE /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C84B413EAF4C57BC10A21B /* libPods.a */; settings = {ATTRIBUTES = (Weak, ); }; };
 		870EDAE6197F4EAD001901B9 /* EditableCellTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 870EDAE5197F4EAD001901B9 /* EditableCellTableViewController.m */; };
+		8715AC4D19846AB900A51165 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8715AC4C19846AB900A51165 /* MessageUI.framework */; };
+		871A0B031980835D00BACD31 /* UIColor+LighterAndDarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 871A0B021980835D00BACD31 /* UIColor+LighterAndDarker.m */; };
+		871CDAC6198048F200E72357 /* EditingArtistItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 871CDAC5198048F200E72357 /* EditingArtistItemTableViewController.m */; };
 		8728B788194959CE00565BDA /* Playlist.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B787194959CE00565BDA /* Playlist.m */; };
 		8728B78B194959E500565BDA /* Artist.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B78A194959E500565BDA /* Artist.m */; };
 		8728B794194964AB00565BDA /* FileIOConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B793194964AB00565BDA /* FileIOConstants.m */; };
@@ -30,6 +33,8 @@
 		87480DCD192C1FBD005CC0A4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DAC192C1FBD005CC0A4 /* UIKit.framework */; };
 		87480DD5192C1FBD005CC0A4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 87480DD3192C1FBD005CC0A4 /* InfoPlist.strings */; };
 		87480DD7192C1FBD005CC0A4 /* Free_Music_LibraryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 87480DD6192C1FBD005CC0A4 /* Free_Music_LibraryTests.m */; };
+		874C535C19831825000382FA /* NSString+WhiteSpace_Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = 874C535B19831825000382FA /* NSString+WhiteSpace_Utility.m */; };
+		874C535F19844201000382FA /* NSObject+ObjectUUID.m in Sources */ = {isa = PBXBuildFile; fileRef = 874C535E19844201000382FA /* NSObject+ObjectUUID.m */; };
 		875984A5195D764700015243 /* PlaylistItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875984A4195D764700015243 /* PlaylistItemTableViewController.m */; };
 		875984A8195D775500015243 /* GenreItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875984A7195D775500015243 /* GenreItemTableViewController.m */; };
 		875B381A197ACB7A008B4409 /* CustomIOS7AlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B3819197ACB7A008B4409 /* CustomIOS7AlertView.m */; };
@@ -48,7 +53,6 @@
 		87A110561964A5EA00270528 /* Album.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A110541964A5EA00270528 /* Album.m */; };
 		87A110591964A67000270528 /* Song.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A110571964A67000270528 /* Song.m */; };
 		87A43E7E1978C413001B4367 /* MasterEditingSongTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A43E7D1978C413001B4367 /* MasterEditingSongTableViewController.m */; };
-		87C4D5741970932A0082D781 /* BackupFileHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C4D5731970932A0082D781 /* BackupFileHelper.m */; };
 		87CEDC6519731EF000780D57 /* PlaylistSongItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87CEDC6419731EF000780D57 /* PlaylistSongItemTableViewController.m */; };
 		87D16D621931B7EE00DB6A34 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 87D16D611931B7EE00DB6A34 /* Podfile */; };
 		87D47D8C19340F8B0057D49B /* AlbumItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47D8919340F8B0057D49B /* AlbumItemViewController.m */; };
@@ -77,6 +81,11 @@
 		566689BB153A40D889AD1CB3 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		870EDAE4197F4EAD001901B9 /* EditableCellTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditableCellTableViewController.h; sourceTree = "<group>"; };
 		870EDAE5197F4EAD001901B9 /* EditableCellTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditableCellTableViewController.m; sourceTree = "<group>"; };
+		8715AC4C19846AB900A51165 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		871A0B011980835D00BACD31 /* UIColor+LighterAndDarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+LighterAndDarker.h"; sourceTree = "<group>"; };
+		871A0B021980835D00BACD31 /* UIColor+LighterAndDarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+LighterAndDarker.m"; sourceTree = "<group>"; };
+		871CDAC4198048F200E72357 /* EditingArtistItemTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditingArtistItemTableViewController.h; sourceTree = "<group>"; };
+		871CDAC5198048F200E72357 /* EditingArtistItemTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditingArtistItemTableViewController.m; sourceTree = "<group>"; };
 		8728B786194959CE00565BDA /* Playlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Playlist.h; sourceTree = "<group>"; };
 		8728B787194959CE00565BDA /* Playlist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Playlist.m; sourceTree = "<group>"; };
 		8728B789194959E500565BDA /* Artist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Artist.h; sourceTree = "<group>"; };
@@ -110,6 +119,10 @@
 		87480DD2192C1FBD005CC0A4 /* Free Music LibraryTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Free Music LibraryTests-Info.plist"; sourceTree = "<group>"; };
 		87480DD4192C1FBD005CC0A4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		87480DD6192C1FBD005CC0A4 /* Free_Music_LibraryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Free_Music_LibraryTests.m; sourceTree = "<group>"; };
+		874C535A19831825000382FA /* NSString+WhiteSpace_Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+WhiteSpace_Utility.h"; sourceTree = "<group>"; };
+		874C535B19831825000382FA /* NSString+WhiteSpace_Utility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+WhiteSpace_Utility.m"; sourceTree = "<group>"; };
+		874C535D19844201000382FA /* NSObject+ObjectUUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+ObjectUUID.h"; sourceTree = "<group>"; };
+		874C535E19844201000382FA /* NSObject+ObjectUUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+ObjectUUID.m"; sourceTree = "<group>"; };
 		875984A3195D764700015243 /* PlaylistItemTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistItemTableViewController.h; sourceTree = "<group>"; };
 		875984A4195D764700015243 /* PlaylistItemTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistItemTableViewController.m; sourceTree = "<group>"; };
 		875984A6195D775500015243 /* GenreItemTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenreItemTableViewController.h; sourceTree = "<group>"; };
@@ -145,11 +158,9 @@
 		87A110581964A67000270528 /* Song.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Song.h; sourceTree = "<group>"; };
 		87A43E7C1978C413001B4367 /* MasterEditingSongTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterEditingSongTableViewController.h; sourceTree = "<group>"; };
 		87A43E7D1978C413001B4367 /* MasterEditingSongTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterEditingSongTableViewController.m; sourceTree = "<group>"; };
-		87C4D5721970932A0082D781 /* BackupFileHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupFileHelper.h; sourceTree = "<group>"; };
-		87C4D5731970932A0082D781 /* BackupFileHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupFileHelper.m; sourceTree = "<group>"; };
 		87CEDC6319731EF000780D57 /* PlaylistSongItemTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistSongItemTableViewController.h; sourceTree = "<group>"; };
 		87CEDC6419731EF000780D57 /* PlaylistSongItemTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistSongItemTableViewController.m; sourceTree = "<group>"; };
-		87D16D611931B7EE00DB6A34 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
+		87D16D611931B7EE00DB6A34 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		87D47D8819340F8B0057D49B /* AlbumItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumItemViewController.h; sourceTree = "<group>"; };
 		87D47D8919340F8B0057D49B /* AlbumItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumItemViewController.m; sourceTree = "<group>"; };
 		87D47D8A19340F8B0057D49B /* MasterAlbumsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterAlbumsTableViewController.h; sourceTree = "<group>"; };
@@ -181,6 +192,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8715AC4D19846AB900A51165 /* MessageUI.framework in Frameworks */,
 				87480DAB192C1FBD005CC0A4 /* CoreGraphics.framework in Frameworks */,
 				87480DAD192C1FBD005CC0A4 /* UIKit.framework in Frameworks */,
 				87480DA9192C1FBD005CC0A4 /* Foundation.framework in Frameworks */,
@@ -201,13 +213,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		870EDAE7197F4EB0001901B9 /* Editing Field In Cell */ = {
+		870EDAE7197F4EB0001901B9 /* Editing Field View */ = {
+			isa = PBXGroup;
+			children = (
+				871CDAC7198048FA00E72357 /* Editing a string */,
+				871CDAC81980491900E72357 /* Choosing an existing artist? */,
+			);
+			name = "Editing Field View";
+			sourceTree = "<group>";
+		};
+		871CDAC7198048FA00E72357 /* Editing a string */ = {
 			isa = PBXGroup;
 			children = (
 				870EDAE4197F4EAD001901B9 /* EditableCellTableViewController.h */,
 				870EDAE5197F4EAD001901B9 /* EditableCellTableViewController.m */,
 			);
-			name = "Editing Field In Cell";
+			name = "Editing a string";
+			sourceTree = "<group>";
+		};
+		871CDAC81980491900E72357 /* Choosing an existing artist? */ = {
+			isa = PBXGroup;
+			children = (
+				871CDAC4198048F200E72357 /* EditingArtistItemTableViewController.h */,
+				871CDAC5198048F200E72357 /* EditingArtistItemTableViewController.m */,
+			);
+			name = "Choosing an existing artist?";
 			sourceTree = "<group>";
 		};
 		87362AF4194E3819004DB544 /* Music Playback */ = {
@@ -245,6 +275,7 @@
 				878ACD60192D391E005938F5 /* Playlists tab */,
 				878ACD61192D3931005938F5 /* Genres tab */,
 				87F10BCF19682EDF003EDFB2 /* Settings View */,
+				870EDAE7197F4EB0001901B9 /* Editing Field View */,
 				8740724019798130004C5C57 /* GUI consistent style helpers */,
 			);
 			name = GUI;
@@ -257,10 +288,11 @@
 				87A0FD94197DD93A008FBBF7 /* Album Formatter */,
 				87A0FDD3197DFA34008FBBF7 /* Artist Formatter */,
 				87911300197EF91200DFC2DB /* Playlist Formatter */,
-				870EDAE7197F4EB0001901B9 /* Editing Field In Cell */,
 				87A0FD92197DD923008FBBF7 /* Side Bar Menu */,
 				87A0FD8F197DD594008FBBF7 /* PreferredFontSizeUtility.h */,
 				87A0FD90197DD594008FBBF7 /* PreferredFontSizeUtility.m */,
+				871A0B011980835D00BACD31 /* UIColor+LighterAndDarker.h */,
+				871A0B021980835D00BACD31 /* UIColor+LighterAndDarker.m */,
 			);
 			name = "GUI consistent style helpers";
 			sourceTree = "<group>";
@@ -301,6 +333,7 @@
 		87480DA7192C1FBD005CC0A4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8715AC4C19846AB900A51165 /* MessageUI.framework */,
 				87D9EB9919392DFF004F3885 /* libsqlite3.dylib */,
 				87FEBB22193576AD0088EF41 /* iCloud.framework */,
 				87480DA8192C1FBD005CC0A4 /* Foundation.framework */,
@@ -484,10 +517,12 @@
 				8728B793194964AB00565BDA /* FileIOConstants.m */,
 				876EDE5E19648AA300795767 /* AlbumArtUtilities.h */,
 				876EDE5F19648AA300795767 /* AlbumArtUtilities.m */,
-				87C4D5721970932A0082D781 /* BackupFileHelper.h */,
-				87C4D5731970932A0082D781 /* BackupFileHelper.m */,
 				875B3824197AFF29008B4409 /* NSString+smartSort.h */,
 				875B3825197AFF29008B4409 /* NSString+smartSort.m */,
+				874C535A19831825000382FA /* NSString+WhiteSpace_Utility.h */,
+				874C535B19831825000382FA /* NSString+WhiteSpace_Utility.m */,
+				874C535D19844201000382FA /* NSObject+ObjectUUID.h */,
+				874C535E19844201000382FA /* NSObject+ObjectUUID.m */,
 			);
 			name = "Model Utilities";
 			sourceTree = "<group>";
@@ -686,10 +721,14 @@
 				875984A5195D764700015243 /* PlaylistItemTableViewController.m in Sources */,
 				87FEBB38193587610088EF41 /* UpNextSongQueue.m in Sources */,
 				87D47D991934289F0057D49B /* MasterGenreTableViewController.m in Sources */,
+				874C535C19831825000382FA /* NSString+WhiteSpace_Utility.m in Sources */,
 				87362B00194E70B4004DB544 /* PlaybackHistory.m in Sources */,
 				8740723F19798129004C5C57 /* SongTableViewFormatter.m in Sources */,
 				875B3820197ACBC0008B4409 /* SettingsTableViewController.m in Sources */,
+				874C535F19844201000382FA /* NSObject+ObjectUUID.m in Sources */,
 				87E1C5A0193A5E8B009AE399 /* GenreConstants.m in Sources */,
+				871CDAC6198048F200E72357 /* EditingArtistItemTableViewController.m in Sources */,
+				871A0B031980835D00BACD31 /* UIColor+LighterAndDarker.m in Sources */,
 				87480DB9192C1FBD005CC0A4 /* AppDelegate.m in Sources */,
 				8728B794194964AB00565BDA /* FileIOConstants.m in Sources */,
 				87D47DA419345D8E0057D49B /* MasterArtistsTableViewController.m in Sources */,
@@ -711,7 +750,6 @@
 				87480DB5192C1FBD005CC0A4 /* main.m in Sources */,
 				87A0FDD2197DFA2C008FBBF7 /* ArtistTableViewFormatter.m in Sources */,
 				870EDAE6197F4EAD001901B9 /* EditableCellTableViewController.m in Sources */,
-				87C4D5741970932A0082D781 /* BackupFileHelper.m in Sources */,
 				87A0FD87197DC595008FBBF7 /* FrostedSideBarHelper.m in Sources */,
 				87362B03194E9CDF004DB544 /* Stack.m in Sources */,
 				8728B78B194959E500565BDA /* Artist.m in Sources */,

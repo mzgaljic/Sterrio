@@ -239,7 +239,28 @@ CGFloat buttonSpacerHeight = 0;
         [closeButton setTitle:[buttonTitles objectAtIndex:i] forState:UIControlStateNormal];
         [closeButton setTitleColor:[UIColor colorWithRed:0.0f green:0.5f blue:1.0f alpha:1.0f] forState:UIControlStateNormal];
         [closeButton setTitleColor:[UIColor colorWithRed:0.2f green:0.2f blue:0.2f alpha:0.5f] forState:UIControlStateHighlighted];
-        [closeButton.titleLabel setFont:[UIFont boldSystemFontOfSize:14.0f]];
+        
+        //Mark was here, changed the font size
+        short size = [AppEnvironmentConstants preferredSizeSetting];
+        switch (size)
+        {
+                //cases 1 and 2 should be using apples UIAlertView
+            case 3:
+                [closeButton.titleLabel setFont:[UIFont boldSystemFontOfSize:16.0f]];
+                break;
+            case 4:
+                [closeButton.titleLabel setFont:[UIFont boldSystemFontOfSize:18.0f]];
+                break;
+            case 5:
+                [closeButton.titleLabel setFont:[UIFont boldSystemFontOfSize:19.0f]];
+                break;
+            case 6:
+                [closeButton.titleLabel setFont:[UIFont boldSystemFontOfSize:20.0f]];
+                break;
+            default:
+                [closeButton.titleLabel setFont:[UIFont boldSystemFontOfSize:16.0f]];
+                break;
+        }
         [closeButton.layer setCornerRadius:kCustomIOS7AlertViewCornerRadius];
 
         [container addSubview:closeButton];
