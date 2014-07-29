@@ -11,12 +11,14 @@
 @interface SettingsTableViewController ()
 @property (nonatomic, strong) SDCAlertView *alertView;
 @property (nonatomic, strong) UIImage *attachmentImage;
+@property (nonatomic, strong) NSMutableArray *attachmentUIImages;
 @property (nonatomic, assign) BOOL showEmailAlertView;
-@property (nonatomic, strong) UIImagePickerController *photoPicker;
+//@property (nonatomic, strong) UIImagePickerController *photoPicker;
+@property (nonatomic, strong) ZCImagePickerController *photoPicker;
 @end
 
 @implementation SettingsTableViewController
-@synthesize boldSongSwitch = _boldSongSwitch, smartSortSwitch = _smartSortSwitch, syncSettingViaIcloudSwitch = _syncSettingViaIcloudSwitch, attachmentImage = _attachmentImage, showEmailAlertView = _showEmailAlertView, photoPicker = _photoPicker;
+@synthesize boldSongSwitch = _boldSongSwitch, smartSortSwitch = _smartSortSwitch, syncSettingViaIcloudSwitch = _syncSettingViaIcloudSwitch, attachmentImage = _attachmentImage, showEmailAlertView = _showEmailAlertView, photoPicker = _photoPicker, attachmentUIImages = _attachmentUIImages;
 
 static BOOL PRODUCTION_MODE;
 static short const TOP_INSET_OF_TABLE = -20;
@@ -42,6 +44,8 @@ static NSString *BUG_REPORT_EMAIL;
         BUG_REPORT_EMAIL = @"example@example.com";
     else
         BUG_REPORT_EMAIL = @"mzgaljic@me.com";
+    
+    _attachmentUIImages = [NSMutableArray array];
     
     //remove extra padding placed between first cell and navigation bar
     if ([[UIDevice currentDevice].systemVersion floatValue] >= 7){
@@ -81,10 +85,9 @@ static NSString *BUG_REPORT_EMAIL;
 {
     switch (section)
     {
-            #pragma mark - Table Section Titles
         case 0:     return @"";
         case 1:     return @"Media Quality";
-        case 2:     return @"Presentation";
+        case 2:     return @"Appearance";
         case 3:     return @"Sorting";
         case 4:     return @"Help";
         default:    return @"";
@@ -95,11 +98,10 @@ static NSString *BUG_REPORT_EMAIL;
 {
     switch (section)
     {
-            #pragma mark - Table Section Descriptions/Footers
         case 0:     return @"Sync settings to your remaining Apple devices.";
         case 1:     return @"The preferred music video playback quality for each connection type.";
         case 2:     return @"'Bold Names' changes song, album, artist, playlist, and genre names to bold wherever possible. (enabled by default)";
-        case 3:     return @"Enabling \"Smart\" Alphabetical Sort changes the way library content is sorted. The words (a/an/the) are ignored. When disabled, library content is sorted in true alphabetical order.";
+        case 3:     return @"Enabled, \"Smart\" Alphabetical Sort changes the way library content is sorted; the words (a/an/the) are ignored. Disabled, library content is sorted in true alphabetical order.";
         case 4:     return @"A Software 'Bug' is unexpected app behavior.";
         default:    return nil;
     }
@@ -530,23 +532,28 @@ NSArray *CellStreamOptions;
     [picker setSubject:emailSubject];
 
     // Set up recipients
-    //[picker setCcRecipients:nil];
-    //[picker setBccRecipients:nil];
     [picker setToRecipients:@[BUG_REPORT_EMAIL]];
     [picker setMessageBody:[self buildEmailBodyString] isHTML:NO];
-    if(_attachmentImage)
-        [picker addAttachmentData:UIImagePNGRepresentation(_attachmentImage) mimeType:@"image/png" fileName:@"screenshot.png"];
-    if(_attachmentImage)
+    if(_attachmentUIImages.count > 0){
+        int count = 1;
+        for(UIImage *attachmentImage in _attachmentUIImages){
+            [picker addAttachmentData:UIImagePNGRepresentation(attachmentImage) mimeType:@"image/png" fileName:[NSString stringWithFormat:@"image %i", count]];
+            count++;
+        }
+        
         //completion block dismisses the photo picker only AFTER mail popup is dismissed
         //if dismissed before, it looks jump/laggy if a large pic was selected by user.
         //remember, _photoPicker presents mail since it is now on top of the stack
         [_photoPicker presentViewController:picker animated:YES completion: nil];
+    }
     else
         //in this case, SettingsTableViewController is on top of stack. So it presents mail popup.
         [self presentViewController:picker animated:YES completion: nil];
     
     if(picker)
         picker = nil;
+    
+    _photoPicker = nil;
 }
 
 - (NSString *)buildEmailBodyString
@@ -554,7 +561,7 @@ NSArray *CellStreamOptions;
     //\u2022 is Unicode for a bullet
     NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"];
     NSString *body;
-    if(_attachmentImage)
+    if(_attachmentUIImages.count > 0)
         body = @"Try to provide as much information as possible.\n\nName the bug:\n\nLocation of issue:\n\nSeverity: (High/Medium/Low)\n\nReported By:\n\n=============\nDescription\n\u2022\n\nSteps To Reproduce Bug\n\u2022\n\nExpected result\n\u2022\n=============\ntime&date\n\nVersion: version#\n[End of bug report]\nScreenshot:";
     else
         body = @"Try to provide as much information as possible. Attaching screenshots is optional (but encouraged).\n\nName the bug:\n\nLocation of issue:\n\nSeverity: (High/Medium/Low)\n\nReported By:\n\n=============\nDescription\n\u2022\n\nSteps To Reproduce Bug\n\u2022\n\nExpected result\n\u2022\n=============\ntime&date\n\nVersion: version#\n[End of bug report]";
@@ -577,7 +584,7 @@ NSArray *CellStreamOptions;
     return returnMe;
 }
 
-// Dismisses the email composition interface when users tap Cancel or Send. Then it updates the message field with the result of the operation.
+// Dismisses email composition gui when users tap Cancel or Send. Then it updates the message field with the result of the operation.
 - (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error
 {
     NSString* alertMessage;
@@ -601,7 +608,7 @@ NSArray *CellStreamOptions;
             _showEmailAlertView = YES;
             break;
     }
-    _attachmentImage = nil;
+    _attachmentUIImages = [NSMutableArray array];
     
     _alertView = [[SDCAlertView alloc] initWithTitle:@"Bug Report"
                                              message:alertMessage
@@ -632,17 +639,25 @@ NSArray *CellStreamOptions;
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:email]];
 }
 
-#pragma mark - UIActionSheet methods (and UIImagePicker stuff)
+#pragma mark - UIActionSheet methods (and image picker stuff)
 - (void)actionSheet:(UIActionSheet *)popup clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    _photoPicker = nil;
     if(popup.tag == 1){
+        _photoPicker = nil;
+        
         switch (buttonIndex)
         {
             case 0:
             {
-                _photoPicker = [[UIImagePickerController alloc] init];
-                _photoPicker.delegate = self;
+                //start with fresh array
+                _attachmentUIImages = [NSMutableArray array];
+                
+                _photoPicker = [[ZCImagePickerController alloc] init];
+                _photoPicker.imagePickerDelegate = self;
+                _photoPicker.maximumAllowsSelectionCount = 5;
+                _photoPicker.mediaType = ZCMediaAllPhotos;
+                
+                // code for iPhone and iPod Touch (different code needed for iPad)
                 [self presentViewController:_photoPicker animated:YES completion:nil];
                 break;
             }
@@ -655,11 +670,23 @@ NSArray *CellStreamOptions;
     }
 }
 
-- (void) imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(NSDictionary *)editingInfo
+- (void)zcImagePickerController:(ZCImagePickerController *)imagePickerController didFinishPickingMediaWithInfo:(NSArray *)info
 {
-    _attachmentImage = image;
+    //populate our array with the users images
+    for (NSDictionary *imageDictionary in info)
+        [_attachmentUIImages addObject:[imageDictionary objectForKey:UIImagePickerControllerOriginalImage]];
+    
     [self launchEmailPicker];
     //photo picker is dismissed after mail popup is dismissed (both modal views are dismiseed at same time)
+}
+
+- (void)zcImagePickerControllerDidCancel:(ZCImagePickerController *)imagePickerController
+{
+    //dismissed both modal view controllers (photo picker and mail)
+    [self dismissViewControllerAnimated:YES completion:nil];
+    _attachmentUIImages = [NSMutableArray array];
+    _photoPicker = nil;
+    return;
 }
 
 @end

@@ -38,7 +38,8 @@ static BOOL PRODUCTION_MODE;
     _allPlaylists = [NSMutableArray arrayWithArray:[Playlist loadAll]];
     [self.tableView reloadData];
     
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    //if coming from these orientations
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight
        || orientation == UIInterfaceOrientationPortraitUpsideDown)
     {
@@ -65,6 +66,12 @@ static BOOL PRODUCTION_MODE;
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    if(! stillInSameTab){  //want to reset the state of our variables only when we pick another tab
+        tappedTabBar = YES;
+        pushedMoreViews = NO;
+        stillInSameTab = YES;
+    }
+    stillInSameTab = NO;
     self.navigationController.navigationBar.translucent = NO;
 }
 
@@ -138,7 +145,9 @@ static BOOL PRODUCTION_MODE;
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{    
+{
+    pushedMoreViews = YES;
+    stillInSameTab = YES;
     if([[segue identifier] isEqualToString: @"playlistItemSegue"]){
         [[segue destinationViewController] setPlaylist:sender];
     }
@@ -219,8 +228,10 @@ static BOOL PRODUCTION_MODE;
 {
     if (1){
         [sidebar dismissAnimated:YES];
-        if(index == 3)  //settings button
+        if(index == 3){  //settings button
+            pushedMoreViews = YES;
             [self performSegueWithIdentifier:@"settingsSegue" sender:self];
+        }
     }
 }
 
@@ -247,18 +258,42 @@ static BOOL PRODUCTION_MODE;
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
+static BOOL tappedTabBar = YES;
+static BOOL pushedMoreViews = NO;
+static BOOL stillInSameTab = NO;
 - (BOOL)prefersStatusBarHidden
 {
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    //coming from portrait?
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
-        [self setTabBarVisible:NO animated:NO];
-        return YES;
-    }
-    else{
         [self setTabBarVisible:YES animated:NO];
         //fixes a bug when using another viewController with all these "hiding" nav bar features...and returning to this viewController
         self.tabBarController.tabBar.hidden = NO;
         return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
+    }
+    //coming from landscape?
+    else{
+        if(pushedMoreViews){
+            if(orientation == UIInterfaceOrientationPortrait){  //coming back from dismissed view, presenting in portrait
+                if([[UIDevice currentDevice] orientation] == UIDeviceOrientationLandscapeLeft || [[UIDevice currentDevice] orientation] == UIDeviceOrientationLandscapeRight){
+                    [self setTabBarVisible:NO animated:NO];
+                    return YES;
+                }
+                [self setTabBarVisible:YES animated:NO];
+                return NO;
+            }else{
+                [self setTabBarVisible:NO animated:NO];
+                return YES;
+            }
+        }
+        if(tappedTabBar){
+            tappedTabBar = NO;
+            return NO;
+        }
+        else{
+            [self setTabBarVisible:NO animated:NO];
+             return YES;
+        }
     }
 }
 

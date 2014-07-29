@@ -12,6 +12,7 @@
 #import "AppEnvironmentConstants.h"
 #import "SDCAlertView.h"
 #import "PreferredFontSizeUtility.h"
+#import "ZCImagePickerController.h"  //image picker that allows for multi selection
 
 
 @interface SettingsTableViewController : UITableViewController <UIPickerViewDelegate,
@@ -20,7 +21,8 @@
                                                                 MFMailComposeViewControllerDelegate,
                                                                 UIImagePickerControllerDelegate,
                                                                 UINavigationControllerDelegate,
-                                                                UIActionSheetDelegate>
+                                                                UIActionSheetDelegate,
+                                                                ZCImagePickerControllerDelegate>
 
 @property (nonatomic, strong) UISwitch *syncSettingViaIcloudSwitch;
 @property (nonatomic, strong) UISwitch *boldSongSwitch;

@@ -15,11 +15,6 @@
 #import "SongTableViewFormatter.h"
 #import "FrostedSideBarHelper.h"
 
-@interface MasterSongsTableViewController : UITableViewController
-
-@property (nonatomic, strong) NSMutableArray *results;  //for searching tableView?
-@property (nonatomic, assign) int selectedRowIndexValue;
-@property (nonatomic, assign) int indexOfEditingSong;
-
+@interface MasterSongsTableViewController : UITableViewController <UISearchBarDelegate>
 - (IBAction)expandableMenuSelected:(id)sender;
 @end

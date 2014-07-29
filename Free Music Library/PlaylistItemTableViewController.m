@@ -11,6 +11,7 @@
 @interface PlaylistItemTableViewController()
 @property (nonatomic, assign) int lastTableViewModelCount;
 @property (nonatomic, strong) UITextField *txtField;
+@property (nonatomic, assign) BOOL currentlyEditingPlaylistName;
 @end
 
 @implementation PlaylistItemTableViewController
@@ -38,6 +39,15 @@ static BOOL PRODUCTION_MODE;
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if((orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight
+       || orientation == UIInterfaceOrientationPortraitUpsideDown) && (!_currentlyEditingPlaylistName))
+    {
+        self.tabBarController.tabBar.hidden = YES;
+    }
+    else
+        self.tabBarController.tabBar.hidden = NO;
 
     _numSongsNotAddedYet = (int)([Song loadAll].count - _playlist.songsInThisPlaylist.count);
     _lastTableViewModelCount = (int)_playlist.songsInThisPlaylist.count;
@@ -172,14 +182,17 @@ static BOOL PRODUCTION_MODE;
         _originalRightBarButtonItems = nil;
         
         [super setEditing:NO animated:YES];
+        _currentlyEditingPlaylistName = NO;
     }
     else
     {
         [super setEditing:YES animated:YES];
+        _currentlyEditingPlaylistName = YES;
         
         //allows for renaming the playlist
         [self setUpUITextField];
     }
+    [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
@@ -288,7 +301,7 @@ static BOOL PRODUCTION_MODE;
             int x = (int)(_playlist.songsInThisPlaylist.count - _lastTableViewModelCount);
             _numSongsNotAddedYet = _numSongsNotAddedYet - x;
             _lastTableViewModelCount = _lastTableViewModelCount + x;
-        }//else nothing changed (remember, we can't remove songs from the song picker)
+        }//else nothing changed (remember, we can't remove songs using the song picker)
         
         if(_numSongsNotAddedYet == 0)
             _addBarButton.enabled = NO;
@@ -306,27 +319,10 @@ static BOOL PRODUCTION_MODE;
         [self userTappedCancel];
         return YES;
     }
-        
-    NSArray *allPlaylists = [Playlist loadAll];
-    BOOL duplicate = NO;
-    for(Playlist *somePlaylist in allPlaylists){
-        if([somePlaylist.playlistName isEqualToString:newName]){
-            duplicate = YES;
-            break;
-        }
-    }
-    allPlaylists = nil;
-    
-    if(duplicate){
-        //show uialertview with problem
-        return NO;
-    } else{
-        [textField resignFirstResponder];
-        [self commitNewPlaylistName:newName];
-        return YES;
-    }
-    
+    [textField resignFirstResponder];
+    [self commitNewPlaylistName:newName];
     return YES;
+    
 }
 
 - (BOOL)textFieldShouldClear:(UITextField *)textField
@@ -340,7 +336,9 @@ static BOOL PRODUCTION_MODE;
     _originalLeftBarButtonItems = self.navBar.leftBarButtonItems;
     _originalRightBarButtonItems = self.navBar.rightBarButtonItems;
     
-    _txtField = [[UITextField alloc] initWithFrame :CGRectMake(15, 100, 320, 30)];
+    //purposely using huge width...making sure its always as big as possible on screen.
+    _txtField = [[UITextField alloc] initWithFrame :CGRectMake(15, 100, 4000, 27)];
+    
     [_txtField addTarget:self action:@selector(userTappedUITextField) forControlEvents:UIControlEventEditingDidBegin];
     
     _txtField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -352,7 +350,7 @@ static BOOL PRODUCTION_MODE;
         _txtField.font = [UIFont boldSystemFontOfSize:20];
     else
         _txtField.font = [UIFont systemFontOfSize:20];
-    //_txtField.returnKeyType = UIReturnKeyDone;  better if it looks like we're not leaving editing mode when return is hit
+    _txtField.returnKeyType = UIReturnKeyDone;
     _txtField.clearButtonMode = UITextFieldViewModeWhileEditing;
     
     _txtField.backgroundColor = [UIColor whiteColor];
@@ -381,9 +379,17 @@ static BOOL PRODUCTION_MODE;
 
 - (void)commitNewPlaylistName:(NSString *)newName
 {
-    [_playlist saveUnderNewName:newName];
+    _playlist.playlistName = newName;
+    [_playlist updateExistingPlaylist];
+    _txtField.text = _playlist.playlistName;  //make change visible in nav bar
     
-    [self userTappedCancel];
+    //bring back UI to the normal editing mode (leaving playlist editing mode)
+    UIBarButtonItem *editButton = self.editButtonItem;
+    editButton.action = @selector(editTapped:);
+    [self.navBar setRightBarButtonItem:editButton animated:YES];
+    
+    //dismiss keyboard
+    [_txtField resignFirstResponder];
 }
 
 - (void)userTappedUITextField
@@ -413,11 +419,10 @@ static BOOL PRODUCTION_MODE;
 - (BOOL)prefersStatusBarHidden
 {
     UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+    if((orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight) && (!_currentlyEditingPlaylistName))
         return YES;
     else
-        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
+        return NO;  //returned when in portrait, or editing playlist.
 }
-
 
 @end

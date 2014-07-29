@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface EditableCellTableViewController : UITableViewController
+@interface EditableCellTableViewController : UITableViewController <UITextFieldDelegate>
 
 @property (nonatomic, strong) NSString *stringUserIsEditing;
 

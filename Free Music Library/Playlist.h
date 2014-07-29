@@ -9,20 +9,20 @@
 #import <Foundation/Foundation.h>
 #import "AppEnvironmentConstants.h"
 #import "NSString+smartSort.h"
+#import "NSObject+ObjectUUID.h"
 
 @interface Playlist : NSObject <NSCoding>
 
 @property (nonatomic, strong) NSString *playlistName;
 @property (nonatomic, strong) NSMutableArray *songsInThisPlaylist;
 @property (atomic, assign) short status;  //used in song picker
-//Playlist objects don't need object ID's...got it to work without.
+@property(nonatomic, strong, readonly) NSString *playlistID;
 
 + (NSArray *)loadAll;
 ///should be saved upon Playlists creation
 - (BOOL)savePlaylist;
 - (BOOL)deletePlaylist;
 - (BOOL)updateExistingPlaylist;
-- (BOOL)saveUnderNewName:(NSString *)newName;
 
 //used when adding songs to playlists and creating them (passing playlist object via disk)
 - (BOOL)saveTempPlaylistOnDisk;

@@ -9,17 +9,15 @@
 #import "MasterSongsTableViewController.h"
 
 @interface MasterSongsTableViewController ()
+@property (nonatomic, strong) NSMutableArray *results;  //for searching tableView?
 @property(nonatomic, strong) NSMutableArray *allSongsInLibrary;
+@property (nonatomic, assign) int indexOfEditingSong;
+@property (nonatomic, assign) int selectedRowIndexValue;
+@property(nonatomic, strong) UISearchBar* searchBar;
 @end
 
 @implementation MasterSongsTableViewController
-@synthesize allSongsInLibrary;
 static BOOL PRODUCTION_MODE;
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
 
 - (NSMutableArray *) results
 {
@@ -29,11 +27,63 @@ static BOOL PRODUCTION_MODE;
     return _results;
 }
 
+#pragma mark - Miscellaneous
 - (void)setProductionModeValue
 {
     PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
 }
 
+-(void)makeBarButtonGrey:(UIBarButtonItem *)barButton yes:(BOOL)show
+{
+    if (show) {
+        barButton.style = UIBarButtonItemStyleBordered;
+        barButton.enabled = true;
+    } else {
+        barButton.style = UIBarButtonItemStylePlain;
+        barButton.enabled = false;
+        barButton.title = nil;
+    }
+}
+
+- (void)setUpNavBarItems
+{
+    //edit button
+    UIBarButtonItem *editButton = self.editButtonItem;
+    editButton.action = @selector(editTapped:);
+    
+    //+ sign...also wire it up to the ibAction "addButtonPressed"
+    UIBarButtonItem *addButton = [[UIBarButtonItem alloc]
+                                  initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                  target:self action:@selector(addButtonPressed)];
+    NSArray *rightBarButtonItems = [NSArray arrayWithObjects:editButton, addButton, nil];
+    self.navigationItem.rightBarButtonItems = rightBarButtonItems;  //place both buttons on the nav bar
+}
+
+- (void)setUpSearchBar
+{
+    _searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+    _searchBar.delegate = self;
+    self.tableView.tableHeaderView = _searchBar;
+}
+
+- (void)editTapped:(id)sender
+{
+    if(self.editing)
+    {
+        //leaving editing mode now
+        [super setEditing:NO animated:YES];
+        [self makeBarButtonGrey:[self.navigationItem.rightBarButtonItems objectAtIndex:1] yes:YES];
+    }
+    else
+    {
+        //entering editing mode now
+        [super setEditing:YES animated:YES];
+        [self makeBarButtonGrey:[self.navigationItem.rightBarButtonItems objectAtIndex:1] yes:NO];
+    }
+}
+
+
+#pragma mark - View Controller life cycle
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -43,8 +93,9 @@ static BOOL PRODUCTION_MODE;
     [self.tableView reloadData];
     
     UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight
-                                                          || orientation == UIInterfaceOrientationPortraitUpsideDown)
+    if(orientation == UIInterfaceOrientationLandscapeLeft ||
+       orientation == UIInterfaceOrientationLandscapeRight||
+       orientation == UIInterfaceOrientationPortraitUpsideDown)
     {
         self.tabBarController.tabBar.hidden = YES;
     }
@@ -78,54 +129,19 @@ static BOOL PRODUCTION_MODE;
     self.tableView.allowsSelectionDuringEditing = YES;
 }
 
-- (void)setUpNavBarItems
-{
-    //edit button
-    UIBarButtonItem *editButton = self.editButtonItem;
-    editButton.action = @selector(editTapped:);
-    
-    //+ sign...also wire it up to the ibAction "addButtonPressed"
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc]
-                                  initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                  target:self action:@selector(addButtonPressed)];
-    NSArray *rightBarButtonItems = [NSArray arrayWithObjects:editButton, addButton, nil];
-    self.navigationItem.rightBarButtonItems = rightBarButtonItems;  //place both buttons on the nav bar
-}
-
-- (void)editTapped:(id)sender
-{
-    if(self.editing)
-    {
-        //leaving editing mode now
-        [super setEditing:NO animated:YES];
-        [self makeBarButtonGrey:[self.navigationItem.rightBarButtonItems objectAtIndex:1] yes:YES];
-    }
-    else
-    {
-        //entering editing mode now
-        [super setEditing:YES animated:YES];
-        [self makeBarButtonGrey:[self.navigationItem.rightBarButtonItems objectAtIndex:1] yes:NO];
-    }
-}
-
--(void)makeBarButtonGrey:(UIBarButtonItem *)barButton yes:(BOOL)show
-{
-    if (show) {
-        barButton.style = UIBarButtonItemStyleBordered;
-        barButton.enabled = true;
-    } else {
-        barButton.style = UIBarButtonItemStylePlain;
-        barButton.enabled = false;
-        barButton.title = nil;
-    }
-}
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+
+#pragma mark - UITableView implementation
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return 1;
@@ -207,6 +223,7 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
+#pragma mark - segue
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     //song was tapped
@@ -242,6 +259,7 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
+#pragma mark - song editing
 - (void)editingModeCompleted:(NSNotification *)notification
 {
     if([notification.name isEqualToString:@"SongEditDone"]){
@@ -270,6 +288,7 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
+#pragma mark - Side menu
 - (void)sidebar:(RNFrostedSidebar *)sidebar didTapItemAtIndex:(NSUInteger)index
 {
    if (1){
@@ -279,6 +298,12 @@ static BOOL PRODUCTION_MODE;
    }
 }
 
+- (IBAction)expandableMenuSelected:(id)sender
+{
+    [FrostedSideBarHelper setupAndShowSlideOutMenuUsingdelegate:self];
+}
+
+#pragma mark - Adding msuic to library
 //called when + sign is tapped - selector defined in setUpNavBarItems method!
 - (void)addButtonPressed
 {
@@ -290,10 +315,6 @@ static BOOL PRODUCTION_MODE;
     [alert show];
 }
 
-- (IBAction)expandableMenuSelected:(id)sender
-{
-    [FrostedSideBarHelper setupAndShowSlideOutMenuUsingdelegate:self];
-}
 
 #pragma mark - Rotation status bar methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
