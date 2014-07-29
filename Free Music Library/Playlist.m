@@ -10,10 +10,11 @@
 #import "FileIOConstants.h"
 #define PLAYLIST_NAME_KEY @"playlistName"
 #define SONGS_IN_THIS_PLAYLIST_KEY @"songsInThisPlaylist"
+#define PLAYLIST_ID_KEY @"playlistID"
 #define STATUS_KEY @"status"
 
 @implementation Playlist
-@synthesize playlistName = _playlistName, songsInThisPlaylist = _songsInThisPlaylist;
+@synthesize playlistName = _playlistName, songsInThisPlaylist = _songsInThisPlaylist, playlistID = _playlistID;
 
 static  int const SAVE_PLAYLIST = 0;
 static int const DELETE_PLAYLIST = 1;
@@ -26,6 +27,7 @@ static int const TEMP_SAVE_PLAYLIST_TO_DISK = 3;
     if (self) {
         _songsInThisPlaylist = [NSMutableArray array];
         _status = 0;  //code for playlist "in creation" mode
+        _playlistID = [[NSObject UUID] copy];
     }
     return self;
 }
@@ -34,6 +36,7 @@ static int const TEMP_SAVE_PLAYLIST_TO_DISK = 3;
 {
     self = [super init];
     if(self){
+        _playlistID = [aDecoder decodeObjectForKey:PLAYLIST_ID_KEY];
         _playlistName = [aDecoder decodeObjectForKey:PLAYLIST_NAME_KEY];
         _songsInThisPlaylist = [aDecoder decodeObjectForKey:SONGS_IN_THIS_PLAYLIST_KEY];
         _status = [aDecoder decodeBoolForKey:STATUS_KEY];
@@ -43,6 +46,7 @@ static int const TEMP_SAVE_PLAYLIST_TO_DISK = 3;
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
+    [aCoder encodeObject:_playlistID forKey:PLAYLIST_ID_KEY];
     [aCoder encodeObject:_playlistName forKey:PLAYLIST_NAME_KEY];
     [aCoder encodeObject:_songsInThisPlaylist forKey:SONGS_IN_THIS_PLAYLIST_KEY];
     [aCoder encodeBool:_status forKey:STATUS_KEY];
@@ -87,7 +91,7 @@ static int const TEMP_SAVE_PLAYLIST_TO_DISK = 3;
 + (BOOL)reInsertTempPlaylist:(Playlist *)playlistToInsert
 {
     if(playlistToInsert){
-        //add the loaded playlist back into the main model on disk. Re-sort the model.
+        //add the loaded playlist back into the main model on disk.
         NSMutableArray *playlists = (NSMutableArray *)[Playlist loadAll];
         if([playlists containsObject:playlistToInsert]){
             [playlists removeObject:playlistToInsert];
@@ -115,22 +119,6 @@ static int const TEMP_SAVE_PLAYLIST_TO_DISK = 3;
 - (BOOL)updateExistingPlaylist
 {
     return [self performModelAction:UPDATE_PLAYLIST];
-}
-
-- (BOOL)saveUnderNewName:(NSString *)newName
-{
-    NSMutableArray *playlists = (NSMutableArray *)[Playlist loadAll];
-    if(playlists.count > 0){
-        int index = (int)[playlists indexOfObject:self];
-        _playlistName = newName;
-        [playlists replaceObjectAtIndex:index withObject:self];
-        
-        //save changes to model on disk
-        NSData *fileData = [NSKeyedArchiver archivedDataWithRootObject:playlists];  //encode playlists
-        return [fileData writeToURL:[FileIOConstants createSingleton].playlistsFileURL atomically:YES];
-    }
-    else
-        return NO;
 }
 
 - (BOOL)performModelAction:(int)desiredActionConst  //does the 'hard work' of altering the model.
@@ -187,7 +175,7 @@ static int const TEMP_SAVE_PLAYLIST_TO_DISK = 3;
     if(!object || ![object isMemberOfClass:[self class]])  //object is nil or not a playlist object
         return NO;
     
-    return ([_playlistName isEqualToString:((Playlist *)object).playlistName]) ? YES : NO;
+    return ([_playlistID isEqualToString:((Playlist *)object).playlistID]) ? YES : NO;
 }
 
 /**
@@ -211,15 +199,15 @@ static int const TEMP_SAVE_PLAYLIST_TO_DISK = 3;
     //NSUInteger noPrime = 1237;
     
     // Add any object that already has a hash function (NSString)
-    result = prime * result + [_playlistName hash];
-    result = prime * result + [_songsInThisPlaylist hash];
+    //result = prime * result + [_playlistName hash];
+    //result = prime * result + [_songsInThisPlaylist hash];
+    return prime * result + [_playlistID hash];
     
     // Add primitive variables (int)
-    result = prime * result + _status;
+    //result = prime * result + _status;
     
     // Boolean values (BOOL)
     //result = (prime * result + _fullyCreated) ? yesPrime : noPrime;
-    
     return result;
 }
 

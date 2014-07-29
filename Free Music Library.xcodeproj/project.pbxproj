@@ -19,6 +19,20 @@
 		87362B00194E70B4004DB544 /* PlaybackHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 87362AFF194E70B4004DB544 /* PlaybackHistory.m */; };
 		87362B03194E9CDF004DB544 /* Stack.m in Sources */ = {isa = PBXBuildFile; fileRef = 87362B01194E9CDF004DB544 /* Stack.m */; };
 		87394BE31965FFE100E750B1 /* Queue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87394BE21965FFE100E750B1 /* Queue.m */; };
+		873FA7F61986020D006F02BD /* ZCLocalized.strings in Resources */ = {isa = PBXBuildFile; fileRef = 873FA7DE1986020D006F02BD /* ZCLocalized.strings */; };
+		873FA7F71986020D006F02BD /* SelectionOverlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 873FA7E11986020D006F02BD /* SelectionOverlay.png */; };
+		873FA7F81986020D006F02BD /* SelectionOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 873FA7E21986020D006F02BD /* SelectionOverlay@2x.png */; };
+		873FA7F91986020D006F02BD /* SelectionOverlay~iOS7.png in Resources */ = {isa = PBXBuildFile; fileRef = 873FA7E31986020D006F02BD /* SelectionOverlay~iOS7.png */; };
+		873FA7FA1986020D006F02BD /* SelectionOverlay~iOS7@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 873FA7E41986020D006F02BD /* SelectionOverlay~iOS7@2x.png */; };
+		873FA7FB1986020D006F02BD /* VideoOverlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 873FA7E51986020D006F02BD /* VideoOverlay.png */; };
+		873FA7FC1986020D006F02BD /* VideoOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 873FA7E61986020D006F02BD /* VideoOverlay@2x.png */; };
+		873FA7FD1986020D006F02BD /* ZCAlbumPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 873FA7E81986020D006F02BD /* ZCAlbumPickerController.m */; };
+		873FA7FE1986020D006F02BD /* ZCAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 873FA7EA1986020D006F02BD /* ZCAsset.m */; };
+		873FA7FF1986020D006F02BD /* ZCAssetCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 873FA7EC1986020D006F02BD /* ZCAssetCell.m */; };
+		873FA8001986020D006F02BD /* ZCAssetTablePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 873FA7EE1986020D006F02BD /* ZCAssetTablePicker.m */; };
+		873FA8011986020D006F02BD /* ZCHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 873FA7F01986020D006F02BD /* ZCHelper.m */; };
+		873FA8021986020D006F02BD /* ZCImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 873FA7F21986020D006F02BD /* ZCImagePickerController.m */; };
+		873FA8031986020D006F02BD /* ReadMe-imagepicker.txt in Resources */ = {isa = PBXBuildFile; fileRef = 873FA7F51986020D006F02BD /* ReadMe-imagepicker.txt */; };
 		8740723F19798129004C5C57 /* SongTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8740723E19798129004C5C57 /* SongTableViewFormatter.m */; };
 		87480DA9192C1FBD005CC0A4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DA8192C1FBD005CC0A4 /* Foundation.framework */; };
 		87480DAB192C1FBD005CC0A4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DAA192C1FBD005CC0A4 /* CoreGraphics.framework */; };
@@ -37,8 +51,6 @@
 		874C535F19844201000382FA /* NSObject+ObjectUUID.m in Sources */ = {isa = PBXBuildFile; fileRef = 874C535E19844201000382FA /* NSObject+ObjectUUID.m */; };
 		875984A5195D764700015243 /* PlaylistItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875984A4195D764700015243 /* PlaylistItemTableViewController.m */; };
 		875984A8195D775500015243 /* GenreItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875984A7195D775500015243 /* GenreItemTableViewController.m */; };
-		875B381A197ACB7A008B4409 /* CustomIOS7AlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B3819197ACB7A008B4409 /* CustomIOS7AlertView.m */; };
-		875B381C197ACB8B008B4409 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 875B381B197ACB8B008B4409 /* README.md */; };
 		875B3820197ACBC0008B4409 /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B381F197ACBC0008B4409 /* SettingsTableViewController.m */; };
 		875B3826197AFF29008B4409 /* NSString+smartSort.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B3825197AFF29008B4409 /* NSString+smartSort.m */; };
 		876EC5F01965C9F6006B3C29 /* AppEnvironmentConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 876EC5EF1965C9F6006B3C29 /* AppEnvironmentConstants.m */; };
@@ -100,6 +112,28 @@
 		87362B02194E9CDF004DB544 /* Stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stack.h; sourceTree = "<group>"; };
 		87394BE11965FFE100E750B1 /* Queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Queue.h; sourceTree = "<group>"; };
 		87394BE21965FFE100E750B1 /* Queue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Queue.m; sourceTree = "<group>"; };
+		873FA7DF1986020D006F02BD /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ZCLocalized.strings; sourceTree = "<group>"; };
+		873FA7E11986020D006F02BD /* SelectionOverlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SelectionOverlay.png; sourceTree = "<group>"; };
+		873FA7E21986020D006F02BD /* SelectionOverlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "SelectionOverlay@2x.png"; sourceTree = "<group>"; };
+		873FA7E31986020D006F02BD /* SelectionOverlay~iOS7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "SelectionOverlay~iOS7.png"; sourceTree = "<group>"; };
+		873FA7E41986020D006F02BD /* SelectionOverlay~iOS7@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "SelectionOverlay~iOS7@2x.png"; sourceTree = "<group>"; };
+		873FA7E51986020D006F02BD /* VideoOverlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VideoOverlay.png; sourceTree = "<group>"; };
+		873FA7E61986020D006F02BD /* VideoOverlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "VideoOverlay@2x.png"; sourceTree = "<group>"; };
+		873FA7E71986020D006F02BD /* ZCAlbumPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZCAlbumPickerController.h; sourceTree = "<group>"; };
+		873FA7E81986020D006F02BD /* ZCAlbumPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZCAlbumPickerController.m; sourceTree = "<group>"; };
+		873FA7E91986020D006F02BD /* ZCAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZCAsset.h; sourceTree = "<group>"; };
+		873FA7EA1986020D006F02BD /* ZCAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZCAsset.m; sourceTree = "<group>"; };
+		873FA7EB1986020D006F02BD /* ZCAssetCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZCAssetCell.h; sourceTree = "<group>"; };
+		873FA7EC1986020D006F02BD /* ZCAssetCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZCAssetCell.m; sourceTree = "<group>"; };
+		873FA7ED1986020D006F02BD /* ZCAssetTablePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZCAssetTablePicker.h; sourceTree = "<group>"; };
+		873FA7EE1986020D006F02BD /* ZCAssetTablePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZCAssetTablePicker.m; sourceTree = "<group>"; };
+		873FA7EF1986020D006F02BD /* ZCHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZCHelper.h; sourceTree = "<group>"; };
+		873FA7F01986020D006F02BD /* ZCHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZCHelper.m; sourceTree = "<group>"; };
+		873FA7F11986020D006F02BD /* ZCImagePickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZCImagePickerController.h; sourceTree = "<group>"; };
+		873FA7F21986020D006F02BD /* ZCImagePickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZCImagePickerController.m; sourceTree = "<group>"; };
+		873FA7F31986020D006F02BD /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/ZCLocalized.strings"; sourceTree = "<group>"; };
+		873FA7F41986020D006F02BD /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/ZCLocalized.strings"; sourceTree = "<group>"; };
+		873FA7F51986020D006F02BD /* ReadMe-imagepicker.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "ReadMe-imagepicker.txt"; sourceTree = "<group>"; };
 		8740723D19798129004C5C57 /* SongTableViewFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SongTableViewFormatter.h; sourceTree = "<group>"; };
 		8740723E19798129004C5C57 /* SongTableViewFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SongTableViewFormatter.m; sourceTree = "<group>"; };
 		87480DA5192C1FBD005CC0A4 /* Free Music Library.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Free Music Library.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -127,9 +161,6 @@
 		875984A4195D764700015243 /* PlaylistItemTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistItemTableViewController.m; sourceTree = "<group>"; };
 		875984A6195D775500015243 /* GenreItemTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenreItemTableViewController.h; sourceTree = "<group>"; };
 		875984A7195D775500015243 /* GenreItemTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenreItemTableViewController.m; sourceTree = "<group>"; };
-		875B3818197ACB7A008B4409 /* CustomIOS7AlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomIOS7AlertView.h; sourceTree = "<group>"; };
-		875B3819197ACB7A008B4409 /* CustomIOS7AlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomIOS7AlertView.m; sourceTree = "<group>"; };
-		875B381B197ACB8B008B4409 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		875B381E197ACBC0008B4409 /* SettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsTableViewController.h; sourceTree = "<group>"; };
 		875B381F197ACBC0008B4409 /* SettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTableViewController.m; sourceTree = "<group>"; };
 		875B3824197AFF29008B4409 /* NSString+smartSort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+smartSort.h"; sourceTree = "<group>"; };
@@ -281,6 +312,49 @@
 			name = GUI;
 			sourceTree = "<group>";
 		};
+		873FA7DC1986020D006F02BD /* ZCImage Picker Controller */ = {
+			isa = PBXGroup;
+			children = (
+				873FA7DD1986020D006F02BD /* Files */,
+				873FA7F51986020D006F02BD /* ReadMe-imagepicker.txt */,
+			);
+			path = "ZCImage Picker Controller";
+			sourceTree = "<group>";
+		};
+		873FA7DD1986020D006F02BD /* Files */ = {
+			isa = PBXGroup;
+			children = (
+				873FA7DE1986020D006F02BD /* ZCLocalized.strings */,
+				873FA7E01986020D006F02BD /* Images */,
+				873FA7E71986020D006F02BD /* ZCAlbumPickerController.h */,
+				873FA7E81986020D006F02BD /* ZCAlbumPickerController.m */,
+				873FA7E91986020D006F02BD /* ZCAsset.h */,
+				873FA7EA1986020D006F02BD /* ZCAsset.m */,
+				873FA7EB1986020D006F02BD /* ZCAssetCell.h */,
+				873FA7EC1986020D006F02BD /* ZCAssetCell.m */,
+				873FA7ED1986020D006F02BD /* ZCAssetTablePicker.h */,
+				873FA7EE1986020D006F02BD /* ZCAssetTablePicker.m */,
+				873FA7EF1986020D006F02BD /* ZCHelper.h */,
+				873FA7F01986020D006F02BD /* ZCHelper.m */,
+				873FA7F11986020D006F02BD /* ZCImagePickerController.h */,
+				873FA7F21986020D006F02BD /* ZCImagePickerController.m */,
+			);
+			path = Files;
+			sourceTree = "<group>";
+		};
+		873FA7E01986020D006F02BD /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				873FA7E11986020D006F02BD /* SelectionOverlay.png */,
+				873FA7E21986020D006F02BD /* SelectionOverlay@2x.png */,
+				873FA7E31986020D006F02BD /* SelectionOverlay~iOS7.png */,
+				873FA7E41986020D006F02BD /* SelectionOverlay~iOS7@2x.png */,
+				873FA7E51986020D006F02BD /* VideoOverlay.png */,
+				873FA7E61986020D006F02BD /* VideoOverlay@2x.png */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
 		8740724019798130004C5C57 /* GUI consistent style helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -378,19 +452,9 @@
 		875B3817197ACB6D008B4409 /* GUI Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				875B381D197ACB90008B4409 /* Custom ios7 AlertView */,
+				873FA7DC1986020D006F02BD /* ZCImage Picker Controller */,
 			);
 			name = "GUI Libraries";
-			sourceTree = "<group>";
-		};
-		875B381D197ACB90008B4409 /* Custom ios7 AlertView */ = {
-			isa = PBXGroup;
-			children = (
-				875B381B197ACB8B008B4409 /* README.md */,
-				875B3818197ACB7A008B4409 /* CustomIOS7AlertView.h */,
-				875B3819197ACB7A008B4409 /* CustomIOS7AlertView.m */,
-			);
-			name = "Custom ios7 AlertView";
 			sourceTree = "<group>";
 		};
 		878ACD5E192D38B6005938F5 /* Songs tab */ = {
@@ -641,6 +705,8 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
+				"zh-Hant",
 			);
 			mainGroup = 87480D9C192C1FBD005CC0A4;
 			productRefGroup = 87480DA6192C1FBD005CC0A4 /* Products */;
@@ -658,11 +724,18 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				873FA8031986020D006F02BD /* ReadMe-imagepicker.txt in Resources */,
 				87480DC4192C1FBD005CC0A4 /* Images.xcassets in Resources */,
 				87480DB3192C1FBD005CC0A4 /* InfoPlist.strings in Resources */,
-				875B381C197ACB8B008B4409 /* README.md in Resources */,
+				873FA7F61986020D006F02BD /* ZCLocalized.strings in Resources */,
+				873FA7F81986020D006F02BD /* SelectionOverlay@2x.png in Resources */,
+				873FA7FC1986020D006F02BD /* VideoOverlay@2x.png in Resources */,
+				873FA7FA1986020D006F02BD /* SelectionOverlay~iOS7@2x.png in Resources */,
 				87D16D621931B7EE00DB6A34 /* Podfile in Resources */,
 				87480DBC192C1FBD005CC0A4 /* Main.storyboard in Resources */,
+				873FA7FB1986020D006F02BD /* VideoOverlay.png in Resources */,
+				873FA7F71986020D006F02BD /* SelectionOverlay.png in Resources */,
+				873FA7F91986020D006F02BD /* SelectionOverlay~iOS7.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -714,17 +787,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				875B381A197ACB7A008B4409 /* CustomIOS7AlertView.m in Sources */,
+				873FA7FD1986020D006F02BD /* ZCAlbumPickerController.m in Sources */,
+				873FA8011986020D006F02BD /* ZCHelper.m in Sources */,
 				87A110591964A67000270528 /* Song.m in Sources */,
 				87D47D93193428350057D49B /* MasterPlaylistTableViewController.m in Sources */,
 				878ACD6A192D532D005938F5 /* SongItemViewController.m in Sources */,
 				875984A5195D764700015243 /* PlaylistItemTableViewController.m in Sources */,
+				873FA8001986020D006F02BD /* ZCAssetTablePicker.m in Sources */,
 				87FEBB38193587610088EF41 /* UpNextSongQueue.m in Sources */,
 				87D47D991934289F0057D49B /* MasterGenreTableViewController.m in Sources */,
 				874C535C19831825000382FA /* NSString+WhiteSpace_Utility.m in Sources */,
 				87362B00194E70B4004DB544 /* PlaybackHistory.m in Sources */,
 				8740723F19798129004C5C57 /* SongTableViewFormatter.m in Sources */,
 				875B3820197ACBC0008B4409 /* SettingsTableViewController.m in Sources */,
+				873FA7FE1986020D006F02BD /* ZCAsset.m in Sources */,
 				874C535F19844201000382FA /* NSObject+ObjectUUID.m in Sources */,
 				87E1C5A0193A5E8B009AE399 /* GenreConstants.m in Sources */,
 				871CDAC6198048F200E72357 /* EditingArtistItemTableViewController.m in Sources */,
@@ -746,6 +822,7 @@
 				87FE09F11933ED84001A5FB7 /* MusicStoreService.m in Sources */,
 				875984A8195D775500015243 /* GenreItemTableViewController.m in Sources */,
 				87A0FD91197DD594008FBBF7 /* PreferredFontSizeUtility.m in Sources */,
+				873FA8021986020D006F02BD /* ZCImagePickerController.m in Sources */,
 				87D47DA519345D8E0057D49B /* ArtistItemAlbumViewController.m in Sources */,
 				87480DB5192C1FBD005CC0A4 /* main.m in Sources */,
 				87A0FDD2197DFA2C008FBBF7 /* ArtistTableViewFormatter.m in Sources */,
@@ -755,6 +832,7 @@
 				8728B78B194959E500565BDA /* Artist.m in Sources */,
 				87FEBB3B19358FBE0088EF41 /* NowPlaying.m in Sources */,
 				87D47D8D19340F8B0057D49B /* MasterAlbumsTableViewController.m in Sources */,
+				873FA7FF1986020D006F02BD /* ZCAssetCell.m in Sources */,
 				87394BE31965FFE100E750B1 /* Queue.m in Sources */,
 				878ACD64192D48EF005938F5 /* MasterSongsTableViewController.m in Sources */,
 			);
@@ -779,6 +857,16 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		873FA7DE1986020D006F02BD /* ZCLocalized.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				873FA7DF1986020D006F02BD /* en */,
+				873FA7F31986020D006F02BD /* zh-Hans */,
+				873FA7F41986020D006F02BD /* zh-Hant */,
+			);
+			name = ZCLocalized.strings;
+			sourceTree = "<group>";
+		};
 		87480DB1192C1FBD005CC0A4 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -888,19 +976,13 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Manually",
-					Added,
-					Frameworks,
 					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Free Music Library/Free Music Library-Prefix.pch";
 				INFOPLIST_FILE = "Free Music Library/Free Music Library-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/mZgaljic/Desktop/iCloud.framework,
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -919,19 +1001,13 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Manually",
-					Added,
-					Frameworks,
 					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Free Music Library/Free Music Library-Prefix.pch";
 				INFOPLIST_FILE = "Free Music Library/Free Music Library-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/mZgaljic/Desktop/iCloud.framework,
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;

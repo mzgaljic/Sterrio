@@ -40,6 +40,15 @@ static const short NORMAL_PLAYLIST = -1;
 {
     [super viewWillAppear:animated];
     
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight
+       || orientation == UIInterfaceOrientationPortraitUpsideDown)
+    {
+        self.tabBarController.tabBar.hidden = YES;
+    }
+    else
+        self.tabBarController.tabBar.hidden = NO;
+    
     _songsSelected = [NSMutableArray array];
     
     //init tableView model
@@ -62,6 +71,9 @@ static const short NORMAL_PLAYLIST = -1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    // This will remove extra separators from tableview
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
     [self setProductionModeValue];
     self.tableView.allowsMultipleSelection = YES;
