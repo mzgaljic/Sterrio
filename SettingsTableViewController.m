@@ -57,6 +57,10 @@ static NSString *BUG_REPORT_EMAIL;
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+    
+    SDImageCache *imageCache = [SDImageCache sharedImageCache];
+    [imageCache clearMemory];
+    [imageCache clearDisk];
 }
 
 - (NSString *)convertFontSizeToString
@@ -528,7 +532,7 @@ NSArray *CellStreamOptions;
 {
     MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
     picker.mailComposeDelegate = self;
-    NSString *emailSubject = @"Bug Report [F M L]";
+    NSString *emailSubject = @"Bug Report [zTunes]";
     [picker setSubject:emailSubject];
 
     // Set up recipients

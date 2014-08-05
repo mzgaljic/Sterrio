@@ -13,6 +13,7 @@
 #import "SDCAlertView.h"
 #import "PreferredFontSizeUtility.h"
 #import "ZCImagePickerController.h"  //image picker that allows for multi selection
+#import "SDWebImageManager.h"
 
 
 @interface SettingsTableViewController : UITableViewController <UIPickerViewDelegate,

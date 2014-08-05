@@ -8,6 +8,7 @@
 
 #import "GenreItemTableViewController.h"
 
+//need to implement didReceiveMemory warning for sdwebimage cache!
 @implementation GenreItemTableViewController
 
 @end

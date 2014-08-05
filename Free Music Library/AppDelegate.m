@@ -218,6 +218,11 @@ static const int APP_LAUNCHED_ALREADY = 1;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    [[SDImageCache sharedImageCache] setMaxCacheSize:5000000];  //5 mb cache size
+    
+    //set app global-tint color
+    self.window.tintColor = [UIColor defaultSystemTintColor];
+    
     [self setProductionModeValue];
     [self setUpGenreConstants];
     [self setUpNSCodingFilePaths];

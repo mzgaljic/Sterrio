@@ -14,6 +14,7 @@
 #import "AppEnvironmentConstants.h"
 #import "SongTableViewFormatter.h"
 #import "UIColor+LighterAndDarker.h"
+#import "SDWebImageManager.h"
 
 @interface PlaylistItemTableViewController : UITableViewController <UITextFieldDelegate>
 

@@ -2,12 +2,12 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x"
+      "scale" : "1x",
+      "filename" : "20th Century Masters - The Millennium Collection- The Best of Lionel Richie.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "2x",
-      "filename" : "20th Century Masters - The Millennium Collection- The Best of Lionel Richie.png"
+      "scale" : "2x"
     }
   ],
   "info" : {

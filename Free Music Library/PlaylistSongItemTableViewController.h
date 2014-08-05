@@ -13,6 +13,7 @@
 #import "AppEnvironmentConstants.h"
 #import "MasterSongsTableViewController.h"
 #import "SongTableViewFormatter.h"
+#import "SDWebImageManager.h"
 
 @interface PlaylistSongItemTableViewController : UITableViewController
 

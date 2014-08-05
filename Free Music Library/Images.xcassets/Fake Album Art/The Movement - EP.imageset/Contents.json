@@ -2,12 +2,12 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x"
+      "scale" : "1x",
+      "filename" : "The Movement - EP.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "2x",
-      "filename" : "The Movement - EP.png"
+      "scale" : "2x"
     }
   ],
   "info" : {

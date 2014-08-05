@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>BB18C5ED-5E60-4D63-B029-B51C01FAAB85</string>
+	<key>IDESourceControlProjectName</key>
+	<string>zMusic</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>7563E9FA-977C-4E3E-A377-F82B0EA0FF7D</key>
+		<string>https://bitbucket.org/mzgaljic/free-music-library.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>zMusic.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>7563E9FA-977C-4E3E-A377-F82B0EA0FF7D</key>
+		<string>..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://bitbucket.org/mzgaljic/free-music-library.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>7563E9FA-977C-4E3E-A377-F82B0EA0FF7D</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>7563E9FA-977C-4E3E-A377-F82B0EA0FF7D</string>
+			<key>IDESourceControlWCCName</key>
+			<string>zMusic</string>
+		</dict>
+	</array>
+</dict>
+</plist>

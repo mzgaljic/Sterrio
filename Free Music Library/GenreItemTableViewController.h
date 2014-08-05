@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SDWebImageManager.h"
 
 @interface GenreItemTableViewController : NSObject
 

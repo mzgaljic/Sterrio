@@ -14,6 +14,7 @@
 #import "AppEnvironmentConstants.h"
 #import "PlayListTableViewFormatter.h"
 #import "NSString+WhiteSpace_Utility.h"
+#import "SDWebImageManager.h"
 
 @interface MasterPlaylistTableViewController : UITableViewController <UITextFieldDelegate>
 

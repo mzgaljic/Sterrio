@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "Artist.h"
+#import "SDWebImageManager.h"
 
 @interface ArtistItemAlbumViewController : UIViewController
 @property (strong, nonatomic) Artist *artist;

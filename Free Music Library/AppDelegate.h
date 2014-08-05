@@ -14,7 +14,9 @@
 #import "GenreConstants.h"
 #import "FileIOConstants.h"
 #import "AlbumArtUtilities.h"
+#import "SDWebImageManager.h"
 #import "AppEnvironmentConstants.h"
+#import "UIColor+SystemTintColor.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 

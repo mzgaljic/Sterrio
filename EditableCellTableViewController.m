@@ -19,7 +19,6 @@
 {
     UIStoryboard*  sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     EditableCellTableViewController* vc = [sb instantiateViewControllerWithIdentifier:@"editingCellItemView"];
-    //self = [super initWithNibName:@"DestinationViewController" bundle:nil];
     self = vc;
     if (self) {
         _stringUserIsEditing = [aString copy];
@@ -40,6 +39,10 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+    
+    SDImageCache *imageCache = [SDImageCache sharedImageCache];
+    [imageCache clearMemory];
+    [imageCache clearDisk];
 }
 
 #pragma mark - Table view data source
@@ -145,8 +148,6 @@
     //remove header gap at top of table, and remove some scrolling space under the delete button (update scroll insets too)
     [self.tableView setContentInset:UIEdgeInsetsMake(68,0,-68,0)];
     [self.tableView setScrollIndicatorInsets:UIEdgeInsetsMake(68,0,-68,0)];
-    
-    //[self.tableView reloadData];
 }
 
 

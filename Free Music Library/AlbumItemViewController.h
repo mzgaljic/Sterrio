@@ -11,6 +11,7 @@
 #import "AppEnvironmentConstants.h"
 #import "Album.h"
 #import "Song.h"
+#import "SDWebImageManager.h"
 
 @interface AlbumItemViewController : UIViewController
 @property (strong, nonatomic) Album *album;

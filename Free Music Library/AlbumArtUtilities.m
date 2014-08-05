@@ -20,6 +20,14 @@
     return [UIImage imageWithContentsOfFile:path];
 }
 
++ (NSURL *)albumArtFileNameToNSURL:(NSString *)albumArtFileName
+{
+    NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *artDirPath = [documentsPath stringByAppendingPathComponent:@"Album Art"];
+    NSString* path = [artDirPath stringByAppendingPathComponent: albumArtFileName];
+    return [NSURL fileURLWithPath:path];
+}
+
 + (BOOL)deleteAlbumArtFileWithName:(NSString *)fileName
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];

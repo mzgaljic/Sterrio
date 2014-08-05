@@ -9,40 +9,21 @@
 #import "MasterSongsTableViewController.h"
 
 @interface MasterSongsTableViewController ()
-@property (nonatomic, strong) NSMutableArray *results;  //for searching tableView?
-@property(nonatomic, strong) NSMutableArray *allSongsInLibrary;
+@property (nonatomic, strong) NSMutableArray *searchResults;
+@property (nonatomic, strong) NSMutableArray *allSongsInLibrary;
 @property (nonatomic, assign) int indexOfEditingSong;
 @property (nonatomic, assign) int selectedRowIndexValue;
-@property(nonatomic, strong) UISearchBar* searchBar;
+@property (nonatomic, strong) UISearchBar* searchBar;
+@property (nonatomic, assign) BOOL displaySearchResults;
 @end
 
 @implementation MasterSongsTableViewController
 static BOOL PRODUCTION_MODE;
 
-- (NSMutableArray *) results
-{
-    if(! _results){
-        _results = [[NSMutableArray alloc] init];
-    }
-    return _results;
-}
-
 #pragma mark - Miscellaneous
 - (void)setProductionModeValue
 {
     PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
-}
-
--(void)makeBarButtonGrey:(UIBarButtonItem *)barButton yes:(BOOL)show
-{
-    if (show) {
-        barButton.style = UIBarButtonItemStyleBordered;
-        barButton.enabled = true;
-    } else {
-        barButton.style = UIBarButtonItemStylePlain;
-        barButton.enabled = false;
-        barButton.title = nil;
-    }
 }
 
 - (void)setUpNavBarItems
@@ -59,11 +40,16 @@ static BOOL PRODUCTION_MODE;
     self.navigationItem.rightBarButtonItems = rightBarButtonItems;  //place both buttons on the nav bar
 }
 
-- (void)setUpSearchBar
+-(void)makeBarButtonGrey:(UIBarButtonItem *)barButton yes:(BOOL)show
 {
-    _searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
-    _searchBar.delegate = self;
-    self.tableView.tableHeaderView = _searchBar;
+    if (show) {
+        barButton.style = UIBarButtonItemStyleBordered;
+        barButton.enabled = true;
+    } else {
+        barButton.style = UIBarButtonItemStylePlain;
+        barButton.enabled = false;
+        barButton.title = nil;
+    }
 }
 
 - (void)editTapped:(id)sender
@@ -82,6 +68,71 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
+#pragma mark - UISearchBar
+- (void)setUpSearchBar
+{
+    //create search bar, add to viewController
+    _searchBar = [[UISearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0)];
+    _searchBar.placeholder = @"Search Songs";
+    _searchBar.keyboardType = UIKeyboardTypeASCIICapable;
+    _searchBar.delegate = self;
+    [self.searchBar sizeToFit];
+    self.tableView.tableHeaderView = _searchBar;
+}
+
+//User tapped the search box
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+{
+    //show the cancel button
+    [_searchBar setShowsCancelButton:YES animated:YES];
+}
+
+//user tapped "Search"
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    //search results already appear as the user types. Just hide the keyboard...
+    [_searchBar resignFirstResponder];
+}
+
+//User tapped "Cancel"
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    //dismiss search bar and hide cancel button
+    [_searchBar setShowsCancelButton:NO animated:YES];
+    [_searchBar resignFirstResponder];
+    
+    _searchResults = [NSMutableArray array];
+}
+
+//User typing as we speak, fetch latest results to populate results as they type
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    //assuming we only show song results instead of whole library?
+    
+    //sample code
+    if(searchText.length == 0)
+    {
+        _displaySearchResults = NO;
+    }
+    else
+    {
+        _searchResults = [NSMutableArray array];
+        _displaySearchResults = YES;
+        for (Song* someSong in _allSongsInLibrary)  //iterate through all songs
+        {
+            NSRange nameRange = [someSong.songName rangeOfString:searchText options:NSCaseInsensitiveSearch];
+          //NSRange descriptionRange = [food.description rangeOfString:text options:NSCaseInsensitiveSearch];
+        //if(nameRange.location != NSNotFound || descriptionRange.location != NSNotFound)
+            if(nameRange.location != NSNotFound)
+            {
+                [_searchResults addObject:someSong];
+            }
+            //would maybe like to filter by BEST result? This only captures results...
+        }
+    }
+    [self.tableView reloadData];
+}
+
 
 #pragma mark - View Controller life cycle
 - (void)viewWillAppear:(BOOL)animated
@@ -89,7 +140,7 @@ static BOOL PRODUCTION_MODE;
     [super viewWillAppear:animated];
     
     //init tableView model
-    self.allSongsInLibrary = [NSMutableArray arrayWithArray:[Song loadAll]];
+    _allSongsInLibrary = [NSMutableArray arrayWithArray:[Song loadAll]];
     [self.tableView reloadData];
     
     UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
@@ -111,7 +162,6 @@ static BOOL PRODUCTION_MODE;
 - (void)viewDidAppear:(BOOL)animated
 {
     self.navigationController.navigationBar.translucent = YES;
-    [[NSNotificationCenter defaultCenter]removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
     
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
@@ -127,12 +177,18 @@ static BOOL PRODUCTION_MODE;
     [self setProductionModeValue];
     [self setUpNavBarItems];
     self.tableView.allowsSelectionDuringEditing = YES;
+    
+    [self setUpSearchBar];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+    
+    SDImageCache *imageCache = [SDImageCache sharedImageCache];
+    [imageCache clearMemory];
+    [imageCache clearDisk];
 }
 
 - (void)dealloc
@@ -149,30 +205,48 @@ static BOOL PRODUCTION_MODE;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.allSongsInLibrary.count;
+    if(_displaySearchResults)
+        return _searchResults.count;  //user is searching and we need to show search results in table
+    else
+        return _allSongsInLibrary.count;  //user browsing library
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SongItemCell" forIndexPath:indexPath];
     
+    Song *song;
     // Configure the cell...
-    Song *song = [self.allSongsInLibrary objectAtIndex: indexPath.row];  //get song object at this index
-   
+    if(_displaySearchResults)
+        song = [_searchResults objectAtIndex:indexPath.row];
+    else
+        song = [_allSongsInLibrary objectAtIndex: indexPath.row];
+    
     //init cell fields
     cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
     if(! [SongTableViewFormatter songNameIsBold])
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    UIImage *image;
-    if(PRODUCTION_MODE)
-        image = [AlbumArtUtilities albumArtFileNameToUiImage: song.albumArtFileName];
-    else
-        image = [UIImage imageNamed:song.album.albumName];
     
-    image = [AlbumArtUtilities imageWithImage:image scaledToSize:[SongTableViewFormatter preferredSongAlbumArtSize]];
-    cell.imageView.image = image;
+    //if the songs tab loading of images is laggy, just go back to the 'standard way', which is the code in the albums tab.
+    UIImage *image;
+    if(PRODUCTION_MODE){
+        CGSize size = [SongTableViewFormatter preferredSongAlbumArtSize];
+        [cell.imageView sd_setImageWithURL:[AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]
+                                placeholderImage:[UIImage imageWithColor:[UIColor clearColor] width:size.width height:size.height]
+                                         options:SDWebImageCacheMemoryOnly
+                                       completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL){
+                                     image = [AlbumArtUtilities imageWithImage:image scaledToSize:size];
+                                           cell.imageView.image = image;
+                                 }];
+    }
+    else{
+        image = [UIImage imageNamed:song.album.albumName];
+        image = [AlbumArtUtilities imageWithImage:image scaledToSize:[SongTableViewFormatter preferredSongAlbumArtSize]];
+        cell.imageView.image = image;
+
+    }
     return cell;
 }
 
@@ -264,7 +338,7 @@ static BOOL PRODUCTION_MODE;
 {
     if([notification.name isEqualToString:@"SongEditDone"]){
         //leave editing mode
-        [self setEditing:NO animated:NO];
+        
         [[NSNotificationCenter defaultCenter] removeObserver:self name:@"SongEditDone" object:nil];
     }
 }
@@ -307,12 +381,7 @@ static BOOL PRODUCTION_MODE;
 //called when + sign is tapped - selector defined in setUpNavBarItems method!
 - (void)addButtonPressed
 {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"'+' Tapped"
-                                                    message:@"This is how you add music to the library!  :)"
-                                                   delegate:nil
-                                          cancelButtonTitle:@"Got it"
-                                          otherButtonTitles:nil];
-    [alert show];
+    [self performSegueWithIdentifier:@"addMusicToLibSegue" sender:nil];
 }
 
 

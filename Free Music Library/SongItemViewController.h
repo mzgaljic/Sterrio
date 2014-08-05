@@ -7,12 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MediaPlayer/MediaPlayer.h>
 #import "Song.h"
 #import "Album.h"
 #import "Artist.h"
 #import "Playlist.h"
+#import "YouTubeVideoSearchService.h"
+#import "YouTubeVideoSearchDelegate.h"
+#import "SDWebImageManager.h"
 
-@interface SongItemViewController : UIViewController
+@interface SongItemViewController : UIViewController <YouTubeVideoSearchDelegate>
+
 ///only applicable when picking songs from lists (not making music queue's on the fly)
 @property (assign, nonatomic) int songNumberInSongCollection;
 ///only applicable when picking songs from lists (not making music queue's on the fly)
@@ -31,5 +36,6 @@
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
 @property (weak, nonatomic) IBOutlet UILabel *songNameLabel;
 
+- (IBAction)buttonTapped:(id)sender;
 
 @end

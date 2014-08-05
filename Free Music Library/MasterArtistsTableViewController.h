@@ -11,6 +11,7 @@
 #import "AppEnvironmentConstants.h"
 #import "Album.h"
 #import "ArtistTableViewFormatter.h"
+#import "SDWebImageManager.h"
 
 @interface MasterArtistsTableViewController : UITableViewController
 

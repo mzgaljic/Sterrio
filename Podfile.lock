@@ -1,19 +1,54 @@
 PODS:
+  - MRProgress (0.6.0):
+    - MRProgress/ActivityIndicator
+    - MRProgress/Blur
+    - MRProgress/Circular
+    - MRProgress/Icons
+    - MRProgress/NavigationBarProgress
+    - MRProgress/Overlay
+  - MRProgress/ActivityIndicator (0.6.0):
+    - MRProgress/Stopable
+  - MRProgress/Blur (0.6.0):
+    - MRProgress/Helper
+  - MRProgress/Circular (0.6.0):
+    - MRProgress/Helper
+    - MRProgress/ProgressBaseClass
+    - MRProgress/Stopable
+  - MRProgress/Helper (0.6.0)
+  - MRProgress/Icons (0.6.0)
+  - MRProgress/NavigationBarProgress (0.6.0):
+    - MRProgress/ProgressBaseClass
+  - MRProgress/Overlay (0.6.0):
+    - MRProgress/ActivityIndicator
+    - MRProgress/Blur
+    - MRProgress/Circular
+    - MRProgress/Helper
+    - MRProgress/Icons
+  - MRProgress/ProgressBaseClass (0.6.0)
+  - MRProgress/Stopable (0.6.0):
+    - MRProgress/Helper
   - RBBAnimation (0.3.0)
   - RNFrostedSidebar (0.2.0)
   - SDCAlertView (1.4):
     - RBBAnimation (~> 0.3)
     - SDCAutoLayout (~> 2.0)
   - SDCAutoLayout (2.0)
+  - SDWebImage (3.7.1):
+    - SDWebImage/Core
+  - SDWebImage/Core (3.7.1)
 
 DEPENDENCIES:
+  - MRProgress
   - RNFrostedSidebar (~> 0.2.0)
   - SDCAlertView
+  - SDWebImage (~> 3.7)
 
 SPEC CHECKSUMS:
+  MRProgress: bacc0f2f6c547e4ab21fd48ed14e19cbd70de3e4
   RBBAnimation: 243d73be1a526f1b51d266b182e4aa0cfe9cbf64
   RNFrostedSidebar: f1d95d9b2627f13cc10e75d36e751a623eec079c
   SDCAlertView: 9d75ea96555ff4b68e09e856b913d0549e3ba8d3
   SDCAutoLayout: 6acad78fe6a09278a064ac71609e8f484a7249fc
+  SDWebImage: 116e88633b5b416ea0ca4b334a4ac59cf72dd38d
 
 COCOAPODS: 0.33.1

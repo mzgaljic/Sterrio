@@ -12,6 +12,7 @@
 
 //file IO
 + (UIImage *)albumArtFileNameToUiImage:(NSString *)albumArtFileName;
++ (NSURL *)albumArtFileNameToNSURL:(NSString *)albumArtFileName;
 + (BOOL)deleteAlbumArtFileWithName:(NSString *)fileName;
 + (BOOL)saveAlbumArtFileWithName:(NSString *)fileName andImage:(UIImage *)albumArtImage;
 + (BOOL)isAlbumArtAlreadySavedOnDisk:(NSString *)albumArtFileName;

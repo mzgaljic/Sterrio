@@ -19,6 +19,25 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    CGFloat screenWidth = [[UIScreen mainScreen] bounds].size.width;
+    CGFloat screenHeight = [[UIScreen mainScreen] bounds].size.height;
+    
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    if (UIInterfaceOrientationIsLandscape(orientation))
+    {
+        // Do something when in landscape
+        
+    }
+    else
+    {
+        
+        // Do something when in portrait
+        float percentOfScreen = screenHeight * .60;  //70%
+        //_myWebView = [[UIWebView alloc] initWithFrame :CGRectMake(0, 44, screenWidth, percentOfScreen)];
+    }
+    
+
+    
     //set song/album details for currently selected song
     NSString *navBarTitle;
     if(self.songNumberInSongCollection == -1){  //could not figure out song #
@@ -45,7 +64,19 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+    
+    SDImageCache *imageCache = [SDImageCache sharedImageCache];
+    [imageCache clearMemory];
+    [imageCache clearDisk];
 }
 
+#pragma mark - Playing parsed Youtube video
 
+- (IBAction)buttonTapped:(id)sender
+{
+    YouTubeVideoSearchService *yt = [[YouTubeVideoSearchService alloc] init];
+    [yt searchYouTubeForVideosUsingString:@"cats"];
+}
+                   
+                   
 @end

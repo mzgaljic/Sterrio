@@ -8,5 +8,11 @@ pod 'RNFrostedSidebar', '~> 0.2.0'
 #UIAlertView clone, that allows for custom subviews...and larger fonts.
 pod 'SDCAlertView'
 
-#progress bar and other types of 'HUD' alerts. Blurred effect too
-#pod 'MBProgressHUD', '~> 0.8'
+#Youtube Player
+#pod 'XCDYouTubeKit', '~> 2.0'
+
+#SDWebImage  effeciently download pics in background from urls
+pod 'SDWebImage', '~> 3.7'
+
+#variety of nice progress bars/loading animation or popups
+pod 'MRProgress'

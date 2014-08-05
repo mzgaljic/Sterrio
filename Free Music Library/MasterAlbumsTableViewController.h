@@ -12,6 +12,7 @@
 #import "AlbumArtUtilities.h"
 #import "AlbumItemViewController.h"
 #import "Album.h"
+#import "SDWebImageManager.h"
 #import "AlbumTableViewFormatter.h"
 
 @interface MasterAlbumsTableViewController : UITableViewController

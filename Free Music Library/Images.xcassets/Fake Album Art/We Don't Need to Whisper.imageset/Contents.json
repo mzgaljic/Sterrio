@@ -2,12 +2,12 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x"
+      "scale" : "1x",
+      "filename" : "We Don't Need to Whisper.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "2x",
-      "filename" : "We Don't Need to Whisper.png"
+      "scale" : "2x"
     }
   ],
   "info" : {
