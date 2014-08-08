@@ -108,7 +108,7 @@ static BOOL PRODUCTION_MODE;
                 if(_songIAmEditing.albumArtFileName)
                     image = [UIImage imageNamed:_songIAmEditing.album.albumName];
             }
-            image = [AlbumArtUtilities imageWithImage:image scaledToSize:CGSizeMake(60, 60)];
+            image = [AlbumArtUtilities imageWithImage:image scaledToSize:CGSizeMake(58, 58)];
             cell.accessoryView = [[ UIImageView alloc ] initWithImage:image];
             cell.detailTextLabel.text = @"";
         } else if(indexPath.row == 4){  //Genre
@@ -203,6 +203,7 @@ static BOOL PRODUCTION_MODE;
                     //album picker
                 }
                 _lastTappedRow = 2;
+                break;
             }
             case 3:  //editing album art
             {
@@ -231,6 +232,7 @@ static BOOL PRODUCTION_MODE;
             }
             case 4:  //editing genre
                 _lastTappedRow = 4;
+                break;
         }
     }
     

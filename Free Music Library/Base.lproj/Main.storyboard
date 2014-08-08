@@ -940,34 +940,59 @@
                     </tableView>
                     <navigationItem key="navigationItem" id="1ir-IH-i0n"/>
                     <connections>
-                        <segue destination="EA4-jZ-sHW" kind="push" identifier="songCreationSegue" id="0Id-bp-pF4"/>
+                        <outlet property="navBar" destination="1ir-IH-i0n" id="1z7-dg-CB9"/>
+                        <segue destination="KHe-Gr-T1s" kind="push" identifier="youtubeVideoPlaybackSegue" id="WWT-NP-dI2"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dhL-xL-Ac8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1647" y="-1937"/>
         </scene>
-        <!--Song Creation Table View Controller-->
-        <scene sceneID="a54-fd-H76">
+        <!--You Tube Video Playback Table View Controller-->
+        <scene sceneID="rqC-Em-e60">
             <objects>
-                <tableViewController storyboardIdentifier="songCellItemView" id="EA4-jZ-sHW" customClass="SongCreationTableViewController" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="aoP-cu-o1o">
+                <tableViewController storyboardIdentifier="ytVideoFieldEntryAndVideoPlayer" useStoryboardIdentifierAsRestorationIdentifier="YES" id="KHe-Gr-T1s" customClass="YouTubeVideoPlaybackTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="GaT-j3-G4F">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="songCreationFieldCell" textLabel="TXd-f9-XcF" style="IBUITableViewCellStyleDefault" id="zsS-V8-gdg">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="SongEntryFieldCell" textLabel="JJc-mu-k6n" style="IBUITableViewCellStyleDefault" id="bFn-7z-hHX">
                                 <rect key="frame" x="0.0" y="119" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="zsS-V8-gdg" id="mn2-in-FL1">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bFn-7z-hHX" id="duw-cg-upF">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="TXd-f9-XcF">
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="JJc-mu-k6n">
                                             <rect key="frame" x="15" y="0.0" width="290" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="26"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="SongAlbumArtEntryFieldCell" textLabel="Tp9-7h-M1b" detailTextLabel="9w1-EK-Oxr" style="IBUITableViewCellStyleValue1" id="7RS-Ay-g8l">
+                                <rect key="frame" x="0.0" y="163" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="7RS-Ay-g8l" id="4wZ-Tw-0Ew">
+                                    <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Tp9-7h-M1b">
+                                            <rect key="frame" x="15" y="11" width="34" height="22"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="9w1-EK-Oxr">
+                                            <rect key="frame" x="241" y="12" width="44" height="21"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
@@ -975,15 +1000,61 @@
                             </tableViewCell>
                         </prototypes>
                         <connections>
-                            <outlet property="dataSource" destination="EA4-jZ-sHW" id="YFx-NW-6lm"/>
-                            <outlet property="delegate" destination="EA4-jZ-sHW" id="8T6-0q-kKl"/>
+                            <outlet property="dataSource" destination="KHe-Gr-T1s" id="xXr-it-Luq"/>
+                            <outlet property="delegate" destination="KHe-Gr-T1s" id="Y1f-Un-4ZY"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="Zft-T3-SZb"/>
+                    <navigationItem key="navigationItem" id="WTB-on-cLy"/>
+                    <connections>
+                        <outlet property="navBar" destination="WTB-on-cLy" id="zId-qy-1Cg"/>
+                    </connections>
                 </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="4Ds-s6-v8K" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="VZQ-ng-ARv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2073" y="-1937"/>
+            <point key="canvasLocation" x="2098" y="-1937"/>
+        </scene>
+        <!--You Tube Video Playback View Controller-->
+        <scene sceneID="Un9-Ku-6KG">
+            <objects>
+                <viewController storyboardIdentifier="youtubeResultPlayer" id="HGk-Sg-seE" customClass="YouTubeVideoPlaybackViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="c6t-IC-upZ"/>
+                        <viewControllerLayoutGuide type="bottom" id="PYf-ny-yM8"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="YTo-Ls-jLQ">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1V7-mx-da4">
+                                <rect key="frame" x="0.0" y="103" width="320" height="161"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            </view>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Label" textAlignment="center" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="srC-HA-VUf">
+                                <rect key="frame" x="20" y="50" width="280" height="45"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="23"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="centerX" secondItem="srC-HA-VUf" secondAttribute="centerX" id="9Ti-0j-dQX"/>
+                            <constraint firstAttribute="centerY" secondItem="1V7-mx-da4" secondAttribute="centerY" id="AUc-7U-KUp"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="7If-uk-h2F">
+                        <barButtonItem key="backBarButtonItem" title="Search Results" id="D1V-HJ-B2W"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="videoTitleLabel" destination="srC-HA-VUf" id="WBz-v1-eMA"/>
+                        <outlet property="youTubeViewContainerView" destination="1V7-mx-da4" id="QAl-fc-o1v"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZYL-xg-PsY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2098" y="-2871"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="b6l-XS-vJ8">

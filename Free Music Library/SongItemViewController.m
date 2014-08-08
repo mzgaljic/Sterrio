@@ -32,7 +32,7 @@
     {
         
         // Do something when in portrait
-        float percentOfScreen = screenHeight * .60;  //70%
+        //float percentOfScreen = screenHeight * .60;  //70%
         //_myWebView = [[UIWebView alloc] initWithFrame :CGRectMake(0, 44, screenWidth, percentOfScreen)];
     }
     

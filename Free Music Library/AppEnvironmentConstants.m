@@ -35,7 +35,7 @@ static BOOL icloudSettingsSync;
     if(numUpToSix <= 6 && numUpToSix > 0)
         preferredSizeValue = numUpToSix;
     else{
-        NSLog(@"Font Size setting problem, received an invalid size value! Will set to default.");
+        NSLog(@"Font Size setting has become corrupt, setting default value.");
         preferredSizeValue = 3;
         return;
     }

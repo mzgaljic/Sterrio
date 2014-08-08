@@ -290,7 +290,7 @@ NSArray *CellStreamOptions;
         case WIFI_STREAM_PICKER_TAG:
         {
             picker = [picker initWithFrame:CGRectMake(0, 0, 260, 400)];
-            WifiStreamOptions = @[@"240p",@"360p", @"480p",@"720p (default)",@"1080p"];
+            WifiStreamOptions = @[@"240p",@"360p",@"720p (default)"];
             short wifiSetting = [AppEnvironmentConstants preferredWifiStreamSetting];
             if(wifiSetting == 720)
                 findMeInArray = [NSString stringWithFormat:@"%hup (default)",wifiSetting];
@@ -307,7 +307,7 @@ NSArray *CellStreamOptions;
         }
         case CELL_STREAM_PICKER_TAG:
             picker = [picker initWithFrame:CGRectMake(0, 0, 260, 400)];
-            CellStreamOptions = @[@"240p",@"360p (default)", @"480p",@"720p"];
+            CellStreamOptions = @[@"240p",@"360p (default)",@"720p"];
             short cellSetting = [AppEnvironmentConstants preferredCellularStreamSetting];
             if(cellSetting == 360)
                 findMeInArray = [NSString stringWithFormat:@"%hup (default)",cellSetting];

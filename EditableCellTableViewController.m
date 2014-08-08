@@ -112,12 +112,6 @@
         // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
         [self prefersStatusBarHidden];
         [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }else {
-        // iOS 6 code only here...checking if we are now going into landscape mode
-        if((toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft) ||(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight))
-            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-        else
-            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
     }
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
@@ -140,8 +134,6 @@
     //remove header gap at top of table, and remove some scrolling space under the delete button (update scroll insets too)
     [self.tableView setContentInset:UIEdgeInsetsMake(0,0,0,0)];
     [self.tableView setScrollIndicatorInsets:UIEdgeInsetsMake(0,0,0,0)];
-    
-    //[self.tableView reloadData];
 }
 - (void)setPortraitTableViewContentValues
 {

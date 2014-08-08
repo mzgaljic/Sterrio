@@ -14,7 +14,6 @@
 #import "SDCAlertView.h"
 #import "PreferredFontSizeUtility.h"
 #import "NSString+WhiteSpace_Utility.h"
-#import "SDWebImageManager.h"
 
 @interface MasterEditingSongTableViewController : UITableViewController <UIActionSheetDelegate,
                                                                         UINavigationControllerDelegate,

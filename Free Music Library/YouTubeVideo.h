@@ -12,7 +12,8 @@
 
 @property (nonatomic, strong) NSString *videoName;
 @property (nonatomic, strong) NSString *videoId;
-@property (nonatomic, strong) NSString *videoThumbnailUrl;
+@property (nonatomic, strong) NSString *videoThumbnailUrl;  //this is really "medium" quality, not the default.
+@property (nonatomic, strong) NSString *videoThumbnailUrlHighQuality;
 @property (nonatomic, strong) NSString *channelTitle;
 
 @end

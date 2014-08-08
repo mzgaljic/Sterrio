@@ -10,6 +10,5 @@
 
 
 @implementation YouTubeVideo
-@synthesize videoName = _videoName, videoId = _videoId, videoThumbnailUrl = _videoThumbnailUrl;
 
 @end

@@ -40,32 +40,34 @@ static BOOL PRODUCTION_MODE;
     self.navigationItem.rightBarButtonItems = rightBarButtonItems;  //place both buttons on the nav bar
 }
 
--(void)makeBarButtonGrey:(UIBarButtonItem *)barButton yes:(BOOL)show
-{
-    if (show) {
-        barButton.style = UIBarButtonItemStyleBordered;
-        barButton.enabled = true;
-    } else {
-        barButton.style = UIBarButtonItemStylePlain;
-        barButton.enabled = false;
-        barButton.title = nil;
-    }
-}
-
 - (void)editTapped:(id)sender
 {
     if(self.editing)
     {
         //leaving editing mode now
         [super setEditing:NO animated:YES];
-        [self makeBarButtonGrey:[self.navigationItem.rightBarButtonItems objectAtIndex:1] yes:YES];
+        [self makeBarButtonItemGrey:[self.navigationItem.rightBarButtonItems objectAtIndex:1]];
     }
     else
     {
         //entering editing mode now
         [super setEditing:YES animated:YES];
-        [self makeBarButtonGrey:[self.navigationItem.rightBarButtonItems objectAtIndex:1] yes:NO];
+        [self makeBarButtonItemNormal:[self.navigationItem.rightBarButtonItems objectAtIndex:1]];
     }
+}
+
+- (UIBarButtonItem *)makeBarButtonItemGrey:(UIBarButtonItem *)barButton
+{
+    barButton.style = UIBarButtonItemStylePlain;
+    barButton.enabled = false;
+    return barButton;
+}
+
+- (UIBarButtonItem *)makeBarButtonItemNormal:(UIBarButtonItem *)barButton
+{
+    barButton.style = UIBarButtonItemStyleBordered;
+    barButton.enabled = true;
+    return barButton;
 }
 
 #pragma mark - UISearchBar

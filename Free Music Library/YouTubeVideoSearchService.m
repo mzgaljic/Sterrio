@@ -157,12 +157,14 @@ static NSString *nextPageString = @"&pageToken=";
     NSDictionary *snippetAtItemIndex;
     NSDictionary *idDictAtIndex;
     NSDictionary *thumbnailsDict;
-    NSDictionary *defaultThumbnailDict;
+    NSDictionary *mediumQualityThumbnailDict;
+    NSDictionary *highQualityThumbnailDict;
     
     //target strings
     NSString *videoTitle;
     NSString *channelTitle;
-    NSString *defaultThumbnailUrl;
+    NSString *mediumQualityThumbnailUrl;
+    NSString *highQualityThumbnailUrl;
     NSString *videoID;
     
     //reusable YouTubeVideo object var
@@ -182,13 +184,18 @@ static NSString *nextPageString = @"&pageToken=";
         channelTitle = [snippetAtItemIndex objectForKey:@"channelTitle"];
 
         thumbnailsDict = [snippetAtItemIndex objectForKey:@"thumbnails"];
-        defaultThumbnailDict = [thumbnailsDict objectForKey:@"default"];
-        defaultThumbnailUrl = [defaultThumbnailDict objectForKey:@"url"];
+        mediumQualityThumbnailDict = [thumbnailsDict objectForKey:@"medium"];
+        mediumQualityThumbnailUrl = [mediumQualityThumbnailDict objectForKey:@"url"];
+        
+        highQualityThumbnailDict = [thumbnailsDict objectForKey:@"high"];
+        highQualityThumbnailUrl = [highQualityThumbnailDict objectForKey:@"url"];
+        
         
         ytVideo = parsedArray[i];
         ytVideo.videoName = videoTitle;
         ytVideo.videoId = videoID;
-        ytVideo.videoThumbnailUrl = defaultThumbnailUrl;
+        ytVideo.videoThumbnailUrl = mediumQualityThumbnailUrl;
+        ytVideo.videoThumbnailUrlHighQuality = highQualityThumbnailUrl;
         ytVideo.channelTitle = channelTitle;
     }
     return parsedArray;

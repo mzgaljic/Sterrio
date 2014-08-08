@@ -22,6 +22,8 @@
 //view isn't actually on top of tableView, but it looks like it. Call "turnTableViewIntoUIView" prior to setting this value!
 @property (nonatomic, strong) UIView *viewOnTopOfTable;
 
+
+@property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
 @property (nonatomic, strong) UIBarButtonItem *cancelButton;
 @property (nonatomic, strong) UIBarButtonItem *scrollToTopButton;
 @property (nonatomic, assign) BOOL scrollToTopButtonVisible;
@@ -68,6 +70,7 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
     {
         // we're already on the navigation stack, another controller must have been popped off.
         _displaySearchResults = YES;
+        self.tableView.scrollEnabled = YES;
         //restore scroll to top button if it was there before segue
         if(_scrollToTopButtonVisible)
             [self showScrollToTopButton:YES];
@@ -92,9 +95,9 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
     _searchSuggestions = [NSMutableArray array];
     _searchResults = [NSMutableArray array];
     
-    self.navigationController.navigationBar.hidden = YES;
+    //self.navigationController.navigationBar.hidden = YES;
     self.navigationController.toolbarHidden = NO;
-    self.navigationController.title = @"Search Results";
+    _navBar.title = @"Add Music";
     _cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                   target:self
                                                                   action:@selector(cancelTapped)];
@@ -272,6 +275,7 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
     if(buttonIndex == 0){  //hide loading popup behind the uialertView
         [self turnTableViewIntoUIView:NO];
         _displaySearchResults = NO;
+        self.tableView.scrollEnabled = NO;
         [self.tableView reloadData];
     }
 }
@@ -293,6 +297,8 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
 {
     //show the cancel button
     _displaySearchResults = NO;
+    self.tableView.scrollEnabled = NO;
+    _navBar.title = @"Add Music";
     [_searchBar setShowsCancelButton:YES animated:YES];
 }
 
@@ -301,7 +307,9 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
 {
     _searchInitiatedAlready = YES;
     _displaySearchResults = YES;
+    self.tableView.scrollEnabled = YES;
     _lastSuccessfullSearchString = searchBar.text;
+    _navBar.title = @"Search Results";
     [_searchBar resignFirstResponder];
     
     //show loading popup above tableview before content loads
@@ -326,6 +334,7 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
             [_searchSuggestions removeAllObjects];
             [_searchBar resignFirstResponder];
             _displaySearchResults = YES;
+            self.tableView.scrollEnabled = YES;
             [self.tableView reloadData];
             return;
         }
@@ -348,6 +357,7 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
         //fetch auto suggestions
         [_yt fetchYouTubeAutoCompleteResultsForString:searchText];
         _displaySearchResults = NO;
+        self.tableView.scrollEnabled = NO;
         [self.tableView reloadData];
     }
     
@@ -359,6 +369,7 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
             [_searchSuggestions removeAllObjects];
         }
         _displaySearchResults = NO;
+        self.tableView.scrollEnabled = NO;
         [self.tableView reloadData];
     }
 }
@@ -473,7 +484,7 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(! _displaySearchResults)
-        return 48;
+        return 45;
     return 90;
 }
 
@@ -484,7 +495,8 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
     if(_displaySearchResults){  //video search results in table
         if(indexPath.section == 0){
             YouTubeVideo *ytVideo = [_searchResults objectAtIndex:indexPath.row];
-            [self.navigationController pushViewController:[[SongCreationTableViewController alloc] initWithYouTubeVideo:ytVideo] animated:YES];
+            [self.navigationController pushViewController:[[YouTubeVideoPlaybackTableViewController alloc] initWithYouTubeVideo:ytVideo] animated:YES];
+            
         } else if(indexPath.section == 1){
             //Load More button tapped
             if(indexPath.row == 0){
@@ -524,17 +536,6 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
         _viewOnTopOfTable = nil;
         [self setUpSearchBar];
         self.tableView.scrollEnabled = YES;
-    }
-}
-
-#pragma mark - segue
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    //song was tapped
-    if([[segue identifier] isEqualToString: @"songCreationSegue"]){
-        //setup properties in SongCreationTableViewController.h
-        YouTubeVideo *ytVideo = (YouTubeVideo *)sender;
-        [[segue destinationViewController] setSelectedVideo:ytVideo];
     }
 }
 
@@ -622,7 +623,5 @@ static NSDate *finish;
 {
     return YES;
 }
-
-
 
 @end

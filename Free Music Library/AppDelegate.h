@@ -7,6 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
+#import <MediaPlayer/MediaPlayer.h>
+
 #import "Song.h"
 #import "Album.h"
 #import "Artist.h"
@@ -17,6 +20,7 @@
 #import "SDWebImageManager.h"
 #import "AppEnvironmentConstants.h"
 #import "UIColor+SystemTintColor.h"
+#import "YouTubeMoviePlayerSingleton.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 

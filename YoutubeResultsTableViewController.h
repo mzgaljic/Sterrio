@@ -19,7 +19,7 @@
 #import "AlbumArtUtilities.h"
 #import "SDCAlertView.h"
 #import "PreferredFontSizeUtility.h"
-#import "SongCreationTableViewController.h"
+#import "YouTubeVideoPlaybackTableViewController.h"
 
 @interface YoutubeResultsTableViewController : UITableViewController <UISearchBarDelegate, YouTubeVideoSearchDelegate>
 
