@@ -46,13 +46,13 @@ static BOOL PRODUCTION_MODE;
     {
         //leaving editing mode now
         [super setEditing:NO animated:YES];
-        [self makeBarButtonItemGrey:[self.navigationItem.rightBarButtonItems objectAtIndex:1]];
+        [self makeBarButtonItemNormal:[self.navigationItem.rightBarButtonItems objectAtIndex:1]];
     }
     else
     {
         //entering editing mode now
         [super setEditing:YES animated:YES];
-        [self makeBarButtonItemNormal:[self.navigationItem.rightBarButtonItems objectAtIndex:1]];
+        [self makeBarButtonItemGrey:[self.navigationItem.rightBarButtonItems objectAtIndex:1]];
     }
 }
 
@@ -140,6 +140,9 @@ static BOOL PRODUCTION_MODE;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    //hide search bar
+    [self.tableView setContentOffset:CGPointMake(0, -16)];
     
     //init tableView model
     _allSongsInLibrary = [NSMutableArray arrayWithArray:[Song loadAll]];

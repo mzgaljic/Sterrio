@@ -83,8 +83,6 @@ static NSString *nextPageString = @"&pageToken=";
                 {
                     if (requestError != nil)  // Check for problems
                     {
-                        //if(requestError.code == kCFURLErrorNotConnectedToInternet)  //-1019
-                            //NSLog(@"no internet connection. Tried getting yt results.");
                         [_delegate networkErrorHasOccuredFetchingMorePages];
                     }
                 }
@@ -119,8 +117,7 @@ static NSString *nextPageString = @"&pageToken=";
                 {
                     if (requestError != nil)  // Check for problems
                     {
-                        //if(requestError.code == kCFURLErrorNotConnectedToInternet)  //-1019
-                            //NSLog(@"no internet connection. Tried fetching suggetions.");
+                        //don't need to display error to user, not critical to see autosuggestions.
                     }
                 }
                 else  // Data received...continue processing

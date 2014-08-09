@@ -188,7 +188,7 @@ static BOOL PRODUCTION_MODE;
                                                      destructiveButtonTitle:nil otherButtonTitles:@"Choose From Existing Artist",
                                                                                                     @"Create New Artist", nil];
                 popup.tag = 1;
-                [popup showInView:[UIApplication sharedApplication].keyWindow];
+                [popup showInView:self.navigationController.view];
                 _lastTappedRow = 1;
                 break;
             }
@@ -198,7 +198,7 @@ static BOOL PRODUCTION_MODE;
                     UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel"
                                                          destructiveButtonTitle:nil otherButtonTitles: @"", @"Remove Art", nil];
                     popup.tag = 2;
-                    [popup showInView:[UIApplication sharedApplication].keyWindow];
+                    [popup showInView:self.navigationController.view];
                 } else{
                     //album picker
                 }

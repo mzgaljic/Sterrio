@@ -1,7 +1,3 @@
-#platform :ios, '6.0'
-#pod 'Discogs-ObjC'  --> some Discogs wrapper. Probably not needed.
-#pod 'FMDB'     --> some advanced database wrapper. probably too complicated.
-
 #blurred sidebar/menu
 pod 'RNFrostedSidebar', '~> 0.2.0'
 
@@ -14,4 +10,11 @@ pod 'SDWebImage', '~> 3.7'
 #variety of nice progress bars/loading animation or popups
 pod 'MRProgress'
 
+#youtube id video url extractor
 pod 'XCDYouTubeKit', '~> 2.0'
+
+#Searches multiple sources online for images, and crops too.
+pod 'DZNPhotoPickerController'
+
+#MPMoviePlayerController alternative library
+pod 'ALMoviePlayerController', '~>0.3.0'

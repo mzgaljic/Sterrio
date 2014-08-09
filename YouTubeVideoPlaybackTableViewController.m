@@ -9,21 +9,50 @@
 #import "YouTubeVideoPlaybackTableViewController.h"
 
 @interface YouTubeVideoPlaybackTableViewController ()
+{
+    //part of photo search, picker, and editor...
+    UIPopoverController *_popoverController;
+    NSDictionary *_photoPayload;
+}
+
 @property (nonatomic, strong) UIBarButtonItem *addToLibraryButton;
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
+@property (nonatomic, strong) ALMoviePlayerControls *movieControls;
 
 @property (nonatomic, assign) BOOL enoughSongInformationGiven;
 @property (nonatomic, strong) UIImage *albumArt;
+@property (nonatomic, strong) UIImage *smallCellAlbumArt;
+@property (nonatomic, strong) NSString *currentUserEnteredSongName;
+@property (nonatomic, strong) NSString *currentUserEnteredArtistName;
+@property (nonatomic, strong) NSString *currentUserEnteredAlbumName;
+@property (nonatomic, strong) NSString *currentUserEnteredGenreName;
 @end
 
 @implementation YouTubeVideoPlaybackTableViewController
-@synthesize enoughSongInformationGiven = _enoughSongInformationGiven;
+@synthesize enoughSongInformationGiven = _enoughSongInformationGiven, albumArt = _albumArt;
+
 static BOOL PRODUCTION_MODE;
+static NSString *Bing_Account_Key = @"9db+y1deiVZ9Dg6Y2VmkOZI4zv/xEWEvTmUhd2PnQeE";
 static const short Landscape_TableView_Header_Offset = 32;
 static const short Song_Input_TextField_Tag = 100;
 static const short Artist_Input_TextField_Tag = 200;
 static const short Album_Input_TextField_Tag = 300;
 static const short Genre_Input_TextField_Tag = 400;
+
+- (void)setAlbumArt:(UIImage *)albumArt
+{
+    if(albumArt == nil){
+        _albumArt = nil;
+        albumArt = nil;
+        _smallCellAlbumArt = nil;
+        return;
+    } else{
+        _albumArt = albumArt;
+        albumArt = nil;
+        _smallCellAlbumArt = [AlbumArtUtilities imageWithImage:_albumArt scaledToSize:CGSizeMake(58, 58)];
+        return;
+    }
+}
 
 - (void)setEnoughSongInformationGiven:(BOOL)enoughSongInformationGiven
 {
@@ -49,8 +78,18 @@ static const short Genre_Input_TextField_Tag = 400;
         if(youtubeVideoObject == nil)
             return nil;
         _ytVideo = youtubeVideoObject;
+        _photoPayload = nil;
     }
     return self;
+}
+
++ (void)initialize  //initializes album art search stuff
+{
+    //Bing does not require a secret. Rather just an "Account Key"
+    [DZNPhotoPickerController registerService:DZNPhotoPickerControllerServiceBingImages
+                                  consumerKey:Bing_Account_Key
+                               consumerSecret:nil
+                                 subscription:DZNPhotoPickerControllerSubscriptionFree];
 }
 
 - (void)viewDidLoad
@@ -61,6 +100,10 @@ static const short Genre_Input_TextField_Tag = 400;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(setUpLockScreenInfoAndArt)
                                                  name:UIApplicationWillResignActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(orientationHasChanged)
+                                                 name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
     
     self.navigationController.toolbarHidden = NO;
@@ -90,7 +133,6 @@ static short numberTimesViewHasBeenShown = 0;
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    [[[YouTubeMoviePlayerSingleton createSingleton] youtubePlayer] play];
     [super viewDidAppear:animated];
     if(! self.enoughSongInformationGiven)
         [self setUpAddToLibraryButton];  //only works in viewDidAppear.
@@ -105,17 +147,18 @@ static short numberTimesViewHasBeenShown = 0;
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
     
     //End recieving events
     [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     [self resignFirstResponder];
     
-    [[[YouTubeMoviePlayerSingleton createSingleton] youtubePlayer] pause];
-    [YouTubeMoviePlayerSingleton setYouTubePlayerInstance:nil];
+    [[[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer] pause];
+    [YouTubeMoviePlayerSingleton setPreviewMusicYouTubePlayerInstance: nil];
     numberTimesViewHasBeenShown = 0;
 }
 
-#pragma mark - Setting up MPMoviePlayerController
+#pragma mark - Setting up ALMoviePlayerController
 - (void)setUpVideoPlayer
 {
     [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:_ytVideo.videoId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
@@ -214,9 +257,10 @@ static short numberTimesViewHasBeenShown = 0;
 
 - (void)setUpMPMoviePlayerControllerUsingNSURL:(NSURL *)videoUrl
 {
-    MPMoviePlayerController *videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:videoUrl];
-    [YouTubeMoviePlayerSingleton setYouTubePlayerInstance:videoPlayer];
-    videoPlayer.shouldAutoplay = YES;
+    ALMoviePlayerController *videoPlayer = [[ALMoviePlayerController alloc] initWithFrame:self.view.frame];
+    videoPlayer.delegate = self;
+    _movieControls = [[ALMoviePlayerControls alloc] initWithMoviePlayer:videoPlayer style:ALMoviePlayerControlsStyleDefault];
+    [videoPlayer setControls:_movieControls];
     
     [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
     
@@ -237,13 +281,16 @@ static short numberTimesViewHasBeenShown = 0;
     self.tableView.tableHeaderView = headerView;
     
     //present this MPMoviePlayerController inside of the headerView of the table
-    videoPlayer.controlStyle = MPMovieControlStyleEmbedded;
+    videoPlayer.controlStyle = MPMovieControlStyleNone;
 	videoPlayer.view.frame = CGRectMake(0.f, 0.f, headerView.bounds.size.width, headerView.bounds.size.height);
 	videoPlayer.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	if (![headerView.subviews containsObject:videoPlayer.view])
 		[headerView addSubview:videoPlayer.view];
+    
+    [_movieControls setFrame:CGRectMake(0.f, 0.f, videoPlayer.view.bounds.size.width, videoPlayer.view.bounds.size.height)];
 
-    [videoPlayer prepareToPlay];
+    [YouTubeMoviePlayerSingleton setPreviewMusicYouTubePlayerInstance:videoPlayer];
+    [videoPlayer setContentURL:videoUrl];
 }
 
 - (void)setPlaceHolderImageForVideoPlayer
@@ -266,6 +313,20 @@ static short numberTimesViewHasBeenShown = 0;
     
     [MRProgressOverlayView showOverlayAddedTo:placeHolderView title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
     self.tableView.tableHeaderView = placeHolderView;
+}
+
+#pragma mark - ALMoviePlayerController delegate methods
+- (void)moviePlayerWillMoveFromWindow
+{
+    //used to re-add the movie player to your view controller's view (because during the transition to fullscreen,
+    //it was moved to [[UIApplication sharedApplication] keyWindow]
+    ALMoviePlayerController *videoPlayer = [[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer];
+    UIView *headerView = self.tableView.tableHeaderView;
+    if (![headerView.subviews containsObject:videoPlayer.view])
+        [headerView addSubview:videoPlayer.view];
+    
+    [videoPlayer setFrame:CGRectMake(0, 0, headerView.frame.size.width, headerView.frame.size.height)];
+    [_movieControls setFrame:CGRectMake(0.f, 0.f, videoPlayer.view.bounds.size.width, videoPlayer.view.bounds.size.height)];
 }
 
 #pragma mark - AlertView
@@ -339,7 +400,7 @@ static short numberTimesViewHasBeenShown = 0;
 
 - (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent
 {
-    MPMoviePlayerController *videoPlayer = [[YouTubeMoviePlayerSingleton createSingleton] youtubePlayer];
+    ALMoviePlayerController *videoPlayer = [[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer];
     
     if (receivedEvent.type == UIEventTypeRemoteControl) {
         switch (receivedEvent.subtype) {
@@ -426,10 +487,7 @@ static short numberTimesViewHasBeenShown = 0;
         else
             cell.textLabel.font = [UIFont systemFontOfSize:20.0];
         cell.textLabel.text = @"Album Art";
-        if(_albumArt){
-            _albumArt = [AlbumArtUtilities imageWithImage:_albumArt scaledToSize:CGSizeMake(58, 58)];
-            cell.accessoryView = [[UIImageView alloc] initWithImage:_albumArt];
-        }
+        cell.accessoryView = [[UIImageView alloc] initWithImage:_smallCellAlbumArt];
         cell.detailTextLabel.text = @" ";
         return cell;
     }
@@ -483,13 +541,12 @@ static short numberTimesViewHasBeenShown = 0;
     return NO;
 }
 
-- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    //if(indexPath.section == 3)
-        //if(indexPath.row == 0)
-            //display album art picker
-            
+    if(indexPath.section == 4)
+        if(indexPath.row == 0)
+            [self showActionSheet];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
@@ -501,7 +558,7 @@ static short numberTimesViewHasBeenShown = 0;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
-    return (section == 4) ? 30.0f : 0.0f;
+    return (section == 4) ? 32.0f : 0.0f;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
@@ -518,7 +575,181 @@ static short numberTimesViewHasBeenShown = 0;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return (indexPath.row == 3) ? 66.0f : 50.0f;
+    return (indexPath.section == 4) ? 66.0f : 50.0f;
+}
+
+#pragma mark - Album art helper stuff (Action Sheet, Photo picker, etc.)
+- (void)showActionSheet
+{
+    UIActionSheet *actionSheet;
+    if(_albumArt == nil){
+        actionSheet = [[UIActionSheet alloc] initWithTitle:@"Album Art" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Take Photo", @"Choose Photo", @"Search for Art", nil];
+    } else
+        actionSheet = [[UIActionSheet alloc] initWithTitle:@"Album Art" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete Art" otherButtonTitles:@"Edit Art", @"Take Photo", @"Choose Photo", @"Search for Art", nil];
+    
+    [actionSheet showInView:self.navigationController.view];
+    [[[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer] pause];
+}
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if(_albumArt == nil)
+    {
+        switch (buttonIndex) {
+            case 0:  //take photo tapped
+                [self presentImagePickerWithSourceType:UIImagePickerControllerSourceTypeCamera];
+                break;
+            case 1:  //chose photo tapped
+                [self presentImagePickerWithSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+                break;
+            case 2:  //search tapped
+                [self presentPhotoPickerWithImage:nil];
+                break;
+            case 3:  //cancel tapped
+                break;
+            default:
+                break;
+        }
+    }
+    else
+    {
+        switch (buttonIndex) {
+            case 0:  //delete album art
+                self.albumArt = nil;
+                [self.tableView reloadData];
+                break;
+            case 1:  //edit album art
+                [self presentPhotoEditor];
+                break;
+            case 2:  //take photo tapped
+                [self presentImagePickerWithSourceType:UIImagePickerControllerSourceTypeCamera];
+                break;
+            case 3:  //chose photo tapped
+                [self presentImagePickerWithSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+                break;
+            case 4:  //search tapped
+                [self presentPhotoPickerWithImage:nil];
+                break;
+            case 5:  //cancel tapped
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+- (void)presentPhotoPickerWithImage:(UIImage *)image
+{
+    DZNPhotoPickerController *picker = nil;
+    if (image && _photoPayload) {
+        picker = [[DZNPhotoPickerController alloc] initWithEditableImage:image];
+        picker.cropMode = [[_photoPayload objectForKey:DZNPhotoPickerControllerCropMode] integerValue];
+    }
+    else {
+        picker = [DZNPhotoPickerController new];
+        picker.supportedServices = DZNPhotoPickerControllerServiceBingImages;
+        picker.allowsEditing = YES;
+        picker.cropMode = DZNPhotoEditorViewControllerCropModeSquare;
+        
+        NSMutableString *albumArtSearchTerm;
+        if(_currentUserEnteredAlbumName != nil){
+            albumArtSearchTerm = [NSMutableString stringWithString:_currentUserEnteredAlbumName];
+            [albumArtSearchTerm appendString:@" album art"];
+            picker.initialSearchTerm = albumArtSearchTerm;
+        }else if(_currentUserEnteredArtistName != nil){
+            albumArtSearchTerm = [NSMutableString stringWithString:_currentUserEnteredArtistName];
+            [albumArtSearchTerm appendString:@" album art"];
+            picker.initialSearchTerm = albumArtSearchTerm;
+        }else if(_currentUserEnteredSongName != nil){
+            albumArtSearchTerm = [NSMutableString stringWithString:_currentUserEnteredSongName];
+            [albumArtSearchTerm appendString:@" album art"];
+            picker.initialSearchTerm = albumArtSearchTerm;
+        }
+        
+        picker.initialSearchTerm = albumArtSearchTerm;
+        picker.enablePhotoDownload = YES;
+        picker.allowAutoCompletedSearch = YES;
+    }
+    
+    picker.finalizationBlock = ^(DZNPhotoPickerController *picker, NSDictionary *info) {
+        [self updateImageWithPayload:info];
+        [picker dismissViewControllerAnimated:YES completion:NULL];
+    };
+    
+    picker.failureBlock = ^(DZNPhotoPickerController *picker, NSError *error) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"An Error has occured", nil)
+                                                        message:error.localizedDescription
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                              otherButtonTitles:nil];
+        [alert show];
+    };
+    
+    picker.cancellationBlock = ^(DZNPhotoPickerController *picker) {
+        [picker dismissViewControllerAnimated:YES completion:NULL];
+    };
+    
+    [self presentViewController:picker animated:YES completion:NULL];
+}
+
+- (void)presentPhotoEditor
+{
+    UIImage *image = [_photoPayload objectForKey:UIImagePickerControllerOriginalImage];
+    [self presentPhotoPickerWithImage:image];
+}
+
+- (void)updateImageWithPayload:(NSDictionary *)payload
+{
+    _photoPayload = payload;
+    UIImage *image = [payload objectForKey:UIImagePickerControllerEditedImage];
+    if (!image)
+        image = [payload objectForKey:UIImagePickerControllerOriginalImage];
+    
+    //add album art to cell
+    self.albumArt = image;
+    [self.tableView reloadData];
+}
+
+- (void)presentImagePickerWithSourceType:(UIImagePickerControllerSourceType)sourceType
+{
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.sourceType = sourceType;
+    picker.allowsEditing = YES;
+    picker.cropMode = DZNPhotoEditorViewControllerCropModeSquare;
+    
+    picker.finalizationBlock = ^(UIImagePickerController *picker, NSDictionary *info) {
+        [self handleImagePicker:picker withMediaInfo:info];
+    };
+    
+    picker.cancellationBlock = ^(UIImagePickerController *picker) {
+        [self dismissController:picker];
+    };
+    
+    [self presentController:picker];
+}
+
+- (void)handleImagePicker:(UIImagePickerController *)picker withMediaInfo:(NSDictionary *)info
+{
+    if (picker.cropMode != DZNPhotoEditorViewControllerCropModeNone) {
+        UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+        
+        DZNPhotoEditorViewController *editor = [[DZNPhotoEditorViewController alloc] initWithImage:image cropMode:picker.cropMode];
+        [picker pushViewController:editor animated:YES];
+    }
+    else {
+        [self updateImageWithPayload:info];
+        [self dismissController:picker];
+    }
+}
+
+- (void)presentController:(UIViewController *)controller
+{
+    [self presentViewController:controller animated:YES completion:NULL];
+}
+
+- (void)dismissController:(UIViewController *)controller
+{
+    [controller dismissViewControllerAnimated:YES completion:NULL];
 }
 
 #pragma mark - UITextField methods
@@ -535,14 +766,19 @@ static short numberTimesViewHasBeenShown = 0;
     
     switch (textField.tag) {
         case Song_Input_TextField_Tag:      self.enoughSongInformationGiven = YES;
+                                            _currentUserEnteredSongName = textField.text;
                                             break;
             
-        case Artist_Input_TextField_Tag:    break;
-        case Album_Input_TextField_Tag:     break;
-        case Genre_Input_TextField_Tag:     break;
+        case Artist_Input_TextField_Tag:    _currentUserEnteredArtistName = textField.text;
+                                            break;
+            
+        case Album_Input_TextField_Tag:     _currentUserEnteredAlbumName = textField.text;
+                                            break;
+            
+        case Genre_Input_TextField_Tag:     _currentUserEnteredGenreName = textField.text;
+                                            break;
         default:    break;
     }
-    
     return YES;
 }
 
@@ -569,12 +805,17 @@ static short numberTimesViewHasBeenShown = 0;
         self.tableView.tableHeaderView = headerView;
     }];
     
-    
     if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
         // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
         [self prefersStatusBarHidden];
         [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
     }
+}
+
+- (void)orientationHasChanged
+{
+    //now get proper width dimensions for the movie controls after view has rotated
+    [_movieControls setFrame:CGRectMake(0.f, 0.f, self.tableView.bounds.size.width, self.tableView.tableHeaderView.bounds.size.height)];
 }
 
 - (BOOL)prefersStatusBarHidden

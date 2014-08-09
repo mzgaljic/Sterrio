@@ -4,6 +4,26 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Pods-AFNetworking.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods-ALMoviePlayerController.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods-DZNEmptyDataSet.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods-DZNPhotoPickerController.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-MRProgress.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -47,42 +67,62 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>46BCA3DD13754B188085B3EF</key>
+		<key>2C313ADA6BFD49D58F1D53AE</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>5B5C2F420C744AB8818BA2F6</key>
+		<key>4B04DF5C56E743B391C60052</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>648B46DD70384F74AB3F3FCD</key>
+		<key>4D19626FF8B8468EB0843F98</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>770DB2E80FD1469C9407B8B0</key>
+		<key>61060355FB0A476BB8F3AA45</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>7985CA8FAA0F47E194970216</key>
+		<key>680D0B0A038C4375AF965CB5</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9B0C398884F6444D8EF77847</key>
+		<key>7A58A5ADC1B9446CA7C090BE</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>B0F40FF0916540ABA1F10C9C</key>
+		<key>828D2B00629046F290D6DB1D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C2A7E480D45A4D7D995C507A</key>
+		<key>9E9CB1478F0F46EA9D2672D1</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A923277C71CA4AB48EB9628E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C4C926FAB4B046688D6C4B62</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>CA3E3F2DDA794574AD73B093</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>DC5F10CDE98D418BAFEDEB2B</key>
 		<dict>
 			<key>primary</key>
 			<true/>

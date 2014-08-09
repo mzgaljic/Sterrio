@@ -22,8 +22,15 @@
 #import "AlbumArtUtilities.h"
 #import "UIImage+colorImages.h"
 #import "MRProgress.h"
+#import "DZNPhotoPickerController.h"
+#import "UIImagePickerControllerExtended.h"
 
-@interface YouTubeVideoPlaybackTableViewController : UITableViewController <AVAudioSessionDelegate, AVAudioPlayerDelegate, UITextFieldDelegate>
+@interface YouTubeVideoPlaybackTableViewController : UITableViewController <AVAudioSessionDelegate,
+                                                                            AVAudioPlayerDelegate,
+                                                                            UITextFieldDelegate,
+                                                                            UINavigationControllerDelegate,
+                                                                            UIActionSheetDelegate,
+                                                                            ALMoviePlayerControllerDelegate>
 
 @property (nonatomic, strong) YouTubeVideo *ytVideo;
 

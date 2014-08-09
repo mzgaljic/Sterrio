@@ -10,6 +10,7 @@
 
 @implementation YouTubeMoviePlayerSingleton
 static MPMoviePlayerController *videoPlayer = nil;
+static ALMoviePlayerController *previewMusicYoutubePlayer = nil;
 
 + (instancetype)createSingleton
 {
@@ -29,6 +30,18 @@ static MPMoviePlayerController *videoPlayer = nil;
 - (MPMoviePlayerController *)youtubePlayer
 {
     return videoPlayer;
+}
+
+
+
++ (void)setPreviewMusicYouTubePlayerInstance:(ALMoviePlayerController *)ALMoviePlayerControllerInstance
+{
+    previewMusicYoutubePlayer = ALMoviePlayerControllerInstance;
+}
+
+- (ALMoviePlayerController *)previewMusicYoutubePlayer
+{
+    return previewMusicYoutubePlayer;
 }
 
 @end

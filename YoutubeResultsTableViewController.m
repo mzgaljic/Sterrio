@@ -22,16 +22,19 @@
 //view isn't actually on top of tableView, but it looks like it. Call "turnTableViewIntoUIView" prior to setting this value!
 @property (nonatomic, strong) UIView *viewOnTopOfTable;
 
-
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
 @property (nonatomic, strong) UIBarButtonItem *cancelButton;
 @property (nonatomic, strong) UIBarButtonItem *scrollToTopButton;
 @property (nonatomic, assign) BOOL scrollToTopButtonVisible;
+@property (nonatomic, assign) BOOL networkErrorLoadingMoreResults;
+@property (nonatomic, assign) BOOL noMoreResultsToDisplay;
 @end
 
 @implementation YoutubeResultsTableViewController
 static BOOL PRODUCTION_MODE;
 static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
+static NSString *Network_Error_Loading_More_Results_Msg = @"Network error, tap to try again";
+static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 #pragma mark - Miscellaneous
 - (void)setProductionModeValue
@@ -202,6 +205,10 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
         if (selected)
             [self.tableView deselectRowAtIndexPath:selected animated:YES];
     }
+    _networkErrorLoadingMoreResults = NO;
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
+    UITableViewCell *loadMoreCell = [self.tableView cellForRowAtIndexPath:indexPath];
+    [loadMoreCell setAccessoryView:nil];
 }
 
 - (void)ytvideoResultsNoMorePagesToView
@@ -209,8 +216,9 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
     UITableViewCell *loadMoreCell = [self.tableView cellForRowAtIndexPath:indexPath];
     //change "Load More" button
-    loadMoreCell.textLabel.text = @"No more results";
+    loadMoreCell.textLabel.text = No_More_Results_To_Display_Msg;
     loadMoreCell.accessoryView = nil;
+    _noMoreResultsToDisplay = YES;
 }
 
 - (void)ytVideoAutoCompleteResultsDidDownload:(NSArray *)arrayOfNSStrings
@@ -250,9 +258,11 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
     UITableViewCell *loadMoreCell = [self.tableView cellForRowAtIndexPath:indexPath];
     //change "Load More" button
-    loadMoreCell.textLabel.text = @"Network error, tap to try again";
+    loadMoreCell.textLabel.text = Network_Error_Loading_More_Results_Msg;
     loadMoreCell.textLabel.font = [UIFont systemFontOfSize:19];
+    loadMoreCell.textLabel.textColor = [UIColor redColor];
     loadMoreCell.accessoryView = nil;
+    _networkErrorLoadingMoreResults = YES;
 }
 
 #pragma mark - AlertView
@@ -319,6 +329,8 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
     [self startTimingExecution];
     
     [_yt searchYouTubeForVideosUsingString: searchBar.text];
+    _noMoreResultsToDisplay = NO;
+    _networkErrorLoadingMoreResults = NO;
 }
 
 //User tapped "Cancel"
@@ -459,10 +471,20 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
         } else if(indexPath.section == 1){  //the "load more" button is in this section
             if(indexPath.row == 0){
                 cell = [tableView dequeueReusableCellWithIdentifier:@"loadMoreButtonCell" forIndexPath:indexPath];
-                cell.textLabel.text = @"Load more";
                 cell.textLabel.font = [UIFont boldSystemFontOfSize:20];
                 cell.textLabel.textAlignment = NSTextAlignmentCenter;
-                cell.textLabel.textColor = [UIColor defaultSystemTintColor];
+                if(_networkErrorLoadingMoreResults){
+                    cell.textLabel.text = Network_Error_Loading_More_Results_Msg;
+                    cell.textLabel.textColor = [UIColor redColor];
+                }
+                else if(_noMoreResultsToDisplay){
+                    cell.textLabel.text = No_More_Results_To_Display_Msg;
+                    cell.textLabel.textColor = [UIColor blackColor];
+                }
+                else{
+                    cell.textLabel.text = @"Load more";
+                    cell.textLabel.textColor = [UIColor defaultSystemTintColor];
+                }
             }
         }
     }
@@ -485,7 +507,12 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
 {
     if(! _displaySearchResults)
         return 45;
-    return 90;
+    else{
+        if(indexPath.section == 0)
+            return 90.0f;
+        else
+            return 70.0f;
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

@@ -252,8 +252,7 @@ static const int APP_LAUNCHED_ALREADY = 1;
     
     
     //play music so it doesn't stop
-    MPMoviePlayerController *videoPlayer = [[YouTubeMoviePlayerSingleton createSingleton] youtubePlayer];
-    
+    ALMoviePlayerController *videoPlayer = [[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer];
     [videoPlayer performSelector:@selector(play) withObject:nil afterDelay:0];
     [videoPlayer performSelector:@selector(play) withObject:nil afterDelay:.05];
     [videoPlayer performSelector:@selector(play) withObject:nil afterDelay:.1];
@@ -268,7 +267,7 @@ static const int APP_LAUNCHED_ALREADY = 1;
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     
     //play music so it doesn't stop
-    MPMoviePlayerController *videoPlayer = [[YouTubeMoviePlayerSingleton createSingleton] youtubePlayer];
+    ALMoviePlayerController *videoPlayer = [[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer];
     [videoPlayer performSelector:@selector(play) withObject:nil afterDelay:0];
     [videoPlayer performSelector:@selector(play) withObject:nil afterDelay:.05];
     [videoPlayer performSelector:@selector(play) withObject:nil afterDelay:.1];
@@ -284,7 +283,7 @@ static const int APP_LAUNCHED_ALREADY = 1;
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     
     //play music so it doesn't stop
-    MPMoviePlayerController *videoPlayer = [[YouTubeMoviePlayerSingleton createSingleton] youtubePlayer];
+    ALMoviePlayerController *videoPlayer = [[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer];
     [videoPlayer performSelector:@selector(play) withObject:nil afterDelay:0];
     [videoPlayer performSelector:@selector(play) withObject:nil afterDelay:.05];
     [videoPlayer performSelector:@selector(play) withObject:nil afterDelay:.1];
@@ -298,7 +297,7 @@ static const int APP_LAUNCHED_ALREADY = 1;
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     
     //play music so it doesn't stop
-    MPMoviePlayerController *videoPlayer = [[YouTubeMoviePlayerSingleton createSingleton] youtubePlayer];
+    ALMoviePlayerController *videoPlayer = [[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer];
     [videoPlayer performSelector:@selector(play) withObject:nil afterDelay:0];
     [videoPlayer performSelector:@selector(play) withObject:nil afterDelay:.05];
     [videoPlayer performSelector:@selector(play) withObject:nil afterDelay:.1];

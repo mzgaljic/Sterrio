@@ -10,6 +10,7 @@
 
 #import <Foundation/Foundation.h>
 #import <MediaPlayer/MediaPlayer.h>
+#import <ALMoviePlayerController/ALMoviePlayerController.h>
 
 @interface YouTubeMoviePlayerSingleton : NSObject
 
@@ -19,4 +20,9 @@
 
 /**Returns the current XCDYouTubeVideoPlayerViewController instance, or nil if no video player was launched at all.*/
 - (MPMoviePlayerController *)youtubePlayer;
+
+
++ (void)setPreviewMusicYouTubePlayerInstance:(ALMoviePlayerController *)ALMoviePlayerControllerInstance;
+
+- (ALMoviePlayerController *)previewMusicYoutubePlayer;
 @end
