@@ -84,21 +84,28 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [super viewDidDisappear:animated];
     self.navigationController.navigationBar.translucent = NO;
     [[NSNotificationCenter defaultCenter]removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    [[[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer] pause];
+    [[YouTubeMoviePlayerSingleton createSingleton] setPreviewMusicYouTubePlayerInstance:nil];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
     _yt = [[YouTubeVideoSearchService alloc] init];
     [_yt setDelegate:self];
+    SDWebImageManager.sharedManager.delegate = self;
     
     _searchSuggestions = [NSMutableArray array];
     _searchResults = [NSMutableArray array];
     
-    //self.navigationController.navigationBar.hidden = YES;
     self.navigationController.toolbarHidden = NO;
     _navBar.title = @"Add Music";
     _cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
@@ -122,6 +129,16 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     [_searchBar becomeFirstResponder];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    self.navigationController.navigationBar.translucent = YES;
+    if(_displaySearchResults){
+        self.navigationController.navigationBar.topItem.title = @"Search Results";
+        _navBar.title = @"Search Results";
+    }
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -129,7 +146,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     [imageCache clearMemory];
-    [imageCache clearDisk];
 }
 
 #pragma mark - rotation methods
@@ -285,7 +301,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     if(buttonIndex == 0){  //hide loading popup behind the uialertView
         [self turnTableViewIntoUIView:NO];
         _displaySearchResults = NO;
-        self.tableView.scrollEnabled = NO;
+    
         [self.tableView reloadData];
     }
 }
@@ -307,7 +323,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 {
     //show the cancel button
     _displaySearchResults = NO;
-    self.tableView.scrollEnabled = NO;
     _navBar.title = @"Add Music";
     [_searchBar setShowsCancelButton:YES animated:YES];
 }
@@ -319,6 +334,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     _displaySearchResults = YES;
     self.tableView.scrollEnabled = YES;
     _lastSuccessfullSearchString = searchBar.text;
+    //setting it both ways, do to nav bar title bug
+    self.navigationController.navigationBar.topItem.title = @"Search Results";
     _navBar.title = @"Search Results";
     [_searchBar resignFirstResponder];
     
@@ -339,6 +356,10 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     if(! _searchInitiatedAlready){
         [self dismissViewControllerAnimated:YES completion:nil];
     }else{
+        //setting it both ways, do to nav bar title bug
+        self.navigationController.navigationBar.topItem.title = @"Search Results";
+        _navBar.title = @"Search Results";
+        
         if(_displaySearchResults == NO && _searchResults.count > 0){  //bring user back to previous results
             //restore state of search bar before uncommited search bar edit began
             [_searchBar setText:_lastSuccessfullSearchString];
@@ -369,7 +390,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         //fetch auto suggestions
         [_yt fetchYouTubeAutoCompleteResultsForString:searchText];
         _displaySearchResults = NO;
-        self.tableView.scrollEnabled = NO;
         [self.tableView reloadData];
     }
     
@@ -381,7 +401,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
             [_searchSuggestions removeAllObjects];
         }
         _displaySearchResults = NO;
-        self.tableView.scrollEnabled = NO;
         [self.tableView reloadData];
     }
 }
@@ -457,15 +476,16 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
             cell.detailTextLabel.textColor = [[UIColor redColor] darkerColor];
             cell.detailTextLabel.text = ytVideo.channelTitle;
             cell.tag = indexPath.row;  //used to double check the cell in the block below.
-            
+
             // Here we use the new provided setImageWithURL: method to load the web image
             [cell.imageView sd_setImageWithURL:[NSURL URLWithString:ytVideo.videoThumbnailUrl]
                               placeholderImage:[UIImage imageWithColor:[UIColor clearColor] width:120 height:90]
+                                       options:SDWebImageCacheMemoryOnly
                                      completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL){
                                          if(cacheType == SDImageCacheTypeNone)  //if image had to be downloaded from the web for the first time
                                              if (cell.tag == indexPath.row && image){
-                                                 [self.tableView reloadRowsAtIndexPaths:self.tableView.indexPathsForVisibleRows withRowAnimation:
-                                                  UITableViewRowAnimationNone];
+                                                 [self.tableView reloadRowsAtIndexPaths:self.tableView.indexPathsForVisibleRows
+                                                                       withRowAnimation: UITableViewRowAnimationNone];
                                              }
                                      }];
         } else if(indexPath.section == 1){  //the "load more" button is in this section
@@ -550,6 +570,13 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     }
 }
 
+#pragma mark - SDWebImage downloaded image preprocessing
+- (UIImage *)imageManager:(SDWebImageManager *)imageManager transformDownloadedImage:(UIImage *)image withURL:(NSURL *)imageURL
+{
+    return [AlbumArtUtilities imageWithImage:image scaledToSize:CGSizeMake(120.0f, 90.0f)];
+}
+
+
 #pragma mark - TableView custom view toggler
 - (void)turnTableViewIntoUIView:(BOOL)yes
 {
@@ -557,12 +584,10 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         self.tableView.tableHeaderView = nil;
         _viewOnTopOfTable = [[UIView alloc] initWithFrame:self.tableView.frame];
         self.tableView.tableHeaderView = _viewOnTopOfTable;
-        self.tableView.scrollEnabled = NO;
     } else{
         self.tableView.tableHeaderView = nil;
         _viewOnTopOfTable = nil;
         [self setUpSearchBar];
-        self.tableView.scrollEnabled = YES;
     }
 }
 
@@ -636,12 +661,6 @@ static NSDate *finish;
         // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
         [self prefersStatusBarHidden];
         [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }else {
-        // iOS 6 code only here...checking if we are now going into landscape mode
-        if((toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft) ||(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight))
-            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-        else
-            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
     }
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }

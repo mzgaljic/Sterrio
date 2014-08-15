@@ -8,15 +8,13 @@
 
 #import "Album.h"
 #define ALBUM_NAME_KEY @"albumName"
-#define RELEASE_DATE_KEY @"releaseDate"
 #define ALBUM_ART_FILE_NAME_KEY @"albumArtFileName"
 #define ARTIST_KEY @"artist"
 #define ALBUM_SONGS_KEY @"albumSongs"
-#define GENRE_CODE_KEY @"albumGenreCode"
 #define ALBUM_ID_KEY @"albumID"
 
 @implementation Album
-@synthesize albumName = _albumName, releaseDate = _releaseDate, albumArtFileName = _albumArtFileName, artist = _artist, albumSongs = _albumSongs, genreCode = _genreCode, albumID = _albumID;
+@synthesize albumName = _albumName, albumArtFileName = _albumArtFileName, artist = _artist, albumSongs = _albumSongs, albumID = _albumID;
 
 static  int const SAVE_ALBUM = 0;
 static int const DELETE_ALBUM = 1;
@@ -53,11 +51,9 @@ static int const UPDATE_ALBUM = 2;
     if(self){
         _albumID = [aDecoder decodeObjectForKey:ALBUM_ID_KEY];
         _albumName = [aDecoder decodeObjectForKey:ALBUM_NAME_KEY];
-        _releaseDate = [aDecoder decodeObjectForKey:RELEASE_DATE_KEY];
         _albumArtFileName = [aDecoder decodeObjectForKey:ALBUM_ART_FILE_NAME_KEY];
         _artist = [aDecoder decodeObjectForKey:ARTIST_KEY];
         _albumSongs = [aDecoder decodeObjectForKey:ALBUM_SONGS_KEY];
-        _genreCode = [aDecoder decodeIntForKey:GENRE_CODE_KEY];
     }
     return self;
 }
@@ -66,11 +62,9 @@ static int const UPDATE_ALBUM = 2;
 {
     [aCoder encodeObject:_albumID forKey:ALBUM_ID_KEY];
     [aCoder encodeObject:_albumName forKey:ALBUM_NAME_KEY];
-    [aCoder encodeObject:_releaseDate forKey:RELEASE_DATE_KEY];
     [aCoder encodeObject:_albumArtFileName forKey:ALBUM_ART_FILE_NAME_KEY];
     [aCoder encodeObject:_artist forKey:ARTIST_KEY];
     [aCoder encodeObject:_albumSongs forKey:ALBUM_SONGS_KEY];
-    [aCoder encodeInteger:_genreCode forKey:GENRE_CODE_KEY];
 }
 
 + (NSArray *)loadAll  //loads array containing all of the saved albums
@@ -168,11 +162,12 @@ static int const UPDATE_ALBUM = 2;
     BOOL success = NO;
     
     if(image == nil){
-        _albumArtFileName = nil;
+        if(_albumArtFileName != nil)
+            [self removeAlbumArt];
         return YES;
     }
     
-    NSString *artFileName = [NSString stringWithFormat:@"%@.png", self.albumName];
+    NSString *artFileName = [NSString stringWithFormat:@"%@.png", self.albumID];
     
     //save the UIImage to disk
     if([AlbumArtUtilities isAlbumArtAlreadySavedOnDisk:artFileName])
@@ -191,7 +186,6 @@ static int const UPDATE_ALBUM = 2;
         //remove file from disk
         [AlbumArtUtilities deleteAlbumArtFileWithName:_albumArtFileName];
         
-        //made albumArtFileName property nil
         _albumArtFileName = nil;
         
         //set this change to all songs in this album as well

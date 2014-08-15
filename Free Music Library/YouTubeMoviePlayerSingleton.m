@@ -9,7 +9,10 @@
 #import "YouTubeMoviePlayerSingleton.h"
 
 @implementation YouTubeMoviePlayerSingleton
-static MPMoviePlayerController *videoPlayer = nil;
+static AVPlayer *player = nil;
+static AVPlayerLayer *videoLayer = nil;
+static BOOL needsToDisplayNewVideo;
+
 static ALMoviePlayerController *previewMusicYoutubePlayer = nil;
 
 + (instancetype)createSingleton
@@ -22,19 +25,31 @@ static ALMoviePlayerController *previewMusicYoutubePlayer = nil;
     return sharedMyModel;
 }
 
-+ (void)setYouTubePlayerInstance:(MPMoviePlayerController *)MPMoviePlayerControllerInstance
+#pragma mark - Custom AVPlayer powered video player for library
+- (void)setAVPlayerInstance:(AVPlayer *)AVPlayerInstance
 {
-    videoPlayer = MPMoviePlayerControllerInstance;
+    player = AVPlayerInstance;
 }
 
-- (MPMoviePlayerController *)youtubePlayer
+- (AVPlayer *)AVPlayer;
 {
-    return videoPlayer;
+    return player;
 }
 
 
+- (void)setAVPlayerLayerInstance:(AVPlayerLayer *)AVPlayerLayerInstance
+{
+    videoLayer = AVPlayerLayerInstance;
+}
 
-+ (void)setPreviewMusicYouTubePlayerInstance:(ALMoviePlayerController *)ALMoviePlayerControllerInstance
+- (AVPlayerLayer *)AVPlayerLayer
+{
+    return videoLayer;
+}
+
+
+#pragma mark - YouTube video player for previewing songs when adding to library
+- (void)setPreviewMusicYouTubePlayerInstance:(ALMoviePlayerController *)ALMoviePlayerControllerInstance
 {
     previewMusicYoutubePlayer = ALMoviePlayerControllerInstance;
 }
@@ -42,6 +57,57 @@ static ALMoviePlayerController *previewMusicYoutubePlayer = nil;
 - (ALMoviePlayerController *)previewMusicYoutubePlayer
 {
     return previewMusicYoutubePlayer;
+}
+
+#pragma mark - YouTube Link Extraction Helper
++ (NSURL *)closestUrlQualityMatchForSetting:(short)aQualitySetting usingStreamsDictionary:(NSDictionary *)aDictionary
+{
+    short maxDesiredQuality = aQualitySetting;
+    NSDictionary *vidQualityDict = aDictionary;
+    NSURL *url;
+    switch (maxDesiredQuality) {
+        case 240:
+        {
+            url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualitySmall240]];
+            if(url == nil)
+                url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityMedium360]];
+            else if(url == nil)
+                url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityHD720]];
+            break;
+        }
+        case 360:
+        {
+            url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityMedium360]];
+            if(url == nil)
+                url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualitySmall240]];
+            else if(url == nil)
+                url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityHD720]];
+            break;
+        }
+        case 720:
+        {
+            url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityHD720]];
+            if(url == nil)
+                url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityMedium360]];
+            else if(url == nil)
+                url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualitySmall240]];
+            break;
+        }
+        default:
+            url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityMedium360]];
+            break;
+    }
+    return url;
+}
+
++ (void)setNeedsToDisplayNewVideo:(BOOL)displayNewVideo
+{
+    needsToDisplayNewVideo = displayNewVideo;
+}
+
++ (BOOL)needsToDisplayNewVideo
+{
+    return needsToDisplayNewVideo;
 }
 
 @end

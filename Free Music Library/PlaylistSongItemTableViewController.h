@@ -14,6 +14,7 @@
 #import "MasterSongsTableViewController.h"
 #import "SongTableViewFormatter.h"
 #import "SDWebImageManager.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface PlaylistSongItemTableViewController : UITableViewController
 

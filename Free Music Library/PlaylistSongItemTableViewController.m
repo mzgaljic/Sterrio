@@ -96,7 +96,6 @@ static const short NORMAL_PLAYLIST = -1;
     
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     [imageCache clearMemory];
-    [imageCache clearDisk];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -131,14 +130,13 @@ static const short NORMAL_PLAYLIST = -1;
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    UIImage *image;
-    if(PRODUCTION_MODE)
-        image = [AlbumArtUtilities albumArtFileNameToUiImage: song.albumArtFileName];
-    else
-        image = [UIImage imageNamed:song.album.albumName];
-    
-    image = [AlbumArtUtilities imageWithImage:image scaledToSize:[SongTableViewFormatter preferredSongAlbumArtSize]];
-    cell.imageView.image = image;
+    CGSize size = [SongTableViewFormatter preferredSongAlbumArtSize];
+    [cell.imageView sd_setImageWithURL:[AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]
+                      placeholderImage:[UIImage imageWithColor:[UIColor clearColor] width:size.width height:size.height]
+                               options:SDWebImageCacheMemoryOnly
+                             completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL){
+                                 cell.imageView.image = image;
+                             }];
     return cell;
 }
 

@@ -10,7 +10,8 @@
 
 @implementation AppEnvironmentConstants
 
-static const BOOL PRODUCTION_MODE = NO;
+static const BOOL PRODUCTION_MODE = YES;
+
 static short preferredSizeValue;
 static short preferredWifiStreamValue;
 static short preferredCellularStreamValue;

@@ -7,35 +7,46 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <MediaPlayer/MediaPlayer.h>
+//for AVPlayer
+#import <AVFoundation/AVFoundation.h>
+#import "MyAvPlayer.h"
+#import "YouTubeMoviePlayerSingleton.h"
+
+//youtube link parser and internet connectivity
+#import <XCDYouTubeKit/XCDYouTubeClient.h>
+#import "Reachability.h"
+
 #import "Song.h"
 #import "Album.h"
 #import "Artist.h"
 #import "Playlist.h"
-#import "YouTubeVideoSearchService.h"
-#import "YouTubeVideoSearchDelegate.h"
 #import "SDWebImageManager.h"
+#import "SDCAlertView.h"
+#import "MRProgress.h"
+#import "UIImage+colorImages.h"
+#import "ASValueTrackingSlider.h"
+#import "UIColor+SystemTintColor.h"
+#import "PreferredFontSizeUtility.h"
+#import "UIButton+ExpandedHitArea.h"
 
-@interface SongItemViewController : UIViewController <YouTubeVideoSearchDelegate>
+//Playback model
+#import "PlaybackModelSingleton.h"
 
-///only applicable when picking songs from lists (not making music queue's on the fly)
-@property (assign, nonatomic) int songNumberInSongCollection;
-///only applicable when picking songs from lists (not making music queue's on the fly)
-@property (assign, nonatomic) int totalSongsInCollection;
 
-///new item played by the user, thereby erasing any queue's. Nil when value is no longer 'current'.
-@property (strong, nonatomic) Song *aNewSong;
-///new item played by the user, thereby erasing any queue's. Nil when value is no longer 'current'.
-@property (strong, nonatomic) Album *aNewAlbum;
-///new item played by the user, thereby erasing any queue's. Nil when value is no longer 'current'.
-@property (strong, nonatomic) Artist *aNewArtist;
-///new item played by the user, thereby erasing any queue's. Nil when value is no longer 'current'.
-@property (strong, nonatomic) Playlist *aNewPlaylist;
+@interface SongItemViewController : UIViewController <AVAudioSessionDelegate, AVAudioPlayerDelegate, ASValueTrackingSliderDataSource>
 
 //GUI vars
-@property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
+@property (weak, nonatomic) IBOutlet UINavigationItem *navBar;  //really the navBar title item
 @property (weak, nonatomic) IBOutlet UILabel *songNameLabel;
+@property (weak, nonatomic) IBOutlet MyAvPlayer *playerView;
+@property (weak, nonatomic) IBOutlet ASValueTrackingSlider *playbackTimeSlider;
 
-- (IBAction)buttonTapped:(id)sender;
+@property (weak, nonatomic) IBOutlet UILabel *currentTimeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *totalDurationLabel;
+
+
+- (IBAction)playbackSliderValueHasChanged:(id)sender;
+- (IBAction)playbackSliderEditingHasBegun:(id)sender;
+- (IBAction)playbackSliderEditingHasEnded:(id)sender;
 
 @end

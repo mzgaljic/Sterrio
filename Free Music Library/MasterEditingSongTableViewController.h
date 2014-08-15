@@ -14,6 +14,14 @@
 #import "SDCAlertView.h"
 #import "PreferredFontSizeUtility.h"
 #import "NSString+WhiteSpace_Utility.h"
+#import "YouTubeMoviePlayerSingleton.h"
+#import "NSString+HTTP_Char_Escape.h"
+#import "GenreConstants.h"
+#import "PlaybackModelSingleton.h"
+
+#import "ExistingAlbumPickerTableViewController.h"
+#import "ExistingArtistPickerTableViewController.h"
+#import "GenrePickerTableViewController.h"
 
 @interface MasterEditingSongTableViewController : UITableViewController <UIActionSheetDelegate,
                                                                         UINavigationControllerDelegate,

@@ -10,18 +10,20 @@
 
 
 @interface EditableCellTableViewController ()
+@property (nonatomic, strong) NSString *notificationName;
 @end
 
 @implementation EditableCellTableViewController
 
 //using custom init here
-- (id)initWithEditingString:(NSString *)aString
+- (id)initWithEditingString:(NSString *)aString notificationNameToPost:(NSString *)notifName
 {
     UIStoryboard*  sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     EditableCellTableViewController* vc = [sb instantiateViewControllerWithIdentifier:@"editingCellItemView"];
     self = vc;
     if (self) {
         _stringUserIsEditing = [aString copy];
+        _notificationName = notifName;
     }
     return self;
 }
@@ -42,7 +44,6 @@
     
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     [imageCache clearMemory];
-    [imageCache clearDisk];
 }
 
 #pragma mark - Table view data source
@@ -70,7 +71,7 @@
     txtField.layer.cornerRadius = 10.0;
     [txtField setBorderStyle:UITextBorderStyleRoundedRect];
     if(_stringUserIsEditing == nil)
-        [txtField setPlaceholder:@"Tap me"];
+        [txtField setPlaceholder:@"Start Typing"];
     else{
         txtField.text = [txtField.text stringByAppendingString:_stringUserIsEditing];
     }
@@ -94,7 +95,7 @@
 #pragma mark - UITextField methods
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"DoneEditingTextField" object:textField.text];
+    [[NSNotificationCenter defaultCenter] postNotificationName:_notificationName object:textField.text];
     [self.navigationController popViewControllerAnimated:YES];
     return YES;
 }

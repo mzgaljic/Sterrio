@@ -110,7 +110,6 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -118,7 +117,6 @@ static BOOL PRODUCTION_MODE;
     
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     [imageCache clearMemory];
-    [imageCache clearDisk];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -144,15 +142,13 @@ static BOOL PRODUCTION_MODE;
         cell.textLabel.font = [UIFont systemFontOfSize:[AlbumTableViewFormatter nonBoldAlbumLabelFontSize]];
     [AlbumTableViewFormatter formatAlbumDetailLabelUsingAlbum:album andCell:&cell];
     
-    //could only update images for the cells that changed if i want to make this more efficient
-    UIImage *image;
-    if(PRODUCTION_MODE)
-        image = [AlbumArtUtilities albumArtFileNameToUiImage: album.albumArtFileName];
-    else
-        image = [UIImage imageNamed:album.albumName];
-    
-    image = [AlbumArtUtilities imageWithImage:image scaledToSize:[AlbumTableViewFormatter preferredAlbumAlbumArtSize]];
-    cell.imageView.image = image;
+    CGSize size = [AlbumTableViewFormatter preferredAlbumAlbumArtSize];
+    [cell.imageView sd_setImageWithURL:[AlbumArtUtilities albumArtFileNameToNSURL:album.albumArtFileName]
+                      placeholderImage:[UIImage imageWithColor:[UIColor clearColor] width:size.width height:size.height]
+                               options:SDWebImageCacheMemoryOnly
+                             completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL){
+                                 cell.imageView.image = image;
+                             }];
     return cell;
 }
 
@@ -168,6 +164,16 @@ static BOOL PRODUCTION_MODE;
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
         //obtain object for the deleted album
         Album *album = [self.albums objectAtIndex:indexPath.row];
+        
+        for(Song *aSong in album.albumSongs){
+            if([aSong isEqual:[PlaybackModelSingleton createSingleton].nowPlayingSong]){
+                YouTubeMoviePlayerSingleton *singleton = [YouTubeMoviePlayerSingleton createSingleton];
+                [[singleton AVPlayer] pause];
+                [singleton setAVPlayerInstance:nil];
+                [singleton setAVPlayerLayerInstance:nil];
+                break;
+            }
+        }
         
         //delete the object from our data model (which is saved to disk).
         [album deleteAlbum];
@@ -223,21 +229,6 @@ static BOOL PRODUCTION_MODE;
     [alert show];
 }
 
-- (void)sidebar:(RNFrostedSidebar *)sidebar didTapItemAtIndex:(NSUInteger)index
-{
-    if (1){
-        [sidebar dismissAnimated:YES];
-        if(index == 3)  //settings button
-            [self performSegueWithIdentifier:@"settingsSegue" sender:self];
-    }
-}
-
-- (IBAction)expandableMenuSelected:(id)sender
-{
-    [FrostedSideBarHelper setupAndShowSlideOutMenuUsingdelegate:self];
-}
-
-
 #pragma mark - Rotation status bar methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
@@ -245,12 +236,6 @@ static BOOL PRODUCTION_MODE;
         // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
         [self prefersStatusBarHidden];
         [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }else {
-        // iOS 6 code only here...checking if we are now going into landscape mode
-        if((toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft) ||(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight))
-            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-        else
-            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
     }
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }

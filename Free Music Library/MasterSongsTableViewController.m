@@ -28,31 +28,57 @@ static BOOL PRODUCTION_MODE;
 
 - (void)setUpNavBarItems
 {
-    //edit button
+    //right side of nav bar
+    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self
+                                                                               action:@selector(addButtonPressed)];
+    
+    UIImage *image = [UIImage imageNamed:@"Now Playing"];
+    UIBarButtonItem *nowPlaying = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(nowPlayingTapped)];
+    nowPlaying.target = self;
+    nowPlaying.action = @selector(nowPlayingTapped);
+    
+#warning check to see if item is actually playing when adding the now playing button!
+    UIBarButtonItem *negSpaceAdjust = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    [negSpaceAdjust setWidth:-10];
+    
+    NSArray *rightBarButtonItems = @[negSpaceAdjust, nowPlaying, addButton];
+    self.navigationItem.rightBarButtonItems = rightBarButtonItems;
+    
+    //left side of nav bar
     UIBarButtonItem *editButton = self.editButtonItem;
     editButton.action = @selector(editTapped:);
     
-    //+ sign...also wire it up to the ibAction "addButtonPressed"
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc]
-                                  initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                  target:self action:@selector(addButtonPressed)];
-    NSArray *rightBarButtonItems = [NSArray arrayWithObjects:editButton, addButton, nil];
-    self.navigationItem.rightBarButtonItems = rightBarButtonItems;  //place both buttons on the nav bar
+    image = [UIImage imageNamed:@"Settings-Line"];
+    UIBarButtonItem *settings = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self
+                                                                action:@selector(settingsButtonTapped)];
+    UIBarButtonItem *posSpaceAdjust = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    [posSpaceAdjust setWidth:28];
+    
+    self.navigationItem.leftBarButtonItems = @[settings, posSpaceAdjust, editButton];
 }
 
+- (void)nowPlayingTapped
+{
+    
+}
+                                   
 - (void)editTapped:(id)sender
 {
     if(self.editing)
     {
         //leaving editing mode now
         [super setEditing:NO animated:YES];
-        [self makeBarButtonItemNormal:[self.navigationItem.rightBarButtonItems objectAtIndex:1]];
+        for(UIBarButtonItem *abutton in self.navigationItem.rightBarButtonItems){
+            [self makeBarButtonItemNormal:abutton];
+        }
     }
     else
     {
         //entering editing mode now
         [super setEditing:YES animated:YES];
-        [self makeBarButtonItemGrey:[self.navigationItem.rightBarButtonItems objectAtIndex:1]];
+        for(UIBarButtonItem *abutton in self.navigationItem.rightBarButtonItems){
+            [self makeBarButtonItemGrey: abutton];
+        }
     }
 }
 
@@ -73,13 +99,15 @@ static BOOL PRODUCTION_MODE;
 #pragma mark - UISearchBar
 - (void)setUpSearchBar
 {
-    //create search bar, add to viewController
-    _searchBar = [[UISearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0)];
-    _searchBar.placeholder = @"Search Songs";
-    _searchBar.keyboardType = UIKeyboardTypeASCIICapable;
-    _searchBar.delegate = self;
-    [self.searchBar sizeToFit];
-    self.tableView.tableHeaderView = _searchBar;
+    if(_allSongsInLibrary.count > 0){
+        //create search bar, add to viewController
+        _searchBar = [[UISearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0)];
+        _searchBar.placeholder = @"Search Songs";
+        _searchBar.keyboardType = UIKeyboardTypeASCIICapable;
+        _searchBar.delegate = self;
+        [self.searchBar sizeToFit];
+        self.tableView.tableHeaderView = _searchBar;
+    }
 }
 
 //User tapped the search box
@@ -109,9 +137,6 @@ static BOOL PRODUCTION_MODE;
 //User typing as we speak, fetch latest results to populate results as they type
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    //assuming we only show song results instead of whole library?
-    
-    //sample code
     if(searchText.length == 0)
     {
         _displaySearchResults = NO;
@@ -123,8 +148,6 @@ static BOOL PRODUCTION_MODE;
         for (Song* someSong in _allSongsInLibrary)  //iterate through all songs
         {
             NSRange nameRange = [someSong.songName rangeOfString:searchText options:NSCaseInsensitiveSearch];
-          //NSRange descriptionRange = [food.description rangeOfString:text options:NSCaseInsensitiveSearch];
-        //if(nameRange.location != NSNotFound || descriptionRange.location != NSNotFound)
             if(nameRange.location != NSNotFound)
             {
                 [_searchResults addObject:someSong];
@@ -140,13 +163,10 @@ static BOOL PRODUCTION_MODE;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    //hide search bar
-    [self.tableView setContentOffset:CGPointMake(0, -16)];
-    
     //init tableView model
     _allSongsInLibrary = [NSMutableArray arrayWithArray:[Song loadAll]];
-    [self.tableView reloadData];
+    
+    [self setUpSearchBar];  //must be called in viewWillAppear, and after allSongsLibrary is refreshed
     
     UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft ||
@@ -157,16 +177,22 @@ static BOOL PRODUCTION_MODE;
     }
     else
         self.tabBarController.tabBar.hidden = NO;
+    
+    [self.tableView reloadData];  //reset or update any now playing items
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:animated];
     self.navigationController.navigationBar.translucent = NO;
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    [super viewDidAppear:animated];
+    
     self.navigationController.navigationBar.translucent = YES;
+    self.navigationController.navigationBar.topItem.title = @"Songs";
     
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
@@ -182,8 +208,6 @@ static BOOL PRODUCTION_MODE;
     [self setProductionModeValue];
     [self setUpNavBarItems];
     self.tableView.allowsSelectionDuringEditing = YES;
-    
-    [self setUpSearchBar];
 }
 
 - (void)didReceiveMemoryWarning
@@ -193,7 +217,6 @@ static BOOL PRODUCTION_MODE;
     
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     [imageCache clearMemory];
-    [imageCache clearDisk];
 }
 
 - (void)dealloc
@@ -233,25 +256,18 @@ static BOOL PRODUCTION_MODE;
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
+    if([[PlaybackModelSingleton createSingleton].nowPlayingSong isEqual:song])
+        cell.textLabel.textColor = [UIColor defaultSystemTintColor];
+    else
+        cell.textLabel.textColor = [UIColor blackColor];
     
-    //if the songs tab loading of images is laggy, just go back to the 'standard way', which is the code in the albums tab.
-    UIImage *image;
-    if(PRODUCTION_MODE){
-        CGSize size = [SongTableViewFormatter preferredSongAlbumArtSize];
-        [cell.imageView sd_setImageWithURL:[AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]
-                                placeholderImage:[UIImage imageWithColor:[UIColor clearColor] width:size.width height:size.height]
-                                         options:SDWebImageCacheMemoryOnly
-                                       completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL){
-                                     image = [AlbumArtUtilities imageWithImage:image scaledToSize:size];
-                                           cell.imageView.image = image;
-                                 }];
-    }
-    else{
-        image = [UIImage imageNamed:song.album.albumName];
-        image = [AlbumArtUtilities imageWithImage:image scaledToSize:[SongTableViewFormatter preferredSongAlbumArtSize]];
-        cell.imageView.image = image;
-
-    }
+    CGSize size = CGSizeMake(cell.frame.size.height,cell.frame.size.height);
+    [cell.imageView sd_setImageWithURL:[AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]
+                      placeholderImage:[UIImage imageWithColor:[UIColor clearColor] width:size.width height:size.height]
+                               options:SDWebImageCacheMemoryOnly
+                             completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL){
+                                 cell.imageView.image = image;
+                             }];
     return cell;
 }
 
@@ -273,11 +289,23 @@ static BOOL PRODUCTION_MODE;
         //obtain object for the deleted song
         Song *song = [self.allSongsInLibrary objectAtIndex:indexPath.row];
         
+        if([song isEqual:[PlaybackModelSingleton createSingleton].nowPlayingSong]){
+            YouTubeMoviePlayerSingleton *singleton = [YouTubeMoviePlayerSingleton createSingleton];
+            [[singleton AVPlayer] pause];
+            [singleton setAVPlayerInstance:nil];
+            [singleton setAVPlayerLayerInstance:nil];
+        }
+        
         //delete the object from our data model (which is saved to disk).
         [song deleteSong];
         
         //delete song from the tableview data source
         [[self allSongsInLibrary] removeObjectAtIndex:indexPath.row];
+        
+        if(_allSongsInLibrary.count == 0){ //dont need search bar anymore
+            _searchBar = nil;
+            self.tableView.tableHeaderView = nil;
+        }
         
         //delete row from tableView (just the gui)
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
@@ -286,14 +314,34 @@ static BOOL PRODUCTION_MODE;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    //get song for the tapped row
     self.selectedRowIndexValue = (int)indexPath.row;
-    UIBarButtonItem *editButton = self.navigationItem.rightBarButtonItem;
+    UIBarButtonItem *editButton = self.navigationItem.leftBarButtonItems[2];
     
     if([editButton.title isEqualToString:@"Edit"]){  //tapping song plays the song
-       [self performSegueWithIdentifier:@"songItemSegue" sender:self];
+        
+        Song *selectedSong = [self.allSongsInLibrary objectAtIndex:indexPath.row];
+        if([[PlaybackModelSingleton createSingleton].nowPlayingSong isEqual:selectedSong]){
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            if([cell.textLabel.textColor isEqualToColor:[UIColor defaultSystemTintColor]])  //now playing song
+                [YouTubeMoviePlayerSingleton setNeedsToDisplayNewVideo:NO];
+            else
+                [YouTubeMoviePlayerSingleton setNeedsToDisplayNewVideo:YES];
+        }
+        else{
+            YouTubeMoviePlayerSingleton *singleton = [YouTubeMoviePlayerSingleton createSingleton];
+            [[singleton AVPlayer] pause];
+            [singleton setAVPlayerInstance:nil];
+            [singleton setAVPlayerLayerInstance:nil];
+            
+            [YouTubeMoviePlayerSingleton setNeedsToDisplayNewVideo:YES];  //for loading the actual video player, not the other stuff...
+        }
+
+        [[PlaybackModelSingleton createSingleton] changeNowPlayingWithSong:selectedSong
+                                                              fromAllSongs:self.allSongsInLibrary
+                                                           indexOfNextSong:self.selectedRowIndexValue];
+        [self performSegueWithIdentifier:@"songItemSegue" sender:nil];
         
     } else if([editButton.title isEqualToString:@"Done"]){  //tapping song triggers edit segue
         
@@ -305,26 +353,7 @@ static BOOL PRODUCTION_MODE;
 #pragma mark - segue
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    //song was tapped
-    if([[segue identifier] isEqualToString: @"songItemSegue"]){
-        //retrieve the song objects
-        Song *selectedSong = [self.allSongsInLibrary objectAtIndex:self.selectedRowIndexValue];
-        Album *selectedAlbum = selectedSong.album;
-        Artist *selectedArtist = selectedSong.artist;
-        Playlist *selectedPlaylist;
-        
-        //setup properties in SongItemViewController.h
-        [[segue destinationViewController] setANewSong:selectedSong];
-        [[segue destinationViewController] setANewAlbum:selectedAlbum];
-        [[segue destinationViewController] setANewArtist:selectedArtist];
-        [[segue destinationViewController] setANewPlaylist:selectedPlaylist];
-        
-        int songNumber = self.selectedRowIndexValue + 1;  //remember, for loop started at 0!
-        if(songNumber < 0 || songNumber == 0)  //object not found in song model
-            songNumber = -1;
-        [[segue destinationViewController] setSongNumberInSongCollection:songNumber];
-        [[segue destinationViewController] setTotalSongsInCollection:(int)self.allSongsInLibrary.count];
-    } else if([[segue identifier] isEqualToString:@"editingSongMasterSegue"]){
+    if([[segue identifier] isEqualToString:@"editingSongMasterSegue"]){
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(editingModeCompleted:) name:@"SongEditDone" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(songWasSavedDuringEditing:) name:@"SongSavedDuringEdit" object:nil];
         
@@ -333,9 +362,6 @@ static BOOL PRODUCTION_MODE;
         [controller setSongIAmEditing:[self.allSongsInLibrary objectAtIndex:self.selectedRowIndexValue]];
         self.indexOfEditingSong = self.selectedRowIndexValue;
     }
-    else if([[segue identifier] isEqualToString: @"settingsSegue"]){  //settings button tapped from side bar
-        //do i need this?
-    }
 }
 
 #pragma mark - song editing
@@ -343,7 +369,6 @@ static BOOL PRODUCTION_MODE;
 {
     if([notification.name isEqualToString:@"SongEditDone"]){
         //leave editing mode
-        
         [[NSNotificationCenter defaultCenter] removeObserver:self name:@"SongEditDone" object:nil];
     }
 }
@@ -362,33 +387,28 @@ static BOOL PRODUCTION_MODE;
         
         self.allSongsInLibrary = [NSMutableArray arrayWithArray:[Song loadAll]];
         self.indexOfEditingSong = -1;
+        if(_allSongsInLibrary.count == 0){ //dont need search bar anymore
+            _searchBar = nil;
+            self.tableView.tableHeaderView = nil;
+        }
+        
         [self.tableView reloadData];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:@"SongSavedDuringEdit" object:nil];
     }
 }
 
-#pragma mark - Side menu
-- (void)sidebar:(RNFrostedSidebar *)sidebar didTapItemAtIndex:(NSUInteger)index
-{
-   if (1){
-        [sidebar dismissAnimated:YES];
-       if(index == 3)  //settings button
-           [self performSegueWithIdentifier:@"settingsSegue" sender:self];
-   }
-}
-
-- (IBAction)expandableMenuSelected:(id)sender
-{
-    [FrostedSideBarHelper setupAndShowSlideOutMenuUsingdelegate:self];
-}
-
-#pragma mark - Adding msuic to library
+#pragma mark - Adding music to library
 //called when + sign is tapped - selector defined in setUpNavBarItems method!
 - (void)addButtonPressed
 {
     [self performSegueWithIdentifier:@"addMusicToLibSegue" sender:nil];
 }
 
+#pragma mark - Go To Settings
+- (void)settingsButtonTapped
+{
+    [self performSegueWithIdentifier:@"settingsSegue" sender:self];
+}
 
 #pragma mark - Rotation status bar methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration

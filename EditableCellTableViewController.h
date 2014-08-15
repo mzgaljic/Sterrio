@@ -13,6 +13,6 @@
 
 @property (nonatomic, strong) NSString *stringUserIsEditing;
 
-- (id)initWithEditingString:(NSString *)aString;
+- (id)initWithEditingString:(NSString *)aString notificationNameToPost:(NSString *)notifName;
 
 @end

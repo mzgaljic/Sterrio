@@ -12,8 +12,11 @@
 #import "AppEnvironmentConstants.h"
 #import "SDCAlertView.h"
 #import "PreferredFontSizeUtility.h"
-#import "ZCImagePickerController.h"  //image picker that allows for multi selection
+#import "ELCImagePickerController.h"  //image picker that allows for multi selection
 #import "SDWebImageManager.h"
+#import "NSObject+Device_Name.h"
+
+#import <MobileCoreServices/UTCoreTypes.h>  //filtering media in image pickers
 
 
 @interface SettingsTableViewController : UITableViewController <UIPickerViewDelegate,
@@ -23,7 +26,7 @@
                                                                 UIImagePickerControllerDelegate,
                                                                 UINavigationControllerDelegate,
                                                                 UIActionSheetDelegate,
-                                                                ZCImagePickerControllerDelegate>
+                                                                ELCImagePickerControllerDelegate>
 
 @property (nonatomic, strong) UISwitch *syncSettingViaIcloudSwitch;
 @property (nonatomic, strong) UISwitch *boldSongSwitch;
@@ -33,5 +36,8 @@
 @property (nonatomic, assign) short lastSelectedCellQuality;
 @property (nonatomic, assign) short lastSelectedWifiQuality;
 @property (nonatomic, assign) short lastTappedPickerCell;
+
+- (IBAction)doneDismissButtonTapped:(id)sender;
+
 
 @end

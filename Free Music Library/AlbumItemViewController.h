@@ -17,8 +17,6 @@
 @property (strong, nonatomic) Album *album;
 
 //GUI vars
-@property (weak, nonatomic) IBOutlet UILabel *albumNameTitleLabel;
-@property (weak, nonatomic) IBOutlet UIImageView *albumUiImageView;
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
 
 @end

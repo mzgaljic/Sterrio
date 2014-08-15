@@ -16,8 +16,9 @@
 #define ASSOCIATED_WITH_ALBUM_KEY @"associatedWithAlbum"
 #define SONG_ID_KEY @"songID"
 
+//genres and albums can each have their own genre
 @implementation Song
-@synthesize songName = _songName, youtubeLink = _youtubeLink, albumArtFileName = _albumArtFileName, album = _album, artist = _artist, genreCode = _genreCode, associatedWithAlbum = _associatedWithAlbum, songID = _songID;
+@synthesize songName = _songName, youtubeId = _youtubeId, albumArtFileName = _albumArtFileName, album = _album, artist = _artist, genreCode = _genreCode, associatedWithAlbum = _associatedWithAlbum, songID = _songID;
 
 static  int const SAVE_SONG = 0;
 static int const DELETE_SONG = 1;
@@ -47,7 +48,7 @@ static int const UPDATE_SONG = 2;
             
             [_album deleteAlbum];
         }else if(self.artist)
-            [[_artist allSongs] addObject:self];
+            [[_artist allSongs] addObject:self];  //huh?
         
         _album = nil;
         
@@ -69,18 +70,19 @@ static int const UPDATE_SONG = 2;
         //finally, override old album art file name...possibly deleting the old album art if the two vary.
         //check if album has album art already. if not, make this the default for the album!
         if(_album.albumArtFileName){
-            BOOL onDisk = [AlbumArtUtilities isAlbumArtAlreadySavedOnDisk:[NSString stringWithFormat:@"%@.png", self.songName]];
-            //old album art is on disk
+            BOOL onDisk = [AlbumArtUtilities isAlbumArtAlreadySavedOnDisk:[NSString stringWithFormat:@"%@.png", self.songID]];
+            //old album art (from this song before it was linked to the album) is on disk
             if(onDisk)
                 [self removeAlbumArt];
         }else{
-            //reuse the album art as the new art for the album. Rename the file one disk though!
-            [AlbumArtUtilities renameAlbumArtFileFrom:[NSString stringWithFormat:@"%@.png", self.songName]
-                                                   to:[NSString stringWithFormat:@"%@.png", _album.albumName]];
-            [_album setAlbumArt:[AlbumArtUtilities albumArtFileNameToUiImage:[NSString stringWithFormat:@"%@.png", _album.albumName]]];
+            //reuse the album art as the new art for the album. Rename the file on disk though!
+            [AlbumArtUtilities renameAlbumArtFileFrom:[NSString stringWithFormat:@"%@.png", self.songID]
+                                                   to:[NSString stringWithFormat:@"%@.png", _album.albumID]];
+            [_album setAlbumArt:[AlbumArtUtilities albumArtFileNameToUiImage:[NSString stringWithFormat:@"%@.png", _album.albumID]]];
         }
         _albumArtFileName = _album.albumArtFileName;
         
+        //this song will now automatically appear under allAlbums array, so remove it from allSongs (that is for songs NOT associated with albums)
         if(self.artist)
             [[_artist allSongs] removeObject:self];
     }
@@ -115,7 +117,7 @@ static int const UPDATE_SONG = 2;
     if(self){
         _songID = [aDecoder decodeObjectForKey:SONG_ID_KEY];
         _songName = [aDecoder decodeObjectForKey:SONG_NAME_KEY];
-        _youtubeLink = [aDecoder decodeObjectForKey:YOUTUBE_LINK_KEY];
+        _youtubeId = [aDecoder decodeObjectForKey:YOUTUBE_LINK_KEY];
         _albumArtFileName = [aDecoder decodeObjectForKey:ALBUM_ART_FILE_NAME_KEY];
         _album = [aDecoder decodeObjectForKey:ALBUM_KEY];
         _artist = [aDecoder decodeObjectForKey:ARTIST_KEY];
@@ -129,7 +131,7 @@ static int const UPDATE_SONG = 2;
 {
     [aCoder encodeObject:_songID forKey:SONG_ID_KEY];
     [aCoder encodeObject:_songName forKey:SONG_NAME_KEY];
-    [aCoder encodeObject:_youtubeLink forKey:YOUTUBE_LINK_KEY];
+    [aCoder encodeObject:_youtubeId forKey:YOUTUBE_LINK_KEY];
     [aCoder encodeObject:_albumArtFileName forKey:ALBUM_ART_FILE_NAME_KEY];
     [aCoder encodeObject:_album forKey:ALBUM_KEY];
     [aCoder encodeObject:_artist forKey:ARTIST_KEY];
@@ -181,14 +183,20 @@ static int const UPDATE_SONG = 2;
     
     switch (desiredActionConst) {
         case SAVE_SONG:
+        {
             [songs insertObject:self atIndex:0]; //new songs added to array will appear at top of 'list'
             
             //update the artist details for this song
             if(_artist){
                 [_artist.allSongs addObject:self];
             }
-            
+            //remove duplicate songs (dont know why this occurs to be honest)
+            NSArray *hasDuplicates = _artist.allSongs;
+            _artist.allSongs = [NSMutableArray arrayWithArray:[[NSSet setWithArray: hasDuplicates] allObjects]];
+
             break;
+
+        }
             
         case DELETE_SONG:  //This class is responsible for deleting songs from albums
         {
@@ -265,12 +273,13 @@ static int const UPDATE_SONG = 2;
     BOOL success = NO;
     NSString *artFileName;
     if(image == nil){
-        _albumArtFileName = nil;
+        if(_albumArtFileName != nil)
+            [self removeAlbumArt];
         return YES;
     }
     
     if(! _associatedWithAlbum){
-        artFileName = [NSString stringWithFormat:@"%@.png", self.songName];
+        artFileName = [NSString stringWithFormat:@"%@.png", self.songID];
         
         //save the UIImage to disk
         if([AlbumArtUtilities isAlbumArtAlreadySavedOnDisk: artFileName])
@@ -297,6 +306,7 @@ static int const UPDATE_SONG = 2;
         }
         else{
             //we don't want to touch the album artwork if this song is part of an album.
+            _albumArtFileName = nil;
         }
     }
 }
@@ -304,7 +314,7 @@ static int const UPDATE_SONG = 2;
 //private method
 - (BOOL)makeCopyOfArtAndRename
 {
-    return [AlbumArtUtilities makeCopyOfArtWithName:[NSString stringWithFormat:@"%@.png", _album.albumName] andNameIt:[NSString stringWithFormat:@"%@.png", self.songName]];
+    return [AlbumArtUtilities makeCopyOfArtWithName:[NSString stringWithFormat:@"%@.png", _album.albumID] andNameIt:[NSString stringWithFormat:@"%@.png", self.songID]];
 }
 
 + (void)sortExistingSongsAlphabetically:(NSMutableArray **)songModel

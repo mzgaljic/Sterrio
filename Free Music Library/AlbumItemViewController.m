@@ -39,14 +39,6 @@ static BOOL PRODUCTION_MODE;
 
 - (void)setUpAlbumView
 {
-    self.albumNameTitleLabel.text = self.album.albumName;
-    
-    if(PRODUCTION_MODE)
-        self.albumUiImageView.image = [AlbumArtUtilities albumArtFileNameToUiImage: self.album.albumArtFileName];
-    else
-        self.albumUiImageView.image = [UIImage imageNamed:self.album.albumName];
-    
-    
     self.navBar.title = self.album.albumName;
 }
 
@@ -57,7 +49,6 @@ static BOOL PRODUCTION_MODE;
     
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     [imageCache clearMemory];
-    [imageCache clearDisk];
 }
 
 @end

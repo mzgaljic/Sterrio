@@ -14,6 +14,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>Pods-ASValueTrackingSlider.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-DZNEmptyDataSet.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -67,62 +72,67 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>2C313ADA6BFD49D58F1D53AE</key>
+		<key>061BBDCE723941B6BE2D4EA6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4B04DF5C56E743B391C60052</key>
+		<key>24AF590D1FBD486EB219273A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4D19626FF8B8468EB0843F98</key>
+		<key>4CE861B868D8458FAE5670C1</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>61060355FB0A476BB8F3AA45</key>
+		<key>5206FA90B02B47809E8DED12</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>680D0B0A038C4375AF965CB5</key>
+		<key>608C4506E2C045068D1DFD98</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>7A58A5ADC1B9446CA7C090BE</key>
+		<key>627E7A48351647B19F85ADE0</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>828D2B00629046F290D6DB1D</key>
+		<key>753A0D586B5B4C17B4B6D9F1</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9E9CB1478F0F46EA9D2672D1</key>
+		<key>9CC7F8CE604A4DE28830E10F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>A923277C71CA4AB48EB9628E</key>
+		<key>AB57E7AB18514F41A9907CCD</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C4C926FAB4B046688D6C4B62</key>
+		<key>B3891814FB424EA0901B6C7C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>CA3E3F2DDA794574AD73B093</key>
+		<key>C27C522ED9BF45BF8CCEE0A8</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>DC5F10CDE98D418BAFEDEB2B</key>
+		<key>E099DAD7880443D5A4CD89BC</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F0F0ED83ACBE4689880A6368</key>
 		<dict>
 			<key>primary</key>
 			<true/>

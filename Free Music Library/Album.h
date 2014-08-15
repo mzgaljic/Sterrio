@@ -20,7 +20,6 @@
 @interface Album : NSObject <NSCoding>
 
 @property(nonatomic, strong) NSString *albumName;
-@property(nonatomic, strong) NSDate *releaseDate;
 @property(nonatomic, strong, readonly) NSString *albumArtFileName;  //overrides individual song album arts when displaying in GUI.
 @property(nonatomic, strong) Artist *artist;
 @property(nonatomic, strong) NSMutableArray *albumSongs;

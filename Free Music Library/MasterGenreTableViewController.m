@@ -73,7 +73,6 @@ static BOOL PRODUCTION_MODE;
     
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     [imageCache clearMemory];
-    [imageCache clearDisk];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView

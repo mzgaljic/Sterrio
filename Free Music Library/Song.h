@@ -20,7 +20,7 @@
 @interface Song : NSObject <NSCoding>
 
 @property(nonatomic, strong) NSString *songName;
-@property(nonatomic, strong) NSString *youtubeLink;
+@property(nonatomic, strong) NSString *youtubeId;
 @property(nonatomic, strong, readonly) NSString *albumArtFileName;
 
 @property(nonatomic, strong) Artist *artist;

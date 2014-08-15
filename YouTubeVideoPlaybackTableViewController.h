@@ -11,6 +11,9 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import <XCDYouTubeKit/XCDYouTubeClient.h>
 
+#import "Song.h"
+#import "Album.h"
+
 #import "Reachability.h"
 #import "SDWebImageManager.h"
 #import "YouTubeVideo.h"
@@ -24,13 +27,16 @@
 #import "MRProgress.h"
 #import "DZNPhotoPickerController.h"
 #import "UIImagePickerControllerExtended.h"
+#import "NSString+HTTP_Char_Escape.h"
 
 @interface YouTubeVideoPlaybackTableViewController : UITableViewController <AVAudioSessionDelegate,
                                                                             AVAudioPlayerDelegate,
                                                                             UITextFieldDelegate,
                                                                             UINavigationControllerDelegate,
                                                                             UIActionSheetDelegate,
-                                                                            ALMoviePlayerControllerDelegate>
+                                                                            ALMoviePlayerControllerDelegate,
+                                                                            UINavigationBarDelegate,
+                                                                            UIImagePickerControllerDelegate>
 
 @property (nonatomic, strong) YouTubeVideo *ytVideo;
 

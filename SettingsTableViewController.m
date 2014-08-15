@@ -14,7 +14,7 @@
 @property (nonatomic, strong) NSMutableArray *attachmentUIImages;
 @property (nonatomic, assign) BOOL showEmailAlertView;
 //@property (nonatomic, strong) UIImagePickerController *photoPicker;
-@property (nonatomic, strong) ZCImagePickerController *photoPicker;
+@property (nonatomic, strong) ELCImagePickerController *photoPicker;
 @end
 
 @implementation SettingsTableViewController
@@ -39,7 +39,11 @@ static NSString *BUG_REPORT_EMAIL;
 {
     [self setProductionModeValue];
     [super viewDidLoad];
+    //hide back button, since we are supposed to 'dismiss' modally, not left.
+    self.navigationItem.leftBarButtonItem = nil;
+    self.navigationItem.hidesBackButton = YES;
     
+#warning remove my real email before uploading production app. Add real bug report email and real feedback email.
     if(PRODUCTION_MODE)
         BUG_REPORT_EMAIL = @"example@example.com";
     else
@@ -53,6 +57,16 @@ static NSString *BUG_REPORT_EMAIL;
     }
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];    
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -60,7 +74,6 @@ static NSString *BUG_REPORT_EMAIL;
     
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     [imageCache clearMemory];
-    [imageCache clearDisk];
 }
 
 - (NSString *)convertFontSizeToString
@@ -152,10 +165,12 @@ static NSString *BUG_REPORT_EMAIL;
             case 0:
                 cell.textLabel.text = @"Wifi Stream Quality";
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%hup",[AppEnvironmentConstants preferredWifiStreamSetting]];
+                cell.accessoryView = nil;
                 break;
             case 1:
                 cell.textLabel.text = @"Cellular Stream Quality";
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%hup",[AppEnvironmentConstants preferredCellularStreamSetting]];
+                cell.accessoryView = nil;
                 break;
         }
     } else if(indexPath.section == 2){
@@ -164,6 +179,7 @@ static NSString *BUG_REPORT_EMAIL;
             case 0:
                 cell.textLabel.text = @"Font Size";
                 cell.detailTextLabel.text = [self convertFontSizeToString];
+                cell.accessoryView = nil;
                 break;
             case 1:
                 cell.textLabel.text = @"Bold Names";
@@ -229,7 +245,7 @@ static NSString *BUG_REPORT_EMAIL;
         }
     } else if(indexPath.section == 4){
         UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:@"Compose Email" delegate:self cancelButtonTitle:@"Cancel"
-                                             destructiveButtonTitle:nil otherButtonTitles:@"Attach a Screenshot",
+                                             destructiveButtonTitle:nil otherButtonTitles:@"Attach Screenshot(s)",
                                 @"Regular Email", nil];
         popup.tag = 1;
         [popup showInView:[UIApplication sharedApplication].keyWindow];
@@ -563,14 +579,22 @@ NSArray *CellStreamOptions;
 - (NSString *)buildEmailBodyString
 {
     //\u2022 is Unicode for a bullet
-    NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"];
+    NSString *appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"];
+    NSString *iosVersion = [[UIDevice currentDevice] systemVersion];
+    NSString *deviceName = [NSObject deviceName];
     NSString *body;
-    if(_attachmentUIImages.count > 0)
-        body = @"Try to provide as much information as possible.\n\nName the bug:\n\nLocation of issue:\n\nSeverity: (High/Medium/Low)\n\nReported By:\n\n=============\nDescription\n\u2022\n\nSteps To Reproduce Bug\n\u2022\n\nExpected result\n\u2022\n=============\ntime&date\n\nVersion: version#\n[End of bug report]\nScreenshot:";
+    if(_attachmentUIImages.count == 1)
+        body = @"Try to provide as much information as possible.\n\nName the bug:\n\nLocation of issue:\n\nSeverity: (High/Medium/Low)\n\nReported By:\n\n=============\nDescription\n\u2022\n\nSteps To Reproduce Bug\n\u2022\n\nExpected result\n\u2022\n=============\ntime&date\nApp Version: appVersion#\niOS Version: iosVersion#\nDevice: deviceName#\n\n[End of bug report]\nScreenshot:";
+
+    else if(_attachmentUIImages.count > 1)
+        body = @"Try to provide as much information as possible.\n\nName the bug:\n\nLocation of issue:\n\nSeverity: (High/Medium/Low)\n\nReported By:\n\n=============\nDescription\n\u2022\n\nSteps To Reproduce Bug\n\u2022\n\nExpected result\n\u2022\n=============\ntime&date\nApp Version: appVersion#\niOS Version: iosVersion#\nDevice: deviceName#\n\n[End of bug report]\nScreenshots:";
+    
     else
-        body = @"Try to provide as much information as possible. Attaching screenshots is optional (but encouraged).\n\nName the bug:\n\nLocation of issue:\n\nSeverity: (High/Medium/Low)\n\nReported By:\n\n=============\nDescription\n\u2022\n\nSteps To Reproduce Bug\n\u2022\n\nExpected result\n\u2022\n=============\ntime&date\n\nVersion: version#\n[End of bug report]";
-    body = [body stringByReplacingOccurrencesOfString:@"version#" withString:version];
+        body = @"Try to provide as much information as possible. Attaching screenshots is optional (but encouraged).\n\nName the bug:\n\nLocation of issue:\n\nSeverity: (High/Medium/Low)\n\nReported By:\n\n=============\nDescription\n\u2022\n\nSteps To Reproduce Bug\n\u2022\n\nExpected result\n\u2022\n=============\ntime&date\nApp Version: appVersion#\niOS Version: iosVersion#\nDevice: deviceName#\n\n[End of bug report]";
     body = [body stringByReplacingOccurrencesOfString:@"time&date" withString:[self buildCurrentEstTimeString]];
+    body = [body stringByReplacingOccurrencesOfString:@"appVersion#" withString:appVersion];
+    body = [body stringByReplacingOccurrencesOfString:@"iosVersion#" withString:iosVersion];
+    body = [body stringByReplacingOccurrencesOfString:@"deviceName#" withString:deviceName];
     return body;
 }
 
@@ -656,12 +680,14 @@ NSArray *CellStreamOptions;
                 //start with fresh array
                 _attachmentUIImages = [NSMutableArray array];
                 
-                _photoPicker = [[ZCImagePickerController alloc] init];
+                _photoPicker = [[ELCImagePickerController alloc] initImagePicker];
+                _photoPicker.maximumImagesCount = 3; //Set the maximum number of images to select, defaults to 3
+                _photoPicker.returnsOriginalImage = YES; //Only return the fullScreenImage, not the fullResolutionImage
+                _photoPicker.returnsImage = YES; //Return UIimage if YES. If NO, only return asset location information
+                _photoPicker.onOrder = YES; //For multiple image selection, display and return selected order of images
                 _photoPicker.imagePickerDelegate = self;
-                _photoPicker.maximumAllowsSelectionCount = 5;
-                _photoPicker.mediaType = ZCMediaAllPhotos;
-                
-                // code for iPhone and iPod Touch (different code needed for iPad)
+                _photoPicker.mediaTypes = @[(NSString *)kUTTypeImage];
+
                 [self presentViewController:_photoPicker animated:YES completion:nil];
                 break;
             }
@@ -674,7 +700,8 @@ NSArray *CellStreamOptions;
     }
 }
 
-- (void)zcImagePickerController:(ZCImagePickerController *)imagePickerController didFinishPickingMediaWithInfo:(NSArray *)info
+#pragma mark - Multi image picker stuff
+- (void)elcImagePickerController:(ELCImagePickerController *)picker didFinishPickingMediaWithInfo:(NSArray *)info
 {
     //populate our array with the users images
     for (NSDictionary *imageDictionary in info)
@@ -684,13 +711,18 @@ NSArray *CellStreamOptions;
     //photo picker is dismissed after mail popup is dismissed (both modal views are dismiseed at same time)
 }
 
-- (void)zcImagePickerControllerDidCancel:(ZCImagePickerController *)imagePickerController
+- (void)elcImagePickerControllerDidCancel:(ELCImagePickerController *)picker
 {
     //dismissed both modal view controllers (photo picker and mail)
     [self dismissViewControllerAnimated:YES completion:nil];
     _attachmentUIImages = [NSMutableArray array];
     _photoPicker = nil;
     return;
+}
+
+- (IBAction)doneDismissButtonTapped:(id)sender
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

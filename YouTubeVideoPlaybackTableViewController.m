@@ -32,7 +32,6 @@
 @synthesize enoughSongInformationGiven = _enoughSongInformationGiven, albumArt = _albumArt;
 
 static BOOL PRODUCTION_MODE;
-static NSString *Bing_Account_Key = @"9db+y1deiVZ9Dg6Y2VmkOZI4zv/xEWEvTmUhd2PnQeE";
 static const short Landscape_TableView_Header_Offset = 32;
 static const short Song_Input_TextField_Tag = 100;
 static const short Artist_Input_TextField_Tag = 200;
@@ -83,18 +82,12 @@ static const short Genre_Input_TextField_Tag = 400;
     return self;
 }
 
-+ (void)initialize  //initializes album art search stuff
-{
-    //Bing does not require a secret. Rather just an "Account Key"
-    [DZNPhotoPickerController registerService:DZNPhotoPickerControllerServiceBingImages
-                                  consumerKey:Bing_Account_Key
-                               consumerSecret:nil
-                                 subscription:DZNPhotoPickerControllerSubscriptionFree];
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [[[YouTubeMoviePlayerSingleton createSingleton] AVPlayer] pause];
+    //hack to hide back button text. This ALSO changes future back buttons if more stuff is pushed. BEWARE.
+    self.navigationController.navigationBar.topItem.title = @"";
     [self setProductionModeValue];
     self.enoughSongInformationGiven = NO;
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -107,16 +100,9 @@ static const short Genre_Input_TextField_Tag = 400;
                                                object:nil];
     
     self.navigationController.toolbarHidden = NO;
-    self.navigationController.navigationBar.translucent = YES;
     _navBar.title = _ytVideo.videoName;
     _navBar.backBarButtonItem.title = @"";
     [self setUpVideoPlayer];
-    
-    NSError *setCategoryError = nil;
-    NSError *activationError = nil;
-    [[AVAudioSession sharedInstance] setActive:YES error:&activationError];
-    [[AVAudioSession sharedInstance] setDelegate:self];
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&setCategoryError];
 }
 
 static short numberTimesViewHasBeenShown = 0;
@@ -125,9 +111,6 @@ static short numberTimesViewHasBeenShown = 0;
     [super viewWillAppear:animated];
     if(numberTimesViewHasBeenShown == 0)
         [self setPlaceHolderImageForVideoPlayer];  //would do this in viewDidLoad but self.view.frame has incorrect values until viewWillAppear
-    //Once the view has loaded then we can register to begin recieving controls and we can become the first responder
-    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-    [self becomeFirstResponder];
     numberTimesViewHasBeenShown++;
 }
 
@@ -136,12 +119,18 @@ static short numberTimesViewHasBeenShown = 0;
     [super viewDidAppear:animated];
     if(! self.enoughSongInformationGiven)
         [self setUpAddToLibraryButton];  //only works in viewDidAppear.
+    
+    self.navigationController.navigationBar.translucent = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     [self resignFirstResponder];
+    self.navigationController.navigationBar.translucent = NO;
+    
+    [[[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer] pause];
+    [[YouTubeMoviePlayerSingleton createSingleton] setPreviewMusicYouTubePlayerInstance: nil];
 }
 
 - (void)dealloc
@@ -149,12 +138,6 @@ static short numberTimesViewHasBeenShown = 0;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
     
-    //End recieving events
-    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
-    [self resignFirstResponder];
-    
-    [[[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer] pause];
-    [YouTubeMoviePlayerSingleton setPreviewMusicYouTubePlayerInstance: nil];
     numberTimesViewHasBeenShown = 0;
 }
 
@@ -188,11 +171,10 @@ static short numberTimesViewHasBeenShown = 0;
                 NSURL *url;
                 if(usingWifi){
                     short maxDesiredQuality = [AppEnvironmentConstants preferredWifiStreamSetting];
-                    url = [self closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
-                    
+                    url =[YouTubeMoviePlayerSingleton closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
                 }else{
                     short maxDesiredQuality = [AppEnvironmentConstants preferredCellularStreamSetting];
-                    url = [self closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
+                    url =[YouTubeMoviePlayerSingleton closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
                 }
                 
                 //Now that we have the url, load the video into our MPMoviePlayerController
@@ -215,51 +197,11 @@ static short numberTimesViewHasBeenShown = 0;
     }];
 }
 
-- (NSURL *)closestUrlQualityMatchForSetting:(short)aQualitySetting usingStreamsDictionary:(NSDictionary *)aDictionary
-{
-    short maxDesiredQuality = aQualitySetting;
-    NSDictionary *vidQualityDict = aDictionary;
-    NSURL *url;
-    switch (maxDesiredQuality) {
-        case 240:
-        {
-            url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualitySmall240]];
-            if(url == nil)
-                url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityMedium360]];
-            else if(url == nil)
-                url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityHD720]];
-            break;
-        }
-        case 360:
-        {
-            url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityMedium360]];
-            if(url == nil)
-                url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualitySmall240]];
-            else if(url == nil)
-                url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityHD720]];
-            break;
-        }
-        case 720:
-        {
-            url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityHD720]];
-            if(url == nil)
-                url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityMedium360]];
-            else if(url == nil)
-                url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualitySmall240]];
-            break;
-        }
-        default:
-            url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityMedium360]];
-            break;
-    }
-    return url;
-}
-
 - (void)setUpMPMoviePlayerControllerUsingNSURL:(NSURL *)videoUrl
 {
     ALMoviePlayerController *videoPlayer = [[ALMoviePlayerController alloc] initWithFrame:self.view.frame];
     videoPlayer.delegate = self;
-    _movieControls = [[ALMoviePlayerControls alloc] initWithMoviePlayer:videoPlayer style:ALMoviePlayerControlsStyleDefault];
+    _movieControls = [[ALMoviePlayerControls alloc] initWithMoviePlayer:videoPlayer style:ALMoviePlayerControlsStyleEmbedded];
     [videoPlayer setControls:_movieControls];
     
     [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
@@ -289,7 +231,7 @@ static short numberTimesViewHasBeenShown = 0;
     
     [_movieControls setFrame:CGRectMake(0.f, 0.f, videoPlayer.view.bounds.size.width, videoPlayer.view.bounds.size.height)];
 
-    [YouTubeMoviePlayerSingleton setPreviewMusicYouTubePlayerInstance:videoPlayer];
+    [[YouTubeMoviePlayerSingleton createSingleton] setPreviewMusicYouTubePlayerInstance:videoPlayer];
     [videoPlayer setContentURL:videoUrl];
 }
 
@@ -358,7 +300,6 @@ static short numberTimesViewHasBeenShown = 0;
     
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     [imageCache clearMemory];
-    [imageCache clearDisk];
 }
 
 #pragma mark - Lock Screen Song Info & Art
@@ -391,40 +332,6 @@ static short numberTimesViewHasBeenShown = 0;
      }];
 }
 
-#pragma mark - Control event stuff for video/audio
-//Make sure we can recieve remote control events
-- (BOOL)canBecomeFirstResponder
-{
-    return YES;
-}
-
-- (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent
-{
-    ALMoviePlayerController *videoPlayer = [[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer];
-    
-    if (receivedEvent.type == UIEventTypeRemoteControl) {
-        switch (receivedEvent.subtype) {
-            case UIEventSubtypeRemoteControlPlay:
-                [videoPlayer play];
-                break;
-            case UIEventSubtypeRemoteControlPause:
-                [videoPlayer pause];
-                break;
-            case UIEventSubtypeRemoteControlTogglePlayPause:
-                if (videoPlayer.playbackState == MPMoviePlaybackStatePlaying) {
-                    [videoPlayer pause];
-                }
-                else {
-                    [videoPlayer play];
-                }
-                break;
-            default:
-                break;
-        }
-    }
-}
-
-
 #pragma mark - 16:9 Aspect ratio helper
 - (float)videoHeightInSixteenByNineAspectRatioGivenWidth:(float)width
 {
@@ -436,9 +343,36 @@ static short numberTimesViewHasBeenShown = 0;
 #pragma mark - Toolbar methods
 - (void)addToLibraryButtonTapped
 {
+    #warning code does not take genre into account yet
     if(_enoughSongInformationGiven){
         //create song and if necessary, the albums artists, etc here.
+        
+        BOOL artistName = NO, albumName = NO, genreName = NO;
+        if(_currentUserEnteredArtistName.length > 0)
+            artistName = YES;
+        if(_currentUserEnteredAlbumName.length > 0)
+            albumName = YES;
+        if(_currentUserEnteredGenreName.length > 0)
+            genreName = YES;
+        
+        if(!artistName && !albumName)  //just song name given
+            [self createSongWithName:_currentUserEnteredSongName];
+        
+        else if(artistName && !albumName)  //song and artist names given
+            [self createSongWithName:_currentUserEnteredSongName byArtistName:_currentUserEnteredArtistName];
+        
+        else if(!artistName && albumName)  //song and album names given
+            [self createSongWithName:_currentUserEnteredSongName partOfAlbumNamed:_currentUserEnteredAlbumName];
+        
+        else if(artistName && albumName)  //song, album, and artist names given
+            [self createSongWithName:_currentUserEnteredSongName
+                        byArtistName:_currentUserEnteredArtistName
+                    partOfAlbumNamed:_currentUserEnteredAlbumName];
     }
+    
+    [[[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer] pause];
+    [[YouTubeMoviePlayerSingleton createSingleton] setPreviewMusicYouTubePlayerInstance: nil];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)setUpAddToLibraryButton
@@ -505,18 +439,26 @@ static short numberTimesViewHasBeenShown = 0;
         case 0:
             [txtField setPlaceholder:@"Song"];
             txtField.tag = Song_Input_TextField_Tag;
+            if(_currentUserEnteredSongName.length > 0)
+                txtField.text = _currentUserEnteredSongName;
             break;
         case 1:
             [txtField setPlaceholder:@"Artist"];
             txtField.tag = Artist_Input_TextField_Tag;
+            if(_currentUserEnteredArtistName.length > 0)
+                txtField.text = _currentUserEnteredArtistName;
             break;
         case 2:
             [txtField setPlaceholder:@"Album"];
             txtField.tag = Album_Input_TextField_Tag;
+            if(_currentUserEnteredAlbumName.length > 0)
+                txtField.text = _currentUserEnteredAlbumName;
             break;
         case 3:
             [txtField setPlaceholder:@"Genre"];
             txtField.tag = Genre_Input_TextField_Tag;
+            if(_currentUserEnteredGenreName.length > 0)
+                txtField.text = _currentUserEnteredGenreName;
             break;
         default:
             break;
@@ -597,14 +539,26 @@ static short numberTimesViewHasBeenShown = 0;
     {
         switch (buttonIndex) {
             case 0:  //take photo tapped
-                [self presentImagePickerWithSourceType:UIImagePickerControllerSourceTypeCamera];
+                [NSTimer scheduledTimerWithTimeInterval: 0.5f
+                                                 target:self
+                                               selector:@selector(showCameraViewController)
+                                               userInfo:nil
+                                                repeats:NO];
                 break;
             case 1:  //chose photo tapped
                 [self presentImagePickerWithSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
                 break;
             case 2:  //search tapped
-                [self presentPhotoPickerWithImage:nil];
+            {
+                NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"x-web-search://?%@",
+                                                   [[self buildAlbumArtSearchString] stringForHTTPRequest]]];
+                
+                if (![[UIApplication sharedApplication] openURL:url])
+                    NSLog(@"%@%@",@"Failed to open url:",[url description]);
+#warning display 'failed to open safari' warning to user
                 break;
+            }
+                
             case 3:  //cancel tapped
                 break;
             default:
@@ -622,20 +576,56 @@ static short numberTimesViewHasBeenShown = 0;
                 [self presentPhotoEditor];
                 break;
             case 2:  //take photo tapped
-                [self presentImagePickerWithSourceType:UIImagePickerControllerSourceTypeCamera];
+                [NSTimer scheduledTimerWithTimeInterval: 0.5f
+                                                 target:self
+                                               selector:@selector(showCameraViewController)
+                                               userInfo:nil
+                                                repeats:NO];
                 break;
             case 3:  //chose photo tapped
                 [self presentImagePickerWithSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
                 break;
             case 4:  //search tapped
-                [self presentPhotoPickerWithImage:nil];
-                break;
+            {
+                NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"x-web-search://?%@",
+                                                   [[self buildAlbumArtSearchString] stringForHTTPRequest]]];
+                
+                if (![[UIApplication sharedApplication] openURL:url])
+                    NSLog(@"%@%@",@"Failed to open url:",[url description]);
+#warning display 'failed to open safari' warning to user
+                    break;
+            }
             case 5:  //cancel tapped
                 break;
             default:
                 break;
         }
     }
+}
+
+- (void)showCameraViewController
+{
+    [self presentImagePickerWithSourceType:UIImagePickerControllerSourceTypeCamera];
+}
+
+- (NSString *)buildAlbumArtSearchString
+{
+    NSMutableString *albumArtSearchTerm = [NSMutableString stringWithString:@""];
+    if(_currentUserEnteredAlbumName != nil)
+        [albumArtSearchTerm appendString: _currentUserEnteredAlbumName];
+    [albumArtSearchTerm appendString:@" "];
+    
+    if(_currentUserEnteredArtistName != nil)
+        [albumArtSearchTerm appendString: _currentUserEnteredArtistName];
+    [albumArtSearchTerm appendString:@" "];
+    
+    if(_currentUserEnteredSongName != nil && (_currentUserEnteredAlbumName == nil))
+        [albumArtSearchTerm appendString: _currentUserEnteredSongName];
+    [albumArtSearchTerm appendString:@" "];
+    
+    albumArtSearchTerm = [NSMutableString stringWithString:[albumArtSearchTerm removeIrrelevantWhitespace]];
+    [albumArtSearchTerm appendString:@" album art"];
+    return albumArtSearchTerm;
 }
 
 - (void)presentPhotoPickerWithImage:(UIImage *)image
@@ -645,32 +635,6 @@ static short numberTimesViewHasBeenShown = 0;
         picker = [[DZNPhotoPickerController alloc] initWithEditableImage:image];
         picker.cropMode = [[_photoPayload objectForKey:DZNPhotoPickerControllerCropMode] integerValue];
     }
-    else {
-        picker = [DZNPhotoPickerController new];
-        picker.supportedServices = DZNPhotoPickerControllerServiceBingImages;
-        picker.allowsEditing = YES;
-        picker.cropMode = DZNPhotoEditorViewControllerCropModeSquare;
-        
-        NSMutableString *albumArtSearchTerm;
-        if(_currentUserEnteredAlbumName != nil){
-            albumArtSearchTerm = [NSMutableString stringWithString:_currentUserEnteredAlbumName];
-            [albumArtSearchTerm appendString:@" album art"];
-            picker.initialSearchTerm = albumArtSearchTerm;
-        }else if(_currentUserEnteredArtistName != nil){
-            albumArtSearchTerm = [NSMutableString stringWithString:_currentUserEnteredArtistName];
-            [albumArtSearchTerm appendString:@" album art"];
-            picker.initialSearchTerm = albumArtSearchTerm;
-        }else if(_currentUserEnteredSongName != nil){
-            albumArtSearchTerm = [NSMutableString stringWithString:_currentUserEnteredSongName];
-            [albumArtSearchTerm appendString:@" album art"];
-            picker.initialSearchTerm = albumArtSearchTerm;
-        }
-        
-        picker.initialSearchTerm = albumArtSearchTerm;
-        picker.enablePhotoDownload = YES;
-        picker.allowAutoCompletedSearch = YES;
-    }
-    
     picker.finalizationBlock = ^(DZNPhotoPickerController *picker, NSDictionary *info) {
         [self updateImageWithPayload:info];
         [picker dismissViewControllerAnimated:YES completion:NULL];
@@ -786,6 +750,98 @@ static short numberTimesViewHasBeenShown = 0;
 {
     return YES;
 }
+
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    NSString *string = [textField.text removeIrrelevantWhitespace];
+    if(string.length == 0){
+        textField.text = @"";
+        if(textField.tag == Song_Input_TextField_Tag)
+            self.enoughSongInformationGiven = NO;
+    }
+    
+    switch (textField.tag) {
+        case Song_Input_TextField_Tag:      self.enoughSongInformationGiven = YES;
+            _currentUserEnteredSongName = textField.text;
+            break;
+            
+        case Artist_Input_TextField_Tag:    _currentUserEnteredArtistName = textField.text;
+            break;
+            
+        case Album_Input_TextField_Tag:     _currentUserEnteredAlbumName = textField.text;
+            break;
+            
+        case Genre_Input_TextField_Tag:     _currentUserEnteredGenreName = textField.text;
+            break;
+        default:    break;
+    }
+
+}
+
+
+#pragma mark - Song, Album, Artist, and Genre 'factories' (not real factory)
+- (void)createSongWithName:(NSString *)songName
+{
+    Song *aSong = [[Song alloc] init];
+    aSong.songName = songName;
+    aSong.youtubeId = _ytVideo.videoId;
+    [aSong setAlbumArt:_albumArt];
+    
+    [aSong saveSong];
+}
+
+- (void)createSongWithName:(NSString *)songName byArtistName:(NSString *)artistName
+{
+    Artist *anArtist = [[Artist alloc] init];
+    anArtist.artistName = artistName;
+    
+    Song *aSong = [[Song alloc] init];
+    aSong.songName = songName;
+    aSong.youtubeId = _ytVideo.videoId;
+    aSong.artist = anArtist;
+    [aSong setAlbumArt:_albumArt];
+    
+    [aSong saveSong];
+    [anArtist saveArtist];
+}
+
+- (void)createSongWithName:(NSString *)songName partOfAlbumNamed:(NSString *)albumName
+{
+    Album *anAlbum = [[Album alloc] init];
+    anAlbum.albumName = albumName;
+    [anAlbum setAlbumArt:_albumArt];
+    
+    Song *aSong = [[Song alloc] init];
+    aSong.songName = songName;
+    aSong.youtubeId = _ytVideo.videoId;
+    aSong.album = anAlbum;
+    
+    [anAlbum saveAlbum];
+    [aSong saveSong];
+}
+
+- (void)createSongWithName:(NSString *)songName byArtistName:(NSString *)artistName partOfAlbumNamed:(NSString *)albumName
+{
+    Album *anAlbum = [[Album alloc] init];
+    anAlbum.albumName = albumName;
+    [anAlbum setAlbumArt:_albumArt];
+    
+    Artist *anArtist = [[Artist alloc] init];
+    anArtist.artistName = artistName;
+    anAlbum.artist = anArtist;
+    
+    Song *aSong = [[Song alloc] init];
+    aSong.songName = songName;
+    aSong.youtubeId = _ytVideo.videoId;
+    //swap these
+    aSong.artist = anArtist;
+    aSong.album = anAlbum;
+    
+    [anArtist saveArtist];
+    [anAlbum saveAlbum];
+    [aSong saveSong];
+}
+
 
 #pragma mark - Rotation methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration

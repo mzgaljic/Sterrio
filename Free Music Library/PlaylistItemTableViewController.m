@@ -98,7 +98,6 @@ static BOOL PRODUCTION_MODE;
     
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     [imageCache clearMemory];
-    [imageCache clearDisk];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -124,14 +123,13 @@ static BOOL PRODUCTION_MODE;
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    UIImage *image;
-    if(PRODUCTION_MODE)
-        image = [AlbumArtUtilities albumArtFileNameToUiImage: song.albumArtFileName];
-    else
-        image = [UIImage imageNamed:song.album.albumName];
-    
-    image = [AlbumArtUtilities imageWithImage:image scaledToSize:[SongTableViewFormatter preferredSongAlbumArtSize]];
-    cell.imageView.image = image;
+    CGSize size = [SongTableViewFormatter preferredSongAlbumArtSize];
+    [cell.imageView sd_setImageWithURL:[AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]
+                      placeholderImage:[UIImage imageWithColor:[UIColor clearColor] width:size.width height:size.height]
+                               options:SDWebImageCacheMemoryOnly
+                             completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL){
+                                 cell.imageView.image = image;
+                             }];
     return cell;
 
 }
@@ -232,16 +230,18 @@ static BOOL PRODUCTION_MODE;
         Playlist *selectedPlaylist;
         
         //setup properties in SongItemViewController.h
+        /**
         [[segue destinationViewController] setANewSong:selectedSong];
         [[segue destinationViewController] setANewAlbum:selectedAlbum];
         [[segue destinationViewController] setANewArtist:selectedArtist];
         [[segue destinationViewController] setANewPlaylist:selectedPlaylist];
-        
+        */
+         
         int songNumber = row + 1;  //remember, for loop started at 0!
         if(songNumber < 0 || songNumber == 0)  //object not found in song model
             songNumber = -1;
-        [[segue destinationViewController]setSongNumberInSongCollection:songNumber];
-        [[segue destinationViewController]setTotalSongsInCollection:(int)_playlist.songsInThisPlaylist.count];
+
+        //set songs in playlist, etc etc for the now playing viewcontroller
     }
 }
 

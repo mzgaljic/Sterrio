@@ -13,8 +13,11 @@ pod 'MRProgress'
 #youtube id video url extractor
 pod 'XCDYouTubeKit', '~> 2.0'
 
-#Searches multiple sources online for images, and crops too.
+#I use it for image 'square' cropping and editing.
 pod 'DZNPhotoPickerController'
 
 #MPMoviePlayerController alternative library
 pod 'ALMoviePlayerController', '~>0.3.0'
+
+#Percentage when sliding a tracking bar
+pod 'ASValueTrackingSlider'

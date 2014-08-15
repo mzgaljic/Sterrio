@@ -101,26 +101,52 @@
 //adds a space to the artist string, then it just changes the album string to grey.
 + (NSAttributedString *)generateDetailLabelAttrStringWithArtistName:(NSString *)artistString andAlbumName:(NSString *)albumString
 {
-    if(artistString == nil || albumString == nil)
+    if(artistString != nil && albumString != nil){
+        NSMutableString *newArtistString = [NSMutableString stringWithString:artistString];
+        [newArtistString appendString:@" "];
+        
+        NSMutableString *entireString = [NSMutableString stringWithString:newArtistString];
+        [entireString appendString:albumString];
+        
+        NSArray *components = @[newArtistString, albumString];
+        //NSRange untouchedRange = [entireString rangeOfString:[components objectAtIndex:0]];
+        NSRange grayRange = [entireString rangeOfString:[components objectAtIndex:1]];
+        
+        NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
+        
+        [attrString beginEditing];
+        [attrString addAttribute: NSForegroundColorAttributeName
+                           value:[UIColor grayColor]
+                           range:grayRange];
+        [attrString endEditing];
+        return attrString;
+        
+    } else if(artistString == nil && albumString == nil)
         return nil;
-    NSMutableString *newArtistString = [NSMutableString stringWithString:artistString];
-    [newArtistString appendString:@" "];
     
-    NSMutableString *entireString = [NSMutableString stringWithString:newArtistString];
-    [entireString appendString:albumString];
-    
-    NSArray *components = @[newArtistString, albumString];
-    //NSRange untouchedRange = [entireString rangeOfString:[components objectAtIndex:0]];
-    NSRange grayRange = [entireString rangeOfString:[components objectAtIndex:1]];
-    
-    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
-    
-    [attrString beginEditing];
-    [attrString addAttribute: NSForegroundColorAttributeName
-                       value:[UIColor grayColor]
-                       range:grayRange];
-    [attrString endEditing];
-    return attrString;
+    else if(artistString == nil && albumString != nil){
+        NSMutableString *entireString = [NSMutableString stringWithString:albumString];
+        
+        NSArray *components = @[albumString];
+        NSRange grayRange = [entireString rangeOfString:[components objectAtIndex:0]];
+        
+        NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
+        
+        [attrString beginEditing];
+        [attrString addAttribute: NSForegroundColorAttributeName
+                           value:[UIColor grayColor]
+                           range:grayRange];
+        [attrString endEditing];
+        return attrString;
+
+    } else if(artistString != nil && albumString == nil){
+        
+        NSMutableString *entireString = [NSMutableString stringWithString:artistString];
+        NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
+        return attrString;
+
+    } else  //case should never happen
+        return nil;
 }
 
 @end

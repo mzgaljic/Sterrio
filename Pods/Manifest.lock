@@ -21,6 +21,7 @@ PODS:
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - ALMoviePlayerController (0.3.0)
+  - ASValueTrackingSlider (0.9.4)
   - DZNEmptyDataSet (1.4.1)
   - DZNPhotoPickerController (1.5):
     - AFNetworking (~> 2.3.1)
@@ -74,6 +75,7 @@ PODS:
 
 DEPENDENCIES:
   - ALMoviePlayerController (~> 0.3.0)
+  - ASValueTrackingSlider
   - DZNPhotoPickerController
   - MRProgress
   - RNFrostedSidebar (~> 0.2.0)
@@ -84,6 +86,7 @@ DEPENDENCIES:
 SPEC CHECKSUMS:
   AFNetworking: 6d7b76aa5d04c8c37daad3eef4b7e3f2a7620da3
   ALMoviePlayerController: bee05da71110002321ba4f87dc021e97348d7a6a
+  ASValueTrackingSlider: 74a4bbf70c8cf43d29b701ff4c7659fc5d0afd99
   DZNEmptyDataSet: 381e880cb3bb2d33885cb0325218443df265bc98
   DZNPhotoPickerController: 3d7428991e2604939fc56e581693d61d29138186
   MRProgress: bacc0f2f6c547e4ab21fd48ed14e19cbd70de3e4

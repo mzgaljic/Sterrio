@@ -8,21 +8,36 @@
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <ALMoviePlayerController/ALMoviePlayerController.h>
+
+//used by youtube link extractor
+#import <XCDYouTubeKit/XCDYouTubeClient.h>
 
 @interface YouTubeMoviePlayerSingleton : NSObject
 
 + (instancetype)createSingleton;
 
-+ (void)setYouTubePlayerInstance:(MPMoviePlayerController *)MPMoviePlayerControllerInstance;
+#pragma mark - Custom AVPlayer powered video player for library
+- (void)setAVPlayerInstance:(AVPlayer *)AVPlayerInstance;
+- (AVPlayer *)AVPlayer;
 
-/**Returns the current XCDYouTubeVideoPlayerViewController instance, or nil if no video player was launched at all.*/
-- (MPMoviePlayerController *)youtubePlayer;
+- (void)setAVPlayerLayerInstance:(AVPlayerLayer *)AVPlayerInstance;
+- (AVPlayerLayer *)AVPlayerLayer;
 
-
-+ (void)setPreviewMusicYouTubePlayerInstance:(ALMoviePlayerController *)ALMoviePlayerControllerInstance;
+#pragma mark - YouTube video player for previewing songs when adding to library
+- (void)setPreviewMusicYouTubePlayerInstance:(ALMoviePlayerController *)ALMoviePlayerControllerInstance;
 
 - (ALMoviePlayerController *)previewMusicYoutubePlayer;
+
+#pragma mark - YouTube Link Extraction Helper
++ (NSURL *)closestUrlQualityMatchForSetting:(short)aQualitySetting usingStreamsDictionary:(NSDictionary *)aDictionary;
+
+#pragma mark - Helper variables for view controllers
++ (void)setNeedsToDisplayNewVideo:(BOOL)displayNewVideo;
++ (BOOL)needsToDisplayNewVideo;
+
 @end

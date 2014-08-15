@@ -7,18 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <SDWebImage/UIImageView+WebCache.h>
 #import "AppEnvironmentConstants.h"
 #import "AlbumArtUtilities.h"
 #import "SongItemViewController.h"
 #import "MasterEditingSongTableViewController.h"
 #import "Song.h"
 #import "SDWebImageManager.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 #import "SongTableViewFormatter.h"
-#import "FrostedSideBarHelper.h"
 #import "PreferredFontSizeUtility.h"
 #import "UIImage+colorImages.h"
+#import "PlaybackModelSingleton.h"
+#import "UIColor+SystemTintColor.h"
+#import "UIColor+ColorComparison.h"
 
 @interface MasterSongsTableViewController : UITableViewController <UISearchBarDelegate>
-- (IBAction)expandableMenuSelected:(id)sender;
 @end

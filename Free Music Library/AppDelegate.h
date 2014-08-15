@@ -10,6 +10,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
 
+#import "AppDelegateSetupHelper.h"
+
 #import "Song.h"
 #import "Album.h"
 #import "Artist.h"
@@ -21,8 +23,9 @@
 #import "AppEnvironmentConstants.h"
 #import "UIColor+SystemTintColor.h"
 #import "YouTubeMoviePlayerSingleton.h"
+#import "PlaybackModelSingleton.h"
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, AVAudioSessionDelegate, AVAudioPlayerDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 
