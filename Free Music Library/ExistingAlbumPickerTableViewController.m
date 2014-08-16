@@ -94,8 +94,8 @@ static BOOL PRODUCTION_MODE;
     if([album isEqual:_usersCurrentAlbum]){  //disable this cell
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.userInteractionEnabled = NO;
-        cell.textLabel.enabled = NO;
-        cell.detailTextLabel.enabled = NO;
+        cell.textLabel.textColor = [UIColor defaultSystemTintColor];
+        cell.detailTextLabel.textColor = [UIColor defaultSystemTintColor];
     }
     //init cell fields
     cell.textLabel.attributedText = [AlbumTableViewFormatter formatAlbumLabelUsingAlbum:album];

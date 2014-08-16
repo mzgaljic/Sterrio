@@ -16,6 +16,7 @@
 #import "AlbumTableViewFormatter.h"
 #import "PlaybackModelSingleton.h"
 #import "UIImage+colorImages.h"
+#import "UIColor+SystemTintColor.h"
 
 @interface ExistingAlbumPickerTableViewController : UITableViewController
 

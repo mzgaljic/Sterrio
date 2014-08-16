@@ -419,7 +419,6 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 - (void)newGenreHasBeenChosen:(NSNotification *)notification
 {
     if([notification.name isEqualToString:@"new genre has been chosen"]){
-        NSString *genreName = (NSString *)notification.object;
         _currentGenreCode = [GenreConstants genreStringToCode:(NSString *)notification.object];
         [self.tableView reloadData];
     }

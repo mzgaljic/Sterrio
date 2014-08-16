@@ -10,6 +10,9 @@
 #import "GenreSearchDelegate.h"
 #import "GenreConstants.h"
 #import "NSString+WhiteSpace_Utility.h"
+//#import "NSString+Levenshtein.h"
+#import "NSString+Levenshtein_Distance.h"
+#import "LevenshteinDistanceItem.h"
 
 @interface GenreSearchService : NSObject
 

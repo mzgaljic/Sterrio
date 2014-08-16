@@ -34,12 +34,7 @@ static BOOL PRODUCTION_MODE;
 {
     [AppDelegateSetupHelper setProductionModeValue];
     
-    NSArray *songs = [NSMutableArray arrayWithArray:[Song loadAll]];
-    NSArray *albums = [NSMutableArray arrayWithArray:[Album loadAll]];
     if(!PRODUCTION_MODE){
-        songs = nil;
-        albums = nil;
-        
         //make the fake contents
         Artist *artist1 = [[Artist alloc] init];
         artist1.artistName = @"Leona Lewis";

@@ -11,6 +11,7 @@
 #import "Album.h"
 #import "ArtistTableViewFormatter.h"
 #import "SDWebImageManager.h"
+#import "UIColor+SystemTintColor.h"
 
 @interface ExistingArtistPickerTableViewController : UITableViewController
 

@@ -28,6 +28,15 @@ static int const UPDATE_ALBUM = 2;
     return self;
 }
 
+- (void)dealloc
+{
+    _albumName = nil;
+    _albumArtFileName = nil;
+    _artist = nil;
+    _albumSongs = nil;
+    _albumID = nil;
+}
+
 //custom setter method
 - (void)setArtist:(Artist *)artist
 {

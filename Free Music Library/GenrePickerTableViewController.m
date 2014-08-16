@@ -9,7 +9,8 @@
 #import "GenrePickerTableViewController.h"
 
 @interface GenrePickerTableViewController ()
-@property (nonatomic, strong) NSArray *allGenreStrings;
+@property (nonatomic, strong) NSDictionary *dictToGenreByLetter;
+@property (nonatomic, strong) NSArray *dictKeys;  //key is names of headers (ie: 'A', 'B', 'C'...)
 @property (nonatomic, strong) NSString *usersCurrentGenreString;
 
 @property (nonatomic, strong) UISearchBar *searchBar;
@@ -21,6 +22,7 @@
 @end
 
 @implementation GenrePickerTableViewController
+@synthesize searchResults = _searchResults;
 
 - (id)initWithGenreCode:(int)aGenreCode notificationNameToPost:(NSString *)notifName;
 {
@@ -35,15 +37,44 @@
     return self;
 }
 
+- (void)setSearchResults:(NSArray *)searchResults
+{
+    if(searchResults != nil)
+        _searchResults = searchResults;
+    else
+        _searchResults = [NSMutableArray array];
+}
+
+- (NSDictionary *)setUpDictionaryUsingAllGenreStrings
+{
+    NSArray *list = [GenreConstants alphabeticallySortedUserPresentableArrayOfGenreStringsAvailable];
+    //will only get 26 letters of alphabet for english letters. will need to modify for other languages
+    
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    for (NSString *word in list) {
+        NSString *firstLetter = [[word substringToIndex:1] uppercaseString];
+        NSMutableArray *letterList = [dict objectForKey:firstLetter];
+        if (!letterList) {
+            letterList = [NSMutableArray array];
+            [dict setObject:letterList forKey:firstLetter];
+        }
+        [letterList addObject:word];
+    }
+    return dict;
+}
+
 #pragma mark - View Controller life cycle
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _allGenreStrings = [GenreConstants alphabeticallySortedUserPresentableArrayOfGenreStringsAvailable];
+    _dictToGenreByLetter = [self setUpDictionaryUsingAllGenreStrings];
+    _dictKeys = [[_dictToGenreByLetter allKeys] sortedArrayUsingSelector:@selector(compare:)];
     
-    _searchResults = [NSMutableArray array];
+    self.searchResults = [NSMutableArray array];
     _navBar.title = @"All Genres";
     [GenreSearchService setDelegate:self];
+    
+    self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
     
     // This will remove extra separators from tableview
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -79,7 +110,7 @@
 #pragma mark - Genre Search Delegate 
 - (void)genreSearchDidCompleteWithResults:(NSArray *)arrayOfGenreStrings
 {
-    _searchResults = arrayOfGenreStrings;
+    self.searchResults = arrayOfGenreStrings;
     [self.tableView reloadData];
 }
 
@@ -102,15 +133,9 @@
     [_searchBar setShowsCancelButton:YES animated:YES];
     
     //now try to find results using old search term (if there is one)
-    if(searchBar.text.length == 0){
-        _displaySearchResults = NO;
-        _navBar.title = @"Search";
-    }
-    else{
-        _navBar.title = @"Search Results";
-        [GenreSearchService searchAllGenresForGenreString:searchBar.text];
-        _displaySearchResults = YES;
-    }
+    _navBar.title = @"Search Results";
+    [GenreSearchService searchAllGenresForGenreString:searchBar.text];
+    _displaySearchResults = NO;
 }
 
 //user tapped "Search"
@@ -129,7 +154,7 @@
     //dismiss search bar and hide cancel button
     [_searchBar setShowsCancelButton:NO animated:YES];
     [_searchBar resignFirstResponder];
-    _searchResults = [NSMutableArray array];
+    self.searchResults = [NSMutableArray array];
     _displaySearchResults = NO;
     [self.tableView reloadData];
 }
@@ -138,7 +163,7 @@
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     if(searchText.length == 0){
-        _displaySearchResults = NO;
+        _displaySearchResults = YES;  //mark was here
         _navBar.title = @"Search";
     }
     else{
@@ -152,15 +177,23 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 1;
+    if(_displaySearchResults)
+        return 1;
+    else
+        return _dictKeys.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if(_displaySearchResults)
         return _searchResults.count;  //user is searching and we need to show search results in table
-    else
-        return _allGenreStrings.count;  //user browsing all genres
+    else{
+        NSString *key = _dictKeys[section];  //'A', 'B', etc..
+        
+        //now grab # of values in this section
+        NSArray *keyValues = _dictToGenreByLetter[key];
+        return keyValues.count;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -171,14 +204,19 @@
     // Configure the cell...
     if(_displaySearchResults)
         aGenreString = [_searchResults objectAtIndex:indexPath.row];
-    else
-        aGenreString = [_allGenreStrings objectAtIndex: indexPath.row];
+    else{
+        //determine which section of the table we are populating, get the appropriate array from the dictionary
+        NSString *key = _dictKeys[indexPath.section];
+        NSArray *keyValues = _dictToGenreByLetter[key];
+        //now just get the genre from the array
+        aGenreString = keyValues[indexPath.row];
+    }
     
     if([aGenreString isEqual:_usersCurrentGenreString]){  //disable this cell
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.userInteractionEnabled = NO;
-        cell.textLabel.enabled = NO;
-        cell.detailTextLabel.enabled = NO;
+        cell.textLabel.textColor = [UIColor defaultSystemTintColor];
+        cell.detailTextLabel.textColor = [UIColor defaultSystemTintColor];
     } else{
         cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         cell.userInteractionEnabled = YES;
@@ -212,10 +250,46 @@
     NSString *chosenGenre;
     if(_displaySearchResults)
         chosenGenre = _searchResults[indexPath.row];
-    else
-        chosenGenre = _allGenreStrings[indexPath.row];
+    else{
+        //determine which section of the table we are populating, get the appropriate array from the dictionary
+        NSString *key = _dictKeys[indexPath.section];
+        NSArray *keyValues = _dictToGenreByLetter[key];
+        //now just get the genre from the array
+        chosenGenre = keyValues[indexPath.row];
+    }
     [[NSNotificationCenter defaultCenter] postNotificationName:_notificationName object:chosenGenre];
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+
+#pragma mark - Table View Data Source -'side letters' stuff
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.0f;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if(_displaySearchResults)
+        return nil;
+    else
+        return [[[UILocalizedIndexedCollation currentCollation] sectionTitles] objectAtIndex:section];
+}
+
+- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
+{
+    if(_displaySearchResults)
+        return nil;
+    else
+        return _dictKeys;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
+{
+    if(_displaySearchResults)
+        return 0;
+    else
+        return [[UILocalizedIndexedCollation currentCollation] sectionForSectionIndexTitleAtIndex:index];
 }
 
 #pragma mark - Rotation status bar methods

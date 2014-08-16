@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <objc/runtime.h>
+#import "StackController.h"
 #import "AppEnvironmentConstants.h"
 #import "AlbumArtUtilities.h"
 #import "SongItemViewController.h"
@@ -21,5 +23,10 @@
 #import "UIColor+SystemTintColor.h"
 #import "UIColor+ColorComparison.h"
 
+@class StackController;
 @interface MasterSongsTableViewController : UITableViewController <UISearchBarDelegate>
+{
+    StackController *stackController;
+}
+
 @end

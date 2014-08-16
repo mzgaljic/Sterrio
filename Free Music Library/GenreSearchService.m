@@ -25,15 +25,32 @@ static id<GenreSearchDelegate>delegate;
         searchString = [searchString removeIrrelevantWhitespace];
         NSArray *arrayOfGenreStrings = [GenreConstants unsortedRawArrayOfGenreStringsAvailable];
         NSMutableArray *resultArray = [NSMutableArray array];
+        NSMutableArray *levenshteinDistanceObjects = [NSMutableArray array];
+        NSInteger thisDistance;
+        LevenshteinDistanceItem *item;
         
-        for(NSString *aGenreString in arrayOfGenreStrings)  //iterate through genre strings
-        {
-            NSRange nameRange = [aGenreString rangeOfString:searchString options:NSCaseInsensitiveSearch];
-            if(nameRange.location != NSNotFound)
-                [resultArray addObject:aGenreString];
+        for(NSString *aGenreString in arrayOfGenreStrings){
+            thisDistance = [aGenreString levenshteinDistanceToString:searchString];
+            item = [[LevenshteinDistanceItem alloc] init];
+            item.string = aGenreString;
+            item.distance = thisDistance;
+            [levenshteinDistanceObjects addObject: item];
+        }
+        //sort by distance (best match first in array), ascending order.
+        [GenreSearchService sortLevenshteinDistanceResults:&levenshteinDistanceObjects];
+        
+        for(LevenshteinDistanceItem *item in levenshteinDistanceObjects){
+            if(item.distance > 18)  //distance limit in final resutls
+                break;
+            if(resultArray.count == 50)  //limit on total # of results
+                break;
+            
+            [resultArray addObject:item.string];
         }
         [resultArray removeObject:[GenreConstants noGenreSelectedGenreString]];
-        [GenreSearchService sortExistingGenreMutableArrayAlphabetically:&resultArray];
+        
+        //check for any 'special' genres that i want to map to specific search terms, even if they aren't very similar
+        [GenreSearchService addAnySpecialSearchResultMapping:&resultArray currentSearchTerm:&searchString];
         
         [delegate genreSearchDidCompleteWithResults:resultArray];
     }
@@ -44,9 +61,22 @@ static id<GenreSearchDelegate>delegate;
     delegate = aDelegate;
 }
 
-+ (void)sortExistingGenreMutableArrayAlphabetically:(NSMutableArray **)anArray
++ (void)sortLevenshteinDistanceResults:(NSMutableArray **)arrayOfLevenshteinDistanceItems
 {
-    [*anArray sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    NSSortDescriptor *highToLow = [NSSortDescriptor sortDescriptorWithKey:@"distance" ascending:YES];
+    [*arrayOfLevenshteinDistanceItems sortUsingDescriptors:[NSArray arrayWithObject:highToLow]];
+}
+
++ (void)addAnySpecialSearchResultMapping:(NSMutableArray **)arrayOfSearchResults currentSearchTerm:(NSString **)searchTerm
+{
+    NSArray *R_and_B = @[@"r and b", @"randb", @"r&b", @"r & b", @"r &b", @"r& b"];
+    for(NSString *item in R_and_B){
+        if([*searchTerm caseInsensitiveCompare:item] == NSOrderedSame){  //strings are exact match except possibly case
+            int genreCodeFor_R_and_B_sould = 15;
+            [*arrayOfSearchResults insertObject:[GenreConstants genreCodeToString:genreCodeFor_R_and_B_sould] atIndex:0];
+            break;
+        }
+    }
 }
 
 @end

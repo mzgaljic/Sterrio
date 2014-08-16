@@ -471,7 +471,6 @@ static BOOL sliderIsBeingTouched = NO;
     if(_needsToDisplayNewVideo){
         YouTubeMoviePlayerSingleton *singleton = [YouTubeMoviePlayerSingleton createSingleton];
         [singleton setAVPlayerInstance:[AVPlayer playerWithURL:videoUrl]];
-        player = [singleton AVPlayer];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playbackStarted) name:@"PlaybackStartedNotification" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupPlaybackTimeSlider) name:@"PlaybackStartedNotification" object:nil];

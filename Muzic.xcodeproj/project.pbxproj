@@ -14,6 +14,9 @@
 		8715AC4D19846AB900A51165 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8715AC4C19846AB900A51165 /* MessageUI.framework */; };
 		871A0B031980835D00BACD31 /* UIColor+LighterAndDarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 871A0B021980835D00BACD31 /* UIColor+LighterAndDarker.m */; };
 		87268E62198B580200FE51D7 /* YouTubeVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = 87268E61198B580200FE51D7 /* YouTubeVideo.m */; };
+		87270032199E815000D71204 /* NSString+Levenshtein_Distance.m in Sources */ = {isa = PBXBuildFile; fileRef = 87270031199E815000D71204 /* NSString+Levenshtein_Distance.m */; };
+		87270035199E820700D71204 /* LevenshteinDistanceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 87270034199E820700D71204 /* LevenshteinDistanceItem.m */; };
+		87270038199EB90500D71204 /* StackController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87270037199EB90500D71204 /* StackController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		8728B788194959CE00565BDA /* Playlist.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B787194959CE00565BDA /* Playlist.m */; };
 		8728B78B194959E500565BDA /* Artist.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B78A194959E500565BDA /* Artist.m */; };
 		8728B794194964AB00565BDA /* FileIOConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 8728B793194964AB00565BDA /* FileIOConstants.m */; };
@@ -124,6 +127,12 @@
 		871A0B021980835D00BACD31 /* UIColor+LighterAndDarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIColor+LighterAndDarker.m"; path = "../UIColor+LighterAndDarker.m"; sourceTree = "<group>"; };
 		87268E60198B580200FE51D7 /* YouTubeVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YouTubeVideo.h; sourceTree = "<group>"; };
 		87268E61198B580200FE51D7 /* YouTubeVideo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YouTubeVideo.m; sourceTree = "<group>"; };
+		87270030199E815000D71204 /* NSString+Levenshtein_Distance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Levenshtein_Distance.h"; sourceTree = "<group>"; };
+		87270031199E815000D71204 /* NSString+Levenshtein_Distance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Levenshtein_Distance.m"; sourceTree = "<group>"; };
+		87270033199E820700D71204 /* LevenshteinDistanceItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LevenshteinDistanceItem.h; sourceTree = "<group>"; };
+		87270034199E820700D71204 /* LevenshteinDistanceItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LevenshteinDistanceItem.m; sourceTree = "<group>"; };
+		87270036199EB90500D71204 /* StackController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StackController.h; sourceTree = "<group>"; };
+		87270037199EB90500D71204 /* StackController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StackController.m; sourceTree = "<group>"; };
 		8728B786194959CE00565BDA /* Playlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Playlist.h; sourceTree = "<group>"; };
 		8728B787194959CE00565BDA /* Playlist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Playlist.m; sourceTree = "<group>"; };
 		8728B789194959E500565BDA /* Artist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Artist.h; sourceTree = "<group>"; };
@@ -343,6 +352,15 @@
 			name = "Editing a string";
 			sourceTree = "<group>";
 		};
+		87270039199EB9DB00D71204 /* LIFO Stack Controller - ViewControllers w/ pics */ = {
+			isa = PBXGroup;
+			children = (
+				87270036199EB90500D71204 /* StackController.h */,
+				87270037199EB90500D71204 /* StackController.m */,
+			);
+			name = "LIFO Stack Controller - ViewControllers w/ pics";
+			sourceTree = "<group>";
+		};
 		87334408198D8349002B9E18 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
@@ -368,6 +386,8 @@
 				874C535E19844201000382FA /* NSObject+ObjectUUID.m */,
 				87A453DA199C11E3004D1319 /* NSObject+Device_Name.h */,
 				87A453DB199C11E3004D1319 /* NSObject+Device_Name.m */,
+				87270030199E815000D71204 /* NSString+Levenshtein_Distance.h */,
+				87270031199E815000D71204 /* NSString+Levenshtein_Distance.m */,
 			);
 			name = Categories;
 			path = "Free Music Library";
@@ -407,6 +427,7 @@
 				870EDAE7197F4EB0001901B9 /* Editing Field View */,
 				8750157D198C29CC00382945 /* Adding Music To Library */,
 				8740724019798130004C5C57 /* GUI consistent style helpers */,
+				87270039199EB9DB00D71204 /* LIFO Stack Controller - ViewControllers w/ pics */,
 			);
 			name = GUI;
 			sourceTree = "<group>";
@@ -799,6 +820,8 @@
 			isa = PBXGroup;
 			children = (
 				87A9AF50199D8CCE005B9A5B /* GenreSearchDelegate.h */,
+				87270033199E820700D71204 /* LevenshteinDistanceItem.h */,
+				87270034199E820700D71204 /* LevenshteinDistanceItem.m */,
 				87A9AF51199DA36F005B9A5B /* GenreSearchService.h */,
 				87A9AF52199DA36F005B9A5B /* GenreSearchService.m */,
 				87AF35CE1989679C005882B6 /* YouTubeVideoSearchDelegate.h */,
@@ -994,6 +1017,7 @@
 				8780134F199C854E004727A0 /* ExistingArtistPickerTableViewController.m in Sources */,
 				87A453C9199C0891004D1319 /* ELCAsset.m in Sources */,
 				87A453D8199C0891004D1319 /* UIImage+EYFixOrientation.m in Sources */,
+				87270032199E815000D71204 /* NSString+Levenshtein_Distance.m in Sources */,
 				87A453CD199C0891004D1319 /* ELCImagePickerController.m in Sources */,
 				8733440B198DC915002B9E18 /* UIImage+colorImages.m in Sources */,
 				87A110591964A67000270528 /* Song.m in Sources */,
@@ -1014,6 +1038,7 @@
 				878519D21994327C00A573A9 /* Reachability.m in Sources */,
 				87334418198E0332002B9E18 /* UIColor+SystemTintColor.m in Sources */,
 				87E1C5A0193A5E8B009AE399 /* GenreConstants.m in Sources */,
+				87270035199E820700D71204 /* LevenshteinDistanceItem.m in Sources */,
 				871A0B031980835D00BACD31 /* UIColor+LighterAndDarker.m in Sources */,
 				87480DB9192C1FBD005CC0A4 /* AppDelegate.m in Sources */,
 				87A453CA199C0891004D1319 /* ELCAssetCell.m in Sources */,
@@ -1021,6 +1046,7 @@
 				8728B794194964AB00565BDA /* FileIOConstants.m in Sources */,
 				87D47DA419345D8E0057D49B /* MasterArtistsTableViewController.m in Sources */,
 				8772517519888F1A00A2156B /* YouTubeVideoSearchService.m in Sources */,
+				87270038199EB90500D71204 /* StackController.m in Sources */,
 				87A453CE199C0891004D1319 /* ELCOverlayImageView.m in Sources */,
 				879112FF197EF90E00DFC2DB /* PlaylistTableViewFormatter.m in Sources */,
 				8728B788194959CE00565BDA /* Playlist.m in Sources */,
@@ -1192,7 +1218,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/Manually",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Free Music Library/Muzic-Prefix.pch";
@@ -1218,7 +1243,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/Manually",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Free Music Library/Muzic-Prefix.pch";

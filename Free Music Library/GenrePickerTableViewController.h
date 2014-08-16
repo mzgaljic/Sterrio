@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "SDWebImageManager.h"
+#import "UIColor+SystemTintColor.h"
 #import "GenreConstants.h"
 #import "GenreSearchService.h"
 #import "ArtistTableViewFormatter.h"  //using this since the artist tab also is only text...so its a similar format style

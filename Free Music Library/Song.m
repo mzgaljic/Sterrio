@@ -32,6 +32,16 @@ static int const UPDATE_SONG = 2;
     return self;
 }
 
+- (void)dealloc
+{
+    _songID = nil;
+    _songName = nil;
+    _youtubeId = nil;
+    _albumArtFileName = nil;
+    _artist = nil;
+    _album = nil;
+}
+
 //custom property setter
 - (void)setAlbum:(Album *)album
 {

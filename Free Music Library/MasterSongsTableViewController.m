@@ -164,6 +164,7 @@ static BOOL PRODUCTION_MODE;
 {
     [super viewWillAppear:animated];
     //init tableView model
+    _allSongsInLibrary = nil;
     _allSongsInLibrary = [NSMutableArray arrayWithArray:[Song loadAll]];
     
     [self setUpSearchBar];  //must be called in viewWillAppear, and after allSongsLibrary is refreshed
@@ -201,7 +202,7 @@ static BOOL PRODUCTION_MODE;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    stackController = [[StackController alloc] init];
     // This will remove extra separators from tableview
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
@@ -239,10 +240,12 @@ static BOOL PRODUCTION_MODE;
         return _allSongsInLibrary.count;  //user browsing library
 }
 
+static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SongItemCell" forIndexPath:indexPath];
     
+    /**
     Song *song;
     // Configure the cell...
     if(_displaySearchResults)
@@ -268,6 +271,63 @@ static BOOL PRODUCTION_MODE;
                              completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL){
                                  cell.imageView.image = image;
                              }];
+    
+     */
+    //---------------------------------------
+    
+    if (cell == nil)
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"SongItemCell"];
+    else
+    {
+        // If an existing cell is being reused, reset the image to the default until it is populated.
+        // Without this code, previous images are displayed against the new people during rapid scrolling.
+        cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
+    }
+    
+    // Set up other aspects of the cell content.
+    Song *song;
+    if(_displaySearchResults)
+        song = [_searchResults objectAtIndex:indexPath.row];
+    else
+        song = [_allSongsInLibrary objectAtIndex: indexPath.row];
+    
+    //init cell fields
+    cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
+    if(! [SongTableViewFormatter songNameIsBold])
+        cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
+    [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
+    
+    if([[PlaybackModelSingleton createSingleton].nowPlayingSong isEqual:song])
+        cell.textLabel.textColor = [UIColor defaultSystemTintColor];
+    else
+        cell.textLabel.textColor = [UIColor blackColor];
+    
+    // Store a reference to the current cell that will enable the image to be associated with the correct
+    // cell, when the image is subsequently loaded asynchronously.
+    objc_setAssociatedObject(cell,
+                             &songIndexPathAssociationKey,
+                             indexPath,
+                             OBJC_ASSOCIATION_RETAIN);
+    
+    // Queue a block that obtains/creates the image and then loads it into the cell.
+    // The code block will be run asynchronously in a last-in-first-out queue, so that when
+    // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
+    [stackController addBlock:^{
+        UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:[AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]]];
+        albumArt = [AlbumArtUtilities imageWithImage:albumArt scaledToSize:CGSizeMake(cell.frame.size.height, cell.frame.size.height)];
+        // The block will be processed on a background Grand Central Dispatch queue.
+        // Therefore, ensure that this code that updates the UI will run on the main queue.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSIndexPath *cellIndexPath = (NSIndexPath *)objc_getAssociatedObject(cell, &songIndexPathAssociationKey);
+            if ([indexPath isEqual:cellIndexPath]) {
+                // Only set cell image if the cell currently being displayed is the one that actually required this image.
+                // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
+                cell.imageView.image = albumArt;
+            }
+        });
+    }];
+    //--------------------------------------------------------------
+    
     return cell;
 }
 

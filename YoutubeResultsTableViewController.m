@@ -37,6 +37,20 @@ static NSString *Network_Error_Loading_More_Results_Msg = @"Network error, tap t
 static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 #pragma mark - Miscellaneous
+- (void)dealloc
+{
+    _searchBar = nil;
+    _searchResults = nil;
+    _searchSuggestions = nil;
+    _yt = nil;
+    _lastSuccessfullSearchString = nil;
+    _viewOnTopOfTable = nil;
+    _cancelButton = nil;
+    _scrollToTopButton = nil;
+    start = nil; finish = nil;
+    NSLog(@"Dealloc'ed in %@", NSStringFromClass([YoutubeResultsTableViewController class]));
+}
+
 - (void)setProductionModeValue
 {
     PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
@@ -87,6 +101,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     [super viewDidDisappear:animated];
     self.navigationController.navigationBar.translucent = NO;
     [[NSNotificationCenter defaultCenter]removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+    _yt = nil;
 }
 
 - (void)viewDidDisappear:(BOOL)animated
