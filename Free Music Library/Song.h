@@ -1,43 +1,36 @@
 //
 //  Song.h
-//  Free Music Library
+//  Muzic
 //
-//  Created by Mark Zgaljic on 6/11/14.
+//  Created by Mark Zgaljic on 8/22/14.
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
-#import "Album.h"
-#import "Artist.h"
-#import "FileIOConstants.h"
-#import "NSString+smartSort.h"
-#import "AppEnvironmentConstants.h"
-#import "NSObject+ObjectUUID.h"
+#import <CoreData/CoreData.h>
 
-@class Album;
-@class Artist;
+@class Album, Artist, Playlist;
 
-@interface Song : NSObject <NSCoding>
+@interface Song : NSManagedObject
 
-@property(nonatomic, strong) NSString *songName;
-@property(nonatomic, strong) NSString *youtubeId;
-@property(nonatomic, strong, readonly) NSString *albumArtFileName;
+@property (nonatomic, retain) NSString * albumArtFileName;
+@property (nonatomic, retain) NSNumber * associatedWithAlbum;
+@property (nonatomic, retain) NSNumber * genreCode;
+@property (nonatomic, retain) NSNumber * nowPlaying;
+@property (nonatomic, retain) NSString * smartSortSongName;
+@property (nonatomic, retain) NSString * song_id;
+@property (nonatomic, retain) NSString * songName;
+@property (nonatomic, retain) NSString * youtube_id;
+@property (nonatomic, retain) Album *album;
+@property (nonatomic, retain) Artist *artist;
+@property (nonatomic, retain) NSSet *playlistIAmIn;
+@end
 
-@property(nonatomic, strong) Artist *artist;
-@property(nonatomic, strong) Album *album;
-@property(nonatomic, assign) int genreCode;  //album genre will override this value if this song belongs to an album!
-@property(nonatomic, assign, readonly) BOOL associatedWithAlbum;
-@property(nonatomic, strong, readonly) NSString *songID;
+@interface Song (CoreDataGeneratedAccessors)
 
-+ (NSArray *)loadAll;
-+ (void)reSortModel;
-
-/**Song objects need to be saved after being created if they are to appear in the model.*/
-- (BOOL)saveSong;
-- (BOOL)deleteSong;
-- (BOOL)updateExistingSong;
-
-- (BOOL)setAlbumArt:(UIImage *)image;
-- (void)removeAlbumArt;
+- (void)addPlaylistIAmInObject:(Playlist *)value;
+- (void)removePlaylistIAmInObject:(Playlist *)value;
+- (void)addPlaylistIAmIn:(NSSet *)values;
+- (void)removePlaylistIAmIn:(NSSet *)values;
 
 @end

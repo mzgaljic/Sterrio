@@ -7,15 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "FrostedSideBarHelper.h"
+#import "CoreDataTableViewController.h"
 #import "AppEnvironmentConstants.h"
 #import "Album.h"
+#import "Song+Utilities.h"
 #import "ArtistTableViewFormatter.h"
+#import "NSString+smartSort.h"
 #import "SDWebImageManager.h"
+#import "PlaybackModelSingleton.h"
+#import "YouTubeMoviePlayerSingleton.h"
 
-@interface MasterArtistsTableViewController : UITableViewController
-
-@property (nonatomic, strong) NSMutableArray *results;  //for searching tableView?
-@property (nonatomic, assign) int selectedRowIndexValue;
+@interface MasterArtistsTableViewController : CoreDataTableViewController <UISearchBarDelegate>
 
 @end

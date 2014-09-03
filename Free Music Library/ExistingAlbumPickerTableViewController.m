@@ -16,7 +16,7 @@
 @implementation ExistingAlbumPickerTableViewController
 @synthesize albums;
 static BOOL PRODUCTION_MODE;
-
+/*
 //using custom init here
 - (id)initWithCurrentAlbum:(Album *)anAlbum
 {
@@ -164,6 +164,6 @@ static BOOL PRODUCTION_MODE;
     else
         return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
 }
-
+*/
 
 @end

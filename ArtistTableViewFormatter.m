@@ -43,24 +43,28 @@
 {
     Artist *artist = anArtistInstance;
     int songsInAlbumsCount = 0;
+    
     //count all the songs that are associated with albums for this artist
-    for(int i = 0; i < artist.allAlbums.count; i++){
-        Album *anAlbum = artist.allAlbums[i];
-        for(int k = 0; k < anAlbum.albumSongs.count; k++){
+    NSSet *artistAlbums = artist.albums;
+    NSSet *albumSongs;
+    for(Album *anAlbum in artistAlbums) {
+        albumSongs = anAlbum.albumSongs;
+        for(int i = 0; i < albumSongs.count; i++){
             songsInAlbumsCount++;
         }
     }
     
     NSString *albumPart, *songPart;
-    if((int)artist.allAlbums.count == 1)
+    if((int)artist.albums.count == 1)
         albumPart = @"1 Album";
     else
-        albumPart = [NSString stringWithFormat:@"%d Albums", (int)artist.allAlbums.count];
+        albumPart = [NSString stringWithFormat:@"%d Albums", (int)artist.albums.count];
     
-    if((int)artist.allSongs.count + songsInAlbumsCount == 1)
+    if((int)artist.standAloneSongs.count + songsInAlbumsCount == 1)
         songPart = @"1 Song";
     else
-        songPart = [NSString stringWithFormat:@"%d Songs", (int)artist.allSongs.count + songsInAlbumsCount];
+        songPart = [NSString stringWithFormat:@"%d Songs", (int)artist.standAloneSongs.count
+                                                                            + songsInAlbumsCount];
     
     NSMutableString *finalDetailLabel = [NSMutableString stringWithString:albumPart];
     [finalDetailLabel appendString:@" "];

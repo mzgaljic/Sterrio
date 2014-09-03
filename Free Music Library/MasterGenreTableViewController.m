@@ -14,6 +14,7 @@
 @end
 
 @implementation MasterGenreTableViewController
+/*
 @synthesize allSongsInLibrary = _allSongsInLibrary;
 static BOOL PRODUCTION_MODE;
 
@@ -175,5 +176,5 @@ static BOOL PRODUCTION_MODE;
 {
     return self.tabBarController.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame);
 }
-
+*/
 @end

@@ -12,5 +12,6 @@
 
 //code by Jamz Tang, found at: http://blog.ioscodesnippet.com/post/9247898208/creating-a-placeholder-uiimage-dynamically-with-color
 + (UIImage *)imageWithColor:(UIColor *)color width:(float)widthValue height:(float)heightValue;
++ (UIImage*)colorOpaquePartOfImage:(UIColor*)color :(UIImage*)image;
 
 @end

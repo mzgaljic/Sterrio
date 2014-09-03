@@ -305,6 +305,7 @@
                     <navigationItem key="navigationItem" title="Albums" id="Koe-dd-BbI"/>
                     <connections>
                         <segue destination="Lxg-v4-Z1q" kind="modal" identifier="settingsSegue" modalTransitionStyle="coverVertical" id="Mvp-5d-lNL"/>
+                        <segue destination="V5K-xF-P6M" kind="modal" identifier="addMusicToLibSegue" modalTransitionStyle="coverVertical" id="pPM-be-vV0"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="el1-qp-blA" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -367,15 +368,9 @@
                             <outlet property="delegate" destination="eYp-4z-EJP" id="Ma6-NH-1zm"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Playlists" id="XaG-qV-nzD">
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="kaI-z5-q5r">
-                            <connections>
-                                <action selector="addButtonPressed:" destination="eYp-4z-EJP" id="ajv-N2-OCZ"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="Playlists" id="XaG-qV-nzD"/>
                     <connections>
-                        <segue destination="seh-WX-nMz" kind="modal" identifier="playlistSongItemPickerSegue" modalTransitionStyle="coverVertical" id="0pK-W3-xB8"/>
+                        <segue destination="seh-WX-nMz" kind="modal" identifier="playlistSongAdderPickerSegue" modalTransitionStyle="coverVertical" id="0pK-W3-xB8"/>
                         <segue destination="Lxg-v4-Z1q" kind="modal" identifier="settingsSegue" modalTransitionStyle="coverVertical" id="XN9-6a-i4d"/>
                     </connections>
                 </tableViewController>
@@ -427,14 +422,14 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="playlist name" id="SZ4-h5-jo6">
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="sbP-Di-MNU">
+                        <barButtonItem key="rightBarButtonItem" title="Item" systemItem="add" id="f6N-PD-nkL">
                             <connections>
-                                <action selector="addButtonPressed:" destination="zmX-nC-18m" id="3Rj-pC-Rp0"/>
+                                <action selector="addButtonPressed:" destination="zmX-nC-18m" id="12F-bD-7Gk"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="addBarButton" destination="sbP-Di-MNU" id="qeQ-Sh-mDD"/>
+                        <outlet property="addBarButton" destination="f6N-PD-nkL" id="gaP-oB-a1n"/>
                         <outlet property="navBar" destination="SZ4-h5-jo6" id="PSD-fV-8cT"/>
                         <segue destination="seh-WX-nMz" kind="modal" identifier="addMoreSongsToPlaylist" modalTransitionStyle="coverVertical" id="7Sy-qq-35y"/>
                     </connections>
@@ -508,6 +503,7 @@
                     <navigationItem key="navigationItem" title="Artists" id="Y7c-Np-suQ"/>
                     <connections>
                         <segue destination="Lxg-v4-Z1q" kind="modal" identifier="settingsSegue" modalTransitionStyle="coverVertical" id="cmg-e5-xSB"/>
+                        <segue destination="V5K-xF-P6M" kind="modal" identifier="addMusicToLibSegue" modalTransitionStyle="coverVertical" id="Ng7-YK-K4e"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DgJ-kO-zQg" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -581,10 +577,10 @@
             </objects>
             <point key="canvasLocation" x="2015" y="1289"/>
         </scene>
-        <!--Playlist Song Item Table View Controller - Pick Songs-->
+        <!--Playlist Song Adder Table View Controller - Pick Songs-->
         <scene sceneID="GG1-dK-p7c">
             <objects>
-                <tableViewController extendedLayoutIncludesOpaqueBars="YES" id="Nk6-be-5wM" customClass="PlaylistSongItemTableViewController" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="playlistSongAdderView" extendedLayoutIncludesOpaqueBars="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Nk6-be-5wM" customClass="PlaylistSongAdderTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="PnO-K3-ZrR">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -660,7 +656,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AVZ-Oe-miG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2629" y="716"/>
+            <point key="canvasLocation" x="2615" y="716"/>
         </scene>
         <!--Master Editing Song Table View Controller - Edit Song-->
         <scene sceneID="XcI-a6-wBT">
@@ -986,7 +982,7 @@
             </objects>
             <point key="canvasLocation" x="3261" y="-1358"/>
         </scene>
-        <!--Youtube Results Table View Controller-->
+        <!--Youtube Results Table View Controller - Add Music-->
         <scene sceneID="4KX-bh-cq6">
             <objects>
                 <tableViewController id="s8d-Lc-Gkj" customClass="YoutubeResultsTableViewController" sceneMemberID="viewController">
@@ -995,33 +991,42 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="youtubeResultCell" textLabel="0UP-2H-jlR" detailTextLabel="ZkF-1F-pKH" style="IBUITableViewCellStyleSubtitle" id="Tmz-oB-veX">
-                                <rect key="frame" x="0.0" y="119" width="320" height="44"/>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="youtubeResultCell" rowHeight="85" id="Tmz-oB-veX" customClass="CustomYoutubeTableViewCell">
+                                <rect key="frame" x="0.0" y="119" width="320" height="85"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Tmz-oB-veX" id="E6x-Yk-50v">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="84"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="0UP-2H-jlR">
-                                            <rect key="frame" x="15" y="3" width="34" height="22"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="if9-zZ-fs5">
+                                            <rect key="frame" x="2" y="2" width="142" height="80"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        </imageView>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="QxY-xQ-Ffm">
+                                            <rect key="frame" x="152" y="20" width="170" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Detail" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ZkF-1F-pKH">
-                                            <rect key="frame" x="15" y="25" width="32" height="15"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="EIo-UR-IOF">
+                                            <rect key="frame" x="152" y="58" width="170" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
-                                <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <inset key="separatorInset" minX="2" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <connections>
+                                    <outlet property="videoChannel" destination="EIo-UR-IOF" id="ekf-aG-yoP"/>
+                                    <outlet property="videoThumbnail" destination="if9-zZ-fs5" id="uVB-J2-Pvd"/>
+                                    <outlet property="videoTitle" destination="QxY-xQ-Ffm" id="CSs-st-eeV"/>
+                                </connections>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="youtubeSuggsestCell" textLabel="TaK-SK-AqN" style="IBUITableViewCellStyleDefault" id="uic-nJ-JbA">
-                                <rect key="frame" x="0.0" y="163" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="204" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="uic-nJ-JbA" id="83B-dR-QPT">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -1039,7 +1044,7 @@
                                 <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="loadMoreButtonCell" textLabel="1Er-ur-g2A" style="IBUITableViewCellStyleDefault" id="M6t-L7-dFw">
-                                <rect key="frame" x="0.0" y="207" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="248" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="M6t-L7-dFw" id="kub-LB-wLp">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -1062,7 +1067,7 @@
                             <outlet property="delegate" destination="s8d-Lc-Gkj" id="QsJ-v7-68S"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="1ir-IH-i0n"/>
+                    <navigationItem key="navigationItem" title="Add Music" id="1ir-IH-i0n"/>
                     <connections>
                         <outlet property="navBar" destination="1ir-IH-i0n" id="1z7-dg-CB9"/>
                         <segue destination="KHe-Gr-T1s" kind="push" identifier="youtubeVideoPlaybackSegue" id="WWT-NP-dI2"/>
@@ -1070,7 +1075,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dhL-xL-Ac8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1647" y="-1937"/>
+            <point key="canvasLocation" x="-817" y="2639"/>
         </scene>
         <!--You Tube Video Playback Table View Controller-->
         <scene sceneID="rqC-Em-e60">
@@ -1135,42 +1140,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VZQ-ng-ARv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2098" y="-1937"/>
-        </scene>
-        <!--You Tube Video Playback View Controller-->
-        <scene sceneID="Un9-Ku-6KG">
-            <objects>
-                <viewController storyboardIdentifier="youtubeResultPlayer" id="HGk-Sg-seE" customClass="YouTubeVideoPlaybackViewController" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="YTo-Ls-jLQ">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" id="1V7-mx-da4">
-                                <rect key="frame" x="0.0" y="103" width="320" height="161"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                            </view>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="srC-HA-VUf">
-                                <rect key="frame" x="20" y="50" width="280" height="45"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="23"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="7If-uk-h2F">
-                        <barButtonItem key="backBarButtonItem" title="Search Results" id="D1V-HJ-B2W"/>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="videoTitleLabel" destination="srC-HA-VUf" id="WBz-v1-eMA"/>
-                        <outlet property="youTubeViewContainerView" destination="1V7-mx-da4" id="QAl-fc-o1v"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="ZYL-xg-PsY" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2098" y="-2871"/>
+            <point key="canvasLocation" x="-366" y="2639"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="b6l-XS-vJ8">
@@ -1188,7 +1158,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5v9-O3-xcH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1255" y="-1937"/>
+            <point key="canvasLocation" x="-1209" y="2639"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="tsg-jN-r8a">
@@ -1223,8 +1193,9 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="0pK-W3-xB8"/>
-        <segue reference="cmg-e5-xSB"/>
-        <segue reference="aQU-5c-2vO"/>
+        <segue reference="cob-ad-5Vf"/>
+        <segue reference="pPM-be-vV0"/>
+        <segue reference="XN9-6a-i4d"/>
+        <segue reference="7Sy-qq-35y"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -16,24 +16,12 @@
 
 @implementation PlaylistItemTableViewController
 @synthesize playlist = _playlist, numSongsNotAddedYet = _numSongsNotAddedYet, txtField = _txtField;
-static BOOL PRODUCTION_MODE;
 
 - (void) dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (NSMutableArray *) results
-{
-    if(! _results){
-        _results = [[NSMutableArray alloc] init];
-    }
-    return _results;
-}
-
-- (void)setProductionModeValue
-{
-    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
+    _playlist = nil;
+    _txtField = nil;
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -49,8 +37,8 @@ static BOOL PRODUCTION_MODE;
     else
         self.tabBarController.tabBar.hidden = NO;
 
-    _numSongsNotAddedYet = (int)([Song loadAll].count - _playlist.songsInThisPlaylist.count);
-    _lastTableViewModelCount = (int)_playlist.songsInThisPlaylist.count;
+    _numSongsNotAddedYet = (int)([self numberOfSongsInCoreDataModel] - _playlist.playlistSongs.count);
+    _lastTableViewModelCount = (int)_playlist.playlistSongs.count;
     
     if(_numSongsNotAddedYet == 0)
         _addBarButton.enabled = NO;
@@ -63,21 +51,22 @@ static BOOL PRODUCTION_MODE;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self setFetchedResultsControllerAndSortStyle];
     
     // This will remove extra separators from tableview
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    
-    [self setProductionModeValue];
     [self setUpNavBarItems];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    [super viewDidAppear:animated];
     self.navigationController.navigationBar.translucent = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:animated];
     self.navigationController.navigationBar.translucent = NO;
 }
 
@@ -99,23 +88,21 @@ static BOOL PRODUCTION_MODE;
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     [imageCache clearMemory];
 }
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return _playlist.songsInThisPlaylist.count;
-}
-
+#pragma mark - Table View Data Source
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"playlistSongItemCell" forIndexPath:indexPath];
-    
     // Configure the cell...
-    Song *song = [_playlist.songsInThisPlaylist objectAtIndex: indexPath.row];  //get song object at this index
+    Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    
+    if (cell == nil)
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"playlistSongItemCell"];
+    else
+    {
+        UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:[AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]]];
+        albumArt = [AlbumArtUtilities imageWithImage:albumArt scaledToSize:CGSizeMake(cell.frame.size.height, cell.frame.size.height)];
+        cell.imageView.image = albumArt;
+    }
     
     //init cell fields
     cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
@@ -123,15 +110,7 @@ static BOOL PRODUCTION_MODE;
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    CGSize size = [SongTableViewFormatter preferredSongAlbumArtSize];
-    [cell.imageView sd_setImageWithURL:[AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]
-                      placeholderImage:[UIImage imageWithColor:[UIColor clearColor] width:size.width height:size.height]
-                               options:SDWebImageCacheMemoryOnly
-                             completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL){
-                                 cell.imageView.image = image;
-                             }];
     return cell;
-
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -152,18 +131,15 @@ static BOOL PRODUCTION_MODE;
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
-        //delete song from the tableview data source
-        [_playlist.songsInThisPlaylist removeObjectAtIndex:indexPath.row];
+        //remove song from playlist only (not song from library in general)
+        NSMutableOrderedSet *set = [NSMutableOrderedSet orderedSetWithOrderedSet:_playlist.playlistSongs];
+        [set removeObjectAtIndex:indexPath.row];
+        _playlist.playlistSongs = set;
+        [[CoreDataManager sharedInstance] saveContext];
         
-        //update the playlist object from our data model (which is saved to disk).
-        [_playlist updateExistingPlaylist];
-        
-        //delete row from tableView (just the gui)
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-        
+        //keep track of how many songs i can still add in this playlist (so we know when to grey out plus button)
         _numSongsNotAddedYet++;
         _lastTableViewModelCount--;
-        
         if(_numSongsNotAddedYet == 0)
             _addBarButton.enabled = NO;
         else
@@ -177,13 +153,13 @@ static BOOL PRODUCTION_MODE;
     {
         [self.navBar setRightBarButtonItems:_originalRightBarButtonItems animated:YES];
         [self.navBar setLeftBarButtonItems:_originalLeftBarButtonItems animated:YES];
-        [self.navigationItem setHidesBackButton:NO animated:YES];
         self.navBar.titleView = nil;
         self.navBar.title = _playlist.playlistName;
         _originalLeftBarButtonItems = nil;
         _originalRightBarButtonItems = nil;
         
         [super setEditing:NO animated:YES];
+        [self.navigationItem setHidesBackButton:NO animated:YES];
         _currentlyEditingPlaylistName = NO;
     }
     else
@@ -204,10 +180,10 @@ static BOOL PRODUCTION_MODE;
 
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
 {
-    Song *item = [_playlist.songsInThisPlaylist objectAtIndex:fromIndexPath.row];
-    [_playlist.songsInThisPlaylist removeObject:item];
-    [_playlist.songsInThisPlaylist insertObject:item atIndex:toIndexPath.row];
-    [_playlist updateExistingPlaylist];
+    NSMutableOrderedSet *set = [NSMutableOrderedSet orderedSetWithOrderedSet:_playlist.playlistSongs];
+    [set moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:fromIndexPath.row] toIndex:toIndexPath.row];
+    _playlist.playlistSongs = set;
+    [[CoreDataManager sharedInstance] saveContext];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -220,7 +196,9 @@ static BOOL PRODUCTION_MODE;
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     //song was tapped
+#warning implementation needed
     if([[segue identifier] isEqualToString: @"playlistSongItemPlayingSegue"]){
+        /*
         int row = [(NSNumber *)sender intValue];
         
         //retrieve the song objects
@@ -230,79 +208,41 @@ static BOOL PRODUCTION_MODE;
         Playlist *selectedPlaylist;
         
         //setup properties in SongItemViewController.h
-        /**
-        [[segue destinationViewController] setANewSong:selectedSong];
-        [[segue destinationViewController] setANewAlbum:selectedAlbum];
-        [[segue destinationViewController] setANewArtist:selectedArtist];
-        [[segue destinationViewController] setANewPlaylist:selectedPlaylist];
-        */
+ 
+        //[[segue destinationViewController] setANewSong:selectedSong];
+        //[[segue destinationViewController] setANewAlbum:selectedAlbum];
+        //[[segue destinationViewController] setANewArtist:selectedArtist];
+        //[[segue destinationViewController] setANewPlaylist:selectedPlaylist];
          
         int songNumber = row + 1;  //remember, for loop started at 0!
         if(songNumber < 0 || songNumber == 0)  //object not found in song model
             songNumber = -1;
 
         //set songs in playlist, etc etc for the now playing viewcontroller
+         */
     }
-}
-
-- (NSAttributedString *)BoldAttributedStringWithString:(NSString *)aString withFontSize:(float)fontSize
-{
-    if(! aString)
-        return nil;
-    
-    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:aString];
-    [attributedText addAttribute: NSFontAttributeName value:[UIFont boldSystemFontOfSize:fontSize] range:NSMakeRange(0, [aString length])];
-    return attributedText;
-}
-
-//adds a space to the artist string, then it just changes the album string to grey.
-- (NSAttributedString *)generateDetailLabelAttrStringWithArtistName:(NSString *)artistString andAlbumName:(NSString *)albumString
-{
-    if(artistString == nil || albumString == nil)
-        return nil;
-    NSMutableString *newArtistString = [NSMutableString stringWithString:artistString];
-    [newArtistString appendString:@" "];
-    
-    NSMutableString *entireString = [NSMutableString stringWithString:newArtistString];
-    [entireString appendString:albumString];
-    
-    NSArray *components = @[newArtistString, albumString];
-    //NSRange untouchedRange = [entireString rangeOfString:[components objectAtIndex:0]];
-    NSRange grayRange = [entireString rangeOfString:[components objectAtIndex:1]];
-    
-    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
-    
-    [attrString beginEditing];
-    [attrString addAttribute: NSForegroundColorAttributeName
-                       value:[UIColor grayColor]
-                       range:grayRange];
-    [attrString endEditing];
-    return attrString;
 }
 
 - (IBAction)addButtonPressed:(id)sender
 {
-    //get ready to hand off the playlist object to the song picker
-    [_playlist saveTempPlaylistOnDisk];
-    
     //start listening for notifications (so we know when the modal song picker dissapears)
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(songPickerWasDismissed:) name:@"song picker dismissed" object:nil];
     
-    //now segue to modal view where user can pick songs for this playlist
-    [self performSegueWithIdentifier:@"addMoreSongsToPlaylist" sender:self];
+    PlaylistSongAdderTableViewController *vc = [[PlaylistSongAdderTableViewController alloc] initWithPlaylist:_playlist];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)songPickerWasDismissed:(NSNotification *)someNSNotification
 {
     if([someNSNotification.name isEqualToString:@"song picker dismissed"]){
-        NSArray *allPlaylists = [Playlist loadAll];
-        //Update variable for model, if it changed...remember, playlists are only compared by name
-        _playlist = [allPlaylists objectAtIndex:[allPlaylists indexOfObject:_playlist]];
-        
-        [self.tableView reloadData];
-        
-        if(_lastTableViewModelCount < _playlist.songsInThisPlaylist.count){  //songs added
-            int x = (int)(_playlist.songsInThisPlaylist.count - _lastTableViewModelCount);
+        if(someNSNotification.object != nil)  //songs added to playlist, created a new one to replace the old one. need to update our VC model.
+        {
+            _playlist = (Playlist *) someNSNotification.object;
+            [self setFetchedResultsControllerAndSortStyle];
+        }
+
+        if(_lastTableViewModelCount < _playlist.playlistSongs.count){  //songs added
+            int x = (int)(_playlist.playlistSongs.count - _lastTableViewModelCount);
             _numSongsNotAddedYet = _numSongsNotAddedYet - x;
             _lastTableViewModelCount = _lastTableViewModelCount + x;
         }//else nothing changed (remember, we can't remove songs using the song picker)
@@ -326,7 +266,6 @@ static BOOL PRODUCTION_MODE;
     [textField resignFirstResponder];
     [self commitNewPlaylistName:newName];
     return YES;
-    
 }
 
 - (BOOL)textFieldShouldClear:(UITextField *)textField
@@ -341,7 +280,7 @@ static BOOL PRODUCTION_MODE;
     _originalRightBarButtonItems = self.navBar.rightBarButtonItems;
     
     //purposely using huge width...making sure its always as big as possible on screen.
-    _txtField = [[UITextField alloc] initWithFrame :CGRectMake(15, 100, 4000, 27)];
+    _txtField = [[UITextField alloc] initWithFrame :CGRectMake(15, 100, self.view.frame.size.width - (65), 27)];
     
     [_txtField addTarget:self action:@selector(userTappedUITextField) forControlEvents:UIControlEventEditingDidBegin];
     
@@ -361,6 +300,7 @@ static BOOL PRODUCTION_MODE;
     [[[[[_txtField.backgroundColor darkerColor] darkerColor]darkerColor] darkerColor] darkerColor];
     _txtField.textColor = [UIColor blackColor];
     [_txtField setDelegate:self];
+    _txtField.textAlignment = NSTextAlignmentRight;
     
     UIBarButtonItem *editButton = self.editButtonItem;
     editButton.action = @selector(editTapped:);
@@ -368,7 +308,7 @@ static BOOL PRODUCTION_MODE;
     [self.navigationItem setHidesBackButton:YES animated:NO];
     [self.navBar setRightBarButtonItems:@[editButton] animated:YES];
     [self.navBar setLeftBarButtonItems:nil animated:YES];
-    self.navBar.titleView = _txtField;  //works?
+    self.navBar.titleView = _txtField;
 }
 
 - (void)userTappedCancel
@@ -384,7 +324,7 @@ static BOOL PRODUCTION_MODE;
 - (void)commitNewPlaylistName:(NSString *)newName
 {
     _playlist.playlistName = newName;
-    [_playlist updateExistingPlaylist];
+    [[CoreDataManager sharedInstance] saveContext];
     _txtField.text = _playlist.playlistName;  //make change visible in nav bar
     
     //bring back UI to the normal editing mode (leaving playlist editing mode)
@@ -427,6 +367,44 @@ static BOOL PRODUCTION_MODE;
         return YES;
     else
         return NO;  //returned when in portrait, or editing playlist.
+}
+
+#pragma mark - Counting Songs in core data
+- (int)numberOfSongsInCoreDataModel
+{
+    //count how many instances there are of the Song entity in core data
+    NSManagedObjectContext *context = [CoreDataManager context];
+    int count = 0;
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:context];
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setEntity:entity];
+    [fetchRequest setIncludesPropertyValues:NO];
+    [fetchRequest setIncludesSubentities:NO];
+    NSError *error = nil;
+    NSUInteger tempCount = [context countForFetchRequest: fetchRequest error: &error];
+    if(error == nil){
+        count = (int)tempCount;
+    }
+    return count;
+}
+
+#pragma mark - fetching and sorting
+- (void)setFetchedResultsControllerAndSortStyle
+{
+    self.fetchedResultsController = nil;
+    
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
+    request.predicate = [NSPredicate predicateWithFormat:@"ANY playlistIAmIn.playlist_id == %@", _playlist.playlist_id];
+    
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistIAmIn"
+                                                                     ascending:YES];
+    
+    request.sortDescriptors = @[sortDescriptor];
+    //fetchedResultsController is from custom super class
+    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+                                                                        managedObjectContext:[CoreDataManager context]
+                                                                          sectionNameKeyPath:nil
+                                                                                   cacheName:nil];
 }
 
 @end

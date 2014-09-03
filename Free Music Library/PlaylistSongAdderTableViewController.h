@@ -1,5 +1,5 @@
 //
-//  PlaylistSongItemTableViewController.h
+//  PlaylistSongAdderTableViewController.h
 //  Free Music Library
 //
 //  Created by Mark Zgaljic on 7/13/14.
@@ -8,17 +8,24 @@
 
 //This class controls how the user adds songs to their playlist
 #import <Foundation/Foundation.h>
+#import <objc/runtime.h>
+#import "StackController.h"
 #import "Song.h"
-#import "Playlist.h"
+#import "Playlist+Utilities.h"
 #import "AppEnvironmentConstants.h"
 #import "MasterSongsTableViewController.h"
 #import "SongTableViewFormatter.h"
 #import "SDWebImageManager.h"
 #import <SDWebImage/UIImageView+WebCache.h>
+#import "CoreDataManager.h"
 
-@interface PlaylistSongItemTableViewController : UITableViewController
+@interface PlaylistSongAdderTableViewController : CoreDataTableViewController
+{
+    StackController *stackController;
+}
 
-@property (nonatomic, strong) NSMutableArray *results;  //for searching tableView?
+- (id)initWithPlaylist:(Playlist *)aPlaylist;
+
 @property (nonatomic, assign) int selectedRowIndexValue;
 @property (nonatomic, strong) NSMutableArray *songsSelected;
 @property (nonatomic, strong) Playlist *receiverPlaylist;  //the playlist the chosen songs will be a part of

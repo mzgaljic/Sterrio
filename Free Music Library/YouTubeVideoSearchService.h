@@ -17,5 +17,6 @@
 - (void)fetchNextYouTubePageForLastQuery;
 - (void)fetchYouTubeAutoCompleteResultsForString:(NSString *)currentString;
 - (void)setDelegate:(id<YouTubeVideoSearchDelegate>)delegate;
++ (void)removeDelegate;
 
 @end

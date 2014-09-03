@@ -13,7 +13,6 @@
 @property (nonatomic, strong) UIImage *attachmentImage;
 @property (nonatomic, strong) NSMutableArray *attachmentUIImages;
 @property (nonatomic, assign) BOOL showEmailAlertView;
-//@property (nonatomic, strong) UIImagePickerController *photoPicker;
 @property (nonatomic, strong) ELCImagePickerController *photoPicker;
 @end
 
@@ -29,6 +28,19 @@ static const int CELL_STREAM_PICKER_TAG = 107;
 
 //could go in AppEnvironmentConstants...
 static NSString *BUG_REPORT_EMAIL;
+
+- (void)dealloc
+{
+    _alertView = nil;
+    _attachmentImage = nil;
+    _attachmentUIImages = nil;
+    _photoPicker = nil;
+    _photoPicker.delegate = nil;
+    _syncSettingViaIcloudSwitch = nil;
+    _boldSongSwitch = nil;
+    _smartSortSwitch = nil;
+    NSLog(@"Deallocated Settings VC");
+}
 
 - (void)setProductionModeValue
 {
@@ -118,7 +130,7 @@ static NSString *BUG_REPORT_EMAIL;
         case 0:     return @"Sync settings to your remaining Apple devices.";
         case 1:     return @"The preferred music video playback quality for each connection type.";
         case 2:     return @"'Bold Names' changes song, album, artist, playlist, and genre names to bold wherever possible. (enabled by default)";
-        case 3:     return @"Enabled, \"Smart\" Alphabetical Sort changes the way library content is sorted; the words (a/an/the) are ignored. Disabled, library content is sorted in true alphabetical order.";
+        case 3:     return @"Enabled, (a/an/the) are ignored when sorting library content. Disabled, everything is sorted in true alphabetical order.";
         case 4:     return @"A Software 'Bug' is unexpected app behavior.";
         default:    return nil;
     }
@@ -148,7 +160,7 @@ static NSString *BUG_REPORT_EMAIL;
                 cell.textLabel.text = @"Sync Settings Via iCloud";
                 //setup toggle switch
                 _syncSettingViaIcloudSwitch = [[UISwitch alloc] init];
-                
+                _syncSettingViaIcloudSwitch.onTintColor = [UIColor defaultSystemTintColor];
                 [_syncSettingViaIcloudSwitch setOn:[AppEnvironmentConstants icloudSettingsSync] animated:NO];
                 cell.accessoryView = [[UIView alloc] initWithFrame:_syncSettingViaIcloudSwitch.frame];
                 [cell.accessoryView addSubview:_syncSettingViaIcloudSwitch];
@@ -186,8 +198,10 @@ static NSString *BUG_REPORT_EMAIL;
                 //setup toggle switch
                 _boldSongSwitch = [[UISwitch alloc] init];
                 [_boldSongSwitch setOn:[AppEnvironmentConstants boldNames] animated:NO];
+                _boldSongSwitch.onTintColor = [UIColor defaultSystemTintColor];
                 cell.accessoryView = [[UIView alloc] initWithFrame:_boldSongSwitch.frame];
                 [cell.accessoryView addSubview:_boldSongSwitch];
+                
                 cell.detailTextLabel.text = @"";
                 [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
                 
@@ -198,9 +212,10 @@ static NSString *BUG_REPORT_EMAIL;
         switch (indexPath.row)
         {
             case 0:
-                cell.textLabel.text = @"\"Smart\" Alphabetical Sort";
+                cell.textLabel.text = @"Smart Alphabetical Sort";
                 //setup toggle switch
                 _smartSortSwitch = [[UISwitch alloc] init];
+                _smartSortSwitch.onTintColor = [UIColor defaultSystemTintColor];
                 [_smartSortSwitch setOn:[AppEnvironmentConstants smartAlphabeticalSort] animated:NO];
                 cell.accessoryView = [[UIView alloc] initWithFrame:_smartSortSwitch.frame];
                 [cell.accessoryView addSubview:_smartSortSwitch];
@@ -490,7 +505,6 @@ NSArray *CellStreamOptions;
 {
     //update settings
     [AppEnvironmentConstants setSmartAlphabeticalSort:_smartSortSwitch.on];
-    [Song reSortModel];
 }
 
 

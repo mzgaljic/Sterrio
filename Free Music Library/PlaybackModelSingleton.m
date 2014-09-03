@@ -17,6 +17,7 @@
 @implementation PlaybackModelSingleton
 @synthesize nowPlayingSong = _nowPlayingSong, printFrienlyNowPlayingSongNumber = _printFrienlyNowPlayingSongNumber, printFrienlyTotalSongsInCollectionNumber = _printFrienlyTotalSongsInCollectionNumber;
 
+
 #pragma mark - Custom getters and setters
 - (Song *)nowPlayingSong
 {
@@ -46,7 +47,7 @@
     }
     return self;
 }
-
+/**
 #pragma mark - Changing the playback model
 - (void)changeNowPlayingWithSong:(Song *)nextSong fromAllSongs:(NSArray *)allSongs indexOfNextSong:(NSUInteger)index
 {
@@ -84,7 +85,7 @@
         NSUInteger indexOfNextSongInGivenPlaylist = [newPlaylist.songsInThisPlaylist indexOfObject:nextSong];
         NSRange rangeA;
         rangeA.location = 0;
-        rangeA.length = indexOfNextSongInGivenPlaylist +1;;
+        rangeA.length = indexOfNextSongInGivenPlaylist +1;
         //add items from beginning of playlist, up to and including the NowPlayingSong, to songLinkedList
         [songLinkedList addObjectsFromArray:[newPlaylist.songsInThisPlaylist subarrayWithRange:rangeA]];
         
@@ -134,5 +135,5 @@
     } else
         return nil;
 }
-
+*/
 @end

@@ -4,9 +4,6 @@ pod 'RNFrostedSidebar', '~> 0.2.0'
 #UIAlertView clone, that allows for custom subviews...and larger fonts.
 pod 'SDCAlertView'
 
-#SDWebImage  effeciently download pics in background from urls
-pod 'SDWebImage', '~> 3.7'
-
 #variety of nice progress bars/loading animation or popups
 pod 'MRProgress'
 
@@ -21,3 +18,4 @@ pod 'ALMoviePlayerController', '~>0.3.0'
 
 #Percentage when sliding a tracking bar
 pod 'ASValueTrackingSlider'
+

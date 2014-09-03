@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "Album.h"
+#import "Artist.h"
 #import "PreferredFontSizeUtility.h"
 
 @interface AlbumTableViewFormatter : NSObject

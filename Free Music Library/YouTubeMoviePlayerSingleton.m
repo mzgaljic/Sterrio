@@ -13,7 +13,7 @@ static AVPlayer *player = nil;
 static AVPlayerLayer *videoLayer = nil;
 static BOOL needsToDisplayNewVideo;
 
-static ALMoviePlayerController *previewMusicYoutubePlayer = nil;
+static MPMoviePlayerController *previewMusicYoutubePlayer = nil;
 
 + (instancetype)createSingleton
 {
@@ -49,12 +49,12 @@ static ALMoviePlayerController *previewMusicYoutubePlayer = nil;
 
 
 #pragma mark - YouTube video player for previewing songs when adding to library
-- (void)setPreviewMusicYouTubePlayerInstance:(ALMoviePlayerController *)ALMoviePlayerControllerInstance
+- (void)setPreviewMusicYouTubePlayerInstance:(MPMoviePlayerController *)MPMoviePlayerControllerInstance
 {
-    previewMusicYoutubePlayer = ALMoviePlayerControllerInstance;
+    previewMusicYoutubePlayer = MPMoviePlayerControllerInstance;
 }
 
-- (ALMoviePlayerController *)previewMusicYoutubePlayer
+- (MPMoviePlayerController *)previewMusicYoutubePlayer
 {
     return previewMusicYoutubePlayer;
 }
@@ -108,6 +108,27 @@ static ALMoviePlayerController *previewMusicYoutubePlayer = nil;
 + (BOOL)needsToDisplayNewVideo
 {
     return needsToDisplayNewVideo;
+}
+
+#pragma mark - Core Data Fetching/Queries
++ (Song *)nowPlayingSong
+{
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
+    request.predicate = [NSPredicate predicateWithFormat:@"nowPlaying = %@", [NSNumber numberWithBool:YES]];
+    NSError *error;
+    NSArray *matches = [[CoreDataManager context] executeFetchRequest:request error:&error];
+    if(matches)
+    {
+        if(matches.count == 1)
+            return matches[0];
+        else if([matches count] > 1)
+        {
+            //set any of the false positives back to NO.
+            for(Song *aSong in matches)
+                aSong.nowPlaying = [NSNumber numberWithBool:NO];
+        }
+    }
+    return nil;
 }
 
 @end

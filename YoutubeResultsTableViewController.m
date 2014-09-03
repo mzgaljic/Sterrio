@@ -13,6 +13,7 @@
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray *searchResults;
 @property (nonatomic, strong) NSMutableArray *searchSuggestions;
+@property (nonatomic, strong) NSMutableArray *imageCache;
 @property (nonatomic, assign) BOOL displaySearchResults;
 @property (nonatomic, assign) BOOL searchInitiatedAlready;
 @property (nonatomic, assign) BOOL activityIndicatorOnScreen;
@@ -21,6 +22,7 @@
 @property (nonatomic, assign) float heightOfScreenRotationIndependant;
 //view isn't actually on top of tableView, but it looks like it. Call "turnTableViewIntoUIView" prior to setting this value!
 @property (nonatomic, strong) UIView *viewOnTopOfTable;
+@property (nonatomic, strong) UIView *progressViewHere;
 
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
 @property (nonatomic, strong) UIBarButtonItem *cancelButton;
@@ -36,18 +38,28 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
 static NSString *Network_Error_Loading_More_Results_Msg = @"Network error, tap to try again";
 static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
+//custom setters
+- (void)setDisplaySearchResults:(BOOL)displaySearchResults
+{
+    _displaySearchResults = displaySearchResults;
+}
+
 #pragma mark - Miscellaneous
 - (void)dealloc
 {
+    [YouTubeVideoSearchService removeDelegate];
+    _searchBar.delegate = nil;
     _searchBar = nil;
     _searchResults = nil;
     _searchSuggestions = nil;
+    _cancelButton = nil;
+    _scrollToTopButton = nil;
+    _viewOnTopOfTable = nil;
     _yt = nil;
     _lastSuccessfullSearchString = nil;
     _viewOnTopOfTable = nil;
-    _cancelButton = nil;
-    _scrollToTopButton = nil;
     start = nil; finish = nil;
+    _imageCache = nil;
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([YoutubeResultsTableViewController class]));
 }
 
@@ -83,10 +95,11 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [_yt setDelegate:self];
     if (self.isMovingToParentViewController == NO)
     {
         // we're already on the navigation stack, another controller must have been popped off.
-        _displaySearchResults = YES;
+        self.displaySearchResults = YES;
         self.tableView.scrollEnabled = YES;
         //restore scroll to top button if it was there before segue
         if(_scrollToTopButtonVisible)
@@ -99,9 +112,9 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
+    [YouTubeVideoSearchService removeDelegate];
     self.navigationController.navigationBar.translucent = NO;
     [[NSNotificationCenter defaultCenter]removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
-    _yt = nil;
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -115,8 +128,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 {
     [super viewDidLoad];
     _yt = [[YouTubeVideoSearchService alloc] init];
-    [_yt setDelegate:self];
-    SDWebImageManager.sharedManager.delegate = self;
+    _imageCache = [NSMutableArray array];
     
     _searchSuggestions = [NSMutableArray array];
     _searchResults = [NSMutableArray array];
@@ -140,7 +152,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         _heightOfScreenRotationIndependant = a;
     else
         _heightOfScreenRotationIndependant = b;
-    
     [_searchBar becomeFirstResponder];
 }
 
@@ -148,19 +159,17 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 {
     [super viewDidAppear:animated];
     self.navigationController.navigationBar.translucent = YES;
-    if(_displaySearchResults){
+    if(self.displaySearchResults){
         self.navigationController.navigationBar.topItem.title = @"Search Results";
         _navBar.title = @"Search Results";
-    }
+    } else
+        self.tableView.scrollEnabled = NO;
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
-    
-    SDImageCache *imageCache = [SDImageCache sharedImageCache];
-    [imageCache clearMemory];
 }
 
 #pragma mark - rotation methods
@@ -254,7 +263,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 - (void)ytVideoAutoCompleteResultsDidDownload:(NSArray *)arrayOfNSStrings
 {
-    //only going to use 5 of the 10 results returned. 10 is too much
+    //only going to use 5 of the 10 results returned. 10 is too much (searchSuggestions array is already empty-emptied in search bar text did change)
     [_searchSuggestions removeAllObjects];
     
     int upperBound = -1;
@@ -315,7 +324,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 {
     if(buttonIndex == 0){  //hide loading popup behind the uialertView
         [self turnTableViewIntoUIView:NO];
-        _displaySearchResults = NO;
+        self.displaySearchResults = NO;
     
         [self.tableView reloadData];
     }
@@ -336,17 +345,21 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 //User tapped the search box textField
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
+    if(searchBar.text.length == 0)
+        self.tableView.scrollEnabled = NO;
+    
     //show the cancel button
-    _displaySearchResults = NO;
+    self.displaySearchResults = NO;
     _navBar.title = @"Add Music";
     [_searchBar setShowsCancelButton:YES animated:YES];
+    [self.tableView reloadData];
 }
 
 //user tapped "Search"
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     _searchInitiatedAlready = YES;
-    _displaySearchResults = YES;
+    self.displaySearchResults = YES;
     self.tableView.scrollEnabled = YES;
     _lastSuccessfullSearchString = searchBar.text;
     //setting it both ways, do to nav bar title bug
@@ -356,8 +369,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     
     //show loading popup above tableview before content loads
     [self turnTableViewIntoUIView:YES];
-    // Blocking a custom view
-    [MRProgressOverlayView showOverlayAddedTo:_viewOnTopOfTable animated:YES];
+    [MRProgressOverlayView showOverlayAddedTo:_progressViewHere animated:YES];
     [self startTimingExecution];
     
     [_yt searchYouTubeForVideosUsingString: searchBar.text];
@@ -375,13 +387,13 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         self.navigationController.navigationBar.topItem.title = @"Search Results";
         _navBar.title = @"Search Results";
         
-        if(_displaySearchResults == NO && _searchResults.count > 0){  //bring user back to previous results
+        if(self.displaySearchResults == NO && _searchResults.count > 0){  //bring user back to previous results
             //restore state of search bar before uncommited search bar edit began
             [_searchBar setText:_lastSuccessfullSearchString];
             
             [_searchSuggestions removeAllObjects];
             [_searchBar resignFirstResponder];
-            _displaySearchResults = YES;
+            self.displaySearchResults = YES;
             self.tableView.scrollEnabled = YES;
             [self.tableView reloadData];
             return;
@@ -401,21 +413,28 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 //User typing as we speak, fetch latest results to populate results as they type
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
+    
     if(searchText.length != 0){
+        if(! self.displaySearchResults)
+            self.tableView.scrollEnabled = YES;
+        
         //fetch auto suggestions
         [_yt fetchYouTubeAutoCompleteResultsForString:searchText];
-        _displaySearchResults = NO;
+        self.displaySearchResults = NO;
         [self.tableView reloadData];
     }
     
     else{  //user cleared the textField
+        if(! self.displaySearchResults)
+            self.tableView.scrollEnabled = NO;
+        
         if([searchBar isFirstResponder])  //keyboard on screen
             [_searchSuggestions removeAllObjects];
         else{
             [searchBar becomeFirstResponder];  //bring up keyboard
             [_searchSuggestions removeAllObjects];
         }
-        _displaySearchResults = NO;
+        self.displaySearchResults = NO;
         [self.tableView reloadData];
     }
 }
@@ -424,7 +443,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 #pragma mark - TableView deleagte
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    if(_displaySearchResults)
+    if(self.displaySearchResults)
         return 2;  //this one has a "load more" button
     else
         return 1;
@@ -432,7 +451,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 - (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if(! _displaySearchResults)
+    if(! self.displaySearchResults)
         return 36.0f;
     else{
         if(section == 0)  //dont want a gap betweent table and search bar
@@ -444,7 +463,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
 {
-    if(_displaySearchResults){
+    if(self.displaySearchResults){
         if(section == 0){
             return [NSString stringWithFormat:@"Displaying %i results", (int)_searchResults.count];
         }
@@ -454,7 +473,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if(_displaySearchResults){
+    if(self.displaySearchResults){
         if(section == 0)
             return _searchResults.count;  //number of videos in results
         else if(section == 1)  //"Load more" cell
@@ -468,7 +487,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    if(! _displaySearchResults){
+    if(! self.displaySearchResults){
         if(section == 0 && _searchSuggestions.count > 0)
             return @"Top Hits";
     }
@@ -478,31 +497,55 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell;
-    
     // Configure the cell...
     YouTubeVideo *ytVideo;
-    if(_displaySearchResults){  //video search results will populate the table
+    
+    if(self.displaySearchResults){  //video search results will populate the table
         if(indexPath.section == 0){
             ytVideo = [_searchResults objectAtIndex:indexPath.row];
             
-            cell = [tableView dequeueReusableCellWithIdentifier:@"youtubeResultCell" forIndexPath:indexPath];
-            cell.textLabel.text = ytVideo.videoName;
-            cell.detailTextLabel.font = [UIFont systemFontOfSize:14];
-            cell.detailTextLabel.textColor = [[UIColor redColor] darkerColor];
-            cell.detailTextLabel.text = ytVideo.channelTitle;
-            cell.tag = indexPath.row;  //used to double check the cell in the block below.
-
-            // Here we use the new provided setImageWithURL: method to load the web image
-            [cell.imageView sd_setImageWithURL:[NSURL URLWithString:ytVideo.videoThumbnailUrl]
-                              placeholderImage:[UIImage imageWithColor:[UIColor clearColor] width:120 height:90]
-                                       options:SDWebImageCacheMemoryOnly
-                                     completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL){
-                                         if(cacheType == SDImageCacheTypeNone)  //if image had to be downloaded from the web for the first time
-                                             if (cell.tag == indexPath.row && image){
-                                                 [self.tableView reloadRowsAtIndexPaths:self.tableView.indexPathsForVisibleRows
-                                                                       withRowAnimation: UITableViewRowAnimationNone];
-                                             }
-                                     }];
+            CustomYoutubeTableViewCell *customCell;
+            customCell = [tableView dequeueReusableCellWithIdentifier:@"youtubeResultCell" forIndexPath:indexPath];
+            customCell.videoTitle.text = ytVideo.videoName;
+            customCell.videoChannel.font = [UIFont systemFontOfSize:14];
+            customCell.videoChannel.textColor = [[UIColor redColor] darkerColor];
+            customCell.videoChannel.text = ytVideo.channelTitle;
+            
+            //check cache first
+            for(UIImageView *imageView in _imageCache)
+            {
+                if(imageView.tag == indexPath.row){
+                    customCell.videoThumbnail = imageView;
+                    return customCell;
+                }
+            }
+            
+            // If an existing cell is being reused, reset the image to the default until it is populated.
+            // Without this code, previous images are displayed against the new people during rapid scrolling.
+            customCell.videoThumbnail.image = [UIImage imageWithColor:[UIColor clearColor]
+                                                           width:customCell.videoThumbnail.frame.size.width
+                                                          height:customCell.videoThumbnail.frame.size.height];
+            
+            // now download the true thumbnail image asynchronously
+            [self downloadImageWithURL:[NSURL URLWithString:ytVideo.videoThumbnailUrl] completionBlock:^(BOOL succeeded, UIImage *image)
+            {
+                if (succeeded) {
+                    // change the image in the cell
+                    customCell.videoThumbnail.image = image;
+                    
+                    /*
+                    // cache the image for use later (when scrolling up)
+                    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+                    imageView.tag = indexPath.row;
+                    [_imageCache addObject: imageView];
+                    if(_imageCache.count > 10)
+                        [_imageCache removeObjectAtIndex:0];
+                     */
+                }
+            }];
+            
+            return customCell;
+            
         } else if(indexPath.section == 1){  //the "load more" button is in this section
             if(indexPath.row == 0){
                 cell = [tableView dequeueReusableCellWithIdentifier:@"loadMoreButtonCell" forIndexPath:indexPath];
@@ -519,6 +562,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
                 else{
                     cell.textLabel.text = @"Load more";
                     cell.textLabel.textColor = [UIColor defaultSystemTintColor];
+                    cell.textLabel.textAlignment = NSTextAlignmentCenter;
                 }
             }
         }
@@ -540,7 +584,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(! _displaySearchResults)
+    if(! self.displaySearchResults)
         return 45;
     else{
         if(indexPath.section == 0)
@@ -554,7 +598,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    if(_displaySearchResults){  //video search results in table
+    if(self.displaySearchResults){  //video search results in table
         if(indexPath.section == 0){
             YouTubeVideo *ytVideo = [_searchResults objectAtIndex:indexPath.row];
             [self.navigationController pushViewController:[[YouTubeVideoPlaybackTableViewController alloc] initWithYouTubeVideo:ytVideo] animated:YES];
@@ -585,22 +629,48 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     }
 }
 
+/*
 #pragma mark - SDWebImage downloaded image preprocessing
 - (UIImage *)imageManager:(SDWebImageManager *)imageManager transformDownloadedImage:(UIImage *)image withURL:(NSURL *)imageURL
 {
-    return [AlbumArtUtilities imageWithImage:image scaledToSize:CGSizeMake(120.0f, 90.0f)];
+    //return [AlbumArtUtilities imageWithImage:image scaledToSize:CGSizeMake(120.0f, 90.0f)];
+}
+ */
+- (void)downloadImageWithURL:(NSURL *)url completionBlock:(void (^)(BOOL succeeded, UIImage *image))completionBlock
+{
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:[NSOperationQueue mainQueue]
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                               if ( !error )
+                               {
+                                   UIImage *image = [[UIImage alloc] initWithData:data];
+                                   completionBlock(YES,image);
+                               } else{
+                                   completionBlock(NO,nil);
+                               }
+                           }];
 }
 
 
-#pragma mark - TableView custom view toggler
+#pragma mark - TableView custom view toggler/creator
 - (void)turnTableViewIntoUIView:(BOOL)yes
 {
     if(yes){
+        CGFloat screenHeight = [[UIScreen mainScreen] bounds].size.height;
+        float yValue = screenHeight * 0.15f;
+        
+        self.tableView.scrollEnabled = NO;
         self.tableView.tableHeaderView = nil;
         _viewOnTopOfTable = [[UIView alloc] initWithFrame:self.tableView.frame];
+        _progressViewHere = [[UIView alloc] initWithFrame:
+                                    CGRectMake(0, 0, _viewOnTopOfTable.frame.size.width, _viewOnTopOfTable.frame.size.height - yValue)];
+        [_viewOnTopOfTable addSubview:_progressViewHere];
         self.tableView.tableHeaderView = _viewOnTopOfTable;
     } else{
+        self.tableView.scrollEnabled = YES;
         self.tableView.tableHeaderView = nil;
+        _progressViewHere = nil;
         _viewOnTopOfTable = nil;
         [self setUpSearchBar];
     }

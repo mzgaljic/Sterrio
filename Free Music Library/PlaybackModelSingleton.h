@@ -12,7 +12,7 @@
 #import "Album.h"
 
 @interface PlaybackModelSingleton : NSObject
-@property (nonatomic, strong, readonly) Song *nowPlayingSong;
+@property (nonatomic, strong) Song *nowPlayingSong;
 @property (nonatomic, assign, readonly) NSUInteger printFrienlyNowPlayingSongNumber;
 @property (nonatomic, assign, readonly) NSUInteger printFrienlyTotalSongsInCollectionNumber;
 @property (nonatomic, assign) BOOL userWantsPlaybackPaused;

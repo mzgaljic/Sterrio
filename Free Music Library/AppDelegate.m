@@ -7,11 +7,11 @@
 //
 
 #import "AppDelegate.h"
+#define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 @implementation AppDelegate
 
 static BOOL PRODUCTION_MODE;
-//app launched first time?
 static const int APP_LAUNCHED_FIRST_TIME = 0;
 static const int APP_LAUNCHED_ALREADY = 1;
 
@@ -23,18 +23,20 @@ static const int APP_LAUNCHED_ALREADY = 1;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
-    [[SDImageCache sharedImageCache] setMaxCacheSize:5000000];  //5 mb cache size
+    [[SDImageCache sharedImageCache] setMaxCacheSize:2000000];  //2 mb cache size
     
     //set app global-tint color
-    self.window.tintColor = [UIColor defaultSystemTintColor];
-    //self.window.tintColor = [UIColor colorWithHue:0.55 saturation:0.8 brightness:0.9 alpha:0.7];
+    //self.window.tintColor = [UIColor defaultSystemTintColor];
+    self.window.tintColor = Rgb2UIColor(255, 143, 47);  //orange tint color based on splash screen
     
     [self setProductionModeValue];
-    [AppDelegateSetupHelper setUpNSCodingFilePaths];
+    
+    if(! PRODUCTION_MODE)
+        [AppDelegateSetupHelper logGlobalAppTintColor];
     
     [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime:[self appLaunchedFirstTime]];
     if([self appLaunchedFirstTime]){
-        [AppDelegateSetupHelper setUpFakeLibraryContent];
+        //do stuff that you'd want to see the first time you launch!
     }
     
     [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY forKey:APP_ALREADY_LAUNCHED_KEY];

@@ -50,6 +50,17 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     _backwardButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _playButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _forwardButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    
+    [_backwardButton addTarget:self
+                        action:@selector(backwardsButtonTappedOnce)
+              forControlEvents:UIControlEventTouchUpInside];
+    [_playButton addTarget:self
+                    action:@selector(playOrPauseButtonTapped)
+          forControlEvents:UIControlEventTouchUpInside];
+    [_forwardButton addTarget:self
+                       action:@selector(forwardsButtonTappedOnce)
+             forControlEvents:UIControlEventTouchUpInside];
+    
     _musicButtons = @[_backwardButton, _playButton, _forwardButton];
     
     _needToLoadPlayer = YES;
@@ -64,16 +75,18 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     //hack to hide back button text. This ALSO changes future back buttons if more stuff is pushed. BEWARE.
     self.navigationController.navigationBar.topItem.title = @"";
     
-    PlaybackModelSingleton * playbackModel = [PlaybackModelSingleton createSingleton];
+    Song *nowPlayingSong = [self fetchNowPlayingSong];
+    //dont check for error fetching here (nil song) because it will fail to play the video and prompt the user anyway
     if(_needsToDisplayNewVideo)
-        [self setUpVideoPlayerUsingVideoID:playbackModel.nowPlayingSong.youtubeId];
+        [self setUpVideoPlayerUsingVideoID:nowPlayingSong.youtube_id];
     else
         [self startPlayback:nil];
     
     //set song/album details for currently selected song
-    self.songNameLabel.text = playbackModel.nowPlayingSong.songName;
-    NSString *navBarTitle = [NSString stringWithFormat:@"%lu of %lu",(unsigned long)playbackModel.printFrienlyNowPlayingSongNumber,
-                                                                    (unsigned long)playbackModel.printFrienlyTotalSongsInCollectionNumber];
+    self.songNameLabel.text = nowPlayingSong.songName;
+    NSString *navBarTitle = [NSString stringWithFormat:@"%i of %i",
+                             [[self printFriendlySongIndex] intValue],
+                             [self numberOfSongsInCoreDataModel]];
     self.navBar.title = navBarTitle;
 }
 
@@ -83,7 +96,6 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                                                                                            target:self
                                                                                            action:@selector(shareButtonTapped)];
-    
     if(_needToLoadPlayer){
         [self setupVideoPlayerViewDimensionsAndShowLoading];
         [self positionMusicButtonsOnScreenAndSetThemUp];
@@ -133,7 +145,39 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
+}
+
+- (void)dealloc
+{
     _needToLoadPlayer = YES;
+    _sliderTimer = nil;
+    _musicButtons = nil;
+    _playButton = nil;
+    _forwardButton = nil;
+    _backwardButton = nil;
+    _printFriendlySongIndex = nil;
+}
+
+#pragma mark - Fetch Now Playing Song
+- (Song *)fetchNowPlayingSong
+{
+    Song *nowPlayingSong;
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
+    request.predicate = [NSPredicate predicateWithFormat:@"nowPlaying = %@", [NSNumber numberWithBool:YES]];
+    NSError *error;
+    NSArray *matches = [[CoreDataManager context] executeFetchRequest:request error:&error];
+    if(matches){
+        if([matches count] == 1){
+            nowPlayingSong = [matches firstObject];
+        } else if([matches count] > 1){
+            //handle error where more than one song is marked as 'now playing'
+            //let fectching the video silently fail, and set all of the false positives back to NO.
+            for(Song *aSong in matches)
+                aSong.nowPlaying = [NSNumber numberWithBool:NO];
+            [[CoreDataManager sharedInstance] saveContext];
+        }
+    }
+    return nowPlayingSong;
 }
 
 #pragma mark - Memory Warning
@@ -146,27 +190,76 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     [imageCache clearMemory];
 }
                                               
-#pragma mark - Share Button
+#pragma mark - Share Button Tapped
 - (void)shareButtonTapped
 {
-    NSString *youtubeLinkBeginning = @"youtube.com/watch?v=";
-    NSMutableString *shareString = [NSMutableString stringWithString:@"Check out this song:\n"];
-    [shareString appendString:youtubeLinkBeginning];
-    [shareString appendString:[PlaybackModelSingleton createSingleton].nowPlayingSong.youtubeId];
-    //UIImage *shareImage = [UIImage imageNamed:@"Pause-Filled"];
-    //NSURL *shareUrl = nil;
-    
-    NSArray *activityItems = [NSArray arrayWithObjects:shareString, nil];
-    
-    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
-    activityVC.excludedActivityTypes = @[UIActivityTypePrint,
-                                       UIActivityTypeAssignToContact,
-                                       UIActivityTypeSaveToCameraRoll];
-    
-    [self presentViewController:activityVC animated:YES completion:nil];
+    Song *nowPlayingSong = [self fetchNowPlayingSong];
+    if(nowPlayingSong){
+        NSString *youtubeLinkBeginning = @"youtube.com/watch?v=";
+        NSMutableString *shareString = [NSMutableString stringWithString:@"Check out this song:\n"];
+        [shareString appendString:youtubeLinkBeginning];
+        [shareString appendString:nowPlayingSong.youtube_id];
+        
+        NSArray *activityItems = [NSArray arrayWithObjects:shareString, nil];
+        
+        UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+        activityVC.excludedActivityTypes = @[UIActivityTypePrint,
+                                             UIActivityTypeAssignToContact,
+                                             UIActivityTypeSaveToCameraRoll,
+                                             UIActivityTypeAirDrop];
+        
+        [self presentViewController:activityVC animated:YES completion:nil];
+    } else{
+        // Handle error
+        NSString *title = @"Trouble Sharing";
+        NSString *msg = @"Sorry, we had some trouble getting the song details. Please try again.";
+        [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
+    }
 }
 
-#pragma mark - Music Buttons
+#pragma mark - Music Button actions
+- (void)backwardsButtonTappedOnce
+{
+    
+}
+
+- (void)playOrPauseButtonTapped
+{
+    AVPlayer *player = [[YouTubeMoviePlayerSingleton createSingleton] AVPlayer];
+    UIColor *appTint = [UIColor defaultSystemTintColor];
+    if(player.rate == 0)
+    {
+        UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:appTint
+                                                              :[UIImage imageNamed:PAUSE_IMAGE_FILLED]];
+        UIImage *pauseUnfilled = [UIImage colorOpaquePartOfImage:appTint
+                                                            :[UIImage imageNamed:PAUSE_IMAGE_UNFILLED]];
+        
+        [_playButton setImage:pauseFilled forState:UIControlStateNormal];
+        [_playButton setImage:pauseUnfilled forState: UIControlStateHighlighted];
+        _userWantsPlaybackPaused = NO;
+         [player play];
+    }
+    else
+    {
+        UIImage *playFilled = [UIImage colorOpaquePartOfImage:appTint
+                                                              :[UIImage imageNamed:PLAY_IMAGE_FILLED]];
+        UIImage *playUnfilled = [UIImage colorOpaquePartOfImage:appTint
+                                                            :[UIImage imageNamed:PLAY_IMAGE_UNFILLED]];
+
+        [_playButton setImage:playFilled forState:UIControlStateNormal];
+        [_playButton setImage:playUnfilled forState: UIControlStateHighlighted];
+        _userWantsPlaybackPaused = YES;
+        [player pause];
+    }
+    _playButton.enabled = YES;
+}
+
+- (void)forwardsButtonTappedOnce
+{
+    
+}
+
+#pragma mark - Positioning Music Buttons
 - (void)positionMusicButtonsOnScreenAndSetThemUp  //buttons are initialized in viewDidLoad
 {
     //make images fill up frame, change button hit area
@@ -182,40 +275,73 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     CGFloat screenHeight = screenRect.size.height;
     CGFloat screenWidth = screenRect.size.width;
     
-    //play button
-    UIImage *playImage = [UIImage imageNamed:PLAY_IMAGE_FILLED];
-    float playButtonWidth = playImage.size.width * imgScaleFactor;
-    float playButtonHeight = playImage.size.height * imgScaleFactor;
-    float yValue = ceil(screenHeight * percentDownScreen);  //want the play button to be 84% of the way down the screen
-    //want play button to be in the middle of the screen horizontally
-    float xValue = (screenWidth * 0.5) - (playButtonWidth/2);
-    _playButton.frame = CGRectMake(xValue +2, yValue, playButtonWidth, playButtonHeight);
-    [_playButton setImage:playImage forState:UIControlStateNormal];
-    [_playButton setImage:[UIImage imageNamed:PLAY_IMAGE_UNFILLED] forState: UIControlStateHighlighted];
+    UIColor *appTint = [UIColor defaultSystemTintColor];
+    float yValue, xValue;
+    //play button or pause button
+    if(_needsToDisplayNewVideo){
+        UIImage *playFilled = [UIImage colorOpaquePartOfImage:appTint
+                                                             :[UIImage imageNamed:PLAY_IMAGE_FILLED]];
+        UIImage *playUnfilled = [UIImage colorOpaquePartOfImage:appTint
+                                                               :[UIImage imageNamed:PLAY_IMAGE_UNFILLED]];
+        
+        float playButtonWidth = playFilled.size.width * imgScaleFactor;
+        float playButtonHeight = playFilled.size.height * imgScaleFactor;
+        yValue = ceil(screenHeight * percentDownScreen);  //want the play button to be 84% of the way down the screen
+        //want play button to be in the middle of the screen horizontally
+        xValue = (screenWidth * 0.5) - (playButtonWidth/2);
+        _playButton.frame = CGRectMake(xValue +2, yValue, playButtonWidth, playButtonHeight);
+        [_playButton setImage:playFilled forState:UIControlStateNormal];
+        [_playButton setImage:playUnfilled forState: UIControlStateHighlighted];
+        _playButton.enabled = NO;
+    } else{
+        UIImage *playFilled = [UIImage colorOpaquePartOfImage:appTint
+                                                             :[UIImage imageNamed:PAUSE_IMAGE_FILLED]];
+        UIImage *playUnfilled = [UIImage colorOpaquePartOfImage:appTint
+                                                            :[UIImage imageNamed:PAUSE_IMAGE_UNFILLED]];
+        
+        float playButtonWidth = playFilled.size.width * imgScaleFactor;
+        float playButtonHeight = playFilled.size.height * imgScaleFactor;
+        yValue = ceil(screenHeight * percentDownScreen);  //want the play button to be 84% of the way down the screen
+        //want play button to be in the middle of the screen horizontally
+        xValue = (screenWidth * 0.5) - (playButtonWidth/2);
+        _playButton.frame = CGRectMake(xValue +2, yValue, playButtonWidth, playButtonHeight);
+        [_playButton setImage:playFilled forState:UIControlStateNormal];
+        [_playButton setImage:playUnfilled forState: UIControlStateHighlighted];
+        _playButton.enabled = YES;
+    }
+    
     
     //seek backward button
-    UIImage *backwardImage = [UIImage imageNamed:BACKWARD_IMAGE_FILLED];
-    float backwardButtonWidth = backwardImage.size.width * imgScaleFactor;
-    float backwardButtonHeight = backwardImage.size.height * imgScaleFactor;
+    UIImage *backFilled = [UIImage colorOpaquePartOfImage:appTint
+                                                         :[UIImage imageNamed:BACKWARD_IMAGE_FILLED]];
+    UIImage *backUnfilled = [UIImage colorOpaquePartOfImage:appTint
+                                                        :[UIImage imageNamed:BACKWARD_IMAGE_UNFILLED]];
+    
+    float backwardButtonWidth = backFilled.size.width * imgScaleFactor;
+    float backwardButtonHeight = backFilled.size.height * imgScaleFactor;
     //will be in between the play button and left side of screen
     xValue = (((screenWidth /2) - ((screenWidth /2) /2)) - backwardButtonWidth/2);
     //middle y value in the center of the play button
     float middlePointVertically = _playButton.center.y;
-    yValue = (middlePointVertically - (backwardImage.size.height/1.5));
+    yValue = (middlePointVertically - (backFilled.size.height/1.5));
     _backwardButton.frame = CGRectMake(xValue, yValue -1, backwardButtonWidth, backwardButtonHeight);
-    [_backwardButton setImage:backwardImage forState:UIControlStateNormal];
-    [_backwardButton setImage:[UIImage imageNamed:BACKWARD_IMAGE_UNFILLED] forState: UIControlStateHighlighted];
+    [_backwardButton setImage:backFilled forState:UIControlStateNormal];
+    [_backwardButton setImage:backUnfilled forState: UIControlStateHighlighted];
     
     //see forward button
-    UIImage *forwardImage = [UIImage imageNamed:FORWARD_IMAGE_FILLED];
-    float forwardButtonWidth = forwardImage.size.width * imgScaleFactor;
-    float forwardButtonHeight = forwardImage.size.height * imgScaleFactor;
+    UIImage *forwardFilled = [UIImage colorOpaquePartOfImage:appTint
+                                                         :[UIImage imageNamed:FORWARD_IMAGE_FILLED]];
+    UIImage *forwardUnfilled = [UIImage colorOpaquePartOfImage:appTint
+                                                           :[UIImage imageNamed:FORWARD_IMAGE_UNFILLED]];
+
+    float forwardButtonWidth = forwardFilled.size.width * imgScaleFactor;
+    float forwardButtonHeight = forwardFilled.size.height * imgScaleFactor;
     //will be in between the play button and right side of screen
     xValue = (((screenWidth /2) + ((screenWidth /2) /2)) - forwardButtonWidth/2);
-    yValue = (middlePointVertically - (forwardImage.size.height/1.5));
+    yValue = (middlePointVertically - (forwardFilled.size.height/1.5));
     _forwardButton.frame = CGRectMake(xValue +3, yValue -1, forwardButtonWidth, forwardButtonHeight);
-    [_forwardButton setImage:forwardImage forState:UIControlStateNormal];
-    [_forwardButton setImage:[UIImage imageNamed:FORWARD_IMAGE_UNFILLED] forState: UIControlStateHighlighted];
+    [_forwardButton setImage:forwardFilled forState:UIControlStateNormal];
+    [_forwardButton setImage:forwardUnfilled forState: UIControlStateHighlighted];
     
     //add buttons to the viewControllers view
     for(UIButton *aButton in _musicButtons){
@@ -248,7 +374,7 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
             _playbackTimeSlider.maximumValue = durationInSeconds;
             _playbackTimeSlider.popUpViewCornerRadius = 12.0;
             [_playbackTimeSlider setMaxFractionDigitsDisplayed:0];
-            _playbackTimeSlider.popUpViewColor = [UIColor colorWithHue:0.55 saturation:0.8 brightness:0.9 alpha:0.7];
+            _playbackTimeSlider.popUpViewColor = [[UIColor defaultSystemTintColor] lighterColor];
             _playbackTimeSlider.font = [UIFont fontWithName:@"GillSans-Bold" size:24];
             _playbackTimeSlider.textColor = [UIColor whiteColor];
             _playbackTimeSlider.minimumTrackTintColor = [UIColor defaultSystemTintColor];
@@ -297,6 +423,7 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
 
 - (void)playbackStarted
 {
+    [AppEnvironmentConstants setSongHasBeenPlayedSinceLaunch];
     _playbackTimeSlider.enabled = YES;
     [self updatePlaybackTimeSlider];
     
@@ -482,7 +609,7 @@ static BOOL sliderIsBeingTouched = NO;
     
     player = [[YouTubeMoviePlayerSingleton createSingleton] AVPlayer];
     [self.playerView setMovieToPlayer: player];
-    [player play];
+    [self playOrPauseButtonTapped];
     
     [self setupNSNotificationVideoPlaybackListenerUsingAVPlayer:player andNSURL:videoUrl];
     
@@ -516,12 +643,19 @@ static BOOL playWhenBufferReturns = NO;
     if(kRateDidChangeKVO == context)
     {
         AVPlayer *player = [[YouTubeMoviePlayerSingleton createSingleton] AVPlayer];
-        if(player.rate == 0.0f && [PlaybackModelSingleton createSingleton].userWantsPlaybackPaused == NO)
+        if(player.rate == 0.0f && _userWantsPlaybackPaused == NO)
         {
             playWhenBufferReturns = YES;
             
             //change play button to pause button, if the pause button isnt already on screen
+            UIColor *appTint = [UIColor defaultSystemTintColor];
+            UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:appTint
+                                                            :[UIImage imageNamed:PAUSE_IMAGE_FILLED]];
+            UIImage *pauseUnfilled = [UIImage colorOpaquePartOfImage:appTint
+                                                        :[UIImage imageNamed:PAUSE_IMAGE_UNFILLED]];
             
+            [_playButton setImage:pauseFilled forState:UIControlStateNormal];
+            [_playButton setImage:pauseUnfilled forState: UIControlStateHighlighted];
         }
     }
     else if (kTimeRangesKVO == context)
@@ -531,7 +665,7 @@ static BOOL playWhenBufferReturns = NO;
             CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
             if (CMTIME_COMPARE_INLINE(timerange.duration, >, CMTimeMakeWithSeconds(10, timerange.duration.timescale))) {
                 AVPlayer *player = [[YouTubeMoviePlayerSingleton createSingleton] AVPlayer];
-                if (player.rate == 0.0f && playWhenBufferReturns && ![PlaybackModelSingleton createSingleton].userWantsPlaybackPaused) {
+                if (player.rate == 0.0f && playWhenBufferReturns && !_userWantsPlaybackPaused) {
                     if(!sliderIsBeingTouched){
                         [player play];
                     }
@@ -708,6 +842,25 @@ static UIInterfaceOrientation toOrienation;
         [self.navigationController setNavigationBarHidden:NO];
         return NO;
     }
+}
+                             
+#pragma mark - Counting Songs in core data
+- (int)numberOfSongsInCoreDataModel
+{
+    //count how many instances there are of the Song entity in core data
+    NSManagedObjectContext *context = [CoreDataManager context];
+    int count = 0;
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:context];
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setEntity:entity];
+    [fetchRequest setIncludesPropertyValues:NO];
+    [fetchRequest setIncludesSubentities:NO];
+    NSError *error = nil;
+    NSUInteger tempCount = [context countForFetchRequest: fetchRequest error: &error];
+    if(error == nil){
+        count = (int)tempCount;
+    }
+    return count;
 }
 
 @end

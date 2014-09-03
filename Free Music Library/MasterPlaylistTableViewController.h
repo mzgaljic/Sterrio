@@ -7,19 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Playlist.h"
-#import "FrostedSideBarHelper.h"
+#import "Playlist+Utilities.h"
 #import "PlaylistItemTableViewController.h"  //tableview controller that shows the songs in the playlist
-#import "PlaylistSongItemTableViewController.h"  //song picker
+#import "PlaylistSongAdderTableViewController.h"  //song picker
 #import "AppEnvironmentConstants.h"
 #import "PlayListTableViewFormatter.h"
 #import "NSString+WhiteSpace_Utility.h"
 #import "SDWebImageManager.h"
+#import "CoreDataManager.h"
 
-@interface MasterPlaylistTableViewController : UITableViewController <UITextFieldDelegate>
+#import "PlaylistSongAdderTableViewController.h"
 
-@property (nonatomic, strong) NSMutableArray *results;  //for searching tableView?
-@property (nonatomic, assign) int selectedRowIndexValue;
+@interface MasterPlaylistTableViewController : CoreDataTableViewController <UISearchBarDelegate, UITextFieldDelegate>
 
-- (IBAction)addButtonPressed:(id)sender;
 @end

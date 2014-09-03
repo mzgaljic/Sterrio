@@ -4,14 +4,29 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Core Data Static Library.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>14</integer>
+		</dict>
 		<key>Muzic.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>12</integer>
+			<integer>0</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>8703442919A19E3E002E5077</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>8703443619A19E3E002E5077</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>87480DA4192C1FBD005CC0A4</key>
 		<dict>
 			<key>primary</key>

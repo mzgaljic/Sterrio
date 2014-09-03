@@ -13,6 +13,7 @@
 #import <Foundation/Foundation.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <ALMoviePlayerController/ALMoviePlayerController.h>
+#import "Song+Utilities.h"
 
 //used by youtube link extractor
 #import <XCDYouTubeKit/XCDYouTubeClient.h>
@@ -39,5 +40,8 @@
 #pragma mark - Helper variables for view controllers
 + (void)setNeedsToDisplayNewVideo:(BOOL)displayNewVideo;
 + (BOOL)needsToDisplayNewVideo;
+
+#pragma mark - Core Data Fetching/Queries
++ (Song *)nowPlayingSong;
 
 @end

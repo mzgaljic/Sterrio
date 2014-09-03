@@ -96,6 +96,7 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     self.navigationController.navigationBar.translucent = NO;
+    [GenreSearchService removeDelegate];
 }
 
 - (void)didReceiveMemoryWarning
@@ -212,13 +213,14 @@
         aGenreString = keyValues[indexPath.row];
     }
     
-    if([aGenreString isEqual:_usersCurrentGenreString]){  //disable this cell
+    if([aGenreString isEqualToString:_usersCurrentGenreString]){  //disable this cell
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.userInteractionEnabled = NO;
         cell.textLabel.textColor = [UIColor defaultSystemTintColor];
         cell.detailTextLabel.textColor = [UIColor defaultSystemTintColor];
     } else{
         cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+        cell.textLabel.textColor = [UIColor blackColor];
         cell.userInteractionEnabled = YES;
         cell.textLabel.enabled = YES;
         cell.detailTextLabel.enabled = YES;

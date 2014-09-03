@@ -14,5 +14,6 @@
 /** Performs a smart sort comparison on the given string. 
  In smart sort, the words (a/an/the) are all ignored.*/
 - (NSComparisonResult)smartSort:(NSString*)aString;
+- (NSString *)regularStringToSmartSortString;
 
 @end

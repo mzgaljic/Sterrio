@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "AppEnvironmentConstants.h"
 #import "Album.h"
+#import "Artist+Utilities.h"
 #import "ArtistTableViewFormatter.h"
 #import "SDWebImageManager.h"
 #import "UIColor+SystemTintColor.h"

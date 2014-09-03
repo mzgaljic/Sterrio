@@ -11,6 +11,7 @@
 @implementation AppEnvironmentConstants
 
 static const BOOL PRODUCTION_MODE = YES;
+static BOOL hasSongBeenPlayedSinceLaunch = NO;
 
 static short preferredSizeValue;
 static short preferredWifiStreamValue;
@@ -22,6 +23,16 @@ static BOOL icloudSettingsSync;
 + (BOOL)isAppInProductionMode
 {
     return PRODUCTION_MODE;
+}
+
++ (BOOL)hasSongBeenPlayedSinceLaunch
+{
+    return hasSongBeenPlayedSinceLaunch;
+}
+
++ (void)setSongHasBeenPlayedSinceLaunch
+{
+    hasSongBeenPlayedSinceLaunch = YES;
 }
 
 //app settings

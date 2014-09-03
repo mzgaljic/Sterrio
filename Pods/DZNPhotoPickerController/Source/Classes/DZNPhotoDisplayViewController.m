@@ -51,7 +51,6 @@ static CGFloat kDZNPhotoDisplayMinimumBarHeight = 44.0;
 @synthesize activityIndicator = _activityIndicator;
 @synthesize searchTimer = _searchTimer;
 
-//Mark was here
 - (instancetype)init
 {
     return [self initWithCollectionViewLayout:[DZNPhotoDisplayViewController flowLayout]];
@@ -1027,8 +1026,12 @@ Returns the custom collection view layout.
 
 - (NSUInteger)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskAllButUpsideDown;
-    //return UIInterfaceOrientationMaskAll;
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return NO;
 }
 
 @end

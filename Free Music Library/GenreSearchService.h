@@ -10,7 +10,6 @@
 #import "GenreSearchDelegate.h"
 #import "GenreConstants.h"
 #import "NSString+WhiteSpace_Utility.h"
-//#import "NSString+Levenshtein.h"
 #import "NSString+Levenshtein_Distance.h"
 #import "LevenshteinDistanceItem.h"
 
@@ -18,5 +17,6 @@
 
 + (void)searchAllGenresForGenreString:(NSString *)searchString;
 + (void)setDelegate:(id<GenreSearchDelegate>)delegate;
++ (void)removeDelegate;
 
 @end

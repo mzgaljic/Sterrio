@@ -12,7 +12,10 @@
 #import <XCDYouTubeKit/XCDYouTubeClient.h>
 
 #import "Song.h"
-#import "Album.h"
+#import "Song+Utilities.h"
+#import "GenreConstants.h"
+#import "CoreDataManager.h"
+#import "YouTubeVideoSearchService.h"
 
 #import "Reachability.h"
 #import "SDWebImageManager.h"
@@ -28,13 +31,13 @@
 #import "DZNPhotoPickerController.h"
 #import "UIImagePickerControllerExtended.h"
 #import "NSString+HTTP_Char_Escape.h"
+#import "XCDYouTubeVideoPlayerViewController.h"
 
 @interface YouTubeVideoPlaybackTableViewController : UITableViewController <AVAudioSessionDelegate,
                                                                             AVAudioPlayerDelegate,
                                                                             UITextFieldDelegate,
                                                                             UINavigationControllerDelegate,
                                                                             UIActionSheetDelegate,
-                                                                            ALMoviePlayerControllerDelegate,
                                                                             UINavigationBarDelegate,
                                                                             UIImagePickerControllerDelegate>
 

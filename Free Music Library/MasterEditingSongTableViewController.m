@@ -64,7 +64,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     _currentSongName = _songIAmEditing.songName;
     _currentArtist = _songIAmEditing.artist;
     _currentAlbum = _songIAmEditing.album;
-    _currentGenreCode = _songIAmEditing.genreCode;
+    _currentGenreCode = [_songIAmEditing.genreCode intValue];
     self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.albumArtFileName];
     
     //remove header gap at top of table, and remove some scrolling space under the delete button (update scroll insets too)
@@ -175,6 +175,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
         
         if(indexPath.row == 0){  //Delete song text
             cell.textLabel.text = @"Delete Song";
+            cell.textLabel.font = [UIFont boldSystemFontOfSize:17.0f];
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.textLabel.textColor = [UIColor redColor];
         }
@@ -325,7 +326,9 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                 [singleton setAVPlayerLayerInstance:nil];
             }
             
-            [_songIAmEditing deleteSong];
+            [_songIAmEditing removeAlbumArt];
+            [[CoreDataManager context] deleteObject:_songIAmEditing];
+            [[CoreDataManager sharedInstance] saveContext];
             [self dismissViewControllerAnimated:YES completion:nil];
         } else
             return;
@@ -361,6 +364,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     } else
         _songIAmEditing.songName = (NSString *)notification.object;
      */
+
     _currentSongName = newName;
     [self.tableView reloadData];
 }
@@ -680,5 +684,4 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 
     }
 }
-
 @end

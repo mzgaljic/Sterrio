@@ -15,8 +15,7 @@
     static UIColor* systemTintColor = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        UIView* view = [[UIView alloc] init];
-        systemTintColor = view.tintColor;
+        systemTintColor = [[[UIApplication sharedApplication] delegate] window].tintColor;
     });
     return systemTintColor;
 }

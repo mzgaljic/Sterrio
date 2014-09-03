@@ -9,34 +9,152 @@
 #import "MasterPlaylistTableViewController.h"
 
 @interface MasterPlaylistTableViewController ()
-@property(nonatomic, strong) NSMutableArray *allPlaylists;
 @property(nonatomic, strong) UIAlertView *createPlaylistAlert;
+
+@property (nonatomic, assign) int indexOfEditingSong;
+@property (nonatomic, assign) int selectedRowIndexValue;
+@property (nonatomic, strong) UISearchBar* searchBar;
 @end
 
 @implementation MasterPlaylistTableViewController
-@synthesize allPlaylists = _allPlaylists, createPlaylistAlert = _createPlaylistAlert;
-static BOOL PRODUCTION_MODE;
+@synthesize createPlaylistAlert = _createPlaylistAlert;
 
-- (NSMutableArray *) results
+- (void)setUpNavBarItems
 {
-    if(! _results){
-        _results = [[NSMutableArray alloc] init];
+    //right side of nav bar
+    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self
+                                                                               action:@selector(addButtonPressed)];
+    
+    UIImage *image = [UIImage imageNamed:@"Now Playing"];
+    UIBarButtonItem *nowPlaying = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(nowPlayingTapped)];
+    nowPlaying.target = self;
+    nowPlaying.action = @selector(nowPlayingTapped);
+    
+#warning check to see if item is actually playing when adding the now playing button!
+    UIBarButtonItem *negSpaceAdjust = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    [negSpaceAdjust setWidth:-10];
+    
+    NSArray *rightBarButtonItems = @[negSpaceAdjust, nowPlaying, addButton];
+    self.navigationItem.rightBarButtonItems = rightBarButtonItems;
+    
+    //left side of nav bar
+    image = [UIImage imageNamed:@"Settings-Line"];
+    UIBarButtonItem *settings = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self
+                                                                action:@selector(settingsButtonTapped)];
+    
+    self.navigationItem.leftBarButtonItems = @[settings];
+}
+
+- (void)nowPlayingTapped
+{
+    
+}
+
+- (UIBarButtonItem *)makeBarButtonItemGrey:(UIBarButtonItem *)barButton
+{
+    barButton.style = UIBarButtonItemStylePlain;
+    barButton.enabled = false;
+    return barButton;
+}
+
+- (UIBarButtonItem *)makeBarButtonItemNormal:(UIBarButtonItem *)barButton
+{
+    barButton.style = UIBarButtonItemStyleBordered;
+    barButton.enabled = true;
+    return barButton;
+}
+
+#pragma mark - UISearchBar
+- (void)setUpSearchBar
+{
+    if([self numberOfPlaylistsInCoreDataModel] > 0){
+        //create search bar, add to viewController
+        _searchBar = [[UISearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0)];
+        _searchBar.placeholder = @"Search Playlists";
+        _searchBar.keyboardType = UIKeyboardTypeASCIICapable;
+        _searchBar.delegate = self;
+        [self.searchBar sizeToFit];
+        self.tableView.tableHeaderView = _searchBar;
     }
-    return _results;
 }
 
-- (void)setProductionModeValue
+//User tapped the search box
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
+    //show the cancel button
+    [_searchBar setShowsCancelButton:YES animated:YES];
 }
 
--(void)viewWillAppear:(BOOL)animated
+//user tapped "Search"
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    //search results already appear as the user types. Just hide the keyboard...
+    [_searchBar resignFirstResponder];
+}
+
+//User tapped "Cancel"
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    //dismiss search bar and hide cancel button
+    [_searchBar setShowsCancelButton:NO animated:YES];
+    [_searchBar resignFirstResponder];
+}
+
+//User typing as we speak, fetch latest results to populate results as they type
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    if(searchText.length == 0)
+    {
+        self.displaySearchResults = NO;
+    }
+    else
+    {
+        self.displaySearchResults = YES;
+        
+        /*
+         self.fetchedResultsController = nil;
+         NSManagedObjectContext *context = [CoreDataManager context];
+         NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
+         
+         if([AppEnvironmentConstants smartAlphabeticalSort])
+         request.predicate = [NSPredicate predicateWithFormat:@"smartSortSongName == %@", searchText];
+         else
+         request.predicate = [NSPredicate predicateWithFormat:@"songName == %@", searchText];
+         
+         //fetchedResultsController is from custom super class
+         self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+         managedObjectContext:context
+         sectionNameKeyPath:nil
+         cacheName:nil];
+         */
+        //now search through each song to find the query we need
+        /**
+         for (Song* someSong in _allSongsInLibrary)  //iterate through all songs
+         {
+         NSRange nameRange = [someSong.songName rangeOfString:searchText options:NSCaseInsensitiveSearch];
+         if(nameRange.location != NSNotFound)
+         {
+         [_searchResults addObject:someSong];
+         }
+         //would maybe like to filter by BEST result? This only captures results...
+         }
+         */
+    }
+}
+
+#pragma mark - View Controller life cycle
+static BOOL lastSortOrder;
+- (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
-    //init tableView model
-    _allPlaylists = [NSMutableArray arrayWithArray:[Playlist loadAll]];
-    [self.tableView reloadData];
+    [self setUpSearchBar];  //must be called in viewWillAppear, and after allSongsLibrary is refreshed
+    
+    if(lastSortOrder != [AppEnvironmentConstants smartAlphabeticalSort])
+    {
+        [self setFetchedResultsControllerAndSortStyle];
+        lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
+    }
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     //if coming from these orientations
@@ -47,32 +165,50 @@ static BOOL PRODUCTION_MODE;
     }
     else
         self.tabBarController.tabBar.hidden = NO;
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
     
-    // This will remove extra separators from tableview
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    if([self numberOfPlaylistsInCoreDataModel] == 0){ //dont need search bar anymore
+        _searchBar = nil;
+        self.tableView.tableHeaderView = nil;
+    }
     
-    [self setProductionModeValue];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    self.navigationController.navigationBar.translucent = YES;
+    [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:animated];
     if(! stillInSameTab){  //want to reset the state of our variables only when we pick another tab
         tappedTabBar = YES;
         pushedMoreViews = NO;
         stillInSameTab = YES;
     }
     stillInSameTab = NO;
+
     self.navigationController.navigationBar.translucent = NO;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    self.navigationController.navigationBar.translucent = YES;
+    self.navigationController.navigationBar.topItem.title = @"Playlists";
+    
+    //need to check because when user presses back button, tab bar isnt always hidden
+    [self prefersStatusBarHidden];
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
+    [self setFetchedResultsControllerAndSortStyle];
+    
+    // This will remove extra separators from tableview
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
+    [self setUpNavBarItems];
+    self.tableView.allowsSelectionDuringEditing = YES;
 }
 
 - (void)didReceiveMemoryWarning
@@ -84,22 +220,17 @@ static BOOL PRODUCTION_MODE;
     [imageCache clearMemory];
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return _allPlaylists.count;
-}
-
+#pragma mark - Table View Data Source
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PlaylistItemCell" forIndexPath:indexPath];
-    // Configure the cell...
     
-    Playlist *playlist = [_allPlaylists objectAtIndex: indexPath.row];  //get playlist instance at this index
+    // Configure the cell...
+    Playlist *playlist;
+    if(self.displaySearchResults)
+        playlist = [self.searchFetchedResultsController objectAtIndexPath:indexPath];
+    else
+        playlist = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     //init cell fields
     cell.textLabel.attributedText = [PlaylistTableViewFormatter formatPlaylistLabelUsingPlaylist:playlist];
@@ -120,26 +251,53 @@ static BOOL PRODUCTION_MODE;
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
-        //obtain object for the deleted playlist
-        Playlist *playlist = [_allPlaylists objectAtIndex:indexPath.row];
+        Playlist *playlist = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
-        //delete the object from our data model (which is saved to disk).
-        [playlist deletePlaylist];
+        //check if any of the songs in this playlist are currently playing, if so, set the avplayer to nil (and pause it) so it doesn't crash!
         
-        //delete album from the tableview data source
-        [_allPlaylists removeObjectAtIndex:indexPath.row];
+        for(Song *aSong in playlist.playlistSongs)
+        {
+            if([aSong.nowPlaying boolValue] == YES)
+            {
+                YouTubeMoviePlayerSingleton *singleton = [YouTubeMoviePlayerSingleton createSingleton];
+                [[singleton AVPlayer] pause];
+                [singleton setAVPlayerInstance:nil];
+                [singleton setAVPlayerLayerInstance:nil];
+            }
+        }
         
-        //delete row from tableView (just the gui)
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        //delete the playlist and save changes
+        NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Playlist" inManagedObjectContext:[CoreDataManager context]];
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        [request setEntity:entityDesc];
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"playlist_id == %@", playlist.playlist_id];
+        [request setPredicate:predicate];
+        
+        NSError *error;
+        NSArray *matchingData = [[CoreDataManager context] executeFetchRequest:request error:&error];
+        if(matchingData.count == 1)
+            [[CoreDataManager context] deleteObject:matchingData[0]];
+        [[CoreDataManager sharedInstance] saveContext];
+        
+        if([self numberOfPlaylistsInCoreDataModel] == 0){ //dont need search bar anymore
+            _searchBar = nil;
+            self.tableView.tableHeaderView = nil;
+        }
     }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    Playlist *selectedPlaylist;
+    if(self.displaySearchResults)
+        selectedPlaylist = [self.searchFetchedResultsController objectAtIndexPath:indexPath];
+    else
+        selectedPlaylist = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     //now segue to push view where user can view the tapped playlist
-   [self performSegueWithIdentifier:@"playlistItemSegue" sender:[_allPlaylists objectAtIndex:(int)indexPath.row]];
+   [self performSegueWithIdentifier:@"playlistItemSegue" sender:selectedPlaylist];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -147,6 +305,7 @@ static BOOL PRODUCTION_MODE;
     return [PlaylistTableViewFormatter preferredPlaylistCellHeight];
 }
 
+#pragma mark - segue
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     pushedMoreViews = YES;
@@ -156,7 +315,7 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
-- (IBAction)addButtonPressed:(id)sender
+- (void)addButtonPressed
 {
     _createPlaylistAlert = [[UIAlertView alloc] init];
     _createPlaylistAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
@@ -180,13 +339,9 @@ static BOOL PRODUCTION_MODE;
             if(playlistName.length == 0)  //was all whitespace, or user gave us an empty string
                 return;
             
-            //create the playlist
-            Playlist *newPlaylist = [[Playlist alloc] init];
-            newPlaylist.playlistName = playlistName;
-            [newPlaylist saveTempPlaylistOnDisk];
-            
-            //now segue to modal view where user can pick songs for this playlist
-            [self performSegueWithIdentifier:@"playlistSongItemPickerSegue" sender:self];
+            Playlist *myNewPlaylist = [Playlist createNewPlaylistWithName:playlistName inManagedContext:[CoreDataManager context]];
+            PlaylistSongAdderTableViewController *vc = [[PlaylistSongAdderTableViewController alloc] initWithPlaylist:myNewPlaylist];
+            [self.navigationController pushViewController:vc animated:YES];
         }
         else  //canceled
             return;
@@ -214,35 +369,23 @@ static BOOL PRODUCTION_MODE;
     }
     
     //create the playlist
-    Playlist *newPlaylist = [[Playlist alloc] init];
-    newPlaylist.playlistName = playlistName;
-    [newPlaylist saveTempPlaylistOnDisk];
+    Playlist *myNewPlaylist = [Playlist createNewPlaylistWithName:playlistName inManagedContext:[CoreDataManager context]];
+    PlaylistSongAdderTableViewController *vc = [[PlaylistSongAdderTableViewController alloc] initWithPlaylist:myNewPlaylist];
     
     [alertTextField resignFirstResponder];  //dismiss keyboard.
     [_createPlaylistAlert dismissWithClickedButtonIndex:50 animated:YES];  //dismisses alertView, skip clickedButtonAtIndex method
     
     //now segue to modal view where user can pick songs for this playlist
-    [self performSegueWithIdentifier:@"playlistSongItemPickerSegue" sender:self];
+    [self.navigationController pushViewController:vc animated:YES];
     
     return YES;
 }
 
-- (void)sidebar:(RNFrostedSidebar *)sidebar didTapItemAtIndex:(NSUInteger)index
+#pragma mark - Go To Settings
+- (void)settingsButtonTapped
 {
-    if (1){
-        [sidebar dismissAnimated:YES];
-        if(index == 3){  //settings button
-            pushedMoreViews = YES;
-            [self performSegueWithIdentifier:@"settingsSegue" sender:self];
-        }
-    }
+    [self performSegueWithIdentifier:@"settingsSegue" sender:self];
 }
-
-- (IBAction)expandableMenuSelected:(id)sender
-{
-    [FrostedSideBarHelper setupAndShowSlideOutMenuUsingdelegate:self];
-}
-
 
 #pragma mark - Rotation status bar methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
@@ -322,6 +465,69 @@ static BOOL stillInSameTab = NO;
 - (BOOL)tabBarIsVisible
 {
     return self.tabBarController.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame);
+}
+
+#pragma mark - Counting Playlists in core data
+- (int)numberOfPlaylistsInCoreDataModel
+{
+    //count how many instances there are of the Song entity in core data
+    NSManagedObjectContext *context = [CoreDataManager context];
+    int count = 0;
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Playlist" inManagedObjectContext:context];
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setEntity:entity];
+    [fetchRequest setIncludesPropertyValues:NO];
+    [fetchRequest setIncludesSubentities:NO];
+    NSError *error = nil;
+    NSUInteger tempCount = [context countForFetchRequest: fetchRequest error: &error];
+    if(error == nil){
+        count = (int)tempCount;
+    }
+    return count;
+}
+
+#pragma mark - setting now playing song
+- (void)setNowPlayingSong:(Song *)myNowPlayingSong
+{
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
+    request.predicate = [NSPredicate predicateWithFormat:@"nowPlaying = %@", [NSNumber numberWithBool:YES]];
+    NSError *error;
+    NSArray *matches = [[CoreDataManager context] executeFetchRequest:request error:&error];
+    if(matches)
+    {
+        if(matches.count == 1)
+            ((Song*)matches[0]).nowPlaying = [NSNumber numberWithBool:NO];
+        else if([matches count] > 1)
+        {
+            //set any of the false positives back to NO.
+            for(Song *aSong in matches)
+                aSong.nowPlaying = [NSNumber numberWithBool:NO];
+        }
+        
+        //now set the song we want
+        myNowPlayingSong.nowPlaying = [NSNumber numberWithBool:YES];
+        [[CoreDataManager sharedInstance] saveContext];
+    }
+}
+
+#pragma mark - fetching and sorting
+- (void)setFetchedResultsControllerAndSortStyle
+{
+    self.fetchedResultsController = nil;
+    NSManagedObjectContext *context = [CoreDataManager context];
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Playlist"];
+    request.predicate = nil;  //means i want all of the playlists
+    
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistName"
+                                                                     ascending:YES
+                                                                      selector:@selector(localizedStandardCompare:)];
+    
+    request.sortDescriptors = @[sortDescriptor];
+    //fetchedResultsController is from custom super class
+    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+                                                                        managedObjectContext:context
+                                                                          sectionNameKeyPath:nil
+                                                                                   cacheName:nil];
 }
 
 @end

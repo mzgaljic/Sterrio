@@ -50,4 +50,9 @@ static NSString *myself;
         return self;
 }
 
+- (NSString *)regularStringToSmartSortString
+{
+    return [self removeArticles];
+}
+
 @end

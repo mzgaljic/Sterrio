@@ -61,6 +61,11 @@ static id<GenreSearchDelegate>delegate;
     delegate = aDelegate;
 }
 
++ (void)removeDelegate
+{
+    delegate = nil;
+}
+
 + (void)sortLevenshteinDistanceResults:(NSMutableArray **)arrayOfLevenshteinDistanceItems
 {
     NSSortDescriptor *highToLow = [NSSortDescriptor sortDescriptorWithKey:@"distance" ascending:YES];

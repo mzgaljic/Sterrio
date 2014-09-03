@@ -24,16 +24,20 @@
 #import "SDCAlertView.h"
 #import "MRProgress.h"
 #import "UIImage+colorImages.h"
+#import "UIColor+LighterAndDarker.h"
 #import "ASValueTrackingSlider.h"
 #import "UIColor+SystemTintColor.h"
 #import "PreferredFontSizeUtility.h"
 #import "UIButton+ExpandedHitArea.h"
+#import "AlbumArtUtilities.h"
+#import "CoreDataManager.h"
 
 //Playback model
 #import "PlaybackModelSingleton.h"
 
 
 @interface SongItemViewController : UIViewController <AVAudioSessionDelegate, AVAudioPlayerDelegate, ASValueTrackingSliderDataSource>
+@property (strong, nonatomic) NSNumber *printFriendlySongIndex;
 
 //GUI vars
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;  //really the navBar title item

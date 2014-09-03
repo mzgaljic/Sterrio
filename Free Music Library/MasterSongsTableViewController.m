@@ -7,14 +7,12 @@
 //
 
 #import "MasterSongsTableViewController.h"
+#import "AppDelegate.h"
 
 @interface MasterSongsTableViewController ()
-@property (nonatomic, strong) NSMutableArray *searchResults;
-@property (nonatomic, strong) NSMutableArray *allSongsInLibrary;
 @property (nonatomic, assign) int indexOfEditingSong;
 @property (nonatomic, assign) int selectedRowIndexValue;
 @property (nonatomic, strong) UISearchBar* searchBar;
-@property (nonatomic, assign) BOOL displaySearchResults;
 @end
 
 @implementation MasterSongsTableViewController
@@ -96,10 +94,11 @@ static BOOL PRODUCTION_MODE;
     return barButton;
 }
 
+
 #pragma mark - UISearchBar
 - (void)setUpSearchBar
 {
-    if(_allSongsInLibrary.count > 0){
+    if([self numberOfSongsInCoreDataModel] > 0){
         //create search bar, add to viewController
         _searchBar = [[UISearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0)];
         _searchBar.placeholder = @"Search Songs";
@@ -110,9 +109,18 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
-//User tapped the search box
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
+{
+    self.searchFetchedResultsController = nil;
+    [self setFetchedResultsControllerAndSortStyle];
+}
+
+//user tapped search box
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
+    self.searchFetchedResultsController = nil;
+    self.fetchedResultsController = nil;
+    
     //show the cancel button
     [_searchBar setShowsCancelButton:YES animated:YES];
 }
@@ -127,11 +135,11 @@ static BOOL PRODUCTION_MODE;
 //User tapped "Cancel"
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
+    [self setFetchedResultsControllerAndSortStyle];
+    
     //dismiss search bar and hide cancel button
     [_searchBar setShowsCancelButton:NO animated:YES];
     [_searchBar resignFirstResponder];
-    
-    _searchResults = [NSMutableArray array];
 }
 
 //User typing as we speak, fetch latest results to populate results as they type
@@ -139,35 +147,62 @@ static BOOL PRODUCTION_MODE;
 {
     if(searchText.length == 0)
     {
-        _displaySearchResults = NO;
+        self.displaySearchResults = NO;
+        self.searchFetchedResultsController = nil;
     }
     else
     {
-        _searchResults = [NSMutableArray array];
-        _displaySearchResults = YES;
-        for (Song* someSong in _allSongsInLibrary)  //iterate through all songs
-        {
-            NSRange nameRange = [someSong.songName rangeOfString:searchText options:NSCaseInsensitiveSearch];
-            if(nameRange.location != NSNotFound)
-            {
-                [_searchResults addObject:someSong];
-            }
-            //would maybe like to filter by BEST result? This only captures results...
-        }
+        self.displaySearchResults = YES;
+        
+        self.searchFetchedResultsController = nil;
+        NSManagedObjectContext *context = [CoreDataManager context];
+        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
+        
+        if([AppEnvironmentConstants smartAlphabeticalSort])
+            
+            request.predicate = [NSPredicate predicateWithFormat:@"smartSortSongName CONTAINS[cd] %@", searchText];
+        else
+            request.predicate = [NSPredicate predicateWithFormat:@"songName CONTAINS[cd] %@", searchText];
+        
+        NSSortDescriptor *sortDescriptor;
+        if([AppEnvironmentConstants smartAlphabeticalSort])
+            sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
+                                                           ascending:YES
+                                                            selector:@selector(localizedStandardCompare:)];
+        else
+            sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
+                                                           ascending:YES
+                                                            selector:@selector(localizedStandardCompare:)];
+        request.sortDescriptors = @[sortDescriptor];
+        //searchResults
+        self.searchFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+                                                                                  managedObjectContext:context
+                                                                                    sectionNameKeyPath:nil
+                                                                                             cacheName:nil];
     }
-    [self.tableView reloadData];
 }
 
 
 #pragma mark - View Controller life cycle
+static BOOL lastSortOrder;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    //init tableView model
-    _allSongsInLibrary = nil;
-    _allSongsInLibrary = [NSMutableArray arrayWithArray:[Song loadAll]];
     
     [self setUpSearchBar];  //must be called in viewWillAppear, and after allSongsLibrary is refreshed
+    
+    if(self.searchFetchedResultsController)
+    {
+        self.searchFetchedResultsController = nil;
+        [self setFetchedResultsControllerAndSortStyle];
+        lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
+    }
+    
+    if(lastSortOrder != [AppEnvironmentConstants smartAlphabeticalSort])
+    {
+        [self setFetchedResultsControllerAndSortStyle];
+        lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
+    }
     
     UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft ||
@@ -179,7 +214,12 @@ static BOOL PRODUCTION_MODE;
     else
         self.tabBarController.tabBar.hidden = NO;
     
-    [self.tableView reloadData];  //reset or update any now playing items
+    if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
+        _searchBar = nil;
+        self.tableView.tableHeaderView = nil;
+    }
+    
+    [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -202,7 +242,12 @@ static BOOL PRODUCTION_MODE;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
+    
+    [self setFetchedResultsControllerAndSortStyle];
+    
     stackController = [[StackController alloc] init];
+    
     // This will remove extra separators from tableview
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
@@ -225,56 +270,12 @@ static BOOL PRODUCTION_MODE;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-
-#pragma mark - UITableView implementation
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    if(_displaySearchResults)
-        return _searchResults.count;  //user is searching and we need to show search results in table
-    else
-        return _allSongsInLibrary.count;  //user browsing library
-}
-
+#pragma mark - Table View Data Source
 static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SongItemCell" forIndexPath:indexPath];
-    
-    /**
-    Song *song;
-    // Configure the cell...
-    if(_displaySearchResults)
-        song = [_searchResults objectAtIndex:indexPath.row];
-    else
-        song = [_allSongsInLibrary objectAtIndex: indexPath.row];
-    
-    //init cell fields
-    cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
-    if(! [SongTableViewFormatter songNameIsBold])
-        cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
-    [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
-    
-    if([[PlaybackModelSingleton createSingleton].nowPlayingSong isEqual:song])
-        cell.textLabel.textColor = [UIColor defaultSystemTintColor];
-    else
-        cell.textLabel.textColor = [UIColor blackColor];
-    
-    CGSize size = CGSizeMake(cell.frame.size.height,cell.frame.size.height);
-    [cell.imageView sd_setImageWithURL:[AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]
-                      placeholderImage:[UIImage imageWithColor:[UIColor clearColor] width:size.width height:size.height]
-                               options:SDWebImageCacheMemoryOnly
-                             completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL){
-                                 cell.imageView.image = image;
-                             }];
-    
-     */
-    //---------------------------------------
-    
+
     if (cell == nil)
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"SongItemCell"];
     else
@@ -286,18 +287,18 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     // Set up other aspects of the cell content.
     Song *song;
-    if(_displaySearchResults)
-        song = [_searchResults objectAtIndex:indexPath.row];
+    if(self.displaySearchResults)
+        song = [self.searchFetchedResultsController objectAtIndexPath:indexPath];
     else
-        song = [_allSongsInLibrary objectAtIndex: indexPath.row];
-    
+        song = [self.fetchedResultsController objectAtIndexPath:indexPath];
+
     //init cell fields
     cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
     if(! [SongTableViewFormatter songNameIsBold])
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    if([[PlaybackModelSingleton createSingleton].nowPlayingSong isEqual:song])
+    if([song.nowPlaying boolValue] == YES)
         cell.textLabel.textColor = [UIColor defaultSystemTintColor];
     else
         cell.textLabel.textColor = [UIColor blackColor];
@@ -326,7 +327,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             }
         });
     }];
-    //--------------------------------------------------------------
     
     return cell;
 }
@@ -334,7 +334,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //could also selectively choose which rows may be deleted here.
-    return YES;
+    if(self.displaySearchResults)
+        return NO;
+    else
+        return YES;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -347,28 +350,32 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
         //obtain object for the deleted song
-        Song *song = [self.allSongsInLibrary objectAtIndex:indexPath.row];
+        Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
-        if([song isEqual:[PlaybackModelSingleton createSingleton].nowPlayingSong]){
+        if([song.nowPlaying boolValue] == YES){
             YouTubeMoviePlayerSingleton *singleton = [YouTubeMoviePlayerSingleton createSingleton];
             [[singleton AVPlayer] pause];
             [singleton setAVPlayerInstance:nil];
             [singleton setAVPlayerLayerInstance:nil];
         }
+        [song removeAlbumArt];
+        NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:[CoreDataManager context]];
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        [request setEntity:entityDesc];
         
-        //delete the object from our data model (which is saved to disk).
-        [song deleteSong];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"song_id == %@", song.song_id];
+        [request setPredicate:predicate];
         
-        //delete song from the tableview data source
-        [[self allSongsInLibrary] removeObjectAtIndex:indexPath.row];
-        
-        if(_allSongsInLibrary.count == 0){ //dont need search bar anymore
+        NSError *error;
+        NSArray *matchingData = [[CoreDataManager context] executeFetchRequest:request error:&error];
+        if(matchingData.count == 1)
+            [[CoreDataManager context] deleteObject:matchingData[0]];
+        [[CoreDataManager sharedInstance] saveContext];
+
+        if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
             _searchBar = nil;
             self.tableView.tableHeaderView = nil;
         }
-        
-        //delete row from tableView (just the gui)
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -378,16 +385,27 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     self.selectedRowIndexValue = (int)indexPath.row;
     UIBarButtonItem *editButton = self.navigationItem.leftBarButtonItems[2];
+    Song *selectedSong;
+    if(self.displaySearchResults)
+        selectedSong = [self.searchFetchedResultsController objectAtIndexPath:indexPath];
+    else
+        selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     if([editButton.title isEqualToString:@"Edit"]){  //tapping song plays the song
-        
-        Song *selectedSong = [self.allSongsInLibrary objectAtIndex:indexPath.row];
-        if([[PlaybackModelSingleton createSingleton].nowPlayingSong isEqual:selectedSong]){
+        if([selectedSong.nowPlaying boolValue] == YES)
+        {
             UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-            if([cell.textLabel.textColor isEqualToColor:[UIColor defaultSystemTintColor]])  //now playing song
-                [YouTubeMoviePlayerSingleton setNeedsToDisplayNewVideo:NO];
+            if([AppEnvironmentConstants hasSongBeenPlayedSinceLaunch])
+            {
+                if([cell.textLabel.textColor isEqualToColor:[UIColor defaultSystemTintColor]])  //now playing song
+                    [YouTubeMoviePlayerSingleton setNeedsToDisplayNewVideo:NO];
+                else
+                    [YouTubeMoviePlayerSingleton setNeedsToDisplayNewVideo:YES];
+            }
             else
+            {
                 [YouTubeMoviePlayerSingleton setNeedsToDisplayNewVideo:YES];
+            }
         }
         else{
             YouTubeMoviePlayerSingleton *singleton = [YouTubeMoviePlayerSingleton createSingleton];
@@ -396,17 +414,17 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             [singleton setAVPlayerLayerInstance:nil];
             
             [YouTubeMoviePlayerSingleton setNeedsToDisplayNewVideo:YES];  //for loading the actual video player, not the other stuff...
+            
+            [self setNowPlayingSong:selectedSong];
+            [[CoreDataManager sharedInstance] saveContext];
         }
-
-        [[PlaybackModelSingleton createSingleton] changeNowPlayingWithSong:selectedSong
-                                                              fromAllSongs:self.allSongsInLibrary
-                                                           indexOfNextSong:self.selectedRowIndexValue];
-        [self performSegueWithIdentifier:@"songItemSegue" sender:nil];
+        [self performSegueWithIdentifier:@"songItemSegue"
+                                  sender:[NSNumber numberWithInt:(int)indexPath.row +1]];
         
     } else if([editButton.title isEqualToString:@"Done"]){  //tapping song triggers edit segue
         
         //now segue to modal view where user can edit the tapped song
-        [self performSegueWithIdentifier:@"editingSongMasterSegue" sender:self];
+        [self performSegueWithIdentifier:@"editingSongMasterSegue" sender:selectedSong];
     }
 }
 
@@ -419,8 +437,14 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         
         //set the songIAmEditing property in the modal view controller
         MasterEditingSongTableViewController* controller = (MasterEditingSongTableViewController*)[[segue destinationViewController] topViewController];
-        [controller setSongIAmEditing:[self.allSongsInLibrary objectAtIndex:self.selectedRowIndexValue]];
+        [controller setSongIAmEditing:(Song *)sender];
         self.indexOfEditingSong = self.selectedRowIndexValue;
+    }
+    else if([[segue identifier] isEqualToString:@"songItemSegue"]){
+        if ([segue.destinationViewController respondsToSelector:@selector(setPrintFriendlySongIndex:)]){
+            [segue.destinationViewController performSelector:@selector(setPrintFriendlySongIndex:)
+                                                  withObject:(NSNumber *)sender];
+        }
     }
 }
 
@@ -443,16 +467,16 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)commitNewSongChanges:(Song *)changedSong
 {
     if(changedSong){
-        [changedSong updateExistingSong];
+        [[CoreDataManager sharedInstance] saveContext];
+#warning register for the notification: DataManagerDidSaveFailedNotification  (look in CoreDataManager.m)
         
-        self.allSongsInLibrary = [NSMutableArray arrayWithArray:[Song loadAll]];
         self.indexOfEditingSong = -1;
-        if(_allSongsInLibrary.count == 0){ //dont need search bar anymore
+        if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
             _searchBar = nil;
             self.tableView.tableHeaderView = nil;
         }
         
-        [self.tableView reloadData];
+        //[self.tableView reloadData];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:@"SongSavedDuringEdit" object:nil];
     }
 }
@@ -524,6 +548,76 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (BOOL)tabBarIsVisible
 {
     return self.tabBarController.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame);
+}
+
+#pragma mark - Counting Songs in core data
+- (int)numberOfSongsInCoreDataModel
+{
+    //count how many instances there are of the Song entity in core data
+    NSManagedObjectContext *context = [CoreDataManager context];
+    int count = 0;
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:context];
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setEntity:entity];
+    [fetchRequest setIncludesPropertyValues:NO];
+    [fetchRequest setIncludesSubentities:NO];
+    NSError *error = nil;
+    NSUInteger tempCount = [context countForFetchRequest: fetchRequest error: &error];
+    if(error == nil){
+        count = (int)tempCount;
+    }
+    return count;
+}
+
+#pragma mark - setting now playing song
+- (void)setNowPlayingSong:(Song *)myNowPlayingSong
+{
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
+    request.predicate = [NSPredicate predicateWithFormat:@"nowPlaying = %@", [NSNumber numberWithBool:YES]];
+    NSError *error;
+    NSArray *matches = [[CoreDataManager context] executeFetchRequest:request error:&error];
+    if(matches)
+    {
+        if(matches.count == 1)
+            ((Song*)matches[0]).nowPlaying = [NSNumber numberWithBool:NO];
+        else if([matches count] > 1)
+        {
+            //set any of the false positives back to NO.
+            for(Song *aSong in matches)
+                aSong.nowPlaying = [NSNumber numberWithBool:NO];
+        }
+        
+        //now set the song we want
+        myNowPlayingSong.nowPlaying = [NSNumber numberWithBool:YES];
+        [[CoreDataManager sharedInstance] saveContext];
+    }
+}
+
+#pragma mark - fetching and sorting
+- (void)setFetchedResultsControllerAndSortStyle
+{
+    self.searchFetchedResultsController = nil;
+    self.fetchedResultsController = nil;
+    NSManagedObjectContext *context = [CoreDataManager context];
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
+    request.predicate = nil;  //means i want all of the songs
+    
+    NSSortDescriptor *sortDescriptor;
+    if([AppEnvironmentConstants smartAlphabeticalSort])
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
+                                                       ascending:YES
+                                                        selector:@selector(localizedStandardCompare:)];
+    else
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
+                                                       ascending:YES
+                                                        selector:@selector(localizedStandardCompare:)];
+    
+    request.sortDescriptors = @[sortDescriptor];
+    //fetchedResultsController is from custom super class
+    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+                                                                        managedObjectContext:context
+                                                                          sectionNameKeyPath:nil
+                                                                                   cacheName:nil];
 }
 
 @end

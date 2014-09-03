@@ -1,32 +1,34 @@
 //
 //  Playlist.h
-//  Free Music Library
+//  Muzic
 //
-//  Created by Mark Zgaljic on 6/11/14.
+//  Created by Mark Zgaljic on 8/22/14.
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
-#import "AppEnvironmentConstants.h"
-#import "NSString+smartSort.h"
-#import "NSObject+ObjectUUID.h"
+#import <CoreData/CoreData.h>
 
-@interface Playlist : NSObject <NSCoding>
+@class Song;
 
-@property (nonatomic, strong) NSString *playlistName;
-@property (nonatomic, strong) NSMutableArray *songsInThisPlaylist;
-@property (atomic, assign) short status;  //used in song picker
-@property(nonatomic, strong, readonly) NSString *playlistID;
+@interface Playlist : NSManagedObject
 
-+ (NSArray *)loadAll;
-///should be saved upon Playlists creation
-- (BOOL)savePlaylist;
-- (BOOL)deletePlaylist;
-- (BOOL)updateExistingPlaylist;
+@property (nonatomic, retain) NSString * playlist_id;
+@property (nonatomic, retain) NSString * playlistName;
+@property (nonatomic, retain) NSNumber * status;
+@property (nonatomic, retain) NSOrderedSet *playlistSongs;
+@end
 
-//used when adding songs to playlists and creating them (passing playlist object via disk)
-- (BOOL)saveTempPlaylistOnDisk;
-+ (Playlist *)loadTempPlaylistFromDisk;
-+ (BOOL)reInsertTempPlaylist:(Playlist *)playlistToInsert;
+@interface Playlist (CoreDataGeneratedAccessors)
 
+- (void)insertObject:(Song *)value inPlaylistSongsAtIndex:(NSUInteger)idx;
+- (void)removeObjectFromPlaylistSongsAtIndex:(NSUInteger)idx;
+- (void)insertPlaylistSongs:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
+- (void)removePlaylistSongsAtIndexes:(NSIndexSet *)indexes;
+- (void)replaceObjectInPlaylistSongsAtIndex:(NSUInteger)idx withObject:(Song *)value;
+- (void)replacePlaylistSongsAtIndexes:(NSIndexSet *)indexes withPlaylistSongs:(NSArray *)values;
+- (void)addPlaylistSongsObject:(Song *)value;
+- (void)removePlaylistSongsObject:(Song *)value;
+- (void)addPlaylistSongs:(NSOrderedSet *)values;
+- (void)removePlaylistSongs:(NSOrderedSet *)values;
 @end

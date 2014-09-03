@@ -17,13 +17,13 @@
 #import "Artist.h"
 #import "Playlist.h"
 #import "GenreConstants.h"
-#import "FileIOConstants.h"
 #import "AlbumArtUtilities.h"
 #import "SDWebImageManager.h"
 #import "AppEnvironmentConstants.h"
 #import "UIColor+SystemTintColor.h"
 #import "YouTubeMoviePlayerSingleton.h"
 #import "PlaybackModelSingleton.h"
+#import "UIColor+LighterAndDarker.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, AVAudioSessionDelegate, AVAudioPlayerDelegate>
 

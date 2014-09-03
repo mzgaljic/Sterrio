@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "AppEnvironmentConstants.h"
+#import "UIColor+SystemTintColor.h"
 #import "Song.h"
 #import "Album.h"
 #import "Playlist.h"
@@ -15,8 +16,7 @@
 
 @interface AppDelegateSetupHelper : NSObject
 
-+ (void)setUpNSCodingFilePaths;
-+ (void)setUpFakeLibraryContent;
 + (void)setAppSettingsAppLaunchedFirstTime:(BOOL)firstTime;
++ (void)logGlobalAppTintColor;
 
 @end

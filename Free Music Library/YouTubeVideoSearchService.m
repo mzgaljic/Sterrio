@@ -9,7 +9,6 @@
 #import "YouTubeVideoSearchService.h"
 
 @interface YouTubeVideoSearchService ()
-@property (nonatomic, strong) id<YouTubeVideoSearchDelegate>delegate;
 @property (nonatomic, strong) NSString *nextPageToken;  //set and reset when appropriate
 @property (nonatomic, strong) NSString *originalQueryUrl;
 @end
@@ -44,12 +43,12 @@ static NSString *nextPageString = @"&pageToken=";
                     {
                         //if(requestError.code == kCFURLErrorNotConnectedToInternet)  //-1019
                             //NSLog(@"no internet connection. Tried getting yt results.");
-                        [_delegate networkErrorHasOccuredSearchingYoutube];
+                        [delegate networkErrorHasOccuredSearchingYoutube];
                     }
                 }
                 else  // Data received...continue processing
                 {
-                    [_delegate ytVideoSearchDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
+                    [delegate ytVideoSearchDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
                 }
                 
             });  //end of async dispatch
@@ -61,7 +60,7 @@ static NSString *nextPageString = @"&pageToken=";
 - (void)fetchNextYouTubePageForLastQuery
 {
     if(_nextPageToken == nil){
-        [_delegate ytvideoResultsNoMorePagesToView];
+        [delegate ytvideoResultsNoMorePagesToView];
         return;
     }
     if(_originalQueryUrl){
@@ -83,12 +82,12 @@ static NSString *nextPageString = @"&pageToken=";
                 {
                     if (requestError != nil)  // Check for problems
                     {
-                        [_delegate networkErrorHasOccuredFetchingMorePages];
+                        [delegate networkErrorHasOccuredFetchingMorePages];
                     }
                 }
                 else  // Data received...continue processing
                 {
-                    [_delegate ytVideoNextPageResultsDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
+                    [delegate ytVideoNextPageResultsDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
                 }
                 
             });  //end of async dispatch
@@ -122,7 +121,7 @@ static NSString *nextPageString = @"&pageToken=";
                 }
                 else  // Data received...continue processing
                 {
-                    [_delegate ytVideoAutoCompleteResultsDidDownload:[self parseYouTubeVideoAutoSuggestResponse:data]];
+                    [delegate ytVideoAutoCompleteResultsDidDownload:[self parseYouTubeVideoAutoSuggestResponse:data]];
                     
                 }
                 
@@ -132,9 +131,15 @@ static NSString *nextPageString = @"&pageToken=";
         return;
 }
 
--(void)setDelegate:(id<YouTubeVideoSearchDelegate>)delegate
+static id<YouTubeVideoSearchDelegate> delegate;
+-(void)setDelegate:(id<YouTubeVideoSearchDelegate>)myDelegate
 {
-    _delegate = delegate;
+    delegate = myDelegate;
+}
+
++ (void)removeDelegate
+{
+    delegate = nil;
 }
 
 

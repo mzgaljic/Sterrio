@@ -17,7 +17,7 @@
 
 @property (nonatomic, strong) UIBarButtonItem *addToLibraryButton;
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
-@property (nonatomic, strong) ALMoviePlayerControls *movieControls;
+@property (nonatomic, strong) XCDYouTubeVideoPlayerViewController *videoPlayerViewController;
 
 @property (nonatomic, assign) BOOL enoughSongInformationGiven;
 @property (nonatomic, strong) UIImage *albumArt;
@@ -37,6 +37,23 @@ static const short Song_Input_TextField_Tag = 100;
 static const short Artist_Input_TextField_Tag = 200;
 static const short Album_Input_TextField_Tag = 300;
 static const short Genre_Input_TextField_Tag = 400;
+
+- (void)dealloc
+{
+    [YouTubeVideoSearchService removeDelegate];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    numberTimesViewHasBeenShown = 0;
+    _addToLibraryButton = nil;
+    _ytVideo = nil;
+    _albumArt = nil;
+    _smallCellAlbumArt = nil;
+    _currentUserEnteredSongName = nil;
+    _currentUserEnteredGenreName = nil;
+    _currentUserEnteredArtistName = nil;
+    _currentUserEnteredAlbumName = nil;
+    NSLog(@"Dealloc'ed in %@", NSStringFromClass([YouTubeVideoPlaybackTableViewController class]));
+}
 
 - (void)setAlbumArt:(UIImage *)albumArt
 {
@@ -94,10 +111,6 @@ static const short Genre_Input_TextField_Tag = 400;
                                              selector:@selector(setUpLockScreenInfoAndArt)
                                                  name:UIApplicationWillResignActiveNotification
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(orientationHasChanged)
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object:nil];
     
     self.navigationController.toolbarHidden = NO;
     _navBar.title = _ytVideo.videoName;
@@ -133,17 +146,10 @@ static short numberTimesViewHasBeenShown = 0;
     [[YouTubeMoviePlayerSingleton createSingleton] setPreviewMusicYouTubePlayerInstance: nil];
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
-    
-    numberTimesViewHasBeenShown = 0;
-}
-
 #pragma mark - Setting up ALMoviePlayerController
 - (void)setUpVideoPlayer
 {
+    //unnecessary to get video id info twice. remove this if time permits.
     [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:_ytVideo.videoId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
         if (video)
         {
@@ -178,7 +184,7 @@ static short numberTimesViewHasBeenShown = 0;
                 }
                 
                 //Now that we have the url, load the video into our MPMoviePlayerController
-                [self setUpMPMoviePlayerControllerUsingNSURL:url];
+                [self setUpVideoView];
                 
             }
             else{
@@ -195,17 +201,13 @@ static short numberTimesViewHasBeenShown = 0;
             [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
         }
     }];
+    
+    _videoPlayerViewController = [[XCDYouTubeVideoPlayerViewController alloc] initWithVideoIdentifier:_ytVideo.videoId];
 }
 
-- (void)setUpMPMoviePlayerControllerUsingNSURL:(NSURL *)videoUrl
+- (void)setUpVideoView
 {
-    ALMoviePlayerController *videoPlayer = [[ALMoviePlayerController alloc] initWithFrame:self.view.frame];
-    videoPlayer.delegate = self;
-    _movieControls = [[ALMoviePlayerControls alloc] initWithMoviePlayer:videoPlayer style:ALMoviePlayerControlsStyleEmbedded];
-    [videoPlayer setControls:_movieControls];
-    
     [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
-    
     float widthOfScreenRoationIndependant;
     float  a = [[UIScreen mainScreen] bounds].size.height;
     float b = [[UIScreen mainScreen] bounds].size.width;
@@ -219,20 +221,18 @@ static short numberTimesViewHasBeenShown = 0;
         offset += Landscape_TableView_Header_Offset;
     float frameHeight = [self videoHeightInSixteenByNineAspectRatioGivenWidth:widthOfScreenRoationIndependant];
     UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, frameHeight + offset)];
-    [videoPlayer.view setFrame:CGRectMake(0, 0, headerView.frame.size.width, headerView.frame.size.height)];
+    [self.tableView.tableHeaderView setFrame:CGRectMake(0, 0, headerView.frame.size.width, headerView.frame.size.height)];
     self.tableView.tableHeaderView = headerView;
     
     //present this MPMoviePlayerController inside of the headerView of the table
-    videoPlayer.controlStyle = MPMovieControlStyleNone;
-	videoPlayer.view.frame = CGRectMake(0.f, 0.f, headerView.bounds.size.width, headerView.bounds.size.height);
-	videoPlayer.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	if (![headerView.subviews containsObject:videoPlayer.view])
-		[headerView addSubview:videoPlayer.view];
-    
-    [_movieControls setFrame:CGRectMake(0.f, 0.f, videoPlayer.view.bounds.size.width, videoPlayer.view.bounds.size.height)];
+	self.tableView.tableHeaderView.frame = CGRectMake(0.f, 0.f, headerView.bounds.size.width, headerView.bounds.size.height);
+	self.tableView.tableHeaderView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-    [[YouTubeMoviePlayerSingleton createSingleton] setPreviewMusicYouTubePlayerInstance:videoPlayer];
-    [videoPlayer setContentURL:videoUrl];
+    [_videoPlayerViewController presentInView:self.tableView.tableHeaderView];
+    [_videoPlayerViewController.moviePlayer play];
+    
+    YouTubeMoviePlayerSingleton *singleton = [YouTubeMoviePlayerSingleton createSingleton];
+    [singleton setPreviewMusicYouTubePlayerInstance:_videoPlayerViewController.moviePlayer];
 }
 
 - (void)setPlaceHolderImageForVideoPlayer
@@ -255,20 +255,6 @@ static short numberTimesViewHasBeenShown = 0;
     
     [MRProgressOverlayView showOverlayAddedTo:placeHolderView title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
     self.tableView.tableHeaderView = placeHolderView;
-}
-
-#pragma mark - ALMoviePlayerController delegate methods
-- (void)moviePlayerWillMoveFromWindow
-{
-    //used to re-add the movie player to your view controller's view (because during the transition to fullscreen,
-    //it was moved to [[UIApplication sharedApplication] keyWindow]
-    ALMoviePlayerController *videoPlayer = [[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer];
-    UIView *headerView = self.tableView.tableHeaderView;
-    if (![headerView.subviews containsObject:videoPlayer.view])
-        [headerView addSubview:videoPlayer.view];
-    
-    [videoPlayer setFrame:CGRectMake(0, 0, headerView.frame.size.width, headerView.frame.size.height)];
-    [_movieControls setFrame:CGRectMake(0.f, 0.f, videoPlayer.view.bounds.size.width, videoPlayer.view.bounds.size.height)];
 }
 
 #pragma mark - AlertView
@@ -775,71 +761,69 @@ static short numberTimesViewHasBeenShown = 0;
             break;
         default:    break;
     }
-
 }
 
 
 #pragma mark - Song, Album, Artist, and Genre 'factories' (not real factory)
 - (void)createSongWithName:(NSString *)songName
 {
-    Song *aSong = [[Song alloc] init];
-    aSong.songName = songName;
-    aSong.youtubeId = _ytVideo.videoId;
-    [aSong setAlbumArt:_albumArt];
+    Song *myNewSong;
+    myNewSong = [Song createNewSongWithName:songName
+                       inNewOrExistingAlbum:nil
+                      byNewOrExistingArtist:nil
+                                    inGenre:0
+                           inManagedContext:[CoreDataManager context]];
+    myNewSong.youtube_id = _ytVideo.videoId;
+    [myNewSong setAlbumArt:self.albumArt];
     
-    [aSong saveSong];
+    [[CoreDataManager sharedInstance] saveContext];
+    NSString *videoId = myNewSong.youtube_id;
+#warning register for the notification: DataManagerDidSaveFailedNotification  (look in CoreDataManager.m)
 }
 
 - (void)createSongWithName:(NSString *)songName byArtistName:(NSString *)artistName
 {
-    Artist *anArtist = [[Artist alloc] init];
-    anArtist.artistName = artistName;
+    Song *myNewSong;
+    myNewSong = [Song createNewSongWithName:songName
+                       inNewOrExistingAlbum:nil
+                      byNewOrExistingArtist:artistName
+                                    inGenre:0
+                           inManagedContext:[CoreDataManager context]];
+    myNewSong.youtube_id = _ytVideo.videoId;
+    [myNewSong setAlbumArt:self.albumArt];
     
-    Song *aSong = [[Song alloc] init];
-    aSong.songName = songName;
-    aSong.youtubeId = _ytVideo.videoId;
-    aSong.artist = anArtist;
-    [aSong setAlbumArt:_albumArt];
-    
-    [aSong saveSong];
-    [anArtist saveArtist];
+    [[CoreDataManager sharedInstance] saveContext];
+#warning register for the notification: DataManagerDidSaveFailedNotification  (look in CoreDataManager.m)
 }
 
 - (void)createSongWithName:(NSString *)songName partOfAlbumNamed:(NSString *)albumName
 {
-    Album *anAlbum = [[Album alloc] init];
-    anAlbum.albumName = albumName;
-    [anAlbum setAlbumArt:_albumArt];
+    Song *myNewSong;
+    myNewSong = [Song createNewSongWithName:songName
+                       inNewOrExistingAlbum:albumName
+                      byNewOrExistingArtist:nil
+                                    inGenre:0
+                           inManagedContext:[CoreDataManager context]];
+    myNewSong.youtube_id = _ytVideo.videoId;
+    [myNewSong setAlbumArt:self.albumArt];
     
-    Song *aSong = [[Song alloc] init];
-    aSong.songName = songName;
-    aSong.youtubeId = _ytVideo.videoId;
-    aSong.album = anAlbum;
-    
-    [anAlbum saveAlbum];
-    [aSong saveSong];
+    [[CoreDataManager sharedInstance] saveContext];
+#warning register for the notification: DataManagerDidSaveFailedNotification  (look in CoreDataManager.m)
 }
 
 - (void)createSongWithName:(NSString *)songName byArtistName:(NSString *)artistName partOfAlbumNamed:(NSString *)albumName
 {
-    Album *anAlbum = [[Album alloc] init];
-    anAlbum.albumName = albumName;
-    [anAlbum setAlbumArt:_albumArt];
+    Song *myNewSong;
+    myNewSong = [Song createNewSongWithName:songName
+                       inNewOrExistingAlbum:albumName
+                      byNewOrExistingArtist:artistName
+                                    inGenre:0
+                           inManagedContext:[CoreDataManager context]];
+    myNewSong.youtube_id = _ytVideo.videoId;
+    [myNewSong setAlbumArt:self.albumArt];
     
-    Artist *anArtist = [[Artist alloc] init];
-    anArtist.artistName = artistName;
-    anAlbum.artist = anArtist;
-    
-    Song *aSong = [[Song alloc] init];
-    aSong.songName = songName;
-    aSong.youtubeId = _ytVideo.videoId;
-    //swap these
-    aSong.artist = anArtist;
-    aSong.album = anAlbum;
-    
-    [anArtist saveArtist];
-    [anAlbum saveAlbum];
-    [aSong saveSong];
+    [[CoreDataManager sharedInstance] saveContext];
+#warning register for the notification: DataManagerDidSaveFailedNotification  (look in CoreDataManager.m)
 }
 
 
@@ -851,9 +835,9 @@ static short numberTimesViewHasBeenShown = 0;
     UIView *headerView = self.tableView.tableHeaderView;
     CGRect newRect;
     if(toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft || toInterfaceOrientation == UIInterfaceOrientationLandscapeRight)
-        newRect = CGRectMake(0, 0, headerView.frame.size.width, headerView.frame.size.height + Landscape_TableView_Header_Offset);
+        newRect = CGRectMake(0, 0, self.view.frame.size.width, headerView.frame.size.height + Landscape_TableView_Header_Offset);
     else
-        newRect = CGRectMake(0, 0, headerView.frame.size.width, headerView.frame.size.height - Landscape_TableView_Header_Offset);
+        newRect = CGRectMake(0, 0, self.view.frame.size.width, headerView.frame.size.height - Landscape_TableView_Header_Offset);
     
     // Animate the height change of the headerView
     [UIView animateWithDuration:0.5 animations:^{
@@ -866,12 +850,6 @@ static short numberTimesViewHasBeenShown = 0;
         [self prefersStatusBarHidden];
         [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
     }
-}
-
-- (void)orientationHasChanged
-{
-    //now get proper width dimensions for the movie controls after view has rotated
-    [_movieControls setFrame:CGRectMake(0.f, 0.f, self.tableView.bounds.size.width, self.tableView.tableHeaderView.bounds.size.height)];
 }
 
 - (BOOL)prefersStatusBarHidden

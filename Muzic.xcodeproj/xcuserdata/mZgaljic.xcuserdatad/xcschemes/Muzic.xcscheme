@@ -28,6 +28,16 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       buildConfiguration = "Debug">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "8703443619A19E3E002E5077"
+               BuildableName = "Core Data Static LibraryTests.xctest"
+               BlueprintName = "Core Data Static LibraryTests"
+               ReferencedContainer = "container:Muzic.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

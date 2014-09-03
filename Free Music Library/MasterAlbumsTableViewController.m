@@ -9,77 +9,53 @@
 #import "MasterAlbumsTableViewController.h"
 
 @interface MasterAlbumsTableViewController()
-@property (nonatomic, strong) NSMutableArray *albums;
+@property (nonatomic, assign) int indexOfEditingArtist;
+@property (nonatomic, assign) int selectedRowIndexValue;
+@property (nonatomic, strong) UISearchBar* searchBar;
 @end
 
 @implementation MasterAlbumsTableViewController
-@synthesize albums;
 static BOOL PRODUCTION_MODE;
-
-- (NSMutableArray *) results  //for searching tableview?
-{
-    if(! _results){
-        _results = [[NSMutableArray alloc] init];
-    }
-    return _results;
-}
 
 - (void)setProductionModeValue
 {
     PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
 }
 
--(void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-    //init tableView model
-    self.albums = [NSMutableArray arrayWithArray:[Album loadAll]];
-    [self.tableView reloadData];
-    
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight
-       || orientation == UIInterfaceOrientationPortraitUpsideDown)
-    {
-        self.tabBarController.tabBar.hidden = YES;
-    }
-    else
-        self.tabBarController.tabBar.hidden = NO;
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    
-    // This will remove extra separators from tableview
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    
-    [self setProductionModeValue];
-    [self setUpNavBarItems];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    self.navigationController.navigationBar.translucent = NO;
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    self.navigationController.navigationBar.translucent = YES;
-}
-
 - (void)setUpNavBarItems
 {
-    //edit button
+    //right side of nav bar
+    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self
+                                                                               action:@selector(addButtonPressed)];
+    
+    UIImage *image = [UIImage imageNamed:@"Now Playing"];
+    UIBarButtonItem *nowPlaying = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(nowPlayingTapped)];
+    nowPlaying.target = self;
+    nowPlaying.action = @selector(nowPlayingTapped);
+    
+#warning check to see if item is actually playing when adding the now playing button!
+    UIBarButtonItem *negSpaceAdjust = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    [negSpaceAdjust setWidth:-10];
+    
+    NSArray *rightBarButtonItems = @[negSpaceAdjust, nowPlaying, addButton];
+    self.navigationItem.rightBarButtonItems = rightBarButtonItems;
+    
+    //left side of nav bar
     UIBarButtonItem *editButton = self.editButtonItem;
     editButton.action = @selector(editTapped:);
     
-    //+ sign...also wire it up to the ibAction "addButtonPressed"
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc]
-                                  initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                  target:self action:@selector(addButtonPressed)];
-    NSArray *rightBarButtonItems = [NSArray arrayWithObjects:editButton, addButton, nil];
-    self.navigationItem.rightBarButtonItems = rightBarButtonItems;  //place both buttons on the nav bar
+    image = [UIImage imageNamed:@"Settings-Line"];
+    UIBarButtonItem *settings = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self
+                                                                action:@selector(settingsButtonTapped)];
+    UIBarButtonItem *posSpaceAdjust = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    [posSpaceAdjust setWidth:28];
+    
+    self.navigationItem.leftBarButtonItems = @[settings, posSpaceAdjust, editButton];
+}
+
+- (void)nowPlayingTapped
+{
+    
 }
 
 - (void)editTapped:(id)sender
@@ -88,26 +64,159 @@ static BOOL PRODUCTION_MODE;
     {
         //leaving editing mode now
         [super setEditing:NO animated:YES];
-        [self makeBarButtonGrey:[self.navigationItem.rightBarButtonItems objectAtIndex:1] yes:YES];
+        for(UIBarButtonItem *abutton in self.navigationItem.rightBarButtonItems){
+            [self makeBarButtonItemNormal:abutton];
+        }
     }
     else
     {
         //entering editing mode now
         [super setEditing:YES animated:YES];
-        [self makeBarButtonGrey:[self.navigationItem.rightBarButtonItems objectAtIndex:1] yes:NO];
+        for(UIBarButtonItem *abutton in self.navigationItem.rightBarButtonItems){
+            [self makeBarButtonItemGrey: abutton];
+        }
     }
 }
 
--(void)makeBarButtonGrey:(UIBarButtonItem *)barButton yes:(BOOL)show
+- (UIBarButtonItem *)makeBarButtonItemGrey:(UIBarButtonItem *)barButton
 {
-    if (show) {
-        barButton.style = UIBarButtonItemStyleBordered;
-        barButton.enabled = true;
-    } else {
-        barButton.style = UIBarButtonItemStylePlain;
-        barButton.enabled = false;
-        barButton.title = nil;
+    barButton.style = UIBarButtonItemStylePlain;
+    barButton.enabled = false;
+    return barButton;
+}
+
+- (UIBarButtonItem *)makeBarButtonItemNormal:(UIBarButtonItem *)barButton
+{
+    barButton.style = UIBarButtonItemStyleBordered;
+    barButton.enabled = true;
+    return barButton;
+}
+
+#pragma mark - UISearchBar
+- (void)setUpSearchBar
+{
+    if([self numberOfAlbumsInCoreDataModel] > 0){
+        //create search bar, add to viewController
+        _searchBar = [[UISearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0)];
+        _searchBar.placeholder = @"Search Songs";
+        _searchBar.keyboardType = UIKeyboardTypeASCIICapable;
+        _searchBar.delegate = self;
+        [self.searchBar sizeToFit];
+        self.tableView.tableHeaderView = _searchBar;
     }
+}
+
+//User tapped the search box
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+{
+    //show the cancel button
+    [_searchBar setShowsCancelButton:YES animated:YES];
+}
+
+//user tapped "Search"
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    //search results already appear as the user types. Just hide the keyboard...
+    [_searchBar resignFirstResponder];
+}
+
+//User tapped "Cancel"
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    //dismiss search bar and hide cancel button
+    [_searchBar setShowsCancelButton:NO animated:YES];
+    [_searchBar resignFirstResponder];
+}
+
+//User typing as we speak, fetch latest results to populate results as they type
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    if(searchText.length == 0)
+    {
+        self.displaySearchResults = NO;
+    }
+    else
+    {
+        self.displaySearchResults = YES;
+        //now search through each song to find the query we need
+        /**
+         for (Song* someSong in _allSongsInLibrary)  //iterate through all songs
+         {
+         NSRange nameRange = [someSong.songName rangeOfString:searchText options:NSCaseInsensitiveSearch];
+         if(nameRange.location != NSNotFound)
+         {
+         [_searchResults addObject:someSong];
+         }
+         //would maybe like to filter by BEST result? This only captures results...
+         }
+         */
+    }
+}
+
+#pragma mark - View Controller life cycle
+static BOOL lastSortOrder;
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [self setUpSearchBar];  //must be called in viewWillAppear, and after allSongsLibrary is refreshed
+    
+    if(lastSortOrder != [AppEnvironmentConstants smartAlphabeticalSort])
+    {
+        [self setFetchedResultsControllerAndSortStyle];
+        lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
+    }
+    
+    
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft ||
+       orientation == UIInterfaceOrientationLandscapeRight||
+       orientation == UIInterfaceOrientationPortraitUpsideDown)
+    {
+        self.tabBarController.tabBar.hidden = YES;
+    }
+    else
+        self.tabBarController.tabBar.hidden = NO;
+    
+    if([self numberOfAlbumsInCoreDataModel] == 0){ //dont need search bar anymore
+        _searchBar = nil;
+        self.tableView.tableHeaderView = nil;
+    }
+    
+    [self.tableView reloadData];  //needed to update the font sizes, bold font, and cell height (if changed in settings)
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    self.navigationController.navigationBar.translucent = NO;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    self.navigationController.navigationBar.translucent = YES;
+    self.navigationController.navigationBar.topItem.title = @"Albums";
+    
+    //need to check because when user presses back button, tab bar isnt always hidden
+    [self prefersStatusBarHidden];
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
+    
+    [self setFetchedResultsControllerAndSortStyle];
+    stackController = [[StackController alloc] init];
+    
+    // This will remove extra separators from tableview
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
+    [self setProductionModeValue];
+    [self setUpNavBarItems];
+    self.tableView.allowsSelectionDuringEditing = YES;
 }
 
 - (void)didReceiveMemoryWarning
@@ -119,22 +228,32 @@ static BOOL PRODUCTION_MODE;
     [imageCache clearMemory];
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+- (void)dealloc
 {
-    return 1;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return self.albums.count;
-}
-
+#pragma mark - Table View Data Source
+static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"AlbumItemCell" forIndexPath:indexPath];
-    // Configure the cell...
     
-    Album *album = [self.albums objectAtIndex: indexPath.row];  //get album instance at this index
+    if (cell == nil)
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"AlbumItemCell"];
+    else
+    {
+        // If an existing cell is being reused, reset the image to the default until it is populated.
+        // Without this code, previous images are displayed against the new people during rapid scrolling.
+        cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
+    }
+    
+    // Set up other aspects of the cell content.
+    Album *album;
+    if(self.displaySearchResults)
+        album = [self.searchFetchedResultsController objectAtIndexPath:indexPath];
+    else
+        album = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     //init cell fields
     cell.textLabel.attributedText = [AlbumTableViewFormatter formatAlbumLabelUsingAlbum:album];
@@ -142,20 +261,56 @@ static BOOL PRODUCTION_MODE;
         cell.textLabel.font = [UIFont systemFontOfSize:[AlbumTableViewFormatter nonBoldAlbumLabelFontSize]];
     [AlbumTableViewFormatter formatAlbumDetailLabelUsingAlbum:album andCell:&cell];
     
-    CGSize size = [AlbumTableViewFormatter preferredAlbumAlbumArtSize];
-    [cell.imageView sd_setImageWithURL:[AlbumArtUtilities albumArtFileNameToNSURL:album.albumArtFileName]
-                      placeholderImage:[UIImage imageWithColor:[UIColor clearColor] width:size.width height:size.height]
-                               options:SDWebImageCacheMemoryOnly
-                             completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL){
-                                 cell.imageView.image = image;
-                             }];
+    //check if a song in this album is the now playing song
+    BOOL albumHasNowPlaying;
+    for(Song *albumSong in album.albumSongs)
+    {
+        if([albumSong.nowPlaying boolValue] == YES){
+            albumHasNowPlaying = YES;
+            break;
+        }
+    }
+    
+    if(albumHasNowPlaying)
+        cell.textLabel.textColor = [UIColor defaultSystemTintColor];
+    else
+        cell.textLabel.textColor = [UIColor blackColor];
+    
+    // Store a reference to the current cell that will enable the image to be associated with the correct
+    // cell, when the image is subsequently loaded asynchronously.
+    objc_setAssociatedObject(cell,
+                             &songIndexPathAssociationKey,
+                             indexPath,
+                             OBJC_ASSOCIATION_RETAIN);
+    
+    // Queue a block that obtains/creates the image and then loads it into the cell.
+    // The code block will be run asynchronously in a last-in-first-out queue, so that when
+    // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
+    [stackController addBlock:^{
+        UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:[AlbumArtUtilities albumArtFileNameToNSURL:album.albumArtFileName]]];
+        albumArt = [AlbumArtUtilities imageWithImage:albumArt scaledToSize:CGSizeMake(cell.frame.size.height, cell.frame.size.height)];
+        // The block will be processed on a background Grand Central Dispatch queue.
+        // Therefore, ensure that this code that updates the UI will run on the main queue.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSIndexPath *cellIndexPath = (NSIndexPath *)objc_getAssociatedObject(cell, &songIndexPathAssociationKey);
+            if ([indexPath isEqual:cellIndexPath]) {
+                // Only set cell image if the cell currently being displayed is the one that actually required this image.
+                // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
+                cell.imageView.image = albumArt;
+            }
+        });
+    }];
+    
     return cell;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //could also selectively choose which rows may be deleted here.
-    return YES;
+    if(self.displaySearchResults)
+        return NO;
+    else
+        return YES;
 }
 
 //editing the tableView items
@@ -163,27 +318,34 @@ static BOOL PRODUCTION_MODE;
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
         //obtain object for the deleted album
-        Album *album = [self.albums objectAtIndex:indexPath.row];
+        Album *album = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
-        for(Song *aSong in album.albumSongs){
-            if([aSong isEqual:[PlaybackModelSingleton createSingleton].nowPlayingSong]){
-                YouTubeMoviePlayerSingleton *singleton = [YouTubeMoviePlayerSingleton createSingleton];
-                [[singleton AVPlayer] pause];
-                [singleton setAVPlayerInstance:nil];
-                [singleton setAVPlayerLayerInstance:nil];
-                break;
-            }
+        //check if any of the songs in this album are currently playing. if so, set the avplayer to nil (and pause it) so it doesn't crash!
+        for(Song *aSong in album.albumSongs)
+        {
+            if([aSong.nowPlaying boolValue] == YES)
+                [self pauseMusicAndSetAVPlayerToNil];
         }
         
-        //delete the object from our data model (which is saved to disk).
-        [album deleteAlbum];
+        //delete the album and save changes
+        NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Album" inManagedObjectContext:[CoreDataManager context]];
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        [request setEntity:entityDesc];
         
-        //delete album from the tableview data source
-        [[self albums] removeObjectAtIndex:indexPath.row];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"album_id == %@", album.album_id];
+        [request setPredicate:predicate];
         
-        //delete row from tableView (just the gui)
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        NSError *error;
+        NSArray *matchingData = [[CoreDataManager context] executeFetchRequest:request error:&error];
+        if(matchingData.count == 1)
+            [[CoreDataManager context] deleteObject:matchingData[0]];
+        [[CoreDataManager sharedInstance] saveContext];
     }
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -191,21 +353,22 @@ static BOOL PRODUCTION_MODE;
     return [AlbumTableViewFormatter preferredAlbumCellHeight];
 }
 
+#pragma mark - other stuff
+- (void)pauseMusicAndSetAVPlayerToNil
+{
+    YouTubeMoviePlayerSingleton *singleton = [YouTubeMoviePlayerSingleton createSingleton];
+    [[singleton AVPlayer] pause];
+    [singleton setAVPlayerInstance:nil];
+    [singleton setAVPlayerLayerInstance:nil];
+}
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    //get the index of the tapped album
-    UITableView *tableView = self.tableView;
-    for(int i = 0; i < self.albums.count; i++){
-        UITableViewCell *cell =[tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-        if(cell.selected){
-            self.selectedRowIndexValue = i;
-            break;
-        }
-    }
-    
+    /*
     if([[segue identifier] isEqualToString: @"albumItemSegue"]){
         [[segue destinationViewController] setAlbum:self.albums[self.selectedRowIndexValue]];
     }
+     */
 }
 
 - (NSAttributedString *)BoldAttributedStringWithString:(NSString *)aString withFontSize:(float)fontSize
@@ -218,15 +381,54 @@ static BOOL PRODUCTION_MODE;
     return attributedText;
 }
 
+#pragma mark - artist editing
+- (void)editingModeCompleted:(NSNotification *)notification
+{
+    if([notification.name isEqualToString:@"AlbumEditDone"]){
+        //leave editing mode
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:@"AlbumEditDone" object:nil];
+    }
+}
+
+- (void)albumWasSavedDuringEditing:(NSNotification *)notification
+{
+    /*
+     if([notification.name isEqualToString:@"AlbumSavedDuringEdit"]){
+     [self commitNewSongChanges:(Song *)notification.object];
+     }
+     */
+}
+
+- (void)commitNewAlbumChanges:(Artist *)changedAlbum
+{
+    /*
+     if(changedSong){
+     [[CoreDataManager sharedInstance] saveContext];
+     #warning register for the notification: DataManagerDidSaveFailedNotification  (look in CoreDataManager.m)
+     
+     self.indexOfEditingSong = -1;
+     if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
+     _searchBar = nil;
+     self.tableView.tableHeaderView = nil;
+     }
+     
+     //[self.tableView reloadData];
+     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"SongSavedDuringEdit" object:nil];
+     }
+     */
+}
+
+#pragma mark - Adding music to library
 //called when + sign is tapped - selector defined in setUpNavBarItems method!
 - (void)addButtonPressed
 {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"'+' Tapped"
-                                                    message:@"This is how you add songs to the library!  :)"
-                                                   delegate:nil
-                                          cancelButtonTitle:@"Got it"
-                                          otherButtonTitles:nil];
-    [alert show];
+    [self performSegueWithIdentifier:@"addMusicToLibSegue" sender:nil];
+}
+
+#pragma mark - Go To Settings
+- (void)settingsButtonTapped
+{
+    [self performSegueWithIdentifier:@"settingsSegue" sender:self];
 }
 
 #pragma mark - Rotation status bar methods
@@ -279,5 +481,49 @@ static BOOL PRODUCTION_MODE;
     return self.tabBarController.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame);
 }
 
+#pragma mark - Counting Albums in core data
+- (int)numberOfAlbumsInCoreDataModel
+{
+    //count how many instances there are of the Artist entity in core data
+    NSManagedObjectContext *context = [CoreDataManager context];
+    int count = 0;
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Album" inManagedObjectContext:context];
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setEntity:entity];
+    [fetchRequest setIncludesPropertyValues:NO];
+    [fetchRequest setIncludesSubentities:NO];
+    NSError *error = nil;
+    NSUInteger tempCount = [context countForFetchRequest: fetchRequest error: &error];
+    if(error == nil){
+        count = (int)tempCount;
+    }
+    return count;
+}
+
+#pragma mark - fetching and sorting
+- (void)setFetchedResultsControllerAndSortStyle
+{
+    self.fetchedResultsController = nil;
+    NSManagedObjectContext *context = [CoreDataManager context];
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Album"];
+    request.predicate = nil;  //means i want all of the songs
+    
+    NSSortDescriptor *sortDescriptor;
+    if([AppEnvironmentConstants smartAlphabeticalSort])
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortAlbumName"
+                                                       ascending:YES
+                                                        selector:@selector(localizedStandardCompare:)];
+    else
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"albumName"
+                                                       ascending:YES
+                                                        selector:@selector(localizedStandardCompare:)];
+    
+    request.sortDescriptors = @[sortDescriptor];
+    //fetchedResultsController is from custom super class
+    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+                                                                        managedObjectContext:context
+                                                                          sectionNameKeyPath:nil
+                                                                                   cacheName:nil];
+}
 
 @end

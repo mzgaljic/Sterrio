@@ -48,7 +48,7 @@ static BOOL PRODUCTION_MODE;
     [super viewWillAppear:animated];
     
     //init tableView model
-    _allArtists = [NSMutableArray arrayWithArray:[Artist loadAll]];
+    //_allArtists = [NSMutableArray arrayWithArray:[Artist loadAll]];
     [self.tableView reloadData];
 }
 
@@ -88,11 +88,19 @@ static BOOL PRODUCTION_MODE;
     
     // Configure the cell...
     Artist *artist = [self.allArtists objectAtIndex: indexPath.row];  //get artist object at this index
-    if([artist isEqual:_usersCurrentArtist]){  //disable this cell
+    
+    if([Artist areArtistsEqual:[NSArray arrayWithObjects:artist, _usersCurrentArtist, nil]]){  //disable this cell
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.userInteractionEnabled = NO;
         cell.textLabel.textColor = [UIColor defaultSystemTintColor];
         cell.detailTextLabel.textColor = [UIColor defaultSystemTintColor];
+    } else{
+        cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+        cell.textLabel.textColor = [UIColor blackColor];
+        cell.detailTextLabel.textColor = [UIColor blackColor];
+        cell.userInteractionEnabled = YES;
+        cell.textLabel.enabled = YES;
+        cell.detailTextLabel.enabled = YES;
     }
     
     // init cell fields

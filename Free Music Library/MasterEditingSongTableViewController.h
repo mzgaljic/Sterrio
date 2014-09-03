@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "Song.h"
+#import "Song+Utilities.h"
 #import "AppEnvironmentConstants.h"
 #import "AlbumArtUtilities.h"
 #import "EditableCellTableViewController.h"

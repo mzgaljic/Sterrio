@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import "Song.h"
+#import "Artist.h"
+#import "Album.h"
 #import "AppEnvironmentConstants.h"
 #import "PreferredFontSizeUtility.h"
 

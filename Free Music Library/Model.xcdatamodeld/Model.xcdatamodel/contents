@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13E28" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="iOS 7.0">
+    <entity name="Album" syncable="YES">
+        <attribute name="album_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="albumArtFileName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="albumName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="genreCode" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="mySongs" toMany="YES" deletionRule="Cascade" destinationEntity="Song" inverseName="toMyAlbum" inverseEntity="Song" syncable="YES"/>
+    </entity>
+    <entity name="Artist" syncable="YES">
+        <attribute name="artist_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="artistName" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="mySongs" toMany="YES" deletionRule="Cascade" destinationEntity="Song" inverseName="toMyArtist" inverseEntity="Song" syncable="YES"/>
+    </entity>
+    <entity name="Playlist" syncable="YES">
+        <attribute name="playlist_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="playlistName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="status" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <relationship name="mySongs" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Song" inverseName="playlistIAmIn" inverseEntity="Song" syncable="YES"/>
+    </entity>
+    <entity name="Song" syncable="YES">
+        <attribute name="albumArtFileName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="associatedWithAlbum" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="genreCode" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="song_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="songName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="youtube_id" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="playlistIAmIn" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Playlist" inverseName="mySongs" inverseEntity="Playlist" syncable="YES"/>
+        <relationship name="toMyAlbum" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Album" inverseName="mySongs" inverseEntity="Album" syncable="YES"/>
+        <relationship name="toMyArtist" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Artist" inverseName="mySongs" inverseEntity="Artist" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Album" positionX="-9767" positionY="-27" width="128" height="118"/>
+        <element name="Artist" positionX="-9126" positionY="18" width="128" height="88"/>
+        <element name="Playlist" positionX="-9668" positionY="-225" width="128" height="103"/>
+        <element name="Song" positionX="-9434" positionY="-72" width="128" height="178"/>
+    </elements>
+</model>

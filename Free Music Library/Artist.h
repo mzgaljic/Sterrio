@@ -1,29 +1,35 @@
 //
 //  Artist.h
-//  Free Music Library
+//  Muzic
 //
-//  Created by Mark Zgaljic on 6/11/14.
+//  Created by Mark Zgaljic on 8/22/14.
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
-#import "Song.h"
-#import "FileIOConstants.h"
-#import "AppEnvironmentConstants.h"
-#import "NSString+smartSort.h"
-#import "NSObject+ObjectUUID.h"
+#import <CoreData/CoreData.h>
 
-@interface Artist : NSObject <NSCoding>
+@class Album, Song;
 
-@property(nonatomic, strong) NSString *artistName;  //note: naming conventions are restricted
-@property(nonatomic, strong) NSMutableArray *allSongs;  //songs NOT associated w/ albums
-@property(nonatomic, strong) NSMutableArray *allAlbums;
-@property(nonatomic, strong, readonly) NSString *artistID;
+@interface Artist : NSManagedObject
 
-+ (NSArray *)loadAll;
-/**Artist objects need to be saved after being created if they are to appear in the model.*/
-- (BOOL)saveArtist;
-- (BOOL)deleteArtist;
-- (BOOL)updateExistingArtist;
+@property (nonatomic, retain) NSString * artist_id;
+@property (nonatomic, retain) NSString * artistName;
+@property (nonatomic, retain) NSString * smartSortArtistName;
+@property (nonatomic, retain) NSSet *albums;
+@property (nonatomic, retain) NSSet *standAloneSongs;
+@end
+
+@interface Artist (CoreDataGeneratedAccessors)
+
+- (void)addAlbumsObject:(Album *)value;
+- (void)removeAlbumsObject:(Album *)value;
+- (void)addAlbums:(NSSet *)values;
+- (void)removeAlbums:(NSSet *)values;
+
+- (void)addStandAloneSongsObject:(Song *)value;
+- (void)removeStandAloneSongsObject:(Song *)value;
+- (void)addStandAloneSongs:(NSSet *)values;
+- (void)removeStandAloneSongs:(NSSet *)values;
 
 @end

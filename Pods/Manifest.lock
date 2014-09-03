@@ -80,7 +80,6 @@ DEPENDENCIES:
   - MRProgress
   - RNFrostedSidebar (~> 0.2.0)
   - SDCAlertView
-  - SDWebImage (~> 3.7)
   - XCDYouTubeKit (~> 2.0)
 
 SPEC CHECKSUMS:

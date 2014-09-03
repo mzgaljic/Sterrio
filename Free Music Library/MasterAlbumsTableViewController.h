@@ -7,20 +7,21 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <objc/runtime.h>
+#import "StackController.h"
 #import "AppEnvironmentConstants.h"
 #import "AlbumArtUtilities.h"
 #import "AlbumItemViewController.h"
 #import "Album.h"
-#import "SDWebImageManager.h"
-#import <SDWebImage/UIImageView+WebCache.h>
 #import "AlbumTableViewFormatter.h"
 #import "PlaybackModelSingleton.h"
 #import "YouTubeMoviePlayerSingleton.h"
 #import "UIImage+colorImages.h"
+#import "CoreDataTableViewController.h"
+#import "UIColor+SystemTintColor.h"
 
-@interface MasterAlbumsTableViewController : UITableViewController
-
-@property (nonatomic, strong) NSMutableArray *results;  //for searching tableView?
-@property (nonatomic, assign) int selectedRowIndexValue;
-
+@interface MasterAlbumsTableViewController : CoreDataTableViewController <UISearchBarDelegate>
+{
+    StackController *stackController;
+}
 @end

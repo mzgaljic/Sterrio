@@ -7,26 +7,26 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Playlist.h"
-#import "Song.h"
-#import "RNFrostedSideBar.h"
+#import "Playlist+Utilities.h"
+#import "Song+Utilities.h"
 #import "SongItemViewController.h"
 #import "AppEnvironmentConstants.h"
 #import "SongTableViewFormatter.h"
 #import "UIColor+LighterAndDarker.h"
 #import "SDWebImageManager.h"
-#import <SDWebImage/UIImageView+WebCache.h>
+#import "CoreDataTableViewController.h"
 
-@interface PlaylistItemTableViewController : UITableViewController <UITextFieldDelegate>
+#import "PlaylistSongAdderTableViewController.h"
 
-@property (nonatomic, strong) NSMutableArray *results;  //for searching tableView?
+@interface PlaylistItemTableViewController : CoreDataTableViewController <UITextFieldDelegate>
+
 @property (nonatomic, strong) Playlist *playlist;
 @property (nonatomic, assign) int numSongsNotAddedYet;
 @property (nonatomic, strong) NSArray *originalLeftBarButtonItems;
 @property (nonatomic, strong) NSArray *originalRightBarButtonItems;
 
-@property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *addBarButton;
+@property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
 
 - (IBAction)addButtonPressed:(id)sender;
 @end
