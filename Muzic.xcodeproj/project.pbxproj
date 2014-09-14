@@ -95,6 +95,7 @@
 		87A453DF199C7096004D1319 /* ExistingAlbumPickerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A453DE199C7096004D1319 /* ExistingAlbumPickerTableViewController.m */; };
 		87A9AF4E199D8429005B9A5B /* GenrePickerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9AF4D199D8429005B9A5B /* GenrePickerTableViewController.m */; };
 		87A9AF53199DA36F005B9A5B /* GenreSearchService.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9AF52199DA36F005B9A5B /* GenreSearchService.m */; };
+		87C0BD5819C564CA00EB7D91 /* AutoScrollLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C0BD5719C564CA00EB7D91 /* AutoScrollLabel.m */; };
 		87CEDC6519731EF000780D57 /* PlaylistSongAdderTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87CEDC6419731EF000780D57 /* PlaylistSongAdderTableViewController.m */; };
 		87D16D621931B7EE00DB6A34 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 87D16D611931B7EE00DB6A34 /* Podfile */; };
 		87D37438199AA99700D3B70B /* UIColor+ColorComparison.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D37437199AA99700D3B70B /* UIColor+ColorComparison.m */; };
@@ -105,7 +106,9 @@
 		87D47D991934289F0057D49B /* MasterGenreTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47D961934289F0057D49B /* MasterGenreTableViewController.m */; };
 		87D47DA419345D8E0057D49B /* MasterArtistsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47DA019345D8E0057D49B /* MasterArtistsTableViewController.m */; };
 		87D47DA519345D8E0057D49B /* ArtistItemAlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47DA219345D8E0057D49B /* ArtistItemAlbumViewController.m */; };
+		87DB103219C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DB103119C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m */; };
 		87E1C5A0193A5E8B009AE399 /* GenreConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E1C59F193A5E8B009AE399 /* GenreConstants.m */; };
+		87EE89DB19BD4C1E0099E290 /* CustomSongOrAlbumTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 87EE89DA19BD4C1E0099E290 /* CustomSongOrAlbumTableViewCell.m */; };
 		87FA7D2C19A8033D00149D23 /* Artist.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FA7D2B19A8033D00149D23 /* Artist.m */; };
 		87FA7D2F19A8033E00149D23 /* Playlist.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FA7D2E19A8033E00149D23 /* Playlist.m */; };
 		87FA7D3219A8033E00149D23 /* Song.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FA7D3119A8033E00149D23 /* Song.m */; };
@@ -288,6 +291,8 @@
 		87A9AF51199DA36F005B9A5B /* GenreSearchService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenreSearchService.h; sourceTree = "<group>"; };
 		87A9AF52199DA36F005B9A5B /* GenreSearchService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenreSearchService.m; sourceTree = "<group>"; };
 		87AF35CE1989679C005882B6 /* YouTubeVideoSearchDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YouTubeVideoSearchDelegate.h; sourceTree = "<group>"; };
+		87C0BD5619C564CA00EB7D91 /* AutoScrollLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutoScrollLabel.h; sourceTree = "<group>"; };
+		87C0BD5719C564CA00EB7D91 /* AutoScrollLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AutoScrollLabel.m; sourceTree = "<group>"; };
 		87CEDC6319731EF000780D57 /* PlaylistSongAdderTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistSongAdderTableViewController.h; sourceTree = "<group>"; };
 		87CEDC6419731EF000780D57 /* PlaylistSongAdderTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistSongAdderTableViewController.m; sourceTree = "<group>"; };
 		87D16D611931B7EE00DB6A34 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -308,8 +313,12 @@
 		87D47DA219345D8E0057D49B /* ArtistItemAlbumViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArtistItemAlbumViewController.m; sourceTree = "<group>"; };
 		87D47DA319345D8E0057D49B /* ArtistItemAlbumViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArtistItemAlbumViewController.h; sourceTree = "<group>"; };
 		87D9EB9919392DFF004F3885 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		87DB103019C53CC000B190E5 /* UINavigationController+CustomPushAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+CustomPushAnimation.h"; sourceTree = "<group>"; };
+		87DB103119C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+CustomPushAnimation.m"; sourceTree = "<group>"; };
 		87E1C59E193A5E8B009AE399 /* GenreConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenreConstants.h; sourceTree = "<group>"; };
 		87E1C59F193A5E8B009AE399 /* GenreConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenreConstants.m; sourceTree = "<group>"; };
+		87EE89D919BD4C1E0099E290 /* CustomSongOrAlbumTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomSongOrAlbumTableViewCell.h; sourceTree = "<group>"; };
+		87EE89DA19BD4C1E0099E290 /* CustomSongOrAlbumTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomSongOrAlbumTableViewCell.m; sourceTree = "<group>"; };
 		87FA7D2A19A8033D00149D23 /* Artist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Artist.h; sourceTree = "<group>"; };
 		87FA7D2B19A8033D00149D23 /* Artist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Artist.m; sourceTree = "<group>"; };
 		87FA7D2D19A8033E00149D23 /* Playlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Playlist.h; sourceTree = "<group>"; };
@@ -438,6 +447,8 @@
 				87A453DB199C11E3004D1319 /* NSObject+Device_Name.m */,
 				87270030199E815000D71204 /* NSString+Levenshtein_Distance.h */,
 				87270031199E815000D71204 /* NSString+Levenshtein_Distance.m */,
+				87DB103019C53CC000B190E5 /* UINavigationController+CustomPushAnimation.h */,
+				87DB103119C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m */,
 			);
 			name = Categories;
 			path = "Free Music Library";
@@ -508,6 +519,7 @@
 				87334408198D8349002B9E18 /* Categories */,
 				87FE09F31933F39B001A5FB7 /* Models */,
 				87362AFA194E3F27004DB544 /* GUI */,
+				87FCD02D19A5BC0E00C600D3 /* Custom cells */,
 				87480DC3192C1FBD005CC0A4 /* Images.xcassets */,
 				87A453A0199C0825004D1319 /* GUI Libraries */,
 				87480DAF192C1FBD005CC0A4 /* Supporting Files */,
@@ -584,7 +596,6 @@
 				8750157F198C3D5300382945 /* YoutubeResultsTableViewController.m */,
 				878519C7199400C200A573A9 /* YouTubeVideoPlaybackTableViewController.h */,
 				878519C8199400C200A573A9 /* YouTubeVideoPlaybackTableViewController.m */,
-				87FCD02D19A5BC0E00C600D3 /* Custom cells */,
 			);
 			name = "Adding Music To Library";
 			sourceTree = "<group>";
@@ -789,6 +800,7 @@
 		87A453A0199C0825004D1319 /* GUI Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				87C0BD5519C564CA00EB7D91 /* AutoScrollLabel */,
 				87A453A1199C0891004D1319 /* ELCImagePickerController */,
 			);
 			name = "GUI Libraries";
@@ -885,6 +897,15 @@
 			name = "Genre Picker";
 			sourceTree = "<group>";
 		};
+		87C0BD5519C564CA00EB7D91 /* AutoScrollLabel */ = {
+			isa = PBXGroup;
+			children = (
+				87C0BD5619C564CA00EB7D91 /* AutoScrollLabel.h */,
+				87C0BD5719C564CA00EB7D91 /* AutoScrollLabel.m */,
+			);
+			path = AutoScrollLabel;
+			sourceTree = "<group>";
+		};
 		87D47D9F19345BC00057D49B /* Artists tab */ = {
 			isa = PBXGroup;
 			children = (
@@ -922,6 +943,8 @@
 			children = (
 				87FCD02A19A5BC0B00C600D3 /* CustomYoutubeTableViewCell.h */,
 				87FCD02B19A5BC0B00C600D3 /* CustomYoutubeTableViewCell.m */,
+				87EE89D919BD4C1E0099E290 /* CustomSongOrAlbumTableViewCell.h */,
+				87EE89DA19BD4C1E0099E290 /* CustomSongOrAlbumTableViewCell.m */,
 			);
 			name = "Custom cells";
 			sourceTree = "<group>";
@@ -1120,6 +1143,7 @@
 				877C4BA7199FE4B800CE86BC /* Album+Utilities.m in Sources */,
 				87A453C8199C0891004D1319 /* ELCAlbumPickerController.m in Sources */,
 				8780134F199C854E004727A0 /* ExistingArtistPickerTableViewController.m in Sources */,
+				87DB103219C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m in Sources */,
 				87A453C9199C0891004D1319 /* ELCAsset.m in Sources */,
 				87124BA419A3CBB8003D29CD /* AlbumModelHandler.m in Sources */,
 				87A453D8199C0891004D1319 /* UIImage+EYFixOrientation.m in Sources */,
@@ -1171,11 +1195,13 @@
 				876EDE6019648AA300795767 /* AlbumArtUtilities.m in Sources */,
 				87334407198D8321002B9E18 /* NSString+HTTP_Char_Escape.m in Sources */,
 				87124B9E19A3C392003D29CD /* SongModelHandler.m in Sources */,
+				87EE89DB19BD4C1E0099E290 /* CustomSongOrAlbumTableViewCell.m in Sources */,
 				878B96361996A6240072A459 /* MyAvPlayer.m in Sources */,
 				875984A8195D775500015243 /* GenreItemTableViewController.m in Sources */,
 				87449AF419971A58009F01EA /* AppDelegateSetupHelper.m in Sources */,
 				87A0FD91197DD594008FBBF7 /* PreferredFontSizeUtility.m in Sources */,
 				87FA7D2C19A8033D00149D23 /* Artist.m in Sources */,
+				87C0BD5819C564CA00EB7D91 /* AutoScrollLabel.m in Sources */,
 				87A453D7199C0891004D1319 /* EYLargePhotoManager.m in Sources */,
 				87268E62198B580200FE51D7 /* YouTubeVideo.m in Sources */,
 				87D47DA519345D8E0057D49B /* ArtistItemAlbumViewController.m in Sources */,

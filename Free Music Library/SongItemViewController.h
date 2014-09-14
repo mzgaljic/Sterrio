@@ -31,6 +31,7 @@
 #import "UIButton+ExpandedHitArea.h"
 #import "AlbumArtUtilities.h"
 #import "CoreDataManager.h"
+#import "AutoScrollLabel.h"
 
 //Playback model
 #import "PlaybackModelSingleton.h"
@@ -41,7 +42,6 @@
 
 //GUI vars
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;  //really the navBar title item
-@property (weak, nonatomic) IBOutlet UILabel *songNameLabel;
 @property (weak, nonatomic) IBOutlet MyAvPlayer *playerView;
 @property (weak, nonatomic) IBOutlet ASValueTrackingSlider *playbackTimeSlider;
 

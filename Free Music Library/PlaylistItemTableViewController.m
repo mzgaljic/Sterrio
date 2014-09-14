@@ -28,14 +28,7 @@
 {
     [super viewWillAppear:animated];
     
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    if((orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight
-       || orientation == UIInterfaceOrientationPortraitUpsideDown) && (!_currentlyEditingPlaylistName))
-    {
-        self.tabBarController.tabBar.hidden = YES;
-    }
-    else
-        self.tabBarController.tabBar.hidden = NO;
+    self.tabBarController.tabBar.hidden = YES;
 
     _numSongsNotAddedYet = (int)([self numberOfSongsInCoreDataModel] - _playlist.playlistSongs.count);
     _lastTableViewModelCount = (int)_playlist.playlistSongs.count;
@@ -62,6 +55,9 @@
 {
     [super viewDidAppear:animated];
     self.navigationController.navigationBar.translucent = YES;
+    
+    //need to check because when user presses back button, tab bar isnt always hidden
+    [self prefersStatusBarHidden];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -88,6 +84,7 @@
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     [imageCache clearMemory];
 }
+
 #pragma mark - Table View Data Source
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -350,12 +347,6 @@
         // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
         [self prefersStatusBarHidden];
         [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }else {
-        // iOS 6 code only here...checking if we are now going into landscape mode
-        if((toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft) ||(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight))
-            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-        else
-            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
     }
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
@@ -363,10 +354,39 @@
 - (BOOL)prefersStatusBarHidden
 {
     UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    if((orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight) && (!_currentlyEditingPlaylistName))
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+        [self setTabBarVisible:NO animated:NO];
+        self.tabBarController.tabBar.hidden = YES;
         return YES;
-    else
-        return NO;  //returned when in portrait, or editing playlist.
+    }
+    else{
+        [self setTabBarVisible:NO animated:NO];
+        self.tabBarController.tabBar.hidden = YES;
+        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
+    }
+}
+
+- (void)setTabBarVisible:(BOOL)visible animated:(BOOL)animated
+{
+    // bail if the current state matches the desired state
+    if ([self tabBarIsVisible] == visible) return;
+    
+    // get a frame calculation ready
+    CGRect frame = self.tabBarController.tabBar.frame;
+    CGFloat height = frame.size.height;
+    CGFloat offsetY = (visible)? -height : height;
+    
+    // zero duration means no animation
+    CGFloat duration = (animated)? 0.3 : 0.0;
+    
+    [UIView animateWithDuration:duration animations:^{
+        self.tabBarController.tabBar.frame = CGRectOffset(frame, 0, offsetY);
+    }];
+}
+
+- (BOOL)tabBarIsVisible
+{
+    return self.tabBarController.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame);
 }
 
 #pragma mark - Counting Songs in core data

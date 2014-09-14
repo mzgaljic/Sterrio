@@ -12,6 +12,7 @@
 #import "CoreDataManager.h"
 #import "NSObject+ObjectUUID.h"
 #import "NSString+smartSort.h"
+#import "AppEnvironmentConstants.h"
 
 @interface Artist (Utilities)
 

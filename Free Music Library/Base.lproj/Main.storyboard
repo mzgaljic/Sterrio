@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="8YX-ce-x5E">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="14A343f" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="8YX-ce-x5E">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
@@ -64,15 +64,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Song name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="sY3-DC-Geg">
-                                <rect key="frame" x="53" y="262" width="300" height="75"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <view contentMode="scaleToFill" id="Rca-dj-bnA" customClass="MyAvPlayer">
-                                <rect key="frame" x="53" y="61" width="214" height="140"/>
+                                <rect key="frame" x="101" y="310" width="214" height="52"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </view>
@@ -89,7 +82,7 @@
                                 <rect key="frame" x="7" y="395" width="43" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="13:21" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="L3D-0t-UZe">
@@ -98,8 +91,16 @@
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <scrollView appearanceType="aqua" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="eA5-re-obU" customClass="AutoScrollLabel">
+                                <rect key="frame" x="0.0" y="117" width="320" height="66"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </scrollView>
+                            <scrollView appearanceType="aqua" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="BXA-xa-qlq" customClass="AutoScrollLabel">
+                                <rect key="frame" x="0.0" y="64" width="320" height="66"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </scrollView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <navigationItem key="navigationItem" title="1/203" id="B6K-mw-sf0"/>
                     <connections>
@@ -107,7 +108,8 @@
                         <outlet property="navBar" destination="B6K-mw-sf0" id="xnq-2a-haq"/>
                         <outlet property="playbackTimeSlider" destination="xEs-9p-3Fv" id="qGy-Lt-7yL"/>
                         <outlet property="playerView" destination="Rca-dj-bnA" id="FO3-4P-Xvx"/>
-                        <outlet property="songNameLabel" destination="sY3-DC-Geg" id="yh7-1u-qph"/>
+                        <outlet property="scrollingArtistAlbumView" destination="eA5-re-obU" id="qBU-Hv-Ngy"/>
+                        <outlet property="scrollingSongView" destination="BXA-xa-qlq" id="kfm-E7-1vH"/>
                         <outlet property="totalDurationLabel" destination="L3D-0t-UZe" id="DYu-N8-KJC"/>
                     </connections>
                 </viewController>
@@ -436,7 +438,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IX5-yR-2hJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2015" y="618"/>
+            <point key="canvasLocation" x="2015" y="601"/>
         </scene>
         <!--Navigation Controller - Playlists-->
         <scene sceneID="hcm-bu-jM1">
@@ -580,7 +582,7 @@
         <!--Playlist Song Adder Table View Controller - Pick Songs-->
         <scene sceneID="GG1-dK-p7c">
             <objects>
-                <tableViewController storyboardIdentifier="playlistSongAdderView" extendedLayoutIncludesOpaqueBars="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Nk6-be-5wM" customClass="PlaylistSongAdderTableViewController" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="playlistSongAdderView" extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Nk6-be-5wM" customClass="PlaylistSongAdderTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="PnO-K3-ZrR">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -642,7 +644,7 @@
         <!--Navigation Controller-->
         <scene sceneID="skx-Ze-w4W">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="seh-WX-nMz" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" hidesBottomBarWhenPushed="YES" id="seh-WX-nMz" sceneMemberID="viewController">
                     <toolbarItems/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="wL6-d1-fPj">
@@ -1011,7 +1013,7 @@
                                         </label>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="EIo-UR-IOF">
                                             <rect key="frame" x="152" y="58" width="170" height="21"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
@@ -1193,9 +1195,9 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="cob-ad-5Vf"/>
-        <segue reference="pPM-be-vV0"/>
-        <segue reference="XN9-6a-i4d"/>
         <segue reference="7Sy-qq-35y"/>
+        <segue reference="o0x-vp-6sV"/>
+        <segue reference="fFN-xo-skq"/>
+        <segue reference="aQU-5c-2vO"/>
     </inferredMetricsTieBreakers>
 </document>

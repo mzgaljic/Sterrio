@@ -17,6 +17,7 @@
 #import "CoreDataTableViewController.h"
 
 #import "PlaylistSongAdderTableViewController.h"
+#import "UINavigationController+CustomPushAnimation.h"
 
 @interface PlaylistItemTableViewController : CoreDataTableViewController <UITextFieldDelegate>
 

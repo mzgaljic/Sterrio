@@ -141,8 +141,12 @@ static short numberTimesViewHasBeenShown = 0;
     [super viewWillDisappear:animated];
     [self resignFirstResponder];
     self.navigationController.navigationBar.translucent = NO;
-    
+
     [[[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer] pause];
+    [[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer].initialPlaybackTime = -1;
+    [[[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer] stop];
+    [[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer].initialPlaybackTime = -1;
+    [[[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer].view removeFromSuperview];
     [[YouTubeMoviePlayerSingleton createSingleton] setPreviewMusicYouTubePlayerInstance: nil];
 }
 

@@ -55,7 +55,7 @@
                 newOrExistingAlbum.artist = newOrExistingArtist;
             }
         }
-
+/*
         if(albumOrAlbumName){  //need to avoid duplicate songs
             NSArray *standAloneSongs = [newOrExistingArtist.standAloneSongs allObjects];
             if([standAloneSongs containsObject:newSong]){
@@ -64,8 +64,7 @@
                 newOrExistingArtist.standAloneSongs = mutableSet;
             }
         }
-        
-        newSong.artist = newOrExistingArtist;
+ */newSong.artist = newOrExistingArtist;
     }
     return newSong;
 }
@@ -162,6 +161,13 @@
     [self removeObserver:self forKeyPath:@"artist"];
 }
  */
+
+- (void)prepareForDeletion
+{
+    NSString *artFileName = self.albumArtFileName;
+    NSString *songName = self.songName;
+    [AlbumArtUtilities deleteAlbumArtFileWithName:self.albumArtFileName];
+}
 
 #pragma mark - private implementation
 + (Song *)createNewSongWithName:(NSString *)name inManagedContext:(NSManagedObjectContext *)context

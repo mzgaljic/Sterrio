@@ -61,7 +61,7 @@
         albumPart = [NSString stringWithFormat:@"%d Albums", (int)artist.albums.count];
     
     if((int)artist.standAloneSongs.count + songsInAlbumsCount == 1)
-        songPart = @"1 Song";
+        songPart = @"1 Song ";
     else
         songPart = [NSString stringWithFormat:@"%d Songs", (int)artist.standAloneSongs.count
                                                                             + songsInAlbumsCount];

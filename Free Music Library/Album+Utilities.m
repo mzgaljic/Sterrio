@@ -20,9 +20,18 @@
     album.smartSortAlbumName = [name regularStringToSmartSortString];
     if(album.smartSortAlbumName.length == 0)  //edge case,if name itself is something like 'the', dont remove all chars! Keep original name.
         album.smartSortAlbumName = name;
-    newSong.associatedWithAlbum = [NSNumber numberWithBool:YES];
+    if(newSong)
+        newSong.associatedWithAlbum = [NSNumber numberWithBool:YES];
     
     return album;
+}
+
++ (void)updateAlbumSmartSortAndArtFileNames:(Album *)anAlbum
+{
+    NSString *originalSmartSortName = anAlbum.albumName;
+    anAlbum.smartSortAlbumName = [anAlbum.albumName regularStringToSmartSortString];
+    if(anAlbum.smartSortAlbumName.length == 0)  //edge case,if name itself is something like 'the', dont remove all chars! Keep original name.
+        anAlbum.smartSortAlbumName = originalSmartSortName;
 }
 
 + (BOOL)areAlbumsEqual:(NSArray *)arrayOfTwoAlbumObjects
@@ -96,6 +105,32 @@
         if(albumSongs.count == 0){
             [self removeAlbumArt];
             [self deleteThisAlbumAfterDelayUsingAlbumId: self.album_id];
+        } else{
+            //check if a song has been nullified (which means a song entity was deleted, and its delete rule nullifies the pointer)
+            Song *deletedSong;
+            NSArray *albumSongsArray = [albumSongs allObjects];
+            for(int i = 0; i < albumSongsArray.count; i++)
+            {
+                if(albumSongsArray[i] == nil)  //found the deleted song
+                {
+                    deletedSong = albumSongsArray[i];
+                    break;
+                }
+            }
+            //remove the song from the data model
+            if(deletedSong != nil)
+            {
+                [[CoreDataManager context] deleteObject:deletedSong];
+                [[CoreDataManager sharedInstance] saveContext];
+            }
+        }
+    } else if([keyPath isEqualToString:@"albumName"]){
+        [Album updateAlbumSmartSortAndArtFileNames:self];
+        [[CoreDataManager sharedInstance] saveContext];
+    } else if([keyPath isEqualToString:@"albumArtFileName"]){
+        for(Song *aSong in self.albumSongs)
+        {
+            aSong.albumArtFileName = self.albumArtFileName;
         }
     }
 }
@@ -124,7 +159,12 @@
 
 - (void)willTurnIntoFault
 {
-    [self removeObserver:self forKeyPath:@"albumSongs"];
+    //bad practice but it works. A Sigbart occurs here when editing album info under a song edit (and cancelling the edit).
+    @try{
+        [self removeObserver:self forKeyPath:@"albumSongs"];
+    }@catch(id anException){
+        //do nothing, obviously it wasn't attached because an exception was thrown
+    }
 }
 
 @end

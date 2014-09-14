@@ -20,6 +20,9 @@
 
 + (BOOL)isAppInProductionMode;
 
++ (BOOL)isUserEditingSongOrAlbumOrArtist;
++ (void)setUserIsEditingSongOrAlbumOrArtist:(BOOL)aValue;
+
 + (BOOL)hasSongBeenPlayedSinceLaunch;
 + (void)setSongHasBeenPlayedSinceLaunch;
 

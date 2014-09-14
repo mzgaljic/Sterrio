@@ -101,6 +101,8 @@ static BOOL lastSortOrder;
 - (void)viewDidAppear:(BOOL)animated
 {
     self.navigationController.navigationBar.translucent = YES;
+    //need to check because when user presses back button, tab bar isnt always hidden
+    [self prefersStatusBarHidden];
 }
 
 - (void)dealloc
@@ -335,6 +337,55 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             [self.navigationController popViewControllerAnimated:YES];
         }
     }
+}
+
+#pragma mark - Rotation status bar methods
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
+        [self prefersStatusBarHidden];
+        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+    }
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+        [self setTabBarVisible:NO animated:NO];
+        self.tabBarController.tabBar.hidden = YES;
+        return YES;
+    }
+    else{
+        [self setTabBarVisible:NO animated:NO];
+        self.tabBarController.tabBar.hidden = YES;
+        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
+    }
+}
+
+- (void)setTabBarVisible:(BOOL)visible animated:(BOOL)animated
+{
+    // bail if the current state matches the desired state
+    if ([self tabBarIsVisible] == visible) return;
+    
+    // get a frame calculation ready
+    CGRect frame = self.tabBarController.tabBar.frame;
+    CGFloat height = frame.size.height;
+    CGFloat offsetY = (visible)? -height : height;
+    
+    // zero duration means no animation
+    CGFloat duration = (animated)? 0.3 : 0.0;
+    
+    [UIView animateWithDuration:duration animations:^{
+        self.tabBarController.tabBar.frame = CGRectOffset(frame, 0, offsetY);
+    }];
+}
+
+- (BOOL)tabBarIsVisible
+{
+    return self.tabBarController.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame);
 }
 
 @end

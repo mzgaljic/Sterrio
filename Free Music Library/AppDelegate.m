@@ -27,7 +27,8 @@ static const int APP_LAUNCHED_ALREADY = 1;
     
     //set app global-tint color
     //self.window.tintColor = [UIColor defaultSystemTintColor];
-    self.window.tintColor = Rgb2UIColor(255, 143, 47);  //orange tint color based on splash screen
+    //self.window.tintColor = Rgb2UIColor(255, 143, 47);  //orange tint color based on splash screen
+    self.window.tintColor = Rgb2UIColor(255, 149, 0);
     
     [self setProductionModeValue];
     

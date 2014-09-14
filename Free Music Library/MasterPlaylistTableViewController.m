@@ -156,10 +156,10 @@ static BOOL lastSortOrder;
         lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
     }
     
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    //if coming from these orientations
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight
-       || orientation == UIInterfaceOrientationPortraitUpsideDown)
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft ||
+       orientation == UIInterfaceOrientationLandscapeRight||
+       orientation == UIInterfaceOrientationPortraitUpsideDown)
     {
         self.tabBarController.tabBar.hidden = YES;
     }
@@ -177,13 +177,6 @@ static BOOL lastSortOrder;
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    if(! stillInSameTab){  //want to reset the state of our variables only when we pick another tab
-        tappedTabBar = YES;
-        pushedMoreViews = NO;
-        stillInSameTab = YES;
-    }
-    stillInSameTab = NO;
-
     self.navigationController.navigationBar.translucent = NO;
 }
 
@@ -308,8 +301,6 @@ static BOOL lastSortOrder;
 #pragma mark - segue
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    pushedMoreViews = YES;
-    stillInSameTab = YES;
     if([[segue identifier] isEqualToString: @"playlistItemSegue"]){
         [[segue destinationViewController] setPlaylist:sender];
     }
@@ -387,63 +378,32 @@ static BOOL lastSortOrder;
     [self performSegueWithIdentifier:@"settingsSegue" sender:self];
 }
 
-#pragma mark - Rotation status bar methods
+#pragma mark - Rotation methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
         // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
         [self prefersStatusBarHidden];
         [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }else {
-        // iOS 6 code only here...checking if we are now going into landscape mode
-        if((toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft) ||(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight))
-            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-        else
-            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
     }
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
-static BOOL tappedTabBar = YES;
-static BOOL pushedMoreViews = NO;
-static BOOL stillInSameTab = NO;
 - (BOOL)prefersStatusBarHidden
 {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    //coming from portrait?
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+        [self setTabBarVisible:NO animated:NO];
+        return YES;
+    }
+    else{
         [self setTabBarVisible:YES animated:NO];
         //fixes a bug when using another viewController with all these "hiding" nav bar features...and returning to this viewController
         self.tabBarController.tabBar.hidden = NO;
         return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
     }
-    //coming from landscape?
-    else{
-        if(pushedMoreViews){
-            if(orientation == UIInterfaceOrientationPortrait){  //coming back from dismissed view, presenting in portrait
-                if([[UIDevice currentDevice] orientation] == UIDeviceOrientationLandscapeLeft || [[UIDevice currentDevice] orientation] == UIDeviceOrientationLandscapeRight){
-                    [self setTabBarVisible:NO animated:NO];
-                    return YES;
-                }
-                [self setTabBarVisible:YES animated:NO];
-                return NO;
-            }else{
-                [self setTabBarVisible:NO animated:NO];
-                return YES;
-            }
-        }
-        if(tappedTabBar){
-            tappedTabBar = NO;
-            return NO;
-        }
-        else{
-            [self setTabBarVisible:NO animated:NO];
-             return YES;
-        }
-    }
 }
 
-#pragma mark - Rotation tab bar methods
 - (void)setTabBarVisible:(BOOL)visible animated:(BOOL)animated
 {
     // bail if the current state matches the desired state
@@ -466,6 +426,7 @@ static BOOL stillInSameTab = NO;
 {
     return self.tabBarController.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame);
 }
+
 
 #pragma mark - Counting Playlists in core data
 - (int)numberOfPlaylistsInCoreDataModel

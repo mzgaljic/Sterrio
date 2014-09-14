@@ -11,6 +11,7 @@
 @implementation AppEnvironmentConstants
 
 static const BOOL PRODUCTION_MODE = YES;
+static BOOL USER_EDITING_MEDIA = YES;
 static BOOL hasSongBeenPlayedSinceLaunch = NO;
 
 static short preferredSizeValue;
@@ -23,6 +24,16 @@ static BOOL icloudSettingsSync;
 + (BOOL)isAppInProductionMode
 {
     return PRODUCTION_MODE;
+}
+
++ (BOOL)isUserEditingSongOrAlbumOrArtist
+{
+    return USER_EDITING_MEDIA;
+}
+
++ (void)setUserIsEditingSongOrAlbumOrArtist:(BOOL)aValue
+{
+    USER_EDITING_MEDIA = aValue;
 }
 
 + (BOOL)hasSongBeenPlayedSinceLaunch

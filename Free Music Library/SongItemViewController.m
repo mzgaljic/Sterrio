@@ -8,10 +8,13 @@
 
 #import "SongItemViewController.h"
 
+
 @interface SongItemViewController ()
 {
     id endOfSongObserver;
 }
+@property (weak, nonatomic) IBOutlet AutoScrollLabel *scrollingSongView;
+@property (weak, nonatomic) IBOutlet AutoScrollLabel *scrollingArtistAlbumView;
 @property (nonatomic, strong) NSTimer *sliderTimer;
 @property (nonatomic, assign) BOOL needToLoadPlayer;  //used to determine if user went all the way 'back' using slide gesture
 @property (nonatomic, assign) BOOL needsToDisplayNewVideo;  //used to determine if user is tapping on 'now playing', or a new song.
@@ -22,6 +25,9 @@
 @property (nonatomic, strong) UIButton *playButton;
 @property (nonatomic, strong) UIButton *forwardButton;
 @property (nonatomic, strong) UIButton *backwardButton;
+
+@property (nonatomic, strong) NSString *songLabel;
+@property (nonatomic, strong) NSString *artistAlbumLabel;
 @end
 
 @implementation SongItemViewController
@@ -71,6 +77,8 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     
     _currentTimeLabel.text = @"--:--";
     _totalDurationLabel.text = @"--:--";
+    _currentTimeLabel.textColor = [UIColor defaultSystemTintColor];
+    _totalDurationLabel.textColor = [UIColor defaultSystemTintColor];
     
     //hack to hide back button text. This ALSO changes future back buttons if more stuff is pushed. BEWARE.
     self.navigationController.navigationBar.topItem.title = @"";
@@ -83,11 +91,39 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
         [self startPlayback:nil];
     
     //set song/album details for currently selected song
-    self.songNameLabel.text = nowPlayingSong.songName;
+    _songLabel = nowPlayingSong.songName;
+    self.scrollingSongView.text = _songLabel;
+    self.scrollingSongView.textColor = [UIColor defaultSystemTintColor];
+    self.scrollingSongView.font = [UIFont fontWithName:@"HelveticaNeue" size:40.0f];
+    
+    NSMutableString *artistAlbumLabel = [NSMutableString string];
+    if(nowPlayingSong.artist != nil)
+        [artistAlbumLabel appendString:nowPlayingSong.artist.artistName];
+    if(nowPlayingSong.album != nil)
+    {
+        if(nowPlayingSong.artist != nil)
+            [artistAlbumLabel appendString:@" ・ "];
+        [artistAlbumLabel appendString:nowPlayingSong.album.albumName];
+    }
+    _artistAlbumLabel = artistAlbumLabel;
+    self.scrollingArtistAlbumView.text = _artistAlbumLabel;
+    self.scrollingArtistAlbumView.textColor = [UIColor defaultSystemTintColor];
+    self.scrollingArtistAlbumView.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:self.scrollingSongView.font.pointSize];
+    self.scrollingArtistAlbumView.scrollSpeed = 20.0;
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didEnterForeground:)
+                                                name:@"UIApplicationWillEnterForegroundNotification" object:nil];
+    
+    
     NSString *navBarTitle = [NSString stringWithFormat:@"%i of %i",
                              [[self printFriendlySongIndex] intValue],
                              [self numberOfSongsInCoreDataModel]];
     self.navBar.title = navBarTitle;
+}
+
+- (void)didEnterForeground:(NSNotification*)sender;
+{
+    self.scrollingSongView.text = _songLabel;
+    self.scrollingArtistAlbumView.text = _artistAlbumLabel;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -231,11 +267,8 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     {
         UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:appTint
                                                               :[UIImage imageNamed:PAUSE_IMAGE_FILLED]];
-        UIImage *pauseUnfilled = [UIImage colorOpaquePartOfImage:appTint
-                                                            :[UIImage imageNamed:PAUSE_IMAGE_UNFILLED]];
         
         [_playButton setImage:pauseFilled forState:UIControlStateNormal];
-        [_playButton setImage:pauseUnfilled forState: UIControlStateHighlighted];
         _userWantsPlaybackPaused = NO;
          [player play];
     }
@@ -243,11 +276,8 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     {
         UIImage *playFilled = [UIImage colorOpaquePartOfImage:appTint
                                                               :[UIImage imageNamed:PLAY_IMAGE_FILLED]];
-        UIImage *playUnfilled = [UIImage colorOpaquePartOfImage:appTint
-                                                            :[UIImage imageNamed:PLAY_IMAGE_UNFILLED]];
 
         [_playButton setImage:playFilled forState:UIControlStateNormal];
-        [_playButton setImage:playUnfilled forState: UIControlStateHighlighted];
         _userWantsPlaybackPaused = YES;
         [player pause];
     }
@@ -266,7 +296,7 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     for(UIButton *aButton in _musicButtons){
         aButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentFill;
         aButton.contentVerticalAlignment = UIControlContentVerticalAlignmentFill;
-        [aButton setHitTestEdgeInsets:UIEdgeInsetsMake(-36, -36, -36, -36)];
+        [aButton setHitTestEdgeInsets:UIEdgeInsetsMake(-32, -32, -32, -32)];
     }
     
     float imgScaleFactor = 1.4f;
@@ -281,8 +311,6 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     if(_needsToDisplayNewVideo){
         UIImage *playFilled = [UIImage colorOpaquePartOfImage:appTint
                                                              :[UIImage imageNamed:PLAY_IMAGE_FILLED]];
-        UIImage *playUnfilled = [UIImage colorOpaquePartOfImage:appTint
-                                                               :[UIImage imageNamed:PLAY_IMAGE_UNFILLED]];
         
         float playButtonWidth = playFilled.size.width * imgScaleFactor;
         float playButtonHeight = playFilled.size.height * imgScaleFactor;
@@ -291,13 +319,10 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
         xValue = (screenWidth * 0.5) - (playButtonWidth/2);
         _playButton.frame = CGRectMake(xValue +2, yValue, playButtonWidth, playButtonHeight);
         [_playButton setImage:playFilled forState:UIControlStateNormal];
-        [_playButton setImage:playUnfilled forState: UIControlStateHighlighted];
         _playButton.enabled = NO;
     } else{
         UIImage *playFilled = [UIImage colorOpaquePartOfImage:appTint
                                                              :[UIImage imageNamed:PAUSE_IMAGE_FILLED]];
-        UIImage *playUnfilled = [UIImage colorOpaquePartOfImage:appTint
-                                                            :[UIImage imageNamed:PAUSE_IMAGE_UNFILLED]];
         
         float playButtonWidth = playFilled.size.width * imgScaleFactor;
         float playButtonHeight = playFilled.size.height * imgScaleFactor;
@@ -306,7 +331,6 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
         xValue = (screenWidth * 0.5) - (playButtonWidth/2);
         _playButton.frame = CGRectMake(xValue +2, yValue, playButtonWidth, playButtonHeight);
         [_playButton setImage:playFilled forState:UIControlStateNormal];
-        [_playButton setImage:playUnfilled forState: UIControlStateHighlighted];
         _playButton.enabled = YES;
     }
     
@@ -314,8 +338,6 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     //seek backward button
     UIImage *backFilled = [UIImage colorOpaquePartOfImage:appTint
                                                          :[UIImage imageNamed:BACKWARD_IMAGE_FILLED]];
-    UIImage *backUnfilled = [UIImage colorOpaquePartOfImage:appTint
-                                                        :[UIImage imageNamed:BACKWARD_IMAGE_UNFILLED]];
     
     float backwardButtonWidth = backFilled.size.width * imgScaleFactor;
     float backwardButtonHeight = backFilled.size.height * imgScaleFactor;
@@ -326,13 +348,10 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     yValue = (middlePointVertically - (backFilled.size.height/1.5));
     _backwardButton.frame = CGRectMake(xValue, yValue -1, backwardButtonWidth, backwardButtonHeight);
     [_backwardButton setImage:backFilled forState:UIControlStateNormal];
-    [_backwardButton setImage:backUnfilled forState: UIControlStateHighlighted];
     
     //see forward button
     UIImage *forwardFilled = [UIImage colorOpaquePartOfImage:appTint
                                                          :[UIImage imageNamed:FORWARD_IMAGE_FILLED]];
-    UIImage *forwardUnfilled = [UIImage colorOpaquePartOfImage:appTint
-                                                           :[UIImage imageNamed:FORWARD_IMAGE_UNFILLED]];
 
     float forwardButtonWidth = forwardFilled.size.width * imgScaleFactor;
     float forwardButtonHeight = forwardFilled.size.height * imgScaleFactor;
@@ -341,7 +360,6 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     yValue = (middlePointVertically - (forwardFilled.size.height/1.5));
     _forwardButton.frame = CGRectMake(xValue +3, yValue -1, forwardButtonWidth, forwardButtonHeight);
     [_forwardButton setImage:forwardFilled forState:UIControlStateNormal];
-    [_forwardButton setImage:forwardUnfilled forState: UIControlStateHighlighted];
     
     //add buttons to the viewControllers view
     for(UIButton *aButton in _musicButtons){
@@ -444,25 +462,21 @@ static BOOL playAfterMovingSlider = YES;
 static BOOL sliderIsBeingTouched = NO;
 - (IBAction)playbackSliderEditingHasBegun:(id)sender
 {
-    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        // Add code here to do background processing
-        AVPlayer *player = [[YouTubeMoviePlayerSingleton createSingleton] AVPlayer];
-        if(player.rate == 0)
-            playAfterMovingSlider = NO;
-        [[[YouTubeMoviePlayerSingleton createSingleton] AVPlayer] pause];
-        sliderIsBeingTouched = YES;
-    });
+    // Add code here to do background processing
+    AVPlayer *player = [[YouTubeMoviePlayerSingleton createSingleton] AVPlayer];
+    if(player.rate == 0)
+        playAfterMovingSlider = NO;
+    [[[YouTubeMoviePlayerSingleton createSingleton] AVPlayer] pause];
+    sliderIsBeingTouched = YES;
 }
 
 - (IBAction)playbackSliderEditingHasEnded:(id)sender
 {
-    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        // Add code here to do background processing
-        if(playAfterMovingSlider)
-            [[[YouTubeMoviePlayerSingleton createSingleton] AVPlayer] play];
-        playAfterMovingSlider = YES;  //reset value
-        sliderIsBeingTouched = NO;
-    });
+    // Add code here to do background processing
+    if(playAfterMovingSlider)
+        [[[YouTubeMoviePlayerSingleton createSingleton] AVPlayer] play];
+    playAfterMovingSlider = YES;  //reset value
+    sliderIsBeingTouched = NO;
 }
 
 //used to update WHILE playback is taking place (user is not touching slider)
@@ -538,49 +552,55 @@ static BOOL sliderIsBeingTouched = NO;
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
     {
-        dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            //entering view controller in landscape, show fullscreen video
-            CGRect screenRect = [[UIScreen mainScreen] bounds];
-            CGFloat screenWidth = screenRect.size.width;
-            CGFloat screenHeight = screenRect.size.height;
-            
-            dispatch_async( dispatch_get_main_queue(), ^{
-                //+1 is because the view ALMOST covered the full screen.
-                [self.playerView setFrame:CGRectMake(0, 0, ceil(screenHeight +1), screenWidth)];
-                //hide status bar
-                toOrienation = orientation;  //value used in prefersStatusBarHidden
-                [self prefersStatusBarHidden];
-                [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-                
-                if(_needsToDisplayNewVideo)
-                    [MRProgressOverlayView showOverlayAddedTo:self.playerView title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
-                [self.playerView setBackgroundColor:[UIColor blackColor]];
-            });
-        });
+        //entering view controller in landscape, show fullscreen video
+        CGRect screenRect = [[UIScreen mainScreen] bounds];
+        CGFloat screenWidth = screenRect.size.width;
+        CGFloat screenHeight = screenRect.size.height;
+        
+        //+1 is because the view ALMOST covered the full screen.
+        [self.playerView setFrame:CGRectMake(0, 0, ceil(screenHeight +1), screenWidth)];
+        //hide status bar
+        toOrienation = orientation;  //value used in prefersStatusBarHidden
+        [self prefersStatusBarHidden];
+        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+        
+        if(_needsToDisplayNewVideo)
+            [MRProgressOverlayView showOverlayAddedTo:self.playerView title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
+        [self.playerView setBackgroundColor:[UIColor blackColor]];
         
     }
     else
     {
-        dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            //show portrait player
-            float widthOfScreenRoationIndependant;
-            float  a = [[UIScreen mainScreen] bounds].size.height;
-            float b = [[UIScreen mainScreen] bounds].size.width;
-            if(a < b)
-                widthOfScreenRoationIndependant = a;
-            else
-                widthOfScreenRoationIndependant = b;
-            float frameHeight = [self videoHeightInSixteenByNineAspectRatioGivenWidth:widthOfScreenRoationIndependant];
-
-            dispatch_async( dispatch_get_main_queue(), ^{
-                [self.playerView setFrame:CGRectMake(0, STATUS_AND_NAV_BAR_OFFSET, self.view.frame.size.width, frameHeight)];
-                
-                if(_needsToDisplayNewVideo)
-                    [MRProgressOverlayView showOverlayAddedTo:self.playerView title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
-                [self.playerView setBackgroundColor:[UIColor blackColor]];
-            });
-        });
+        //show portrait player
+        float widthOfScreenRoationIndependant;
+        float heightOfScreenRotationIndependant;
+        float  a = [[UIScreen mainScreen] bounds].size.height;
+        float b = [[UIScreen mainScreen] bounds].size.width;
+        if(a < b)
+        {
+            heightOfScreenRotationIndependant = b;
+            widthOfScreenRoationIndependant = a;
+        }
+        else
+        {
+            widthOfScreenRoationIndependant = b;
+            heightOfScreenRotationIndependant = a;
+        }
+        float videoFrameHeight = [self videoHeightInSixteenByNineAspectRatioGivenWidth:widthOfScreenRoationIndependant];
+        float playerFrameYTempalue = roundf(((heightOfScreenRotationIndependant / 2.0) /1.5));
+        int playerYValue = nearestEvenInt((int)playerFrameYTempalue);
+        [self.playerView setFrame:CGRectMake(0, playerYValue, self.view.frame.size.width, videoFrameHeight)];
+        
+        if(_needsToDisplayNewVideo)
+            [MRProgressOverlayView showOverlayAddedTo:self.playerView title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
+        [self.playerView setBackgroundColor:[UIColor blackColor]];
     }
+}
+
+//tiny helper function for the setupVideoPlayerViewDimensionsAndShowLoading method
+int nearestEvenInt(int to)
+{
+    return (to % 2 == 0) ? to : (to + 1);
 }
 
 #pragma mark - 16:9 Aspect ratio helper
@@ -651,11 +671,8 @@ static BOOL playWhenBufferReturns = NO;
             UIColor *appTint = [UIColor defaultSystemTintColor];
             UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:appTint
                                                             :[UIImage imageNamed:PAUSE_IMAGE_FILLED]];
-            UIImage *pauseUnfilled = [UIImage colorOpaquePartOfImage:appTint
-                                                        :[UIImage imageNamed:PAUSE_IMAGE_UNFILLED]];
             
             [_playButton setImage:pauseFilled forState:UIControlStateNormal];
-            [_playButton setImage:pauseUnfilled forState: UIControlStateHighlighted];
         }
     }
     else if (kTimeRangesKVO == context)
@@ -812,15 +829,25 @@ static BOOL playWhenBufferReturns = NO;
         [self.playerView setFrame:CGRectMake(0, 0, ceil(screenHeight +1), screenWidth)];  //+1 is because the view ALMOST covered the full screen.
     }
     else{
+        //show portrait player
         float widthOfScreenRoationIndependant;
+        float heightOfScreenRotationIndependant;
         float  a = [[UIScreen mainScreen] bounds].size.height;
         float b = [[UIScreen mainScreen] bounds].size.width;
         if(a < b)
+        {
+            heightOfScreenRotationIndependant = b;
             widthOfScreenRoationIndependant = a;
+        }
         else
+        {
             widthOfScreenRoationIndependant = b;
-        float frameHeight = [self videoHeightInSixteenByNineAspectRatioGivenWidth:widthOfScreenRoationIndependant];
-        [self.playerView setFrame:CGRectMake(0, STATUS_AND_NAV_BAR_OFFSET, screenWidth, frameHeight)];
+            heightOfScreenRotationIndependant = a;
+        }
+        float videoFrameHeight = [self videoHeightInSixteenByNineAspectRatioGivenWidth:widthOfScreenRoationIndependant];
+        float playerFrameYTempalue = roundf(((heightOfScreenRotationIndependant / 2.0) /1.5));
+        int playerYValue = nearestEvenInt((int)playerFrameYTempalue);
+        [self.playerView setFrame:CGRectMake(0, playerYValue, screenWidth, videoFrameHeight)];
     }
     
     toOrienation = toInterfaceOrientation;
