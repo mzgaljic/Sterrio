@@ -9,70 +9,68 @@
 #import "YouTubeVideoSearchService.h"
 
 @interface YouTubeVideoSearchService ()
-@property (nonatomic, strong) NSString *nextPageToken;  //set and reset when appropriate
+@property (nonatomic, strong) NSString *nextPageToken; //set and reset when appropriate
 @property (nonatomic, strong) NSString *originalQueryUrl;
 @end
 
 @implementation YouTubeVideoSearchService
+#pragma mark- Constants
 static NSString *baseUrlA = @"https://www.googleapis.com/youtube/v3/search?type=video&part=snippet&maxResults=15&key=AIzaSyBAFK0pOUf4IWdfS94dYk_42dO46ssTUH8&q=";
-
 static NSString *baseUrlB = @"http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q=";
-
 static NSString *nextPageString = @"&pageToken=";
 
+#pragma mark - Searching Youtube
 - (void)searchYouTubeForVideosUsingString:(NSString *)searchString
 {
     if(searchString){
-        NSMutableString *fullUrl = [NSMutableString stringWithString: baseUrlA];
-        [fullUrl appendString:[searchString stringForHTTPRequest]];
-        _originalQueryUrl = fullUrl;
+        NSMutableString *queryUrl = [NSMutableString stringWithString: baseUrlA];
+        [queryUrl appendString:[searchString stringForHTTPRequest]];
+        _originalQueryUrl = queryUrl;
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            
+            //sending a basic synchronous request here sine we're off the main thread anyway
+            NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]];
+            NSURLResponse *urlResponse = nil;
+            NSError *requestError = nil;
+            NSData *data = [NSURLConnection sendSynchronousRequest:urlRequest
+                                                 returningResponse:&urlResponse error:&requestError];
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                // Send a synchronous request here, already on a different thread
-                NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:fullUrl]];
-                NSURLResponse *urlResponse = nil;
-                NSError *requestError = nil;
-                NSData *data = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&urlResponse error:&requestError];
-                
-                //sendSynchronousRequest returns nil if a connection could not be created or if the download fails.
-                if (urlResponse == nil)
+                //data is nil if a connection could not be created or if the download failed.
+                if (data == nil)
                 {
-                    if (requestError != nil)  // Check for problems
-                    {
-                        //if(requestError.code == kCFURLErrorNotConnectedToInternet)  //-1019
-                            //NSLog(@"no internet connection. Tried getting yt results.");
-                        [delegate networkErrorHasOccuredSearchingYoutube];
-                    }
+                    //do not need to check error type, the user doesn't care. Just notify delegate.
+                    [delegate networkErrorHasOccuredSearchingYoutube];
                 }
-                else  // Data received...continue processing
+                else //data received...continue processing
                 {
                     [delegate ytVideoSearchDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
                 }
                 
-            });  //end of async dispatch
+            }); //end of async dispatch
         });
     } else
-        return;
+        return; //nothing to search for
 }
 
-- (void)fetchNextYouTubePageForLastQuery
+- (void)fetchNextYouTubePageUsingLastQueryString
 {
-    if(_nextPageToken == nil){
+    if(_nextPageToken == nil){ //user has gone through all available 'pages' in the result
         [delegate ytvideoResultsNoMorePagesToView];
         return;
     }
     if(_originalQueryUrl){
-        NSMutableString *fullUrl = [NSMutableString stringWithString: _originalQueryUrl];
-        [fullUrl appendString:nextPageString];
-        [fullUrl appendString:_nextPageToken];
+        NSMutableString *queryUrl = [NSMutableString stringWithString: _originalQueryUrl];
+        [queryUrl appendString:nextPageString];
+        [queryUrl appendString:_nextPageToken];
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 // Send a synchronous request here, already on a different thread
-                NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:fullUrl]];
+                NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]];
                 NSURLResponse *urlResponse = nil;
                 NSError *requestError = nil;
                 NSData *data = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&urlResponse error:&requestError];

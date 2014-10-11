@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="14A343f" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="8YX-ce-x5E">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="14A361c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="8YX-ce-x5E">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <deployment defaultVersion="1792" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
     </dependencies>
     <scenes>
-        <!--Master Songs Table View Controller - Songs-->
+        <!--Songs-->
         <scene sceneID="JxM-OT-aUc">
             <objects>
                 <tableViewController extendedLayoutIncludesOpaqueBars="YES" id="C05-aT-A4x" customClass="MasterSongsTableViewController" sceneMemberID="viewController">
@@ -56,7 +57,7 @@
             </objects>
             <point key="canvasLocation" x="1459" y="-819"/>
         </scene>
-        <!--Song Item View Controller - 1/203-->
+        <!--1/203-->
         <scene sceneID="aB0-HZ-Jc6">
             <objects>
                 <viewController storyboardIdentifier="songItemView" extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="PBb-rQ-7sq" customClass="SongItemViewController" sceneMemberID="viewController">
@@ -91,11 +92,11 @@
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <scrollView appearanceType="aqua" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="eA5-re-obU" customClass="AutoScrollLabel">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="eA5-re-obU" customClass="AutoScrollLabel">
                                 <rect key="frame" x="0.0" y="117" width="320" height="66"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </scrollView>
-                            <scrollView appearanceType="aqua" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="BXA-xa-qlq" customClass="AutoScrollLabel">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="BXA-xa-qlq" customClass="AutoScrollLabel">
                                 <rect key="frame" x="0.0" y="64" width="320" height="66"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </scrollView>
@@ -117,7 +118,7 @@
             </objects>
             <point key="canvasLocation" x="2015" y="-819"/>
         </scene>
-        <!--Master Genre Table View Controller - Genres-->
+        <!--Genres-->
         <scene sceneID="Vww-o9-vR9">
             <objects>
                 <tableViewController extendedLayoutIncludesOpaqueBars="YES" id="RD8-Q5-Icz" customClass="MasterGenreTableViewController" sceneMemberID="viewController">
@@ -191,7 +192,7 @@
             </objects>
             <point key="canvasLocation" x="130" y="180"/>
         </scene>
-        <!--Navigation Controller - Songs-->
+        <!--Songs-->
         <scene sceneID="ckA-Oq-9Mg">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="ZWq-Z9-URc" sceneMemberID="viewController">
@@ -211,7 +212,7 @@
             </objects>
             <point key="canvasLocation" x="981" y="-819"/>
         </scene>
-        <!--Navigation Controller - Genres-->
+        <!--Genres-->
         <scene sceneID="vUt-9J-pjQ">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="rUd-Wq-cn2" sceneMemberID="viewController">
@@ -230,7 +231,7 @@
             </objects>
             <point key="canvasLocation" x="981" y="1289"/>
         </scene>
-        <!--Album Item View Controller - album name-->
+        <!--album name-->
         <scene sceneID="COP-Ij-JKb">
             <objects>
                 <viewController extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" id="G0K-FY-YuF" customClass="AlbumItemViewController" sceneMemberID="viewController">
@@ -261,7 +262,7 @@
             </objects>
             <point key="canvasLocation" x="2015" y="-135"/>
         </scene>
-        <!--Master Albums Table View Controller - Albums-->
+        <!--Albums-->
         <scene sceneID="op1-aV-4gz">
             <objects>
                 <tableViewController extendedLayoutIncludesOpaqueBars="YES" id="6rZ-IE-7YV" customClass="MasterAlbumsTableViewController" sceneMemberID="viewController">
@@ -314,13 +315,12 @@
             </objects>
             <point key="canvasLocation" x="1459" y="-135"/>
         </scene>
-        <!--Navigation Controller - Albums-->
+        <!--Albums-->
         <scene sceneID="1id-C4-d81">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="N8U-tP-Z8r" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Albums" image="albums" id="M5K-hl-duo"/>
                     <toolbarItems/>
-                    <size key="freeformSize" width="320" height="568"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="5D3-H1-wzj">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -334,7 +334,7 @@
             </objects>
             <point key="canvasLocation" x="981" y="-135"/>
         </scene>
-        <!--Master Playlist Table View Controller - Playlists-->
+        <!--Playlists-->
         <scene sceneID="GRy-Te-h4a">
             <objects>
                 <tableViewController extendedLayoutIncludesOpaqueBars="YES" id="eYp-4z-EJP" customClass="MasterPlaylistTableViewController" sceneMemberID="viewController">
@@ -380,7 +380,7 @@
             </objects>
             <point key="canvasLocation" x="1459" y="601"/>
         </scene>
-        <!--Playlist Item Table View Controller - playlist name-->
+        <!--playlist name-->
         <scene sceneID="JTw-3d-KD7">
             <objects>
                 <tableViewController extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" id="zmX-nC-18m" customClass="PlaylistItemTableViewController" sceneMemberID="viewController">
@@ -440,7 +440,7 @@
             </objects>
             <point key="canvasLocation" x="2015" y="601"/>
         </scene>
-        <!--Navigation Controller - Playlists-->
+        <!--Playlists-->
         <scene sceneID="hcm-bu-jM1">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="d6y-Vn-oTB" sceneMemberID="viewController">
@@ -459,7 +459,7 @@
             </objects>
             <point key="canvasLocation" x="981" y="601"/>
         </scene>
-        <!--Master Artists Table View Controller - Artists-->
+        <!--Artists-->
         <scene sceneID="Lre-IJ-5W8">
             <objects>
                 <tableViewController extendedLayoutIncludesOpaqueBars="YES" id="0K4-5L-WBH" customClass="MasterArtistsTableViewController" sceneMemberID="viewController">
@@ -512,7 +512,7 @@
             </objects>
             <point key="canvasLocation" x="1454" y="2021"/>
         </scene>
-        <!--Navigation Controller - Artists-->
+        <!--Artists-->
         <scene sceneID="9tt-32-52e">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="CtG-eT-64A" sceneMemberID="viewController">
@@ -531,7 +531,7 @@
             </objects>
             <point key="canvasLocation" x="981" y="2021"/>
         </scene>
-        <!--Artist Item Album View Controller - artist name-->
+        <!--artist name-->
         <scene sceneID="ayP-5N-4eZ">
             <objects>
                 <viewController extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" id="kan-nw-IVP" customClass="ArtistItemAlbumViewController" sceneMemberID="viewController">
@@ -549,7 +549,7 @@
             </objects>
             <point key="canvasLocation" x="2015" y="2021"/>
         </scene>
-        <!--Genre Item View Controller - genre name-->
+        <!--genre name-->
         <scene sceneID="xOu-gs-Vat">
             <objects>
                 <tableViewController extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" id="epC-52-2Pl" customClass="GenreItemViewController" sceneMemberID="viewController">
@@ -579,7 +579,7 @@
             </objects>
             <point key="canvasLocation" x="2015" y="1289"/>
         </scene>
-        <!--Playlist Song Adder Table View Controller - Pick Songs-->
+        <!--Pick Songs-->
         <scene sceneID="GG1-dK-p7c">
             <objects>
                 <tableViewController storyboardIdentifier="playlistSongAdderView" extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Nk6-be-5wM" customClass="PlaylistSongAdderTableViewController" sceneMemberID="viewController">
@@ -660,7 +660,7 @@
             </objects>
             <point key="canvasLocation" x="2615" y="716"/>
         </scene>
-        <!--Master Editing Song Table View Controller - Edit Song-->
+        <!--Edit Song-->
         <scene sceneID="XcI-a6-wBT">
             <objects>
                 <tableViewController extendedLayoutIncludesOpaqueBars="YES" id="aMZ-SU-lD1" customClass="MasterEditingSongTableViewController" sceneMemberID="viewController">
@@ -914,7 +914,7 @@
             </objects>
             <point key="canvasLocation" x="2805" y="-1958"/>
         </scene>
-        <!--Settings Table View Controller - Settings-->
+        <!--Settings-->
         <scene sceneID="B5X-97-CTG">
             <objects>
                 <tableViewController hidesBottomBarWhenPushed="YES" id="iih-ga-hAY" customClass="SettingsTableViewController" sceneMemberID="viewController">
@@ -984,7 +984,7 @@
             </objects>
             <point key="canvasLocation" x="3261" y="-1358"/>
         </scene>
-        <!--Youtube Results Table View Controller - Add Music-->
+        <!--Add Music-->
         <scene sceneID="4KX-bh-cq6">
             <objects>
                 <tableViewController id="s8d-Lc-Gkj" customClass="YoutubeResultsTableViewController" sceneMemberID="viewController">
@@ -1004,16 +1004,16 @@
                                             <rect key="frame" x="2" y="2" width="142" height="80"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         </imageView>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="QxY-xQ-Ffm">
-                                            <rect key="frame" x="152" y="20" width="170" height="21"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="EIo-UR-IOF">
+                                            <rect key="frame" x="152" y="58" width="170" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="EIo-UR-IOF">
-                                            <rect key="frame" x="152" y="58" width="170" height="21"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="QxY-xQ-Ffm">
+                                            <rect key="frame" x="152" y="20" width="170" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>

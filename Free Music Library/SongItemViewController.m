@@ -57,15 +57,18 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     _playButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _forwardButton = [UIButton buttonWithType:UIButtonTypeCustom];
     
-    [_backwardButton addTarget:self
-                        action:@selector(backwardsButtonTappedOnce)
+    [_backwardButton addTarget:self action:@selector(backwardsButtonTappedOnce)
               forControlEvents:UIControlEventTouchUpInside];
-    [_playButton addTarget:self
-                    action:@selector(playOrPauseButtonTapped)
+    [_backwardButton addTarget:self action:@selector(backwardsButtonBeingHeld) forControlEvents:UIControlEventTouchDown];
+    [_backwardButton addTarget:self action:@selector(backwardsButtonLetGo) forControlEvents:UIControlEventTouchUpOutside];
+    [_playButton addTarget:self action:@selector(playOrPauseButtonTapped)
           forControlEvents:UIControlEventTouchUpInside];
-    [_forwardButton addTarget:self
-                       action:@selector(forwardsButtonTappedOnce)
+    [_playButton addTarget:self action:@selector(playOrPauseButtonBeingHeld) forControlEvents:UIControlEventTouchDown];
+    [_playButton addTarget:self action:@selector(playOrPauseButtonLetGo) forControlEvents:UIControlEventTouchUpOutside];
+    [_forwardButton addTarget:self action:@selector(forwardsButtonTappedOnce)
              forControlEvents:UIControlEventTouchUpInside];
+    [_forwardButton addTarget:self action:@selector(forwardsButtonBeingHeld) forControlEvents:UIControlEventTouchDown];
+    [_forwardButton addTarget:self action:@selector(forwardsButtonLetGo) forControlEvents:UIControlEventTouchUpOutside];
     
     _musicButtons = @[_backwardButton, _playButton, _forwardButton];
     
@@ -77,8 +80,8 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     
     _currentTimeLabel.text = @"--:--";
     _totalDurationLabel.text = @"--:--";
-    _currentTimeLabel.textColor = [UIColor defaultSystemTintColor];
-    _totalDurationLabel.textColor = [UIColor defaultSystemTintColor];
+    _currentTimeLabel.textColor = [UIColor blackColor];
+    _totalDurationLabel.textColor = [UIColor blackColor];
     
     //hack to hide back button text. This ALSO changes future back buttons if more stuff is pushed. BEWARE.
     self.navigationController.navigationBar.topItem.title = @"";
@@ -93,7 +96,7 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     //set song/album details for currently selected song
     _songLabel = nowPlayingSong.songName;
     self.scrollingSongView.text = _songLabel;
-    self.scrollingSongView.textColor = [UIColor defaultSystemTintColor];
+    self.scrollingSongView.textColor = [UIColor blackColor];
     self.scrollingSongView.font = [UIFont fontWithName:@"HelveticaNeue" size:40.0f];
     
     NSMutableString *artistAlbumLabel = [NSMutableString string];
@@ -107,7 +110,7 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     }
     _artistAlbumLabel = artistAlbumLabel;
     self.scrollingArtistAlbumView.text = _artistAlbumLabel;
-    self.scrollingArtistAlbumView.textColor = [UIColor defaultSystemTintColor];
+    self.scrollingArtistAlbumView.textColor = [UIColor blackColor];
     self.scrollingArtistAlbumView.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:self.scrollingSongView.font.pointSize];
     self.scrollingArtistAlbumView.scrollSpeed = 20.0;
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didEnterForeground:)
@@ -256,13 +259,19 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
 #pragma mark - Music Button actions
 - (void)backwardsButtonTappedOnce
 {
+    //code to rewind to previous song
     
+    [self backwardsButtonLetGo];
 }
+
+- (void)backwardsButtonBeingHeld{ [self addShadowToButton:_backwardButton]; }
+
+- (void)backwardsButtonLetGo{ [self removeShadowForButton:_backwardButton]; }
 
 - (void)playOrPauseButtonTapped
 {
     AVPlayer *player = [[YouTubeMoviePlayerSingleton createSingleton] AVPlayer];
-    UIColor *appTint = [UIColor defaultSystemTintColor];
+    UIColor *appTint = [UIColor blackColor];
     if(player.rate == 0)
     {
         UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:appTint
@@ -282,11 +291,39 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
         [player pause];
     }
     _playButton.enabled = YES;
+    
+    [self playOrPauseButtonLetGo];
 }
+
+- (void)playOrPauseButtonBeingHeld{ [self addShadowToButton:_playButton]; }
+
+- (void)playOrPauseButtonLetGo{ [self removeShadowForButton:_playButton]; }
 
 - (void)forwardsButtonTappedOnce
 {
+    //code to fast forward
     
+    [self forwardsButtonLetGo];
+}
+
+- (void)forwardsButtonBeingHeld{ [self addShadowToButton:_forwardButton]; }
+
+- (void)forwardsButtonLetGo{ [self removeShadowForButton:_forwardButton]; }
+
+- (void)addShadowToButton:(UIButton *)aButton
+{
+    aButton.layer.shadowColor = [[UIColor defaultSystemTintColor] darkerColor].CGColor;
+    aButton.layer.shadowRadius = 5.0f;
+    aButton.layer.shadowOpacity = 1.0f;
+    aButton.layer.shadowOffset = CGSizeZero;
+}
+
+- (void)removeShadowForButton:(UIButton *)aButton
+{
+    aButton.layer.shadowColor = [UIColor clearColor].CGColor;
+    aButton.layer.shadowRadius = 5.0f;
+    aButton.layer.shadowOpacity = 1.0f;
+    aButton.layer.shadowOffset = CGSizeZero;
 }
 
 #pragma mark - Positioning Music Buttons
@@ -305,7 +342,7 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     CGFloat screenHeight = screenRect.size.height;
     CGFloat screenWidth = screenRect.size.width;
     
-    UIColor *appTint = [UIColor defaultSystemTintColor];
+    UIColor *appTint = [UIColor blackColor];
     float yValue, xValue;
     //play button or pause button
     if(_needsToDisplayNewVideo){
@@ -370,39 +407,35 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
 #pragma mark - Playback Time Slider
 - (void)setupPlaybackTimeSlider
 {
-    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        CMTime cmTime = [[YouTubeMoviePlayerSingleton createSingleton] AVPlayer].currentItem.asset.duration;
-        Float64 durationInSeconds = CMTimeGetSeconds(cmTime);
-        
-        if(durationInSeconds <= 0.0f || durationInSeconds == NAN){
-            // Handle error
-            NSString *title = @"Trouble Loading Video";
-            NSString *msg = @"Sorry, something whacky is going on, please try again.";
-            [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
-            [self.navigationController popViewControllerAnimated:YES];
-        }
-        //setup total song duration lable animations
-        CATransition *animation = [CATransition animation];
-        animation.duration = 1.0;
-        animation.type = kCATransitionFade;
-        animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        
-        dispatch_async( dispatch_get_main_queue(), ^{
-            _playbackTimeSlider.minimumValue = 0.0f;
-            _playbackTimeSlider.maximumValue = durationInSeconds;
-            _playbackTimeSlider.popUpViewCornerRadius = 12.0;
-            [_playbackTimeSlider setMaxFractionDigitsDisplayed:0];
-            _playbackTimeSlider.popUpViewColor = [[UIColor defaultSystemTintColor] lighterColor];
-            _playbackTimeSlider.font = [UIFont fontWithName:@"GillSans-Bold" size:24];
-            _playbackTimeSlider.textColor = [UIColor whiteColor];
-            _playbackTimeSlider.minimumTrackTintColor = [UIColor defaultSystemTintColor];
-            
-            //set duration label
-            if(_needsToDisplayNewVideo)
-                [_totalDurationLabel.layer addAnimation:animation forKey:@"changeTextTransition"];  //animates the duration once its determined
-            _totalDurationLabel.text = [self convertSecondsToPrintableNSStringWithSliderValue:durationInSeconds];  //just sets duration, already known.
-        });
-    });
+    CMTime cmTime = [[YouTubeMoviePlayerSingleton createSingleton] AVPlayer].currentItem.asset.duration;
+    Float64 durationInSeconds = CMTimeGetSeconds(cmTime);
+    
+    if(durationInSeconds <= 0.0f || durationInSeconds == NAN){
+        // Handle error
+        NSString *title = @"Trouble Loading Video";
+        NSString *msg = @"Sorry, something whacky is going on, please try again.";
+        [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
+        [self.navigationController popViewControllerAnimated:YES];
+    }
+    //setup total song duration lable animations
+    CATransition *animation = [CATransition animation];
+    animation.duration = 1.0;
+    animation.type = kCATransitionFade;
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    
+    _playbackTimeSlider.minimumValue = 0.0f;
+    _playbackTimeSlider.maximumValue = durationInSeconds;
+    _playbackTimeSlider.popUpViewCornerRadius = 12.0;
+    [_playbackTimeSlider setMaxFractionDigitsDisplayed:0];
+    _playbackTimeSlider.popUpViewColor = [[UIColor defaultSystemTintColor] lighterColor];
+    _playbackTimeSlider.font = [UIFont fontWithName:@"GillSans-Bold" size:24];
+    _playbackTimeSlider.textColor = [UIColor whiteColor];
+    _playbackTimeSlider.minimumTrackTintColor = [UIColor defaultSystemTintColor];
+    
+    //set duration label
+    if(_needsToDisplayNewVideo)
+        [_totalDurationLabel.layer addAnimation:animation forKey:@"changeTextTransition"];  //animates the duration once its determined
+    _totalDurationLabel.text = [self convertSecondsToPrintableNSStringWithSliderValue:durationInSeconds];  //just sets duration, already known.
 }
 
 - (void)positionPlaybackSliderOnScreen
@@ -668,7 +701,7 @@ static BOOL playWhenBufferReturns = NO;
             playWhenBufferReturns = YES;
             
             //change play button to pause button, if the pause button isnt already on screen
-            UIColor *appTint = [UIColor defaultSystemTintColor];
+            UIColor *appTint = [UIColor blackColor];
             UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:appTint
                                                             :[UIImage imageNamed:PAUSE_IMAGE_FILLED]];
             
@@ -845,9 +878,12 @@ static BOOL playWhenBufferReturns = NO;
             heightOfScreenRotationIndependant = a;
         }
         float videoFrameHeight = [self videoHeightInSixteenByNineAspectRatioGivenWidth:widthOfScreenRoationIndependant];
-        float playerFrameYTempalue = roundf(((heightOfScreenRotationIndependant / 2.0) /1.5));
-        int playerYValue = nearestEvenInt((int)playerFrameYTempalue);
-        [self.playerView setFrame:CGRectMake(0, playerYValue, screenWidth, videoFrameHeight)];
+        float playerFrameYTempValue = roundf(((heightOfScreenRotationIndependant / 2.0) /1.5));
+        int playerYValue = nearestEvenInt((int)playerFrameYTempValue);
+        [self.playerView setFrame:CGRectMake(0,
+                                             playerYValue,
+                                             widthOfScreenRoationIndependant,
+                                             videoFrameHeight)];
     }
     
     toOrienation = toInterfaceOrientation;

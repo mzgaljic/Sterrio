@@ -20,6 +20,7 @@ MRProgress is a collection of drop-in components that display a dimmed overlay w
 * **Reusable**: The code is fragmented in small reusable pieces.
 * **Well documented**: You can install and open Appledoc documentation.
 * **Integrated**: It offers an integration into [AFNetworking](https://github.com/AFNetworking/AFNetworking).
+* **Accessible**: It provides labels, traits and events for UIAccessibility.
 
 
 ## Components
@@ -222,7 +223,7 @@ MRProgress offers an integration into the network library AFNetworking.
 2. Import the adequate category header for the component you want to use:
 
    ```objc
-   import <MRProgress/MRProgressOverlayView+AFNetworking.h>
+   #import <MRProgress/MRProgressOverlayView+AFNetworking.h>
    ```
 
 3. You can now just setup your task / operation as usual and use the category

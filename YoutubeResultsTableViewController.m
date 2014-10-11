@@ -614,7 +614,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
                 [loadMoreCell setAccessoryView:activityView];
                 
                 //try to load more results
-                [_yt fetchNextYouTubePageForLastQuery];
+                [_yt fetchNextYouTubePageUsingLastQueryString];
             }
         }
     }
@@ -629,13 +629,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     }
 }
 
-/*
-#pragma mark - SDWebImage downloaded image preprocessing
-- (UIImage *)imageManager:(SDWebImageManager *)imageManager transformDownloadedImage:(UIImage *)image withURL:(NSURL *)imageURL
-{
-    //return [AlbumArtUtilities imageWithImage:image scaledToSize:CGSizeMake(120.0f, 90.0f)];
-}
- */
 - (void)downloadImageWithURL:(NSURL *)url completionBlock:(void (^)(BOOL succeeded, UIImage *image))completionBlock
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];

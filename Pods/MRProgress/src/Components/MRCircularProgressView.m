@@ -12,7 +12,7 @@
 #import "MRStopButton.h"
 
 
-NSString *const MRCircularProgressViewProgressAnimationKey = @"MRCircularProgressViewProgressAnimationKey";
+static NSString *const MRCircularProgressViewProgressAnimationKey = @"MRCircularProgressViewProgressAnimationKey";
 
 
 @interface MRCircularProgressView ()
@@ -63,7 +63,9 @@ NSString *const MRCircularProgressViewProgressAnimationKey = @"MRCircularProgres
 }
 
 - (void)commonInit {
-    self.progress = 0;
+    self.isAccessibilityElement = YES;
+    self.accessibilityLabel = NSLocalizedString(@"Determinate Progress", @"Accessibility label for circular progress view");
+    self.accessibilityTraits = UIAccessibilityTraitUpdatesFrequently;
     
     NSNumberFormatter *numberFormatter = [NSNumberFormatter new];
     self.numberFormatter = numberFormatter;
@@ -84,6 +86,8 @@ NSString *const MRCircularProgressViewProgressAnimationKey = @"MRCircularProgres
     self.stopButton = stopButton;
     
     self.mayStop = NO;
+    
+    self.progress = 0;
     
     [self tintColorDidChange];
 }
@@ -174,6 +178,7 @@ NSString *const MRCircularProgressViewProgressAnimationKey = @"MRCircularProgres
     _progress = progress;
     
     [self updateProgress];
+    UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification, self);
 }
 
 - (void)updateProgress {
@@ -187,11 +192,12 @@ NSString *const MRCircularProgressViewProgressAnimationKey = @"MRCircularProgres
 
 - (void)updateLabel:(float)progress {
     self.valueLabel.text = [self.numberFormatter stringFromNumber:@(progress)];
+    self.accessibilityValue = self.valueLabel.text;
 }
 
 - (void)setProgress:(float)progress animated:(BOOL)animated {
     if (animated) {
-        if (self.progress == progress) {
+        if (ABS(self.progress - progress) < CGFLOAT_MIN) {
             return;
         }
         
@@ -199,6 +205,7 @@ NSString *const MRCircularProgressViewProgressAnimationKey = @"MRCircularProgres
     } else {
         self.progress = progress;
     }
+    UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification, self);
 }
 
 - (void)setAnimationDuration:(CFTimeInterval)animationDuration {

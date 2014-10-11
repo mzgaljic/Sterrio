@@ -14,7 +14,7 @@
 @interface YouTubeVideoSearchService : NSObject <NSURLConnectionDelegate>
 
 - (void)searchYouTubeForVideosUsingString:(NSString *)searchString;
-- (void)fetchNextYouTubePageForLastQuery;
+- (void)fetchNextYouTubePageUsingLastQueryString;
 - (void)fetchYouTubeAutoCompleteResultsForString:(NSString *)currentString;
 - (void)setDelegate:(id<YouTubeVideoSearchDelegate>)delegate;
 + (void)removeDelegate;

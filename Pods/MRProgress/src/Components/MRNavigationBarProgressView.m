@@ -48,6 +48,15 @@ static NSString *const MR_UINavigationControllerLastVisibleViewController = @"UI
 
 @implementation MRNavigationBarProgressView
 
+static NSNumberFormatter *progressNumberFormatter;
+
++ (void)load {
+    NSNumberFormatter *numberFormatter = [NSNumberFormatter new];
+    numberFormatter.numberStyle = NSNumberFormatterPercentStyle;
+    numberFormatter.locale = NSLocale.currentLocale;
+    progressNumberFormatter = numberFormatter;
+}
+
 + (instancetype)progressViewForNavigationController:(UINavigationController *)navigationController {
     // Try to get existing bar
     MRNavigationBarProgressView *progressView = navigationController.progressView;
@@ -61,7 +70,7 @@ static NSString *const MR_UINavigationControllerLastVisibleViewController = @"UI
     progressView.barView = navigationBar;
     
     progressView.progressTintColor = navigationBar.tintColor
-        ?: UIApplication.sharedApplication.delegate.window.tintColor;
+        ? navigationBar.tintColor : UIApplication.sharedApplication.delegate.window.tintColor;
     
     // Store bar and add to view hierachy
     navigationController.progressView = progressView;
@@ -95,6 +104,10 @@ static NSString *const MR_UINavigationControllerLastVisibleViewController = @"UI
 }
 
 - (void)commonInit {
+    self.isAccessibilityElement = YES;
+    self.accessibilityLabel = NSLocalizedString(@"Determinate Progress", @"Accessibility label for navigation bar progress view");
+    self.accessibilityTraits = UIAccessibilityTraitUpdatesFrequently;
+    
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.opaque = NO;
     
@@ -203,11 +216,14 @@ static NSString *const MR_UINavigationControllerLastVisibleViewController = @"UI
 - (void)progressDidChange {
     self.progressView.alpha = self.progress >= 1 ? 0 : 1;
     [self layoutProgressView];
+    
+    self.accessibilityValue = [progressNumberFormatter stringFromNumber:@(self.progress)];
+    UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification, self);
 }
 
 - (void)setProgress:(float)progress animated:(BOOL)animated {
     if (animated) {
-        if (progress > 0 && progress < 1.0 && self.progressView.alpha == 0) {
+        if (progress > 0 && progress < 1.0 && self.progressView.alpha <= CGFLOAT_MIN) {
             // progressView was hidden. Make it visible first.
             self.progressView.alpha = 1;
         }
@@ -218,7 +234,7 @@ static NSString *const MR_UINavigationControllerLastVisibleViewController = @"UI
             } completion:nil];
         };
         
-        if (progress > self.progress || self.progress == 1) {
+        if (progress > self.progress || self.progress >= 1) {
             // Progress increased: ease out.
             [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                 [self _setProgress:progress];

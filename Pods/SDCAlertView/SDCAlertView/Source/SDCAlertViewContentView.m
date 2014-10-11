@@ -22,6 +22,7 @@ static UIEdgeInsets const SDCAlertViewTextFieldBackgroundViewInsets = {0, 2, 0, 
 static UIEdgeInsets const SDCAlertViewTextFieldTextInsets = {0, 4, 0, 4};
 static CGFloat const SDCAlertViewPrimaryTextFieldHeight = 30;
 static CGFloat const SDCAlertViewSecondaryTextFieldHeight = 29;
+static CGFloat const SDCAlertViewButtonTableViewRowHeight = 44;
 
 static CGFloat const SDCAlertViewSeparatorThickness = 1;
 CGFloat SDCAlertViewGetSeparatorThickness() {
@@ -55,11 +56,6 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 @end
 
 @implementation SDCAlertViewContentView
-#pragma mark - destruction
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"settingFontPickerScrolled" object:nil];
-}
 
 #pragma mark - Initialization
 
@@ -67,8 +63,6 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 	self = [super init];
 	
 	if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(scrollTheContentScrollView)
-                                                     name:@"settingFontPickerScrolled" object:nil];
 		_delegate = delegate;
 		_cancelButtonIndex = SDCAlertViewUnspecifiedButtonIndex;
 		
@@ -169,6 +163,7 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 	tableView.separatorInset = UIEdgeInsetsZero;
 	tableView.separatorColor = [UIColor clearColor];
 	tableView.scrollEnabled = NO;
+	tableView.rowHeight = SDCAlertViewButtonTableViewRowHeight;
 	return tableView;
 }
 
@@ -548,13 +543,6 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 	[self.contentScrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:verticalVFL options:0 metrics:metrics views:mapping]];
 }
 
-//Mark was here
-- (void)scrollTheContentScrollView
-{
-    //adjust title so it doesn't get clipped
-    [self.contentScrollView setContentOffset:CGPointMake(0, CGFLOAT_MAX) animated:NO];
-}
-
 - (void)positionTextFields {
 	NSDictionary *mapping = @{@"primaryTextField": self.primaryTextField, @"textFieldSeparator": self.textFieldSeparatorView, @"secondaryTextField": self.secondaryTextField};
 	NSDictionary *metrics = @{@"primaryTextFieldHeight": @(SDCAlertViewPrimaryTextFieldHeight), @"secondaryTextFieldHeight": @(SDCAlertViewSecondaryTextFieldHeight), @"separatorHeight": @(SDCAlertViewGetSeparatorThickness())};
@@ -594,7 +582,7 @@ static NSInteger const SDCAlertViewDefaultFirstButtonIndex = 0;
 - (void)positionButtons {
 	NSArray *elements = [self alertViewElementsToDisplay];
 	
-	if ([elements containsObject:self.contentScrollView]) {
+	if ([elements containsObject:self.buttonTopSeparatorView]) {
 		[self.buttonTopSeparatorView sdc_horizontallyCenterInSuperview];
 		[self.buttonTopSeparatorView sdc_pinWidthToWidthOfView:self];
 		[self.buttonTopSeparatorView sdc_pinHeight:SDCAlertViewGetSeparatorThickness()];
