@@ -32,7 +32,6 @@
 
 @implementation SongItemViewController
 @synthesize navBar, playerView, playbackTimeSlider = _playbackTimeSlider, currentTimeLabel = _currentTimeLabel, totalDurationLabel = _totalDurationLabel;
-static const short STATUS_AND_NAV_BAR_OFFSET = 64;
 static NSString *PAUSE_IMAGE_FILLED = @"Pause-Filled";
 static NSString *PAUSE_IMAGE_UNFILLED = @"Pause-Line";
 static NSString *PLAY_IMAGE_FILLED = @"Play-Filled";
@@ -675,7 +674,7 @@ int nearestEvenInt(int to)
                                                      usingBlock:^(void)            {
                                                     [[[YouTubeMoviePlayerSingleton createSingleton] AVPlayer] removeTimeObserver:endOfSongObserver];
                                                     endOfSongObserver = nil;
-                                                         
+                                                         NSLog(@"Song ended!");
                                                               //jump to next song
 #warning incomplete implementation HERE!!!
                                                               
@@ -684,8 +683,6 @@ int nearestEvenInt(int to)
                                                     [[singleton AVPlayer] pause];
                                                     [singleton setAVPlayerInstance:nil];
                                                     [singleton setAVPlayerLayerInstance:nil];
-                                                              
-                                                    [PlaybackModelSingleton createSingleton].lastSongHasEnded = YES;
                                                     }];
 }
 
@@ -807,7 +804,7 @@ static BOOL playWhenBufferReturns = NO;
 #pragma mark - Lock Screen Song Info & Art
 - (void)setUpLockScreenInfoAndArt
 {
-    Song *nowPlayingSong = [PlaybackModelSingleton createSingleton].nowPlayingSong;
+    Song *nowPlayingSong = [MusicPlaybackController nowPlayingSong];
     NSURL *url = [AlbumArtUtilities albumArtFileNameToNSURL:nowPlayingSong.albumArtFileName];
     
     // do something with image

@@ -14,7 +14,6 @@
 #import "AlbumItemViewController.h"
 #import "Album.h"
 #import "AlbumTableViewFormatter.h"
-#import "PlaybackModelSingleton.h"
 #import "YouTubeMoviePlayerSingleton.h"
 #import "UIImage+colorImages.h"
 #import "CoreDataTableViewController.h"

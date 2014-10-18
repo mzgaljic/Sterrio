@@ -14,7 +14,6 @@
 #import "ArtistTableViewFormatter.h"
 #import "NSString+smartSort.h"
 #import "SDWebImageManager.h"
-#import "PlaybackModelSingleton.h"
 #import "YouTubeMoviePlayerSingleton.h"
 
 @interface MasterArtistsTableViewController : CoreDataTableViewController <UISearchBarDelegate>

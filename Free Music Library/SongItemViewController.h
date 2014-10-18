@@ -33,9 +33,7 @@
 #import "CoreDataManager.h"
 #import "AutoScrollLabel.h"
 
-//Playback model
-#import "PlaybackModelSingleton.h"
-
+#import "MusicPlaybackController.h"
 
 @interface SongItemViewController : UIViewController <AVAudioSessionDelegate, AVAudioPlayerDelegate, ASValueTrackingSliderDataSource>
 @property (strong, nonatomic) NSNumber *printFriendlySongIndex;

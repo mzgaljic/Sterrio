@@ -110,25 +110,4 @@ static MPMoviePlayerController *previewMusicYoutubePlayer = nil;
     return needsToDisplayNewVideo;
 }
 
-#pragma mark - Core Data Fetching/Queries
-+ (Song *)nowPlayingSong
-{
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"nowPlaying = %@", [NSNumber numberWithBool:YES]];
-    NSError *error;
-    NSArray *matches = [[CoreDataManager context] executeFetchRequest:request error:&error];
-    if(matches)
-    {
-        if(matches.count == 1)
-            return matches[0];
-        else if([matches count] > 1)
-        {
-            //set any of the false positives back to NO.
-            for(Song *aSong in matches)
-                aSong.nowPlaying = [NSNumber numberWithBool:NO];
-        }
-    }
-    return nil;
-}
-
 @end

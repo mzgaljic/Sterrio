@@ -13,6 +13,8 @@
     NSMutableArray* internalArray;
 }
 
+//NOTE: Index 0 starts at the head, the last index is the tail. Objects are entered into the queue at the tail "end".
+
 //main operations
 - (void)enqueue:(id)anObject;
 - (id)dequeue;

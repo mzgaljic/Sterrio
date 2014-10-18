@@ -18,7 +18,7 @@
 #import "YouTubeMoviePlayerSingleton.h"
 #import "NSString+HTTP_Char_Escape.h"
 #import "GenreConstants.h"
-#import "PlaybackModelSingleton.h"
+#import "MusicPlaybackController.h"
 
 #import "ExistingAlbumPickerTableViewController.h"
 #import "ExistingArtistPickerTableViewController.h"

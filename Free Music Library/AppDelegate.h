@@ -22,8 +22,8 @@
 #import "AppEnvironmentConstants.h"
 #import "UIColor+SystemTintColor.h"
 #import "YouTubeMoviePlayerSingleton.h"
-#import "PlaybackModelSingleton.h"
 #import "UIColor+LighterAndDarker.h"
+#import "MusicPlaybackController.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, AVAudioSessionDelegate, AVAudioPlayerDelegate>
 

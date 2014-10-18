@@ -14,7 +14,6 @@
 #import "SDWebImageManager.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "AlbumTableViewFormatter.h"
-#import "PlaybackModelSingleton.h"
 #import "UIImage+colorImages.h"
 #import "UIColor+SystemTintColor.h"
 

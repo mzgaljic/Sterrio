@@ -41,7 +41,4 @@
 + (void)setNeedsToDisplayNewVideo:(BOOL)displayNewVideo;
 + (BOOL)needsToDisplayNewVideo;
 
-#pragma mark - Core Data Fetching/Queries
-+ (Song *)nowPlayingSong;
-
 @end

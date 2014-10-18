@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13E28" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6244" systemVersion="14A388a" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Album" representedClassName="Album" syncable="YES">
         <attribute name="album_id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="albumArtFileName" optional="YES" attributeType="String" syncable="YES"/>
@@ -36,9 +36,9 @@
         <relationship name="playlistIAmIn" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Playlist" inverseName="playlistSongs" inverseEntity="Playlist" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Album" positionX="-9767" positionY="36" width="128" height="148"/>
-        <element name="Artist" positionX="-9281" positionY="158" width="128" height="118"/>
-        <element name="Playlist" positionX="-9668" positionY="-229" width="128" height="103"/>
-        <element name="Song" positionX="-9434" positionY="-70" width="128" height="208"/>
+        <element name="Album" positionX="-9909" positionY="-81" width="128" height="148"/>
+        <element name="Artist" positionX="-9684" positionY="-306" width="128" height="118"/>
+        <element name="Playlist" positionX="-9074" positionY="-18" width="128" height="103"/>
+        <element name="Song" positionX="-9450" positionY="-126" width="126" height="208"/>
     </elements>
 </model>

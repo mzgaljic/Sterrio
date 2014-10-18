@@ -9,9 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @interface Deque : NSObject
-{
-    NSMutableArray* internalArray;
-}
+//NOTE: Index 0 starts at the head, the last index is the tail. Objects may entered into the deque at either end-it does not matter.
 
 //main operations
 - (void)enqueue:(id)anObject;
@@ -27,6 +25,10 @@
 - (NSArray *)enqueueObjectsFromArray:(NSArray *)anArray;
 - (NSArray *)enqueueObjectsFromArrayToHead:(NSArray *)anArray;  //shoves new items in front
 - (NSArray *)allQueueObjectsAsArray;
+
+//breaking deque rules
+- (id)objectAtIndex:(NSUInteger)index;
+- (NSArray *)insertItem:(id)anObject atIndex:(NSUInteger)index;
 
 @property (atomic, readonly) NSUInteger count;
 @end

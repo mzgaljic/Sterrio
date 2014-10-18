@@ -8,6 +8,12 @@
 
 #import "Deque.h"
 
+@interface Deque ()
+{
+    NSMutableArray* internalArray;
+}
+@end
+
 @implementation Deque
 @synthesize count;
 
@@ -48,6 +54,12 @@
     NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, anArray.count - 1)];
     [internalArray insertObjects:anArray atIndexes:indexSet];
     count = internalArray.count;
+    return internalArray;
+}
+
+- (NSArray *)insertItem:(id)anObject atIndex:(NSUInteger)index
+{
+    [internalArray insertObject:anObject atIndex:index];
     return internalArray;
 }
 
@@ -103,6 +115,12 @@
 - (NSArray *)allQueueObjectsAsArray
 {
     return (NSArray *)internalArray;
+}
+
+//breaking deque rules
+- (id)objectAtIndex:(NSUInteger)index
+{
+    return [internalArray objectAtIndex:index];
 }
 
 @end

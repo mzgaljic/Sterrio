@@ -93,21 +93,20 @@ static const int APP_LAUNCHED_ALREADY = 1;
     {
         case UIEventSubtypeRemoteControlTogglePlayPause:
             if([player rate] == 0){
-                [PlaybackModelSingleton createSingleton].userWantsPlaybackPaused = NO;
+                [MusicPlaybackController explicitlyPausePlayback:NO];
                 [player play];
-            }
-            else{
-                [PlaybackModelSingleton createSingleton].userWantsPlaybackPaused = YES;
+            }else{
+                [MusicPlaybackController explicitlyPausePlayback:YES];
                 [player pause];
             }
             
             break;
         case UIEventSubtypeRemoteControlPlay:
-            [PlaybackModelSingleton createSingleton].userWantsPlaybackPaused = NO;
+            [MusicPlaybackController explicitlyPausePlayback:NO];
             [player play];
             break;
         case UIEventSubtypeRemoteControlPause:
-            [PlaybackModelSingleton createSingleton].userWantsPlaybackPaused = YES;
+            [MusicPlaybackController explicitlyPausePlayback:YES];
             [player pause];
             break;
         default:
