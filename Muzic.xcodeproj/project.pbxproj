@@ -472,7 +472,7 @@
 			name = "Data Structures";
 			sourceTree = "<group>";
 		};
-		87362AFA194E3F27004DB544 /* GUI */ = {
+		87362AFA194E3F27004DB544 /* GUI and GUI Controllers */ = {
 			isa = PBXGroup;
 			children = (
 				879AB33E19F2188B00FD6582 /* The Player */,
@@ -486,7 +486,7 @@
 				8750157D198C29CC00382945 /* Adding Music To Library */,
 				877C4B85199FB44E00CE86BC /* ViewController helpers */,
 			);
-			name = GUI;
+			name = "GUI and GUI Controllers";
 			sourceTree = "<group>";
 		};
 		8740724019798130004C5C57 /* GUI (VC) consistent style helpers */ = {
@@ -515,7 +515,7 @@
 				87362AF6194E3B41004DB544 /* Data Structures */,
 				87334408198D8349002B9E18 /* Categories */,
 				87FE09F31933F39B001A5FB7 /* Models */,
-				87362AFA194E3F27004DB544 /* GUI */,
+				87362AFA194E3F27004DB544 /* GUI and GUI Controllers */,
 				87FCD02D19A5BC0E00C600D3 /* Custom cells */,
 				87480DC3192C1FBD005CC0A4 /* Images.xcassets */,
 				87A453A0199C0825004D1319 /* Imported Libraries */,

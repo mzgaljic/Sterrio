@@ -29,7 +29,7 @@ static NSString *nextPageString = @"&pageToken=";
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
-            //sending a basic synchronous request here sine we're off the main thread anyway
+            //sending a basic synchronous request here since we're off the main thread anyway
             NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]];
             NSURLResponse *urlResponse = nil;
             NSError *requestError = nil;
@@ -39,13 +39,10 @@ static NSString *nextPageString = @"&pageToken=";
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 //data is nil if a connection could not be created or if the download failed.
-                if (data == nil)
-                {
+                if (data == nil){
                     //do not need to check error type, the user doesn't care. Just notify delegate.
                     [delegate networkErrorHasOccuredSearchingYoutube];
-                }
-                else //data received...continue processing
-                {
+                } else{ //data received...continue processing
                     [delegate ytVideoSearchDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
                 }
                 
@@ -54,6 +51,7 @@ static NSString *nextPageString = @"&pageToken=";
     } else
         return; //nothing to search for
 }
+
 
 - (void)fetchNextYouTubePageUsingLastQueryString
 {
@@ -67,30 +65,22 @@ static NSString *nextPageString = @"&pageToken=";
         [queryUrl appendString:_nextPageToken];
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            
+            // Send a synchronous request here, already on a different thread
+            NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]];
+            NSURLResponse *urlResponse = nil;
+            NSError *requestError = nil;
+            NSData *data = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&urlResponse error:&requestError];
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                // Send a synchronous request here, already on a different thread
-                NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]];
-                NSURLResponse *urlResponse = nil;
-                NSError *requestError = nil;
-                NSData *data = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&urlResponse error:&requestError];
-                
-                //sendSynchronousRequest returns nil if a connection could not be created or if the download fails.
-                if (urlResponse == nil)
-                {
-                    if (requestError != nil)  // Check for problems
-                    {
-                        [delegate networkErrorHasOccuredFetchingMorePages];
-                    }
-                }
-                else  // Data received...continue processing
-                {
+                if (data == nil){
+                    [delegate networkErrorHasOccuredFetchingMorePages];
+                } else{  // Data received...continue processing
                     [delegate ytVideoNextPageResultsDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
                 }
-                
             });  //end of async dispatch
         });
-
     }
 }
 
@@ -101,28 +91,21 @@ static NSString *nextPageString = @"&pageToken=";
         [fullUrl appendString:[currentString stringForHTTPRequest]];
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            
+            // Send a synchronous request here, already on a different thread
+            NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:fullUrl]];
+            NSURLResponse *urlResponse = nil;
+            NSError *requestError = nil;
+            NSData *data = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&urlResponse error:&requestError];
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                // Send a synchronous request here, already on a different thread
-                NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:fullUrl]];
-                NSURLResponse *urlResponse = nil;
-                NSError *requestError = nil;
-                NSData *data = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&urlResponse error:&requestError];
-                
-                //sendSynchronousRequest returns nil if a connection could not be created or if the download fails.
-                if (urlResponse == nil)
-                {
-                    if (requestError != nil)  // Check for problems
-                    {
-                        //don't need to display error to user, not critical to see autosuggestions.
-                    }
-                }
-                else  // Data received...continue processing
-                {
+                if (data == nil){}  //don't need to display error to user, not critical to see autosuggestions.
+
+                else{
+                    // Data received...continue processing
                     [delegate ytVideoAutoCompleteResultsDidDownload:[self parseYouTubeVideoAutoSuggestResponse:data]];
-                    
                 }
-                
             });  //end of async dispatch
         });
     } else
