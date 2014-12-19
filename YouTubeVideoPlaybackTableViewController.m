@@ -37,7 +37,7 @@ static const short Song_Input_TextField_Tag = 100;
 static const short Artist_Input_TextField_Tag = 200;
 static const short Album_Input_TextField_Tag = 300;
 static const short Genre_Input_TextField_Tag = 400;
-
+/*
 - (void)dealloc
 {
     [YouTubeVideoSearchService removeDelegate];
@@ -861,5 +861,5 @@ static short numberTimesViewHasBeenShown = 0;
     return YES;
 }
 
-
+*/
 @end

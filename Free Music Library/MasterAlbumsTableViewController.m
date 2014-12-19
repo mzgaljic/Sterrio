@@ -262,7 +262,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     [AlbumTableViewFormatter formatAlbumDetailLabelUsingAlbum:album andCell:&cell];
     
     //check if a song in this album is the now playing song
-    BOOL albumHasNowPlaying;
+    BOOL albumHasNowPlaying = NO;
     for(Song *albumSong in album.albumSongs)
     {
         if([albumSong.nowPlaying boolValue] == YES){

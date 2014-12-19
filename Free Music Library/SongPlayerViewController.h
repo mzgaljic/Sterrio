@@ -26,6 +26,7 @@
 #import "AlbumArtUtilities.h"  //interface for accessing album art on disk
 #import "SongPlayerViewDisplayHelper.h"  //gui code helpers (determining aspect ration player size, etc)
 
+@class MusicPlaybackController;
 
 NSString * const PAUSE_IMAGE_FILLED = @"Pause-Filled";
 NSString * const PAUSE_IMAGE_UNFILLED = @"Pause-Line";

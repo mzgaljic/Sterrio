@@ -13,6 +13,7 @@
 {
     id endOfSongObserver;
 }
+/*
 @property (weak, nonatomic) IBOutlet AutoScrollLabel *scrollingSongView;
 @property (weak, nonatomic) IBOutlet AutoScrollLabel *scrollingArtistAlbumView;
 @property (nonatomic, strong) NSTimer *sliderTimer;
@@ -27,10 +28,12 @@
 
 @property (nonatomic, strong) NSString *songLabel;
 @property (nonatomic, strong) NSString *artistAlbumLabel;
+ */
 @end
 
 @implementation SongItemViewController
-@synthesize navBar, playerView, playbackTimeSlider = _playbackTimeSlider, currentTimeLabel = _currentTimeLabel, totalDurationLabel = _totalDurationLabel;
+//@synthesize navBar, playerView, playbackTimeSlider = _playbackTimeSlider, currentTimeLabel = _currentTimeLabel, totalDurationLabel = _totalDurationLabel;
+/*
 NSString * const PAUSE_IMAGE_FILLED = @"Pause-Filled";
 NSString * const PAUSE_IMAGE_UNFILLED = @"Pause-Line";
 NSString * const PLAY_IMAGE_FILLED = @"Play-Filled";
@@ -39,15 +42,15 @@ NSString * const FORWARD_IMAGE_FILLED = @"Seek-Filled";
 NSString * const FORWARD_IMAGE_UNFILLED = @"Seek-Line";
 NSString * const BACKWARD_IMAGE_FILLED = @"Backward-Filled";
 NSString * const BACKWARD_IMAGE_UNFILLED = @"Backward-Line";
-
+*/
 #warning unregister for observer changes if the same player isnt reused! ie: [observedObject removeObserver:inspector forKeyPath:@"openingBalance"];
 
 //for observing AVPlayer notifications
-void *kRateDidChangeKVO = &kRateDidChangeKVO;
-void *kTimeRangesKVO = &kTimeRangesKVO;
+//void *kRateDidChangeKVO = &kRateDidChangeKVO;
+//void *kTimeRangesKVO = &kTimeRangesKVO;
 
 #pragma mark - ViewController lifecycle
-
+/*
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -510,6 +513,7 @@ static BOOL sliderIsBeingTouched = NO;
 {
     if(sliderIsBeingTouched)
         return;
+ */
     /**
     if(_playbackTimeSlider.value == _playbackTimeSlider.maximumValue){
         [_sliderTimer invalidate];
@@ -517,6 +521,7 @@ static BOOL sliderIsBeingTouched = NO;
         return;
     }
      */
+/*
     else if(_sliderTimer != nil)
     {
         dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -916,5 +921,6 @@ static UIInterfaceOrientation toOrienation;
     }
     return count;
 }
-
+*/
 @end
+    

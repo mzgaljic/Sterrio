@@ -9,7 +9,7 @@
 #import "SettingsTableViewController.h"
 
 @interface SettingsTableViewController ()
-@property (nonatomic, weak) SDCAlertView *alertView;
+@property (nonatomic, strong) SDCAlertView *alertView;
 @property (nonatomic, strong) UIImage *attachmentImage;
 @property (nonatomic, strong) NSMutableArray *attachmentUIImages;
 @property (nonatomic, assign) BOOL showEmailAlertView;

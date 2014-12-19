@@ -14,6 +14,7 @@
 #import <XCDYouTubeKit/XCDYouTubeClient.h>
 #import "Reachability.h"
 
+/*
 #import "Song.h"
 #import "Album.h"
 #import "Artist.h"
@@ -23,17 +24,18 @@
 #import "MRProgress.h"
 #import "UIImage+colorImages.h"
 #import "UIColor+LighterAndDarker.h"
-#import "ASValueTrackingSlider.h"
+
 #import "UIColor+SystemTintColor.h"
 #import "PreferredFontSizeUtility.h"
 #import "UIButton+ExpandedHitArea.h"
 #import "AlbumArtUtilities.h"
 #import "CoreDataManager.h"
 #import "AutoScrollLabel.h"
-
 #import "MusicPlaybackController.h"
-
+*/
+#import "ASValueTrackingSlider.h"
 @interface SongItemViewController : UIViewController <AVAudioSessionDelegate, AVAudioPlayerDelegate, ASValueTrackingSliderDataSource>
+/*
 @property (strong, nonatomic) NSNumber *printFriendlySongIndex;
 
 //GUI vars
@@ -48,5 +50,5 @@
 - (IBAction)playbackSliderValueHasChanged:(id)sender;
 - (IBAction)playbackSliderEditingHasBegun:(id)sender;
 - (IBAction)playbackSliderEditingHasEnded:(id)sender;
-
+*/
 @end

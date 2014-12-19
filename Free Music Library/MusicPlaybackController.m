@@ -151,9 +151,9 @@ static BOOL initialized = NO;
     return playbackQueue;
 }
 
-+ (void)setRawAVPlayer:(MyAVPlayer *)myAvPlayer
++ (void)setRawAVPlayer:(AVPlayer *)myAvPlayer
 {
-    player = myAvPlayer;
+    player = (MyAVPlayer *)myAvPlayer;
 }
 + (AVPlayer *)obtainRawAVPlayer
 {

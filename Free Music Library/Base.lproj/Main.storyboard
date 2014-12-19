@@ -408,7 +408,7 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="playlist name" id="SZ4-h5-jo6">
-                        <barButtonItem key="rightBarButtonItem" title="Item" systemItem="add" id="f6N-PD-nkL">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="f6N-PD-nkL">
                             <connections>
                                 <action selector="addButtonPressed:" destination="zmX-nC-18m" id="12F-bD-7Gk"/>
                             </connections>
@@ -1179,9 +1179,9 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
+        <segue reference="cob-ad-5Vf"/>
         <segue reference="7Sy-qq-35y"/>
-        <segue reference="o0x-vp-6sV"/>
-        <segue reference="fFN-xo-skq"/>
-        <segue reference="aQU-5c-2vO"/>
+        <segue reference="pPM-be-vV0"/>
+        <segue reference="Mvp-5d-lNL"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -8,19 +8,26 @@
 
 #import "MyAVPlayer.h"
 
+
 @interface MyAVPlayer ()
 {
     AVPlayerItem *playerItem;
     NSURL *currentItemLink;
     BOOL movingForward;  //identifies which direction the user just went (back/forward) in queue
+    
+    NSString * NEW_SONG_IN_AVPLAYER;
+    NSString * AVPLAYER_DONE_PLAYING;
 }
 @end
 
 @implementation MyAVPlayer
 
+
 - (id)initWithURL:(NSURL *)URL
 {
     if(self = [super initWithURL:URL]){
+        NEW_SONG_IN_AVPLAYER = @"New song added to AVPlayer, lets hope the interface makes appropriate changes.";
+        AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
         movingForward = YES;
         currentItemLink = URL;
         playerItem = self.currentItem;

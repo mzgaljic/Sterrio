@@ -23,9 +23,6 @@
 + (BOOL)isUserEditingSongOrAlbumOrArtist;
 + (void)setUserIsEditingSongOrAlbumOrArtist:(BOOL)aValue;
 
-+ (BOOL)hasSongBeenPlayedSinceLaunch;
-+ (void)setSongHasBeenPlayedSinceLaunch;
-
 //app settings
 + (short)preferredSizeSetting;
 + (void)setPreferredSizeSetting:(short)numUpToFive;

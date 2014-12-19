@@ -55,7 +55,7 @@
 #pragma mark - Playback status
 + (BOOL)playbackExplicitlyPaused;
 + (void)explicitlyPausePlayback:(BOOL)pause;
-+ (void)setRawAVPlayer:(MyAVPlayer *)myAvPlayer;
++ (void)setRawAVPlayer:(AVPlayer *)myAvPlayer;
 + (AVPlayer *)obtainRawAVPlayer;
 
 @end

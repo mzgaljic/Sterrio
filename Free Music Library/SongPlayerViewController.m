@@ -88,7 +88,7 @@ static UIInterfaceOrientation toOrienation;  //used by "prefersStatusBarHidden" 
 //new song played from queue
 - (void)newSongIsAboutToStartPlaying:(NSNotification *)object
 {
-    Song *songAboutToPlay = (Song *)object;
+    //Song *songAboutToPlay = (Song *)object;
     
     #warning need to update GUI text and info displayed to user
 }

@@ -15,9 +15,6 @@
 #import "MusicPlaybackController.h"  //for using queue, etc
 
 
-NSString * const NEW_SONG_IN_AVPLAYER = @"New song added to AVPlayer, lets hope the interface makes appropriate changes.";
-NSString * const AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
-
 @interface MyAVPlayer : AVPlayer
 
 - (id)initWithURL:(NSURL *)URL;
