@@ -20,8 +20,8 @@
 @property (assign, nonatomic) NSUInteger skippedCount;
 @property (assign, nonatomic) NSUInteger finishedCount;
 @property (assign, nonatomic) NSTimeInterval startedTime;
-@property (copy, nonatomic) SDWebImagePrefetcherCompletionBlock completionBlock;
-@property (copy, nonatomic) SDWebImagePrefetcherProgressBlock progressBlock;
+@property (copy, nonatomic) void (^completionBlock)(NSUInteger, NSUInteger);
+@property (copy, nonatomic) void (^progressBlock)(NSUInteger, NSUInteger);
 
 @end
 
@@ -113,7 +113,7 @@
     [self prefetchURLs:urls progress:nil completed:nil];
 }
 
-- (void)prefetchURLs:(NSArray *)urls progress:(SDWebImagePrefetcherProgressBlock)progressBlock completed:(SDWebImagePrefetcherCompletionBlock)completionBlock {
+- (void)prefetchURLs:(NSArray *)urls progress:(void (^)(NSUInteger, NSUInteger))progressBlock completed:(void (^)(NSUInteger, NSUInteger))completionBlock {
     [self cancelPrefetching]; // Prevent duplicate prefetch request
     self.startedTime = CFAbsoluteTimeGetCurrent();
     self.prefetchURLs = urls;

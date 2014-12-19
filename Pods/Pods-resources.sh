@@ -41,22 +41,6 @@ install_resource()
       ;;
   esac
 }
-install_resource "ALMoviePlayerController/ALMoviePlayerController/Images/movieBackward.png"
-install_resource "ALMoviePlayerController/ALMoviePlayerController/Images/movieBackward@2x.png"
-install_resource "ALMoviePlayerController/ALMoviePlayerController/Images/movieBackwardSelected.png"
-install_resource "ALMoviePlayerController/ALMoviePlayerController/Images/movieBackwardSelected@2x.png"
-install_resource "ALMoviePlayerController/ALMoviePlayerController/Images/movieEndFullscreen.png"
-install_resource "ALMoviePlayerController/ALMoviePlayerController/Images/movieEndFullscreen@2x.png"
-install_resource "ALMoviePlayerController/ALMoviePlayerController/Images/movieForward.png"
-install_resource "ALMoviePlayerController/ALMoviePlayerController/Images/movieForward@2x.png"
-install_resource "ALMoviePlayerController/ALMoviePlayerController/Images/movieForwardSelected.png"
-install_resource "ALMoviePlayerController/ALMoviePlayerController/Images/movieForwardSelected@2x.png"
-install_resource "ALMoviePlayerController/ALMoviePlayerController/Images/movieFullscreen.png"
-install_resource "ALMoviePlayerController/ALMoviePlayerController/Images/movieFullscreen@2x.png"
-install_resource "ALMoviePlayerController/ALMoviePlayerController/Images/moviePause.png"
-install_resource "ALMoviePlayerController/ALMoviePlayerController/Images/moviePause@2x.png"
-install_resource "ALMoviePlayerController/ALMoviePlayerController/Images/moviePlay.png"
-install_resource "ALMoviePlayerController/ALMoviePlayerController/Images/moviePlay@2x.png"
 install_resource "DZNPhotoPickerController/Source/Resources/en-GB.lproj/DZNPhotoPickerController.strings"
 install_resource "DZNPhotoPickerController/Source/Resources/en.lproj/DZNPhotoPickerController.strings"
 install_resource "DZNPhotoPickerController/Source/Resources/en-GB.lproj"

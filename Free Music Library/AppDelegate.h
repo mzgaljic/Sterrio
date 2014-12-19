@@ -21,7 +21,6 @@
 #import "SDWebImageManager.h"
 #import "AppEnvironmentConstants.h"
 #import "UIColor+SystemTintColor.h"
-#import "YouTubeMoviePlayerSingleton.h"
 #import "UIColor+LighterAndDarker.h"
 #import "MusicPlaybackController.h"
 

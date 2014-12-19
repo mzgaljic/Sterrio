@@ -23,13 +23,11 @@
 #import "SDCAlertView.h"
 #import "AppEnvironmentConstants.h"
 #import "PreferredFontSizeUtility.h"
-#import "YouTubeMoviePlayerSingleton.h"
 #import "NSString+WhiteSpace_Utility.h"
 #import "AlbumArtUtilities.h"
 #import "UIImage+colorImages.h"
 #import "MRProgress.h"
 #import "DZNPhotoPickerController.h"
-#import "UIImagePickerControllerExtended.h"
 #import "NSString+HTTP_Char_Escape.h"
 #import "XCDYouTubeVideoPlayerViewController.h"
 

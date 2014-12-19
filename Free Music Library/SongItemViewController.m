@@ -18,7 +18,6 @@
 @property (nonatomic, strong) NSTimer *sliderTimer;
 @property (nonatomic, assign) BOOL needToLoadPlayer;  //used to determine if user went all the way 'back' using slide gesture
 @property (nonatomic, assign) BOOL needsToDisplayNewVideo;  //used to determine if user is tapping on 'now playing', or a new song.
-@property (nonatomic, assign) BOOL playbackOccuring;
 @property (nonatomic, assign) BOOL userWantsPlaybackPaused;
 
 @property (nonatomic, strong) NSArray *musicButtons;
@@ -32,14 +31,14 @@
 
 @implementation SongItemViewController
 @synthesize navBar, playerView, playbackTimeSlider = _playbackTimeSlider, currentTimeLabel = _currentTimeLabel, totalDurationLabel = _totalDurationLabel;
-static NSString *PAUSE_IMAGE_FILLED = @"Pause-Filled";
-static NSString *PAUSE_IMAGE_UNFILLED = @"Pause-Line";
-static NSString *PLAY_IMAGE_FILLED = @"Play-Filled";
-static NSString *PLAY_IMAGE_UNFILLED = @"Play-Line";
-static NSString *FORWARD_IMAGE_FILLED = @"Seek-Filled";
-static NSString *FORWARD_IMAGE_UNFILLED = @"Seek-Line";
-static NSString *BACKWARD_IMAGE_FILLED = @"Backward-Filled";
-static NSString *BACKWARD_IMAGE_UNFILLED = @"Backward-Line";
+NSString * const PAUSE_IMAGE_FILLED = @"Pause-Filled";
+NSString * const PAUSE_IMAGE_UNFILLED = @"Pause-Line";
+NSString * const PLAY_IMAGE_FILLED = @"Play-Filled";
+NSString * const PLAY_IMAGE_UNFILLED = @"Play-Line";
+NSString * const FORWARD_IMAGE_FILLED = @"Seek-Filled";
+NSString * const FORWARD_IMAGE_UNFILLED = @"Seek-Line";
+NSString * const BACKWARD_IMAGE_FILLED = @"Backward-Filled";
+NSString * const BACKWARD_IMAGE_UNFILLED = @"Backward-Line";
 
 #warning unregister for observer changes if the same player isnt reused! ie: [observedObject removeObserver:inspector forKeyPath:@"openingBalance"];
 
@@ -180,11 +179,6 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"PlaybackStartedNotification" object:nil];
 }
 
-- (void)viewDidDisappear:(BOOL)animated
-{
-    [super viewDidDisappear:animated];
-}
-
 - (void)dealloc
 {
     _needToLoadPlayer = YES;
@@ -233,7 +227,7 @@ void *kTimeRangesKVO = &kTimeRangesKVO;
 {
     Song *nowPlayingSong = [self fetchNowPlayingSong];
     if(nowPlayingSong){
-        NSString *youtubeLinkBeginning = @"youtube.com/watch?v=";
+        NSString *youtubeLinkBeginning = @"www.youtube.com/watch?v=";
         NSMutableString *shareString = [NSMutableString stringWithString:@"Check out this song:\n"];
         [shareString appendString:youtubeLinkBeginning];
         [shareString appendString:nowPlayingSong.youtube_id];

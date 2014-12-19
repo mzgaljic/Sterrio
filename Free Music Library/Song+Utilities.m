@@ -164,8 +164,6 @@
 
 - (void)prepareForDeletion
 {
-    NSString *artFileName = self.albumArtFileName;
-    NSString *songName = self.songName;
     [AlbumArtUtilities deleteAlbumArtFileWithName:self.albumArtFileName];
 }
 

@@ -20,9 +20,9 @@
 @interface UIScrollView (EmptyDataSet)
 
 /** The empty datasets data source. */
-@property (nonatomic, weak) IBOutlet id <DZNEmptyDataSetSource> emptyDataSetSource;
+@property (nonatomic, weak) id <DZNEmptyDataSetSource> emptyDataSetSource;
 /** The empty datasets delegate. */
-@property (nonatomic, weak) IBOutlet id <DZNEmptyDataSetDelegate> emptyDataSetDelegate;
+@property (nonatomic, weak) id <DZNEmptyDataSetDelegate> emptyDataSetDelegate;
 /** YES if any empty dataset is visible. */
 @property (nonatomic, readonly, getter = isEmptyDataSetVisible) BOOL emptyDataSetVisible;
 
@@ -37,7 +37,8 @@
 
 /**
  The object that acts as the data source of the empty datasets.
- @discussion The data source must adopt the DZNEmptyDataSetSource protocol. The data source is not retained. All data source methods are optional.
+ 
+ @discussion The data source must adopt the DZNEmptyDataSetSource protocol. The data source is not retained. All data source methods are optional; they will not be considered if the view controller doesn't conform to them.
  */
 @protocol DZNEmptyDataSetSource <NSObject>
 @required
@@ -110,7 +111,6 @@
 
 /**
  Asks the data source for a offset for vertical and horizontal alignment of the content. Default is CGPointZero.
- @discussion If called when using a tableView, a value sum between the header and footer view's height will be added to any value you assign to vertical offset.
  
  @param scrollView A scrollView subclass object informing the delegate.
  @return The offset for vertical and horizontal alignment.
@@ -130,7 +130,7 @@
 
 /**
  The object that acts as the delegate of the empty datasets.
- @discussion The delegate can adopt the DZNEmptyDataSetDelegate protocol. The delegate is not retained. All delegate methods are optional.
+ The delegate must adopt the DZNEmptyDataSetDelegate protocol. The delegate is not retained.
  
  @discussion All delegate methods are optional. Use this delegate for receiving action callbacks.
  */
@@ -176,19 +176,5 @@
  @param scrollView A scrollView subclass informing the delegate.
  */
 - (void)emptyDataSetDidTapButton:(UIScrollView *)scrollView;
-
-/**
- Tells the delegate that the empty data set will appear.
-
- @param scrollView A scrollView subclass informing the delegate.
- */
-- (void)emptyDataSetWillAppear:(UIScrollView *)scrollView;
-
-/**
- Tells the delegate that the empty data set will disappear.
-
- @param scrollView A scrollView subclass informing the delegate.
- */
-- (void)emptyDataSetWillDisappear:(UIScrollView *)scrollView;
 
 @end

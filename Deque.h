@@ -29,6 +29,7 @@
 //breaking deque rules
 - (id)objectAtIndex:(NSUInteger)index;
 - (NSArray *)insertItem:(id)anObject atIndex:(NSUInteger)index;
+- (void)removeObjectFromQueue:(id)anObject;
 
 @property (atomic, readonly) NSUInteger count;
 @end

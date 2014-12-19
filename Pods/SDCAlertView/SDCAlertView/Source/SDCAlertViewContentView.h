@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Scotty Doesn't Code. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+@import UIKit;
 
 #import "SDCAlertView.h" // Required for SDCAlertViewStyle
 
@@ -38,7 +38,7 @@
 
 @property (nonatomic, weak) id <SDCAlertViewContentViewDelegate> delegate;
 
-- (instancetype)initWithDelegate:(id <SDCAlertViewContentViewDelegate>)delegate;
+- (instancetype)initWithDelegate:(id <SDCAlertViewContentViewDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
 - (void)updateContentForStyle:(SDCAlertViewStyle)style;
 - (void)prepareForShowing;
@@ -59,5 +59,7 @@
 @property (nonatomic, strong) UIFont *suggestedButtonFont;
 @property (nonatomic, strong) UIFont *normalButtonFont;
 @property (nonatomic, strong) UIColor *buttonTextColor;
+@property (nonatomic, assign) UIEdgeInsets contentPadding;
+@property (nonatomic, assign) CGFloat labelSpacing;
 
 @end

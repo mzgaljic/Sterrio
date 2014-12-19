@@ -276,7 +276,7 @@ static BOOL lastSortOrder;
         for(Song *aSong in artist.standAloneSongs)
         {
             if([aSong.nowPlaying boolValue] == YES)
-                [self pauseMusicAndSetAVPlayerToNil];
+                [MusicPlaybackController songAboutToBeDeleted];
             [aSong removeAlbumArt];
         }
         for(Album *anAlbum in artist.albums)
@@ -284,7 +284,7 @@ static BOOL lastSortOrder;
             for(Song *aSong in anAlbum.albumSongs)
             {
                 if([aSong.nowPlaying boolValue] == YES)
-                    [self pauseMusicAndSetAVPlayerToNil];
+                    [MusicPlaybackController songAboutToBeDeleted];
             }
             [anAlbum removeAlbumArt];
         }
@@ -313,14 +313,6 @@ static BOOL lastSortOrder;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
-}
-
-- (void)pauseMusicAndSetAVPlayerToNil
-{
-    YouTubeMoviePlayerSingleton *singleton = [YouTubeMoviePlayerSingleton createSingleton];
-    [[singleton AVPlayer] pause];
-    [singleton setAVPlayerInstance:nil];
-    [singleton setAVPlayerLayerInstance:nil];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender

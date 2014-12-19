@@ -1,6 +1,3 @@
-#blurred sidebar/menu
-pod 'RNFrostedSidebar', '~> 0.2.0'
-
 #UIAlertView clone, that allows for custom subviews...and larger fonts.
 pod 'SDCAlertView'
 
@@ -14,8 +11,10 @@ pod 'XCDYouTubeKit', '~> 2.0'
 pod 'DZNPhotoPickerController'
 
 #MPMoviePlayerController alternative library
-pod 'ALMoviePlayerController', '~>0.3.0'
+#pod 'ALMoviePlayerController', '~>0.3.0'
 
 #Percentage when sliding a tracking bar
 pod 'ASValueTrackingSlider'
 
+#TransitionKit -state machine library
+pod 'TransitionKit', '~> 2.0.0'

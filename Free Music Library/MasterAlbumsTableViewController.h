@@ -14,10 +14,10 @@
 #import "AlbumItemViewController.h"
 #import "Album.h"
 #import "AlbumTableViewFormatter.h"
-#import "YouTubeMoviePlayerSingleton.h"
 #import "UIImage+colorImages.h"
 #import "CoreDataTableViewController.h"
 #import "UIColor+SystemTintColor.h"
+#import "MusicPlaybackController.h"
 
 @interface MasterAlbumsTableViewController : CoreDataTableViewController <UISearchBarDelegate>
 {

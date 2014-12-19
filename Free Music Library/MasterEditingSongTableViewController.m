@@ -315,10 +315,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
         if(indexPath.row == 0){
             //defensively check to see if the song we're about to delete is playing. if so, avoid a crash.
             if([_songIAmEditing isEqual:[MusicPlaybackController nowPlayingSong]]){
-                YouTubeMoviePlayerSingleton *singleton = [YouTubeMoviePlayerSingleton createSingleton];
-                [[singleton AVPlayer] pause];
-                [singleton setAVPlayerInstance:nil];
-                [singleton setAVPlayerLayerInstance:nil];
+                [MusicPlaybackController songAboutToBeDeleted];
             }
             
             [_songIAmEditing removeAlbumArt];

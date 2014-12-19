@@ -252,10 +252,7 @@ static BOOL lastSortOrder;
         {
             if([aSong.nowPlaying boolValue] == YES)
             {
-                YouTubeMoviePlayerSingleton *singleton = [YouTubeMoviePlayerSingleton createSingleton];
-                [[singleton AVPlayer] pause];
-                [singleton setAVPlayerInstance:nil];
-                [singleton setAVPlayerLayerInstance:nil];
+                [MusicPlaybackController songAboutToBeDeleted];
             }
         }
         

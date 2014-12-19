@@ -22,6 +22,7 @@
 #import "UIImage+colorImages.h"
 #import "UIColor+SystemTintColor.h"
 #import "UIColor+ColorComparison.h"
+#import "MusicPlaybackController.h"
 
 @class StackController;
 @interface MasterSongsTableViewController : CoreDataTableViewController <UISearchBarDelegate>

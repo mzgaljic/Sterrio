@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "FrostedSideBarHelper.h"
 #import "AppEnvironmentConstants.h"
 #import "SDWebImageManager.h"
 

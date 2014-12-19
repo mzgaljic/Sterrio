@@ -1,99 +1,102 @@
 PODS:
-  - AFNetworking (2.3.1):
+  - AFNetworking (2.4.1):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
     - AFNetworking/UIKit
-  - AFNetworking/NSURLConnection (2.3.1):
+  - AFNetworking/NSURLConnection (2.4.1):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/NSURLSession (2.3.1):
+  - AFNetworking/NSURLSession (2.4.1):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (2.3.1)
-  - AFNetworking/Security (2.3.1)
-  - AFNetworking/Serialization (2.3.1)
-  - AFNetworking/UIKit (2.3.1):
+  - AFNetworking/Reachability (2.4.1)
+  - AFNetworking/Security (2.4.1)
+  - AFNetworking/Serialization (2.4.1)
+  - AFNetworking/UIKit (2.4.1):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - ALMoviePlayerController (0.3.0)
   - ASValueTrackingSlider (0.9.4)
-  - DZNEmptyDataSet (1.4.1)
-  - DZNPhotoPickerController (1.5):
-    - AFNetworking (~> 2.3.1)
-    - DZNEmptyDataSet
-    - DZNPhotoPickerController/UIImagePickerControllerExtended
-    - DZNPhotoPickerController/UIImagePickerControllerExtended
-    - SDWebImage (~> 3.7)
-  - DZNPhotoPickerController/UIImagePickerControllerExtended (1.5):
-    - AFNetworking (~> 2.3.1)
-    - DZNEmptyDataSet
-    - DZNPhotoPickerController/UIImagePickerControllerExtended
-    - SDWebImage (~> 3.7)
-  - MRProgress (0.7.0):
+  - DZNEmptyDataSet (1.3.3)
+  - DZNPhotoPickerController (1.6.1):
+    - DZNPhotoPickerController/Core
+  - DZNPhotoPickerController/Core (1.6.1):
+    - DZNEmptyDataSet (= 1.3.3)
+    - DZNPhotoPickerController/Editor
+    - DZNPhotoPickerController/Services
+    - MBProgressHUD (= 0.9)
+    - SDWebImage (= 3.7)
+  - DZNPhotoPickerController/Editor (1.6.1)
+  - DZNPhotoPickerController/Services (1.6.1):
+    - AFNetworking (= 2.4.1)
+    - GROAuth2SessionManager (= 0.2.3)
+  - GROAuth2SessionManager (0.2.3):
+    - AFNetworking (~> 2.4.1)
+  - MBProgressHUD (0.9)
+  - MRProgress (0.8.1):
     - MRProgress/ActivityIndicator
     - MRProgress/Blur
     - MRProgress/Circular
     - MRProgress/Icons
     - MRProgress/NavigationBarProgress
     - MRProgress/Overlay
-  - MRProgress/ActivityIndicator (0.7.0):
+  - MRProgress/ActivityIndicator (0.8.1):
     - MRProgress/Stopable
-  - MRProgress/Blur (0.7.0):
+  - MRProgress/Blur (0.8.1):
     - MRProgress/Helper
-  - MRProgress/Circular (0.7.0):
+  - MRProgress/Circular (0.8.1):
     - MRProgress/Helper
     - MRProgress/ProgressBaseClass
     - MRProgress/Stopable
-  - MRProgress/Helper (0.7.0)
-  - MRProgress/Icons (0.7.0)
-  - MRProgress/NavigationBarProgress (0.7.0):
+  - MRProgress/Helper (0.8.1)
+  - MRProgress/Icons (0.8.1)
+  - MRProgress/NavigationBarProgress (0.8.1):
     - MRProgress/ProgressBaseClass
-  - MRProgress/Overlay (0.7.0):
+  - MRProgress/Overlay (0.8.1):
     - MRProgress/ActivityIndicator
     - MRProgress/Blur
     - MRProgress/Circular
     - MRProgress/Helper
     - MRProgress/Icons
-  - MRProgress/ProgressBaseClass (0.7.0)
-  - MRProgress/Stopable (0.7.0):
+  - MRProgress/ProgressBaseClass (0.8.1)
+  - MRProgress/Stopable (0.8.1):
     - MRProgress/Helper
   - RBBAnimation (0.3.0)
-  - RNFrostedSidebar (0.2.0)
-  - SDCAlertView (1.4.1):
+  - SDCAlertView (2.1):
     - RBBAnimation (~> 0.3)
     - SDCAutoLayout (~> 2.0)
-  - SDCAutoLayout (2.0)
-  - SDWebImage (3.7.1):
+  - SDCAutoLayout (2.0.2)
+  - SDWebImage (3.7.0):
     - SDWebImage/Core
-  - SDWebImage/Core (3.7.1)
-  - XCDYouTubeKit (2.0.2)
+  - SDWebImage/Core (3.7.0)
+  - TransitionKit (2.0.0)
+  - XCDYouTubeKit (2.0.3)
 
 DEPENDENCIES:
-  - ALMoviePlayerController (~> 0.3.0)
   - ASValueTrackingSlider
   - DZNPhotoPickerController
   - MRProgress
-  - RNFrostedSidebar (~> 0.2.0)
   - SDCAlertView
+  - TransitionKit (~> 2.0.0)
   - XCDYouTubeKit (~> 2.0)
 
 SPEC CHECKSUMS:
-  AFNetworking: 6d7b76aa5d04c8c37daad3eef4b7e3f2a7620da3
-  ALMoviePlayerController: bee05da71110002321ba4f87dc021e97348d7a6a
+  AFNetworking: 0aabc6fae66d6e5d039eeb21c315843c7aae51ab
   ASValueTrackingSlider: 74a4bbf70c8cf43d29b701ff4c7659fc5d0afd99
-  DZNEmptyDataSet: 381e880cb3bb2d33885cb0325218443df265bc98
-  DZNPhotoPickerController: 3d7428991e2604939fc56e581693d61d29138186
-  MRProgress: 5abb19ba97ad22c321c37f3d299e32391109b1d6
+  DZNEmptyDataSet: aa20600aff620af3d78edbff4bc47282972e815f
+  DZNPhotoPickerController: b160709441243eeed87cd998d2b92da1f6d91840
+  GROAuth2SessionManager: d40e386b9e865806687b4b818964efb3ac6db952
+  MBProgressHUD: 2038dbcf3dce73215abed6001657043d53aa79a8
+  MRProgress: cd12726e001ea25dec133322d34cc4754cbc58f8
   RBBAnimation: 243d73be1a526f1b51d266b182e4aa0cfe9cbf64
-  RNFrostedSidebar: f1d95d9b2627f13cc10e75d36e751a623eec079c
-  SDCAlertView: 73b84d53e9c2e994b47b07c441fa1aa696c8049b
-  SDCAutoLayout: 6acad78fe6a09278a064ac71609e8f484a7249fc
-  SDWebImage: 116e88633b5b416ea0ca4b334a4ac59cf72dd38d
-  XCDYouTubeKit: 65d5f5b9fe4e731327ab61ecc253b8e70e5d5a4d
+  SDCAlertView: a363910a3e851dc1863ee87e20f7762d6164a488
+  SDCAutoLayout: 4a963629725ed2b7d665e789ca4d6cfcd7446822
+  SDWebImage: 791cb0f588046cb0bb7802ae8ae8f5462947b773
+  TransitionKit: 7877021649a734f3239ed176b7967de29321dcf3
+  XCDYouTubeKit: 840728453f0a22f54e4488ebeb8ee955a30c274c
 
 COCOAPODS: 0.33.1

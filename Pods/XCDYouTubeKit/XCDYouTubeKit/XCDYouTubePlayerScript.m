@@ -8,7 +8,7 @@
 
 #import <Availability.h>
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0
-//#warning Rewrite JavaScriptCore code with JSContext + JSValue (available since iOS 7) instead the verbose C API.
+#warning Rewrite JavaScriptCore code with JSContext + JSValue (available since iOS 7) instead the verbose C API.
 #elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED) && __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_9
 #warning Rewrite JavaScriptCore code with JSContext + JSValue (available since OS X 10.9) instead the verbose C API.
 #endif
@@ -32,8 +32,9 @@
 		script = [script substringWithRange:NSMakeRange(jsPrologue.length, script.length - (jsPrologue.length + jsEpilogue.length))];
 	
 	__block NSString *signatureFunctionName = nil;
-	NSRegularExpression *signatureRegularExpression = [NSRegularExpression regularExpressionWithPattern:@"signature\\s*=\\s*([^\\(]+)" options:NSRegularExpressionCaseInsensitive error:NULL];
-	[signatureRegularExpression enumerateMatchesInString:script options:(NSMatchingOptions)0 range:NSMakeRange(0, script.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+	NSRegularExpression *signatureRegularExpression = [NSRegularExpression regularExpressionWithPattern:@"[\"']signature[\"']\\s*,\\s*([^\\(]+)" options:NSRegularExpressionCaseInsensitive error:NULL];
+	[signatureRegularExpression enumerateMatchesInString:script options:(NSMatchingOptions)0 range:NSMakeRange(0, script.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop)
+	{
 		signatureFunctionName = [script substringWithRange:[result rangeAtIndex:1]];
 		*stop = YES;
 	}];

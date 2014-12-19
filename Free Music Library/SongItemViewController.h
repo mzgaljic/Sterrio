@@ -9,8 +9,6 @@
 #import <UIKit/UIKit.h>
 //for AVPlayer
 #import <AVFoundation/AVFoundation.h>
-#import "MyAvPlayer.h"
-#import "YouTubeMoviePlayerSingleton.h"
 
 //youtube link parser and internet connectivity
 #import <XCDYouTubeKit/XCDYouTubeClient.h>
@@ -40,7 +38,7 @@
 
 //GUI vars
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;  //really the navBar title item
-@property (weak, nonatomic) IBOutlet MyAvPlayer *playerView;
+@property (weak, nonatomic) IBOutlet MyAVPlayer *playerView;
 @property (weak, nonatomic) IBOutlet ASValueTrackingSlider *playbackTimeSlider;
 
 @property (weak, nonatomic) IBOutlet UILabel *currentTimeLabel;

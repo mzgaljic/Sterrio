@@ -324,7 +324,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         for(Song *aSong in album.albumSongs)
         {
             if([aSong.nowPlaying boolValue] == YES)
-                [self pauseMusicAndSetAVPlayerToNil];
+                [MusicPlaybackController songAboutToBeDeleted];
         }
         
         //delete the album and save changes
@@ -354,14 +354,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 }
 
 #pragma mark - other stuff
-- (void)pauseMusicAndSetAVPlayerToNil
-{
-    YouTubeMoviePlayerSingleton *singleton = [YouTubeMoviePlayerSingleton createSingleton];
-    [[singleton AVPlayer] pause];
-    [singleton setAVPlayerInstance:nil];
-    [singleton setAVPlayerLayerInstance:nil];
-}
-
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     /*

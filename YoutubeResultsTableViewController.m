@@ -120,8 +120,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    [[[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer] pause];
-    [[YouTubeMoviePlayerSingleton createSingleton] setPreviewMusicYouTubePlayerInstance:nil];
+#warning need to add AVPLayer code back in here!
 }
 
 - (void)viewDidLoad

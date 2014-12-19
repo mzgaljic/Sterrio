@@ -57,12 +57,6 @@
     return internalArray;
 }
 
-- (NSArray *)insertItem:(id)anObject atIndex:(NSUInteger)index
-{
-    [internalArray insertObject:anObject atIndex:index];
-    return internalArray;
-}
-
 - (NSArray *)enqueueObjectsFromArray:(NSArray *)anArray
 {
     [internalArray addObjectsFromArray:anArray];
@@ -121,6 +115,19 @@
 - (id)objectAtIndex:(NSUInteger)index
 {
     return [internalArray objectAtIndex:index];
+}
+
+- (NSArray *)insertItem:(id)anObject atIndex:(NSUInteger)index
+{
+    [internalArray insertObject:anObject atIndex:index];
+    return internalArray;
+}
+
+- (void)removeObjectFromQueue:(id)anObject
+{
+    if(count > 0){
+        [internalArray removeObject:anObject];
+    }
 }
 
 @end

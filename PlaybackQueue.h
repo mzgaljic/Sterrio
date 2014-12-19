@@ -21,6 +21,8 @@
 - (Song *)skipForward;
 - (Song *)skipToPrevious;
 
+- (void)removeSong:(Song *)song;
+
 - (NSArray *)listOfUpcomingSongsNowPlayingExclusive;
 - (NSArray *)listOfUpcomingSongsNowPlayingInclusive;
 - (NSArray *)listOfPlayedSongsNowPlayingExclusive;

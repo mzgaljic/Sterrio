@@ -12,7 +12,6 @@
 
 static const BOOL PRODUCTION_MODE = YES;
 static BOOL USER_EDITING_MEDIA = YES;
-static BOOL hasSongBeenPlayedSinceLaunch = NO;
 
 static short preferredSizeValue;
 static short preferredWifiStreamValue;
@@ -34,16 +33,6 @@ static BOOL icloudSettingsSync;
 + (void)setUserIsEditingSongOrAlbumOrArtist:(BOOL)aValue
 {
     USER_EDITING_MEDIA = aValue;
-}
-
-+ (BOOL)hasSongBeenPlayedSinceLaunch
-{
-    return hasSongBeenPlayedSinceLaunch;
-}
-
-+ (void)setSongHasBeenPlayedSinceLaunch
-{
-    hasSongBeenPlayedSinceLaunch = YES;
 }
 
 //app settings

@@ -10,27 +10,33 @@
 #import <AVFoundation/AVFoundation.h>
 #import "Song.h"
 #import "PlaybackQueue.h"
+#import "MyAVPlayer.h"  //custom AVPlayer class
 
 @interface MusicPlaybackController : NSObject
 
-#pragma mark + Controling playback
+#pragma mark - Controling playback
 /** Playback will resume immediately */
-+ (void)ResumePlayback;
++ (void)resumePlayback;
 
 /** Playback will pause immediately */
-+ (void)PausePlayback;
++ (void)pausePlayback;
+
+/** Stops playback and removes the item from the queue - "prep" for deletion **/
++ (void)songAboutToBeDeleted;
 
 /** Playback will continue from the specified seek point, skipping a portion of the track. */
-+ (void)SeekToTime;
++ (void)seekToTime;
 
 /** Stop playback of current song/track, and begin playback of the next track */
-+ (void)SkipToNextTrack;
++ (void)skipToNextTrack;
 
 /** Stop playback of current song/track, and begin playback of previous track */
-+ (void)ReturnToPreviousTrack;
++ (void)returnToPreviousTrack;
 
 /** Current elapsed playback time (for the current song/track). */
 + (void)currentTime;
+
++ (NSURL *)closestUrlQualityMatchForSetting:(short)aQualitySetting usingStreamsDictionary:(NSDictionary *)aDictionary;
 
 #pragma mark - Now Playing Song
 + (Song *)nowPlayingSong;
@@ -49,5 +55,7 @@
 #pragma mark - Playback status
 + (BOOL)playbackExplicitlyPaused;
 + (void)explicitlyPausePlayback:(BOOL)pause;
++ (void)setRawAVPlayer:(MyAVPlayer *)myAvPlayer;
++ (AVPlayer *)obtainRawAVPlayer;
 
 @end

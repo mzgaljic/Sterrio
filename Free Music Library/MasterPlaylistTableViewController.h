@@ -15,6 +15,7 @@
 #import "NSString+WhiteSpace_Utility.h"
 #import "SDWebImageManager.h"
 #import "CoreDataManager.h"
+#import "MusicPlaybackController.h"
 
 #import "PlaylistSongAdderTableViewController.h"
 #import "UINavigationController+CustomPushAnimation.h"

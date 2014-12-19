@@ -353,10 +353,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
         if([song.nowPlaying boolValue] == YES){
-            YouTubeMoviePlayerSingleton *singleton = [YouTubeMoviePlayerSingleton createSingleton];
-            [[singleton AVPlayer] pause];
-            [singleton setAVPlayerInstance:nil];
-            [singleton setAVPlayerLayerInstance:nil];
+            [MusicPlaybackController songAboutToBeDeleted];
         }
         [song removeAlbumArt];
         NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:[CoreDataManager context]];
@@ -392,28 +389,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     if([editButton.title isEqualToString:@"Edit"]){  //tapping song plays the song
-        if([selectedSong.nowPlaying boolValue] == YES)
-        {
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-            if([AppEnvironmentConstants hasSongBeenPlayedSinceLaunch])
-            {
-                if([cell.textLabel.textColor isEqualToColor:[UIColor defaultSystemTintColor]])  //now playing song
-                    [YouTubeMoviePlayerSingleton setNeedsToDisplayNewVideo:NO];
-                else
-                    [YouTubeMoviePlayerSingleton setNeedsToDisplayNewVideo:YES];
-            }
-            else
-            {
-                [YouTubeMoviePlayerSingleton setNeedsToDisplayNewVideo:YES];
-            }
-        }
-        else{
-            YouTubeMoviePlayerSingleton *singleton = [YouTubeMoviePlayerSingleton createSingleton];
-            [[singleton AVPlayer] pause];
-            [singleton setAVPlayerInstance:nil];
-            [singleton setAVPlayerLayerInstance:nil];
-            
-            [YouTubeMoviePlayerSingleton setNeedsToDisplayNewVideo:YES];  //for loading the actual video player, not the other stuff...
+        if([selectedSong.nowPlaying boolValue] != YES){
+            [MusicPlaybackController pausePlayback];
+            [MusicPlaybackController newQueueWithSong:selectedSong album:nil artist:nil playlist:nil genreCode:0 skipCurrentSong:YES];
+#warning not production ready code (line before this)
             
             [self setNowPlayingSong:selectedSong];
             [[CoreDataManager sharedInstance] saveContext];

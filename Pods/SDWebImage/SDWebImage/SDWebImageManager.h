@@ -81,8 +81,6 @@ typedef void(^SDWebImageCompletionBlock)(UIImage *image, NSError *error, SDImage
 
 typedef void(^SDWebImageCompletionWithFinishedBlock)(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL);
 
-typedef NSString *(^SDWebImageCacheKeyFilterBlock)(NSURL *url);
-
 
 @class SDWebImageManager;
 
@@ -159,7 +157,7 @@ SDWebImageManager *manager = [SDWebImageManager sharedManager];
 
  * @endcode
  */
-@property (copy) SDWebImageCacheKeyFilterBlock cacheKeyFilter;
+@property (strong) NSString *(^cacheKeyFilter)(NSURL *url);
 
 /**
  * Returns global SDWebImageManager instance.

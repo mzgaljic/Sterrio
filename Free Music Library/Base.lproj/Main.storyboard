@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="14A388a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="8YX-ce-x5E">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="8YX-ce-x5E">
     <dependencies>
-        <deployment defaultVersion="1792" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
     </dependencies>
     <scenes>
         <!--Songs-->
@@ -60,16 +60,11 @@
         <!--1/203-->
         <scene sceneID="aB0-HZ-Jc6">
             <objects>
-                <viewController storyboardIdentifier="songItemView" extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="PBb-rQ-7sq" customClass="SongItemViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="songItemView" extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="PBb-rQ-7sq" customClass="SongPlayerViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="4qq-iL-gTX">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" id="Rca-dj-bnA" customClass="MyAvPlayer">
-                                <rect key="frame" x="101" y="310" width="214" height="52"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                            </view>
                             <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="3.5" id="xEs-9p-3Fv" customClass="ASValueTrackingSlider">
                                 <rect key="frame" x="51" y="391" width="218" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -92,14 +87,6 @@
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="eA5-re-obU" customClass="AutoScrollLabel">
-                                <rect key="frame" x="0.0" y="117" width="320" height="66"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            </scrollView>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="BXA-xa-qlq" customClass="AutoScrollLabel">
-                                <rect key="frame" x="0.0" y="64" width="320" height="66"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            </scrollView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
@@ -108,9 +95,6 @@
                         <outlet property="currentTimeLabel" destination="vwG-hB-hqU" id="JIl-WH-4Db"/>
                         <outlet property="navBar" destination="B6K-mw-sf0" id="xnq-2a-haq"/>
                         <outlet property="playbackTimeSlider" destination="xEs-9p-3Fv" id="qGy-Lt-7yL"/>
-                        <outlet property="playerView" destination="Rca-dj-bnA" id="FO3-4P-Xvx"/>
-                        <outlet property="scrollingArtistAlbumView" destination="eA5-re-obU" id="qBU-Hv-Ngy"/>
-                        <outlet property="scrollingSongView" destination="BXA-xa-qlq" id="kfm-E7-1vH"/>
                         <outlet property="totalDurationLabel" destination="L3D-0t-UZe" id="DYu-N8-KJC"/>
                     </connections>
                 </viewController>
@@ -736,7 +720,7 @@
                         <outlet property="rightBarButton" destination="ud9-PN-iga" id="2GJ-oF-muW"/>
                         <segue destination="ue5-WF-jye" kind="push" identifier="editFieldSegue" id="MCm-iq-SUd"/>
                         <segue destination="jOb-Dc-qbt" kind="push" identifier="browseExistingAlbumsSegue" id="vr8-fR-rE3"/>
-                        <segue destination="tA4-jx-Xwj" kind="push" id="PSr-AB-3xW"/>
+                        <segue destination="tA4-jx-Xwj" kind="push" identifier="browseExistingArtistsSegue" id="PSr-AB-3xW"/>
                         <segue destination="YfS-Z1-bSz" kind="push" identifier="editGenreFieldSegue" id="z81-x2-7uW"/>
                     </connections>
                 </tableViewController>
