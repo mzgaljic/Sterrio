@@ -28,6 +28,8 @@
 		87362AFD194E68A5004DB544 /* Deque.m in Sources */ = {isa = PBXBuildFile; fileRef = 87362AFC194E68A5004DB544 /* Deque.m */; };
 		87362B03194E9CDF004DB544 /* Stack.m in Sources */ = {isa = PBXBuildFile; fileRef = 87362B01194E9CDF004DB544 /* Stack.m */; };
 		87394BE31965FFE100E750B1 /* Queue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87394BE21965FFE100E750B1 /* Queue.m */; };
+		873CF45A1A45425C00716B52 /* UIViewController+ZoomTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 873CF4591A45425C00716B52 /* UIViewController+ZoomTransition.m */; };
+		873CF45C1A45435E00716B52 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 873CF45B1A45435E00716B52 /* QuartzCore.framework */; };
 		8740723F19798129004C5C57 /* SongTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8740723E19798129004C5C57 /* SongTableViewFormatter.m */; };
 		87449AF419971A58009F01EA /* AppDelegateSetupHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 87449AF319971A58009F01EA /* AppDelegateSetupHelper.m */; };
 		87480DA9192C1FBD005CC0A4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DA8192C1FBD005CC0A4 /* Foundation.framework */; };
@@ -168,6 +170,9 @@
 		87362B02194E9CDF004DB544 /* Stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stack.h; sourceTree = "<group>"; };
 		87394BE11965FFE100E750B1 /* Queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Queue.h; sourceTree = "<group>"; };
 		87394BE21965FFE100E750B1 /* Queue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Queue.m; sourceTree = "<group>"; };
+		873CF4581A45425C00716B52 /* UIViewController+ZoomTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+ZoomTransition.h"; sourceTree = "<group>"; };
+		873CF4591A45425C00716B52 /* UIViewController+ZoomTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+ZoomTransition.m"; sourceTree = "<group>"; };
+		873CF45B1A45435E00716B52 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8740723D19798129004C5C57 /* SongTableViewFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SongTableViewFormatter.h; sourceTree = "<group>"; };
 		8740723E19798129004C5C57 /* SongTableViewFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SongTableViewFormatter.m; sourceTree = "<group>"; };
 		87449AF219971A58009F01EA /* AppDelegateSetupHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegateSetupHelper.h; sourceTree = "<group>"; };
@@ -344,6 +349,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				873CF45C1A45435E00716B52 /* QuartzCore.framework in Frameworks */,
 				8727003E199F0C1F00D71204 /* CoreData.framework in Frameworks */,
 				8768E53C19929343004708C4 /* AVFoundation.framework in Frameworks */,
 				8768E53A19928AD5004708C4 /* MediaPlayer.framework in Frameworks */,
@@ -462,6 +468,8 @@
 				87270031199E815000D71204 /* NSString+Levenshtein_Distance.m */,
 				87DB103019C53CC000B190E5 /* UINavigationController+CustomPushAnimation.h */,
 				87DB103119C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m */,
+				873CF4581A45425C00716B52 /* UIViewController+ZoomTransition.h */,
+				873CF4591A45425C00716B52 /* UIViewController+ZoomTransition.m */,
 			);
 			name = Categories;
 			path = "Free Music Library";
@@ -548,6 +556,7 @@
 		87480DA7192C1FBD005CC0A4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				873CF45B1A45435E00716B52 /* QuartzCore.framework */,
 				8727003D199F0C1F00D71204 /* CoreData.framework */,
 				8732FB111999D7E300FE6693 /* ImageIO.framework */,
 				8768E53B19929343004708C4 /* AVFoundation.framework */,
@@ -1191,6 +1200,7 @@
 				87A43E7E1978C413001B4367 /* MasterEditingSongTableViewController.m in Sources */,
 				87CEDC6519731EF000780D57 /* PlaylistSongAdderTableViewController.m in Sources */,
 				876EC5F01965C9F6006B3C29 /* AppEnvironmentConstants.m in Sources */,
+				873CF45A1A45425C00716B52 /* UIViewController+ZoomTransition.m in Sources */,
 				875B3826197AFF29008B4409 /* NSString+smartSort.m in Sources */,
 				876EDE6019648AA300795767 /* AlbumArtUtilities.m in Sources */,
 				87334407198D8321002B9E18 /* NSString+HTTP_Char_Escape.m in Sources */,
