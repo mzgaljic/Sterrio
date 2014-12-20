@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="8YX-ce-x5E">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
     </dependencies>
     <scenes>
@@ -48,7 +47,7 @@
                     <navigationItem key="navigationItem" title="Songs" id="Oyd-HO-iMf"/>
                     <connections>
                         <segue destination="5sU-IG-zJp" kind="modal" identifier="editingSongMasterSegue" modalTransitionStyle="coverVertical" id="i6u-By-3UM"/>
-                        <segue destination="PBb-rQ-7sq" kind="push" identifier="songItemSegue" id="aQU-5c-2vO"/>
+                        <segue destination="mqG-UD-sBX" kind="modal" identifier="songItemSegue" id="aQU-5c-2vO"/>
                         <segue destination="Lxg-v4-Z1q" kind="modal" identifier="settingsSegue" modalTransitionStyle="coverVertical" id="o0x-vp-6sV"/>
                         <segue destination="V5K-xF-P6M" kind="modal" identifier="addMusicToLibSegue" modalTransitionStyle="coverVertical" id="fFN-xo-skq"/>
                     </connections>
@@ -87,10 +86,20 @@
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="Funny pic" id="03Q-h2-A3e">
+                                <rect key="frame" x="53" y="74" width="213" height="309"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
-                    <navigationItem key="navigationItem" title="1/203" id="B6K-mw-sf0"/>
+                    <navigationItem key="navigationItem" title="1/203" id="B6K-mw-sf0">
+                        <barButtonItem key="leftBarButtonItem" style="done" systemItem="stop" id="cx4-w4-ge2">
+                            <connections>
+                                <action selector="minimizePlayerButtonTapped:" destination="PBb-rQ-7sq" id="wXC-y9-p1L"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="currentTimeLabel" destination="vwG-hB-hqU" id="JIl-WH-4Db"/>
                         <outlet property="navBar" destination="B6K-mw-sf0" id="xnq-2a-haq"/>
@@ -100,7 +109,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="shW-Aa-q3b" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2015" y="-819"/>
+            <point key="canvasLocation" x="2775" y="-735"/>
         </scene>
         <!--Genres-->
         <scene sceneID="Vww-o9-vR9">
@@ -373,7 +382,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="playlistSongItemCell" textLabel="V00-mX-Jxk" detailTextLabel="zWi-AO-Gz7" style="IBUITableViewCellStyleSubtitle" id="lxG-Kv-GeX">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="detailDisclosureButton" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="playlistSongItemCell" textLabel="V00-mX-Jxk" detailTextLabel="zWi-AO-Gz7" style="IBUITableViewCellStyleSubtitle" id="lxG-Kv-GeX">
                                 <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="lxG-Kv-GeX" id="Rci-gm-btp">
@@ -398,7 +407,7 @@
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <connections>
-                                    <segue destination="PBb-rQ-7sq" kind="push" identifier="playlistSongItemPlayingSegue" trigger="accessoryAction" id="cob-ad-5Vf"/>
+                                    <segue destination="mqG-UD-sBX" kind="push" identifier="playlistSongItemPlayingSegue" trigger="accessoryAction" id="cob-ad-5Vf"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -726,7 +735,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hVx-ts-7je" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3690" y="-1358"/>
+            <point key="canvasLocation" x="4222" y="-1358"/>
         </scene>
         <!--Existing Artist Picker Table View Controller-->
         <scene sceneID="e9E-ha-S25">
@@ -966,7 +975,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ffq-2h-bd7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3261" y="-1358"/>
+            <point key="canvasLocation" x="3793" y="-1358"/>
         </scene>
         <!--Add Music-->
         <scene sceneID="4KX-bh-cq6">
@@ -1165,8 +1174,28 @@
             </objects>
             <point key="canvasLocation" x="1912" y="2843"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="Vpx-dD-L2m">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="mqG-UD-sBX" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" id="G43-z9-ciZ"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="kBF-KI-x6E">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="PBb-rQ-7sq" kind="relationship" relationship="rootViewController" id="stt-e2-nLN"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="q6b-gX-OLx" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2387" y="-735"/>
+        </scene>
     </scenes>
     <resources>
+        <image name="Funny pic" width="960" height="1280"/>
         <image name="albums" width="31" height="28"/>
         <image name="artists" width="39" height="32"/>
         <image name="genres" width="36" height="33"/>
@@ -1179,9 +1208,9 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="cob-ad-5Vf"/>
+        <segue reference="Mvp-5d-lNL"/>
+        <segue reference="aQU-5c-2vO"/>
         <segue reference="7Sy-qq-35y"/>
         <segue reference="pPM-be-vV0"/>
-        <segue reference="Mvp-5d-lNL"/>
     </inferredMetricsTieBreakers>
 </document>

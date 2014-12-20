@@ -61,4 +61,7 @@ void *kDidFailKVO               = &kDidFailKVO;
 - (IBAction)playbackSliderEditingHasBegun:(id)sender;
 - (IBAction)playbackSliderEditingHasEnded:(id)sender;
 
+- (IBAction)minimizePlayerButtonTapped:(id)sender;
+
+
 @end

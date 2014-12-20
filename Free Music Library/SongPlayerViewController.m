@@ -31,6 +31,8 @@
 @implementation SongPlayerViewController
 @synthesize navBar, playbackTimeSlider = _playbackTimeSlider, currentTimeLabel = _currentTimeLabel, totalDurationLabel = _totalDurationLabel;
 static UIInterfaceOrientation toOrienation;  //used by "prefersStatusBarHidden" and other rotation code
+static BOOL playAfterMovingSlider = YES;
+static BOOL sliderIsBeingTouched = NO;
 
 #pragma mark - VC Life Cycle
 - (void)viewDidLoad
@@ -249,8 +251,9 @@ static UIInterfaceOrientation toOrienation;  //used by "prefersStatusBarHidden" 
     playingBack = NO;
     [MusicPlaybackController resumePlayback];  //starts playback
     
-    timeObserver = [player addPeriodicTimeObserverForInterval:CMTimeMakeWithSeconds(0.5, 600) queue:nil usingBlock:^(CMTime time) {
-        //NSLog(@"Playback time %.5f", CMTimeGetSeconds(time));
+    timeObserver = [player addPeriodicTimeObserverForInterval:CMTimeMakeWithSeconds(0.1, 100) queue:nil usingBlock:^(CMTime time) {
+        //code will be called each 1/10th second....  NSLog(@"Playback time %.5f", CMTimeGetSeconds(time));
+        [self updatePlaybackTimeSlider];
     }];
 }
 
@@ -319,6 +322,81 @@ static UIInterfaceOrientation toOrienation;  //used by "prefersStatusBarHidden" 
             }
         }
     }
+}
+
+- (IBAction)playbackSliderEditingHasBegun:(id)sender
+{
+    // Add code here to do background processing
+    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    if(player.rate == 0)
+        playAfterMovingSlider = NO;
+    [player pause];
+    sliderIsBeingTouched = YES;
+}
+
+- (IBAction)playbackSliderValueHasChanged:(id)sender
+{
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        // Add code here to do background processing
+        CMTime newTime = CMTimeMakeWithSeconds(_playbackTimeSlider.value, 1);
+        [(MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer] seekToTime:newTime];
+    });
+}
+
+- (IBAction)playbackSliderEditingHasEnded:(id)sender
+{
+    // Add code here to do background processing
+    if(playAfterMovingSlider)
+        [(MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer] play];
+    playAfterMovingSlider = YES;  //reset value
+    sliderIsBeingTouched = NO;
+}
+
+- (NSString *)slider:(ASValueTrackingSlider *)slider stringForValue:(float)value
+{
+    NSString *returnString = [self convertSecondsToPrintableNSStringWithSliderValue:value];
+    _currentTimeLabel.text = returnString;
+    return returnString;
+}
+
+- (void)updatePlaybackTimeSlider
+{
+    if(sliderIsBeingTouched)
+        return;
+    
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        CMTime currentTime = ((MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer]).currentItem.currentTime;
+        Float64 currentTimeValue = CMTimeGetSeconds(currentTime);
+        
+        //sets the value directly from the value, since playback could stutter or pause! So you can't increment by 1 each second.
+        [_playbackTimeSlider setValue:(currentTimeValue) animated:YES];
+    });
+    
+}
+
+
+- (NSString *)convertSecondsToPrintableNSStringWithSliderValue:(float)value
+{
+    NSUInteger totalSeconds = value;
+    NSString *returnString;
+    short  seconds = totalSeconds % 60;
+    short minutes = (totalSeconds / 60) % 60;
+    short hours = (short)totalSeconds / 3600;
+    
+    if(minutes < 10 && hours == 0)  //we can shorten the text
+        returnString = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
+    
+    else if(hours > 0)
+    {
+        if(hours < 9)
+            returnString = [NSString stringWithFormat:@"%i:%02d:%02d",hours, minutes, seconds];
+        else
+            returnString = [NSString stringWithFormat:@"%02d:%02d:%02d",hours, minutes, seconds];
+    }
+    else
+        returnString = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
+    return returnString;
 }
 
 #pragma mark - Initializing & Registering Buttons
@@ -432,6 +510,12 @@ static UIInterfaceOrientation toOrienation;  //used by "prefersStatusBarHidden" 
     aButton.layer.shadowOffset = CGSizeZero;
 }
 
+- (IBAction)minimizePlayerButtonTapped:(id)sender
+{
+#warning complex code to minimize the VC but keep it visible on screen will go here probably.
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark - Presenting Song Information On Screen
 - (void)updateScreenWithInfoForNewSong:(Song *)mySong
 {
@@ -533,7 +617,7 @@ static UIInterfaceOrientation toOrienation;  //used by "prefersStatusBarHidden" 
 - (void)alertView:(SDCAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if(buttonIndex == 0)
-        [self.navigationController popViewControllerAnimated:YES];
+        [self minimizePlayerButtonTapped:nil];
 }
 
 
