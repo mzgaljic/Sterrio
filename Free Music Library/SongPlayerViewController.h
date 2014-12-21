@@ -8,9 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>  //needed for avplayer
+#import <MediaPlayer/MediaPlayer.h>  //needed for placing info/media on lock screen
 #import "Artist.h"
 #import "Album.h"
-#import <MediaPlayer/MediaPlayer.h>  //needed for placing info/media on lock screen
 #import "PlayerView.h"  //custom avplayer view
 #import "ASValueTrackingSlider.h"  //slider
 #import "PreferredFontSizeUtility.h"

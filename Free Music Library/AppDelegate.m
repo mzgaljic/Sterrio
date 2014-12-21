@@ -31,7 +31,6 @@ static const int APP_LAUNCHED_ALREADY = 1;
     self.window.tintColor = Rgb2UIColor(255, 149, 0);
     
     [self setProductionModeValue];
-    
     if(! PRODUCTION_MODE)
         [AppDelegateSetupHelper logGlobalAppTintColor];
     
@@ -40,8 +39,8 @@ static const int APP_LAUNCHED_ALREADY = 1;
         //do stuff that you'd want to see the first time you launch!
     }
     
-    [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY forKey:APP_ALREADY_LAUNCHED_KEY];
-    
+    [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY
+                                               forKey:APP_ALREADY_LAUNCHED_KEY];
     [self activateAudioSession];
     
     return YES;

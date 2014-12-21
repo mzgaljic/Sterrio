@@ -397,8 +397,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             [self setNowPlayingSong:selectedSong];
             [[CoreDataManager sharedInstance] saveContext];
         }
-        [self performSegueWithIdentifier:@"songItemSegue"
-                                  sender:[NSNumber numberWithInt:(int)indexPath.row +1]];
+        [self performSegueWithIdentifier:@"songItemSegue" sender:nil];
         
     } else if([editButton.title isEqualToString:@"Done"]){  //tapping song triggers edit segue
         
@@ -418,12 +417,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         MasterEditingSongTableViewController* controller = (MasterEditingSongTableViewController*)[[segue destinationViewController] topViewController];
         [controller setSongIAmEditing:(Song *)sender];
         self.indexOfEditingSong = self.selectedRowIndexValue;
-    }
-    else if([[segue identifier] isEqualToString:@"songItemSegue"]){
-        if ([segue.destinationViewController respondsToSelector:@selector(setPrintFriendlySongIndex:)]){
-            [segue.destinationViewController performSelector:@selector(setPrintFriendlySongIndex:)
-                                                  withObject:(NSNumber *)sender];
-        }
     }
 }
 
