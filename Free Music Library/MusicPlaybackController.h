@@ -11,6 +11,7 @@
 #import "Song.h"
 #import "PlaybackQueue.h"
 #import "MyAVPlayer.h"  //custom AVPlayer class
+#import "PlayerView.h"
 
 @interface MusicPlaybackController : NSObject
 
@@ -55,7 +56,12 @@
 #pragma mark - Playback status
 + (BOOL)playbackExplicitlyPaused;
 + (void)explicitlyPausePlayback:(BOOL)pause;
+
+#pragma mark - getters/setters for avplayer and the playerview
 + (void)setRawAVPlayer:(AVPlayer *)myAvPlayer;
 + (AVPlayer *)obtainRawAVPlayer;
+
++ (void)setRawPlayerView:(PlayerView *)myPlayerView;
++ (PlayerView *)obtainRawPlayerView;
 
 @end

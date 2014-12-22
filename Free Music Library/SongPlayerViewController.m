@@ -10,7 +10,6 @@
 
 @interface SongPlayerViewController ()
 {
-    PlayerView *playerView;
     BOOL playingBack;
     
     //for key value observing
@@ -58,32 +57,99 @@ static BOOL sliderIsBeingTouched = NO;
     
     //hack for hiding back bttn text. (affects other back bttns if more VC's pushed)
     self.navigationController.navigationBar.topItem.title = @"";
-    
-    Song *nowPlaying = [MusicPlaybackController nowPlayingSong];
-    
-    //begin loading player using video id
-    
-    [self updateScreenWithInfoForNewSong: nowPlaying];
 }
 
+static int numTimesVCLoaded = 0;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    if(numTimesVCLoaded == 0)
+        [self setUpFloatingImageViewAndPlayer];  //sets up the video GUI
+    numTimesVCLoaded++;
+    
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                                                                                            target:self
                                                                                            action:@selector(shareButtonTapped)];
-    [self setupVideoPlayerViewDimensionsAndShowLoading];  //SET UP VIDEO PLAYER GUI HERE
     [self checkDeviceOrientation];
+    
+    Song *nowPlaying = [MusicPlaybackController nowPlayingSong];
+    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    [player startPlaybackOfSong:nowPlaying goingForward:YES];
+    //avplayer will control itself for the most part now...
     
     dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self setUpLockScreenInfoAndArt];
     });
+    
+    [self updateScreenWithInfoForNewSong: nowPlaying];
 }
 
 - (void)dealloc
 {
     [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:timeObserver];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - Obtaining a link for a given 
+
+#pragma mark - Setup Floating ImgView
+- (void)setUpFloatingImageViewAndPlayer
+{
+    UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
+    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    
+    if(playerView == nil){
+        playerView = [[PlayerView alloc] init];
+        player = [[MyAVPlayer alloc] init];
+        [playerView setPlayer:player];  //attaches AVPlayer to AVPlayerLayer
+        playerView.frame = CGRectInset(appWindow.bounds, 20, 20);
+        [MusicPlaybackController setRawAVPlayer:player];
+        [MusicPlaybackController setRawPlayerView:playerView];
+    } else
+        return;  //this case should never happen
+    
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+    {
+        //entering view controller in landscape, show fullscreen video
+        CGRect screenRect = [appWindow bounds];
+        CGFloat screenWidth = screenRect.size.width;
+        CGFloat screenHeight = screenRect.size.height;
+        
+        //+1 is because the view ALMOST covered the full screen.
+        [playerView setFrame:CGRectMake(0, 0, ceil(screenHeight +1), screenWidth)];
+        //hide status bar
+        toOrienation = orientation;  //value used in prefersStatusBarHidden
+        [self prefersStatusBarHidden];
+        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+    }
+    else
+    {
+        //show portrait player
+        float widthOfScreenRoationIndependant;
+        float heightOfScreenRotationIndependant;
+        float  a = [appWindow bounds].size.height;
+        float b = [appWindow bounds].size.width;
+        if(a < b)
+        {
+            heightOfScreenRotationIndependant = b;
+            widthOfScreenRoationIndependant = a;
+        }
+        else
+        {
+            widthOfScreenRoationIndependant = b;
+            heightOfScreenRotationIndependant = a;
+        }
+        float videoFrameHeight = [SongPlayerViewDisplayHelper videoHeightInSixteenByNineAspectRatioGivenWidth:widthOfScreenRoationIndependant];
+        float playerFrameYTempalue = roundf(((heightOfScreenRotationIndependant / 2.0) /1.5));
+        int playerYValue = nearestEvenInt((int)playerFrameYTempalue);
+        [playerView setFrame:CGRectMake(0, playerYValue, self.view.frame.size.width, videoFrameHeight)];
+        [playerView setBackgroundColor:[UIColor blackColor]];
+    }
+
+    [appWindow addSubview:playerView];
 }
 
 #pragma mark - Check and update GUI based on device orientation (and respond to events)
@@ -124,6 +190,7 @@ static BOOL sliderIsBeingTouched = NO;
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     CGFloat screenWidth = screenRect.size.width;
     CGFloat screenHeight = screenRect.size.height;
+    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     
     if(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight || toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft){
         [playerView setFrame:CGRectMake(0, 0, ceil(screenHeight +1), screenWidth)];  //+1 is because the view ALMOST covered the full screen.
@@ -159,95 +226,41 @@ static BOOL sliderIsBeingTouched = NO;
     }
 }
 
-
-#pragma mark - GUI Initialization
-//Setting up Video Player size and setting up spinner
-- (void)setupVideoPlayerViewDimensionsAndShowLoading
-{
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
-    {
-        //entering view controller in landscape, show fullscreen video
-        CGRect screenRect = [[UIScreen mainScreen] bounds];
-        CGFloat screenWidth = screenRect.size.width;
-        CGFloat screenHeight = screenRect.size.height;
-        
-        //+1 is because the view ALMOST covered the full screen.
-        [playerView setFrame:CGRectMake(0, 0, ceil(screenHeight +1), screenWidth)];
-        //hide status bar
-        toOrienation = orientation;  //value used in prefersStatusBarHidden
-        [self prefersStatusBarHidden];
-        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }
-    else
-    {
-        //show portrait player
-        float widthOfScreenRoationIndependant;
-        float heightOfScreenRotationIndependant;
-        float  a = [[UIScreen mainScreen] bounds].size.height;
-        float b = [[UIScreen mainScreen] bounds].size.width;
-        if(a < b)
-        {
-            heightOfScreenRotationIndependant = b;
-            widthOfScreenRoationIndependant = a;
-        }
-        else
-        {
-            widthOfScreenRoationIndependant = b;
-            heightOfScreenRotationIndependant = a;
-        }
-        float videoFrameHeight = [SongPlayerViewDisplayHelper videoHeightInSixteenByNineAspectRatioGivenWidth:widthOfScreenRoationIndependant];
-        float playerFrameYTempalue = roundf(((heightOfScreenRotationIndependant / 2.0) /1.5));
-        int playerYValue = nearestEvenInt((int)playerFrameYTempalue);
-        [playerView setFrame:CGRectMake(0, playerYValue, self.view.frame.size.width, videoFrameHeight)];
-        [playerView setBackgroundColor:[UIColor blackColor]];
-    }
-}
-
-
 #pragma mark - Initiating Playback
-- (void)playURL:(NSURL *)videoURL
+- (void)setupKeyValueObservers
 {
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     
-    if (!player) {
-        player = [[MyAVPlayer alloc] initWithURL:videoURL];
-        playerView = [[PlayerView alloc] init];
-        [playerView setPlayer:player];  //attaches AVPlayer to AVPlayerLayer
-        playerView.frame = CGRectInset(self.view.bounds, 20, 20);
-        [self.view addSubview:playerView];
-        
-        [player addObserver:self
-                 forKeyPath:@"rate"
-                    options:NSKeyValueObservingOptionNew
-                    context:kRateDidChangeKVO];
-        [player addObserver:self
-                 forKeyPath:@"currentItem.status"
-                    options:NSKeyValueObservingOptionNew
-                    context:kStatusDidChangeKVO];
-        [player addObserver:self
-                 forKeyPath:@"currentItem.duration"
-                    options:NSKeyValueObservingOptionNew
-                    context:kDurationDidChangeKVO];
-        [player addObserver:self
-                 forKeyPath:@"currentItem.loadedTimeRanges"
-                    options:NSKeyValueObservingOptionNew
-                    context:kTimeRangesKVO];
-        [player addObserver:self
-                 forKeyPath:@"currentItem.playbackBufferFull"
-                    options:NSKeyValueObservingOptionNew
-                    context:kBufferFullKVO];
-        [player addObserver:self
-                 forKeyPath:@"currentItem.playbackBufferEmpty"
-                    options:NSKeyValueObservingOptionNew
-                    context:kBufferEmptyKVO];
-        [player addObserver:self
-                 forKeyPath:@"currentItem.error"
-                    options:NSKeyValueObservingOptionNew
-                    context:kDidFailKVO];
-        
-        [MusicPlaybackController setRawAVPlayer:player];
-    }
+    [player addObserver:self
+             forKeyPath:@"rate"
+                options:NSKeyValueObservingOptionNew
+                context:kRateDidChangeKVO];
+    [player addObserver:self
+             forKeyPath:@"currentItem.status"
+                options:NSKeyValueObservingOptionNew
+                context:kStatusDidChangeKVO];
+    [player addObserver:self
+             forKeyPath:@"currentItem.duration"
+                options:NSKeyValueObservingOptionNew
+                context:kDurationDidChangeKVO];
+    [player addObserver:self
+             forKeyPath:@"currentItem.loadedTimeRanges"
+                options:NSKeyValueObservingOptionNew
+                context:kTimeRangesKVO];
+    [player addObserver:self
+             forKeyPath:@"currentItem.playbackBufferFull"
+                options:NSKeyValueObservingOptionNew
+                context:kBufferFullKVO];
+    [player addObserver:self
+             forKeyPath:@"currentItem.playbackBufferEmpty"
+                options:NSKeyValueObservingOptionNew
+                context:kBufferEmptyKVO];
+    [player addObserver:self
+             forKeyPath:@"currentItem.error"
+                options:NSKeyValueObservingOptionNew
+                context:kDidFailKVO];
+    
+
     playingBack = NO;
     [MusicPlaybackController resumePlayback];  //starts playback
     

@@ -8,6 +8,7 @@
 
 #import "MusicPlaybackController.h"
 static MyAVPlayer *player = nil;
+static PlayerView *playerView = nil;
 static PlaybackQueue *playbackQueue = nil;  //DO NOT access directly! getter below
 static BOOL explicitlyPausePlayback = NO;
 static BOOL initialized = NO;
@@ -29,7 +30,7 @@ static BOOL initialized = NO;
 {
     [player pause];
     
-    if(playbackQueue.listOfPlayedSongsNowPlayingExclusive.count > 0){  //more items to play
+    if([MusicPlaybackController playbackQueue].listOfPlayedSongsNowPlayingExclusive.count > 0){  //more items to play
         [self skipToNextTrack];
     } else{
         [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
@@ -84,9 +85,10 @@ static BOOL initialized = NO;
          skipCurrentSong:(BOOL)skipNow;
 {
     if(skipNow){
-        [playbackQueue clearQueue];
+        [[MusicPlaybackController playbackQueue] clearQueue];
     }
-    [playbackQueue insertSongsAfterNowPlaying:@[song]];
+    [[MusicPlaybackController playbackQueue] insertSongsAfterNowPlaying:@[song]];
+    
 #warning missing implementation
 }
 
@@ -147,6 +149,7 @@ static BOOL initialized = NO;
 {
     if(!initialized){
         playbackQueue = [[PlaybackQueue alloc] init];
+        initialized = YES;
     }
     return playbackQueue;
 }
@@ -158,6 +161,17 @@ static BOOL initialized = NO;
 + (AVPlayer *)obtainRawAVPlayer
 {
     return player;
+}
+
+#pragma mark - getters/setters for avplayer and the playerview
++ (void)setRawPlayerView:(PlayerView *)myPlayerView
+{
+    playerView = myPlayerView;
+}
+
++ (PlayerView *)obtainRawPlayerView
+{
+    return playerView;
 }
 
 @end

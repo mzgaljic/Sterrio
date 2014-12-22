@@ -64,15 +64,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="3.5" id="xEs-9p-3Fv" customClass="ASValueTrackingSlider">
-                                <rect key="frame" x="51" y="391" width="218" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <connections>
-                                    <action selector="playbackSliderEditingHasBegun:" destination="PBb-rQ-7sq" eventType="touchDown" id="rFZ-uP-63j"/>
-                                    <action selector="playbackSliderEditingHasEnded:" destination="PBb-rQ-7sq" eventType="touchUpInside" id="YXs-CY-bkw"/>
-                                    <action selector="playbackSliderValueHasChanged:" destination="PBb-rQ-7sq" eventType="valueChanged" id="NZz-2p-0Op"/>
-                                </connections>
-                            </slider>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="vwG-hB-hqU">
                                 <rect key="frame" x="7" y="395" width="43" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -86,10 +77,15 @@
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="Funny pic" id="03Q-h2-A3e">
-                                <rect key="frame" x="53" y="74" width="213" height="309"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                            </imageView>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="3.5" id="xEs-9p-3Fv" customClass="ASValueTrackingSlider">
+                                <rect key="frame" x="51" y="391" width="218" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="playbackSliderEditingHasBegun:" destination="PBb-rQ-7sq" eventType="touchDown" id="rFZ-uP-63j"/>
+                                    <action selector="playbackSliderEditingHasEnded:" destination="PBb-rQ-7sq" eventType="touchUpInside" id="YXs-CY-bkw"/>
+                                    <action selector="playbackSliderValueHasChanged:" destination="PBb-rQ-7sq" eventType="valueChanged" id="NZz-2p-0Op"/>
+                                </connections>
+                            </slider>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
@@ -163,10 +159,10 @@
             </objects>
             <point key="canvasLocation" x="1454" y="1289"/>
         </scene>
-        <!--My Tab Bar View Controller-->
+        <!--Tab Bar Controller-->
         <scene sceneID="Vex-rW-GRa">
             <objects>
-                <tabBarController id="8YX-ce-x5E" customClass="MyTabBarViewController" sceneMemberID="viewController">
+                <tabBarController id="8YX-ce-x5E" sceneMemberID="viewController">
                     <nil key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="JQR-rB-NYL">
                         <rect key="frame" x="0.0" y="431" width="320" height="49"/>
@@ -1195,7 +1191,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Funny pic" width="960" height="1280"/>
         <image name="albums" width="31" height="28"/>
         <image name="artists" width="39" height="32"/>
         <image name="genres" width="36" height="33"/>

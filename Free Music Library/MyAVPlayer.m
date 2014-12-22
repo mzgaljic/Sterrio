@@ -23,17 +23,16 @@
 @implementation MyAVPlayer
 
 
-- (id)initWithURL:(NSURL *)URL
+- (id)init
 {
-    if(self = [super initWithURL:URL]){
+    if(self = [super init]){
         NEW_SONG_IN_AVPLAYER = @"New song added to AVPlayer, lets hope the interface makes appropriate changes.";
         AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
         movingForward = YES;
-        currentItemLink = URL;
+        currentItemLink = nil;
         playerItem = self.currentItem;
         
         [self begingListeningForNotifications];
-        [self play];
     }
     return self;
 }
