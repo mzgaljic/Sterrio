@@ -117,6 +117,11 @@
     return [internalArray objectAtIndex:index];
 }
 
+- (NSUInteger)indexOfObject:(id)object
+{
+    return [internalArray indexOfObject:object];
+}
+
 - (NSArray *)insertItem:(id)anObject atIndex:(NSUInteger)index
 {
     [internalArray insertObject:anObject atIndex:index];

@@ -28,6 +28,7 @@
 
 //breaking deque rules
 - (id)objectAtIndex:(NSUInteger)index;
+- (NSUInteger)indexOfObject:(id)object;
 - (NSArray *)insertItem:(id)anObject atIndex:(NSUInteger)index;
 - (void)removeObjectFromQueue:(id)anObject;
 

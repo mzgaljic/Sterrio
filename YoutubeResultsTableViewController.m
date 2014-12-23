@@ -47,7 +47,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 #pragma mark - Miscellaneous
 - (void)dealloc
 {
-    [YouTubeVideoSearchService removeDelegate];
     _searchBar.delegate = nil;
     _searchBar = nil;
     _searchResults = nil;
@@ -112,7 +111,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    [YouTubeVideoSearchService removeDelegate];
     self.navigationController.navigationBar.translucent = NO;
     [[NSNotificationCenter defaultCenter]removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }

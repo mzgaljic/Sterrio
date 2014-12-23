@@ -45,6 +45,9 @@
 - (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)yes
 {
     movingForward = yes;
+    [MusicPlaybackController updateLockScreenInfoAndArtForSong:aSong];
+    //SongPlayerViewController will respond if it is on screen
+    [[NSNotificationCenter defaultCenter] postNotificationName:NEW_SONG_IN_AVPLAYER object:aSong];
     [self playSong:aSong];
 }
 
@@ -115,6 +118,7 @@
             else{
                 NSLog(@"Skipping song since it is > 10 min (on Cellular network)");
                 
+                [MusicPlaybackController skipToNextTrack];
                 //NSString *title = @"Long Video Without Wifi";
                 //NSString *msg = @"Sorry, playback of long videos (ie: more than 10 minutes) is restricted to Wifi.";
                 //[self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
@@ -123,6 +127,7 @@
         else
         {
             NSLog(@"Error has occured loading video. Skipping to next track instead.");
+            [MusicPlaybackController skipToNextTrack];
             // Handle error
             //NSString *title = @"Trouble Loading Video";
             //NSString *msg = @"Sorry, there was a problem. Please try again.";

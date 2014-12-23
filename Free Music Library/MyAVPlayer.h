@@ -17,7 +17,6 @@
 
 @interface MyAVPlayer : AVPlayer
 
-- (id)initWithURL:(NSURL *)URL;
 - (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)yes;
 
 @end

@@ -31,12 +31,24 @@
     [deque clear];
 }
 
+- (NSUInteger)numSongsInQueue
+{
+    return deque.count;
+}
+
 - (Song *)nowPlaying
 {
     if(deque.count > 0)
         return [deque objectAtIndex:nowPlayingIndex];
     else
         return nil;
+}
+- (void)setNowPlayingIndexWithSong:(Song *)song
+{
+    if(deque.count > 0){
+        NSUInteger index = [deque indexOfObject:song];
+        nowPlayingIndex = index;
+    }
 }
 - (Song *)peekAtNextSong
 {

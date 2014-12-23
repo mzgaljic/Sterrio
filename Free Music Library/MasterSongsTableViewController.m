@@ -389,15 +389,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     if([editButton.title isEqualToString:@"Edit"]){  //tapping song plays the song
-        [MusicPlaybackController pausePlayback];
         [MusicPlaybackController newQueueWithSong:selectedSong album:nil artist:nil playlist:nil genreCode:0 skipCurrentSong:YES];
 #warning not production ready code (line before this)
         
         [self setNowPlayingSong:selectedSong];
         [[CoreDataManager sharedInstance] saveContext];
-        
-        //EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:_songIAmEditing.songName
-        //                                                                              notificationNameToPost:@"DoneEditingSongField"];
         [self performSegueWithIdentifier:@"songItemSegue" sender:nil];
         
     } else if([editButton.title isEqualToString:@"Done"]){  //tapping song triggers edit segue

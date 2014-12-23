@@ -8,9 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-NSString * const NEW_SONG_IN_AVPLAYER = @"New song added to AVPlayer, lets hope the interface makes appropriate changes.";
-NSString * const AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
-
 @interface SongPlayerViewDisplayHelper : NSObject
 
 ///tiny helper function for the setupVideoPlayerViewDimensionsAndShowLoading method

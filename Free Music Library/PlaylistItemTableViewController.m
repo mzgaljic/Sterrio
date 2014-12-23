@@ -186,7 +186,8 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    
+    Song *selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    [MusicPlaybackController newQueueWithSong:selectedSong album:nil artist:nil playlist:_playlist genreCode:0 skipCurrentSong:YES];
     [self performSegueWithIdentifier:@"playlistSongItemPlayingSegue" sender:[NSNumber numberWithInt:(int)indexPath.row]];
 }
 

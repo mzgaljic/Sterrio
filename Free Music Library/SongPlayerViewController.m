@@ -10,45 +10,40 @@
 
 @interface SongPlayerViewController ()
 {
-    BOOL playingBack;
-    
-    //for key value observing
-    id timeObserver;
-    int totalVideoDuration;
-    int mostRecentLoadedDuration;
-    
     NSArray *musicButtons;
     UIButton *playButton;
     UIButton *forwardButton;
     UIButton *backwardButton;
     NSString *songLabel;
     NSString *artistAlbumLabel;
-    NSTimer *sliderTimer;
 }
 @end
 
 @implementation SongPlayerViewController
-@synthesize navBar, playbackTimeSlider = _playbackTimeSlider, currentTimeLabel = _currentTimeLabel, totalDurationLabel = _totalDurationLabel;
+@synthesize navBar, playbackTimeSlider = _playbackTimeSlider, currentTimeLabel = _currentTimeLabel,
+            totalDurationLabel = _totalDurationLabel;
 static UIInterfaceOrientation toOrienation;  //used by "prefersStatusBarHidden" and other rotation code
 static BOOL playAfterMovingSlider = YES;
 static BOOL sliderIsBeingTouched = NO;
+NSString * const NEW_SONG_IN_AVPLAYER = @"New song added to AVPlayer, lets hope the interface makes appropriate changes.";
+NSString * const AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
 
 #pragma mark - VC Life Cycle
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    //these two observers help us know when this VC must update its GUI due to a new song playing, etc.
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(newSongIsAboutToStartPlaying:)
+                                             selector:@selector(updateScreenWithInfoForNewSong:)
                                                  name:NEW_SONG_IN_AVPLAYER
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(lastSongHasFinishedPlayback:)
                                                  name:AVPLAYER_DONE_PLAYING
                                                object:nil];
-    mostRecentLoadedDuration = 0;
     _playbackTimeSlider.enabled = NO;
     _playbackTimeSlider.dataSource = self;
-    sliderTimer = nil;
+    [[SongPlayerCoordinator sharedInstance] setDelegate:self];
     
     _currentTimeLabel.text = @"--:--";
     _totalDurationLabel.text = @"--:--";
@@ -64,34 +59,28 @@ static int numTimesVCLoaded = 0;
 {
     [super viewWillAppear:animated];
     
-    if(numTimesVCLoaded == 0)
+    Song *nowPlaying = [MusicPlaybackController nowPlayingSong];
+    if(numTimesVCLoaded == 0){
         [self setUpFloatingImageViewAndPlayer];  //sets up the video GUI
+        
+        
+        MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+        [player startPlaybackOfSong:nowPlaying goingForward:YES];
+        //avplayer will control itself for the most part now...
+    }
     numTimesVCLoaded++;
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                                                                                            target:self
                                                                                            action:@selector(shareButtonTapped)];
     [self checkDeviceOrientation];
-    
-    Song *nowPlaying = [MusicPlaybackController nowPlayingSong];
-    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-    [player startPlaybackOfSong:nowPlaying goingForward:YES];
-    //avplayer will control itself for the most part now...
-    
-    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self setUpLockScreenInfoAndArt];
-    });
-    
-    [self updateScreenWithInfoForNewSong: nowPlaying];
+    [self initAndRegisterAllButtons];
 }
 
 - (void)dealloc
 {
-    [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:timeObserver];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-
-#pragma mark - Obtaining a link for a given 
 
 #pragma mark - Setup Floating ImgView
 - (void)setUpFloatingImageViewAndPlayer
@@ -152,18 +141,41 @@ static int numTimesVCLoaded = 0;
     [appWindow addSubview:playerView];
 }
 
-#pragma mark - Check and update GUI based on device orientation (and respond to events)
-//new song played from queue
-- (void)newSongIsAboutToStartPlaying:(NSNotification *)object
-{
-    //Song *songAboutToPlay = (Song *)object;
-    
-    #warning need to update GUI text and info displayed to user
-}
-
+#pragma mark - Check and update GUI based on device orientation (or responding to events)
 - (void)lastSongHasFinishedPlayback:(NSNotification *)object
 {
 #warning desired for behavior after queue finishes playing goes here
+}
+
+- (void)updateScreenWithInfoForNewSong:(NSNotification *)object
+{
+    /*
+    Song *newSong = (Song *)object;
+     _songLabel = nowPlayingSong.songName;
+     self.scrollingSongView.text = _songLabel;
+     self.scrollingSongView.textColor = [UIColor blackColor];
+     self.scrollingSongView.font = [UIFont fontWithName:@"HelveticaNeue" size:40.0f];
+     
+     NSMutableString *artistAlbumLabel = [NSMutableString string];
+     if(nowPlayingSong.artist != nil)
+     [artistAlbumLabel appendString:nowPlayingSong.artist.artistName];
+     if(nowPlayingSong.album != nil)
+     {
+     if(nowPlayingSong.artist != nil)
+     [artistAlbumLabel appendString:@" ・ "];
+     [artistAlbumLabel appendString:nowPlayingSong.album.albumName];
+     }
+     _artistAlbumLabel = artistAlbumLabel;
+     self.scrollingArtistAlbumView.text = _artistAlbumLabel;
+     self.scrollingArtistAlbumView.textColor = [UIColor blackColor];
+     self.scrollingArtistAlbumView.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:self.scrollingSongView.font.pointSize];
+     self.scrollingArtistAlbumView.scrollSpeed = 20.0;
+     
+     NSString *navBarTitle = [NSString stringWithFormat:@"%i of %i",
+     [[self printFriendlySongIndex] intValue],
+     [self numberOfSongsInCoreDataModel]];
+     self.navBar.title = navBarTitle;
+     */
 }
 
 - (void)checkDeviceOrientation
@@ -226,117 +238,7 @@ static int numTimesVCLoaded = 0;
     }
 }
 
-#pragma mark - Initiating Playback
-- (void)setupKeyValueObservers
-{
-    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-    
-    [player addObserver:self
-             forKeyPath:@"rate"
-                options:NSKeyValueObservingOptionNew
-                context:kRateDidChangeKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.status"
-                options:NSKeyValueObservingOptionNew
-                context:kStatusDidChangeKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.duration"
-                options:NSKeyValueObservingOptionNew
-                context:kDurationDidChangeKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.loadedTimeRanges"
-                options:NSKeyValueObservingOptionNew
-                context:kTimeRangesKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.playbackBufferFull"
-                options:NSKeyValueObservingOptionNew
-                context:kBufferFullKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.playbackBufferEmpty"
-                options:NSKeyValueObservingOptionNew
-                context:kBufferEmptyKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.error"
-                options:NSKeyValueObservingOptionNew
-                context:kDidFailKVO];
-    
-
-    playingBack = NO;
-    [MusicPlaybackController resumePlayback];  //starts playback
-    
-    timeObserver = [player addPeriodicTimeObserverForInterval:CMTimeMakeWithSeconds(0.1, 100) queue:nil usingBlock:^(CMTime time) {
-        //code will be called each 1/10th second....  NSLog(@"Playback time %.5f", CMTimeGetSeconds(time));
-        [self updatePlaybackTimeSlider];
-    }];
-}
-
 #pragma mark - Responding to Player Playback Events (rate, internet connection, etc.)
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context
-{
-    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-    if (kRateDidChangeKVO == context) {
-        float rate = player.rate;
-        BOOL internetConnectionPresent;
-        BOOL videoCompletelyBuffered = (mostRecentLoadedDuration == totalVideoDuration);
-        
-        Reachability *networkReachability = [Reachability reachabilityForInternetConnection];
-        if ([networkReachability currentReachabilityStatus] == NotReachable)
-            internetConnectionPresent = NO;
-        else
-            internetConnectionPresent = YES;
-        
-        if(rate != 0 && mostRecentLoadedDuration != 0 &&internetConnectionPresent){  //playing
-            playingBack = YES;
-            NSLog(@"Playing");
-            
-        } else if(rate == 0 && !videoCompletelyBuffered &&!internetConnectionPresent){  //stopped
-            //Playback has stopped due to an internet connection issue.
-            
-            playingBack = NO;
-            NSLog(@"Video stopped, no connection.");
-            
-        }else{  //paused
-            playingBack = NO;
-            NSLog(@"Paused");
-        }
-        
-    } else if (kStatusDidChangeKVO == context) {
-        //player "status" has changed. Not particulary useful information.
-        if (player.status == AVPlayerStatusReadyToPlay) {
-            NSArray * timeRanges = player.currentItem.loadedTimeRanges;
-            if (timeRanges && [timeRanges count]){
-                CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
-                int secondsBuffed = (int)CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration));
-                if(secondsBuffed > 0){
-                    NSLog(@"Min buffer reached, ready to continue playing.");
-                }
-            }
-        }
-        
-    } else if (kTimeRangesKVO == context) {
-        NSArray *timeRanges = (NSArray *)[change objectForKey:NSKeyValueChangeNewKey];
-        if (timeRanges && [timeRanges count]) {
-            CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
-            
-            int secondsLoaded = (int)CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration));
-            if(secondsLoaded == mostRecentLoadedDuration)
-                return;
-            else
-                mostRecentLoadedDuration = secondsLoaded;
-            
-            //NSLog(@"New loaded range: %i -> %i", (int)CMTimeGetSeconds(timerange.start), secondsLoaded);
-            
-            //if paused, check if user wanted it paused. if not, resume playback since buffer is back
-            if(!playingBack && ![MusicPlaybackController playbackExplicitlyPaused]){
-                [MusicPlaybackController resumePlayback];
-            }
-        }
-    }
-}
-
 - (IBAction)playbackSliderEditingHasBegun:(id)sender
 {
     // Add code here to do background processing
@@ -455,6 +357,7 @@ static int numTimesVCLoaded = 0;
 - (void)backwardsButtonTappedOnce
 {
     //code to rewind to previous song
+    [MusicPlaybackController returnToPreviousTrack];
     
     [self backwardsButtonLetGo];
 }
@@ -468,7 +371,7 @@ static int numTimesVCLoaded = 0;
 {
     UIColor *color = [UIColor blackColor];
     UIImage *tempImage;
-    if(playingBack)
+    if([MusicPlaybackController obtainRawAVPlayer].rate == 1)  //playing back
     {
         tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
         UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:color :tempImage];
@@ -498,6 +401,7 @@ static int numTimesVCLoaded = 0;
 - (void)forwardsButtonTappedOnce
 {
     //code to fast forward
+    [MusicPlaybackController skipToNextTrack];
     
     [self forwardsButtonLetGo];
 }
@@ -525,64 +429,8 @@ static int numTimesVCLoaded = 0;
 
 - (IBAction)minimizePlayerButtonTapped:(id)sender
 {
-#warning complex code to minimize the VC but keep it visible on screen will go here probably.
+    [[SongPlayerCoordinator sharedInstance] beginShrinkingVideoPlayer];
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark - Presenting Song Information On Screen
-- (void)updateScreenWithInfoForNewSong:(Song *)mySong
-{
-    /*
-    _songLabel = nowPlayingSong.songName;
-    self.scrollingSongView.text = _songLabel;
-    self.scrollingSongView.textColor = [UIColor blackColor];
-    self.scrollingSongView.font = [UIFont fontWithName:@"HelveticaNeue" size:40.0f];
-    
-    NSMutableString *artistAlbumLabel = [NSMutableString string];
-    if(nowPlayingSong.artist != nil)
-        [artistAlbumLabel appendString:nowPlayingSong.artist.artistName];
-    if(nowPlayingSong.album != nil)
-    {
-        if(nowPlayingSong.artist != nil)
-            [artistAlbumLabel appendString:@" ・ "];
-        [artistAlbumLabel appendString:nowPlayingSong.album.albumName];
-    }
-    _artistAlbumLabel = artistAlbumLabel;
-    self.scrollingArtistAlbumView.text = _artistAlbumLabel;
-    self.scrollingArtistAlbumView.textColor = [UIColor blackColor];
-    self.scrollingArtistAlbumView.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:self.scrollingSongView.font.pointSize];
-    self.scrollingArtistAlbumView.scrollSpeed = 20.0;
-     
-     NSString *navBarTitle = [NSString stringWithFormat:@"%i of %i",
-     [[self printFriendlySongIndex] intValue],
-     [self numberOfSongsInCoreDataModel]];
-     self.navBar.title = navBarTitle;
-     */
-}
-
-#pragma mark - Lock Screen Song Info & Art
-- (void)setUpLockScreenInfoAndArt
-{
-    Song *nowPlayingSong = [MusicPlaybackController nowPlayingSong];
-    NSURL *url = [AlbumArtUtilities albumArtFileNameToNSURL:nowPlayingSong.albumArtFileName];
-    
-    // do something with image
-    Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
-    if (playingInfoCenter) {
-        NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
-        
-        UIImage *albumArtImage = [UIImage imageWithData:[NSData dataWithContentsOfURL:url]];
-        if(albumArtImage != nil){
-            MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage: albumArtImage];
-            [songInfo setObject:nowPlayingSong.songName forKey:MPMediaItemPropertyTitle];
-            if(nowPlayingSong.artist.artistName != nil)
-                [songInfo setObject:nowPlayingSong.artist.artistName forKey:MPMediaItemPropertyArtist];
-            if(nowPlayingSong.album.albumName != nil)
-                [songInfo setObject:nowPlayingSong.album.albumName forKey:MPMediaItemPropertyAlbumTitle];
-            [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
-            [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
-        }
-    }
 }
 
 #pragma mark - Share Button Tapped

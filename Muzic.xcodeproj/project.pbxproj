@@ -160,6 +160,7 @@
 		87270040199F0F5600D71204 /* Model.xcdatamodel */ = {isa = PBXFileReference; explicitFileType = wrapper.xcdatamodeld; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		872F78751A47B17900288FDD /* SongPlayerCoordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SongPlayerCoordinator.h; sourceTree = "<group>"; };
 		872F78761A47B17900288FDD /* SongPlayerCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SongPlayerCoordinator.m; sourceTree = "<group>"; };
+		872F78781A47B91500288FDD /* VideoPlayerControlInterfaceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoPlayerControlInterfaceDelegate.h; sourceTree = "<group>"; };
 		8732FB111999D7E300FE6693 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		87334405198D8321002B9E18 /* NSString+HTTP_Char_Escape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+HTTP_Char_Escape.h"; sourceTree = "<group>"; };
 		87334406198D8321002B9E18 /* NSString+HTTP_Char_Escape.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+HTTP_Char_Escape.m"; sourceTree = "<group>"; };
@@ -766,6 +767,7 @@
 				87A41FE919F0D9C800C037D9 /* MyAVPlayer.h */,
 				87A41FEA19F0D9C800C037D9 /* MyAVPlayer.m */,
 				87A928441A4227F000707931 /* SongPlayerViewDisplayHelper.h */,
+				872F78781A47B91500288FDD /* VideoPlayerControlInterfaceDelegate.h */,
 				872F78751A47B17900288FDD /* SongPlayerCoordinator.h */,
 				872F78761A47B17900288FDD /* SongPlayerCoordinator.m */,
 			);
@@ -967,9 +969,9 @@
 		87FE09F21933ED9B001A5FB7 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				87A9AF50199D8CCE005B9A5B /* GenreSearchDelegate.h */,
 				87270033199E820700D71204 /* LevenshteinDistanceItem.h */,
 				87270034199E820700D71204 /* LevenshteinDistanceItem.m */,
+				87A9AF50199D8CCE005B9A5B /* GenreSearchDelegate.h */,
 				87A9AF51199DA36F005B9A5B /* GenreSearchService.h */,
 				87A9AF52199DA36F005B9A5B /* GenreSearchService.m */,
 				87AF35CE1989679C005882B6 /* YouTubeVideoSearchDelegate.h */,

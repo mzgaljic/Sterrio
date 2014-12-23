@@ -13,8 +13,10 @@
 @interface PlaybackQueue : NSObject
 
 - (void)clearQueue;
+- (NSUInteger)numSongsInQueue;
 
 - (Song *)nowPlaying;
+- (void)setNowPlayingIndexWithSong:(Song *)song;
 - (Song *)peekAtNextSong;
 - (Song *)peekAtPreviousSong;
 

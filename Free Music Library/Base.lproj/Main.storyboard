@@ -403,7 +403,7 @@
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <connections>
-                                    <segue destination="mqG-UD-sBX" kind="push" identifier="playlistSongItemPlayingSegue" trigger="accessoryAction" id="cob-ad-5Vf"/>
+                                    <segue destination="mqG-UD-sBX" kind="modal" identifier="playlistSongItemPlayingSegue" trigger="accessoryAction" id="cob-ad-5Vf"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -1203,9 +1203,9 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="Mvp-5d-lNL"/>
-        <segue reference="aQU-5c-2vO"/>
         <segue reference="7Sy-qq-35y"/>
         <segue reference="pPM-be-vV0"/>
+        <segue reference="Mvp-5d-lNL"/>
+        <segue reference="cob-ad-5Vf"/>
     </inferredMetricsTieBreakers>
 </document>

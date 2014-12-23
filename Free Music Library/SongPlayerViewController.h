@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>  //needed for avplayer
-#import <MediaPlayer/MediaPlayer.h>  //needed for placing info/media on lock screen
 #import "Artist.h"
 #import "Album.h"
 #import "PlayerView.h"  //custom avplayer view
@@ -25,6 +24,7 @@
 #import "UIColor+SystemTintColor.h"
 #import "AlbumArtUtilities.h"  //interface for accessing album art on disk
 #import "SongPlayerViewDisplayHelper.h"  //gui code helpers (determining aspect ration player size, etc)
+#import "SongPlayerCoordinator.h"  //controls the video player frame and responds to player events via delegates
 
 @class MusicPlaybackController;
 
@@ -37,19 +37,11 @@ NSString * const FORWARD_IMAGE_UNFILLED = @"Seek-Line";
 NSString * const BACKWARD_IMAGE_FILLED = @"Backward-Filled";
 NSString * const BACKWARD_IMAGE_UNFILLED = @"Backward-Line";
 
-void *kCurrentItemDidChangeKVO  = &kCurrentItemDidChangeKVO;
-void *kRateDidChangeKVO         = &kRateDidChangeKVO;
-void *kStatusDidChangeKVO       = &kStatusDidChangeKVO;
-void *kDurationDidChangeKVO     = &kDurationDidChangeKVO;
-void *kTimeRangesKVO            = &kTimeRangesKVO;
-void *kBufferFullKVO            = &kBufferFullKVO;
-void *kBufferEmptyKVO           = &kBufferEmptyKVO;
-void *kDidFailKVO               = &kDidFailKVO;
-
 
 @interface SongPlayerViewController : UIViewController <AVAudioSessionDelegate,
                                                         AVAudioPlayerDelegate,
-                                                        ASValueTrackingSliderDataSource>
+                                                        ASValueTrackingSliderDataSource,
+                                                        VideoPlayerControlInterfaceDelegate>
 
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;  //really the navBar title item
 @property (weak, nonatomic) IBOutlet ASValueTrackingSlider *playbackTimeSlider;

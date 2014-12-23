@@ -8,10 +8,14 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
+#import <MediaPlayer/MediaPlayer.h>  //needed for placing info/media on lock screen
 #import "Song.h"
+#import "Playlist.h"
 #import "PlaybackQueue.h"
 #import "MyAVPlayer.h"  //custom AVPlayer class
 #import "PlayerView.h"
+#import "GenreConstants.h"
+
 
 @interface MusicPlaybackController : NSObject
 
@@ -44,6 +48,7 @@
 
 #pragma mark + Gathering playback info
 + (NSArray *)listOfUpcomingSongsInQueue;
++ (NSUInteger)numSongsInQueue;
 
 #pragma mark + Changing the Queue
 + (void)newQueueWithSong:(Song *)song
@@ -63,5 +68,8 @@
 
 + (void)setRawPlayerView:(PlayerView *)myPlayerView;
 + (PlayerView *)obtainRawPlayerView;
+
+#pragma mark - Lock Screen Song Info & Art
++ (void)updateLockScreenInfoAndArtForSong:(Song *)song;
 
 @end

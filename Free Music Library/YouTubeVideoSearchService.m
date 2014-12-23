@@ -11,9 +11,11 @@
 @interface YouTubeVideoSearchService ()
 @property (nonatomic, strong) NSString *nextPageToken; //set and reset when appropriate
 @property (nonatomic, strong) NSString *originalQueryUrl;
+@property (nonatomic, weak) id<YouTubeVideoSearchDelegate> delegate;
 @end
 
 @implementation YouTubeVideoSearchService
+@synthesize delegate = _delegate;
 #pragma mark- Constants
 static NSString *baseUrlA = @"https://www.googleapis.com/youtube/v3/search?type=video&part=snippet&maxResults=15&key=AIzaSyBAFK0pOUf4IWdfS94dYk_42dO46ssTUH8&q=";
 static NSString *baseUrlB = @"http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q=";
@@ -41,9 +43,9 @@ static NSString *nextPageString = @"&pageToken=";
                 //data is nil if a connection could not be created or if the download failed.
                 if (data == nil){
                     //do not need to check error type, the user doesn't care. Just notify delegate.
-                    [delegate networkErrorHasOccuredSearchingYoutube];
+                    [self.delegate networkErrorHasOccuredSearchingYoutube];
                 } else{ //data received...continue processing
-                    [delegate ytVideoSearchDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
+                    [self.delegate ytVideoSearchDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
                 }
                 
             }); //end of async dispatch
@@ -56,7 +58,7 @@ static NSString *nextPageString = @"&pageToken=";
 - (void)fetchNextYouTubePageUsingLastQueryString
 {
     if(_nextPageToken == nil){ //user has gone through all available 'pages' in the result
-        [delegate ytvideoResultsNoMorePagesToView];
+        [self.delegate ytvideoResultsNoMorePagesToView];
         return;
     }
     if(_originalQueryUrl){
@@ -75,9 +77,9 @@ static NSString *nextPageString = @"&pageToken=";
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 if (data == nil){
-                    [delegate networkErrorHasOccuredFetchingMorePages];
+                    [self.delegate networkErrorHasOccuredFetchingMorePages];
                 } else{  // Data received...continue processing
-                    [delegate ytVideoNextPageResultsDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
+                    [self.delegate ytVideoNextPageResultsDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
                 }
             });  //end of async dispatch
         });
@@ -104,7 +106,7 @@ static NSString *nextPageString = @"&pageToken=";
 
                 else{
                     // Data received...continue processing
-                    [delegate ytVideoAutoCompleteResultsDidDownload:[self parseYouTubeVideoAutoSuggestResponse:data]];
+                    [self.delegate ytVideoAutoCompleteResultsDidDownload:[self parseYouTubeVideoAutoSuggestResponse:data]];
                 }
             });  //end of async dispatch
         });
@@ -112,15 +114,9 @@ static NSString *nextPageString = @"&pageToken=";
         return;
 }
 
-static id<YouTubeVideoSearchDelegate> delegate;
 -(void)setDelegate:(id<YouTubeVideoSearchDelegate>)myDelegate
 {
-    delegate = myDelegate;
-}
-
-+ (void)removeDelegate
-{
-    delegate = nil;
+    _delegate = myDelegate;
 }
 
 
