@@ -89,13 +89,7 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
-                    <navigationItem key="navigationItem" title="1/203" id="B6K-mw-sf0">
-                        <barButtonItem key="leftBarButtonItem" style="done" systemItem="stop" id="cx4-w4-ge2">
-                            <connections>
-                                <action selector="minimizePlayerButtonTapped:" destination="PBb-rQ-7sq" id="wXC-y9-p1L"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="1/203" id="B6K-mw-sf0"/>
                     <connections>
                         <outlet property="currentTimeLabel" destination="vwG-hB-hqU" id="JIl-WH-4Db"/>
                         <outlet property="navBar" destination="B6K-mw-sf0" id="xnq-2a-haq"/>
@@ -1170,10 +1164,10 @@
             </objects>
             <point key="canvasLocation" x="1912" y="2843"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Song Player Nav Controller-->
         <scene sceneID="Vpx-dD-L2m">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="mqG-UD-sBX" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="mqG-UD-sBX" customClass="SongPlayerNavController" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="G43-z9-ciZ"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="kBF-KI-x6E">

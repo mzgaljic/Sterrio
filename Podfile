@@ -18,3 +18,7 @@ pod 'ASValueTrackingSlider'
 
 #TransitionKit -state machine library
 pod 'TransitionKit', '~> 2.0.0'
+
+#AFBlurSegue ~ custom modal segue that blurs the
+#source navigation controller
+pod 'AFBlurSegue', '~> 1.2'

@@ -9,18 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "AppEnvironmentConstants.h"
 #import "YouTubeVideoSearchDelegate.h"
-#import "YouTubeVideoSearchService.h"
-#import "UIImage+colorImages.h"
 #import "UIImageView+WebCache.h"
-#import "UIColor+LighterAndDarker.h"
-#import "UIColor+SystemTintColor.h"
-#import "MRProgress.h"
-#import "AlbumArtUtilities.h"
-#import "SDCAlertView.h"
-#import "PreferredFontSizeUtility.h"
-#import "YouTubeVideoPlaybackTableViewController.h"
-
-#import "CustomYoutubeTableViewCell.h"
 
 @interface YoutubeResultsTableViewController : UITableViewController <UISearchBarDelegate, YouTubeVideoSearchDelegate, SDWebImageManagerDelegate>
 @end

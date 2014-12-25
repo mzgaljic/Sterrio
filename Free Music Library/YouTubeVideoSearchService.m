@@ -7,27 +7,40 @@
 //
 
 #import "YouTubeVideoSearchService.h"
+#import "YouTubeVideo.h"
 
 @interface YouTubeVideoSearchService ()
-@property (nonatomic, strong) NSString *nextPageToken; //set and reset when appropriate
-@property (nonatomic, strong) NSString *originalQueryUrl;
-@property (nonatomic, weak) id<YouTubeVideoSearchDelegate> delegate;
+{
+    NSString *nextPageToken; //set and reset when appropriate
+    NSString *originalQueryUrl;
+    id<YouTubeVideoSearchDelegate> delegate;
+    
+    //constants
+    NSString *BASE_URL_A;
+    NSString *BASE_URL_B;
+    NSString *NEXT_PAGE_STRING;
+}
 @end
 
 @implementation YouTubeVideoSearchService
-@synthesize delegate = _delegate;
-#pragma mark- Constants
-static NSString *baseUrlA = @"https://www.googleapis.com/youtube/v3/search?type=video&part=snippet&maxResults=15&key=AIzaSyBAFK0pOUf4IWdfS94dYk_42dO46ssTUH8&q=";
-static NSString *baseUrlB = @"http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q=";
-static NSString *nextPageString = @"&pageToken=";
+
+- (id)init
+{
+    if([super init]){
+        BASE_URL_A = @"https://www.googleapis.com/youtube/v3/search?type=video&part=snippet&maxResults=15&key=AIzaSyBAFK0pOUf4IWdfS94dYk_42dO46ssTUH8&q=";
+        BASE_URL_B = @"http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q=";
+        NEXT_PAGE_STRING = @"&pageToken=";
+    }
+    return self;
+}
 
 #pragma mark - Searching Youtube
 - (void)searchYouTubeForVideosUsingString:(NSString *)searchString
 {
     if(searchString){
-        NSMutableString *queryUrl = [NSMutableString stringWithString: baseUrlA];
+        NSMutableString *queryUrl = [NSMutableString stringWithString: BASE_URL_A];
         [queryUrl appendString:[searchString stringForHTTPRequest]];
-        _originalQueryUrl = queryUrl;
+        originalQueryUrl = queryUrl;
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
@@ -43,9 +56,9 @@ static NSString *nextPageString = @"&pageToken=";
                 //data is nil if a connection could not be created or if the download failed.
                 if (data == nil){
                     //do not need to check error type, the user doesn't care. Just notify delegate.
-                    [self.delegate networkErrorHasOccuredSearchingYoutube];
+                    [delegate networkErrorHasOccuredSearchingYoutube];
                 } else{ //data received...continue processing
-                    [self.delegate ytVideoSearchDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
+                    [delegate ytVideoSearchDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
                 }
                 
             }); //end of async dispatch
@@ -57,14 +70,14 @@ static NSString *nextPageString = @"&pageToken=";
 
 - (void)fetchNextYouTubePageUsingLastQueryString
 {
-    if(_nextPageToken == nil){ //user has gone through all available 'pages' in the result
-        [self.delegate ytvideoResultsNoMorePagesToView];
+    if(nextPageToken == nil){ //user has gone through all available 'pages' in the result
+        [delegate ytvideoResultsNoMorePagesToView];
         return;
     }
-    if(_originalQueryUrl){
-        NSMutableString *queryUrl = [NSMutableString stringWithString: _originalQueryUrl];
-        [queryUrl appendString:nextPageString];
-        [queryUrl appendString:_nextPageToken];
+    if(originalQueryUrl){
+        NSMutableString *queryUrl = [NSMutableString stringWithString: originalQueryUrl];
+        [queryUrl appendString:NEXT_PAGE_STRING];
+        [queryUrl appendString:nextPageToken];
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
@@ -77,9 +90,9 @@ static NSString *nextPageString = @"&pageToken=";
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 if (data == nil){
-                    [self.delegate networkErrorHasOccuredFetchingMorePages];
+                    [delegate networkErrorHasOccuredFetchingMorePages];
                 } else{  // Data received...continue processing
-                    [self.delegate ytVideoNextPageResultsDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
+                    [delegate ytVideoNextPageResultsDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
                 }
             });  //end of async dispatch
         });
@@ -89,7 +102,7 @@ static NSString *nextPageString = @"&pageToken=";
 - (void)fetchYouTubeAutoCompleteResultsForString:(NSString *)currentString
 {
     if(currentString){
-        NSMutableString *fullUrl = [NSMutableString stringWithString: baseUrlB];
+        NSMutableString *fullUrl = [NSMutableString stringWithString: BASE_URL_B];
         [fullUrl appendString:[currentString stringForHTTPRequest]];
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -106,7 +119,7 @@ static NSString *nextPageString = @"&pageToken=";
 
                 else{
                     // Data received...continue processing
-                    [self.delegate ytVideoAutoCompleteResultsDidDownload:[self parseYouTubeVideoAutoSuggestResponse:data]];
+                    [delegate ytVideoAutoCompleteResultsDidDownload:[self parseYouTubeVideoAutoSuggestResponse:data]];
                 }
             });  //end of async dispatch
         });
@@ -116,7 +129,7 @@ static NSString *nextPageString = @"&pageToken=";
 
 -(void)setDelegate:(id<YouTubeVideoSearchDelegate>)myDelegate
 {
-    _delegate = myDelegate;
+    delegate = myDelegate;
 }
 
 
@@ -126,7 +139,7 @@ static NSString *nextPageString = @"&pageToken=";
     //root dictionary
     NSDictionary *allDataDict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:nil];
     //update nextPageToken
-    _nextPageToken = [allDataDict objectForKey:@"nextPageToken"];
+    nextPageToken = [allDataDict objectForKey:@"nextPageToken"];
     
     //dictionary we will iterate through (contains video results)
     NSArray *itemsArray = [allDataDict objectForKey:@"items"];

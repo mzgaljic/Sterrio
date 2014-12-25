@@ -21,7 +21,7 @@
 {
     [super awakeFromNib];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(orientationHasChanged)
+                                             selector:@selector(orientationNeedsToChanged)
                                                  name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
@@ -36,7 +36,7 @@
     [self adjustViewsForOrientation];
 }
 
-- (void)orientationHasChanged
+- (void)orientationNeedsToChanged
 {
     [self adjustViewsForOrientation];
 }

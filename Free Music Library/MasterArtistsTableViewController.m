@@ -275,7 +275,7 @@ static BOOL lastSortOrder;
         
         for(Song *aSong in artist.standAloneSongs)
         {
-            if([aSong.nowPlaying boolValue] == YES)
+            if([[MusicPlaybackController nowPlayingSong] isEqual:aSong])
                 [MusicPlaybackController songAboutToBeDeleted];
             [aSong removeAlbumArt];
         }
@@ -283,7 +283,7 @@ static BOOL lastSortOrder;
         {
             for(Song *aSong in anAlbum.albumSongs)
             {
-                if([aSong.nowPlaying boolValue] == YES)
+                if([[MusicPlaybackController nowPlayingSong] isEqual:aSong])
                     [MusicPlaybackController songAboutToBeDeleted];
             }
             [anAlbum removeAlbumArt];

@@ -6,6 +6,12 @@
 // project.
 
 
+// AFBlurSegue
+#define COCOAPODS_POD_AVAILABLE_AFBlurSegue
+#define COCOAPODS_VERSION_MAJOR_AFBlurSegue 1
+#define COCOAPODS_VERSION_MINOR_AFBlurSegue 2
+#define COCOAPODS_VERSION_PATCH_AFBlurSegue 0
+
 // AFNetworking
 #define COCOAPODS_POD_AVAILABLE_AFNetworking
 #define COCOAPODS_VERSION_MAJOR_AFNetworking 2

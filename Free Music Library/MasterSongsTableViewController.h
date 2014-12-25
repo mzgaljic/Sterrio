@@ -23,7 +23,6 @@
 #import "UIColor+SystemTintColor.h"
 #import "UIColor+ColorComparison.h"
 #import "MusicPlaybackController.h"
-#import "UIViewController+ZoomTransition.h"  //for maximizing and minimizing the video
 
 @class StackController;
 @interface MasterSongsTableViewController : CoreDataTableViewController <UISearchBarDelegate>

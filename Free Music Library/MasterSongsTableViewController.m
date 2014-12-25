@@ -298,7 +298,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    if([song.nowPlaying boolValue] == YES)
+    if([[MusicPlaybackController nowPlayingSong] isEqual:song])
         cell.textLabel.textColor = [UIColor defaultSystemTintColor];
     else
         cell.textLabel.textColor = [UIColor blackColor];
@@ -352,7 +352,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         //obtain object for the deleted song
         Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
-        if([song.nowPlaying boolValue] == YES){
+        if([[MusicPlaybackController nowPlayingSong] isEqual:song]){
             [MusicPlaybackController songAboutToBeDeleted];
         }
         [song removeAlbumArt];
@@ -389,12 +389,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     if([editButton.title isEqualToString:@"Edit"]){  //tapping song plays the song
-        [MusicPlaybackController newQueueWithSong:selectedSong album:nil artist:nil playlist:nil genreCode:0 skipCurrentSong:YES];
-#warning not production ready code (line before this)
-        
-        [self setNowPlayingSong:selectedSong];
-        [[CoreDataManager sharedInstance] saveContext];
-        [self performSegueWithIdentifier:@"songItemSegue" sender:nil];
+        short code = [GenreConstants noGenreSelectedGenreCode];
+        [MusicPlaybackController newQueueWithSong:selectedSong album:nil artist:nil playlist:nil genreCode:code skipCurrentSong:YES];
+        [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:self];
         
     } else if([editButton.title isEqualToString:@"Done"]){  //tapping song triggers edit segue
         
@@ -531,30 +528,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         count = (int)tempCount;
     }
     return count;
-}
-
-#pragma mark - setting now playing song
-- (void)setNowPlayingSong:(Song *)myNowPlayingSong
-{
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"nowPlaying = %@", [NSNumber numberWithBool:YES]];
-    NSError *error;
-    NSArray *matches = [[CoreDataManager context] executeFetchRequest:request error:&error];
-    if(matches)
-    {
-        if(matches.count == 1)
-            ((Song*)matches[0]).nowPlaying = [NSNumber numberWithBool:NO];
-        else if([matches count] > 1)
-        {
-            //set any of the false positives back to NO.
-            for(Song *aSong in matches)
-                aSong.nowPlaying = [NSNumber numberWithBool:NO];
-        }
-        
-        //now set the song we want
-        myNowPlayingSong.nowPlaying = [NSNumber numberWithBool:YES];
-        [[CoreDataManager sharedInstance] saveContext];
-    }
 }
 
 #pragma mark - fetching and sorting

@@ -16,7 +16,6 @@
 @property (nonatomic, retain) NSString * albumArtFileName;
 @property (nonatomic, retain) NSNumber * associatedWithAlbum;
 @property (nonatomic, retain) NSNumber * genreCode;
-@property (nonatomic, retain) NSNumber * nowPlaying;
 @property (nonatomic, retain) NSString * smartSortSongName;
 @property (nonatomic, retain) NSString * song_id;
 @property (nonatomic, retain) NSString * songName;

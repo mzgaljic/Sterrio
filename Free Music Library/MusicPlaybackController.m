@@ -73,9 +73,15 @@ static BOOL initialized = NO;
     return [[MusicPlaybackController playbackQueue] listOfUpcomingSongsNowPlayingExclusive];
 }
 
-+ (NSUInteger)numSongsInQueue
++ (NSUInteger)numMoreSongsInQueue
 {
-    return [[MusicPlaybackController playbackQueue] numSongsInQueue];
+    return [[MusicPlaybackController playbackQueue] numMoreSongsInQueue];
+}
+
++ (BOOL)isSongLastInQueue:(Song *)song
+{
+    NSArray *array = [[MusicPlaybackController playbackQueue] listOfUpcomingSongsNowPlayingInclusive];
+    return ([array[array.count-1] isEqual:song]) ? YES : NO;
 }
 
 #pragma mark - Now Playing Song
@@ -91,13 +97,17 @@ static BOOL initialized = NO;
                genreCode:(int)code
          skipCurrentSong:(BOOL)skipNow;
 {
+    if([[MusicPlaybackController nowPlayingSong] isEqual:song]){  //selected song is already playing...
+        //ignore new queue request (SongPlayerViewController will still be able to open)
+        return;
+    }
     if(skipNow){
         [[MusicPlaybackController playbackQueue] clearQueue];
         [MusicPlaybackController pausePlayback];  //current song should be skipped! ...stop playback
     }
     NSArray *songsForQueue = [MusicPlaybackController songArrayGivenSong:song album:album artist:artist playlist:playlist genreCode:code];
-    [playbackQueue setNowPlayingIndexWithSong:song];
     [[MusicPlaybackController playbackQueue] insertSongsAfterNowPlaying:songsForQueue];
+    [playbackQueue setNowPlayingIndexWithSong:song];
     
     //start playback with the song that was tapped
     [player startPlaybackOfSong:song goingForward:YES];
@@ -188,7 +198,7 @@ static BOOL initialized = NO;
 #pragma mark - Lock Screen Song Info & Art
 + (void)updateLockScreenInfoAndArtForSong:(Song *)song
 {
-    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
         Song *nowPlayingSong = [MusicPlaybackController nowPlayingSong];
         NSURL *url = [AlbumArtUtilities albumArtFileNameToNSURL:nowPlayingSong.albumArtFileName];
@@ -199,18 +209,27 @@ static BOOL initialized = NO;
             NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
             
             UIImage *albumArtImage = [UIImage imageWithData:[NSData dataWithContentsOfURL:url]];
+            if(albumArtImage == nil){  //song has no album art, check if its album does
+                Album *songsAlbum = song.album;
+                if(songsAlbum){
+                    NSURL *url = [AlbumArtUtilities albumArtFileNameToNSURL:songsAlbum.albumArtFileName];
+                    albumArtImage = [UIImage imageWithData:[NSData dataWithContentsOfURL:url]];
+                }
+            }
+            
             if(albumArtImage != nil){
                 MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage: albumArtImage];
-                [songInfo setObject:nowPlayingSong.songName forKey:MPMediaItemPropertyTitle];
-                if(nowPlayingSong.artist.artistName != nil)
-                    [songInfo setObject:nowPlayingSong.artist.artistName forKey:MPMediaItemPropertyArtist];
-                if(nowPlayingSong.album.albumName != nil)
-                    [songInfo setObject:nowPlayingSong.album.albumName forKey:MPMediaItemPropertyAlbumTitle];
                 [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
-                [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
             }
+            
+            [songInfo setObject:nowPlayingSong.songName forKey:MPMediaItemPropertyTitle];
+            
+            if(nowPlayingSong.artist.artistName != nil)
+                [songInfo setObject:nowPlayingSong.artist.artistName forKey:MPMediaItemPropertyArtist];
+            if(nowPlayingSong.album.albumName != nil)
+                [songInfo setObject:nowPlayingSong.album.albumName forKey:MPMediaItemPropertyAlbumTitle];
+            [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
         }
-        
     });
 }
 
@@ -227,8 +246,8 @@ static BOOL initialized = NO;
     
     #warning unfinished
     //song tapped in song tab
-    if(!album && !artist && !playlist && [GenreConstants noGenreSelectedGenreCode]){
-        //add all songs from song tab, set now playing
+    if(!album && !artist && !playlist && code == [GenreConstants noGenreSelectedGenreCode]){
+        songArray = [NSMutableArray arrayWithArray:[MusicPlaybackController arrayOfAllSongsInSongTab]];
     }
     //a standalone song was tapped in the artist tab (song not part of an album but has an artist)
     else if(artist && !album){
@@ -247,6 +266,50 @@ static BOOL initialized = NO;
         
     }
     return songArray;
+}
+
+//helper method for songArrayGivenSong: album: artist: playlist: genreCode: method.
++ (NSArray *)arrayOfAllSongsInSongTab
+{
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSManagedObjectContext *context = [CoreDataManager context];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Song"
+                                              inManagedObjectContext:context];
+    [fetchRequest setEntity:entity];
+    NSSortDescriptor *sortDescriptor;
+    if([AppEnvironmentConstants smartAlphabeticalSort])
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
+                                                       ascending:YES
+                                                        selector:@selector(localizedStandardCompare:)];
+    else
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
+                                                       ascending:YES
+                                                        selector:@selector(localizedStandardCompare:)];
+    [fetchRequest setSortDescriptors:@[sortDescriptor]];
+    NSError *error = nil;
+    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
+    return fetchedObjects;
+}
+
+#pragma mark - DEBUG
++ (void)printQueueContents
+{
+    NSArray *array = [[MusicPlaybackController playbackQueue] listOfEntireQueueAsArray];
+    NSMutableString *output = [NSMutableString stringWithString:@"["];
+    Song *aSong = nil;
+    for(int i = 0; i < array.count; i++){
+        aSong = array[i];
+        if(i == 0)
+            [output appendFormat:@"%@", aSong.songName];
+        else
+            [output appendFormat:@",%@", aSong.songName];
+    }
+    int indexOfNowPlaying = (int)[[MusicPlaybackController playbackQueue] obtainNowPlayingIndex];
+    if(indexOfNowPlaying < 0)
+        [output appendString:@"]----No song playing\n\n"];
+    else
+        [output appendFormat:@"]----Now Playing[%i]\n\n", indexOfNowPlaying];
+    NSLog(@"%@", output);
 }
 
 @end

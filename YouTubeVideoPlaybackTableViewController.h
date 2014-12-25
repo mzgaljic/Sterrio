@@ -10,26 +10,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <XCDYouTubeKit/XCDYouTubeClient.h>
-
-#import "Song.h"
-#import "Song+Utilities.h"
-#import "GenreConstants.h"
-#import "CoreDataManager.h"
-#import "YouTubeVideoSearchService.h"
-
-#import "Reachability.h"
-#import "SDWebImageManager.h"
 #import "YouTubeVideo.h"
-#import "SDCAlertView.h"
-#import "AppEnvironmentConstants.h"
-#import "PreferredFontSizeUtility.h"
-#import "NSString+WhiteSpace_Utility.h"
-#import "AlbumArtUtilities.h"
-#import "UIImage+colorImages.h"
-#import "MRProgress.h"
-#import "DZNPhotoPickerController.h"
-#import "NSString+HTTP_Char_Escape.h"
-#import "XCDYouTubeVideoPlayerViewController.h"
+
 
 @interface YouTubeVideoPlaybackTableViewController : UITableViewController <AVAudioSessionDelegate,
                                                                             AVAudioPlayerDelegate,

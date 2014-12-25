@@ -9,7 +9,9 @@
 #import <Foundation/Foundation.h>
 
 @interface YouTubeVideo : NSObject
-
+{
+    
+}
 @property (nonatomic, strong) NSString *videoName;
 @property (nonatomic, strong) NSString *videoId;
 @property (nonatomic, strong) NSString *videoThumbnailUrl;  //this is really "medium" quality, not the default.

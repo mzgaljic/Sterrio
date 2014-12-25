@@ -42,13 +42,16 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)yes
+- (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)forward
 {
-    movingForward = yes;
-    [MusicPlaybackController updateLockScreenInfoAndArtForSong:aSong];
-    //SongPlayerViewController will respond if it is on screen
-    [[NSNotificationCenter defaultCenter] postNotificationName:NEW_SONG_IN_AVPLAYER object:aSong];
-    [self playSong:aSong];
+    [MusicPlaybackController printQueueContents];
+    if(aSong != nil){
+        movingForward = forward;
+        [MusicPlaybackController updateLockScreenInfoAndArtForSong:aSong];
+        //SongPlayerViewController will respond if it is on screen
+        [[NSNotificationCenter defaultCenter] postNotificationName:NEW_SONG_IN_AVPLAYER object:aSong];
+        [self playSong:aSong];
+    }
 }
 
 - (void)begingListeningForNotifications

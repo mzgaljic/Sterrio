@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import "SongPlayerCoordinator.h"
 
 @interface PlayerView : UIView
 

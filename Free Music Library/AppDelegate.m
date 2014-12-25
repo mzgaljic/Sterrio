@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "PreloadedCoreDataModelUtility.h"
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 @implementation AppDelegate
@@ -23,11 +24,9 @@ static const int APP_LAUNCHED_ALREADY = 1;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
-    [[SDImageCache sharedImageCache] setMaxCacheSize:2000000];  //2 mb cache size
+    [[SDImageCache sharedImageCache] setMaxCacheSize:1000000];  //1 mb cache size
     
     //set app global-tint color
-    //self.window.tintColor = [UIColor defaultSystemTintColor];
-    //self.window.tintColor = Rgb2UIColor(255, 143, 47);  //orange tint color based on splash screen
     self.window.tintColor = Rgb2UIColor(255, 149, 0);
     
     [self setProductionModeValue];
@@ -37,6 +36,7 @@ static const int APP_LAUNCHED_ALREADY = 1;
     [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime:[self appLaunchedFirstTime]];
     if([self appLaunchedFirstTime]){
         //do stuff that you'd want to see the first time you launch!
+        [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
     }
     
     [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY
@@ -76,7 +76,6 @@ static const int APP_LAUNCHED_ALREADY = 1;
                 [MusicPlaybackController explicitlyPausePlayback:YES];
                 [player pause];
             }
-            
             break;
         case UIEventSubtypeRemoteControlPlay:
             [MusicPlaybackController explicitlyPausePlayback:NO];
@@ -85,6 +84,12 @@ static const int APP_LAUNCHED_ALREADY = 1;
         case UIEventSubtypeRemoteControlPause:
             [MusicPlaybackController explicitlyPausePlayback:YES];
             [player pause];
+            break;
+        case UIEventSubtypeRemoteControlNextTrack:
+            [MusicPlaybackController skipToNextTrack];
+            break;
+        case UIEventSubtypeRemoteControlPreviousTrack:
+            [MusicPlaybackController returnToPreviousTrack];
             break;
         default:
             break;

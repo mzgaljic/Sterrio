@@ -31,6 +31,7 @@
 - (NSUInteger)indexOfObject:(id)object;
 - (NSArray *)insertItem:(id)anObject atIndex:(NSUInteger)index;
 - (void)removeObjectFromQueue:(id)anObject;
+- (NSInteger)numObjectsAfterThisOne:(id)anObject;
 
 @property (atomic, readonly) NSUInteger count;
 @end

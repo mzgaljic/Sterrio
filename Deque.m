@@ -135,4 +135,28 @@
     }
 }
 
+- (NSInteger)numObjectsAfterThisOne:(id)anObject
+{
+    //check if object in array at all
+    NSInteger index = [internalArray indexOfObjectIdenticalTo:anObject];
+    if(index == NSNotFound){
+        return -1;
+    } else{
+        NSInteger lastIndex;
+        if(internalArray.count > 0)
+            lastIndex = internalArray.count - 1;
+        else
+            lastIndex = internalArray.count;
+        
+        if(index == lastIndex)
+            return 0;
+        else if(index < lastIndex)
+            return lastIndex - index;
+        else if (index > lastIndex)
+            return -1;  //should never happen. indicates dequeue is broken.
+        else
+            return -1;
+    }
+}
+
 @end

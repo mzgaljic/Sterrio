@@ -23,19 +23,10 @@
 #import "UIColor+LighterAndDarker.h"  //creating lighter and darker colors from base colors
 #import "UIColor+SystemTintColor.h"
 #import "AlbumArtUtilities.h"  //interface for accessing album art on disk
-#import "SongPlayerViewDisplayHelper.h"  //gui code helpers (determining aspect ration player size, etc)
 #import "SongPlayerCoordinator.h"  //controls the video player frame and responds to player events via delegates
+#import "SongPlayerNavController.h"
 
 @class MusicPlaybackController;
-
-NSString * const PAUSE_IMAGE_FILLED = @"Pause-Filled";
-NSString * const PAUSE_IMAGE_UNFILLED = @"Pause-Line";
-NSString * const PLAY_IMAGE_FILLED = @"Play-Filled";
-NSString * const PLAY_IMAGE_UNFILLED = @"Play-Line";
-NSString * const FORWARD_IMAGE_FILLED = @"Seek-Filled";
-NSString * const FORWARD_IMAGE_UNFILLED = @"Seek-Line";
-NSString * const BACKWARD_IMAGE_FILLED = @"Backward-Filled";
-NSString * const BACKWARD_IMAGE_UNFILLED = @"Backward-Line";
 
 
 @interface SongPlayerViewController : UIViewController <AVAudioSessionDelegate,
@@ -52,8 +43,6 @@ NSString * const BACKWARD_IMAGE_UNFILLED = @"Backward-Line";
 - (IBAction)playbackSliderValueHasChanged:(id)sender;
 - (IBAction)playbackSliderEditingHasBegun:(id)sender;
 - (IBAction)playbackSliderEditingHasEnded:(id)sender;
-
-- (IBAction)minimizePlayerButtonTapped:(id)sender;
 
 
 @end

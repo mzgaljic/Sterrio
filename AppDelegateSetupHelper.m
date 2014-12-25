@@ -24,7 +24,6 @@ static BOOL PRODUCTION_MODE;
         BOOL boldNames = YES;
         short prefWifiStreamQuality = 720;
         short prefCellStreamQuality = 360;
-        #warning should be YES in release version
         BOOL smartSort = YES;
         BOOL icloudSync = NO;
         [AppEnvironmentConstants setPreferredSizeSetting:sizeSetting];

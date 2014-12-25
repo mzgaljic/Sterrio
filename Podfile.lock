@@ -1,4 +1,5 @@
 PODS:
+  - AFBlurSegue (1.2)
   - AFNetworking (2.4.1):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
@@ -77,6 +78,7 @@ PODS:
   - XCDYouTubeKit (2.0.3)
 
 DEPENDENCIES:
+  - AFBlurSegue (~> 1.2)
   - ASValueTrackingSlider
   - DZNPhotoPickerController
   - MRProgress
@@ -85,6 +87,7 @@ DEPENDENCIES:
   - XCDYouTubeKit (~> 2.0)
 
 SPEC CHECKSUMS:
+  AFBlurSegue: 317204561facdb45be823773c0fefe918c192243
   AFNetworking: 0aabc6fae66d6e5d039eeb21c315843c7aae51ab
   ASValueTrackingSlider: 74a4bbf70c8cf43d29b701ff4c7659fc5d0afd99
   DZNEmptyDataSet: aa20600aff620af3d78edbff4bc47282972e815f

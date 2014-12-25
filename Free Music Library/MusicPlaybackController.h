@@ -13,9 +13,8 @@
 #import "Playlist.h"
 #import "PlaybackQueue.h"
 #import "MyAVPlayer.h"  //custom AVPlayer class
-#import "PlayerView.h"
 #import "GenreConstants.h"
-
+@class PlayerView;  //import doesnt work here
 
 @interface MusicPlaybackController : NSObject
 
@@ -48,7 +47,8 @@
 
 #pragma mark + Gathering playback info
 + (NSArray *)listOfUpcomingSongsInQueue;
-+ (NSUInteger)numSongsInQueue;
++ (NSUInteger)numMoreSongsInQueue;
++ (BOOL)isSongLastInQueue:(Song *)song;
 
 #pragma mark + Changing the Queue
 + (void)newQueueWithSong:(Song *)song
@@ -71,5 +71,8 @@
 
 #pragma mark - Lock Screen Song Info & Art
 + (void)updateLockScreenInfoAndArtForSong:(Song *)song;
+
+#pragma mark - DEBUG
++ (void)printQueueContents;
 
 @end

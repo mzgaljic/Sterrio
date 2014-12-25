@@ -7,6 +7,17 @@
 //
 
 #import "YoutubeResultsTableViewController.h"
+
+#import "YouTubeVideoSearchService.h"
+#import "UIImage+colorImages.h"
+#import "UIColor+LighterAndDarker.h"
+#import "UIColor+SystemTintColor.h"
+#import "MRProgress.h"
+#import "AlbumArtUtilities.h"
+#import "SDCAlertView.h"
+#import "PreferredFontSizeUtility.h"
+#import "YouTubeVideoPlaybackTableViewController.h"
+#import "CustomYoutubeTableViewCell.h"
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 @interface YoutubeResultsTableViewController ()

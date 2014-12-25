@@ -8,6 +8,23 @@
 
 #import "YouTubeVideoPlaybackTableViewController.h"
 
+#import "Reachability.h"
+#import "SDWebImageManager.h"
+#import "SDCAlertView.h"
+#import "AppEnvironmentConstants.h"
+#import "PreferredFontSizeUtility.h"
+#import "NSString+WhiteSpace_Utility.h"
+#import "AlbumArtUtilities.h"
+#import "UIImage+colorImages.h"
+#import "MRProgress.h"
+#import "DZNPhotoPickerController.h"
+#import "NSString+HTTP_Char_Escape.h"
+#import "XCDYouTubeVideoPlayerViewController.h"
+#import "Song+Utilities.h"
+#import "GenreConstants.h"
+#import "CoreDataManager.h"
+#import "YouTubeVideoSearchService.h"
+
 @interface YouTubeVideoPlaybackTableViewController ()
 {
     //part of photo search, picker, and editor...
@@ -31,12 +48,11 @@
 @implementation YouTubeVideoPlaybackTableViewController
 @synthesize enoughSongInformationGiven = _enoughSongInformationGiven, albumArt = _albumArt;
 
-static BOOL PRODUCTION_MODE;
-static const short Landscape_TableView_Header_Offset = 32;
-static const short Song_Input_TextField_Tag = 100;
-static const short Artist_Input_TextField_Tag = 200;
-static const short Album_Input_TextField_Tag = 300;
-static const short Genre_Input_TextField_Tag = 400;
+//static const short Landscape_TableView_Header_Offset = 32;
+//static const short Song_Input_TextField_Tag = 100;
+//static const short Artist_Input_TextField_Tag = 200;
+//static const short Album_Input_TextField_Tag = 300;
+//static const short Genre_Input_TextField_Tag = 400;
 /*
 - (void)dealloc
 {

@@ -31,15 +31,22 @@
     [deque clear];
 }
 
-- (NSUInteger)numSongsInQueue
+- (NSUInteger)numMoreSongsInQueue
 {
-    return deque.count;
+    id object = [deque objectAtIndex:nowPlayingIndex];
+    NSInteger value = [deque numObjectsAfterThisOne:object];
+    if(value < 0)
+        return 0;  //should never happen. indicates a problem with the entire queue
+    else
+        return value;
 }
 
 - (Song *)nowPlaying
 {
-    if(deque.count > 0)
+    if(deque.count > 0){
         return [deque objectAtIndex:nowPlayingIndex];
+    }
+    
     else
         return nil;
 }
@@ -49,6 +56,13 @@
         NSUInteger index = [deque indexOfObject:song];
         nowPlayingIndex = index;
     }
+}
+- (NSInteger)obtainNowPlayingIndex
+{
+    if(deque.count > 0){
+        return nowPlayingIndex;
+    }
+    return nowPlayingIndex;
 }
 - (Song *)peekAtNextSong
 {
@@ -113,6 +127,10 @@
         return [[deque allQueueObjectsAsArray] subarrayWithRange:NSMakeRange(0, (nowPlayingIndex + 1))];
     else
         return nil;
+}
+- (NSArray *)listOfEntireQueueAsArray
+{
+    return [deque allQueueObjectsAsArray];
 }
 
 - (void)insertSongsAfterNowPlaying:(NSArray *)songs

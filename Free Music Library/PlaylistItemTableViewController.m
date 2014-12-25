@@ -188,37 +188,7 @@
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     Song *selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
     [MusicPlaybackController newQueueWithSong:selectedSong album:nil artist:nil playlist:_playlist genreCode:0 skipCurrentSong:YES];
-    [self performSegueWithIdentifier:@"playlistSongItemPlayingSegue" sender:[NSNumber numberWithInt:(int)indexPath.row]];
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    //song was tapped
-#warning implementation needed
-    if([[segue identifier] isEqualToString: @"playlistSongItemPlayingSegue"]){
-        /*
-        int row = [(NSNumber *)sender intValue];
-        
-        //retrieve the song objects
-        Song *selectedSong = [_playlist.songsInThisPlaylist objectAtIndex:row];
-        Album *selectedAlbum = selectedSong.album;
-        Artist *selectedArtist = selectedSong.artist;
-        Playlist *selectedPlaylist;
-        
-        //setup properties in SongItemViewController.h
- 
-        //[[segue destinationViewController] setANewSong:selectedSong];
-        //[[segue destinationViewController] setANewAlbum:selectedAlbum];
-        //[[segue destinationViewController] setANewArtist:selectedArtist];
-        //[[segue destinationViewController] setANewPlaylist:selectedPlaylist];
-         
-        int songNumber = row + 1;  //remember, for loop started at 0!
-        if(songNumber < 0 || songNumber == 0)  //object not found in song model
-            songNumber = -1;
-
-        //set songs in playlist, etc etc for the now playing viewcontroller
-         */
-    }
+    [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:self];
 }
 
 - (IBAction)addButtonPressed:(id)sender

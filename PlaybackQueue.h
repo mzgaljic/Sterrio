@@ -13,22 +13,22 @@
 @interface PlaybackQueue : NSObject
 
 - (void)clearQueue;
-- (NSUInteger)numSongsInQueue;
+- (NSUInteger)numMoreSongsInQueue;
 
 - (Song *)nowPlaying;
 - (void)setNowPlayingIndexWithSong:(Song *)song;
+- (NSInteger)obtainNowPlayingIndex;  //should only be used for debugging purposes
 - (Song *)peekAtNextSong;
 - (Song *)peekAtPreviousSong;
 
 - (Song *)skipForward;
 - (Song *)skipToPrevious;
 
-- (void)removeSong:(Song *)song;
-
 - (NSArray *)listOfUpcomingSongsNowPlayingExclusive;
 - (NSArray *)listOfUpcomingSongsNowPlayingInclusive;
 - (NSArray *)listOfPlayedSongsNowPlayingExclusive;
 - (NSArray *)listOfPlayedSongsNowPlayingInclusive;
+- (NSArray *)listOfEntireQueueAsArray;
 
 /* Inserts songs after the currently playing song. If 
    the queue is empty, all songs are added to the queue. */

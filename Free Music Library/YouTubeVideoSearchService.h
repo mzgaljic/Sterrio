@@ -7,9 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "YouTubeVideoSearchDelegate.h"
-#import "YouTubeVideo.h"
 #import "NSString+HTTP_Char_Escape.h"
+#import "YouTubeVideoSearchDelegate.h"
 
 @interface YouTubeVideoSearchService : NSObject <NSURLConnectionDelegate>
 

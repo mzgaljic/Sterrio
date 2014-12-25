@@ -9,13 +9,17 @@
 #import <Foundation/Foundation.h>
 #import "MusicPlaybackController.h"
 #import "VideoPlayerControlInterfaceDelegate.h"
+#import "SongPlayerViewDisplayUtility.h"
+#import "PlayerView.h"
 
 @interface SongPlayerCoordinator : NSObject
 @property (nonatomic, weak) id<VideoPlayerControlInterfaceDelegate>delegate;
 + (instancetype)sharedInstance;
 
 - (void)setDelegate:(id<VideoPlayerControlInterfaceDelegate>)theDelegate;
-- (void)setupKeyvalueObservers;
+- (BOOL)isVideoPlayerExpanded;
 - (void)beginShrinkingVideoPlayer;
+- (void)begingExpandingVideoPlayer;
+- (void)shrunkenVideoPlayerNeedsToBeRotated;
 
 @end

@@ -742,7 +742,6 @@ static BOOL playWhenBufferReturns = NO;
                                           // Remove the boundary time observer
                                           [blockPlayer removeTimeObserver:obs];
                                       }];
-
 }
 
 - (void)setUpVideoPlayerUsingVideoID:(NSString *)videoId

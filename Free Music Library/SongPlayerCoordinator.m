@@ -10,25 +10,14 @@
 
 @interface SongPlayerCoordinator ()
 {
-    //for key value observing
-    id timeObserver;
-    int totalVideoDuration;
-    int mostRecentLoadedDuration;
+    BOOL videoPlayerIsExpanded;
 }
 @end
 
 @implementation SongPlayerCoordinator
 @synthesize delegate = _delegate;
 
-//key value observing (AVPlayer)
-void *kCurrentItemDidChangeKVO  = &kCurrentItemDidChangeKVO;
-void *kRateDidChangeKVO         = &kRateDidChangeKVO;
-void *kStatusDidChangeKVO       = &kStatusDidChangeKVO;
-void *kDurationDidChangeKVO     = &kDurationDidChangeKVO;
-void *kTimeRangesKVO            = &kTimeRangesKVO;
-void *kBufferFullKVO            = &kBufferFullKVO;
-void *kBufferEmptyKVO           = &kBufferEmptyKVO;
-void *kDidFailKVO               = &kDidFailKVO;
+static const short SMALL_VIDEO_WIDTH = 200;
 
 #pragma mark - Class lifecycle stuff
 + (instancetype)sharedInstance
@@ -41,9 +30,20 @@ void *kDidFailKVO               = &kDidFailKVO;
     return sharedInstance;
 }
 
+- (id)init
+{
+    if([super init]){
+        UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
+        if([MusicPlaybackController obtainRawPlayerView].frame.size.width == [appWindow bounds].size.width)
+            videoPlayerIsExpanded = YES;
+        else
+            videoPlayerIsExpanded = NO;
+    }
+    return self;
+}
+
 - (void)dealloc
 {
-    [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:timeObserver];
     //singleton should never be released
     abort();
 }
@@ -54,113 +54,135 @@ void *kDidFailKVO               = &kDidFailKVO;
     _delegate = theDelegate;
 }
 
-- (void)setupKeyvalueObservers
+- (BOOL)isVideoPlayerExpanded
 {
-    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-    
-    [player addObserver:self
-             forKeyPath:@"rate"
-                options:NSKeyValueObservingOptionNew
-                context:kRateDidChangeKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.status"
-                options:NSKeyValueObservingOptionNew
-                context:kStatusDidChangeKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.duration"
-                options:NSKeyValueObservingOptionNew
-                context:kDurationDidChangeKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.loadedTimeRanges"
-                options:NSKeyValueObservingOptionNew
-                context:kTimeRangesKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.playbackBufferFull"
-                options:NSKeyValueObservingOptionNew
-                context:kBufferFullKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.playbackBufferEmpty"
-                options:NSKeyValueObservingOptionNew
-                context:kBufferEmptyKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.error"
-                options:NSKeyValueObservingOptionNew
-                context:kDidFailKVO];
-    
-    //[MusicPlaybackController resumePlayback];  //starts playback
-    
-    timeObserver = [player addPeriodicTimeObserverForInterval:CMTimeMakeWithSeconds(0.1, 100) queue:nil usingBlock:^(CMTime time) {
-        //code will be called each 1/10th second....  NSLog(@"Playback time %.5f", CMTimeGetSeconds(time));
-        [_delegate updatePlaybackTimeSlider];
-    }];
+    return videoPlayerIsExpanded;
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context
+- (void)begingExpandingVideoPlayer
 {
+    //toOrientation code from songPlayerViewController was removed here (code copied)
+    if(videoPlayerIsExpanded == YES)
+        return;
+    
+    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-    if (kRateDidChangeKVO == context) {
-        float rate = player.rate;
-        BOOL internetConnectionPresent;
-        BOOL videoCompletelyBuffered = (mostRecentLoadedDuration == totalVideoDuration);
-        
-        Reachability *networkReachability = [Reachability reachabilityForInternetConnection];
-        if ([networkReachability currentReachabilityStatus] == NotReachable)
-            internetConnectionPresent = NO;
-        else
-            internetConnectionPresent = YES;
-        
-        if(rate != 0 && mostRecentLoadedDuration != 0 &&internetConnectionPresent){  //playing
-            NSLog(@"Playing");
-            
-        } else if(rate == 0 && !videoCompletelyBuffered &&!internetConnectionPresent){  //stopped
-            //Playback has stopped due to an internet connection issue.
-            NSLog(@"Video stopped, no connection.");
-            
-        }else{  //paused
-            NSLog(@"Paused");
-        }
-        
-    } else if (kStatusDidChangeKVO == context) {
-        //player "status" has changed. Not particulary useful information.
-        if (player.status == AVPlayerStatusReadyToPlay) {
-            NSArray * timeRanges = player.currentItem.loadedTimeRanges;
-            if (timeRanges && [timeRanges count]){
-                CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
-                int secondsBuffed = (int)CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration));
-                if(secondsBuffed > 0){
-                    NSLog(@"Min buffer reached, ready to continue playing.");
-                }
-            }
-        }
-        
-    } else if (kTimeRangesKVO == context) {
-        NSArray *timeRanges = (NSArray *)[change objectForKey:NSKeyValueChangeNewKey];
-        if (timeRanges && [timeRanges count]) {
-            CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
-            
-            int secondsLoaded = (int)CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration));
-            if(secondsLoaded == mostRecentLoadedDuration)
-                return;
-            else
-                mostRecentLoadedDuration = secondsLoaded;
-            
-            //NSLog(@"New loaded range: %i -> %i", (int)CMTimeGetSeconds(timerange.start), secondsLoaded);
-            
-            //if paused, check if user wanted it paused. if not, resume playback since buffer is back
-            if(!(player.rate == 1) && ![MusicPlaybackController playbackExplicitlyPaused]){
-                [MusicPlaybackController resumePlayback];
-            }
-        }
+    UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
+    
+    if(playerView == nil){
+        //player not even on screen yet
+        playerView = [[PlayerView alloc] init];
+        player = [[MyAVPlayer alloc] init];
+        [playerView setPlayer:player];  //attaches AVPlayer to AVPlayerLayer
+        [MusicPlaybackController setRawAVPlayer:player];
+        [MusicPlaybackController setRawPlayerView:playerView];
+        [playerView setBackgroundColor:[UIColor blackColor]];
+        [appWindow addSubview:playerView];
+        //setting a temp frame in the bottom right corner for now
+        [playerView setFrame:CGRectMake(appWindow.frame.size.width, appWindow.frame.size.height, 1, 1)];
+        //real playerView frame set below...
     }
+    
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    
+    [UIView animateWithDuration:0.36f animations:^{
+        if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+        {
+            //entering view controller in landscape (fullscreen video)
+            CGRect screenRect = [appWindow bounds];
+            CGFloat screenWidth = screenRect.size.width;
+            CGFloat screenHeight = screenRect.size.height;
+            
+            //+1 is because the view ALMOST covered the full screen.
+            [playerView setFrame:CGRectMake(0, 0, screenWidth, ceil(screenHeight +1))];
+            //hide status bar
+            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+        }
+        else
+        {
+            //show portrait player
+            [playerView setFrame: [SongPlayerCoordinator bigPlayerFrameInPortrait]];
+        }
+    }];
+    videoPlayerIsExpanded = YES;
 }
 
 - (void)beginShrinkingVideoPlayer
 {
-#warning unimplemented. Shrink player here.
+    if(videoPlayerIsExpanded == NO)
+        return;
+    
+    PlayerView *videoPlayer = [MusicPlaybackController obtainRawPlayerView];
+    
+    [UIView animateWithDuration:0.6f animations:^{
+        videoPlayer.frame = [SongPlayerCoordinator smallPlayerFrameInPortrait];
+    }];
+    videoPlayerIsExpanded = NO;
 }
 
+- (void)shrunkenVideoPlayerNeedsToBeRotated
+{
+    PlayerView *videoPlayer = [MusicPlaybackController obtainRawPlayerView];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+        //landscape rotation...
+        [videoPlayer setFrame:[SongPlayerCoordinator smallPlayerFrameInLandscape]];
+    else
+        //portrait rotation...
+        [videoPlayer setFrame:[SongPlayerCoordinator smallPlayerFrameInPortrait]];
+}
+
++ (CGRect)smallPlayerFrameInPortrait
+{
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    short padding = 10;
+    short tabBarHeight = 49;
+    int width = SMALL_VIDEO_WIDTH;
+    int height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
+    int x = window.frame.size.width - width - padding;
+    int y = window.frame.size.height - tabBarHeight - height - padding;
+    return CGRectMake(x, y, width, height);
+}
+
++ (CGRect)smallPlayerFrameInLandscape
+{
+    UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
+    short padding = 10;
+    int width = SMALL_VIDEO_WIDTH;
+    int height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
+    int x = appWindow.frame.size.width - width - padding;
+    int y = appWindow.frame.size.height - height - padding;
+    return CGRectMake(x, y, width, height);
+}
+
++ (CGRect)bigPlayerFrameInPortrait
+{
+    CGPoint screenWidthAndHeight = [SongPlayerCoordinator widthAndHeightOfScreen];
+    float videoFrameHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:screenWidthAndHeight.x];
+    float playerFrameYTempalue = roundf(((screenWidthAndHeight.y / 2.0) /1.5));
+    int playerYValue = nearestEvenInt((int)playerFrameYTempalue);
+    return CGRectMake(0, playerYValue, screenWidthAndHeight.x, videoFrameHeight);
+}
+
++ (CGPoint)widthAndHeightOfScreen
+{
+    UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
+    float widthOfScreenRoationIndependant;
+    float heightOfScreenRotationIndependant;
+    float  a = [appWindow bounds].size.height;
+    float b = [appWindow bounds].size.width;
+    if(a < b)
+    {
+        heightOfScreenRotationIndependant = b;
+        widthOfScreenRoationIndependant = a;
+    }
+    else
+    {
+        widthOfScreenRoationIndependant = b;
+        heightOfScreenRotationIndependant = a;
+    }
+    return CGPointMake(widthOfScreenRoationIndependant, heightOfScreenRotationIndependant);
+}
 
 @end

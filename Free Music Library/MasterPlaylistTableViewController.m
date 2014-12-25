@@ -250,7 +250,7 @@ static BOOL lastSortOrder;
         
         for(Song *aSong in playlist.playlistSongs)
         {
-            if([aSong.nowPlaying boolValue] == YES)
+            if([[MusicPlaybackController nowPlayingSong] isEqual:aSong])
             {
                 [MusicPlaybackController songAboutToBeDeleted];
             }
@@ -444,29 +444,6 @@ static BOOL lastSortOrder;
     return count;
 }
 
-#pragma mark - setting now playing song
-- (void)setNowPlayingSong:(Song *)myNowPlayingSong
-{
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"nowPlaying = %@", [NSNumber numberWithBool:YES]];
-    NSError *error;
-    NSArray *matches = [[CoreDataManager context] executeFetchRequest:request error:&error];
-    if(matches)
-    {
-        if(matches.count == 1)
-            ((Song*)matches[0]).nowPlaying = [NSNumber numberWithBool:NO];
-        else if([matches count] > 1)
-        {
-            //set any of the false positives back to NO.
-            for(Song *aSong in matches)
-                aSong.nowPlaying = [NSNumber numberWithBool:NO];
-        }
-        
-        //now set the song we want
-        myNowPlayingSong.nowPlaying = [NSNumber numberWithBool:YES];
-        [[CoreDataManager sharedInstance] saveContext];
-    }
-}
 
 #pragma mark - fetching and sorting
 - (void)setFetchedResultsControllerAndSortStyle

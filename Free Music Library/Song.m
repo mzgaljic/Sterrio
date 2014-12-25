@@ -17,7 +17,6 @@
 @dynamic albumArtFileName;
 @dynamic associatedWithAlbum;
 @dynamic genreCode;
-@dynamic nowPlaying;
 @dynamic smartSortSongName;
 @dynamic song_id;
 @dynamic songName;
