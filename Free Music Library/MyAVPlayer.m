@@ -14,6 +14,7 @@
     AVPlayerItem *playerItem;
     NSURL *currentItemLink;
     BOOL movingForward;  //identifies which direction the user just went (back/forward) in queue
+    int secondsSinceWeCheckedInternet;
     
     NSString * NEW_SONG_IN_AVPLAYER;
     NSString * AVPLAYER_DONE_PLAYING;
@@ -31,7 +32,9 @@
         movingForward = YES;
         currentItemLink = nil;
         playerItem = self.currentItem;
+        secondsSinceWeCheckedInternet = 0;
         
+        [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(checkInternetStatus) userInfo:nil repeats:YES];
         [self begingListeningForNotifications];
     }
     return self;
@@ -84,11 +87,13 @@
     __weak Song *weakSong = aSong;
     [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
         BOOL allowedToPlayVideo = NO;  //not checking if we can physically play, but legally (Apple's 10 minute streaming rule)
+        Reachability *reachability = [Reachability reachabilityForInternetConnection];
+        //[reachability startNotifier];
+        
         if (video)
         {
+            [MusicPlaybackController declareInternetProblemWhenLoadingSong:NO];
             BOOL usingWifi = NO;
-            Reachability *reachability = [Reachability reachabilityForInternetConnection];
-            [reachability startNotifier];
             NetworkStatus status = [reachability currentReachabilityStatus];
             if (status == ReachableViaWiFi){
                 //WiFi
@@ -122,6 +127,8 @@
                 NSLog(@"Skipping song since it is > 10 min (on Cellular network)");
                 
                 [MusicPlaybackController skipToNextTrack];
+#warning handle error better
+                // Handle error in a nicer way, maybe with a notification banner when the user re-enters the app
                 //NSString *title = @"Long Video Without Wifi";
                 //NSString *msg = @"Sorry, playback of long videos (ie: more than 10 minutes) is restricted to Wifi.";
                 //[self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
@@ -129,12 +136,26 @@
         }
         else
         {
-            NSLog(@"Error has occured loading video. Skipping to next track instead.");
-            [MusicPlaybackController skipToNextTrack];
-            // Handle error
-            //NSString *title = @"Trouble Loading Video";
-            //NSString *msg = @"Sorry, there was a problem. Please try again.";
-            //[self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
+            if ([reachability currentReachabilityStatus] == NotReachable){
+                //alert user to internet problem
+                NSString *title = @"Internet";
+                NSString *msg = @"Cannot connect to YouTube.";
+                [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
+                [MusicPlaybackController declareInternetProblemWhenLoadingSong:YES];
+                [MusicPlaybackController playbackExplicitlyPaused];
+                [MusicPlaybackController pausePlayback];
+            } else{
+                [MusicPlaybackController declareInternetProblemWhenLoadingSong:NO];
+                //we know for sure that the video no longer exists, notify user.
+                NSLog(@"Your music video is no longer on YouTube.");
+                
+                [MusicPlaybackController skipToNextTrack];
+#warning handle error better
+                // Handle error in a nicer way, maybe with a notification banner when the user re-enters the app
+                //NSString *title = @"Trouble finding your video";
+                //NSString *msg = @"Sorry, it appears your music video is no longer on YouTube.";
+                //[self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
+            }
         }
         
         if(allowedToPlayVideo && video != nil){
@@ -143,11 +164,38 @@
             
             //posting notifications about important AVPLayerItem changes. GUI should react appropriately where needed.
             [[NSNotificationCenter defaultCenter] postNotificationName:NEW_SONG_IN_AVPLAYER object:weakSong];
-            [[NSNotificationCenter defaultCenter] postNotificationName:AVPLAYER_DONE_PLAYING object:nil];
+            
+            if([MusicPlaybackController listOfUpcomingSongsInQueue].count > 0)  //more songs in queue
+                [[NSNotificationCenter defaultCenter] postNotificationName:AVPLAYER_DONE_PLAYING object:nil];
+            
+            
+            // Declare block scope variables to avoid retention cycles from references inside the block
+            __block AVPlayer* weakSelf = self;
+            __block id obs;
+            // Setup boundary time observer to trigger when audio really begins (specifically after 1/10 of a second of playback)
+            obs = [self addBoundaryTimeObserverForTimes:
+                   @[[NSValue valueWithCMTime:CMTimeMake(1, 10)]]
+                                                  queue:NULL
+                                             usingBlock:^{
+                                                 // Raise a notificaiton when playback has started
+                                                 [[NSNotificationCenter defaultCenter]
+                                                  postNotificationName:@"PlaybackStartedNotification"
+                                                  object:nil];
+                                                 
+                                                 // Remove the boundary time observer
+                                                 [weakSelf removeTimeObserver:obs];
+                                             }];
+            [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
+            [MusicPlaybackController simpleSpinnerOnScreen:YES];
             [self play];
+            
         } else{
+            if([MusicPlaybackController didPlaybackStopDueToInternetProblemLoadingSong])  //if so, don't do anything...
+                return;
+            
             currentItemLink = nil;
             playerItem = nil;
+#warning mention "fatal error when trying to play this video"
             [self songDidFinishPlaying:nil];  //triggers the next song to play (for whatever reason/error)
         }
     }];
@@ -165,6 +213,71 @@
     alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
     alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
     [alert show];
+}
+
+- (void)checkInternetStatus
+{
+    if(self.rate == 1)
+        return;
+    if(self.rate == 0 && [MusicPlaybackController playbackExplicitlyPaused])
+        return;
+    
+    __block typeof(self) weakSelf = self;
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        if(secondsSinceWeCheckedInternet < 4){
+            secondsSinceWeCheckedInternet++;
+            return;
+        }
+        else
+            secondsSinceWeCheckedInternet = 0;
+        
+        if([weakSelf isInternetReachable]){
+            [weakSelf showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
+        } else{
+           [weakSelf showSpinnerForInternetConnectionIssueOnView:[MusicPlaybackController obtainRawPlayerView]];
+        }
+    });
+}
+
+#pragma mark - Spinner convenience methods 
+//these methods are also in SongPlayerViewController
+- (void)showSpinnerForInternetConnectionIssueOnView:(UIView *)displaySpinnerOnMe
+{
+    if(![MusicPlaybackController isInternetProblemSpinnerOnScreen]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
+            [MRProgressOverlayView showOverlayAddedTo:displaySpinnerOnMe
+                                                title:@"Internet connection lost..."
+                                                 mode:MRProgressOverlayViewModeIndeterminateSmall
+                                             animated:YES];
+            [MusicPlaybackController internetProblemSpinnerOnScreen:YES];
+        });
+    }
+}
+
+- (void)showSpinnerForBasicLoadingOnView:(UIView *)displaySpinnerOnMe
+{
+    if(![MusicPlaybackController isSimpleSpinnerOnScreen]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
+            [MRProgressOverlayView showOverlayAddedTo:displaySpinnerOnMe title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
+            [MusicPlaybackController simpleSpinnerOnScreen:YES];
+        });
+    }
+}
+
+- (void)dismissAllSpinnersForView:(UIView *)dismissViewOnMe
+{
+    [MRProgressOverlayView dismissAllOverlaysForView:dismissViewOnMe animated:YES];
+}
+
+
+#pragma mark -Internet convenience methods
+- (BOOL)isInternetReachable
+{
+    return ([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == NotReachable) ? NO : YES;
 }
 
 @end

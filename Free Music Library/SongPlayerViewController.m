@@ -17,6 +17,9 @@
     NSString *songLabel;
     NSString *artistAlbumLabel;
     
+    BOOL playerButtonsSetUp;
+    BOOL waitingForNextOrPrevVideoToLoad;
+    
     //for key value observing
     id timeObserver;
     int totalVideoDuration;
@@ -58,6 +61,9 @@ void *kDidFailKVO               = &kDidFailKVO;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    waitingForNextOrPrevVideoToLoad = NO;
+    [self initAndRegisterAllButtons];
+    
     //these two observers help us know when this VC must update its GUI due to a new song playing, etc.
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(updateScreenWithInfoForNewSong:)
@@ -67,7 +73,11 @@ void *kDidFailKVO               = &kDidFailKVO;
                                              selector:@selector(lastSongHasFinishedPlayback:)
                                                  name:AVPLAYER_DONE_PLAYING
                                                object:nil];
-    _playbackTimeSlider.enabled = NO;
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(playbackOfVideoHasBegun)
+                                                 name:@"PlaybackStartedNotification"
+                                               object:nil];
+    //_playbackTimeSlider.enabled = NO;
     _playbackTimeSlider.dataSource = self;
     [[SongPlayerCoordinator sharedInstance] setDelegate:self];
     
@@ -97,22 +107,38 @@ static int numTimesVCLoaded = 0;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                                                                                            target:self
                                                                                            action:@selector(shareButtonTapped)];
-    [self checkDeviceOrientation];
-    [self initAndRegisterAllButtons];
-    [self positionMusicButtonsOnScreenAndSetThemUp];
     
-    UIBarButtonItem *popButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
-                                                                               target:self
-                                                                               action:@selector(dismissVideoPlayerControllerButtonTapped)];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    if(orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown)
+        [self positionMusicButtonsOnScreenAndSetThemUp];
+    [self checkDeviceOrientation];
+    
+    
+    
+    UIBarButtonItem *popButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"UIButtonBarArrowDown"]
+                                                                  style:UIBarButtonItemStylePlain
+                                                                 target:self
+                                                                 action:@selector(dismissVideoPlayerControllerButtonTapped)];
     self.navigationItem.leftBarButtonItem = popButton;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
     [self setupPlaybackTimeSliderAndDuration];
+    [self positionPlaybackSliderOnScreen];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    if(playerButtonsSetUp == NO)
+        [self positionMusicButtonsOnScreenAndSetThemUp];
 }
 
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:timeObserver];
-#warning need to deregister from key value observers right here!
+    [self removeObservers];
 }
 
 #pragma mark - Check and update GUI based on device orientation (or responding to events)
@@ -212,6 +238,7 @@ static int numTimesVCLoaded = 0;
         [playerView setFrame:CGRectMake(0,   playerYValue,
                                              widthOfScreenRoationIndependant,
                                              videoFrameHeight)];
+        [self positionMusicButtonsOnScreenAndSetThemUp];
     }
     
     lastKnownOrientation = toInterfaceOrientation;
@@ -343,9 +370,24 @@ static int numTimesVCLoaded = 0;
     musicButtons = @[backwardButton, playButton, forwardButton];
 }
 
-#pragma mark - Positioning Music Buttons (should be loaded first)
+#pragma mark - Positioning Music Buttons (buttons need to be initialized first)
 - (void)positionMusicButtonsOnScreenAndSetThemUp
 {
+    if(playerButtonsSetUp == YES){
+        //dont need to set them up, just re-animate a "fade in"
+        for(UIButton *aButton in musicButtons){
+            aButton.alpha = 0.0;  //make button transparent
+            [UIView animateWithDuration:0.80  //now animate a "fade in"
+                                  delay:0.0
+                                options:UIViewAnimationOptionAllowUserInteraction
+                             animations:^{ aButton.alpha = 1.0; }
+                             completion:nil];
+        }
+    }
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+        return;
+    
     //make images fill up frame, change button hit area
     for(UIButton *aButton in musicButtons){
         aButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentFill;
@@ -373,7 +415,6 @@ static int numTimesVCLoaded = 0;
         xValue = (screenWidth * 0.5) - (playButtonWidth/2);
         playButton.frame = CGRectMake(xValue +0, yValue, playButtonWidth, playButtonHeight);
         [playButton setImage:playFilled forState:UIControlStateNormal];
-        playButton.enabled = NO;
     } else{
         UIImage *playFilled = [UIImage colorOpaquePartOfImage:appTint
                                                              :[UIImage imageNamed:PAUSE_IMAGE_FILLED]];
@@ -385,9 +426,7 @@ static int numTimesVCLoaded = 0;
         xValue = (screenWidth * 0.5) - (playButtonWidth/2);
         playButton.frame = CGRectMake(xValue +1, yValue, playButtonWidth, playButtonHeight);
         [playButton setImage:playFilled forState:UIControlStateNormal];
-        playButton.enabled = YES;
     }
-    
     
     //seek backward button
     UIImage *backFilled = [UIImage colorOpaquePartOfImage:appTint
@@ -418,7 +457,14 @@ static int numTimesVCLoaded = 0;
     //add buttons to the viewControllers view
     for(UIButton *aButton in musicButtons){
         [self.view addSubview:aButton];
+        aButton.alpha = 0.0;  //make button transparent
+        [UIView animateWithDuration:0.80  //now animate a "fade in"
+                              delay:0.0
+                            options:UIViewAnimationOptionAllowUserInteraction
+                         animations:^{ aButton.alpha = 1.0; }
+                         completion:nil];
     }
+    playerButtonsSetUp = YES;
 }
 
 #pragma mark - Playback Time Slider
@@ -430,11 +476,11 @@ static int numTimesVCLoaded = 0;
     if(durationInSeconds <= 0.0f || durationInSeconds == NAN){
         // Handle error
         NSString *title = @"Trouble Loading Video";
-        NSString *msg = @"Sorry, something whacky is going on, please try again.";
+        NSString *msg = @"A fatal error has occured, please try again.";
         [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
-        [self.navigationController popViewControllerAnimated:YES];
+        [self dismissVideoPlayerControllerButtonTapped];
     }
-    //setup total song duration lable animations
+    //setup total song duration label animations
     CATransition *animation = [CATransition animation];
     animation.duration = 1.0;
     animation.type = kCATransitionFade;
@@ -454,13 +500,51 @@ static int numTimesVCLoaded = 0;
     _totalDurationLabel.text = [self convertSecondsToPrintableNSStringWithSliderValue:durationInSeconds];  //just sets duration, already known.
 }
 
+- (void)positionPlaybackSliderOnScreen
+{
+#warning redo code for determining locations of labels and slider
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    CGFloat screenHeight = screenRect.size.height;
+    CGFloat screenWidth = screenRect.size.width;
+    
+    //setup current time label
+    float xValue = screenWidth * 0.02f;
+    float yValue = ceil(screenHeight * 0.74f);
+    float widthValue = 43.0f;  //hardcoded because i counted how wide it needs to be to fit our text
+    //67 for including hours
+    float heightValue = 21.0f;
+    [_currentTimeLabel setFrame:CGRectMake(xValue, yValue, widthValue, heightValue)];
+    float currentTimeLabelxValue = xValue;
+    float currentTimeLabelWidthValue = widthValue;
+    
+    //setup slider
+    xValue =
+    yValue = yValue;
+    widthValue = _playbackTimeSlider.frame.size.width; //taken from autolayout
+    heightValue = heightValue;
+    [_playbackTimeSlider setFrame:CGRectMake(xValue, yValue, widthValue, heightValue)];
+    
+    //setup total duration label
+    xValue = xValue + widthValue + (currentTimeLabelxValue / 2.0f);
+    yValue = yValue;
+    widthValue = currentTimeLabelWidthValue;
+    heightValue = heightValue;
+    [_totalDurationLabel setFrame:CGRectMake(xValue, yValue, widthValue, heightValue)];
+    
+    _currentTimeLabel.textAlignment = NSTextAlignmentRight;
+    _totalDurationLabel.textAlignment = NSTextAlignmentLeft;
+}
+
 #pragma mark - Responding to Button Events
 //BACK BUTTON
 - (void)backwardsButtonTappedOnce
 {
-    //code to rewind to previous song
+    waitingForNextOrPrevVideoToLoad = YES;
+    [[MusicPlaybackController obtainRawAVPlayer] pause];
+    _playbackTimeSlider.enabled = NO;
     [MusicPlaybackController returnToPreviousTrack];
-    
+    [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
+    [MusicPlaybackController simpleSpinnerOnScreen:YES];
     [self backwardsButtonLetGo];
 }
 
@@ -472,7 +556,7 @@ static int numTimesVCLoaded = 0;
 {
     UIColor *color = [UIColor blackColor];
     UIImage *tempImage;
-    if([MusicPlaybackController obtainRawAVPlayer].rate == 0)  //playing back
+    if([MusicPlaybackController obtainRawAVPlayer].rate == 0)  //currently paused, resume..
     {
         tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
         UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:color :tempImage];
@@ -481,7 +565,7 @@ static int numTimesVCLoaded = 0;
         [MusicPlaybackController explicitlyPausePlayback:NO];
         [MusicPlaybackController resumePlayback];
     }
-    else
+    else  //playing now, pause..
     {
         tempImage = [UIImage imageNamed:PLAY_IMAGE_FILLED];
         UIImage *playFilled = [UIImage colorOpaquePartOfImage:color :tempImage];
@@ -500,9 +584,12 @@ static int numTimesVCLoaded = 0;
 //FORWARD BUTTON
 - (void)forwardsButtonTappedOnce
 {
-    //code to fast forward
+    waitingForNextOrPrevVideoToLoad = YES;
+    [[MusicPlaybackController obtainRawAVPlayer] pause];
+    _playbackTimeSlider.enabled = NO;
     [MusicPlaybackController skipToNextTrack];
-    
+    [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
+    [MusicPlaybackController simpleSpinnerOnScreen:YES];
     [self forwardsButtonLetGo];
 }
 
@@ -589,40 +676,40 @@ static int numTimesVCLoaded = 0;
     }];
 }
 
+- (void)removeObservers
+{
+    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    
+    [player removeObserver:self forKeyPath:@"rate"];
+    [player removeObserver:self forKeyPath:@"currentItem.status"];
+    [player removeObserver:self forKeyPath:@"currentItem.duration"];
+    [player removeObserver:self forKeyPath:@"currentItem.loadedTimeRanges"];
+    [player removeObserver:self forKeyPath:@"currentItem.playbackBufferFull"];
+    [player removeObserver:self forKeyPath:@"currentItem.playbackBufferEmpty"];
+    [player removeObserver:self forKeyPath:@"currentItem.error"];
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
                         change:(NSDictionary *)change
                        context:(void *)context
 {
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    BOOL playbackExplicitlyPaused = [MusicPlaybackController playbackExplicitlyPaused];
+    
     if (kRateDidChangeKVO == context) {
-        float rate = player.rate;
-        BOOL internetConnectionPresent;
-        BOOL videoCompletelyBuffered = (mostRecentLoadedDuration == totalVideoDuration);
-        
-        //make sure we notify the GUI (video player) in case its on screen
-        if(rate == 1)
-            [self playbackHasResumed];
-        else
-            [self playbackHasStopped];
-        
-        Reachability *networkReachability = [Reachability reachabilityForInternetConnection];
-        if ([networkReachability currentReachabilityStatus] == NotReachable)
-            internetConnectionPresent = NO;
-        else
-            internetConnectionPresent = YES;
-        
-        if(rate != 0 && mostRecentLoadedDuration != 0 &&internetConnectionPresent){  //playing
-            NSLog(@"Playing");
-            
-        } else if(rate == 0 && !videoCompletelyBuffered &&!internetConnectionPresent){  //stopped
-            //Playback has stopped due to an internet connection issue.
-            NSLog(@"Video stopped, no connection.");
-            
-        }else{  //paused
-            NSLog(@"Paused");
+        if(player.rate == 0 && !playbackExplicitlyPaused){
+            if(! [MusicPlaybackController isInternetProblemSpinnerOnScreen]){
+                [self showSpinnerForBasicLoadingOnView:playerView];
+                [MusicPlaybackController simpleSpinnerOnScreen:YES];
+                [self toggleDisplayToPausedState];
+            }
+        } else if(player.rate == 1){
+            [self dismissAllSpinnersForView:playerView];
+            [MusicPlaybackController noSpinnersOnScreen];
+            [self toggleDisplayToPlayingState];
         }
-        
     } else if (kStatusDidChangeKVO == context) {
         //player "status" has changed. Not particulary useful information.
         if (player.status == AVPlayerStatusReadyToPlay) {
@@ -631,7 +718,7 @@ static int numTimesVCLoaded = 0;
                 CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
                 int secondsBuffed = (int)CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration));
                 if(secondsBuffed > 0){
-                    NSLog(@"Min buffer reached to continue playback.");
+                    //NSLog(@"Min buffer reached to continue playback.");
                 }
             }
         }
@@ -648,13 +735,59 @@ static int numTimesVCLoaded = 0;
                 mostRecentLoadedDuration = secondsLoaded;
             
             //NSLog(@"New loaded range: %i -> %i", (int)CMTimeGetSeconds(timerange.start), secondsLoaded);
-            
-            //if paused, check if user wanted it paused. if not, resume playback since buffer is back
-            if(!(player.rate == 1) && ![MusicPlaybackController playbackExplicitlyPaused]){
+            if(player.rate == 0 && !playbackExplicitlyPaused && !waitingForNextOrPrevVideoToLoad){
+                //continue where playback left off...
+                [self dismissAllSpinnersForView:playerView];
+                [MusicPlaybackController noSpinnersOnScreen];
                 [MusicPlaybackController resumePlayback];
+                [self toggleDisplayToPlayingState];
             }
         }
     }
+}
+
+- (void)playbackOfVideoHasBegun
+{
+    _playbackTimeSlider.enabled = YES;
+    waitingForNextOrPrevVideoToLoad = NO;
+    UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
+    UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];
+    
+    [playButton setImage:pauseFilled forState:UIControlStateNormal];
+    [MusicPlaybackController explicitlyPausePlayback:NO];
+    [MusicPlaybackController resumePlayback];
+    NSLog(@"Slider frame: %@", NSStringFromCGRect(_playbackTimeSlider.frame));
+}
+
+#pragma mark - Loading Spinner & Internet convenience methods
+- (BOOL)isInternetReachable
+{
+    return ([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == NotReachable) ? NO : YES;
+}
+
+//these methods are also in MyAVPlayer
+- (void)showSpinnerForInternetConnectionIssueOnView:(UIView *)displaySpinnerOnMe
+{
+    if(![MusicPlaybackController isInternetProblemSpinnerOnScreen]){
+        [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
+        [MRProgressOverlayView showOverlayAddedTo:displaySpinnerOnMe
+                                            title:@"Internet connection lost..."
+                                             mode:MRProgressOverlayViewModeIndeterminateSmall
+                                         animated:YES];
+    }
+}
+
+- (void)showSpinnerForBasicLoadingOnView:(UIView *)displaySpinnerOnMe
+{
+    if(![MusicPlaybackController isSimpleSpinnerOnScreen]){
+        [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
+        [MRProgressOverlayView showOverlayAddedTo:displaySpinnerOnMe title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
+    }
+}
+
+- (void)dismissAllSpinnersForView:(UIView *)dismissViewOnMe
+{
+    [MRProgressOverlayView dismissAllOverlaysForView:dismissViewOnMe animated:YES];
 }
 
 #pragma mark - Share Button Tapped
@@ -679,7 +812,7 @@ static int numTimesVCLoaded = 0;
     } else{
         // Handle error
         NSString *title = @"Trouble Sharing";
-        NSString *msg = @"Sorry, something went wrong while getting your song information.";
+        NSString *msg = @"There was a problem gathering information for this song.";
         [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
     }
 }
@@ -701,8 +834,7 @@ static int numTimesVCLoaded = 0;
 
 - (void)alertView:(SDCAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    if(buttonIndex == 0)
-        [self dismissVideoPlayerControllerButtonTapped];
+    return;
 }
 
 

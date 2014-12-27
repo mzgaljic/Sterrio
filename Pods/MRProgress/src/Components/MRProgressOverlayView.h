@@ -239,4 +239,6 @@ typedef NS_ENUM(NSUInteger, MRProgressOverlayViewMode){
  */
 - (void)dismiss:(BOOL)animated completion:(void(^)())completionBlock;
 
+- (void)manualLayoutSubviews;
+
 @end

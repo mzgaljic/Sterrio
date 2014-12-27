@@ -8,6 +8,8 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <XCDYouTubeKit/XCDYouTubeClient.h>
+#import "PlayerView.h"
+#import "MRProgress.h"  //loading spinner
 #import "Reachability.h"
 #import "Song+Utilities.h"
 #import "SDCAlertView.h"  //custom alert view

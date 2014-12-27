@@ -10,6 +10,7 @@
 
 @implementation PlayerView
 
+#pragma mark - UIView lifecycle
 - (id)init
 {
     if (self = [super init]) {
@@ -18,6 +19,11 @@
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(orientationNeedsToChanged)
                                                      name:UIDeviceOrientationDidChangeNotification object:nil];
+        
+        UISwipeGestureRecognizer *upSwipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self
+                                                                                                action:@selector(userSwipedUp)];
+        upSwipeRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
+        [self addGestureRecognizer:upSwipeRecognizer];
     }
     return self;
 }
@@ -27,6 +33,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark - AVPlayer & AVPlayerLayer code
 + (Class)layerClass
 {
     return [AVPlayerLayer class];
@@ -40,15 +47,27 @@
     [(AVPlayerLayer *)[self layer] setPlayer:player];
 }
 
+#pragma mark - Responding to getures
+- (void)userSwipedUp
+{
+    [self segueToPlayerViewControllerIfAppropriate];
+}
+
+
+#pragma mark - Other useful miscellaneous stuff
+
 //detects when view (this AVPlayer) was tapped (fires when touch is released)
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    if(! [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded]){
-        //must be in this order since calling "beginExpanding.." will change the "isVideoPlayerExpanded variable
-        [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:[self topViewController]];
+    CGPoint touchLocation = [[[event allTouches] anyObject] locationInView:self];
+    CGRect frame = self.frame;
+    int x = touchLocation.x;
+    int y = touchLocation.y;
+    BOOL touchWithinVideoBounds = (x > 0 && y > 0 && x <= frame.size.width && y <= frame.size.height);
+    if(touchWithinVideoBounds){
+        [self segueToPlayerViewControllerIfAppropriate];
     }
 }
-
 
 //will rotate the video ONLY when it is small.
 //The SongPlayerViewController class handles the big video rotation.
@@ -59,6 +78,13 @@
     else
         [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerNeedsToBeRotated];
 }
+
+- (void)segueToPlayerViewControllerIfAppropriate
+{
+    if(! [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded])
+        [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:[self topViewController]];
+}
+
 
 - (UIViewController *)topViewController{
     return [self topViewController:[UIApplication sharedApplication].keyWindow.rootViewController];

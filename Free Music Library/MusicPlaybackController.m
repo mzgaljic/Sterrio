@@ -12,6 +12,9 @@ static PlayerView *playerView = nil;
 static PlaybackQueue *playbackQueue = nil;  //DO NOT access directly! getter below
 static BOOL explicitlyPausePlayback = NO;
 static BOOL initialized = NO;
+static BOOL internetProblemLoadingSong = NO;
+static BOOL simpleSpinnerOnScreen = NO;
+static BOOL internetConnectionSpinnerOnScreen = NO;
 
 @implementation MusicPlaybackController
 
@@ -35,6 +38,16 @@ static BOOL initialized = NO;
     } else{
         [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
     }
+}
+
++ (void)declareInternetProblemWhenLoadingSong:(BOOL)declare
+{
+    internetProblemLoadingSong = declare;
+}
+
++ (BOOL)didPlaybackStopDueToInternetProblemLoadingSong
+{
+    return internetProblemLoadingSong;
 }
 
 /** Playback will continue from the specified seek point, skipping a portion of the track. */
@@ -289,6 +302,42 @@ static BOOL initialized = NO;
     NSError *error = nil;
     NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
     return fetchedObjects;
+}
+
+#pragma mark - loading spinner status
++ (void)simpleSpinnerOnScreen:(BOOL)onScreen
+{
+    simpleSpinnerOnScreen = onScreen;
+    if(onScreen)
+        internetConnectionSpinnerOnScreen = NO;
+    else
+        [MusicPlaybackController noSpinnersOnScreen];
+}
++ (void)internetProblemSpinnerOnScreen:(BOOL)onScreen
+{
+    internetConnectionSpinnerOnScreen = onScreen;
+    if(onScreen)
+        simpleSpinnerOnScreen = NO;
+    else
+        [MusicPlaybackController noSpinnersOnScreen];
+}
++ (void)noSpinnersOnScreen
+{
+    simpleSpinnerOnScreen = NO;
+    internetConnectionSpinnerOnScreen = NO;
+}
++ (BOOL)isSimpleSpinnerOnScreen
+{
+    return simpleSpinnerOnScreen;
+}
+
++ (BOOL)isInternetProblemSpinnerOnScreen
+{
+    return internetConnectionSpinnerOnScreen;
+}
++ (BOOL)isSpinnerOnScreen
+{
+    return (internetConnectionSpinnerOnScreen || simpleSpinnerOnScreen) ? YES : NO;
 }
 
 #pragma mark - DEBUG

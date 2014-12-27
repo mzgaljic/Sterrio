@@ -11,6 +11,7 @@
 #import "VideoPlayerControlInterfaceDelegate.h"
 #import "SongPlayerViewDisplayUtility.h"
 #import "PlayerView.h"
+#import "MRProgress.h"  //loading spinner
 
 @interface SongPlayerCoordinator : NSObject
 @property (nonatomic, weak) id<VideoPlayerControlInterfaceDelegate>delegate;

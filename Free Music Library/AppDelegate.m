@@ -70,16 +70,24 @@ static const int APP_LAUNCHED_ALREADY = 1;
     {
         case UIEventSubtypeRemoteControlTogglePlayPause:
             if([player rate] == 0){
-                [MusicPlaybackController explicitlyPausePlayback:NO];
-                [player play];
+                if([MusicPlaybackController didPlaybackStopDueToInternetProblemLoadingSong]){
+                    [player startPlaybackOfSong:[MusicPlaybackController nowPlayingSong] goingForward:YES];
+                } else{
+                    [MusicPlaybackController explicitlyPausePlayback:NO];
+                    [player play];
+                }
             }else{
                 [MusicPlaybackController explicitlyPausePlayback:YES];
                 [player pause];
             }
             break;
         case UIEventSubtypeRemoteControlPlay:
-            [MusicPlaybackController explicitlyPausePlayback:NO];
-            [player play];
+            if([MusicPlaybackController didPlaybackStopDueToInternetProblemLoadingSong]){
+                [player startPlaybackOfSong:[MusicPlaybackController nowPlayingSong] goingForward:YES];
+            } else{
+                [MusicPlaybackController explicitlyPausePlayback:NO];
+                [player play];
+            }
             break;
         case UIEventSubtypeRemoteControlPause:
             [MusicPlaybackController explicitlyPausePlayback:YES];

@@ -28,6 +28,10 @@
 /** Stops playback and removes the item from the queue - "prep" for deletion **/
 + (void)songAboutToBeDeleted;
 
++ (void)declareInternetProblemWhenLoadingSong:(BOOL)declare;
+
++ (BOOL)didPlaybackStopDueToInternetProblemLoadingSong;
+
 /** Playback will continue from the specified seek point, skipping a portion of the track. */
 + (void)seekToTime;
 
@@ -71,6 +75,14 @@
 
 #pragma mark - Lock Screen Song Info & Art
 + (void)updateLockScreenInfoAndArtForSong:(Song *)song;
+
+#pragma mark - loading spinner status
++ (void)simpleSpinnerOnScreen:(BOOL)onScreen;
++ (void)internetProblemSpinnerOnScreen:(BOOL)onScreen;
++ (void)noSpinnersOnScreen;
++ (BOOL)isSimpleSpinnerOnScreen;
++ (BOOL)isInternetProblemSpinnerOnScreen;
++ (BOOL)isSpinnerOnScreen;
 
 #pragma mark - DEBUG
 + (void)printQueueContents;

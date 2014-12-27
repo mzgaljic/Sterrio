@@ -24,21 +24,11 @@
     //right side of nav bar
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self
                                                                                action:@selector(addButtonPressed)];
-    
-    UIImage *image = [UIImage imageNamed:@"Now Playing"];
-    UIBarButtonItem *nowPlaying = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(nowPlayingTapped)];
-    nowPlaying.target = self;
-    nowPlaying.action = @selector(nowPlayingTapped);
-    
-#warning check to see if item is actually playing when adding the now playing button!
-    UIBarButtonItem *negSpaceAdjust = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    [negSpaceAdjust setWidth:-10];
-    
-    NSArray *rightBarButtonItems = @[negSpaceAdjust, nowPlaying, addButton];
+    NSArray *rightBarButtonItems = @[addButton];
     self.navigationItem.rightBarButtonItems = rightBarButtonItems;
     
     //left side of nav bar
-    image = [UIImage imageNamed:@"Settings-Line"];
+    UIImage *image = [UIImage imageNamed:@"Settings-Line"];
     UIBarButtonItem *settings = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self
                                                                 action:@selector(settingsButtonTapped)];
     

@@ -103,6 +103,10 @@ static const short SMALL_VIDEO_WIDTH = 200;
             //show portrait player
             [playerView setFrame: [SongPlayerCoordinator bigPlayerFrameInPortrait]];
         }
+    } completion:^(BOOL finished) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
+        });
     }];
     videoPlayerIsExpanded = YES;
 }
@@ -112,10 +116,14 @@ static const short SMALL_VIDEO_WIDTH = 200;
     if(videoPlayerIsExpanded == NO)
         return;
     
-    PlayerView *videoPlayer = [MusicPlaybackController obtainRawPlayerView];
+    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     
     [UIView animateWithDuration:0.6f animations:^{
-        videoPlayer.frame = [SongPlayerCoordinator smallPlayerFrameInPortrait];
+        playerView.frame = [SongPlayerCoordinator smallPlayerFrameInPortrait];
+    } completion:^(BOOL finished) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
+        });
     }];
     videoPlayerIsExpanded = NO;
 }

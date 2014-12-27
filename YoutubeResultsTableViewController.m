@@ -81,7 +81,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)makeBarButtonGrey:(UIBarButtonItem *)barButton yes:(BOOL)show
 {
     if (show) {
-        barButton.style = UIBarButtonItemStyleBordered;
+        barButton.style = UIBarButtonItemStylePlain;
         barButton.enabled = true;
     } else {
         barButton.style = UIBarButtonItemStylePlain;
