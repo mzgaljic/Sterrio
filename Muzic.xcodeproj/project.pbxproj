@@ -66,7 +66,6 @@
 		878519C9199400C200A573A9 /* YouTubeVideoPlaybackTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878519C8199400C200A573A9 /* YouTubeVideoPlaybackTableViewController.m */; };
 		878519D21994327C00A573A9 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 878519D01994327C00A573A9 /* Reachability.m */; };
 		878ACD64192D48EF005938F5 /* MasterSongsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878ACD63192D48EF005938F5 /* MasterSongsTableViewController.m */; };
-		878ACD6A192D532D005938F5 /* SongItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878ACD69192D532D005938F5 /* SongItemViewController.m */; };
 		879112FF197EF90E00DFC2DB /* PlaylistTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 879112FE197EF90E00DFC2DB /* PlaylistTableViewFormatter.m */; };
 		879AB33D19F1D2E100FD6582 /* PlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 879AB33C19F1D2E100FD6582 /* PlaybackQueue.m */; };
 		879AB34119F225F300FD6582 /* SongPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 879AB34019F225F300FD6582 /* SongPlayerViewController.m */; };
@@ -237,8 +236,6 @@
 		878519D11994327C00A573A9 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		878ACD62192D48EF005938F5 /* MasterSongsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterSongsTableViewController.h; sourceTree = "<group>"; };
 		878ACD63192D48EF005938F5 /* MasterSongsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterSongsTableViewController.m; sourceTree = "<group>"; };
-		878ACD68192D532D005938F5 /* SongItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SongItemViewController.h; sourceTree = "<group>"; };
-		878ACD69192D532D005938F5 /* SongItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SongItemViewController.m; sourceTree = "<group>"; };
 		879112FD197EF90E00DFC2DB /* PlaylistTableViewFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistTableViewFormatter.h; sourceTree = "<group>"; };
 		879112FE197EF90E00DFC2DB /* PlaylistTableViewFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistTableViewFormatter.m; sourceTree = "<group>"; };
 		879AB33B19F1D2E100FD6582 /* PlaybackQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaybackQueue.h; sourceTree = "<group>"; };
@@ -424,15 +421,6 @@
 				870EDAE5197F4EAD001901B9 /* EditableCellTableViewController.m */,
 			);
 			name = "Editing a string";
-			sourceTree = "<group>";
-		};
-		8721F8251A429820002FCFD6 /* Old code - not needed */ = {
-			isa = PBXGroup;
-			children = (
-				878ACD68192D532D005938F5 /* SongItemViewController.h */,
-				878ACD69192D532D005938F5 /* SongItemViewController.m */,
-			);
-			name = "Old code - not needed";
 			sourceTree = "<group>";
 		};
 		87270039199EB9DB00D71204 /* LIFO Stack Controller - for VC */ = {
@@ -761,7 +749,6 @@
 		879AB33E19F2188B00FD6582 /* The Player */ = {
 			isa = PBXGroup;
 			children = (
-				8721F8251A429820002FCFD6 /* Old code - not needed */,
 				879AB33F19F225F300FD6582 /* SongPlayerViewController.h */,
 				879AB34019F225F300FD6582 /* SongPlayerViewController.m */,
 				87CB302B1A4A05F1004E5158 /* SongPlayerNavController.h */,
@@ -1173,7 +1160,6 @@
 				87D3743B199B13B300D3B70B /* UIButton+ExpandedHitArea.m in Sources */,
 				873EEA871A4BBA210092A6DF /* YouTubeVideo.m in Sources */,
 				87FA7D3219A8033E00149D23 /* Song.m in Sources */,
-				878ACD6A192D532D005938F5 /* SongItemViewController.m in Sources */,
 				87501580198C3D5300382945 /* YoutubeResultsTableViewController.m in Sources */,
 				875984A5195D764700015243 /* PlaylistItemTableViewController.m in Sources */,
 				87D47D991934289F0057D49B /* MasterGenreTableViewController.m in Sources */,

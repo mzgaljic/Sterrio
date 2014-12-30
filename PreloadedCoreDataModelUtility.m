@@ -17,14 +17,14 @@ static NSString * const SONG1_YTID = @"7_weSk0BonM";
 static NSString * const ARTIST1_NAME = @"Leona Lewis";
 //static NSString * const ALBUM1_NAME = @"Spirit (Deluxe)";
 
-static NSString * const SONG2_NAME = @"Sretan Božić svakome";
-static NSString * const SONG2_YTID = @"AyeS7PI3mcw";
-static NSString * const ARTIST2_NAME = @"Begini";
-static NSString * const ALBUM2_NAME = @"Music Of Croatia: Yet Another Christmas Hits 2014";
+static NSString * const SONG2_NAME = @"Summer of 69";
+static NSString * const SONG2_YTID = @"9f06QZCVUHg";
+static NSString * const ARTIST2_NAME = @"Bryan Adams";
+static NSString * const ALBUM2_NAME = @"Reckless";
 
-static NSString * const SONG3_NAME = @"Zena nad zenama";
-static NSString * const SONG3_YTID = @"MR4f4jyC90s";
-static NSString * const ARTIST3_NAME = @"Tony Cetinski";
+static NSString * const SONG3_NAME = @"Let It Be";
+static NSString * const SONG3_YTID = @"WcBnJw-H2wQ";
+static NSString * const ARTIST3_NAME = @"The Beatles";
 
 
 + (void)createCoreDataSampleMusicData

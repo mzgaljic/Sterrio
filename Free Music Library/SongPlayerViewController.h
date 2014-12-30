@@ -35,14 +35,15 @@
                                                         VideoPlayerControlInterfaceDelegate>
 
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;  //really the navBar title item
-@property (weak, nonatomic) IBOutlet ASValueTrackingSlider *playbackTimeSlider;
 
 @property (weak, nonatomic) IBOutlet UILabel *currentTimeLabel;
 @property (weak, nonatomic) IBOutlet UILabel *totalDurationLabel;
+@property (weak, nonatomic) IBOutlet ASValueTrackingSlider *playbackSlider;
 
 - (IBAction)playbackSliderValueHasChanged:(id)sender;
 - (IBAction)playbackSliderEditingHasBegun:(id)sender;
-- (IBAction)playbackSliderEditingHasEnded:(id)sender;
+- (IBAction)playbackSliderEditingHasEndedA:(id)sender;  //touch up inside
+- (IBAction)playbackSliderEditingHasEndedB:(id)sender;  //touch up outside
 
 
 @end

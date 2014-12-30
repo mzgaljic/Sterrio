@@ -13,7 +13,6 @@
 #import "CoreDataTableViewController.h"
 #import "AppEnvironmentConstants.h"
 #import "AlbumArtUtilities.h"
-#import "SongItemViewController.h"
 #import "MasterEditingSongTableViewController.h"
 #import "Song.h"
 #import "Song+Utilities.h"

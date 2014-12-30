@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "Playlist+Utilities.h"
 #import "Song+Utilities.h"
-#import "SongItemViewController.h"
 #import "AppEnvironmentConstants.h"
 #import "SongTableViewFormatter.h"
 #import "UIColor+LighterAndDarker.h"

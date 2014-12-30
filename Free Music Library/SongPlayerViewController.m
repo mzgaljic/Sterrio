@@ -28,8 +28,7 @@
 @end
 
 @implementation SongPlayerViewController
-@synthesize navBar, playbackTimeSlider = _playbackTimeSlider, currentTimeLabel = _currentTimeLabel,
-            totalDurationLabel = _totalDurationLabel;
+@synthesize navBar, currentTimeLabel = _currentTimeLabel,totalDurationLabel = _totalDurationLabel, playbackSlider = _playbackSlider;
 
 static UIInterfaceOrientation lastKnownOrientation;
 static BOOL playAfterMovingSlider = YES;
@@ -77,8 +76,8 @@ void *kDidFailKVO               = &kDidFailKVO;
                                              selector:@selector(playbackOfVideoHasBegun)
                                                  name:@"PlaybackStartedNotification"
                                                object:nil];
-    //_playbackTimeSlider.enabled = NO;
-    _playbackTimeSlider.dataSource = self;
+    //self.playbackSlider.enabled = NO;
+    self.playbackSlider.dataSource = self;
     [[SongPlayerCoordinator sharedInstance] setDelegate:self];
     
     _currentTimeLabel.text = @"--:--";
@@ -120,11 +119,7 @@ static int numTimesVCLoaded = 0;
                                                                  target:self
                                                                  action:@selector(dismissVideoPlayerControllerButtonTapped)];
     self.navigationItem.leftBarButtonItem = popButton;
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [self setupPlaybackTimeSliderAndDuration];
+    
     [self positionPlaybackSliderOnScreen];
 }
 
@@ -251,29 +246,31 @@ static int numTimesVCLoaded = 0;
 #pragma mark - Responding to Player Playback Events (rate, internet connection, etc.)
 - (IBAction)playbackSliderEditingHasBegun:(id)sender
 {
-    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     if(player.rate == 0)
         playAfterMovingSlider = NO;
     [player pause];
-#warning need to update play/pause button while doing this
     sliderIsBeingTouched = YES;
+    [self toggleDisplayToPausedState];
+}
+- (IBAction)playbackSliderEditingHasEndedA:(id)sender  //touch up inside
+{
+    if(playAfterMovingSlider)
+        [[MusicPlaybackController obtainRawAVPlayer] play];
+    playAfterMovingSlider = YES;  //reset value
+    sliderIsBeingTouched = NO;
+}
+- (IBAction)playbackSliderEditingHasEndedB:(id)sender  //touch up outside
+{
+    [self playbackSliderEditingHasEndedA:nil];
 }
 
 - (IBAction)playbackSliderValueHasChanged:(id)sender
 {
-    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        CMTime newTime = CMTimeMakeWithSeconds(_playbackTimeSlider.value, 1);
-        [(MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer] seekToTime:newTime];
-    });
+    CMTime newTime = CMTimeMakeWithSeconds(_playbackSlider.value, 1);
+    [[MusicPlaybackController obtainRawAVPlayer] seekToTime:newTime];
 }
 
-- (IBAction)playbackSliderEditingHasEnded:(id)sender
-{
-    if(playAfterMovingSlider)
-        [(MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer] play];
-    playAfterMovingSlider = YES;  //reset value
-    sliderIsBeingTouched = NO;
-}
 
 - (NSString *)slider:(ASValueTrackingSlider *)slider stringForValue:(float)value
 {
@@ -287,15 +284,9 @@ static int numTimesVCLoaded = 0;
     if(sliderIsBeingTouched)
         return;
     
-    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        
-        CMTime currentTime = ((MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer]).currentItem.currentTime;
-        Float64 currentTimeValue = CMTimeGetSeconds(currentTime);
-        
-        //sets the value directly from the value, since playback could stutter or pause! So you can't increment by 1 each second.
-        [_playbackTimeSlider setValue:(currentTimeValue) animated:YES];
-    });
-    
+    Float64 currentTimeValue = CMTimeGetSeconds([MusicPlaybackController obtainRawAVPlayer].currentItem.currentTime);
+    //sets the value directly from the value, since playback could stutter or pause! So you can't increment by 1 each second.
+    [self.playbackSlider setValue:(currentTimeValue) animated:YES];
 }
 
 - (NSString *)convertSecondsToPrintableNSStringWithSliderValue:(float)value
@@ -468,9 +459,50 @@ static int numTimesVCLoaded = 0;
 }
 
 #pragma mark - Playback Time Slider
-- (void)setupPlaybackTimeSliderAndDuration
+- (void)positionPlaybackSliderOnScreen
 {
-    CMTime cmTime = ((MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer]).currentItem.asset.duration;
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    CGFloat screenHeight = screenRect.size.height;
+    CGFloat screenWidth = screenRect.size.width;
+    
+    int labelWidth = 43;  //hardcoded because i counted how wide it needs to be to fit our text (67 for including hours)
+    int labelHeight = 21;
+    int padding = 10;
+    
+    //setup current time label
+    int labelXValue = screenWidth * 0.02f;
+    int yValue = screenHeight * 0.74f;
+    [_currentTimeLabel setFrame:CGRectMake(labelXValue, yValue, labelWidth, labelHeight)];
+    int currentTimeLabelxValue = labelXValue;
+    
+    //setup slider
+    int xValue = currentTimeLabelxValue + labelWidth + padding;
+    //widthValue = self.playbackSlider.frame.size.width; //taken from autolayout
+    int sliderWidth = screenWidth - ((labelXValue + labelWidth + padding) * 2);
+    int sliderHeight = labelHeight;
+    [self.playbackSlider setFrame:CGRectMake(xValue, yValue, sliderWidth, sliderHeight)];
+    
+    //slider settings
+    self.playbackSlider.minimumValue = 0.0f;
+    self.playbackSlider.popUpViewCornerRadius = 12.0;
+    [self.playbackSlider setMaxFractionDigitsDisplayed:0];
+    self.playbackSlider.popUpViewColor = [[UIColor defaultSystemTintColor] lighterColor];
+    self.playbackSlider.font = [UIFont fontWithName:@"GillSans-Bold" size:24];
+    self.playbackSlider.textColor = [UIColor whiteColor];
+    self.playbackSlider.minimumTrackTintColor = [UIColor defaultSystemTintColor];
+    
+    //setup total duration label
+    labelXValue = xValue + sliderWidth + padding;
+    yValue = yValue;
+    [_totalDurationLabel setFrame:CGRectMake(labelXValue, yValue, labelWidth, labelHeight)];
+    
+    _currentTimeLabel.textAlignment = NSTextAlignmentRight;
+    _totalDurationLabel.textAlignment = NSTextAlignmentLeft;
+}
+
+- (void)displayTotalSliderAndLabelDuration
+{
+    CMTime cmTime = [MusicPlaybackController obtainRawAVPlayer].currentItem.asset.duration;
     Float64 durationInSeconds = CMTimeGetSeconds(cmTime);
     
     if(durationInSeconds <= 0.0f || durationInSeconds == NAN){
@@ -486,53 +518,11 @@ static int numTimesVCLoaded = 0;
     animation.type = kCATransitionFade;
     animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
     
-    _playbackTimeSlider.minimumValue = 0.0f;
-    _playbackTimeSlider.maximumValue = durationInSeconds;
-    _playbackTimeSlider.popUpViewCornerRadius = 12.0;
-    [_playbackTimeSlider setMaxFractionDigitsDisplayed:0];
-    _playbackTimeSlider.popUpViewColor = [[UIColor defaultSystemTintColor] lighterColor];
-    _playbackTimeSlider.font = [UIFont fontWithName:@"GillSans-Bold" size:24];
-    _playbackTimeSlider.textColor = [UIColor whiteColor];
-    _playbackTimeSlider.minimumTrackTintColor = [UIColor defaultSystemTintColor];
+    self.playbackSlider.maximumValue = durationInSeconds;
     
     //set duration label
     [_totalDurationLabel.layer addAnimation:animation forKey:@"changeTextTransition"];  //animates the duration once its determined
     _totalDurationLabel.text = [self convertSecondsToPrintableNSStringWithSliderValue:durationInSeconds];  //just sets duration, already known.
-}
-
-- (void)positionPlaybackSliderOnScreen
-{
-#warning redo code for determining locations of labels and slider
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    CGFloat screenHeight = screenRect.size.height;
-    CGFloat screenWidth = screenRect.size.width;
-    
-    //setup current time label
-    float xValue = screenWidth * 0.02f;
-    float yValue = ceil(screenHeight * 0.74f);
-    float widthValue = 43.0f;  //hardcoded because i counted how wide it needs to be to fit our text
-    //67 for including hours
-    float heightValue = 21.0f;
-    [_currentTimeLabel setFrame:CGRectMake(xValue, yValue, widthValue, heightValue)];
-    float currentTimeLabelxValue = xValue;
-    float currentTimeLabelWidthValue = widthValue;
-    
-    //setup slider
-    xValue =
-    yValue = yValue;
-    widthValue = _playbackTimeSlider.frame.size.width; //taken from autolayout
-    heightValue = heightValue;
-    [_playbackTimeSlider setFrame:CGRectMake(xValue, yValue, widthValue, heightValue)];
-    
-    //setup total duration label
-    xValue = xValue + widthValue + (currentTimeLabelxValue / 2.0f);
-    yValue = yValue;
-    widthValue = currentTimeLabelWidthValue;
-    heightValue = heightValue;
-    [_totalDurationLabel setFrame:CGRectMake(xValue, yValue, widthValue, heightValue)];
-    
-    _currentTimeLabel.textAlignment = NSTextAlignmentRight;
-    _totalDurationLabel.textAlignment = NSTextAlignmentLeft;
 }
 
 #pragma mark - Responding to Button Events
@@ -541,7 +531,7 @@ static int numTimesVCLoaded = 0;
 {
     waitingForNextOrPrevVideoToLoad = YES;
     [[MusicPlaybackController obtainRawAVPlayer] pause];
-    _playbackTimeSlider.enabled = NO;
+    self.playbackSlider.enabled = NO;
     [MusicPlaybackController returnToPreviousTrack];
     [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
     [MusicPlaybackController simpleSpinnerOnScreen:YES];
@@ -586,7 +576,7 @@ static int numTimesVCLoaded = 0;
 {
     waitingForNextOrPrevVideoToLoad = YES;
     [[MusicPlaybackController obtainRawAVPlayer] pause];
-    _playbackTimeSlider.enabled = NO;
+    self.playbackSlider.enabled = NO;
     [MusicPlaybackController skipToNextTrack];
     [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
     [MusicPlaybackController simpleSpinnerOnScreen:YES];
@@ -735,7 +725,7 @@ static int numTimesVCLoaded = 0;
                 mostRecentLoadedDuration = secondsLoaded;
             
             //NSLog(@"New loaded range: %i -> %i", (int)CMTimeGetSeconds(timerange.start), secondsLoaded);
-            if(player.rate == 0 && !playbackExplicitlyPaused && !waitingForNextOrPrevVideoToLoad){
+            if(player.rate == 0 && !playbackExplicitlyPaused && !waitingForNextOrPrevVideoToLoad && !sliderIsBeingTouched){
                 //continue where playback left off...
                 [self dismissAllSpinnersForView:playerView];
                 [MusicPlaybackController noSpinnersOnScreen];
@@ -748,7 +738,7 @@ static int numTimesVCLoaded = 0;
 
 - (void)playbackOfVideoHasBegun
 {
-    _playbackTimeSlider.enabled = YES;
+    self.playbackSlider.enabled = YES;
     waitingForNextOrPrevVideoToLoad = NO;
     UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
     UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];
@@ -756,7 +746,8 @@ static int numTimesVCLoaded = 0;
     [playButton setImage:pauseFilled forState:UIControlStateNormal];
     [MusicPlaybackController explicitlyPausePlayback:NO];
     [MusicPlaybackController resumePlayback];
-    NSLog(@"Slider frame: %@", NSStringFromCGRect(_playbackTimeSlider.frame));
+    
+    [self displayTotalSliderAndLabelDuration];
 }
 
 #pragma mark - Loading Spinner & Internet convenience methods
