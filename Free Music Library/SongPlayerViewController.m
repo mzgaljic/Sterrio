@@ -114,8 +114,10 @@ static int numTimesVCLoaded = 0;
                                                                             action:@selector(dismissVideoPlayerControllerButtonTapped)];
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown)
+    if(orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown){
         [self positionMusicButtonsOnScreenAndSetThemUp];
+        [self positionPlaybackSliderOnScreen];
+    }
     
     [self checkDeviceOrientation];
     [self positionPlaybackSliderOnScreen];
@@ -135,8 +137,10 @@ static int numTimesVCLoaded = 0;
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    if(playerButtonsSetUp == NO)
+    if(playerButtonsSetUp == NO){
         [self positionMusicButtonsOnScreenAndSetThemUp];
+        [self positionPlaybackSliderOnScreen];
+    }
 }
 
 - (void)dealloc
@@ -244,6 +248,7 @@ static int numTimesVCLoaded = 0;
                                              widthOfScreenRoationIndependant,
                                              videoFrameHeight)];
         [self positionMusicButtonsOnScreenAndSetThemUp];
+        [self positionPlaybackSliderOnScreen];
     }
     
     lastKnownOrientation = toInterfaceOrientation;
