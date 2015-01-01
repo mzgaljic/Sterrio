@@ -250,7 +250,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     BOOL albumHasNowPlaying = NO;
     for(Song *albumSong in album.albumSongs)
     {
-        if([[MusicPlaybackController nowPlayingSong] isEqual:albumSong]){
+        if([[MusicPlaybackController nowPlayingSong].song_id isEqual:albumSong.song_id]){
             albumHasNowPlaying = YES;
             break;
         }
@@ -308,7 +308,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         //check if any of the songs in this album are currently playing. if so, set the avplayer to nil (and pause it) so it doesn't crash!
         for(Song *aSong in album.albumSongs)
         {
-            if([[MusicPlaybackController nowPlayingSong] isEqual:aSong])
+            if([[MusicPlaybackController nowPlayingSong].song_id isEqual:aSong.song_id])
                 [MusicPlaybackController songAboutToBeDeleted];
         }
         

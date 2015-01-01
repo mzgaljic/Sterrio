@@ -273,7 +273,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    if([[MusicPlaybackController nowPlayingSong] isEqual:song])
+    if([[MusicPlaybackController nowPlayingSong].song_id isEqual:song.song_id])
         cell.textLabel.textColor = [UIColor defaultAppColorScheme];
     else
         cell.textLabel.textColor = [UIColor blackColor];
@@ -327,7 +327,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         //obtain object for the deleted song
         Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
-        if([[MusicPlaybackController nowPlayingSong] isEqual:song]){
+        if([[MusicPlaybackController nowPlayingSong].song_id isEqual:song.song_id]){
             [MusicPlaybackController songAboutToBeDeleted];
         }
         [song removeAlbumArt];

@@ -53,6 +53,7 @@
 + (NSArray *)listOfUpcomingSongsInQueue;
 + (NSUInteger)numMoreSongsInQueue;
 + (BOOL)isSongLastInQueue:(Song *)song;
++ (BOOL)isSongFirstInQueue:(Song *)song;
 
 #pragma mark + Changing the Queue
 + (void)newQueueWithSong:(Song *)song

@@ -235,7 +235,7 @@ static BOOL lastSortOrder;
         
         for(Song *aSong in playlist.playlistSongs)
         {
-            if([[MusicPlaybackController nowPlayingSong] isEqual:aSong])
+            if([[MusicPlaybackController nowPlayingSong].song_id isEqual:aSong.song_id])
             {
                 [MusicPlaybackController songAboutToBeDeleted];
             }

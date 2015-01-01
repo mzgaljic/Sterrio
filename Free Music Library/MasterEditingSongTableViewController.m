@@ -305,7 +305,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     if(indexPath.section == 1){
         if(indexPath.row == 0){
             //defensively check to see if the song we're about to delete is playing. if so, avoid a crash.
-            if([_songIAmEditing isEqual:[MusicPlaybackController nowPlayingSong]]){
+            if([_songIAmEditing.song_id isEqual:[MusicPlaybackController nowPlayingSong].song_id]){
                 [MusicPlaybackController songAboutToBeDeleted];
             }
             

@@ -94,7 +94,15 @@ static BOOL internetConnectionSpinnerOnScreen = NO;
 + (BOOL)isSongLastInQueue:(Song *)song
 {
     NSArray *array = [[MusicPlaybackController playbackQueue] listOfUpcomingSongsNowPlayingInclusive];
-    return ([array[array.count-1] isEqual:song]) ? YES : NO;
+    Song *comparisonSong = array[array.count-1];
+    return ([comparisonSong.song_id isEqual:song.song_id]) ? YES : NO;
+}
+
++ (BOOL)isSongFirstInQueue:(Song *)song
+{
+    NSArray *array = [[MusicPlaybackController playbackQueue] listOfPlayedSongsNowPlayingInclusive];
+    Song *comparisonSong = array[0];
+    return ([comparisonSong.song_id isEqual:song.song_id]) ? YES : NO;
 }
 
 #pragma mark - Now Playing Song
@@ -110,7 +118,7 @@ static BOOL internetConnectionSpinnerOnScreen = NO;
                genreCode:(int)code
          skipCurrentSong:(BOOL)skipNow;
 {
-    if([[MusicPlaybackController nowPlayingSong] isEqual:song]){  //selected song is already playing...
+    if([[MusicPlaybackController nowPlayingSong].song_id isEqual:song.song_id]){  //selected song is already playing...
         //ignore new queue request (SongPlayerViewController will still be able to open)
         return;
     }
@@ -255,12 +263,15 @@ static BOOL internetConnectionSpinnerOnScreen = NO;
 {
     if(song == nil)
         return nil;
-    NSMutableArray *songArray = nil;
+    NSArray *songArray = nil;
     
     #warning unfinished
     //song tapped in song tab
     if(!album && !artist && !playlist && code == [GenreConstants noGenreSelectedGenreCode]){
-        songArray = [NSMutableArray arrayWithArray:[MusicPlaybackController arrayOfAllSongsInSongTab]];
+        NSArray *allSongs = [MusicPlaybackController arrayOfAllSongsInSongTab];
+        NSUInteger songIndex = [allSongs indexOfObject:song];
+        songArray = [[MusicPlaybackController arrayOfAllSongsInSongTab] subarrayWithRange:NSMakeRange(songIndex, allSongs.count-songIndex)];
+        
     }
     //a standalone song was tapped in the artist tab (song not part of an album but has an artist)
     else if(artist && !album){

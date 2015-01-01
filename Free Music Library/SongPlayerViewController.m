@@ -131,8 +131,10 @@ static int numTimesVCLoaded = 0;
     }
     
     //check if this song is the last one
-    if([MusicPlaybackController numMoreSongsInQueue] == 0)
+    if([MusicPlaybackController isSongLastInQueue:nowPlaying])
         [self hideNextTrackButton];
+    if([MusicPlaybackController isSongFirstInQueue:nowPlaying])
+        [self hidePreviousTrackButton];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
@@ -476,6 +478,10 @@ static int numTimesVCLoaded = 0;
 #pragma mark - Playback Time Slider
 - (void)positionPlaybackSliderOnScreen
 {
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+        return;
+    
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     CGFloat screenHeight = screenRect.size.height;
     CGFloat screenWidth = screenRect.size.width;
@@ -558,6 +564,10 @@ static int numTimesVCLoaded = 0;
     [MusicPlaybackController simpleSpinnerOnScreen:YES];
     [self backwardsButtonLetGo];
     [self showNextTrackButton];  //in case it wasnt on screen already
+    
+    //check if this next song is the first one in the queue
+    if([MusicPlaybackController isSongFirstInQueue:[MusicPlaybackController nowPlayingSong]])
+        [self hidePreviousTrackButton];
 }
 
 - (void)backwardsButtonBeingHeld{ [self addShadowToButton:backwardButton]; }
@@ -603,9 +613,10 @@ static int numTimesVCLoaded = 0;
     [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
     [MusicPlaybackController simpleSpinnerOnScreen:YES];
     [self forwardsButtonLetGo];
+    [self showPreviousTrackButton];
     
     //check if this next song is the last one
-    if([MusicPlaybackController numMoreSongsInQueue] == 0)
+    if([MusicPlaybackController isSongLastInQueue:[MusicPlaybackController nowPlayingSong]])
         [self hideNextTrackButton];
 }
 
@@ -664,6 +675,19 @@ static int numTimesVCLoaded = 0;
         return;
     else
         [self.view addSubview:forwardButton];
+}
+
+- (void)hidePreviousTrackButton
+{
+    [backwardButton removeFromSuperview];
+}
+
+- (void)showPreviousTrackButton
+{
+    if([backwardButton isDescendantOfView:self.view])
+        return;
+    else
+        [self.view addSubview:backwardButton];
 }
 
 
