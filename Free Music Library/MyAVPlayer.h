@@ -15,6 +15,7 @@
 #import "SDCAlertView.h"  //custom alert view
 #import "PreferredFontSizeUtility.h"
 #import "MusicPlaybackController.h"  //for using queue, etc
+#import "MyAlerts.h"
 
 
 @interface MyAVPlayer : AVPlayer

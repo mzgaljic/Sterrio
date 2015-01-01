@@ -106,21 +106,25 @@ static int numTimesVCLoaded = 0;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                                                                                            target:self
                                                                                            action:@selector(shareButtonTapped)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"UIButtonBarArrowDown"]
+                                                                             style:UIBarButtonItemStylePlain
+                                                                            target:self
+                                                                            action:@selector(dismissVideoPlayerControllerButtonTapped)];
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown)
         [self positionMusicButtonsOnScreenAndSetThemUp];
+    
     [self checkDeviceOrientation];
-    
-    
-    
-    UIBarButtonItem *popButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"UIButtonBarArrowDown"]
-                                                                  style:UIBarButtonItemStylePlain
-                                                                 target:self
-                                                                 action:@selector(dismissVideoPlayerControllerButtonTapped)];
-    self.navigationItem.leftBarButtonItem = popButton;
-    
     [self positionPlaybackSliderOnScreen];
+    
+    if([MusicPlaybackController obtainRawAVPlayer].rate == 1)  //takes care of duration label, slider, etc.
+        [self playbackOfVideoHasBegun];
+    else{
+        [_playbackSlider setMaximumValue:0];
+        [_playbackSlider setValue:0];
+        _playbackSlider.enabled = NO;
+    }
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
@@ -249,16 +253,16 @@ static int numTimesVCLoaded = 0;
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     if(player.rate == 0)
         playAfterMovingSlider = NO;
-    [player pause];
     sliderIsBeingTouched = YES;
+    [player pause];
     [self toggleDisplayToPausedState];
 }
 - (IBAction)playbackSliderEditingHasEndedA:(id)sender  //touch up inside
 {
+    sliderIsBeingTouched = NO;
     if(playAfterMovingSlider)
         [[MusicPlaybackController obtainRawAVPlayer] play];
     playAfterMovingSlider = YES;  //reset value
-    sliderIsBeingTouched = NO;
 }
 - (IBAction)playbackSliderEditingHasEndedB:(id)sender  //touch up outside
 {
@@ -505,24 +509,30 @@ static int numTimesVCLoaded = 0;
     CMTime cmTime = [MusicPlaybackController obtainRawAVPlayer].currentItem.asset.duration;
     Float64 durationInSeconds = CMTimeGetSeconds(cmTime);
     
-    if(durationInSeconds <= 0.0f || durationInSeconds == NAN){
+    if(durationInSeconds <= 0.0f || isnan(durationInSeconds)){
         // Handle error
-        NSString *title = @"Trouble Loading Video";
-        NSString *msg = @"A fatal error has occured, please try again.";
-        [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
-        [self dismissVideoPlayerControllerButtonTapped];
+        if(![self isInternetReachable]){
+            [MyAlerts displayAlertWithAlertType:CannotConnectToYouTube];
+
+        } else{
+            NSString *title = @"Trouble Loading Video";
+            NSString *msg = @"A fatal error has occured, please try again.";
+            [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
+            [self dismissVideoPlayerControllerButtonTapped];
+        }
+    } else{
+        //setup total song duration label animations
+        CATransition *animation = [CATransition animation];
+        animation.duration = 1.0;
+        animation.type = kCATransitionFade;
+        animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        
+        self.playbackSlider.maximumValue = durationInSeconds;
+        
+        //set duration label
+        [_totalDurationLabel.layer addAnimation:animation forKey:@"changeTextTransition"];  //animates the duration once its determined
+        _totalDurationLabel.text = [self convertSecondsToPrintableNSStringWithSliderValue:durationInSeconds];  //just sets duration, already known.
     }
-    //setup total song duration label animations
-    CATransition *animation = [CATransition animation];
-    animation.duration = 1.0;
-    animation.type = kCATransitionFade;
-    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-    
-    self.playbackSlider.maximumValue = durationInSeconds;
-    
-    //set duration label
-    [_totalDurationLabel.layer addAnimation:animation forKey:@"changeTextTransition"];  //animates the duration once its determined
-    _totalDurationLabel.text = [self convertSecondsToPrintableNSStringWithSliderValue:durationInSeconds];  //just sets duration, already known.
 }
 
 #pragma mark - Responding to Button Events
@@ -536,6 +546,7 @@ static int numTimesVCLoaded = 0;
     [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
     [MusicPlaybackController simpleSpinnerOnScreen:YES];
     [self backwardsButtonLetGo];
+    [self showNextTrackButton];  //in case it wasnt on screen already
 }
 
 - (void)backwardsButtonBeingHeld{ [self addShadowToButton:backwardButton]; }
@@ -581,6 +592,10 @@ static int numTimesVCLoaded = 0;
     [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
     [MusicPlaybackController simpleSpinnerOnScreen:YES];
     [self forwardsButtonLetGo];
+    
+    //check if this next song is the last one
+    if([MusicPlaybackController numMoreSongsInQueue] == 0)
+        [self hideNextTrackButton];
 }
 
 - (void)forwardsButtonBeingHeld{ [self addShadowToButton:forwardButton]; }
@@ -625,6 +640,21 @@ static int numTimesVCLoaded = 0;
     [[SongPlayerCoordinator sharedInstance] beginShrinkingVideoPlayer];
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
+
+#pragma mark - Adding and removing GUI buttons on the fly
+- (void)hideNextTrackButton
+{
+    [forwardButton removeFromSuperview];
+}
+
+- (void)showNextTrackButton
+{
+    if([forwardButton isDescendantOfView:self.view])
+        return;
+    else
+        [self.view addSubview:forwardButton];
+}
+
 
 #pragma mark - Key value observing stuff
 - (void)setupKeyvalueObservers
@@ -695,6 +725,8 @@ static int numTimesVCLoaded = 0;
                 [MusicPlaybackController simpleSpinnerOnScreen:YES];
                 [self toggleDisplayToPausedState];
             }
+            if(!sliderIsBeingTouched)
+                [player play];
         } else if(player.rate == 1){
             [self dismissAllSpinnersForView:playerView];
             [MusicPlaybackController noSpinnersOnScreen];

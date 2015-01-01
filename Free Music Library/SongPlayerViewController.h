@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
 
+#include <math.h>
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>  //needed for avplayer
 #import "Artist.h"
@@ -25,6 +26,8 @@
 #import "AlbumArtUtilities.h"  //interface for accessing album art on disk
 #import "SongPlayerCoordinator.h"  //controls the video player frame and responds to player events via delegates
 #import "SongPlayerNavController.h"
+#import "MyAlerts.h"
+
 
 @class MusicPlaybackController;
 

@@ -69,14 +69,10 @@ static NSString *BUG_REPORT_EMAIL;
     }
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];    
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
+    [super viewDidAppear:animated];
+    [self.tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning
@@ -115,7 +111,7 @@ static NSString *BUG_REPORT_EMAIL;
     switch (section)
     {
         case 0:     return @"";
-        case 1:     return @"Media Quality";
+        case 1:     return @"Video Stream Quality";
         case 2:     return @"Appearance";
         case 3:     return @"Sorting";
         case 4:     return @"Help";
@@ -127,11 +123,17 @@ static NSString *BUG_REPORT_EMAIL;
 {
     switch (section)
     {
-        case 0:     return @"Sync settings to your remaining Apple devices.";
-        case 1:     return @"The preferred music video playback quality for each connection type.";
-        case 2:     return @"'Bold Names' changes song, album, artist, playlist, and genre names to bold wherever possible. (enabled by default)";
-        case 3:     return @"Enabled, (a/an/the) are ignored when sorting library content. Disabled, everything is sorted in true alphabetical order.";
-        case 4:     return @"A Software 'Bug' is unexpected app behavior.";
+        //case 0 would be the "icloud sync" switch stuff
+        case 1:
+            return @"The preferred video streaming quality for each connection type.";
+        case 2:
+            if([AppEnvironmentConstants boldNames])
+                return @"Music titles (ie: Song and Artist names) are bolded.";
+        case 3:
+            if([AppEnvironmentConstants smartAlphabeticalSort])
+                return @"Ignore the following when displaying my music in alphabetical order:\nA \nAn \nThe";
+            else
+                return @"Display my music in regular alphabetical order.";
         default:    return nil;
     }
 }
@@ -238,6 +240,7 @@ static NSString *BUG_REPORT_EMAIL;
     }
     return cell;
 }
+
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -595,7 +598,7 @@ NSArray *CellStreamOptions;
     //\u2022 is Unicode for a bullet
     NSString *appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"];
     NSString *iosVersion = [[UIDevice currentDevice] systemVersion];
-    NSString *deviceName = [NSObject deviceName];
+    NSString *deviceName = [UIDevice deviceName];
     NSString *body;
     if(_attachmentUIImages.count == 1)
         body = @"Try to provide as much information as possible.\n\nName the bug:\n\nLocation of issue:\n\nSeverity: (High/Medium/Low)\n\nReported By:\n\n=============\nDescription\n\u2022\n\nSteps To Reproduce Bug\n\u2022\n\nExpected result\n\u2022\n=============\ntime&date\nApp Version: appVersion#\niOS Version: iosVersion#\nDevice: deviceName#\n\n[End of bug report]\nScreenshot:";

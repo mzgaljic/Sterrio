@@ -57,10 +57,20 @@ static const int APP_LAUNCHED_ALREADY = 1;
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     if(player != nil)
-        if(player.rate == 1.0f)
+        if(player.rate == 1 && !resumePlaybackAfterInterruption)
             [player performSelector:@selector(play) withObject:nil afterDelay:0.01];
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
+    if(player != nil)
+        if(resumePlaybackAfterInterruption){
+            [player performSelector:@selector(play) withObject:nil afterDelay:0.03];
+            resumePlaybackAfterInterruption = NO;
+        }
 }
 
 #pragma mark - AVAudio Player delegate stuff
@@ -113,9 +123,10 @@ static const int APP_LAUNCHED_ALREADY = 1;
 static BOOL resumePlaybackAfterInterruption = NO;
 - (void)beginInterruption
 {
-    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     if([player rate] == 1){  //only works in foreground or when app is on screen
         resumePlaybackAfterInterruption = YES;
+        [player pause];
     }
 }
 
@@ -123,9 +134,8 @@ static BOOL resumePlaybackAfterInterruption = NO;
 {
     [self activateAudioSession];
     if(resumePlaybackAfterInterruption){
-        [(MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer] play];
+        [[MusicPlaybackController obtainRawAVPlayer] play];
         resumePlaybackAfterInterruption = NO;
-        //update gui if needed, about to play audio again
     }
 }
 
@@ -134,9 +144,8 @@ static BOOL resumePlaybackAfterInterruption = NO;
     if(flags == AVAudioSessionInterruptionOptionShouldResume){
         [self activateAudioSession];
         if(resumePlaybackAfterInterruption){
-            [(MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer] play];
+            [[MusicPlaybackController obtainRawAVPlayer] play];
             resumePlaybackAfterInterruption = NO;
-            //update gui if needed, about to play audio again
         }
     }
 }

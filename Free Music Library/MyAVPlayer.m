@@ -136,11 +136,9 @@
         }
         else
         {
-            if ([reachability currentReachabilityStatus] == NotReachable){
-                //alert user to internet problem
-                NSString *title = @"Internet";
-                NSString *msg = @"Cannot connect to YouTube.";
-                [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
+            NetworkStatus internetStatus = [reachability currentReachabilityStatus];
+            if (internetStatus == NotReachable){
+                [MyAlerts displayAlertWithAlertType:CannotConnectToYouTube];
                 [MusicPlaybackController declareInternetProblemWhenLoadingSong:YES];
                 [MusicPlaybackController playbackExplicitlyPaused];
                 [MusicPlaybackController pausePlayback];
@@ -165,7 +163,7 @@
             //posting notifications about important AVPLayerItem changes. GUI should react appropriately where needed.
             [[NSNotificationCenter defaultCenter] postNotificationName:NEW_SONG_IN_AVPLAYER object:weakSong];
             
-            if([MusicPlaybackController listOfUpcomingSongsInQueue].count > 0)  //more songs in queue
+            if([MusicPlaybackController listOfUpcomingSongsInQueue].count == 0)  //no more songs in queue
                 [[NSNotificationCenter defaultCenter] postNotificationName:AVPLAYER_DONE_PLAYING object:nil];
             
             

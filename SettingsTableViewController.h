@@ -14,7 +14,7 @@
 #import "PreferredFontSizeUtility.h"
 #import "ELCImagePickerController.h"  //image picker that allows for multi selection
 #import "SDWebImageManager.h"
-#import "NSObject+Device_Name.h"
+#import "UIDevice+DeviceName.h"
 #import "UIColor+SystemTintColor.h"
 
 #import <MobileCoreServices/UTCoreTypes.h>  //filtering media in image pickers
