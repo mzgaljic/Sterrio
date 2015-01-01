@@ -74,6 +74,9 @@ static BOOL lastSortOrder;
         //i disable songs in the existing playlist in cellForRowAtIndexpath
     }
     [self.tableView reloadData];
+    
+    //needed to make UITableViewCellAccessoryCheckmark the nav bar color!
+    self.tableView.tintColor = [UIColor defaultAppColorScheme];
 }
 
 - (void)viewDidLoad

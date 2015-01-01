@@ -24,6 +24,14 @@
     _txtField = nil;
 }
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    self.tableView.backgroundColor = [UIColor whiteColor];
+    [self setFetchedResultsControllerAndSortStyle];
+    [self setUpNavBarItems];
+}
+
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -39,13 +47,6 @@
     //set song/album details for currently selected song
     NSString *navBarTitle = _playlist.playlistName;
     self.navBar.title = navBarTitle;
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    [self setFetchedResultsControllerAndSortStyle];
-    [self setUpNavBarItems];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -134,6 +135,28 @@
     }
 }
 
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
+{
+    NSMutableOrderedSet *set = [NSMutableOrderedSet orderedSetWithOrderedSet:_playlist.playlistSongs];
+    [set moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:fromIndexPath.row] toIndex:toIndexPath.row];
+    _playlist.playlistSongs = set;
+    [[CoreDataManager sharedInstance] saveContext];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    Song *selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    [MusicPlaybackController newQueueWithSong:selectedSong album:nil artist:nil playlist:_playlist genreCode:0 skipCurrentSong:YES];
+    [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:self];
+}
+
+#pragma mark - Button actions
 - (void)editTapped:(id)sender
 {
     if(self.editing)
@@ -158,27 +181,6 @@
         [self setUpUITextField];
     }
     [self setNeedsStatusBarAppearanceUpdate];
-}
-
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return YES;
-}
-
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-    NSMutableOrderedSet *set = [NSMutableOrderedSet orderedSetWithOrderedSet:_playlist.playlistSongs];
-    [set moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:fromIndexPath.row] toIndex:toIndexPath.row];
-    _playlist.playlistSongs = set;
-    [[CoreDataManager sharedInstance] saveContext];
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    Song *selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    [MusicPlaybackController newQueueWithSong:selectedSong album:nil artist:nil playlist:_playlist genreCode:0 skipCurrentSong:YES];
-    [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:self];
 }
 
 - (IBAction)addButtonPressed:(id)sender

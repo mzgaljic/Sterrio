@@ -66,6 +66,7 @@ PODS:
   - MRProgress/ProgressBaseClass (0.8.1)
   - MRProgress/Stopable (0.8.1):
     - MRProgress/Helper
+  - MSCellAccessory (1.1.2)
   - RBBAnimation (0.3.0)
   - SDCAlertView (2.1):
     - RBBAnimation (~> 0.3)
@@ -82,6 +83,7 @@ DEPENDENCIES:
   - ASValueTrackingSlider
   - DZNPhotoPickerController
   - MRProgress
+  - MSCellAccessory (~> 1.1)
   - SDCAlertView
   - TransitionKit (~> 2.0.0)
   - XCDYouTubeKit (~> 2.0)
@@ -95,6 +97,7 @@ SPEC CHECKSUMS:
   GROAuth2SessionManager: d40e386b9e865806687b4b818964efb3ac6db952
   MBProgressHUD: 2038dbcf3dce73215abed6001657043d53aa79a8
   MRProgress: cd12726e001ea25dec133322d34cc4754cbc58f8
+  MSCellAccessory: 5f5b839e14bbd5de6c3dacb4b0d3ae5a63741778
   RBBAnimation: 243d73be1a526f1b51d266b182e4aa0cfe9cbf64
   SDCAlertView: a363910a3e851dc1863ee87e20f7762d6164a488
   SDCAutoLayout: 4a963629725ed2b7d665e789ca4d6cfcd7446822

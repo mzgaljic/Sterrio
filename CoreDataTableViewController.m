@@ -212,14 +212,17 @@
     self.navigationController.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
     
     //change background color of tableview
-    self.tableView.backgroundColor = [UIColor clearColor];
     self.parentViewController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    //self.tableView.backgroundColor = [UIColor clearColor];
     
     //force tableview to only show cells with content (hide the invisible stuff at the bottom of the table)
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    
-    //Sets the tint color of any accessory views (check marks, chevron arrows, etc)
-    self.tableView.tintColor = [UIColor defaultAppColorScheme];
+
+    //set nav bar title color and transparency
+    self.navigationController.navigationBar.translucent = YES;
+    [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObject:[UIColor defaultWindowTintColor]
+                                                                                                forKey:UITextAttributeTextColor]];
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath

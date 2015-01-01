@@ -12,6 +12,7 @@
 #import "GenreSearchService.h"
 #import "ArtistTableViewFormatter.h"  //using this since the artist tab also is only text...so its a similar format style
 #import "MyTableViewController.h"
+#import "UIColor+LighterAndDarker.h"
 
 //allows user to pick a genre, and posts the chosen genre via an NSNotification (posting it as an NSString)
 @interface GenrePickerTableViewController : MyTableViewController <UISearchBarDelegate, GenreSearchDelegate>

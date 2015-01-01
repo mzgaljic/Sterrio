@@ -19,6 +19,7 @@
     
     BOOL playerButtonsSetUp;
     BOOL waitingForNextOrPrevVideoToLoad;
+    UIColor *colorOfPlaybackButtons;
     
     //for key value observing
     id timeObserver;
@@ -60,6 +61,7 @@ void *kDidFailKVO               = &kDidFailKVO;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    colorOfPlaybackButtons = [UIColor defaultAppColorScheme];
     waitingForNextOrPrevVideoToLoad = NO;
     [self initAndRegisterAllButtons];
     
@@ -125,6 +127,10 @@ static int numTimesVCLoaded = 0;
         [_playbackSlider setValue:0];
         _playbackSlider.enabled = NO;
     }
+    
+    //check if this song is the last one
+    if([MusicPlaybackController numMoreSongsInQueue] == 0)
+        [self hideNextTrackButton];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
@@ -493,7 +499,7 @@ static int numTimesVCLoaded = 0;
     self.playbackSlider.popUpViewColor = [[UIColor defaultAppColorScheme] lighterColor];
     self.playbackSlider.font = [UIFont fontWithName:@"GillSans-Bold" size:24];
     self.playbackSlider.textColor = [UIColor whiteColor];
-    self.playbackSlider.minimumTrackTintColor = [UIColor defaultAppColorScheme];
+    self.playbackSlider.minimumTrackTintColor = [[UIColor defaultAppColorScheme] lighterColor];
     
     //setup total duration label
     labelXValue = xValue + sliderWidth + padding;

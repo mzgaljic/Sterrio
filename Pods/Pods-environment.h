@@ -162,6 +162,12 @@
 #define COCOAPODS_VERSION_MINOR_MRProgress_Stopable 8
 #define COCOAPODS_VERSION_PATCH_MRProgress_Stopable 1
 
+// MSCellAccessory
+#define COCOAPODS_POD_AVAILABLE_MSCellAccessory
+#define COCOAPODS_VERSION_MAJOR_MSCellAccessory 1
+#define COCOAPODS_VERSION_MINOR_MSCellAccessory 1
+#define COCOAPODS_VERSION_PATCH_MSCellAccessory 2
+
 // RBBAnimation
 #define COCOAPODS_POD_AVAILABLE_RBBAnimation
 #define COCOAPODS_VERSION_MAJOR_RBBAnimation 0

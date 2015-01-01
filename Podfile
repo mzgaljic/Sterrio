@@ -22,3 +22,6 @@ pod 'TransitionKit', '~> 2.0.0'
 #AFBlurSegue ~ custom modal segue that blurs the
 #source navigation controller
 pod 'AFBlurSegue', '~> 1.2'
+
+#MSCellAccessory - used for customizable accessory icons
+pod 'MSCellAccessory', '~> 1.1'

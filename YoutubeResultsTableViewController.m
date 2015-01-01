@@ -167,6 +167,10 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         _navBar.title = @"Search Results";
     } else
         self.tableView.scrollEnabled = NO;
+    
+    //make searchbar background clear
+    self.searchBar.barTintColor = [UIColor clearColor];
+    self.searchBar.backgroundImage = [UIImage new];
 }
 
 - (void)didReceiveMemoryWarning

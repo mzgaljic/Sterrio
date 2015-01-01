@@ -73,8 +73,6 @@
     self.searchResults = [NSMutableArray array];
     _navBar.title = @"All Genres";
     [GenreSearchService setDelegate:self];
-    
-    self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -83,6 +81,8 @@
 
     _displaySearchResults = NO;
     [self setUpSearchBar];
+    
+    self.tableView.sectionIndexColor = [UIColor defaultAppColorScheme];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -116,6 +116,10 @@
     _searchBar.delegate = self;
     [self.searchBar sizeToFit];
     self.tableView.tableHeaderView = _searchBar;
+    
+    //make searchbar background clear
+    self.searchBar.barTintColor = [UIColor clearColor];
+    self.searchBar.backgroundImage = [UIImage new];
 }
 
 //User touched the search box
@@ -207,8 +211,8 @@
     if([aGenreString isEqualToString:_usersCurrentGenreString]){  //disable this cell
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.userInteractionEnabled = NO;
-        cell.textLabel.textColor = [UIColor defaultAppColorScheme];
-        cell.detailTextLabel.textColor = [UIColor defaultAppColorScheme];
+        cell.textLabel.textColor = [[UIColor defaultAppColorScheme] lighterColor];
+        cell.detailTextLabel.textColor = [[UIColor defaultAppColorScheme] lighterColor];
     } else{
         cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         cell.textLabel.textColor = [UIColor blackColor];

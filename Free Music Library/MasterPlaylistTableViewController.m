@@ -162,6 +162,10 @@ static BOOL lastSortOrder;
     }
     
     [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
+    
+    //make searchbar background clear
+    self.searchBar.barTintColor = [UIColor clearColor];
+    self.searchBar.backgroundImage = [UIImage new];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -206,6 +210,7 @@ static BOOL lastSortOrder;
     
     //init cell fields
     cell.textLabel.attributedText = [PlaylistTableViewFormatter formatPlaylistLabelUsingPlaylist:playlist];
+    cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[UIColor defaultAppColorScheme]];
     if(! [PlaylistTableViewFormatter playlistNameIsBold])
         cell.textLabel.font = [UIFont systemFontOfSize:[PlaylistTableViewFormatter nonBoldPlaylistLabelFontSize]];
     //playlist doesnt have detail label  :)

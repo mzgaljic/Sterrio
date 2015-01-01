@@ -121,21 +121,27 @@ static NSString *BUG_REPORT_EMAIL;
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
 {
+    NSString *returnMe;
     switch (section)
     {
         //case 0 would be the "icloud sync" switch stuff
         case 1:
-            return @"The preferred video streaming quality for each connection type.";
+            returnMe = @"The preferred video streaming quality for each connection type.";
+            break;
         case 2:
             if([AppEnvironmentConstants boldNames])
-                return @"Music titles (ie: Song and Artist names) are bolded.";
+                returnMe = @"Music titles (ie: Song and Artist names) are bolded.";
+            break;
         case 3:
             if([AppEnvironmentConstants smartAlphabeticalSort])
-                return @"Ignore the following when displaying my music in alphabetical order:\nA \nAn \nThe";
+                returnMe = @"Ignore the following when displaying my music in alphabetical order:\nA \nAn \nThe";
             else
-                return @"Display my music in regular alphabetical order.";
-        default:    return nil;
+                returnMe = @"Display my music in regular alphabetical order.";
+            break;
+            
+        default:    returnMe = nil;
     }
+    return returnMe;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -382,7 +388,6 @@ NSArray *CellStreamOptions;
                 break;
         }
     }
-    //[alertView close];
     [self.tableView reloadData];
 }
 
@@ -496,18 +501,21 @@ NSArray *CellStreamOptions;
 {
     //update settings
     [AppEnvironmentConstants set_iCloudSettingsSync:_syncSettingViaIcloudSwitch.on];
+    [self.tableView reloadData];
 }
 
 - (IBAction)boldSongsSwitchToggled:(id)sender
 {
     //update settings
     [AppEnvironmentConstants setBoldNames:_boldSongSwitch.on];
+    [self.tableView reloadData];
 }
 
 - (IBAction)smartSortSwitchToggled:(id)sender
 {
     //update settings
     [AppEnvironmentConstants setSmartAlphabeticalSort:_smartSortSwitch.on];
+    [self.tableView reloadData];
 }
 
 
@@ -518,12 +526,6 @@ NSArray *CellStreamOptions;
         // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
         [self prefersStatusBarHidden];
         [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }else {
-        // iOS 6 code only here...checking if we are now going into landscape mode
-        if((toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft) ||(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight))
-            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-        else
-            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
     }
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }

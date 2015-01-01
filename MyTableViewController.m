@@ -20,6 +20,11 @@
     
     //force tableview to only show cells with content (hide the invisible stuff at the bottom of the table)
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
+    //set nav bar title color and transparency
+    self.navigationController.navigationBar.translucent = YES;
+    [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObject:[UIColor defaultWindowTintColor]
+                                                                                                forKey:UITextAttributeTextColor]];
 }
 
 @end

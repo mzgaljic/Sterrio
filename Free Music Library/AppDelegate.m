@@ -32,6 +32,9 @@ static const int APP_LAUNCHED_ALREADY = 1;
     self.window.tintColor = [UIColor whiteColor];
     //[UIColor defaultAppColorScheme:Rgb2UIColor(255, 149, 0)];
     [UIColor defaultAppColorScheme:Rgb2UIColor(32, 69, 124)];
+    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
+                                setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                [UIColor defaultAppColorScheme],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
     
     [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime:[self appLaunchedFirstTime]];
     if([self appLaunchedFirstTime]){

@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MSCellAccessory.h>
 #import "Playlist+Utilities.h"
 #import "PlaylistItemTableViewController.h"  //tableview controller that shows the songs in the playlist
 #import "PlaylistSongAdderTableViewController.h"  //song picker

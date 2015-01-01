@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "30292C31F2E742EDAC5E8812"
+               BlueprintIdentifier = "85D5BA1B0BB94DC49509243D"
                BuildableName = "libPods-GROAuth2SessionManager.a"
                BlueprintName = "Pods-GROAuth2SessionManager"
                ReferencedContainer = "container:Pods.xcodeproj">

@@ -183,6 +183,10 @@ static BOOL lastSortOrder;
     
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
+    
+    //make searchbar background clear
+    self.searchBar.barTintColor = [UIColor clearColor];
+    self.searchBar.backgroundImage = [UIImage new];
 }
 
 - (void)viewDidLoad

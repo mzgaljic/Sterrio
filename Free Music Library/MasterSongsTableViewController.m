@@ -199,6 +199,10 @@ static BOOL lastSortOrder;
         self.tableView.tableHeaderView = nil;
     }
     
+    //make searchbar background clear
+    self.searchBar.barTintColor = [UIColor clearColor];
+    self.searchBar.backgroundImage = [UIImage new];
+    
     [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
 }
 
