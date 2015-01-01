@@ -162,7 +162,7 @@ static NSString *BUG_REPORT_EMAIL;
                 cell.textLabel.text = @"Sync Settings Via iCloud";
                 //setup toggle switch
                 _syncSettingViaIcloudSwitch = [[UISwitch alloc] init];
-                _syncSettingViaIcloudSwitch.onTintColor = [UIColor defaultSystemTintColor];
+                _syncSettingViaIcloudSwitch.onTintColor = [UIColor defaultAppColorScheme];
                 [_syncSettingViaIcloudSwitch setOn:[AppEnvironmentConstants icloudSettingsSync] animated:NO];
                 cell.accessoryView = [[UIView alloc] initWithFrame:_syncSettingViaIcloudSwitch.frame];
                 [cell.accessoryView addSubview:_syncSettingViaIcloudSwitch];
@@ -200,7 +200,7 @@ static NSString *BUG_REPORT_EMAIL;
                 //setup toggle switch
                 _boldSongSwitch = [[UISwitch alloc] init];
                 [_boldSongSwitch setOn:[AppEnvironmentConstants boldNames] animated:NO];
-                _boldSongSwitch.onTintColor = [UIColor defaultSystemTintColor];
+                _boldSongSwitch.onTintColor = [UIColor defaultAppColorScheme];
                 cell.accessoryView = [[UIView alloc] initWithFrame:_boldSongSwitch.frame];
                 [cell.accessoryView addSubview:_boldSongSwitch];
                 
@@ -217,7 +217,7 @@ static NSString *BUG_REPORT_EMAIL;
                 cell.textLabel.text = @"Smart Alphabetical Sort";
                 //setup toggle switch
                 _smartSortSwitch = [[UISwitch alloc] init];
-                _smartSortSwitch.onTintColor = [UIColor defaultSystemTintColor];
+                _smartSortSwitch.onTintColor = [UIColor defaultAppColorScheme];
                 [_smartSortSwitch setOn:[AppEnvironmentConstants smartAlphabeticalSort] animated:NO];
                 cell.accessoryView = [[UIView alloc] initWithFrame:_smartSortSwitch.frame];
                 [cell.accessoryView addSubview:_smartSortSwitch];

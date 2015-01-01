@@ -16,7 +16,6 @@
 #import "AlbumTableViewFormatter.h"
 #import "UIImage+colorImages.h"
 #import "CoreDataTableViewController.h"
-#import "UIColor+SystemTintColor.h"
 #import "MusicPlaybackController.h"
 
 @interface MasterAlbumsTableViewController : CoreDataTableViewController <UISearchBarDelegate>

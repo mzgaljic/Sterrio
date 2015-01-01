@@ -43,9 +43,6 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 {
     [super viewWillAppear:animated];
     
-    //force tableview to only show cells with content (hide the invisible stuff at the bottom of the table)
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    
     //change background color of tableview
     self.tableView.backgroundColor = [UIColor clearColor];
     self.parentViewController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
@@ -74,14 +71,8 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newGenreHasBeenChosen:) name:@"new genre has been chosen" object:nil];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
-    self.navigationController.navigationBar.translucent = NO;
-}
-
 - (void)viewDidAppear:(BOOL)animated
 {
-    self.navigationController.navigationBar.translucent = YES;
     [[NSNotificationCenter defaultCenter]removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 

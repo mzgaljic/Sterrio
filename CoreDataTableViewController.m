@@ -206,5 +206,26 @@
         [self.tableView endUpdates];
 }
 
+#pragma mark - overriden methods for default behavior across tableviews
+- (void)viewWillAppear:(BOOL)animated
+{
+    self.navigationController.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
+    
+    //change background color of tableview
+    self.tableView.backgroundColor = [UIColor clearColor];
+    self.parentViewController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    
+    //force tableview to only show cells with content (hide the invisible stuff at the bottom of the table)
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
+    //Sets the tint color of any accessory views (check marks, chevron arrows, etc)
+    self.tableView.tintColor = [UIColor defaultAppColorScheme];
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    cell.backgroundColor = [UIColor groupTableViewBackgroundColor];
+}
+
 @end
 

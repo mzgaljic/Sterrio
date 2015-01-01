@@ -20,7 +20,6 @@
 #import "AlbumArtUtilities.h"
 #import "SDWebImageManager.h"
 #import "AppEnvironmentConstants.h"
-#import "UIColor+SystemTintColor.h"
 #import "UIColor+LighterAndDarker.h"
 #import "MusicPlaybackController.h"
 

@@ -11,7 +11,6 @@
 #import "YouTubeVideoSearchService.h"
 #import "UIImage+colorImages.h"
 #import "UIColor+LighterAndDarker.h"
-#import "UIColor+SystemTintColor.h"
 #import "MRProgress.h"
 #import "AlbumArtUtilities.h"
 #import "SDCAlertView.h"
@@ -122,7 +121,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    self.navigationController.navigationBar.translucent = NO;
     [[NSNotificationCenter defaultCenter]removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
@@ -147,8 +145,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
                                                                   target:self
                                                                   action:@selector(cancelTapped)];
     [self setToolbarItems:@[_cancelButton]];
-    // This will remove extra separators from tableview
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [self setProductionModeValue];
     
     [self setUpSearchBar];
@@ -166,7 +162,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    self.navigationController.navigationBar.translucent = YES;
     if(self.displaySearchResults){
         self.navigationController.navigationBar.topItem.title = @"Search Results";
         _navBar.title = @"Search Results";
@@ -569,7 +564,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
                 }
                 else{
                     cell.textLabel.text = @"Load more";
-                    cell.textLabel.textColor = [UIColor defaultSystemTintColor];
+                    cell.textLabel.textColor = [UIColor defaultAppColorScheme];
                     cell.textLabel.textAlignment = NSTextAlignmentCenter;
                 }
             }

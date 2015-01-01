@@ -12,8 +12,9 @@
 #import "Album.h"
 #import "Song.h"
 #import "SDWebImageManager.h"
+#import "MyViewController.h"
 
-@interface AlbumItemViewController : UIViewController
+@interface AlbumItemViewController : MyViewController
 @property (strong, nonatomic) Album *album;
 
 //GUI vars

@@ -490,10 +490,10 @@ static int numTimesVCLoaded = 0;
     self.playbackSlider.minimumValue = 0.0f;
     self.playbackSlider.popUpViewCornerRadius = 12.0;
     [self.playbackSlider setMaxFractionDigitsDisplayed:0];
-    self.playbackSlider.popUpViewColor = [[UIColor defaultSystemTintColor] lighterColor];
+    self.playbackSlider.popUpViewColor = [[UIColor defaultAppColorScheme] lighterColor];
     self.playbackSlider.font = [UIFont fontWithName:@"GillSans-Bold" size:24];
     self.playbackSlider.textColor = [UIColor whiteColor];
-    self.playbackSlider.minimumTrackTintColor = [UIColor defaultSystemTintColor];
+    self.playbackSlider.minimumTrackTintColor = [UIColor defaultAppColorScheme];
     
     //setup total duration label
     labelXValue = xValue + sliderWidth + padding;
@@ -621,7 +621,7 @@ static int numTimesVCLoaded = 0;
 //BUTTON SHADOWS
 - (void)addShadowToButton:(UIButton *)aButton
 {
-    aButton.layer.shadowColor = [[UIColor defaultSystemTintColor] darkerColor].CGColor;
+    aButton.layer.shadowColor = [[UIColor defaultAppColorScheme] darkerColor].CGColor;
     aButton.layer.shadowRadius = 5.0f;
     aButton.layer.shadowOpacity = 1.0f;
     aButton.layer.shadowOffset = CGSizeZero;
@@ -700,13 +700,17 @@ static int numTimesVCLoaded = 0;
 {
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     
-    [player removeObserver:self forKeyPath:@"rate"];
-    [player removeObserver:self forKeyPath:@"currentItem.status"];
-    [player removeObserver:self forKeyPath:@"currentItem.duration"];
-    [player removeObserver:self forKeyPath:@"currentItem.loadedTimeRanges"];
-    [player removeObserver:self forKeyPath:@"currentItem.playbackBufferFull"];
-    [player removeObserver:self forKeyPath:@"currentItem.playbackBufferEmpty"];
-    [player removeObserver:self forKeyPath:@"currentItem.error"];
+    @try{
+        [player removeObserver:self forKeyPath:@"rate"];
+        [player removeObserver:self forKeyPath:@"currentItem.status"];
+        [player removeObserver:self forKeyPath:@"currentItem.duration"];
+        [player removeObserver:self forKeyPath:@"currentItem.loadedTimeRanges"];
+        [player removeObserver:self forKeyPath:@"currentItem.playbackBufferFull"];
+        [player removeObserver:self forKeyPath:@"currentItem.playbackBufferEmpty"];
+        [player removeObserver:self forKeyPath:@"currentItem.error"];
+    }@catch(id anException){
+        //do nothing, obviously it wasn't attached because an exception was thrown
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath

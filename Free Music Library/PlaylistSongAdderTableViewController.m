@@ -73,14 +73,7 @@ static BOOL lastSortOrder;
         self.rightBarButton.title = @"";
         //i disable songs in the existing playlist in cellForRowAtIndexpath
     }
-    
     [self.tableView reloadData];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    self.navigationController.navigationBar.translucent = NO;
 }
 
 - (void)viewDidLoad
@@ -91,16 +84,13 @@ static BOOL lastSortOrder;
     [self setFetchedResultsControllerAndSortStyle];
     stackController = [[StackController alloc] init];
     
-    // This will remove extra separators from tableview
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    
     [self setProductionModeValue];
     self.tableView.allowsMultipleSelection = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    self.navigationController.navigationBar.translucent = YES;
+    [super viewDidAppear:animated];
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
 }

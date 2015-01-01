@@ -24,6 +24,9 @@
 		872EA4DC1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4DB1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.m */; };
 		872EA4DE1A54CAAB00F8EE9D /* iOSDeviceModelMapping.plist in Resources */ = {isa = PBXBuildFile; fileRef = 872EA4DD1A54CAAB00F8EE9D /* iOSDeviceModelMapping.plist */; };
 		872EA4E11A54CAF200F8EE9D /* UIDevice+DeviceName.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4E01A54CAF200F8EE9D /* UIDevice+DeviceName.m */; };
+		872EA4E41A54F1EA00F8EE9D /* MyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4E31A54F1EA00F8EE9D /* MyTableViewController.m */; };
+		872EA4E71A54F1FC00F8EE9D /* MyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4E61A54F1FC00F8EE9D /* MyViewController.m */; };
+		872EA4EB1A54F4CA00F8EE9D /* MyTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4EA1A54F4CA00F8EE9D /* MyTabBarController.m */; };
 		872F78771A47B17900288FDD /* SongPlayerCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = 872F78761A47B17900288FDD /* SongPlayerCoordinator.m */; };
 		87334407198D8321002B9E18 /* NSString+HTTP_Char_Escape.m in Sources */ = {isa = PBXBuildFile; fileRef = 87334406198D8321002B9E18 /* NSString+HTTP_Char_Escape.m */; };
 		8733440B198DC915002B9E18 /* UIImage+colorImages.m in Sources */ = {isa = PBXBuildFile; fileRef = 8733440A198DC915002B9E18 /* UIImage+colorImages.m */; };
@@ -167,6 +170,12 @@
 		872EA4DD1A54CAAB00F8EE9D /* iOSDeviceModelMapping.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = iOSDeviceModelMapping.plist; sourceTree = "<group>"; };
 		872EA4DF1A54CAF200F8EE9D /* UIDevice+DeviceName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice+DeviceName.h"; sourceTree = "<group>"; };
 		872EA4E01A54CAF200F8EE9D /* UIDevice+DeviceName.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+DeviceName.m"; sourceTree = "<group>"; };
+		872EA4E21A54F1EA00F8EE9D /* MyTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyTableViewController.h; sourceTree = "<group>"; };
+		872EA4E31A54F1EA00F8EE9D /* MyTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTableViewController.m; sourceTree = "<group>"; };
+		872EA4E51A54F1FC00F8EE9D /* MyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyViewController.h; sourceTree = "<group>"; };
+		872EA4E61A54F1FC00F8EE9D /* MyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyViewController.m; sourceTree = "<group>"; };
+		872EA4E91A54F4CA00F8EE9D /* MyTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyTabBarController.h; sourceTree = "<group>"; };
+		872EA4EA1A54F4CA00F8EE9D /* MyTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTabBarController.m; sourceTree = "<group>"; };
 		872F78751A47B17900288FDD /* SongPlayerCoordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SongPlayerCoordinator.h; sourceTree = "<group>"; };
 		872F78761A47B17900288FDD /* SongPlayerCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SongPlayerCoordinator.m; sourceTree = "<group>"; };
 		872F78781A47B91500288FDD /* VideoPlayerControlInterfaceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoPlayerControlInterfaceDelegate.h; sourceTree = "<group>"; };
@@ -450,6 +459,19 @@
 			path = "Free Music Library";
 			sourceTree = "<group>";
 		};
+		872EA4E81A54F42A00F8EE9D /* Custom ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				872EA4E21A54F1EA00F8EE9D /* MyTableViewController.h */,
+				872EA4E31A54F1EA00F8EE9D /* MyTableViewController.m */,
+				872EA4E51A54F1FC00F8EE9D /* MyViewController.h */,
+				872EA4E61A54F1FC00F8EE9D /* MyViewController.m */,
+				872EA4E91A54F4CA00F8EE9D /* MyTabBarController.h */,
+				872EA4EA1A54F4CA00F8EE9D /* MyTabBarController.m */,
+			);
+			name = "Custom ViewControllers";
+			sourceTree = "<group>";
+		};
 		87334408198D8349002B9E18 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
@@ -545,6 +567,7 @@
 				872EA4D31A54A96900F8EE9D /* Alerts */,
 				87FE09F31933F39B001A5FB7 /* Models */,
 				87362AFA194E3F27004DB544 /* GUI and GUI Controllers */,
+				872EA4E81A54F42A00F8EE9D /* Custom ViewControllers */,
 				87FCD02D19A5BC0E00C600D3 /* Custom cells */,
 				87480DC3192C1FBD005CC0A4 /* Images.xcassets */,
 				87A453A0199C0825004D1319 /* Imported Libraries */,
@@ -1217,8 +1240,10 @@
 				87A9AF4E199D8429005B9A5B /* GenrePickerTableViewController.m in Sources */,
 				879AB34119F225F300FD6582 /* SongPlayerViewController.m in Sources */,
 				87D47D8C19340F8B0057D49B /* AlbumItemViewController.m in Sources */,
+				872EA4EB1A54F4CA00F8EE9D /* MyTabBarController.m in Sources */,
 				87A0FD8A197DCEDF008FBBF7 /* AlbumTableViewFormatter.m in Sources */,
 				87FCD02C19A5BC0B00C600D3 /* CustomYoutubeTableViewCell.m in Sources */,
+				872EA4E41A54F1EA00F8EE9D /* MyTableViewController.m in Sources */,
 				87362AFD194E68A5004DB544 /* Deque.m in Sources */,
 				87033B871996965E0077C7AD /* MusicPlaybackController.m in Sources */,
 				87A43E7E1978C413001B4367 /* MasterEditingSongTableViewController.m in Sources */,
@@ -1257,6 +1282,7 @@
 				87394BE31965FFE100E750B1 /* Queue.m in Sources */,
 				872F78771A47B17900288FDD /* SongPlayerCoordinator.m in Sources */,
 				878ACD64192D48EF005938F5 /* MasterSongsTableViewController.m in Sources */,
+				872EA4E71A54F1FC00F8EE9D /* MyViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

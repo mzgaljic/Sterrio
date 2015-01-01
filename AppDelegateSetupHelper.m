@@ -64,7 +64,7 @@ static BOOL PRODUCTION_MODE;
 
 + (void)logGlobalAppTintColor
 {
-    UIColor *uicolor = [UIColor defaultSystemTintColor];
+    UIColor *uicolor = [UIColor defaultAppColorScheme];
     CGColorRef color = [uicolor CGColor];
     int numComponents = (int)CGColorGetNumberOfComponents(color);
     if (numComponents == 4)

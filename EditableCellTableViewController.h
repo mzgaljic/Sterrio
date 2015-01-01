@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "SDWebImageManager.h"
+#import "MyTableViewController.h"
 
-@interface EditableCellTableViewController : UITableViewController <UITextFieldDelegate>
+@interface EditableCellTableViewController : MyTableViewController <UITextFieldDelegate>
 
 @property (nonatomic, strong) NSString *stringUserIsEditing;
 

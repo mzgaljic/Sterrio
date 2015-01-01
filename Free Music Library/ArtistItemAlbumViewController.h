@@ -9,10 +9,11 @@
 #import <UIKit/UIKit.h>
 #import "Artist.h"
 #import "SDWebImageManager.h"
+#import "MyViewController.h"
 
-@interface ArtistItemAlbumViewController : UIViewController
+@interface ArtistItemAlbumViewController : MyViewController
+
 @property (strong, nonatomic) Artist *artist;
-
 //GUI vars
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
 

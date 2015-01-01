@@ -75,9 +75,6 @@
     [GenreSearchService setDelegate:self];
     
     self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
-    
-    // This will remove extra separators from tableview
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -88,14 +85,8 @@
     [self setUpSearchBar];
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    self.navigationController.navigationBar.translucent = YES;
-}
-
 - (void)viewWillDisappear:(BOOL)animated
 {
-    self.navigationController.navigationBar.translucent = NO;
     [GenreSearchService removeDelegate];
 }
 
@@ -216,8 +207,8 @@
     if([aGenreString isEqualToString:_usersCurrentGenreString]){  //disable this cell
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.userInteractionEnabled = NO;
-        cell.textLabel.textColor = [UIColor defaultSystemTintColor];
-        cell.detailTextLabel.textColor = [UIColor defaultSystemTintColor];
+        cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+        cell.detailTextLabel.textColor = [UIColor defaultAppColorScheme];
     } else{
         cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         cell.textLabel.textColor = [UIColor blackColor];

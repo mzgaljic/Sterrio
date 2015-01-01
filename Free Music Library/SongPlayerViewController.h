@@ -22,17 +22,17 @@
 #import "NSNull+AVPlayer.h"  //dealing with key value observer 'NSNull' issues
 #import "UIImage+colorImages.h"  //for recoloring png images
 #import "UIColor+LighterAndDarker.h"  //creating lighter and darker colors from base colors
-#import "UIColor+SystemTintColor.h"
 #import "AlbumArtUtilities.h"  //interface for accessing album art on disk
 #import "SongPlayerCoordinator.h"  //controls the video player frame and responds to player events via delegates
 #import "SongPlayerNavController.h"
 #import "MyAlerts.h"
+#import "MyViewController.h"
 
 
 @class MusicPlaybackController;
 
 
-@interface SongPlayerViewController : UIViewController <AVAudioSessionDelegate,
+@interface SongPlayerViewController : MyViewController <AVAudioSessionDelegate,
                                                         AVAudioPlayerDelegate,
                                                         ASValueTrackingSliderDataSource,
                                                         VideoPlayerControlInterfaceDelegate>

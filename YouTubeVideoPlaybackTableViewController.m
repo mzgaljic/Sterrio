@@ -148,15 +148,12 @@ static short numberTimesViewHasBeenShown = 0;
     [super viewDidAppear:animated];
     if(! self.enoughSongInformationGiven)
         [self setUpAddToLibraryButton];  //only works in viewDidAppear.
-    
-    self.navigationController.navigationBar.translucent = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     [self resignFirstResponder];
-    self.navigationController.navigationBar.translucent = NO;
 
     [[[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer] pause];
     [[YouTubeMoviePlayerSingleton createSingleton] previewMusicYoutubePlayer].initialPlaybackTime = -1;

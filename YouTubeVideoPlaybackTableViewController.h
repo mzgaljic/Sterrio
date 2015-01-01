@@ -11,9 +11,10 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import <XCDYouTubeKit/XCDYouTubeClient.h>
 #import "YouTubeVideo.h"
+#import "MyTableViewController.h"
 
 
-@interface YouTubeVideoPlaybackTableViewController : UITableViewController <AVAudioSessionDelegate,
+@interface YouTubeVideoPlaybackTableViewController : MyTableViewController <AVAudioSessionDelegate,
                                                                             AVAudioPlayerDelegate,
                                                                             UITextFieldDelegate,
                                                                             UINavigationControllerDelegate,

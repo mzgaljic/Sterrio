@@ -39,8 +39,6 @@ static BOOL PRODUCTION_MODE;
 {
     [super viewDidLoad];
     
-    // This will remove extra separators from tableview
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     self.navigationController.navigationController.title = @"Existing Albums";
     [self setProductionModeValue];
 }
@@ -52,16 +50,6 @@ static BOOL PRODUCTION_MODE;
     //init tableView model
     self.albums = [NSMutableArray arrayWithArray:[Album loadAll]];
     [self.tableView reloadData];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    self.navigationController.navigationBar.translucent = YES;
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    self.navigationController.navigationBar.translucent = NO;
 }
 
 - (void)didReceiveMemoryWarning

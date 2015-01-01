@@ -22,8 +22,9 @@
 #import "ExistingAlbumPickerTableViewController.h"
 #import "ExistingArtistPickerTableViewController.h"
 #import "GenrePickerTableViewController.h"
+#import "MyTableViewController.h"
 
-@interface MasterEditingSongTableViewController : UITableViewController <UIActionSheetDelegate,
+@interface MasterEditingSongTableViewController : MyTableViewController <UIActionSheetDelegate,
                                                                         UINavigationControllerDelegate,
                                                                         UIImagePickerControllerDelegate>
 

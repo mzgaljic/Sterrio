@@ -164,17 +164,9 @@ static BOOL lastSortOrder;
     [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    self.navigationController.navigationBar.translucent = NO;
-}
-
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    self.navigationController.navigationBar.translucent = YES;
     self.navigationController.navigationBar.topItem.title = @"Playlists";
     
     //need to check because when user presses back button, tab bar isnt always hidden
@@ -186,9 +178,6 @@ static BOOL lastSortOrder;
     [super viewDidLoad];
     lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
     [self setFetchedResultsControllerAndSortStyle];
-    
-    // This will remove extra separators from tableview
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
     [self setUpNavBarItems];
     self.tableView.allowsSelectionDuringEditing = YES;

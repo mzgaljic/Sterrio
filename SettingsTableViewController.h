@@ -15,12 +15,11 @@
 #import "ELCImagePickerController.h"  //image picker that allows for multi selection
 #import "SDWebImageManager.h"
 #import "UIDevice+DeviceName.h"
-#import "UIColor+SystemTintColor.h"
-
+#import "MyTableViewController.h"
 #import <MobileCoreServices/UTCoreTypes.h>  //filtering media in image pickers
 
 
-@interface SettingsTableViewController : UITableViewController <UIPickerViewDelegate,
+@interface SettingsTableViewController : MyTableViewController <UIPickerViewDelegate,
                                                                 UIPickerViewDataSource,
                                                                 SDCAlertViewDelegate,
                                                                 MFMailComposeViewControllerDelegate,

@@ -8,13 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import "SDWebImageManager.h"
-#import "UIColor+SystemTintColor.h"
 #import "GenreConstants.h"
 #import "GenreSearchService.h"
 #import "ArtistTableViewFormatter.h"  //using this since the artist tab also is only text...so its a similar format style
+#import "MyTableViewController.h"
 
 //allows user to pick a genre, and posts the chosen genre via an NSNotification (posting it as an NSString)
-@interface GenrePickerTableViewController : UITableViewController <UISearchBarDelegate, GenreSearchDelegate>
+@interface GenrePickerTableViewController : MyTableViewController <UISearchBarDelegate, GenreSearchDelegate>
 
 - (id)initWithGenreCode:(int)aGenreCode notificationNameToPost:(NSString *)notifName;
 

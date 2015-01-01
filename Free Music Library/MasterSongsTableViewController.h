@@ -19,7 +19,6 @@
 #import "SongTableViewFormatter.h"
 #import "PreferredFontSizeUtility.h"
 #import "UIImage+colorImages.h"
-#import "UIColor+SystemTintColor.h"
 #import "UIColor+ColorComparison.h"
 #import "MusicPlaybackController.h"
 

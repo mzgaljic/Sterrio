@@ -15,9 +15,9 @@
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "AlbumTableViewFormatter.h"
 #import "UIImage+colorImages.h"
-#import "UIColor+SystemTintColor.h"
+#import "MyTableViewController.h"
 
-@interface ExistingAlbumPickerTableViewController : UITableViewController
+@interface ExistingAlbumPickerTableViewController : MyTableViewController
 
 - (id)initWithCurrentAlbum:(Album *)anAlbum;
 

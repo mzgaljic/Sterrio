@@ -9,8 +9,9 @@
 #import "UIColor+SystemTintColor.h"
 
 @implementation UIColor (SystemTintColor)
+static UIColor* appColorScheme;
 
-+ (UIColor*)defaultSystemTintColor
++ (UIColor*)defaultWindowTintColor
 {
     static UIColor* systemTintColor = nil;
     static dispatch_once_t onceToken;
@@ -18,6 +19,16 @@
         systemTintColor = [[[UIApplication sharedApplication] delegate] window].tintColor;
     });
     return systemTintColor;
+}
+
++ (UIColor*)defaultAppColorScheme
+{
+    return appColorScheme;
+}
+
++ (void)defaultAppColorScheme:(UIColor *)color
+{
+    appColorScheme = color;
 }
 
 @end

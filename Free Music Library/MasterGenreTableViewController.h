@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "AppEnvironmentConstants.h"
 #import "SDWebImageManager.h"
+#import "MyTableViewController.h"
 
-@interface MasterGenreTableViewController : UITableViewController
+@interface MasterGenreTableViewController : MyTableViewController
 
 @property (nonatomic, strong) NSMutableArray *results;  //for searching tableView?
 @property (nonatomic, assign) int selectedRowIndexValue;

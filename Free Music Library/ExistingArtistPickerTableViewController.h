@@ -12,9 +12,9 @@
 #import "Artist+Utilities.h"
 #import "ArtistTableViewFormatter.h"
 #import "SDWebImageManager.h"
-#import "UIColor+SystemTintColor.h"
+#import "MyTableViewController.h"
 
-@interface ExistingArtistPickerTableViewController : UITableViewController
+@interface ExistingArtistPickerTableViewController : MyTableViewController
 
 - (id)initWithCurrentArtist:(Artist *)anArtist;
 

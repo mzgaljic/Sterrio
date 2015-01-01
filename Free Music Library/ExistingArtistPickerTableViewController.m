@@ -37,8 +37,6 @@ static BOOL PRODUCTION_MODE;
 {
     [super viewDidLoad];
     
-    // This will remove extra separators from tableview
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     self.navigationController.navigationController.title = @"Existing Artists";
     [self setProductionModeValue];
 }
@@ -50,16 +48,6 @@ static BOOL PRODUCTION_MODE;
     //init tableView model
     //_allArtists = [NSMutableArray arrayWithArray:[Artist loadAll]];
     [self.tableView reloadData];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    self.navigationController.navigationBar.translucent = YES;
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    self.navigationController.navigationBar.translucent = NO;
 }
 
 - (void)didReceiveMemoryWarning
@@ -92,8 +80,8 @@ static BOOL PRODUCTION_MODE;
     if([Artist areArtistsEqual:[NSArray arrayWithObjects:artist, _usersCurrentArtist, nil]]){  //disable this cell
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.userInteractionEnabled = NO;
-        cell.textLabel.textColor = [UIColor defaultSystemTintColor];
-        cell.detailTextLabel.textColor = [UIColor defaultSystemTintColor];
+        cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+        cell.detailTextLabel.textColor = [UIColor defaultAppColorScheme];
     } else{
         cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         cell.textLabel.textColor = [UIColor blackColor];

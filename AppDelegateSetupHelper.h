@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "AppEnvironmentConstants.h"
-#import "UIColor+SystemTintColor.h"
 #import "Song.h"
 #import "Album.h"
 #import "Playlist.h"

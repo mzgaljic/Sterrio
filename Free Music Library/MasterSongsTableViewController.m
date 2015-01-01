@@ -44,11 +44,6 @@ static BOOL PRODUCTION_MODE;
     
     self.navigationItem.leftBarButtonItems = @[settings, posSpaceAdjust, editButton];
 }
-
-- (void)nowPlayingTapped
-{
-    
-}
                                    
 - (void)editTapped:(id)sender
 {
@@ -194,12 +189,8 @@ static BOOL lastSortOrder;
     }
     
     UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft ||
-       orientation == UIInterfaceOrientationLandscapeRight||
-       orientation == UIInterfaceOrientationPortraitUpsideDown)
-    {
+    if(orientation != UIInterfaceOrientationPortrait)
         self.tabBarController.tabBar.hidden = YES;
-    }
     else
         self.tabBarController.tabBar.hidden = NO;
     
@@ -211,17 +202,9 @@ static BOOL lastSortOrder;
     [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    self.navigationController.navigationBar.translucent = NO;
-}
-
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    self.navigationController.navigationBar.translucent = YES;
     self.navigationController.navigationBar.topItem.title = @"Songs";
     
     //need to check because when user presses back button, tab bar isnt always hidden
@@ -236,9 +219,6 @@ static BOOL lastSortOrder;
     [self setFetchedResultsControllerAndSortStyle];
     
     stackController = [[StackController alloc] init];
-    
-    // This will remove extra separators from tableview
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
     [self setProductionModeValue];
     [self setUpNavBarItems];
@@ -289,7 +269,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
     if([[MusicPlaybackController nowPlayingSong] isEqual:song])
-        cell.textLabel.textColor = [UIColor defaultSystemTintColor];
+        cell.textLabel.textColor = [UIColor defaultAppColorScheme];
     else
         cell.textLabel.textColor = [UIColor blackColor];
     

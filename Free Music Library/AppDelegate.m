@@ -23,15 +23,15 @@ static const int APP_LAUNCHED_ALREADY = 1;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    [self setProductionModeValue];
+    
     // Override point for customization after application launch.
     [[SDImageCache sharedImageCache] setMaxCacheSize:1000000];  //1 mb cache size
     
-    //set app global-tint color
-    self.window.tintColor = Rgb2UIColor(255, 149, 0);
-    
-    [self setProductionModeValue];
-    if(! PRODUCTION_MODE)
-        [AppDelegateSetupHelper logGlobalAppTintColor];
+    //set global default "AppColorScheme"
+    self.window.tintColor = [UIColor whiteColor];
+    //[UIColor defaultAppColorScheme:Rgb2UIColor(255, 149, 0)];
+    [UIColor defaultAppColorScheme:Rgb2UIColor(32, 69, 124)];
     
     [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime:[self appLaunchedFirstTime]];
     if([self appLaunchedFirstTime]){

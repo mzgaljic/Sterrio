@@ -45,25 +45,15 @@
 {
     [super viewDidLoad];
     [self setFetchedResultsControllerAndSortStyle];
-    
-    // This will remove extra separators from tableview
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [self setUpNavBarItems];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    self.navigationController.navigationBar.translucent = YES;
     
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    self.navigationController.navigationBar.translucent = NO;
 }
 
 - (void)setUpNavBarItems

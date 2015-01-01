@@ -10,6 +10,7 @@
 #import "AppEnvironmentConstants.h"
 #import "YouTubeVideoSearchDelegate.h"
 #import "UIImageView+WebCache.h"
+#import "MyTableViewController.h"
 
-@interface YoutubeResultsTableViewController : UITableViewController <UISearchBarDelegate, YouTubeVideoSearchDelegate, SDWebImageManagerDelegate>
+@interface YoutubeResultsTableViewController : MyTableViewController <UISearchBarDelegate, YouTubeVideoSearchDelegate, SDWebImageManagerDelegate>
 @end
