@@ -660,7 +660,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 
 - (BOOL)prefersStatusBarHidden
 {
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
         return YES;
     }

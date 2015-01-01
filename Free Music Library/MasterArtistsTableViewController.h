@@ -15,6 +15,7 @@
 #import "NSString+smartSort.h"
 #import "SDWebImageManager.h"
 #import "MusicPlaybackController.h"
+#import "UIColor+LighterAndDarker.h"
 
 @interface MasterArtistsTableViewController : CoreDataTableViewController <UISearchBarDelegate>
 

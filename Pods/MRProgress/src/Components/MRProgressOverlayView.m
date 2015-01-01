@@ -454,6 +454,7 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
 
 
 #pragma mark - Tint color
+#define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 - (void)setTintColor:(UIColor *)tintColor {
     // Implemented to silent warning
@@ -462,9 +463,20 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
 
 - (void)tintColorDidChange {
     [super tintColorDidChange];
-    self.modeView.tintColor = self.tintColor;
+    self.modeView.tintColor = [self lighterColor:Rgb2UIColor(32, 69, 124)];
 }
 
+//taken from my category
+- (UIColor *)lighterColor:(UIColor *)colorToChange
+{
+    CGFloat h, s, b, a;
+    if ([colorToChange getHue:&h saturation:&s brightness:&b alpha:&a])
+        return [UIColor colorWithHue:h
+                          saturation:s
+                          brightness:MIN(b * 1.3, 1.0)
+                               alpha:a];
+    return nil;
+}
 
 #pragma mark - Mode
 

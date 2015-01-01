@@ -146,7 +146,7 @@ static BOOL lastSortOrder;
         lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
     }
     
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft ||
        orientation == UIInterfaceOrientationLandscapeRight||
        orientation == UIInterfaceOrientationPortraitUpsideDown)
@@ -166,6 +166,7 @@ static BOOL lastSortOrder;
     //make searchbar background clear
     self.searchBar.barTintColor = [UIColor clearColor];
     self.searchBar.backgroundImage = [UIImage new];
+    self.searchBar.tintColor = [[UIColor defaultAppColorScheme] lighterColor];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -210,7 +211,7 @@ static BOOL lastSortOrder;
     
     //init cell fields
     cell.textLabel.attributedText = [PlaylistTableViewFormatter formatPlaylistLabelUsingPlaylist:playlist];
-    cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[UIColor defaultAppColorScheme]];
+    cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[UIColor defaultAppColorScheme] lighterColor]];
     if(! [PlaylistTableViewFormatter playlistNameIsBold])
         cell.textLabel.font = [UIFont systemFontOfSize:[PlaylistTableViewFormatter nonBoldPlaylistLabelFontSize]];
     //playlist doesnt have detail label  :)
@@ -372,7 +373,7 @@ static BOOL lastSortOrder;
 
 - (BOOL)prefersStatusBarHidden
 {
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
         [self setTabBarVisible:NO animated:NO];
         return YES;

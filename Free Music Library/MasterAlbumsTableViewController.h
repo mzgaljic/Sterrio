@@ -15,6 +15,7 @@
 #import "Album.h"
 #import "AlbumTableViewFormatter.h"
 #import "UIImage+colorImages.h"
+#import "UIColor+LighterAndDarker.h"
 #import "CoreDataTableViewController.h"
 #import "MusicPlaybackController.h"
 

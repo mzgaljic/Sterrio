@@ -13,6 +13,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     self.navigationController.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
+    self.navigationController.toolbar.barTintColor = [UIColor defaultAppColorScheme];
     
     //change background color of tableview
     self.tableView.backgroundColor = [UIColor clearColor];

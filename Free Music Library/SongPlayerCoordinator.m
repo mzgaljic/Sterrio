@@ -11,6 +11,7 @@
 @interface SongPlayerCoordinator ()
 {
     BOOL videoPlayerIsExpanded;
+    BOOL canIgnoreToolbar;  //navigation controller toolbar
 }
 @end
 
@@ -38,6 +39,7 @@ static const short SMALL_VIDEO_WIDTH = 200;
             videoPlayerIsExpanded = YES;
         else
             videoPlayerIsExpanded = NO;
+        canIgnoreToolbar = YES;
     }
     return self;
 }
@@ -101,7 +103,7 @@ static const short SMALL_VIDEO_WIDTH = 200;
         else
         {
             //show portrait player
-            [playerView setFrame: [SongPlayerCoordinator bigPlayerFrameInPortrait]];
+            [playerView setFrame: [self bigPlayerFrameInPortrait]];
         }
     } completion:^(BOOL finished) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -119,7 +121,7 @@ static const short SMALL_VIDEO_WIDTH = 200;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     
     [UIView animateWithDuration:0.6f animations:^{
-        playerView.frame = [SongPlayerCoordinator smallPlayerFrameInPortrait];
+        playerView.frame = [self smallPlayerFrameInPortrait];
     } completion:^(BOOL finished) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
@@ -135,36 +137,90 @@ static const short SMALL_VIDEO_WIDTH = 200;
     
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
         //landscape rotation...
-        [videoPlayer setFrame:[SongPlayerCoordinator smallPlayerFrameInLandscape]];
+        [videoPlayer setFrame:[self smallPlayerFrameInLandscape]];
     else
         //portrait rotation...
-        [videoPlayer setFrame:[SongPlayerCoordinator smallPlayerFrameInPortrait]];
+        [videoPlayer setFrame:[self smallPlayerFrameInPortrait]];
 }
 
-+ (CGRect)smallPlayerFrameInPortrait
+- (void)shrunkenVideoPlayerShouldRespectToolbar
+{
+    canIgnoreToolbar = NO;
+    
+    //need to re-animate playerView
+    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    [UIView animateWithDuration:0.6f animations:^{
+        playerView.frame = [self smallPlayerFrameInPortrait];
+    } completion:^(BOOL finished) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
+        });
+    }];
+}
+
+- (void)shrunkenVideoPlayerCanIgnoreToolbar
+{
+    canIgnoreToolbar = YES;
+    
+    //need to re-animate playerView
+    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    [UIView animateWithDuration:0.6f animations:^{
+        playerView.frame = [self smallPlayerFrameInPortrait];
+    } completion:^(BOOL finished) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
+        });
+    }];
+}
+
+- (CGRect)smallPlayerFrameInPortrait
 {
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     short padding = 10;
     short tabBarHeight = 49;
-    int width = SMALL_VIDEO_WIDTH;
-    int height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
-    int x = window.frame.size.width - width - padding;
-    int y = window.frame.size.height - tabBarHeight - height - padding;
+    short toolbarHeight = 44;
+    int width, height, x, y;
+    
+    //set frame based on what kind of VC we are over at the moment
+    if(canIgnoreToolbar){
+        width = SMALL_VIDEO_WIDTH;
+        height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
+        x = window.frame.size.width - width - padding;
+        y = window.frame.size.height - tabBarHeight - height - padding;
+    } else{
+        width = SMALL_VIDEO_WIDTH - 70;
+        height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
+        x = window.frame.size.width - width - padding;
+        y = window.frame.size.height - toolbarHeight - height - padding;
+    }
+
     return CGRectMake(x, y, width, height);
 }
 
-+ (CGRect)smallPlayerFrameInLandscape
+- (CGRect)smallPlayerFrameInLandscape
 {
-    UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
     short padding = 10;
-    int width = SMALL_VIDEO_WIDTH;
-    int height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
-    int x = appWindow.frame.size.width - width - padding;
-    int y = appWindow.frame.size.height - height - padding;
+    short toolbarHeight = 44;
+    int width, height, x, y;
+    
+    //set frame based on what kind of VC we are over at the moment
+    if(canIgnoreToolbar){
+        width = SMALL_VIDEO_WIDTH;
+        height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
+        x = window.frame.size.width - width - padding;
+        y = window.frame.size.height - height - padding;
+    } else{
+        width = SMALL_VIDEO_WIDTH - 70;
+        height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
+        x = window.frame.size.width - width - padding;
+        y = window.frame.size.height - toolbarHeight - height - padding;
+    }
+    
     return CGRectMake(x, y, width, height);
 }
 
-+ (CGRect)bigPlayerFrameInPortrait
+- (CGRect)bigPlayerFrameInPortrait
 {
     CGPoint screenWidthAndHeight = [SongPlayerCoordinator widthAndHeightOfScreen];
     float videoFrameHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:screenWidthAndHeight.x];

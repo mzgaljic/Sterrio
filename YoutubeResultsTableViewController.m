@@ -57,6 +57,11 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 #pragma mark - Miscellaneous
 - (void)dealloc
 {
+    NSLog(@"Dealloc'ed in %@", NSStringFromClass([YoutubeResultsTableViewController class]));
+}
+
+- (void)myPreDealloc
+{
     _searchBar.delegate = nil;
     _searchBar = nil;
     _searchResults = nil;
@@ -69,7 +74,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     _viewOnTopOfTable = nil;
     start = nil; finish = nil;
     _imageCache = nil;
-    NSLog(@"Dealloc'ed in %@", NSStringFromClass([YoutubeResultsTableViewController class]));
+    [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
 }
 
 - (void)setProductionModeValue
@@ -92,6 +97,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 #pragma mark - Toolbar button handling code
 - (void)cancelTapped
 {
+    [self myPreDealloc];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -157,6 +163,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     else
         _heightOfScreenRotationIndependant = b;
     [_searchBar becomeFirstResponder];
+    
+    [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerShouldRespectToolbar];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -167,10 +175,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         _navBar.title = @"Search Results";
     } else
         self.tableView.scrollEnabled = NO;
-    
-    //make searchbar background clear
-    self.searchBar.barTintColor = [UIColor clearColor];
-    self.searchBar.backgroundImage = [UIImage new];
 }
 
 - (void)didReceiveMemoryWarning
@@ -347,6 +351,11 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     _searchBar.delegate = self;
     [self.searchBar sizeToFit];
     self.tableView.tableHeaderView = _searchBar;
+    
+    //make searchbar background clear
+    self.searchBar.barTintColor = [UIColor clearColor];
+    self.searchBar.backgroundImage = [UIImage new];
+    self.searchBar.tintColor = [[UIColor defaultAppColorScheme] lighterColor];
 }
 
 //User tapped the search box textField
@@ -388,6 +397,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     if(! _searchInitiatedAlready){
+        [self myPreDealloc];
         [self dismissViewControllerAnimated:YES completion:nil];
     }else{
         //setting it both ways, do to nav bar title bug
@@ -402,6 +412,11 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
             [_searchBar resignFirstResponder];
             self.displaySearchResults = YES;
             self.tableView.scrollEnabled = YES;
+            
+            //dismiss search bar and hide cancel button
+            [_searchBar setShowsCancelButton:NO animated:YES];
+            [_searchBar resignFirstResponder];
+            
             [self.tableView reloadData];
             return;
         }
@@ -458,14 +473,34 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 - (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if(! self.displaySearchResults)
-        return 36.0f;
+    if(! self.displaySearchResults){  //showing autocomplete.
+        //want to hide the header in landscape
+        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        if(orientation != UIInterfaceOrientationPortrait)
+            return 0;
+        else
+            return 36.0f;
+    }
     else{
         if(section == 0)  //dont want a gap betweent table and search bar
             return 1.0f;
         else
             return 14.0f;  //"Load More" cell is in section 1
     }
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if(! self.displaySearchResults){
+        if(section == 0 && _searchSuggestions.count > 0){
+            UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+            if(orientation != UIInterfaceOrientationPortrait)
+                return @"";
+            else
+                return @"Top Hits";
+        }
+    }
+    return @"";
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
@@ -488,17 +523,14 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         else
             return -1;
     }
-    else
-        return _searchSuggestions.count;  //user has not pressed "search" yet, only showing autosuggestions
-}
-
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
-    if(! self.displaySearchResults){
-        if(section == 0 && _searchSuggestions.count > 0)
-            return @"Top Hits";
+    else{
+        //user has not pressed "search" yet, only showing autosuggestions
+        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        if(orientation != UIInterfaceOrientationPortrait)
+            return _searchSuggestions.count - 1;
+        else
+            return _searchSuggestions.count;
     }
-    return @"";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -742,12 +774,14 @@ static NSDate *finish;
 #pragma mark - Rotation status bar methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
         // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
         [self prefersStatusBarHidden];
         [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
     }
-    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    if(!_displaySearchResults)  //want to reload the section headers during orientation so it fits ("top hits")
+        [self.tableView reloadData];
 }
 
 - (BOOL)prefersStatusBarHidden

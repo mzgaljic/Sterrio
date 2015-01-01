@@ -30,11 +30,11 @@ static const int APP_LAUNCHED_ALREADY = 1;
     
     //set global default "AppColorScheme"
     self.window.tintColor = [UIColor whiteColor];
-    //[UIColor defaultAppColorScheme:Rgb2UIColor(255, 149, 0)];
     [UIColor defaultAppColorScheme:Rgb2UIColor(32, 69, 124)];
+    //set cancel button color of all uisearchbars
     [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
                                 setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                [UIColor defaultAppColorScheme],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
+                                [UIColor redColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;  //makes status bar text color light
     
     [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime:[self appLaunchedFirstTime]];

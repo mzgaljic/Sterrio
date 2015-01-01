@@ -158,7 +158,7 @@ static BOOL lastSortOrder;
     }
 
     
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft ||
        orientation == UIInterfaceOrientationLandscapeRight||
        orientation == UIInterfaceOrientationPortraitUpsideDown)
@@ -187,6 +187,7 @@ static BOOL lastSortOrder;
     //make searchbar background clear
     self.searchBar.barTintColor = [UIColor clearColor];
     self.searchBar.backgroundImage = [UIImage new];
+    self.searchBar.tintColor = [[UIColor defaultAppColorScheme] lighterColor];
 }
 
 - (void)viewDidLoad

@@ -14,7 +14,7 @@
 #import "PlayerView.h"  //custom avplayer view
 #import "ASValueTrackingSlider.h"  //slider
 #import "PreferredFontSizeUtility.h"
-#import "MRProgress.h"  //loading spinner
+#import "MRProgress.h"
 #import "SDCAlertView.h"  //custom alert view
 #import "UIButton+ExpandedHitArea.h"
 #import "MusicPlaybackController.h"  //controls queue playback

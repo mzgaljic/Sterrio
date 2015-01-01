@@ -52,7 +52,7 @@ static BOOL lastSortOrder;
     }
 
     
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight
        || orientation == UIInterfaceOrientationPortraitUpsideDown)
     {
@@ -345,7 +345,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (BOOL)prefersStatusBarHidden
 {
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
         [self setTabBarVisible:NO animated:NO];
         self.tabBarController.tabBar.hidden = YES;

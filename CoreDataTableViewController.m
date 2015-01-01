@@ -214,7 +214,6 @@
     //change background color of tableview
     self.parentViewController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    //self.tableView.backgroundColor = [UIColor clearColor];
     
     //force tableview to only show cells with content (hide the invisible stuff at the bottom of the table)
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];

@@ -145,7 +145,7 @@ static BOOL PRODUCTION_MODE;
 
 - (BOOL)prefersStatusBarHidden
 {
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
         return YES;
     }

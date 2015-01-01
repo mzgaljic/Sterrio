@@ -22,5 +22,7 @@
 - (void)beginShrinkingVideoPlayer;
 - (void)begingExpandingVideoPlayer;
 - (void)shrunkenVideoPlayerNeedsToBeRotated;
+- (void)shrunkenVideoPlayerShouldRespectToolbar;
+- (void)shrunkenVideoPlayerCanIgnoreToolbar;
 
 @end

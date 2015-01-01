@@ -37,7 +37,7 @@ static BOOL PRODUCTION_MODE;
                                               //change this to load from songs class!
    // self.allSongsInLibrary = [NSMutableArray arrayWithArray:[Album allLibraryAlbums]];
     
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight
        || orientation == UIInterfaceOrientationPortraitUpsideDown)
     {
@@ -127,7 +127,7 @@ static BOOL PRODUCTION_MODE;
 
 - (BOOL)prefersStatusBarHidden
 {
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
         [self setTabBarVisible:NO animated:NO];
         return YES;

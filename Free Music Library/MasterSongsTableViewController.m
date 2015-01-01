@@ -188,11 +188,11 @@ static BOOL lastSortOrder;
         lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
     }
     
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation != UIInterfaceOrientationPortrait)
-        self.tabBarController.tabBar.hidden = YES;
+        [self setTabBarVisible:NO animated:YES];
     else
-        self.tabBarController.tabBar.hidden = NO;
+        [self setTabBarVisible:YES animated:YES];
     
     if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
@@ -202,6 +202,7 @@ static BOOL lastSortOrder;
     //make searchbar background clear
     self.searchBar.barTintColor = [UIColor clearColor];
     self.searchBar.backgroundImage = [UIImage new];
+    self.searchBar.tintColor = [[UIColor defaultAppColorScheme] lighterColor];
     
     [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
 }
@@ -448,7 +449,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (BOOL)prefersStatusBarHidden
 {
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
         [self setTabBarVisible:NO animated:NO];
         return YES;
