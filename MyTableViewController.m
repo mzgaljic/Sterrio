@@ -25,6 +25,7 @@
     self.navigationController.navigationBar.translucent = YES;
     [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObject:[UIColor defaultWindowTintColor]
                                                                                                 forKey:UITextAttributeTextColor]];
+    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;  //makes status bar text light and readable
 }
 
 @end

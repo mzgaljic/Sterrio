@@ -47,7 +47,6 @@
                     <navigationItem key="navigationItem" title="Songs" id="Oyd-HO-iMf"/>
                     <connections>
                         <segue destination="5sU-IG-zJp" kind="modal" identifier="editingSongMasterSegue" modalTransitionStyle="coverVertical" id="i6u-By-3UM"/>
-                        <segue destination="mqG-UD-sBX" kind="modal" identifier="songItemSegue" id="aQU-5c-2vO"/>
                         <segue destination="Lxg-v4-Z1q" kind="modal" identifier="settingsSegue" modalTransitionStyle="coverVertical" id="o0x-vp-6sV"/>
                         <segue destination="V5K-xF-P6M" kind="modal" identifier="addMusicToLibSegue" modalTransitionStyle="coverVertical" id="fFN-xo-skq"/>
                     </connections>
@@ -100,7 +99,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="shW-Aa-q3b" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2775" y="-735"/>
+            <point key="canvasLocation" x="3163" y="-431"/>
         </scene>
         <!--Genres-->
         <scene sceneID="Vww-o9-vR9">
@@ -397,9 +396,6 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                <connections>
-                                    <segue destination="mqG-UD-sBX" kind="modal" identifier="playlistSongItemPlayingSegue" trigger="accessoryAction" id="cob-ad-5Vf"/>
-                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -1182,7 +1178,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="q6b-gX-OLx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2387" y="-735"/>
+            <point key="canvasLocation" x="2767" y="-431"/>
         </scene>
     </scenes>
     <resources>
@@ -1198,9 +1194,8 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="cob-ad-5Vf"/>
-        <segue reference="7Sy-qq-35y"/>
         <segue reference="pPM-be-vV0"/>
         <segue reference="Mvp-5d-lNL"/>
+        <segue reference="7Sy-qq-35y"/>
     </inferredMetricsTieBreakers>
 </document>

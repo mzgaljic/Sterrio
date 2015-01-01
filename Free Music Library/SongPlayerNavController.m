@@ -17,6 +17,7 @@
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     SongPlayerViewController *vc = (SongPlayerViewController *)[storyboard instantiateViewControllerWithIdentifier:@"songItemView"];
     [self pushViewController:vc animated:NO];
+    self.navigationBar.barStyle = UIBarStyleBlack;  //makes status bar font light (readable)
 }
 
 @end

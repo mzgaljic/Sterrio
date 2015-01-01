@@ -35,6 +35,7 @@ static const int APP_LAUNCHED_ALREADY = 1;
     [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
                                 setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                 [UIColor defaultAppColorScheme],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;  //makes status bar text color light
     
     [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime:[self appLaunchedFirstTime]];
     if([self appLaunchedFirstTime]){
