@@ -305,11 +305,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         //obtain object for the deleted album
         Album *album = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
-        //check if any of the songs in this album are currently playing. if so, set the avplayer to nil (and pause it) so it doesn't crash!
+        //remove songs from queue if they are in it
         for(Song *aSong in album.albumSongs)
         {
-            if([[MusicPlaybackController nowPlayingSong].song_id isEqual:aSong.song_id])
-                [MusicPlaybackController songAboutToBeDeleted];
+            [MusicPlaybackController songAboutToBeDeleted:aSong];
+            [aSong removeAlbumArt];
         }
         
         //delete the album and save changes

@@ -235,10 +235,7 @@ static BOOL lastSortOrder;
         
         for(Song *aSong in playlist.playlistSongs)
         {
-            if([[MusicPlaybackController nowPlayingSong].song_id isEqual:aSong.song_id])
-            {
-                [MusicPlaybackController songAboutToBeDeleted];
-            }
+            [MusicPlaybackController songAboutToBeDeleted:aSong];
         }
         
         //delete the playlist and save changes

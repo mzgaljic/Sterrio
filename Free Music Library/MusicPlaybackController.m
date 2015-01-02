@@ -29,14 +29,21 @@ static BOOL internetConnectionSpinnerOnScreen = NO;
     [player pause];
 }
 
-+ (void)songAboutToBeDeleted
++ (void)songAboutToBeDeleted:(Song *)song;
 {
-    [player pause];
-    
-    if([MusicPlaybackController playbackQueue].listOfPlayedSongsNowPlayingExclusive.count > 0){  //more items to play
-        [self skipToNextTrack];
-    } else{
-        [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+    if([[MusicPlaybackController playbackQueue] isSongInQueue:song]){
+        [player pause];
+        
+        if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more items to play
+            if([[MusicPlaybackController nowPlayingSong].song_id isEqual:song.song_id])
+                [self skipToNextTrack];
+        }
+        else
+            [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+        [[MusicPlaybackController playbackQueue] removeSongFromQueue:song];
+        
+        NSLog(@"\n\nSong was deleted...printing new queue contents");
+        [MusicPlaybackController printQueueContents];
     }
 }
 

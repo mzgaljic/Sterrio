@@ -138,6 +138,11 @@
     return [deque count];
 }
 
+- (BOOL)isSongInQueue:(Song *)song
+{
+    return [deque isObjectInQueue:song];
+}
+
 - (void)insertSongsAfterNowPlaying:(NSArray *)songs
 {
     //queue non-empty, and now playing song isnt the last song
@@ -152,6 +157,27 @@
         for(Song *aSong in songs){
             [deque enqueue:aSong];
         }
+    }
+}
+
+- (void)removeSongFromQueue:(Song *)song
+{
+    if(deque.count > 0){
+        if(nowPlayingIndex == [deque indexOfObject:song]){
+            if(nowPlayingIndex == [deque count]-1)
+                nowPlayingIndex--;
+            else
+                nowPlayingIndex++;
+            [deque removeObjectFromQueue:song];
+        } else {
+            //save current playing object for recovert in a few steps..
+            id object = [deque objectAtIndex:nowPlayingIndex];
+            [deque removeObjectFromQueue:song];
+            nowPlayingIndex = [deque indexOfObject:object];
+        }
+    } else{
+        nowPlayingIndex = 0;
+        [deque removeObjectFromQueue:song];
     }
 }
 

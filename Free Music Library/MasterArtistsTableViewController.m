@@ -254,22 +254,17 @@ static BOOL lastSortOrder;
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
         Artist *artist = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
-        //check if any of this artists songs are currently playing (check standalone songs and all the artists albums songs).
-        //if so, set the avplayer to nil (and pause it) so it doesn't crash!
-        
+        //remove songs from queue
         for(Song *aSong in artist.standAloneSongs)
         {
-            if([[MusicPlaybackController nowPlayingSong].song_id isEqual:aSong.song_id])
-                [MusicPlaybackController songAboutToBeDeleted];
+            [MusicPlaybackController songAboutToBeDeleted:aSong];
             [aSong removeAlbumArt];
         }
         for(Album *anAlbum in artist.albums)
         {
             for(Song *aSong in anAlbum.albumSongs)
-            {
-                if([[MusicPlaybackController nowPlayingSong].song_id isEqual:aSong.song_id])
-                    [MusicPlaybackController songAboutToBeDeleted];
-            }
+                [MusicPlaybackController songAboutToBeDeleted:aSong];
+            
             [anAlbum removeAlbumArt];
         }
         

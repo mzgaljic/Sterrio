@@ -326,11 +326,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
         //obtain object for the deleted song
         Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
-        
-        if([[MusicPlaybackController nowPlayingSong].song_id isEqual:song.song_id]){
-            [MusicPlaybackController songAboutToBeDeleted];
-        }
+        [MusicPlaybackController songAboutToBeDeleted:song];
         [song removeAlbumArt];
+        
         NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:[CoreDataManager context]];
         NSFetchRequest *request = [[NSFetchRequest alloc] init];
         [request setEntity:entityDesc];

@@ -17,12 +17,17 @@
 @implementation Deque
 @synthesize count;
 
+//custom setters and getters
+- (NSUInteger)count
+{
+    return internalArray.count;
+}
+
 - (id)init
 {
     if(self = [super init])
     {
         internalArray = [NSMutableArray array];
-        count = 0;
     }
     return self;
 }
@@ -32,7 +37,6 @@
     if(self = [super init])
     {
         internalArray = [NSMutableArray arrayWithArray:anArray];
-        count = internalArray.count;
     }
     return self;
 }
@@ -40,27 +44,23 @@
 - (void)enqueue:(id)anObject
 {
     [internalArray addObject:anObject];
-    count = internalArray.count;
 }
 
 - (void)enqueueObjectAtHead:(id)anObject
 {
     [internalArray insertObject:anObject atIndex:0];
-    count = internalArray.count;
 }
 
 - (NSArray *)enqueueObjectsFromArrayToHead:(NSArray *)anArray
 {
     NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, anArray.count - 1)];
     [internalArray insertObjects:anArray atIndexes:indexSet];
-    count = internalArray.count;
     return internalArray;
 }
 
 - (NSArray *)enqueueObjectsFromArray:(NSArray *)anArray
 {
     [internalArray addObjectsFromArray:anArray];
-    count = internalArray.count;
     return internalArray;
 }
 
@@ -71,7 +71,6 @@
     {
         obj = [internalArray objectAtIndex:0];
         [internalArray removeObjectAtIndex:0];
-        count = internalArray.count;
     }
     return obj;
 }
@@ -79,12 +78,11 @@
 - (void)clear
 {
     [internalArray removeAllObjects];
-    count = 0;
 }
 
 - (id)peekAtHead
 {
-    if(count > 0)
+    if(internalArray.count > 0)
         return [internalArray objectAtIndex:0];
     else
         return nil;
@@ -92,15 +90,15 @@
 
 - (id)peekAtTail
 {
-    if(count > 0)
-        return [internalArray objectAtIndex: (count - 1)];
+    if(internalArray.count > 0)
+        return [internalArray objectAtIndex: (internalArray.count - 1)];
     else
         return nil;
 }
 
 - (void)newOrderOfQueue:(NSArray *)anArray
 {
-    if(count != [anArray count])
+    if(internalArray.count != [anArray count])
         return;
     [self clear];
     [self enqueueObjectsFromArray:anArray];
@@ -130,7 +128,7 @@
 
 - (void)removeObjectFromQueue:(id)anObject
 {
-    if(count > 0){
+    if(internalArray.count > 0){
         [internalArray removeObject:anObject];
     }
 }
@@ -138,7 +136,7 @@
 - (NSInteger)numObjectsAfterThisOne:(id)anObject
 {
     //check if object in array at all
-    NSInteger index = [internalArray indexOfObjectIdenticalTo:anObject];
+    NSInteger index = [internalArray isEqual:anObject];
     if(index == NSNotFound){
         return -1;
     } else{
@@ -157,6 +155,11 @@
         else
             return -1;
     }
+}
+
+- (BOOL)isObjectInQueue:(id)object
+{
+    return [internalArray containsObject:object] ? YES : NO;
 }
 
 @end

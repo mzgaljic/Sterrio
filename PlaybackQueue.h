@@ -31,9 +31,11 @@
 - (NSArray *)listOfEntireQueueAsArray;
 
 - (NSUInteger)sizeOfEntireQueue;
+- (BOOL)isSongInQueue:(Song *)song;
 
 /* Inserts songs after the currently playing song. If 
    the queue is empty, all songs are added to the queue. */
 - (void)insertSongsAfterNowPlaying:(NSArray *)songs;
+- (void)removeSongFromQueue:(Song *)song;
 
 @end

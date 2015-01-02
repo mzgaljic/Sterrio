@@ -18,6 +18,8 @@
     SongPlayerViewController *vc = (SongPlayerViewController *)[storyboard instantiateViewControllerWithIdentifier:@"songItemView"];
     [self pushViewController:vc animated:NO];
     self.navigationBar.barStyle = UIBarStyleBlack;  //makes status bar font light (readable)
+    
+    //fixes issue where playerview is sometimes "behind" a presented modal view (usually multiple modals)
     [[MusicPlaybackController obtainRawPlayerView] removeFromSuperview];
     [[[[UIApplication sharedApplication] delegate] window] addSubview:[MusicPlaybackController obtainRawPlayerView]];
 }

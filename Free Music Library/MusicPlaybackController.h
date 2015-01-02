@@ -26,7 +26,7 @@
 + (void)pausePlayback;
 
 /** Stops playback and removes the item from the queue - "prep" for deletion **/
-+ (void)songAboutToBeDeleted;
++ (void)songAboutToBeDeleted:(Song *)song;
 
 + (void)declareInternetProblemWhenLoadingSong:(BOOL)declare;
 
