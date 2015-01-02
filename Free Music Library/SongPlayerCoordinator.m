@@ -86,8 +86,7 @@ static const short SMALL_VIDEO_WIDTH = 200;
     }
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    
-    [UIView animateWithDuration:0.36f animations:^{
+    [UIView animateWithDuration:0.40f animations:^{
         if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
         {
             //entering view controller in landscape (fullscreen video)
@@ -133,8 +132,8 @@ static const short SMALL_VIDEO_WIDTH = 200;
 - (void)shrunkenVideoPlayerNeedsToBeRotated
 {
     PlayerView *videoPlayer = [MusicPlaybackController obtainRawPlayerView];
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
         //landscape rotation...
         [videoPlayer setFrame:[self smallPlayerFrameInLandscape]];
@@ -146,31 +145,57 @@ static const short SMALL_VIDEO_WIDTH = 200;
 - (void)shrunkenVideoPlayerShouldRespectToolbar
 {
     canIgnoreToolbar = NO;
-    
     //need to re-animate playerView
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    [UIView animateWithDuration:0.6f animations:^{
-        playerView.frame = [self smallPlayerFrameInPortrait];
-    } completion:^(BOOL finished) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
-        });
-    }];
+    
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+        //landscape rotation...
+        [UIView animateWithDuration:0.6f animations:^{
+            playerView.frame = [self smallPlayerFrameInLandscape];
+        } completion:^(BOOL finished) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
+            });
+        }];
+    } else{
+        //portrait
+        [UIView animateWithDuration:0.6f animations:^{
+            playerView.frame = [self smallPlayerFrameInPortrait];
+        } completion:^(BOOL finished) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
+            });
+        }];
+    }
 }
 
 - (void)shrunkenVideoPlayerCanIgnoreToolbar
 {
     canIgnoreToolbar = YES;
-    
     //need to re-animate playerView
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    [UIView animateWithDuration:0.6f animations:^{
-        playerView.frame = [self smallPlayerFrameInPortrait];
-    } completion:^(BOOL finished) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
-        });
-    }];
+    
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+        //landscape rotation...
+        [UIView animateWithDuration:0.6f animations:^{
+            playerView.frame = [self smallPlayerFrameInLandscape];
+        } completion:^(BOOL finished) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
+            });
+        }];
+    } else{
+        //portrait
+        [UIView animateWithDuration:0.6f animations:^{
+            playerView.frame = [self smallPlayerFrameInPortrait];
+        } completion:^(BOOL finished) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
+            });
+        }];
+    }
 }
 
 - (CGRect)smallPlayerFrameInPortrait
@@ -201,7 +226,7 @@ static const short SMALL_VIDEO_WIDTH = 200;
 {
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     short padding = 10;
-    short toolbarHeight = 44;
+    short toolbarHeight = 34;
     int width, height, x, y;
     
     //set frame based on what kind of VC we are over at the moment

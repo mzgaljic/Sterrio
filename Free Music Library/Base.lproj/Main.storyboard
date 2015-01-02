@@ -55,7 +55,7 @@
             </objects>
             <point key="canvasLocation" x="1459" y="-819"/>
         </scene>
-        <!--1/203-->
+        <!--Song Player View Controller-->
         <scene sceneID="aB0-HZ-Jc6">
             <objects>
                 <viewController storyboardIdentifier="songItemView" extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="PBb-rQ-7sq" customClass="SongPlayerViewController" sceneMemberID="viewController">
@@ -89,7 +89,7 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
-                    <navigationItem key="navigationItem" title="1/203" id="B6K-mw-sf0"/>
+                    <navigationItem key="navigationItem" id="B6K-mw-sf0"/>
                     <connections>
                         <outlet property="currentTimeLabel" destination="vwG-hB-hqU" id="JIl-WH-4Db"/>
                         <outlet property="navBar" destination="B6K-mw-sf0" id="xnq-2a-haq"/>

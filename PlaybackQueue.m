@@ -57,7 +57,7 @@
         nowPlayingIndex = index;
     }
 }
-- (NSInteger)obtainNowPlayingIndex
+- (NSInteger)nowPlayingIndex
 {
     if(deque.count > 0){
         return nowPlayingIndex;
@@ -131,6 +131,11 @@
 - (NSArray *)listOfEntireQueueAsArray
 {
     return [deque allQueueObjectsAsArray];
+}
+
+- (NSUInteger)sizeOfEntireQueue
+{
+    return [deque count];
 }
 
 - (void)insertSongsAfterNowPlaying:(NSArray *)songs

@@ -86,7 +86,7 @@ void *kDidFailKVO               = &kDidFailKVO;
     _totalDurationLabel.text = @"--:--";
     _currentTimeLabel.textColor = [UIColor blackColor];
     _totalDurationLabel.textColor = [UIColor blackColor];
-    
+    self.navBar.title = [MusicPlaybackController prettyPrintNavBarTitle];
     [self setupKeyvalueObservers];
 }
 
@@ -162,6 +162,7 @@ static int numTimesVCLoaded = 0;
 //in this VC (song name, updating song index, etc)
 - (void)updateScreenWithInfoForNewSong:(NSNotification *)object
 {
+    self.navBar.title = [MusicPlaybackController prettyPrintNavBarTitle];
     /*
     Song *newSong = (Song *)object;
      _songLabel = nowPlayingSong.songName;

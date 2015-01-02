@@ -18,6 +18,8 @@
     SongPlayerViewController *vc = (SongPlayerViewController *)[storyboard instantiateViewControllerWithIdentifier:@"songItemView"];
     [self pushViewController:vc animated:NO];
     self.navigationBar.barStyle = UIBarStyleBlack;  //makes status bar font light (readable)
+    [[MusicPlaybackController obtainRawPlayerView] removeFromSuperview];
+    [[[[UIApplication sharedApplication] delegate] window] addSubview:[MusicPlaybackController obtainRawPlayerView]];
 }
 
 @end

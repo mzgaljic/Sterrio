@@ -54,6 +54,7 @@
 + (NSUInteger)numMoreSongsInQueue;
 + (BOOL)isSongLastInQueue:(Song *)song;
 + (BOOL)isSongFirstInQueue:(Song *)song;
++ (NSString *)prettyPrintNavBarTitle;
 
 #pragma mark + Changing the Queue
 + (void)newQueueWithSong:(Song *)song

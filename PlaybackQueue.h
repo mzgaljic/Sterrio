@@ -17,7 +17,7 @@
 
 - (Song *)nowPlaying;
 - (void)setNowPlayingIndexWithSong:(Song *)song;
-- (NSInteger)obtainNowPlayingIndex;  //should only be used for debugging purposes
+- (NSInteger)nowPlayingIndex;  //should be used sparingly! don't abuse...
 - (Song *)peekAtNextSong;
 - (Song *)peekAtPreviousSong;
 
@@ -29,6 +29,8 @@
 - (NSArray *)listOfPlayedSongsNowPlayingExclusive;
 - (NSArray *)listOfPlayedSongsNowPlayingInclusive;
 - (NSArray *)listOfEntireQueueAsArray;
+
+- (NSUInteger)sizeOfEntireQueue;
 
 /* Inserts songs after the currently playing song. If 
    the queue is empty, all songs are added to the queue. */

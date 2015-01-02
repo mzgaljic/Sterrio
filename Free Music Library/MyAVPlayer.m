@@ -50,10 +50,10 @@
     [MusicPlaybackController printQueueContents];
     if(aSong != nil){
         movingForward = forward;
-        [MusicPlaybackController updateLockScreenInfoAndArtForSong:aSong];
-        //SongPlayerViewController will respond if it is on screen
-        [[NSNotificationCenter defaultCenter] postNotificationName:NEW_SONG_IN_AVPLAYER object:aSong];
+        [[NSNotificationCenter defaultCenter] postNotificationName:NEW_SONG_IN_AVPLAYER
+                                                            object:[MusicPlaybackController nowPlayingSong]];
         [self playSong:aSong];
+        [MusicPlaybackController updateLockScreenInfoAndArtForSong:aSong];
     }
 }
 
@@ -68,8 +68,7 @@
 //Will be called when YTVideoAvPlayer finishes playing a YTVideoPlayerItem
 - (void)songDidFinishPlaying:(NSNotification *) notification
 {
-    NSLog(@"Playback of song finished.");
-    if([MusicPlaybackController listOfUpcomingSongsInQueue].count > 0){  //more songs in queue
+    if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more songs in queue
         if(movingForward)
             [MusicPlaybackController skipToNextTrack];
         else
@@ -78,13 +77,14 @@
     else{  //last song just ended
         [MusicPlaybackController explicitlyPausePlayback:YES];
         [MusicPlaybackController pausePlayback];
+        [[NSNotificationCenter defaultCenter] postNotificationName:AVPLAYER_DONE_PLAYING
+                                                            object:nil];
     }
 }
 
 - (void)playSong:(Song *)aSong
 {
     __weak NSString *weakId = aSong.youtube_id;
-    __weak Song *weakSong = aSong;
     [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
         BOOL allowedToPlayVideo = NO;  //not checking if we can physically play, but legally (Apple's 10 minute streaming rule)
         Reachability *reachability = [Reachability reachabilityForInternetConnection];
@@ -159,12 +159,6 @@
         if(allowedToPlayVideo && video != nil){
             playerItem = [AVPlayerItem playerItemWithURL: currentItemLink];
             [self replaceCurrentItemWithPlayerItem:playerItem];
-            
-            //posting notifications about important AVPLayerItem changes. GUI should react appropriately where needed.
-            [[NSNotificationCenter defaultCenter] postNotificationName:NEW_SONG_IN_AVPLAYER object:weakSong];
-            
-            if([MusicPlaybackController listOfUpcomingSongsInQueue].count == 0)  //no more songs in queue
-                [[NSNotificationCenter defaultCenter] postNotificationName:AVPLAYER_DONE_PLAYING object:nil];
             
             
             // Declare block scope variables to avoid retention cycles from references inside the block

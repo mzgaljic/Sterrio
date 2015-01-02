@@ -105,6 +105,24 @@ static BOOL internetConnectionSpinnerOnScreen = NO;
     return ([comparisonSong.song_id isEqual:song.song_id]) ? YES : NO;
 }
 
+//private method
++ (NSUInteger)sizeOfEntireQueue
+{
+    return [[MusicPlaybackController playbackQueue] sizeOfEntireQueue];
+}
+
+//private method
++ (NSUInteger)indexOfNowPlaying
+{
+    return [[MusicPlaybackController playbackQueue] nowPlayingIndex];
+}
+
++ (NSString *)prettyPrintNavBarTitle
+{
+    return [NSString stringWithFormat:@"%d of %d", (int)[MusicPlaybackController indexOfNowPlaying]+1,
+                                                    (int)[MusicPlaybackController sizeOfEntireQueue]];
+}
+
 #pragma mark - Now Playing Song
 + (Song *)nowPlayingSong
 {
@@ -364,7 +382,7 @@ static BOOL internetConnectionSpinnerOnScreen = NO;
         else
             [output appendFormat:@",%@", aSong.songName];
     }
-    int indexOfNowPlaying = (int)[[MusicPlaybackController playbackQueue] obtainNowPlayingIndex];
+    int indexOfNowPlaying = (int)[[MusicPlaybackController playbackQueue] nowPlayingIndex];
     if(indexOfNowPlaying < 0)
         [output appendString:@"]----No song playing\n\n"];
     else
