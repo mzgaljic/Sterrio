@@ -14,8 +14,6 @@
 #import "Artist+Utilities.h"
 #import "GenreConstants.h"
 #import "NSObject+ObjectUUID.h"
-
-#import "SongModelHandler.h"
 #import "NSString+smartSort.h"
 
 @interface Song (Utilities)

@@ -38,6 +38,6 @@
         <element name="Album" positionX="-9909" positionY="-81" width="128" height="148"/>
         <element name="Artist" positionX="-9684" positionY="-306" width="128" height="118"/>
         <element name="Playlist" positionX="-9074" positionY="-18" width="128" height="103"/>
-        <element name="Song" positionX="-9450" positionY="-126" width="126" height="195"/>
+        <element name="Song" positionX="-9450" positionY="-126" width="126" height="193"/>
     </elements>
 </model>

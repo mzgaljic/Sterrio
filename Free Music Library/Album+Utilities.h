@@ -11,7 +11,6 @@
 #import "Song+Utilities.h"
 #import "NSObject+ObjectUUID.h"
 #import "AlbumArtUtilities.h"
-#import "AlbumModelHandler.h"
 #import "NSString+smartSort.h"
 
 @interface Album (Utilities)

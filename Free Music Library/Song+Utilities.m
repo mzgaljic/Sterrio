@@ -125,45 +125,35 @@
     }
 }
 
-#pragma mark - Code For Custom setters/KVO
-/*
-- (void)awakeFromInsert
-{
-    [self observeStuff];
-}
-
-- (void)awakeFromFetch
-{
-    [self observeStuff];
-}
-
-- (void)observeStuff
-{
-    [self addObserver:self forKeyPath:@"album" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:NULL];
-    [self addObserver:self forKeyPath:@"artist" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:NULL];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if ([keyPath isEqualToString:@"album"]){
-        Album *newValue = [change objectForKey:NSKeyValueChangeNewKey];
-        [SongModelHandler handleAlbumChange:self newAlbum:newValue];
-        
-    } else if([keyPath isEqualToString:@"artist"]){
-        Artist *newValue = [change objectForKey:NSKeyValueChangeNewKey];
-        [SongModelHandler handleArtistChange:self newArtist:newValue];
-    }
-}
-
-- (void)willTurnIntoFault
-{
-    [self removeObserver:self forKeyPath:@"album"];
-    [self removeObserver:self forKeyPath:@"artist"];
-}
- */
-
 - (void)prepareForDeletion
 {
+    if(self.artist != nil){
+        if(self.artist.standAloneSongs.count == 0){
+            //check if there is only 1 album remaining (when we would want to delete the artist)
+            if(self.artist.albums.count == 1){
+                //only delete this songs artist if there is only 1 album, and this is the albums only song
+                int numOtherSongs = 0;
+                for(Album *someAlbum in self.artist.albums){
+                    for(Song *albumSong in someAlbum.albumSongs){
+                        if(![albumSong.song_id isEqual:self.song_id])
+                            numOtherSongs++;
+                    }
+                }
+                if(numOtherSongs == 0)  //we can delete the artist, artist has no other songs except this one!
+                    [[CoreDataManager context] deleteObject:self.artist];
+            }
+        }else if(self.artist.albums.count == 0){
+            if(self.artist.standAloneSongs.count == 1){
+                //is this that 1 remaining song?
+                NSSet *standAloneSongs = self.artist.standAloneSongs;
+                Song *songToCompare = nil;
+                for(Song *aSong in standAloneSongs)
+                    songToCompare = aSong;
+                if([songToCompare.song_id isEqual:self.song_id])
+                    [[CoreDataManager context] deleteObject:self.artist];
+            }
+        }
+    }
     [AlbumArtUtilities deleteAlbumArtFileWithName:self.albumArtFileName];
 }
 
