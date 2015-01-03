@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
 #import "CoreDataManager.h"
+#import "UIColor+LighterAndDarker.h"
 
 @interface CoreDataTableViewController : UITableViewController <NSFetchedResultsControllerDelegate>
 

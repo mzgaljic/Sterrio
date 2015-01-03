@@ -210,14 +210,13 @@ static BOOL lastSortOrder;
         self.tableView.tableHeaderView = nil;
     }
     
-    [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
+    [self setFetchedResultsControllerAndSortStyle];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    //self.navigationController.navigationBar.topItem.title = @"Songs";
-    [self setFetchedResultsControllerAndSortStyle];
+    [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
 }
@@ -433,7 +432,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             _searchBar = nil;
             self.tableView.tableHeaderView = nil;
         }
-        //[self.tableView reloadData];
+        [self setFetchedResultsControllerAndSortStyle];  //in case song name changed, etc...
     }
 }
 

@@ -225,9 +225,15 @@
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;  //makes status bar text light and readable
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
+}
+
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    cell.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    cell.backgroundColor = [[UIColor groupTableViewBackgroundColor] lighterColor];
 }
 
 @end

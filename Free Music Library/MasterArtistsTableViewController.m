@@ -93,6 +93,11 @@ static BOOL PRODUCTION_MODE;
         _searchBar.delegate = self;
         [self.searchBar sizeToFit];
         self.tableView.tableHeaderView = _searchBar;
+        
+        //make searchbar background clear
+        self.searchBar.barTintColor = [UIColor clearColor];
+        self.searchBar.backgroundImage = [UIImage new];
+        self.searchBar.tintColor = [[UIColor defaultAppColorScheme] lighterColor];
     }
 }
 
@@ -150,7 +155,6 @@ static BOOL lastSortOrder;
     [super viewWillAppear:animated];
     
     [self setUpSearchBar];  //must be called in viewWillAppear, and after allSongsLibrary is refreshed
-    
     if(lastSortOrder != [AppEnvironmentConstants smartAlphabeticalSort])
     {
         [self setFetchedResultsControllerAndSortStyle];
@@ -172,8 +176,6 @@ static BOOL lastSortOrder;
         _searchBar = nil;
         self.tableView.tableHeaderView = nil;
     }
-    
-    [self.tableView reloadData];  //needed to update the font sizes, bold font, and cell height (if changed in settings)
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -183,11 +185,6 @@ static BOOL lastSortOrder;
     
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
-    
-    //make searchbar background clear
-    self.searchBar.barTintColor = [UIColor clearColor];
-    self.searchBar.backgroundImage = [UIImage new];
-    self.searchBar.tintColor = [[UIColor defaultAppColorScheme] lighterColor];
 }
 
 - (void)viewDidLoad

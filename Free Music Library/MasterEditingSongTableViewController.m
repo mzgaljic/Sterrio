@@ -57,6 +57,9 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     [CoreDataManager context].undoManager = [[NSUndoManager alloc] init];
     [[CoreDataManager context].undoManager beginUndoGrouping];
     self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.albumArtFileName];
+    if(self.currentAlbumArt == nil)  //maybe this songs album (if it has one) has album art
+        if(_songIAmEditing.album != nil)
+            self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.album.albumArtFileName];
     
     //remove header gap at top of table, and remove some scrolling space under the delete button (update scroll insets too)
     [self.tableView setContentInset:UIEdgeInsetsMake(-32,0,-30,0)];
