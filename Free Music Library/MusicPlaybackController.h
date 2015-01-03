@@ -25,8 +25,15 @@
 /** Playback will pause immediately */
 + (void)pausePlayback;
 
-/** Stops playback and removes the item from the queue - "prep" for deletion **/
+/** Stops playback if the song (x) to be deleted is the now playing song. If x is in the playback queue,
+ it is removed. All deletions (of songs, artists, etc) taking place ANYWHERE in the application should
+ call this method as a "heads up" to avoid potential problems. **/
 + (void)songAboutToBeDeleted:(Song *)song;
+
+/** Stops playback if any of the songs in the group (x) to be deleted is the now playing song. Any songs
+ from group x within the queue are removed. All deletions (of songs, artists, etc) taking place ANYWHERE 
+ in the application should call this method as a "heads up" to avoid potential problems. **/
++ (void)groupOfSongsAboutToBeDeleted:(NSArray *)songs;
 
 + (void)declareInternetProblemWhenLoadingSong:(BOOL)declare;
 

@@ -178,7 +178,6 @@
                                                  [weakSelf removeTimeObserver:obs];
                                              }];
             [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
-            [MusicPlaybackController simpleSpinnerOnScreen:YES];
             [self play];
             
         } else{
@@ -214,55 +213,68 @@
     if(self.rate == 0 && [MusicPlaybackController playbackExplicitlyPaused])
         return;
     
-    __block typeof(self) weakSelf = self;
+    if(secondsSinceWeCheckedInternet < 2){
+        secondsSinceWeCheckedInternet++;
+        return;
+    }
+    else
+        secondsSinceWeCheckedInternet = 0;
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        
-        if(secondsSinceWeCheckedInternet < 4){
-            secondsSinceWeCheckedInternet++;
-            return;
-        }
-        else
-            secondsSinceWeCheckedInternet = 0;
-        
-        if([weakSelf isInternetReachable]){
-            [weakSelf showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
-        } else{
-           [weakSelf showSpinnerForInternetConnectionIssueOnView:[MusicPlaybackController obtainRawPlayerView]];
-        }
-    });
+    if([self isInternetReachable]){
+        [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
+    } else{
+        [self showSpinnerForInternetConnectionIssueOnView:[MusicPlaybackController obtainRawPlayerView]];
+    }
 }
 
-#pragma mark - Spinner convenience methods 
+#pragma mark - Spinner convenience methods
 //these methods are also in SongPlayerViewController
 - (void)showSpinnerForInternetConnectionIssueOnView:(UIView *)displaySpinnerOnMe
 {
     if(![MusicPlaybackController isInternetProblemSpinnerOnScreen]){
-        dispatch_async(dispatch_get_main_queue(), ^{
+        if([NSThread isMainThread]){
             [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
             [MRProgressOverlayView showOverlayAddedTo:displaySpinnerOnMe
                                                 title:@"Internet connection lost..."
                                                  mode:MRProgressOverlayViewModeIndeterminateSmall
                                              animated:YES];
             [MusicPlaybackController internetProblemSpinnerOnScreen:YES];
-        });
+        } else{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
+                [MRProgressOverlayView showOverlayAddedTo:displaySpinnerOnMe
+                                                    title:@"Internet connection lost..."
+                                                     mode:MRProgressOverlayViewModeIndeterminateSmall
+                                                 animated:YES];
+                [MusicPlaybackController internetProblemSpinnerOnScreen:YES];
+            });
+
+        }
     }
 }
 
 - (void)showSpinnerForBasicLoadingOnView:(UIView *)displaySpinnerOnMe
 {
     if(![MusicPlaybackController isSimpleSpinnerOnScreen]){
-        dispatch_async(dispatch_get_main_queue(), ^{
+        if([NSThread isMainThread]){
             [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
             [MRProgressOverlayView showOverlayAddedTo:displaySpinnerOnMe title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
             [MusicPlaybackController simpleSpinnerOnScreen:YES];
-        });
+
+        } else{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
+                [MRProgressOverlayView showOverlayAddedTo:displaySpinnerOnMe title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
+                [MusicPlaybackController simpleSpinnerOnScreen:YES];
+            });
+        }
     }
 }
 
 - (void)dismissAllSpinnersForView:(UIView *)dismissViewOnMe
 {
     [MRProgressOverlayView dismissAllOverlaysForView:dismissViewOnMe animated:YES];
+    [MusicPlaybackController noSpinnersOnScreen];
 }
 
 

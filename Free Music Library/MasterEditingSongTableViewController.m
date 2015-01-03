@@ -329,6 +329,9 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
         return;
     
     _songIAmEditing.songName = newName;
+    _songIAmEditing.smartSortSongName = [newName regularStringToSmartSortString];
+    if(_songIAmEditing.smartSortSongName.length == 0)  //edge case...if name itself is just something like 'the', dont remove all characters! Keep original name.
+        _songIAmEditing.smartSortSongName = newName;
     [self.tableView reloadData];
 }
 
@@ -601,6 +604,8 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 {
     UIImagePickerController *photoPickerController = [[UIImagePickerController alloc] init];
     photoPickerController.delegate = self;
+    //set tint color specifically for this VC so that the cancel buttons arent invisible
+    [photoPickerController.view setTintColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0]];
     [self presentViewController:photoPickerController animated:YES completion:nil];
 }
 

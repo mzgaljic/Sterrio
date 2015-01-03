@@ -79,6 +79,12 @@ static BOOL PRODUCTION_MODE;
     return barButton;
 }
 
+- (void)currentSongHasChanged
+{
+    //want the now playing song to always be a specific colo
+    [self.tableView reloadData];
+}
+
 
 #pragma mark - UISearchBar
 - (void)setUpSearchBar
@@ -91,6 +97,11 @@ static BOOL PRODUCTION_MODE;
         _searchBar.delegate = self;
         [self.searchBar sizeToFit];
         self.tableView.tableHeaderView = _searchBar;
+        
+        //make searchbar background clear
+        self.searchBar.barTintColor = [UIColor clearColor];
+        self.searchBar.backgroundImage = [UIImage new];
+        self.searchBar.tintColor = [[UIColor defaultAppColorScheme] lighterColor];
     }
 }
 
@@ -199,19 +210,14 @@ static BOOL lastSortOrder;
         self.tableView.tableHeaderView = nil;
     }
     
-    //make searchbar background clear
-    self.searchBar.barTintColor = [UIColor clearColor];
-    self.searchBar.backgroundImage = [UIImage new];
-    self.searchBar.tintColor = [[UIColor defaultAppColorScheme] lighterColor];
-    
     [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    self.navigationController.navigationBar.topItem.title = @"Songs";
-    
+    //self.navigationController.navigationBar.topItem.title = @"Songs";
+    [self setFetchedResultsControllerAndSortStyle];
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
 }
@@ -219,9 +225,19 @@ static BOOL lastSortOrder;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(currentSongHasChanged)
+                                                 name:@"current song has changed"
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(editingModeCompleted:)
+                                                 name:@"SongEditDone"
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(songWasSavedDuringEditing:)
+                                                 name:@"SongSavedDuringEdit"
+                                               object:nil];
     lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
-    
-    [self setFetchedResultsControllerAndSortStyle];
     
     stackController = [[StackController alloc] init];
     
@@ -289,7 +305,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     // The code block will be run asynchronously in a last-in-first-out queue, so that when
     // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
     [stackController addBlock:^{
-        UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:[AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]]];
+        NSLog(@"Song name: %@", song.songName);
+        UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
+                                                    [AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]]];
+        if(albumArt == nil) //see if this song has an album. If so, check if it has art.
+            if(song.album != nil)
+                albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
+                                                   [AlbumArtUtilities albumArtFileNameToNSURL:song.album.albumArtFileName]]];
         albumArt = [AlbumArtUtilities imageWithImage:albumArt scaledToSize:CGSizeMake(cell.frame.size.height, cell.frame.size.height)];
         // The block will be processed on a background Grand Central Dispatch queue.
         // Therefore, ensure that this code that updates the UI will run on the main queue.
@@ -377,9 +399,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if([[segue identifier] isEqualToString:@"editingSongMasterSegue"]){
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(editingModeCompleted:) name:@"SongEditDone" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(songWasSavedDuringEditing:) name:@"SongSavedDuringEdit" object:nil];
-        
         //set the songIAmEditing property in the modal view controller
         MasterEditingSongTableViewController* controller = (MasterEditingSongTableViewController*)[[segue destinationViewController] topViewController];
         [controller setSongIAmEditing:(Song *)sender];
@@ -392,7 +411,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     if([notification.name isEqualToString:@"SongEditDone"]){
         //leave editing mode
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:@"SongEditDone" object:nil];
         [self.tableView reloadData];
     }
 }
@@ -415,9 +433,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             _searchBar = nil;
             self.tableView.tableHeaderView = nil;
         }
-        
         //[self.tableView reloadData];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:@"SongSavedDuringEdit" object:nil];
     }
 }
 

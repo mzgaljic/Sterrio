@@ -119,6 +119,8 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
+        [MusicPlaybackController songAboutToBeDeleted:[_playlist.playlistSongs objectAtIndex:indexPath.row]];
+        
         //remove song from playlist only (not song from library in general)
         NSMutableOrderedSet *set = [NSMutableOrderedSet orderedSetWithOrderedSet:_playlist.playlistSongs];
         [set removeObjectAtIndex:indexPath.row];

@@ -29,6 +29,46 @@ static BOOL internetConnectionSpinnerOnScreen = NO;
     [player pause];
 }
 
+/** Playback will continue from the specified seek point, skipping a portion of the track. */
++ (void)seekToTime
+{
+    #warning no implementation
+}
+
+/** Stop playback of current song/track, and begin playback of the next track */
++ (void)skipToNextTrack
+{
+    Song *nextSong = [[MusicPlaybackController playbackQueue] skipForward];
+    if(nextSong != nil)
+        [MusicPlaybackController updateLockScreenInfoAndArtForSong:nextSong];
+    else
+        //no more songs! Make current player item nil in case there is something playing...
+        [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+    
+    [player startPlaybackOfSong:nextSong goingForward:YES];
+    //NOTE: YTVideoAvPlayer will automatically skip more songs if they cant be played
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"current song has changed" object:nil];
+}
+
+/** Stop playback of current song/track, and begin playback of previous track */
++ (void)returnToPreviousTrack
+{
+    Song *previousSong = [[MusicPlaybackController playbackQueue] skipToPrevious];
+    [MusicPlaybackController updateLockScreenInfoAndArtForSong:previousSong];
+    
+    [player startPlaybackOfSong:previousSong goingForward:NO];
+    //NOTE: YTVideoAvPlayer will automatically rewind further back in the queue if some songs cant be played
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"current song has changed" object:nil];
+}
+
+/** Current elapsed playback time (for the current song/track). */
++ (void)currentTime
+{
+    #warning no implementation
+}
+
 + (void)songAboutToBeDeleted:(Song *)song;
 {
     if([[MusicPlaybackController playbackQueue] isSongInQueue:song]){
@@ -42,9 +82,38 @@ static BOOL internetConnectionSpinnerOnScreen = NO;
             [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
         [[MusicPlaybackController playbackQueue] removeSongFromQueue:song];
         
-        NSLog(@"\n\nSong was deleted...printing new queue contents");
         [MusicPlaybackController printQueueContents];
     }
+}
+
++ (void)groupOfSongsAboutToBeDeleted:(NSArray *)songs
+{
+    BOOL willNeedToAdvanceInQueue = NO;
+    BOOL shouldMoveBackwardAndPause = NO;
+    for(Song *aSong in songs){
+        if([[MusicPlaybackController playbackQueue] isSongInQueue:aSong]){
+            
+            if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more items to play
+                if([[MusicPlaybackController nowPlayingSong].song_id isEqual:aSong.song_id]){
+                    willNeedToAdvanceInQueue = YES;
+                    [MusicPlaybackController pausePlayback];
+                    [MusicPlaybackController explicitlyPausePlayback:YES];
+                }
+            }
+            else
+                shouldMoveBackwardAndPause = YES;
+        }
+        [[MusicPlaybackController playbackQueue] removeSongFromQueue:aSong];
+    }
+    if(willNeedToAdvanceInQueue)
+        [self skipToNextTrack];
+    else if(shouldMoveBackwardAndPause){
+        [self returnToPreviousTrack];
+        [MusicPlaybackController pausePlayback];
+        [MusicPlaybackController explicitlyPausePlayback:YES];
+    }
+    
+    [MusicPlaybackController printQueueContents];
 }
 
 + (void)declareInternetProblemWhenLoadingSong:(BOOL)declare
@@ -55,36 +124,6 @@ static BOOL internetConnectionSpinnerOnScreen = NO;
 + (BOOL)didPlaybackStopDueToInternetProblemLoadingSong
 {
     return internetProblemLoadingSong;
-}
-
-/** Playback will continue from the specified seek point, skipping a portion of the track. */
-+ (void)seekToTime
-{
-    #warning no implementation
-}
-
-/** Stop playback of current song/track, and begin playback of the next track */
-+ (void)skipToNextTrack
-{
-    Song *nextSong = [[MusicPlaybackController playbackQueue] skipForward];
-    [MusicPlaybackController updateLockScreenInfoAndArtForSong:nextSong];
-    [player startPlaybackOfSong:nextSong goingForward:YES];
-    //NOTE: YTVideoAvPlayer will automatically skip more songs if they cant be played
-}
-
-/** Stop playback of current song/track, and begin playback of previous track */
-+ (void)returnToPreviousTrack
-{
-    Song *previousSong = [[MusicPlaybackController playbackQueue] skipToPrevious];
-    [MusicPlaybackController updateLockScreenInfoAndArtForSong:previousSong];
-    [player startPlaybackOfSong:previousSong goingForward:NO];
-    //NOTE: YTVideoAvPlayer will automatically rewind further back in the queue if some songs cant be played
-}
-
-/** Current elapsed playback time (for the current song/track). */
-+ (void)currentTime
-{
-    #warning no implementation
 }
 
 #pragma mark - Gathering playback info
@@ -157,6 +196,8 @@ static BOOL internetConnectionSpinnerOnScreen = NO;
     
     //start playback with the song that was tapped
     [player startPlaybackOfSong:song goingForward:YES];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"current song has changed" object:nil];
 }
 
 #pragma mark - Playback status
@@ -244,7 +285,7 @@ static BOOL internetConnectionSpinnerOnScreen = NO;
 #pragma mark - Lock Screen Song Info & Art
 + (void)updateLockScreenInfoAndArtForSong:(Song *)song
 {
-    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         Song *nowPlayingSong = [MusicPlaybackController nowPlayingSong];
         NSURL *url = [AlbumArtUtilities albumArtFileNameToNSURL:nowPlayingSong.albumArtFileName];
@@ -275,6 +316,7 @@ static BOOL internetConnectionSpinnerOnScreen = NO;
             if(nowPlayingSong.album.albumName != nil)
                 [songInfo setObject:nowPlayingSong.album.albumName forKey:MPMediaItemPropertyAlbumTitle];
             [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
+         
         }
     });
 }

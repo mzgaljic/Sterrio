@@ -232,11 +232,7 @@ static BOOL lastSortOrder;
         Playlist *playlist = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
         //check if any of the songs in this playlist are currently playing, if so, set the avplayer to nil (and pause it) so it doesn't crash!
-        
-        for(Song *aSong in playlist.playlistSongs)
-        {
-            [MusicPlaybackController songAboutToBeDeleted:aSong];
-        }
+        [MusicPlaybackController groupOfSongsAboutToBeDeleted:[playlist.playlistSongs array]];
         
         //delete the playlist and save changes
         NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Playlist" inManagedObjectContext:[CoreDataManager context]];

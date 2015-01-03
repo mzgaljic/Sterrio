@@ -562,7 +562,6 @@ static int numTimesVCLoaded = 0;
     self.playbackSlider.enabled = NO;
     [MusicPlaybackController returnToPreviousTrack];
     [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
-    [MusicPlaybackController simpleSpinnerOnScreen:YES];
     [self backwardsButtonLetGo];
     [self showNextTrackButton];  //in case it wasnt on screen already
     
@@ -612,7 +611,6 @@ static int numTimesVCLoaded = 0;
     self.playbackSlider.enabled = NO;
     [MusicPlaybackController skipToNextTrack];
     [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
-    [MusicPlaybackController simpleSpinnerOnScreen:YES];
     [self forwardsButtonLetGo];
     [self showPreviousTrackButton];
     
@@ -762,19 +760,18 @@ static int numTimesVCLoaded = 0;
         if(player.rate == 0 && !playbackExplicitlyPaused){
             if(! [MusicPlaybackController isInternetProblemSpinnerOnScreen]){
                 [self showSpinnerForBasicLoadingOnView:playerView];
-                [MusicPlaybackController simpleSpinnerOnScreen:YES];
                 [self toggleDisplayToPausedState];
             }
             if(!sliderIsBeingTouched)
                 [player play];
         } else if(player.rate == 1){
             [self dismissAllSpinnersForView:playerView];
-            [MusicPlaybackController noSpinnersOnScreen];
             [self toggleDisplayToPlayingState];
         }
     } else if (kStatusDidChangeKVO == context) {
         //player "status" has changed. Not particulary useful information.
         if (player.status == AVPlayerStatusReadyToPlay) {
+            //line above is new?
             NSArray * timeRanges = player.currentItem.loadedTimeRanges;
             if (timeRanges && [timeRanges count]){
                 CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
@@ -800,7 +797,6 @@ static int numTimesVCLoaded = 0;
             if(player.rate == 0 && !playbackExplicitlyPaused && !waitingForNextOrPrevVideoToLoad && !sliderIsBeingTouched){
                 //continue where playback left off...
                 [self dismissAllSpinnersForView:playerView];
-                [MusicPlaybackController noSpinnersOnScreen];
                 [MusicPlaybackController resumePlayback];
                 [self toggleDisplayToPlayingState];
             }
@@ -820,6 +816,7 @@ static int numTimesVCLoaded = 0;
     [MusicPlaybackController resumePlayback];
     
     [self displayTotalSliderAndLabelDuration];
+    [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
 }
 
 #pragma mark - Loading Spinner & Internet convenience methods
@@ -829,28 +826,19 @@ static int numTimesVCLoaded = 0;
 }
 
 //these methods are also in MyAVPlayer
-- (void)showSpinnerForInternetConnectionIssueOnView:(UIView *)displaySpinnerOnMe
-{
-    if(![MusicPlaybackController isInternetProblemSpinnerOnScreen]){
-        [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
-        [MRProgressOverlayView showOverlayAddedTo:displaySpinnerOnMe
-                                            title:@"Internet connection lost..."
-                                             mode:MRProgressOverlayViewModeIndeterminateSmall
-                                         animated:YES];
-    }
-}
-
 - (void)showSpinnerForBasicLoadingOnView:(UIView *)displaySpinnerOnMe
 {
     if(![MusicPlaybackController isSimpleSpinnerOnScreen]){
         [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
         [MRProgressOverlayView showOverlayAddedTo:displaySpinnerOnMe title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
+        [MusicPlaybackController simpleSpinnerOnScreen:YES];
     }
 }
 
 - (void)dismissAllSpinnersForView:(UIView *)dismissViewOnMe
 {
     [MRProgressOverlayView dismissAllOverlaysForView:dismissViewOnMe animated:YES];
+    [MusicPlaybackController noSpinnersOnScreen];
 }
 
 #pragma mark - Share Button Tapped
@@ -870,7 +858,8 @@ static int numTimesVCLoaded = 0;
                                              UIActivityTypeAssignToContact,
                                              UIActivityTypeSaveToCameraRoll,
                                              UIActivityTypeAirDrop];
-        
+        //set tint color specifically for this VC so that the cancel buttons arent invisible
+        [activityVC.view setTintColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0]];
         [self presentViewController:activityVC animated:YES completion:nil];
     } else{
         // Handle error

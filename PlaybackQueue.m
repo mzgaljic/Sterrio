@@ -166,8 +166,7 @@
         if(nowPlayingIndex == [deque indexOfObject:song]){
             if(nowPlayingIndex == [deque count]-1)
                 nowPlayingIndex--;
-            else
-                nowPlayingIndex++;
+
             [deque removeObjectFromQueue:song];
         } else {
             //save current playing object for recovert in a few steps..
