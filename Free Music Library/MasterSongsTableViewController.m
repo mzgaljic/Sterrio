@@ -7,12 +7,11 @@
 //
 
 #import "MasterSongsTableViewController.h"
-#import "AppDelegate.h"
 
 @interface MasterSongsTableViewController ()
 @property (nonatomic, assign) int indexOfEditingSong;
 @property (nonatomic, assign) int selectedRowIndexValue;
-@property (nonatomic, strong) UISearchBar* searchBar;
+@property (nonatomic, strong) MySearchBar* searchBar;
 @end
 
 @implementation MasterSongsTableViewController
@@ -89,19 +88,11 @@ static BOOL PRODUCTION_MODE;
 #pragma mark - UISearchBar
 - (void)setUpSearchBar
 {
-    if([self numberOfSongsInCoreDataModel] > 0){
+    if([self numberOfSongsInCoreDataModel] > 0 && _searchBar == nil){
         //create search bar, add to viewController
-        _searchBar = [[UISearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0)];
-        _searchBar.placeholder = @"Search Songs";
-        _searchBar.keyboardType = UIKeyboardTypeASCIICapable;
+        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search Songs"];
         _searchBar.delegate = self;
-        [self.searchBar sizeToFit];
         self.tableView.tableHeaderView = _searchBar;
-        
-        //make searchbar background clear
-        self.searchBar.barTintColor = [UIColor clearColor];
-        self.searchBar.backgroundImage = [UIImage new];
-        self.searchBar.tintColor = [[UIColor defaultAppColorScheme] lighterColor];
     }
 }
 
@@ -184,8 +175,8 @@ static BOOL lastSortOrder;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    [self setUpSearchBar];  //must be called in viewWillAppear, and after allSongsLibrary is refreshed
+    [self setUpSearchBar];
+    //must be called in viewWillAppear, and after allSongsLibrary is refreshed
     if(self.searchFetchedResultsController)
     {
         self.searchFetchedResultsController = nil;
@@ -304,7 +295,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     // The code block will be run asynchronously in a last-in-first-out queue, so that when
     // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
     [stackController addBlock:^{
-        NSLog(@"Song name: %@", song.songName);
         UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
                                                     [AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]]];
         if(albumArt == nil) //see if this song has an album. If so, check if it has art.
@@ -425,7 +415,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     if(changedSong){
         [[CoreDataManager sharedInstance] saveContext];
-#warning register for the notification: DataManagerDidSaveFailedNotification  (look in CoreDataManager.m)
+//may want to register for the notification: DataManagerDidSaveFailedNotification  (crash during core data undo operation)
         
         self.indexOfEditingSong = -1;
         if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore

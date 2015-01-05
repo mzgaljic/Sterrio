@@ -10,6 +10,7 @@
 #import <CoreData/CoreData.h>
 #import "CoreDataManager.h"
 #import "UIColor+LighterAndDarker.h"
+#import "MySearchBar.h"
 
 @interface CoreDataTableViewController : UITableViewController <NSFetchedResultsControllerDelegate>
 

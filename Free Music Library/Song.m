@@ -2,8 +2,8 @@
 //  Song.m
 //  Muzic
 //
-//  Created by Mark Zgaljic on 8/22/14.
-//  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
+//  Created by Mark Zgaljic on 1/4/15.
+//  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
 #import "Song.h"
@@ -21,6 +21,7 @@
 @dynamic song_id;
 @dynamic songName;
 @dynamic youtube_id;
+@dynamic duration;
 @dynamic album;
 @dynamic artist;
 @dynamic playlistIAmIn;

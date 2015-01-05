@@ -164,6 +164,11 @@
         case NSFetchedResultsChangeDelete:
             [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
             break;
+            //I added the next 2 cases in myself. xcode was complaining.
+        case NSFetchedResultsChangeMove:
+            break;
+        case NSFetchedResultsChangeUpdate:
+            break;
     }
 }
 
@@ -209,17 +214,16 @@
 #pragma mark - overriden methods for default behavior across tableviews
 - (void)viewWillAppear:(BOOL)animated
 {
-    self.navigationController.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
+    [super viewWillAppear:animated];
     
-    //change background color of tableview
-    self.parentViewController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.navigationController.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
     
     //force tableview to only show cells with content (hide the invisible stuff at the bottom of the table)
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 
     //set nav bar title color and transparency
     self.navigationController.navigationBar.translucent = YES;
+    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObject:[UIColor defaultWindowTintColor]
                                                                                                 forKey:UITextAttributeTextColor]];
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;  //makes status bar text light and readable
@@ -231,9 +235,15 @@
     [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
 }
 
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+}
+
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    cell.backgroundColor = [[UIColor groupTableViewBackgroundColor] lighterColor];
+    //set custom cell background color here for all cells using NSFetchedResultsController
+    //cell.backgroundColor = [UIColor groupTableViewBackgroundColor];
 }
 
 @end

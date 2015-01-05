@@ -13,5 +13,7 @@
 #import "MyTableViewController.h"
 #import "SongPlayerCoordinator.h"
 
-@interface YoutubeResultsTableViewController : MyTableViewController <UISearchBarDelegate, YouTubeVideoSearchDelegate, SDWebImageManagerDelegate>
+@interface YoutubeResultsTableViewController : MyTableViewController <UISearchBarDelegate,
+                                                                    YouTubeVideoSearchDelegate,
+                                                                    SDWebImageManagerDelegate>
 @end

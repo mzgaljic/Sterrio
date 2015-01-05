@@ -13,36 +13,41 @@
 {
     NSString *nextPageToken; //set and reset when appropriate
     NSString *originalQueryUrl;
-    id<YouTubeVideoSearchDelegate> delegate;
     
-    //constants
-    NSString *BASE_URL_A;
-    NSString *BASE_URL_B;
-    NSString *NEXT_PAGE_STRING;
+    //base strings used to build url request string
+    NSString *QUERY_BASE;
+    NSString *QUERY_SUGGESTION_BASE;
+    NSString *NEXT_PAGE_QUERY_BASE;
 }
+@property (nonatomic, assign) id<YouTubeVideoSearchDelegate> delegate;
 @end
 
 @implementation YouTubeVideoSearchService
 
+-(void)setTheDelegate:(id<YouTubeVideoSearchDelegate>)myDelegate
+{
+    self.delegate = myDelegate;
+}
+
 - (id)init
 {
     if([super init]){
-        BASE_URL_A = @"https://www.googleapis.com/youtube/v3/search?type=video&part=snippet&maxResults=15&key=AIzaSyBAFK0pOUf4IWdfS94dYk_42dO46ssTUH8&q=";
-        BASE_URL_B = @"http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q=";
-        NEXT_PAGE_STRING = @"&pageToken=";
+        QUERY_BASE = @"https://www.googleapis.com/youtube/v3/search?type=video&part=snippet&maxResults=15&key=AIzaSyBAFK0pOUf4IWdfS94dYk_42dO46ssTUH8&q=";
+        QUERY_SUGGESTION_BASE = @"http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q=";
+        NEXT_PAGE_QUERY_BASE = @"&pageToken=";
     }
     return self;
 }
 
-#pragma mark - Searching Youtube
+#pragma mark - Performing a query
 - (void)searchYouTubeForVideosUsingString:(NSString *)searchString
 {
     if(searchString){
-        NSMutableString *queryUrl = [NSMutableString stringWithString: BASE_URL_A];
+        NSMutableString *queryUrl = [NSMutableString stringWithString: QUERY_BASE];
         [queryUrl appendString:[searchString stringForHTTPRequest]];
         originalQueryUrl = queryUrl;
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
             //sending a basic synchronous request here since we're off the main thread anyway
             NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]];
@@ -55,10 +60,10 @@
                 
                 //data is nil if a connection could not be created or if the download failed.
                 if (data == nil){
-                    //do not need to check error type, the user doesn't care. Just notify delegate.
-                    [delegate networkErrorHasOccuredSearchingYoutube];
+                    //do not need to check error type, the user doesn't care. Just notify self.delegate.
+                    [self.delegate networkErrorHasOccuredSearchingYoutube];
                 } else{ //data received...continue processing
-                    [delegate ytVideoSearchDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
+                    [self.delegate ytVideoSearchDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
                 }
                 
             }); //end of async dispatch
@@ -67,19 +72,25 @@
         return; //nothing to search for
 }
 
+#pragma mark - Fetching Video duration
+- (void)fetchDurationInSecondsForVideo:(YouTubeVideo *)ytVideo
+{
+#warning no implementation
+}
 
+#pragma mark - Fetching more video (ie: Next Page)
 - (void)fetchNextYouTubePageUsingLastQueryString
 {
     if(nextPageToken == nil){ //user has gone through all available 'pages' in the result
-        [delegate ytvideoResultsNoMorePagesToView];
+        [self.delegate ytvideoResultsNoMorePagesToView];
         return;
     }
     if(originalQueryUrl){
         NSMutableString *queryUrl = [NSMutableString stringWithString: originalQueryUrl];
-        [queryUrl appendString:NEXT_PAGE_STRING];
+        [queryUrl appendString:NEXT_PAGE_QUERY_BASE];
         [queryUrl appendString:nextPageToken];
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
             // Send a synchronous request here, already on a different thread
             NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]];
@@ -90,22 +101,23 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 if (data == nil){
-                    [delegate networkErrorHasOccuredFetchingMorePages];
+                    [self.delegate networkErrorHasOccuredFetchingMorePages];
                 } else{  // Data received...continue processing
-                    [delegate ytVideoNextPageResultsDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
+                    [self.delegate ytVideoNextPageResultsDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
                 }
             });  //end of async dispatch
         });
     }
 }
 
+#pragma mark - Query Auto-complete as you type
 - (void)fetchYouTubeAutoCompleteResultsForString:(NSString *)currentString
 {
     if(currentString){
-        NSMutableString *fullUrl = [NSMutableString stringWithString: BASE_URL_B];
+        NSMutableString *fullUrl = [NSMutableString stringWithString: QUERY_SUGGESTION_BASE];
         [fullUrl appendString:[currentString stringForHTTPRequest]];
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
             // Send a synchronous request here, already on a different thread
             NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:fullUrl]];
@@ -119,7 +131,7 @@
 
                 else{
                     // Data received...continue processing
-                    [delegate ytVideoAutoCompleteResultsDidDownload:[self parseYouTubeVideoAutoSuggestResponse:data]];
+                    [self.delegate ytVideoAutoCompleteResultsDidDownload:[self parseYouTubeVideoAutoSuggestResponse:data]];
                 }
             });  //end of async dispatch
         });
@@ -127,12 +139,8 @@
         return;
 }
 
--(void)setDelegate:(id<YouTubeVideoSearchDelegate>)myDelegate
-{
-    delegate = myDelegate;
-}
 
-
+#pragma mark - Parsing query response
 //returns array of YouTubeVideo objects
 - (NSArray *)parseYouTubeVideoResultsResponse:(NSData *)jsonData
 {
@@ -193,6 +201,7 @@
     return parsedArray;
 }
 
+#pragma mark - Parsing Auto-completion response
 //returns array of NSString objects
 - (NSArray *)parseYouTubeVideoAutoSuggestResponse:(NSData *)jsonData
 {

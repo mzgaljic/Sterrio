@@ -2,8 +2,8 @@
 //  Playlist.m
 //  Muzic
 //
-//  Created by Mark Zgaljic on 8/22/14.
-//  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
+//  Created by Mark Zgaljic on 1/4/15.
+//  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
 #import "Playlist.h"

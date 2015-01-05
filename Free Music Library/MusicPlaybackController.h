@@ -39,17 +39,11 @@
 
 + (BOOL)didPlaybackStopDueToInternetProblemLoadingSong;
 
-/** Playback will continue from the specified seek point, skipping a portion of the track. */
-+ (void)seekToTime;
-
 /** Stop playback of current song/track, and begin playback of the next track */
 + (void)skipToNextTrack;
 
 /** Stop playback of current song/track, and begin playback of previous track */
 + (void)returnToPreviousTrack;
-
-/** Current elapsed playback time (for the current song/track). */
-+ (void)currentTime;
 
 + (NSURL *)closestUrlQualityMatchForSetting:(short)aQualitySetting usingStreamsDictionary:(NSDictionary *)aDictionary;
 
@@ -92,6 +86,11 @@
 + (BOOL)isSimpleSpinnerOnScreen;
 + (BOOL)isInternetProblemSpinnerOnScreen;
 + (BOOL)isSpinnerOnScreen;
+
+#pragma mark - Dealing with problems
++ (void)longVideoSkippedOnCellularConnection;
++ (int)numLongVideosSkippedOnCellularConnection;
++ (void)resetNumberOfLongVideosSkippedOnCellularConnection;
 
 #pragma mark - DEBUG
 + (void)printQueueContents;

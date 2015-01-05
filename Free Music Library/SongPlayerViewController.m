@@ -155,7 +155,7 @@ static int numTimesVCLoaded = 0;
 #pragma mark - Check and update GUI based on device orientation (or responding to events)
 - (void)lastSongHasFinishedPlayback:(NSNotification *)object
 {
-#warning desired for behavior after queue finishes playing goes here
+#warning desired behavior after queue finishes playing goes here
 }
 
 //NOT the same as updating the lock screen. this is specifically the info shown
@@ -530,7 +530,7 @@ static int numTimesVCLoaded = 0;
     if(durationInSeconds <= 0.0f || isnan(durationInSeconds)){
         // Handle error
         if(![self isInternetReachable]){
-            [MyAlerts displayAlertWithAlertType:CannotConnectToYouTube];
+            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
 
         } else{
             NSString *title = @"Trouble Loading Video";
@@ -863,9 +863,7 @@ static int numTimesVCLoaded = 0;
         [self presentViewController:activityVC animated:YES completion:nil];
     } else{
         // Handle error
-        NSString *title = @"Trouble Sharing";
-        NSString *msg = @"There was a problem gathering information for this song.";
-        [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
+        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_TroubleSharingLibrarySong];
     }
 }
 

@@ -13,7 +13,7 @@
 
 @property (nonatomic, assign) int indexOfEditingSong;
 @property (nonatomic, assign) int selectedRowIndexValue;
-@property (nonatomic, strong) UISearchBar* searchBar;
+@property (nonatomic, strong) MySearchBar* searchBar;
 @end
 
 @implementation MasterPlaylistTableViewController
@@ -35,11 +35,6 @@
     self.navigationItem.leftBarButtonItems = @[settings];
 }
 
-- (void)nowPlayingTapped
-{
-    
-}
-
 - (UIBarButtonItem *)makeBarButtonItemGrey:(UIBarButtonItem *)barButton
 {
     barButton.style = UIBarButtonItemStylePlain;
@@ -49,7 +44,7 @@
 
 - (UIBarButtonItem *)makeBarButtonItemNormal:(UIBarButtonItem *)barButton
 {
-    barButton.style = UIBarButtonItemStyleBordered;
+    barButton.style = UIBarButtonItemStylePlain;
     barButton.enabled = true;
     return barButton;
 }
@@ -57,19 +52,11 @@
 #pragma mark - UISearchBar
 - (void)setUpSearchBar
 {
-    if([self numberOfPlaylistsInCoreDataModel] > 0){
+    if([self numberOfPlaylistsInCoreDataModel] > 0 && _searchBar == nil){
         //create search bar, add to viewController
-        _searchBar = [[UISearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0)];
-        _searchBar.placeholder = @"Search Playlists";
-        _searchBar.keyboardType = UIKeyboardTypeASCIICapable;
+        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search Playlists"];
         _searchBar.delegate = self;
-        [self.searchBar sizeToFit];
         self.tableView.tableHeaderView = _searchBar;
-        
-        //make searchbar background clear
-        self.searchBar.barTintColor = [UIColor clearColor];
-        self.searchBar.backgroundImage = [UIImage new];
-        self.searchBar.tintColor = [[UIColor defaultAppColorScheme] lighterColor];
     }
 }
 
@@ -142,7 +129,6 @@ static BOOL lastSortOrder;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self setUpSearchBar];  //must be called in viewWillAppear, and after allSongsLibrary is refreshed
     
     if(lastSortOrder != [AppEnvironmentConstants smartAlphabeticalSort])
     {
@@ -183,6 +169,7 @@ static BOOL lastSortOrder;
     
     [self setUpNavBarItems];
     self.tableView.allowsSelectionDuringEditing = YES;
+    [self setUpSearchBar];
 }
 
 - (void)didReceiveMemoryWarning

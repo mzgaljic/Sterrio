@@ -10,13 +10,15 @@
 #import "SDCAlertView+DuplicateAlertsPreventer.h"
 #import "PreferredFontSizeUtility.h"
 #import "SongPlayerCoordinator.h"
+#import "UIColor+LighterAndDarker.h"
+#import "UIImage+colorImages.h"
 
 @implementation MyAlerts
 
 + (void)displayAlertWithAlertType:(ALERT_TYPE)type
 {
     switch (type) {
-        case CannotConnectToYouTube:
+        case ALERT_TYPE_CannotConnectToYouTube:
         {
             //alert user to internet problem
             NSString *title = @"Internet";
@@ -27,7 +29,48 @@
             [[SongPlayerCoordinator sharedInstance] beginShrinkingVideoPlayer];
             break;
         }
+        case ALERT_TYPE_LongVideoSkippedOnCellular:
+        {
+            [MusicPlaybackController longVideoSkippedOnCellularConnection];
             
+            if([[UIApplication sharedApplication] applicationState] == UIApplicationStateActive){
+                MCNotification *notification = [MCNotification notification];
+                UIImage *infoIcon = [UIImage colorOpaquePartOfImage:[UIColor blackColor]
+                                                                   :[UIImage imageNamed:@"Information"]];
+                notification.image = infoIcon;
+                int numSkipped = [MusicPlaybackController numLongVideosSkippedOnCellularConnection];
+                if(numSkipped == 0)
+                    return;
+                else if (numSkipped == 1)
+                    notification.text = @"1 Song Skipped";
+                else
+                    notification.text = [NSString stringWithFormat:@"%i Songs Skipped", numSkipped];
+                notification.detailText = @"Wi-Fi required for longer videos.";
+                notification.backgroundColor = [[UIColor whiteColor] darkerColor];
+                notification.tintColor = [UIColor blackColor];
+                [[MCNotificationManager sharedInstance] showNotification:notification];
+                [MusicPlaybackController resetNumberOfLongVideosSkippedOnCellularConnection];
+            }
+                
+            break;
+        }
+            
+        case ALERT_TYPE_TroubleSharingVideo:
+        {
+            //alert user to internet problem
+            NSString *title = @"Trouble Sharing";
+            NSString *msg = @"Sorry, a problem occured while gathering information to share this video.";
+            [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
+            break;
+        }
+        case ALERT_TYPE_TroubleSharingLibrarySong:
+        {
+            //alert user to internet problem
+            NSString *title = @"Trouble Sharing";
+            NSString *msg = @"Sorry, a problem occured while gathering information to share this song.";
+            [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
+            break;
+        }
         default:
             break;
     }
@@ -66,6 +109,5 @@
     UIViewController *presentedViewController = (UIViewController *)rootViewController.presentedViewController;
     return [self topViewController:presentedViewController];
 }
-
 
 @end

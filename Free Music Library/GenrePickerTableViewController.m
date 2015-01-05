@@ -13,7 +13,7 @@
 @property (nonatomic, strong) NSArray *dictKeys;  //key is names of headers (ie: 'A', 'B', 'C'...)
 @property (nonatomic, strong) NSString *usersCurrentGenreString;
 
-@property (nonatomic, strong) UISearchBar *searchBar;
+@property (nonatomic, strong) MySearchBar *searchBar;
 @property (nonatomic, strong) NSArray *searchResults;
 @property (nonatomic, assign) BOOL displaySearchResults;
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
@@ -73,15 +73,13 @@
     self.searchResults = [NSMutableArray array];
     _navBar.title = @"All Genres";
     [GenreSearchService setDelegate:self];
+    [self setUpSearchBar];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
     _displaySearchResults = NO;
-    [self setUpSearchBar];
-    
     self.tableView.sectionIndexColor = [UIColor defaultAppColorScheme];
 }
 
@@ -109,18 +107,12 @@
 #pragma mark - UISearchBar setup and Delegates
 - (void)setUpSearchBar
 {
-    //create search bar, add to viewController
-    _searchBar = [[UISearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0)];
-    _searchBar.placeholder = @"Search Genres";
-    _searchBar.keyboardType = UIKeyboardTypeASCIICapable;
-    _searchBar.delegate = self;
-    [self.searchBar sizeToFit];
-    self.tableView.tableHeaderView = _searchBar;
-    
-    //make searchbar background clear
-    self.searchBar.barTintColor = [UIColor clearColor];
-    self.searchBar.backgroundImage = [UIImage new];
-    self.searchBar.tintColor = [[UIColor defaultAppColorScheme] lighterColor];
+    if(_searchBar == nil){
+        //create search bar, add to viewController
+        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search Genres"];
+        _searchBar.delegate = self;
+        self.tableView.tableHeaderView = _searchBar;
+    }
 }
 
 //User touched the search box

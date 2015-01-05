@@ -15,7 +15,7 @@
 static NSString * const SONG1_NAME = @"Bleeding Love";
 static NSString * const SONG1_YTID = @"7_weSk0BonM";
 static NSString * const ARTIST1_NAME = @"Leona Lewis";
-//static NSString * const ALBUM1_NAME = @"Spirit (Deluxe)";
+
 
 static NSString * const SONG2_NAME = @"Summer of 69";
 static NSString * const SONG2_YTID = @"9f06QZCVUHg";
@@ -26,12 +26,15 @@ static NSString * const SONG3_NAME = @"Let It Be";
 static NSString * const SONG3_YTID = @"WcBnJw-H2wQ";
 static NSString * const ARTIST3_NAME = @"The Beatles";
 
+static NSString * const SONG4_NAME = @"Christmas Songs 2014 (1hr Mix Playlist)";
+static NSString * const SONG4_YTID = @"mVp0brA3Hpk";
 
 + (void)createCoreDataSampleMusicData
 {
     [PreloadedCoreDataModelUtility createSongWithName:SONG1_NAME byArtistName:ARTIST1_NAME partOfAlbumNamed:nil youtubeID:SONG1_YTID];
     [PreloadedCoreDataModelUtility createSongWithName:SONG2_NAME byArtistName:ARTIST2_NAME partOfAlbumNamed:ALBUM2_NAME youtubeID:SONG2_YTID];
     [PreloadedCoreDataModelUtility createSongWithName:SONG3_NAME byArtistName:ARTIST3_NAME partOfAlbumNamed:nil youtubeID:SONG3_YTID];
+    [PreloadedCoreDataModelUtility createSongWithName:SONG4_NAME byArtistName:nil partOfAlbumNamed:nil youtubeID:SONG4_YTID];
 }
 
 + (void)createSongWithName:(NSString *)songName byArtistName:(NSString *)artistName partOfAlbumNamed:(NSString *)albumName youtubeID:(NSString *)ytID

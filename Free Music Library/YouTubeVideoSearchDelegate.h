@@ -11,6 +11,13 @@
 
 @protocol YouTubeVideoSearchDelegate <NSObject>
 
+@optional
+- (void)ytVideoDurationHasBeenFetched:(NSUInteger)durationInSeconds;
+
+- (void)networkErrorHasOccuredFetchingVideoDuration;
+
+
+@required
 /**called after the json response from the YouTube server was parsed successfully.
  The parameter youTubeVideoObjects contains an array of YouTubeVideo objects.*/
 - (void)ytVideoSearchDidCompleteWithResults:(NSArray *)youTubeVideoObjects;

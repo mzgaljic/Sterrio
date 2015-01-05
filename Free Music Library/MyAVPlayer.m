@@ -87,67 +87,45 @@
     __weak NSString *weakId = aSong.youtube_id;
     [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
         BOOL allowedToPlayVideo = NO;  //not checking if we can physically play, but legally (Apple's 10 minute streaming rule)
+        BOOL usingWifi = NO;
         Reachability *reachability = [Reachability reachabilityForInternetConnection];
         //[reachability startNotifier];
         
         if (video)
         {
             [MusicPlaybackController declareInternetProblemWhenLoadingSong:NO];
-            BOOL usingWifi = NO;
             NetworkStatus status = [reachability currentReachabilityStatus];
-            if (status == ReachableViaWiFi){
-                //WiFi
-                allowedToPlayVideo = YES;
+            if (status == ReachableViaWiFi)
                 usingWifi = YES;
+            
+            //find video quality closest to setting preferences
+            NSDictionary *vidQualityDict = video.streamURLs;
+            NSURL *url;
+            if(usingWifi){
+                short maxDesiredQuality = [AppEnvironmentConstants preferredWifiStreamSetting];
+                url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
+            }else{
+                short maxDesiredQuality = [AppEnvironmentConstants preferredCellularStreamSetting];
+                url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
             }
-            else if (status == ReachableViaWWAN)
-            {
-                //3G
-                if(video.duration >= 600)  //user cant watch video longer than 10 minutes without wifi
-                    allowedToPlayVideo = NO;
-                else
-                    allowedToPlayVideo = YES;
-            }
-            if(allowedToPlayVideo){
-                //find video quality closest to setting preferences
-                NSDictionary *vidQualityDict = video.streamURLs;
-                NSURL *url;
-                if(usingWifi){
-                    short maxDesiredQuality = [AppEnvironmentConstants preferredWifiStreamSetting];
-                    url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
-                    
-                }else{
-                    short maxDesiredQuality = [AppEnvironmentConstants preferredCellularStreamSetting];
-                    url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
-                }
-                
-                currentItemLink = url;
-            }
-            else{
-                NSLog(@"Skipping song since it is > 10 min (on Cellular network)");
-                
-                [MusicPlaybackController skipToNextTrack];
-#warning handle error better
-                // Handle error in a nicer way, maybe with a notification banner when the user re-enters the app
-                //NSString *title = @"Long Video Without Wifi";
-                //NSString *msg = @"Sorry, playback of long videos (ie: more than 10 minutes) is restricted to Wifi.";
-                //[self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
-            }
+            currentItemLink = url;
         }
         else
         {
             NetworkStatus internetStatus = [reachability currentReachabilityStatus];
             if (internetStatus == NotReachable){
-                [MyAlerts displayAlertWithAlertType:CannotConnectToYouTube];
+                [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
                 [MusicPlaybackController declareInternetProblemWhenLoadingSong:YES];
                 [MusicPlaybackController playbackExplicitlyPaused];
                 [MusicPlaybackController pausePlayback];
+                return;
             } else{
                 [MusicPlaybackController declareInternetProblemWhenLoadingSong:NO];
                 //we know for sure that the video no longer exists, notify user.
                 NSLog(@"Your music video is no longer on YouTube.");
                 
                 [MusicPlaybackController skipToNextTrack];
+                return;
 #warning handle error better
                 // Handle error in a nicer way, maybe with a notification banner when the user re-enters the app
                 //NSString *title = @"Trouble finding your video";
@@ -156,10 +134,18 @@
             }
         }
         
+        AVURLAsset *asset = [AVURLAsset assetWithURL: currentItemLink];
+        Float64 duration = CMTimeGetSeconds(asset.duration);
+        int otherDuration = video.duration;
+        if(! usingWifi){
+            if(duration >= 600)  //user cant watch video longer than 10 minutes without wifi
+                allowedToPlayVideo = NO;
+            else
+                allowedToPlayVideo = YES;
+        }
         if(allowedToPlayVideo && video != nil){
-            playerItem = [AVPlayerItem playerItemWithURL: currentItemLink];
+            playerItem = [AVPlayerItem playerItemWithAsset: asset];
             [self replaceCurrentItemWithPlayerItem:playerItem];
-            
             
             // Declare block scope variables to avoid retention cycles from references inside the block
             __block AVPlayer* weakSelf = self;
@@ -184,9 +170,9 @@
             if([MusicPlaybackController didPlaybackStopDueToInternetProblemLoadingSong])  //if so, don't do anything...
                 return;
             
-            currentItemLink = nil;
-            playerItem = nil;
-#warning mention "fatal error when trying to play this video"
+            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
+            [MusicPlaybackController skipToNextTrack];
+            
             [self songDidFinishPlaying:nil];  //triggers the next song to play (for whatever reason/error)
         }
     }];

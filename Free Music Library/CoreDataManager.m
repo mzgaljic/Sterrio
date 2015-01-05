@@ -110,20 +110,24 @@ static NSString *MODEL_NAME = @"Model 1.0";
 {
     if (__persistentStoreCoordinator != nil) 
         return __persistentStoreCoordinator;
+    NSDictionary *persistentOptions = @{
+                                        NSMigratePersistentStoresAutomaticallyOption:@YES,
+                                        NSInferMappingModelAutomaticallyOption:@YES
+                                        };
     NSURL *storeURL = [[self applicationLibraryDirectory] URLByAppendingPathComponent:SQL_FILE_NAME];
-
     NSError *error = nil;
+    
+    // try to initialize persistent store coordinator with options defined below
     __persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc]
-                                     initWithManagedObjectModel:[self managedObjectModel]];
-
-    NSDictionary *options = @{
-                              NSMigratePersistentStoresAutomaticallyOption : @YES,
-                              NSInferMappingModelAutomaticallyOption : @YES
-                              };
-    if (![__persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
-                           configuration:nil URL:storeURL options:options error:&error])
+                                    initWithManagedObjectModel:self.managedObjectModel];
+    [__persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
+                                               configuration:nil URL:storeURL options:persistentOptions error:&error];
+    if (error)
     {
-        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        NSLog(@"[ERROR] Problem initializing persistent store coordinator:\n %@, %@", error,
+                                                            [error localizedDescription]);
+        //usually happens when the underlying model is different than the one our program is using.
+#warning warn user with a normal error so the app crashes AFTER he/she makes a choice lol
         abort();
     }    
 

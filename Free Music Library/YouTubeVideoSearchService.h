@@ -9,12 +9,15 @@
 #import <Foundation/Foundation.h>
 #import "NSString+HTTP_Char_Escape.h"
 #import "YouTubeVideoSearchDelegate.h"
+#import "YouTubeVideo.h"
 
 @interface YouTubeVideoSearchService : NSObject <NSURLConnectionDelegate>
 
 - (void)searchYouTubeForVideosUsingString:(NSString *)searchString;
 - (void)fetchNextYouTubePageUsingLastQueryString;
 - (void)fetchYouTubeAutoCompleteResultsForString:(NSString *)currentString;
-- (void)setDelegate:(id<YouTubeVideoSearchDelegate>)delegate;
+- (void)setTheDelegate:(id<YouTubeVideoSearchDelegate>)delegate;
+
+- (void)fetchDurationInSecondsForVideo:(YouTubeVideo *)ytVideo;
 
 @end

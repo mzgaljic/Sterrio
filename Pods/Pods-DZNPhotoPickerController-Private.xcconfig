@@ -1,5 +1,0 @@
-#include "Pods-DZNPhotoPickerController.xcconfig"
-GCC_PREPROCESSOR_DEFINITIONS = COCOAPODS=1
-HEADER_SEARCH_PATHS = "${PODS_ROOT}/BuildHeaders" "${PODS_ROOT}/BuildHeaders/DZNPhotoPickerController" "${PODS_ROOT}/Headers" "${PODS_ROOT}/Headers/AFBlurSegue" "${PODS_ROOT}/Headers/AFNetworking" "${PODS_ROOT}/Headers/ASValueTrackingSlider" "${PODS_ROOT}/Headers/DZNEmptyDataSet" "${PODS_ROOT}/Headers/DZNPhotoPickerController" "${PODS_ROOT}/Headers/GROAuth2SessionManager" "${PODS_ROOT}/Headers/MBProgressHUD" "${PODS_ROOT}/Headers/MRProgress" "${PODS_ROOT}/Headers/MSCellAccessory" "${PODS_ROOT}/Headers/RBBAnimation" "${PODS_ROOT}/Headers/SDCAlertView" "${PODS_ROOT}/Headers/SDCAutoLayout" "${PODS_ROOT}/Headers/SDWebImage" "${PODS_ROOT}/Headers/TransitionKit" "${PODS_ROOT}/Headers/XCDYouTubeKit"
-OTHER_LDFLAGS = -ObjC
-PODS_ROOT = ${SRCROOT}

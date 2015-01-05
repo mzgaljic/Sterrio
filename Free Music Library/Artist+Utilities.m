@@ -65,7 +65,6 @@
             NSMutableSet *mutableSet = [NSMutableSet setWithSet:standAloneSongs];
             [mutableSet removeObject:matchedItem];
             self.standAloneSongs = mutableSet;  //will unfortunately recursively call this method. but this should only occur once at MOST.
-            int count = (int)self.standAloneSongs.count;  //check if it was removed
         }
         
         //check if a song has been nullified (which means a song entity was deleted, and its delete rule nullifies the pointer)

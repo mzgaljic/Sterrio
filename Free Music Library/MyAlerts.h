@@ -11,7 +11,11 @@
 @interface MyAlerts : NSObject
 
 typedef enum {
-    CannotConnectToYouTube
+    ALERT_TYPE_CannotConnectToYouTube,
+    ALERT_TYPE_LongVideoSkippedOnCellular,
+    
+    ALERT_TYPE_TroubleSharingVideo,
+    ALERT_TYPE_TroubleSharingLibrarySong
 } ALERT_TYPE;
 
 + (void)displayAlertWithAlertType:(ALERT_TYPE)type;

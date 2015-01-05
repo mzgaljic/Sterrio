@@ -28,14 +28,17 @@ static const int APP_LAUNCHED_ALREADY = 1;
     // Override point for customization after application launch.
     [[SDImageCache sharedImageCache] setMaxCacheSize:1000000];  //1 mb cache size
     
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+    
     //set global default "AppColorScheme"
     self.window.tintColor = [UIColor whiteColor];
     [UIColor defaultAppColorScheme:Rgb2UIColor(32, 69, 124)];
+    
     //set cancel button color of all uisearchbars
     [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
-                                setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                [UIColor redColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
-    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;  //makes status bar text color light
+                            setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                [[UIColor defaultAppColorScheme] lighterColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
+    
     
     [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime:[self appLaunchedFirstTime]];
     if([self appLaunchedFirstTime]){
@@ -65,6 +68,13 @@ static const int APP_LAUNCHED_ALREADY = 1;
     if(player != nil)
         if(player.rate == 1 && !resumePlaybackAfterInterruption)
             [player performSelector:@selector(play) withObject:nil afterDelay:0.01];
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+    //display how many songs were skipped while user was in background (long videos skipped)
+    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
+    [MusicPlaybackController resetNumberOfLongVideosSkippedOnCellularConnection];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application

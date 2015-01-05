@@ -15,6 +15,7 @@ static BOOL initialized = NO;
 static BOOL internetProblemLoadingSong = NO;
 static BOOL simpleSpinnerOnScreen = NO;
 static BOOL internetConnectionSpinnerOnScreen = NO;
+static int numLongSongsSkipped = 0;
 
 @implementation MusicPlaybackController
 
@@ -29,24 +30,17 @@ static BOOL internetConnectionSpinnerOnScreen = NO;
     [player pause];
 }
 
-/** Playback will continue from the specified seek point, skipping a portion of the track. */
-+ (void)seekToTime
-{
-    #warning no implementation
-}
-
 /** Stop playback of current song/track, and begin playback of the next track */
 + (void)skipToNextTrack
 {
     Song *nextSong = [[MusicPlaybackController playbackQueue] skipForward];
-    if(nextSong != nil)
-        [MusicPlaybackController updateLockScreenInfoAndArtForSong:nextSong];
+    if(nextSong != nil){
+        [player startPlaybackOfSong:nextSong goingForward:YES];
+        //NOTE: YTVideoAvPlayer will automatically skip more songs if they cant be played
+    }
     else
         //no more songs! Make current player item nil in case there is something playing...
         [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
-    
-    [player startPlaybackOfSong:nextSong goingForward:YES];
-    //NOTE: YTVideoAvPlayer will automatically skip more songs if they cant be played
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"current song has changed" object:nil];
 }
@@ -61,12 +55,6 @@ static BOOL internetConnectionSpinnerOnScreen = NO;
     //NOTE: YTVideoAvPlayer will automatically rewind further back in the queue if some songs cant be played
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"current song has changed" object:nil];
-}
-
-/** Current elapsed playback time (for the current song/track). */
-+ (void)currentTime
-{
-    #warning no implementation
 }
 
 + (void)songAboutToBeDeleted:(Song *)song;
@@ -416,6 +404,22 @@ static BOOL internetConnectionSpinnerOnScreen = NO;
 + (BOOL)isSpinnerOnScreen
 {
     return (internetConnectionSpinnerOnScreen || simpleSpinnerOnScreen) ? YES : NO;
+}
+
+#pragma mark - Dealing with problems
++ (void)longVideoSkippedOnCellularConnection
+{
+    numLongSongsSkipped++;
+}
+
++ (int)numLongVideosSkippedOnCellularConnection
+{
+    return numLongSongsSkipped;
+}
+
++ (void)resetNumberOfLongVideosSkippedOnCellularConnection
+{
+    numLongSongsSkipped = 0;
 }
 
 #pragma mark - DEBUG

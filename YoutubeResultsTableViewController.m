@@ -15,15 +15,14 @@
 #import "AlbumArtUtilities.h"
 #import "SDCAlertView.h"
 #import "PreferredFontSizeUtility.h"
-#import "YouTubeVideoPlaybackTableViewController.h"
+#import "YouTubeSongAdderViewController.h"
 #import "CustomYoutubeTableViewCell.h"
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 @interface YoutubeResultsTableViewController ()
-@property (nonatomic, strong) UISearchBar *searchBar;
+@property (nonatomic, strong) MySearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray *searchResults;
 @property (nonatomic, strong) NSMutableArray *searchSuggestions;
-@property (nonatomic, strong) NSMutableArray *imageCache;
 @property (nonatomic, assign) BOOL displaySearchResults;
 @property (nonatomic, assign) BOOL searchInitiatedAlready;
 @property (nonatomic, assign) BOOL activityIndicatorOnScreen;
@@ -72,8 +71,9 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     _yt = nil;
     _lastSuccessfullSearchString = nil;
     _viewOnTopOfTable = nil;
-    start = nil; finish = nil;
-    _imageCache = nil;
+    start = nil;
+    finish = nil;
+    
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
 }
 
@@ -110,7 +110,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [_yt setDelegate:self];
+    [_yt setTheDelegate:self];
+    self.navigationController.toolbarHidden = NO;
     if (self.isMovingToParentViewController == NO)
     {
         // we're already on the navigation stack, another controller must have been popped off.
@@ -122,6 +123,9 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)    name:UIDeviceOrientationDidChangeNotification  object:nil];
+    
+    if(self.displaySearchResults)
+        _navBar.title = @"Search Results";
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -133,14 +137,12 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-#warning need to add AVPLayer code back in here!
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     _yt = [[YouTubeVideoSearchService alloc] init];
-    _imageCache = [NSMutableArray array];
     
     _searchSuggestions = [NSMutableArray array];
     _searchResults = [NSMutableArray array];
@@ -170,10 +172,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    if(self.displaySearchResults){
-        self.navigationController.navigationBar.topItem.title = @"Search Results";
-        _navBar.title = @"Search Results";
-    } else
+    if(!self.displaySearchResults)
         self.tableView.scrollEnabled = NO;
 }
 
@@ -345,17 +344,9 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)setUpSearchBar
 {
     //create search bar, add to viewController
-    _searchBar = [[UISearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0)];
-    _searchBar.placeholder = @"Find Music On YouTube";
-    _searchBar.keyboardType = UIKeyboardTypeASCIICapable;
+    _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search Music On YouTube"];
     _searchBar.delegate = self;
-    [self.searchBar sizeToFit];
     self.tableView.tableHeaderView = _searchBar;
-    
-    //make searchbar background clear
-    self.searchBar.barTintColor = [UIColor clearColor];
-    self.searchBar.backgroundImage = [UIImage new];
-    self.searchBar.tintColor = [[UIColor defaultAppColorScheme] lighterColor];
 }
 
 //User tapped the search box textField
@@ -547,42 +538,27 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
             customCell = [tableView dequeueReusableCellWithIdentifier:@"youtubeResultCell" forIndexPath:indexPath];
             customCell.videoTitle.text = ytVideo.videoName;
             customCell.videoChannel.font = [UIFont systemFontOfSize:14];
-            customCell.videoChannel.textColor = [[UIColor redColor] darkerColor];
+            customCell.videoChannel.textColor = [UIColor grayColor];
             customCell.videoChannel.text = ytVideo.channelTitle;
             
-            //check cache first
-            for(UIImageView *imageView in _imageCache)
-            {
-                if(imageView.tag == indexPath.row){
-                    customCell.videoThumbnail = imageView;
-                    return customCell;
-                }
-            }
-            
             // If an existing cell is being reused, reset the image to the default until it is populated.
-            // Without this code, previous images are displayed against the new people during rapid scrolling.
+            // Without this code, previous images are displayed against the new cells during rapid scrolling.
+            customCell.videoThumbnail.image = nil;
             customCell.videoThumbnail.image = [UIImage imageWithColor:[UIColor clearColor]
                                                            width:customCell.videoThumbnail.frame.size.width
                                                           height:customCell.videoThumbnail.frame.size.height];
             
             // now download the true thumbnail image asynchronously
-            [self downloadImageWithURL:[NSURL URLWithString:ytVideo.videoThumbnailUrl] completionBlock:^(BOOL succeeded, UIImage *image)
+            __weak NSString *weakVideoURL = ytVideo.videoThumbnailUrl;
+            [self downloadImageWithURL:[NSURL URLWithString:weakVideoURL] completionBlock:^(BOOL succeeded, UIImage *image)
             {
                 if (succeeded) {
                     // change the image in the cell
+                    customCell.videoThumbnail.image = nil;
                     customCell.videoThumbnail.image = image;
-                    
-                    /*
-                    // cache the image for use later (when scrolling up)
-                    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-                    imageView.tag = indexPath.row;
-                    [_imageCache addObject: imageView];
-                    if(_imageCache.count > 10)
-                        [_imageCache removeObjectAtIndex:0];
-                     */
                 }
             }];
-            
+            ytVideo = nil;
             return customCell;
             
         } else if(indexPath.section == 1){  //the "load more" button is in this section
@@ -599,8 +575,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
                     cell.textLabel.textColor = [UIColor blackColor];
                 }
                 else{
-                    cell.textLabel.text = @"Load more";
-                    cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+                    cell.textLabel.text = @"  Load more";
+                    cell.textLabel.textColor = [[UIColor defaultAppColorScheme] lighterColor];
                     cell.textLabel.textAlignment = NSTextAlignmentCenter;
                 }
             }
@@ -611,7 +587,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         cell.textLabel.text = [_searchSuggestions objectAtIndex:indexPath.row];
         cell.imageView.image = nil;
     }
-    
+    ytVideo = nil;
     return cell;
 }
 
@@ -640,7 +616,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     if(self.displaySearchResults){  //video search results in table
         if(indexPath.section == 0){
             YouTubeVideo *ytVideo = [_searchResults objectAtIndex:indexPath.row];
-            [self.navigationController pushViewController:[[YouTubeVideoPlaybackTableViewController alloc] initWithYouTubeVideo:ytVideo] animated:YES];
+            [self.navigationController pushViewController:[[YouTubeSongAdderViewController alloc] initWithYouTubeVideo:ytVideo] animated:YES];
             
         } else if(indexPath.section == 1){
             //Load More button tapped

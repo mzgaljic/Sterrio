@@ -1059,13 +1059,13 @@
             </objects>
             <point key="canvasLocation" x="-817" y="2639"/>
         </scene>
-        <!--You Tube Video Playback Table View Controller-->
+        <!--You Tube Song Adder View Controller-->
         <scene sceneID="rqC-Em-e60">
             <objects>
-                <tableViewController storyboardIdentifier="ytVideoFieldEntryAndVideoPlayer" useStoryboardIdentifierAsRestorationIdentifier="YES" id="KHe-Gr-T1s" customClass="YouTubeVideoPlaybackTableViewController" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="ytVideoFieldEntryAndVideoPlayer" useStoryboardIdentifierAsRestorationIdentifier="YES" id="KHe-Gr-T1s" customClass="YouTubeSongAdderViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="GaT-j3-G4F">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="SongEntryFieldCell" textLabel="JJc-mu-k6n" style="IBUITableViewCellStyleDefault" id="bFn-7z-hHX">
@@ -1164,7 +1164,7 @@
         <!--Song Player Nav Controller-->
         <scene sceneID="Vpx-dD-L2m">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="mqG-UD-sBX" customClass="SongPlayerNavController" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="fakeID" automaticallyAdjustsScrollViewInsets="NO" id="mqG-UD-sBX" customClass="SongPlayerNavController" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="G43-z9-ciZ"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="kBF-KI-x6E">
