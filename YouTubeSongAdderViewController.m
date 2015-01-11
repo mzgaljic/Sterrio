@@ -7,6 +7,7 @@
 //
 
 #import "YouTubeSongAdderViewController.h"
+#import "YouTubeVideoSearchService.h"
 
 @interface YouTubeSongAdderViewController ()
 {
@@ -18,6 +19,7 @@
     BOOL playbackFinished;
     BOOL doneTappedInVideo;
     BOOL pausedBeforePopAttempt;
+    NSUInteger videoDuration;
 }
 
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
@@ -36,6 +38,7 @@
             return nil;
         ytVideo = youtubeVideoObject;
         pausedBeforePopAttempt = YES;
+        videoDuration = 0;
     }
     return self;
 }
@@ -49,6 +52,7 @@
         [videoPlayerViewController stop];
         videoPlayerViewController = nil;
     }
+    [[YouTubeVideoSearchService sharedInstance] removeVideoDurationDelegate];
     
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([YouTubeSongAdderViewController class]));
 }
@@ -57,6 +61,8 @@
 {
     [super viewDidLoad];
     [self loadVideo];
+    [[YouTubeVideoSearchService sharedInstance] setVideoDurationDelegate:self];
+    [[YouTubeVideoSearchService sharedInstance] fetchDurationInSecondsForVideo:ytVideo];
 }
 
 static short numberTimesViewHasBeenShown = 0;
@@ -345,6 +351,25 @@ static short numberTimesViewHasBeenShown = 0;
 -(NSUInteger)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
+}
+
+#pragma mark - Managing video duration fetching
+- (void)ytVideoDurationHasBeenFetched:(NSUInteger)durationInSeconds forVideo:(YouTubeVideo *)video;
+{
+    if([video.videoId isEqualToString:ytVideo.videoId])
+        videoDuration = durationInSeconds;
+    else
+        return;
+}
+
+- (void)networkErrorHasOccuredFetchingVideoDurationForVideo:(YouTubeVideo *)video
+{
+    if([video.videoId isEqualToString:ytVideo.videoId]){
+        //notify user about the problem
+#warning not implemented
+    } else
+        //false alarm about a problem that occured with a previous fetch? Disregard.
+        return;
 }
 
 @end

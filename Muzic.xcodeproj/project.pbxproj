@@ -166,6 +166,7 @@
 		871BA8911A5A2F4100FB87A7 /* Song.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Song.m; sourceTree = "<group>"; };
 		871BA8931A5A2F4100FB87A7 /* Album.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Album.h; sourceTree = "<group>"; };
 		871BA8941A5A2F4100FB87A7 /* Album.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Album.m; sourceTree = "<group>"; };
+		87255AE11A625A23009E1763 /* YouTubeVideoDurationLookupDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YouTubeVideoDurationLookupDelegate.h; sourceTree = "<group>"; };
 		87268E60198B580200FE51D7 /* YouTubeVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YouTubeVideo.h; sourceTree = "<group>"; };
 		87270030199E815000D71204 /* NSString+Levenshtein_Distance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Levenshtein_Distance.h"; sourceTree = "<group>"; };
 		87270031199E815000D71204 /* NSString+Levenshtein_Distance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Levenshtein_Distance.m"; sourceTree = "<group>"; };
@@ -1059,6 +1060,7 @@
 				87A9AF51199DA36F005B9A5B /* GenreSearchService.h */,
 				87A9AF52199DA36F005B9A5B /* GenreSearchService.m */,
 				87AF35CE1989679C005882B6 /* YouTubeVideoSearchDelegate.h */,
+				87255AE11A625A23009E1763 /* YouTubeVideoDurationLookupDelegate.h */,
 				8772517319888F1A00A2156B /* YouTubeVideoSearchService.h */,
 				8772517419888F1A00A2156B /* YouTubeVideoSearchService.m */,
 				87033B88199696630077C7AD /* Music Playback (player) */,

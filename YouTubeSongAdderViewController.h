@@ -16,8 +16,10 @@
 #import "MyAlerts.h"
 #import "SongPlayerViewDisplayUtility.h"
 #import "SDWebImageManager.h"
+#import "YouTubeVideoSearchDelegate.h"
+#import "YouTubeVideoDurationLookupDelegate.h"
 
-@interface YouTubeSongAdderViewController : MyTableViewController
+@interface YouTubeSongAdderViewController : MyTableViewController <YouTubeVideoDurationLookupDelegate>
 
 - (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject;
 

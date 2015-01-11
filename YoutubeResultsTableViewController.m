@@ -26,7 +26,6 @@
 @property (nonatomic, assign) BOOL displaySearchResults;
 @property (nonatomic, assign) BOOL searchInitiatedAlready;
 @property (nonatomic, assign) BOOL activityIndicatorOnScreen;
-@property (nonatomic, strong) YouTubeVideoSearchService *yt;
 @property (nonatomic, strong) NSString *lastSuccessfullSearchString;
 @property (nonatomic, assign) float heightOfScreenRotationIndependant;
 //view isn't actually on top of tableView, but it looks like it. Call "turnTableViewIntoUIView" prior to setting this value!
@@ -68,11 +67,11 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     _cancelButton = nil;
     _scrollToTopButton = nil;
     _viewOnTopOfTable = nil;
-    _yt = nil;
     _lastSuccessfullSearchString = nil;
     _viewOnTopOfTable = nil;
     start = nil;
     finish = nil;
+    [[YouTubeVideoSearchService sharedInstance] removeTheDelegate];
     
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
 }
@@ -110,7 +109,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [_yt setTheDelegate:self];
+    [[YouTubeVideoSearchService sharedInstance] setTheDelegate:self];
     self.navigationController.toolbarHidden = NO;
     if (self.isMovingToParentViewController == NO)
     {
@@ -142,7 +141,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _yt = [[YouTubeVideoSearchService alloc] init];
     
     _searchSuggestions = [NSMutableArray array];
     _searchResults = [NSMutableArray array];
@@ -212,11 +210,13 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     if(executionTime < MINIMUM_DURATION_OF_LOADING_POPUP && executionTime != 0){
         additionalDelay = (MINIMUM_DURATION_OF_LOADING_POPUP - executionTime);
         [self performSelector:@selector(ytVideoSearchDidCompleteWithResults:) withObject:youTubeVideoObjects afterDelay:additionalDelay];
+        youTubeVideoObjects = nil;
         return;
     }
     
     [_searchResults removeAllObjects];
     [_searchResults addObjectsFromArray:youTubeVideoObjects];
+    youTubeVideoObjects = nil;
     
     [MRProgressOverlayView dismissOverlayForView:_viewOnTopOfTable animated:YES];
     if(_searchResults.count == 0){  //special case
@@ -237,9 +237,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     NSUInteger count = _searchResults.count;
     NSUInteger moreResultsCount = moreYouTubeVideoObjects.count;
     
-    if (moreResultsCount) {
+    if (moreResultsCount){
         [_searchResults addObjectsFromArray:moreYouTubeVideoObjects];
-        moreYouTubeVideoObjects = nil;
         
         NSMutableArray *insertIndexPaths = [NSMutableArray array];
         for (NSUInteger item = count; item < count + moreResultsCount; item++)
@@ -255,6 +254,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         if (selected)
             [self.tableView deselectRowAtIndexPath:selected animated:YES];
     }
+    moreYouTubeVideoObjects = nil;
+    
     _networkErrorLoadingMoreResults = NO;
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
     UITableViewCell *loadMoreCell = [self.tableView cellForRowAtIndexPath:indexPath];
@@ -283,7 +284,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         upperBound = (int)arrayOfNSStrings.count;
     
     for(int i = 0; i < upperBound; i++)
-        [_searchSuggestions addObject:arrayOfNSStrings[i]];
+        [_searchSuggestions addObject:[arrayOfNSStrings[i] copy]];
+    arrayOfNSStrings = nil;
     
     [self.tableView reloadData];
 }
@@ -379,7 +381,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     [MRProgressOverlayView showOverlayAddedTo:_progressViewHere animated:YES];
     [self startTimingExecution];
     
-    [_yt searchYouTubeForVideosUsingString: searchBar.text];
+    [[YouTubeVideoSearchService sharedInstance] searchYouTubeForVideosUsingString: searchBar.text];
     _noMoreResultsToDisplay = NO;
     _networkErrorLoadingMoreResults = NO;
 }
@@ -432,7 +434,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
             self.tableView.scrollEnabled = YES;
         
         //fetch auto suggestions
-        [_yt fetchYouTubeAutoCompleteResultsForString:searchText];
+        [[YouTubeVideoSearchService sharedInstance] fetchYouTubeAutoCompleteResultsForString:searchText];
         self.displaySearchResults = NO;
         [self.tableView reloadData];
     }
@@ -629,7 +631,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
                 [loadMoreCell setAccessoryView:activityView];
                 
                 //try to load more results
-                [_yt fetchNextYouTubePageUsingLastQueryString];
+                [[YouTubeVideoSearchService sharedInstance] fetchNextYouTubePageUsingLastQueryString];
             }
         }
     }

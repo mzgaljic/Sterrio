@@ -43,6 +43,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *totalDurationLabel;
 @property (weak, nonatomic) IBOutlet ASValueTrackingSlider *playbackSlider;
 
+@property (nonatomic, weak) UIView *thisVCsView;
+
 - (IBAction)playbackSliderValueHasChanged:(id)sender;
 - (IBAction)playbackSliderEditingHasBegun:(id)sender;
 - (IBAction)playbackSliderEditingHasEndedA:(id)sender;  //touch up inside

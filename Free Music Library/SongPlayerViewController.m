@@ -58,6 +58,7 @@ void *kBufferEmptyKVO           = &kBufferEmptyKVO;
 void *kDidFailKVO               = &kDidFailKVO;
 
 #pragma mark - VC Life Cycle
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -465,7 +466,7 @@ static int numTimesVCLoaded = 0;
     
     //add buttons to the viewControllers view
     for(UIButton *aButton in musicButtons){
-        [self.view addSubview:aButton];
+        [self.thisVCsView addSubview:aButton];
         aButton.alpha = 0.0;  //make button transparent
         [UIView animateWithDuration:0.80  //now animate a "fade in"
                               delay:0.0
@@ -670,10 +671,10 @@ static int numTimesVCLoaded = 0;
 
 - (void)showNextTrackButton
 {
-    if([forwardButton isDescendantOfView:self.view])
+    if([forwardButton isDescendantOfView:self.thisVCsView])
         return;
     else
-        [self.view addSubview:forwardButton];
+        [self.thisVCsView addSubview:forwardButton];
 }
 
 - (void)hidePreviousTrackButton
@@ -683,10 +684,10 @@ static int numTimesVCLoaded = 0;
 
 - (void)showPreviousTrackButton
 {
-    if([backwardButton isDescendantOfView:self.view])
+    if([backwardButton isDescendantOfView:self.thisVCsView])
         return;
     else
-        [self.view addSubview:backwardButton];
+        [self.thisVCsView addSubview:backwardButton];
 }
 
 
@@ -829,16 +830,32 @@ static int numTimesVCLoaded = 0;
 - (void)showSpinnerForBasicLoadingOnView:(UIView *)displaySpinnerOnMe
 {
     if(![MusicPlaybackController isSimpleSpinnerOnScreen]){
-        [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
-        [MRProgressOverlayView showOverlayAddedTo:displaySpinnerOnMe title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
-        [MusicPlaybackController simpleSpinnerOnScreen:YES];
+        if([NSThread isMainThread]){
+            [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
+            [MRProgressOverlayView showOverlayAddedTo:displaySpinnerOnMe title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
+            [MusicPlaybackController simpleSpinnerOnScreen:YES];
+            
+        } else{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
+                [MRProgressOverlayView showOverlayAddedTo:displaySpinnerOnMe title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
+                [MusicPlaybackController simpleSpinnerOnScreen:YES];
+            });
+        }
     }
 }
 
 - (void)dismissAllSpinnersForView:(UIView *)dismissViewOnMe
 {
-    [MRProgressOverlayView dismissAllOverlaysForView:dismissViewOnMe animated:YES];
-    [MusicPlaybackController noSpinnersOnScreen];
+    if([NSThread isMainThread]){
+        [MRProgressOverlayView dismissAllOverlaysForView:dismissViewOnMe animated:YES];
+        [MusicPlaybackController noSpinnersOnScreen];
+    } else{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [MRProgressOverlayView dismissAllOverlaysForView:dismissViewOnMe animated:YES];
+            [MusicPlaybackController noSpinnersOnScreen];
+        });
+    }
 }
 
 #pragma mark - Share Button Tapped
@@ -885,6 +902,17 @@ static int numTimesVCLoaded = 0;
 - (void)alertView:(SDCAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     return;
+}
+
+#pragma mark - Navigation Stack accessor
+- (UIViewController *)backViewController
+{
+    NSInteger numberOfViewControllers = self.navigationController.viewControllers.count;
+    
+    if (numberOfViewControllers < 2)
+        return nil;
+    else
+        return [self.navigationController.viewControllers objectAtIndex:numberOfViewControllers - 2];
 }
 
 

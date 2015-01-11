@@ -93,6 +93,7 @@
         
         if (video)
         {
+            
             [MusicPlaybackController declareInternetProblemWhenLoadingSong:NO];
             NetworkStatus status = [reachability currentReachabilityStatus];
             if (status == ReachableViaWiFi)
@@ -137,11 +138,14 @@
         AVURLAsset *asset = [AVURLAsset assetWithURL: currentItemLink];
         Float64 duration = CMTimeGetSeconds(asset.duration);
         int otherDuration = video.duration;
+        allowedToPlayVideo = YES;  //temp functionality
         if(! usingWifi){
+            /*
             if(duration >= 600)  //user cant watch video longer than 10 minutes without wifi
                 allowedToPlayVideo = NO;
             else
                 allowedToPlayVideo = YES;
+             */
         }
         if(allowedToPlayVideo && video != nil){
             playerItem = [AVPlayerItem playerItemWithAsset: asset];
@@ -259,8 +263,15 @@
 
 - (void)dismissAllSpinnersForView:(UIView *)dismissViewOnMe
 {
-    [MRProgressOverlayView dismissAllOverlaysForView:dismissViewOnMe animated:YES];
-    [MusicPlaybackController noSpinnersOnScreen];
+    if([NSThread isMainThread]){
+        [MRProgressOverlayView dismissAllOverlaysForView:dismissViewOnMe animated:YES];
+        [MusicPlaybackController noSpinnersOnScreen];
+    } else{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [MRProgressOverlayView dismissAllOverlaysForView:dismissViewOnMe animated:YES];
+            [MusicPlaybackController noSpinnersOnScreen];
+        });
+    }
 }
 
 

@@ -18,15 +18,45 @@
     NSString *QUERY_BASE;
     NSString *QUERY_SUGGESTION_BASE;
     NSString *NEXT_PAGE_QUERY_BASE;
+    
+    //base strings for obtaining specific video information (XML response)
+    NSString *VIDEO_INFO_BASE;
+    NSString *VIDEO_INFO_APPENDED_ENDED;
 }
 @property (nonatomic, assign) id<YouTubeVideoSearchDelegate> delegate;
+@property (nonatomic, assign) id<YouTubeVideoDurationLookupDelegate> vidDurationDelegate;
 @end
 
 @implementation YouTubeVideoSearchService
 
--(void)setTheDelegate:(id<YouTubeVideoSearchDelegate>)myDelegate
++ (instancetype)sharedInstance
+{
+    static dispatch_once_t pred;
+    static id sharedInstance = nil;
+    dispatch_once(&pred, ^{
+        sharedInstance = [[[self class] alloc] init];
+    });
+    return sharedInstance;
+}
+
+- (void)setTheDelegate:(id<YouTubeVideoSearchDelegate>)myDelegate
 {
     self.delegate = myDelegate;
+}
+
+- (void)removeTheDelegate
+{
+    self.delegate = nil;
+}
+
+- (void)setVideoDurationDelegate:(id<YouTubeVideoDurationLookupDelegate>)myDelegate
+{
+    self.vidDurationDelegate = myDelegate;
+}
+
+- (void)removeVideoDurationDelegate
+{
+    self.vidDurationDelegate = nil;
 }
 
 - (id)init
@@ -35,6 +65,9 @@
         QUERY_BASE = @"https://www.googleapis.com/youtube/v3/search?type=video&part=snippet&maxResults=15&key=AIzaSyBAFK0pOUf4IWdfS94dYk_42dO46ssTUH8&q=";
         QUERY_SUGGESTION_BASE = @"http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q=";
         NEXT_PAGE_QUERY_BASE = @"&pageToken=";
+        
+        VIDEO_INFO_BASE = @"https://gdata.youtube.com/feeds/api/videos/";
+        VIDEO_INFO_APPENDED_ENDED = @"?v=2";
     }
     return self;
 }
@@ -43,39 +76,61 @@
 - (void)searchYouTubeForVideosUsingString:(NSString *)searchString
 {
     if(searchString){
-        NSMutableString *queryUrl = [NSMutableString stringWithString: QUERY_BASE];
-        [queryUrl appendString:[searchString stringForHTTPRequest]];
+        NSMutableString *tempUrl = [NSMutableString stringWithString: QUERY_BASE];
+        [tempUrl appendString:[searchString stringForHTTPRequest]];
+        NSString *queryUrl = [NSString stringWithString:tempUrl];
         originalQueryUrl = queryUrl;
+        __weak YouTubeVideoSearchService *weakSelf = self;
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            
-            //sending a basic synchronous request here since we're off the main thread anyway
-            NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]];
-            NSURLResponse *urlResponse = nil;
-            NSError *requestError = nil;
-            NSData *data = [NSURLConnection sendSynchronousRequest:urlRequest
-                                                 returningResponse:&urlResponse error:&requestError];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                //data is nil if a connection could not be created or if the download failed.
-                if (data == nil){
-                    //do not need to check error type, the user doesn't care. Just notify self.delegate.
-                    [self.delegate networkErrorHasOccuredSearchingYoutube];
-                } else{ //data received...continue processing
-                    [self.delegate ytVideoSearchDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
-                }
-                
-            }); //end of async dispatch
-        });
-    } else
-        return; //nothing to search for
+        NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]];
+        NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+        
+        [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+        {
+            if (data == nil){
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [weakSelf.delegate networkErrorHasOccuredSearchingYoutube];
+                });
+            } else{
+                //data received...continue processing
+                NSArray *parsedContent = [weakSelf parseYouTubeVideoResultsResponse:data];
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [weakSelf.delegate ytVideoSearchDidCompleteWithResults:parsedContent];
+                });
+            }
+        }];
+    }
 }
 
 #pragma mark - Fetching Video duration
 - (void)fetchDurationInSecondsForVideo:(YouTubeVideo *)ytVideo
 {
-#warning no implementation
+    if(ytVideo){
+        __weak YouTubeVideo *weakVideo = ytVideo;
+        NSMutableString *tempUrl = [NSMutableString stringWithString: VIDEO_INFO_BASE];
+        [tempUrl appendString:ytVideo.videoId];
+        NSString *videoInfoUrl = [NSString stringWithString:tempUrl];
+        __weak YouTubeVideoSearchService *weakSelf = self;
+        
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:videoInfoUrl]];
+        NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+        
+        [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^
+            (NSURLResponse *response, NSData *data, NSError *connectionError)
+         {
+             if (data == nil){
+                 dispatch_sync(dispatch_get_main_queue(), ^{
+                    [weakSelf.vidDurationDelegate networkErrorHasOccuredFetchingVideoDurationForVideo:weakVideo];
+                 });
+             } else{ //data received...continue processing
+                 NSUInteger duration = [weakSelf parseYouTubeVideoForDuration:data];
+                 dispatch_sync(dispatch_get_main_queue(), ^{
+                     [weakSelf.vidDurationDelegate ytVideoDurationHasBeenFetched:duration forVideo:weakVideo];
+                 });
+             }
+         }];
+    } else
+        return;
 }
 
 #pragma mark - Fetching more video (ie: Next Page)
@@ -86,55 +141,61 @@
         return;
     }
     if(originalQueryUrl){
-        NSMutableString *queryUrl = [NSMutableString stringWithString: originalQueryUrl];
-        [queryUrl appendString:NEXT_PAGE_QUERY_BASE];
-        [queryUrl appendString:nextPageToken];
+        NSMutableString *tempUrl = [NSMutableString stringWithString: originalQueryUrl];
+        [tempUrl appendString:NEXT_PAGE_QUERY_BASE];
+        [tempUrl appendString:nextPageToken];
+        NSString *queryUrl = [NSString stringWithString:tempUrl];
+        __weak YouTubeVideoSearchService *weakSelf = self;
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            
-            // Send a synchronous request here, already on a different thread
-            NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]];
-            NSURLResponse *urlResponse = nil;
-            NSError *requestError = nil;
-            NSData *data = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&urlResponse error:&requestError];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                if (data == nil){
-                    [self.delegate networkErrorHasOccuredFetchingMorePages];
-                } else{  // Data received...continue processing
-                    [self.delegate ytVideoNextPageResultsDidCompleteWithResults:[self parseYouTubeVideoResultsResponse:data]];
-                }
-            });  //end of async dispatch
-        });
-    }
+        
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]];
+        NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+        
+        [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^
+            (NSURLResponse *response, NSData *data, NSError *connectionError)
+        {
+            if (data == nil){
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [weakSelf.delegate networkErrorHasOccuredFetchingMorePages];
+                });
+            } else{
+                // Data received...continue processing
+                NSArray *parsedContent = [weakSelf parseYouTubeVideoResultsResponse:data];
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [weakSelf.delegate ytVideoNextPageResultsDidCompleteWithResults:parsedContent];
+                });
+            }
+        }];
+    } else
+        return;
 }
 
 #pragma mark - Query Auto-complete as you type
 - (void)fetchYouTubeAutoCompleteResultsForString:(NSString *)currentString
 {
     if(currentString){
-        NSMutableString *fullUrl = [NSMutableString stringWithString: QUERY_SUGGESTION_BASE];
-        [fullUrl appendString:[currentString stringForHTTPRequest]];
+        NSMutableString *tempUrl = [NSMutableString stringWithString: QUERY_SUGGESTION_BASE];
+        [tempUrl appendString:[currentString stringForHTTPRequest]];
+        NSString *fullUrl = [NSString stringWithString:tempUrl];
+        __weak YouTubeVideoSearchService *weakSelf = self;
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            
-            // Send a synchronous request here, already on a different thread
-            NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:fullUrl]];
-            NSURLResponse *urlResponse = nil;
-            NSError *requestError = nil;
-            NSData *data = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&urlResponse error:&requestError];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                if (data == nil){}  //don't need to display error to user, not critical to see autosuggestions.
-
-                else{
-                    // Data received...continue processing
-                    [self.delegate ytVideoAutoCompleteResultsDidDownload:[self parseYouTubeVideoAutoSuggestResponse:data]];
-                }
-            });  //end of async dispatch
-        });
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:fullUrl]];
+        NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+        
+        [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^
+            (NSURLResponse *response, NSData *data, NSError *connectionError)
+        {
+            if (data == nil)
+            {
+                //don't need to display error to user, not critical to see autosuggestions.
+            } else{
+                // Data received...continue processing
+                NSArray *parsedContent = [self parseYouTubeVideoAutoSuggestResponse:data];
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [weakSelf.delegate ytVideoAutoCompleteResultsDidDownload:parsedContent];
+                });
+            }
+        }];
     } else
         return;
 }
@@ -236,6 +297,27 @@
         [parsedArray addObject: reusableArray[0]];
     }
     return parsedArray;
+}
+
+#pragma mark - Parsing XML response for duration
+- (NSUInteger)parseYouTubeVideoForDuration:(NSData *)XMLdata
+{
+    NSError *error;
+    TBXML *tbxml = [TBXML tbxmlWithXMLData:XMLdata error:&error];
+    
+    if (error) {
+        //dont care what error is, just return 0 so that the app doesnt crash
+        return 0;
+    } else {
+        TBXMLElement *root = tbxml.rootXMLElement;
+        TBXMLElement *mediaGroup = [TBXML childElementNamed:@"media:group"
+                                              parentElement:root];
+        TBXMLElement *mediaContent = [TBXML childElementNamed:@"media:content"
+                                                parentElement:mediaGroup];
+        NSString *durationText = [TBXML valueOfAttributeNamed:@"duration"
+                                                   forElement:mediaContent];
+        return [durationText integerValue];
+    }
 }
 
 @end
