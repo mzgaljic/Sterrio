@@ -495,7 +495,9 @@ static int numTimesVCLoaded = 0;
     //setup current time label
     int labelXValue = screenWidth * 0.02f;
     int yValue = screenHeight * 0.74f;
+    [_currentTimeLabel removeFromSuperview];
     [_currentTimeLabel setFrame:CGRectMake(labelXValue, yValue, labelWidth, labelHeight)];
+    [self.thisVCsView addSubview:_currentTimeLabel];
     int currentTimeLabelxValue = labelXValue;
     
     //setup slider
@@ -503,7 +505,9 @@ static int numTimesVCLoaded = 0;
     //widthValue = self.playbackSlider.frame.size.width; //taken from autolayout
     int sliderWidth = screenWidth - ((labelXValue + labelWidth + padding) * 2);
     int sliderHeight = labelHeight;
+    [self.playbackSlider removeFromSuperview];
     [self.playbackSlider setFrame:CGRectMake(xValue, yValue, sliderWidth, sliderHeight)];
+    [self.thisVCsView addSubview:self.playbackSlider];
     
     //slider settings
     self.playbackSlider.minimumValue = 0.0f;
@@ -517,7 +521,9 @@ static int numTimesVCLoaded = 0;
     //setup total duration label
     labelXValue = xValue + sliderWidth + padding;
     yValue = yValue;
+    [_totalDurationLabel removeFromSuperview];
     [_totalDurationLabel setFrame:CGRectMake(labelXValue, yValue, labelWidth, labelHeight)];
+    [self.thisVCsView addSubview:_totalDurationLabel];
     
     _currentTimeLabel.textAlignment = NSTextAlignmentRight;
     _totalDurationLabel.textAlignment = NSTextAlignmentLeft;
