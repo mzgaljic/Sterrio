@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0768D093C3D80AF36D21A4BA"
+               BlueprintIdentifier = "B22F42A1AE774DDE119541C0"
                BuildableName = "libPods-MSCellAccessory.a"
                BlueprintName = "Pods-MSCellAccessory"
                ReferencedContainer = "container:Pods.xcodeproj">

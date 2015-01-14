@@ -71,7 +71,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     _viewOnTopOfTable = nil;
     start = nil;
     finish = nil;
-    [[YouTubeVideoSearchService sharedInstance] removeTheDelegate];
+    [[YouTubeVideoSearchService sharedInstance] removeVideoQueryDelegate];
     
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
 }
@@ -109,7 +109,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [[YouTubeVideoSearchService sharedInstance] setTheDelegate:self];
+    [[YouTubeVideoSearchService sharedInstance] setVideoQueryDelegate:self];
     self.navigationController.toolbarHidden = NO;
     if (self.isMovingToParentViewController == NO)
     {

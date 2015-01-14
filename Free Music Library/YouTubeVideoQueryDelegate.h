@@ -1,5 +1,5 @@
 //
-//  YouTubeVideoSearchDelegate.h
+//  YouTubeVideoQueryDelegate.h
 //  zTunes
 //
 //  Created by Mark Zgaljic on 7/30/14.
@@ -10,7 +10,7 @@
 #import "YouTubeVideo.h"
 
 
-@protocol YouTubeVideoSearchDelegate <NSObject>
+@protocol YouTubeVideoQueryDelegate <NSObject>
 
 @required
 /**called after the json response from the YouTube server was parsed successfully.

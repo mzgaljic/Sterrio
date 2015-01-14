@@ -9,6 +9,7 @@
 #import "YouTubeSongAdderViewController.h"
 #import "YouTubeVideoSearchService.h"
 
+
 @interface YouTubeSongAdderViewController ()
 {
     YouTubeVideo *ytVideo;
@@ -19,7 +20,7 @@
     BOOL playbackFinished;
     BOOL doneTappedInVideo;
     BOOL pausedBeforePopAttempt;
-    NSUInteger videoDuration;
+    NSDictionary *videoDetails;
 }
 
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
@@ -38,7 +39,6 @@
             return nil;
         ytVideo = youtubeVideoObject;
         pausedBeforePopAttempt = YES;
-        videoDuration = 0;
     }
     return self;
 }
@@ -52,7 +52,7 @@
         [videoPlayerViewController stop];
         videoPlayerViewController = nil;
     }
-    [[YouTubeVideoSearchService sharedInstance] removeVideoDurationDelegate];
+    [[YouTubeVideoSearchService sharedInstance] removeVideoDetailLookupDelegate];
     
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([YouTubeSongAdderViewController class]));
 }
@@ -61,8 +61,8 @@
 {
     [super viewDidLoad];
     [self loadVideo];
-    [[YouTubeVideoSearchService sharedInstance] setVideoDurationDelegate:self];
-    [[YouTubeVideoSearchService sharedInstance] fetchDurationInSecondsForVideo:ytVideo];
+    [[YouTubeVideoSearchService sharedInstance] setVideoDetailLookupDelegate:self];
+    [[YouTubeVideoSearchService sharedInstance] fetchDetailsForVideo:ytVideo];
 }
 
 static short numberTimesViewHasBeenShown = 0;
@@ -206,8 +206,8 @@ static short numberTimesViewHasBeenShown = 0;
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeRight || orientation == UIInterfaceOrientationLandscapeLeft){
-        frameWidth = heightOfScreenRotationIndependant * (3/4.0);
-        frameHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:frameWidth];
+        frameWidth = heightOfScreenRotationIndependant;
+        frameHeight = widthOfScreenRoationIndependant * (1/2.0);
     } else{
         frameWidth = widthOfScreenRoationIndependant;
         frameHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:frameWidth];
@@ -329,7 +329,7 @@ static short numberTimesViewHasBeenShown = 0;
                                              UIActivityTypeSaveToCameraRoll,
                                              UIActivityTypeAirDrop];
         //set tint color specifically for this VC so that the cancel buttons arent invisible
-        [activityVC.view setTintColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0]];
+        [activityVC.view setTintColor:[[UIColor defaultAppColorScheme] lighterColor]];
         [self presentViewController:activityVC animated:YES completion:nil];
     } else{
         // Handle error
@@ -353,16 +353,19 @@ static short numberTimesViewHasBeenShown = 0;
     return UIInterfaceOrientationMaskPortrait;
 }
 
-#pragma mark - Managing video duration fetching
-- (void)ytVideoDurationHasBeenFetched:(NSUInteger)durationInSeconds forVideo:(YouTubeVideo *)video;
+#pragma mark - Managing video detail fetch response
+- (void)detailsHaveBeenFetchedForYouTubeVideo:(YouTubeVideo *)video details:(NSDictionary *)details
 {
-    if([video.videoId isEqualToString:ytVideo.videoId])
-        videoDuration = durationInSeconds;
-    else
+    if([video.videoId isEqualToString:ytVideo.videoId]){
+        if(details){
+            videoDetails = [details copy];
+            details = nil;
+        }
+    }else
         return;
 }
 
-- (void)networkErrorHasOccuredFetchingVideoDurationForVideo:(YouTubeVideo *)video
+- (void)networkErrorHasOccuredFetchingVideoDetailsForVideo:(YouTubeVideo *)video
 {
     if([video.videoId isEqualToString:ytVideo.videoId]){
         //notify user about the problem

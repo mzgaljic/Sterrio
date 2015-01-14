@@ -176,7 +176,14 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     // The code block will be run asynchronously in a last-in-first-out queue, so that when
     // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
     [stackController addBlock:^{
-        UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:[AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]]];
+        UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
+                            [AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]]];
+        if(albumArt == nil){
+            if(song.album){
+                albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
+                        [AlbumArtUtilities albumArtFileNameToNSURL:song.album.albumArtFileName]]];
+            }
+        }
         albumArt = [AlbumArtUtilities imageWithImage:albumArt scaledToSize:CGSizeMake(cell.frame.size.height, cell.frame.size.height)];
         // The block will be processed on a background Grand Central Dispatch queue.
         // Therefore, ensure that this code that updates the UI will run on the main queue.

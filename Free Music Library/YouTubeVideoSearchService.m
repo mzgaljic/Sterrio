@@ -9,6 +9,7 @@
 #import "YouTubeVideoSearchService.h"
 #import "YouTubeVideo.h"
 
+
 @interface YouTubeVideoSearchService ()
 {
     NSString *nextPageToken; //set and reset when appropriate
@@ -23,8 +24,8 @@
     NSString *VIDEO_INFO_BASE;
     NSString *VIDEO_INFO_APPENDED_ENDED;
 }
-@property (nonatomic, assign) id<YouTubeVideoSearchDelegate> delegate;
-@property (nonatomic, assign) id<YouTubeVideoDurationLookupDelegate> vidDurationDelegate;
+@property (nonatomic, assign) id<YouTubeVideoQueryDelegate> queryDelegate;
+@property (nonatomic, assign) id<YouTubeVideoDetailLookupDelegate> vidDurationDelegate;
 @end
 
 @implementation YouTubeVideoSearchService
@@ -39,22 +40,22 @@
     return sharedInstance;
 }
 
-- (void)setTheDelegate:(id<YouTubeVideoSearchDelegate>)myDelegate
+- (void)setVideoQueryDelegate:(id<YouTubeVideoQueryDelegate>)myDelegate;
 {
-    self.delegate = myDelegate;
+    self.queryDelegate = myDelegate;
 }
 
-- (void)removeTheDelegate
+- (void)removeVideoQueryDelegate;
 {
-    self.delegate = nil;
+    self.queryDelegate = nil;
 }
 
-- (void)setVideoDurationDelegate:(id<YouTubeVideoDurationLookupDelegate>)myDelegate
+- (void)setVideoDetailLookupDelegate:(id<YouTubeVideoDetailLookupDelegate>)myDelegate;
 {
     self.vidDurationDelegate = myDelegate;
 }
 
-- (void)removeVideoDurationDelegate
+- (void)removeVideoDetailLookupDelegate
 {
     self.vidDurationDelegate = nil;
 }
@@ -89,13 +90,13 @@
         {
             if (data == nil){
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    [weakSelf.delegate networkErrorHasOccuredSearchingYoutube];
+                    [weakSelf.queryDelegate networkErrorHasOccuredSearchingYoutube];
                 });
             } else{
                 //data received...continue processing
                 NSArray *parsedContent = [weakSelf parseYouTubeVideoResultsResponse:data];
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    [weakSelf.delegate ytVideoSearchDidCompleteWithResults:parsedContent];
+                    [weakSelf.queryDelegate ytVideoSearchDidCompleteWithResults:parsedContent];
                 });
             }
         }];
@@ -103,7 +104,7 @@
 }
 
 #pragma mark - Fetching Video duration
-- (void)fetchDurationInSecondsForVideo:(YouTubeVideo *)ytVideo
+- (void)fetchDetailsForVideo:(YouTubeVideo *)ytVideo
 {
     if(ytVideo){
         __weak YouTubeVideo *weakVideo = ytVideo;
@@ -116,16 +117,17 @@
         NSOperationQueue *queue = [[NSOperationQueue alloc] init];
         
         [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^
-            (NSURLResponse *response, NSData *data, NSError *connectionError)
+         (NSURLResponse *response, NSData *data, NSError *connectionError)
          {
              if (data == nil){
                  dispatch_sync(dispatch_get_main_queue(), ^{
-                    [weakSelf.vidDurationDelegate networkErrorHasOccuredFetchingVideoDurationForVideo:weakVideo];
+                     [weakSelf.vidDurationDelegate networkErrorHasOccuredFetchingVideoDetailsForVideo:weakVideo];
                  });
              } else{ //data received...continue processing
-                 NSUInteger duration = [weakSelf parseYouTubeVideoForDuration:data];
+                 NSDictionary *details = [weakSelf parseYouTubeVideoForDetails:data];
                  dispatch_sync(dispatch_get_main_queue(), ^{
-                     [weakSelf.vidDurationDelegate ytVideoDurationHasBeenFetched:duration forVideo:weakVideo];
+                     [weakSelf.vidDurationDelegate detailsHaveBeenFetchedForYouTubeVideo:weakVideo
+                                                                                 details:details];
                  });
              }
          }];
@@ -137,7 +139,7 @@
 - (void)fetchNextYouTubePageUsingLastQueryString
 {
     if(nextPageToken == nil){ //user has gone through all available 'pages' in the result
-        [self.delegate ytvideoResultsNoMorePagesToView];
+        [self.queryDelegate ytvideoResultsNoMorePagesToView];
         return;
     }
     if(originalQueryUrl){
@@ -156,13 +158,13 @@
         {
             if (data == nil){
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    [weakSelf.delegate networkErrorHasOccuredFetchingMorePages];
+                    [weakSelf.queryDelegate networkErrorHasOccuredFetchingMorePages];
                 });
             } else{
                 // Data received...continue processing
                 NSArray *parsedContent = [weakSelf parseYouTubeVideoResultsResponse:data];
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    [weakSelf.delegate ytVideoNextPageResultsDidCompleteWithResults:parsedContent];
+                    [weakSelf.queryDelegate ytVideoNextPageResultsDidCompleteWithResults:parsedContent];
                 });
             }
         }];
@@ -192,7 +194,7 @@
                 // Data received...continue processing
                 NSArray *parsedContent = [self parseYouTubeVideoAutoSuggestResponse:data];
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    [weakSelf.delegate ytVideoAutoCompleteResultsDidDownload:parsedContent];
+                    [weakSelf.queryDelegate ytVideoAutoCompleteResultsDidDownload:parsedContent];
                 });
             }
         }];
@@ -300,24 +302,37 @@
 }
 
 #pragma mark - Parsing XML response for duration
-- (NSUInteger)parseYouTubeVideoForDuration:(NSData *)XMLdata
+- (NSDictionary *)parseYouTubeVideoForDetails:(NSData *)XMLdata
 {
     NSError *error;
     TBXML *tbxml = [TBXML tbxmlWithXMLData:XMLdata error:&error];
     
     if (error) {
         //dont care what error is, just return 0 so that the app doesnt crash
-        return 0;
+        return nil;
     } else {
         TBXMLElement *root = tbxml.rootXMLElement;
+        
+        //getting duration
         TBXMLElement *mediaGroup = [TBXML childElementNamed:@"media:group"
                                               parentElement:root];
         TBXMLElement *mediaContent = [TBXML childElementNamed:@"media:content"
                                                 parentElement:mediaGroup];
         NSString *durationText = [TBXML valueOfAttributeNamed:@"duration"
                                                    forElement:mediaContent];
-        return [durationText integerValue];
+
+        NSNumber *duration = [NSNumber numberWithInteger:[durationText integerValue]];
+        NSDictionary *details = @{
+                                  MZKeyVideoDuration : duration,
+                                  };
+        return details;
     }
 }
+
+
+/*
+ possibly useful at some point:
+ https://www.googleapis.com/youtube/v3/videos?id=mVp0brA3Hpk&part=contentDetails&key=AIzaSyAhZM3ZPcVq4q7ZdO7Pm44_7Q6U2udxzYo
+ */
 
 @end

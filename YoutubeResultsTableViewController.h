@@ -8,12 +8,12 @@
 
 #import <UIKit/UIKit.h>
 #import "AppEnvironmentConstants.h"
-#import "YouTubeVideoSearchDelegate.h"
+#import "YouTubeVideoQueryDelegate.h"
 #import "UIImageView+WebCache.h"
 #import "MyTableViewController.h"
 #import "SongPlayerCoordinator.h"
 
 @interface YoutubeResultsTableViewController : MyTableViewController <UISearchBarDelegate,
-                                                                    YouTubeVideoSearchDelegate,
+                                                                    YouTubeVideoQueryDelegate,
                                                                     SDWebImageManagerDelegate>
 @end
