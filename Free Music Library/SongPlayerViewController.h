@@ -27,6 +27,7 @@
 #import "SongPlayerNavController.h"
 #import "MyAlerts.h"
 #import "MyViewController.h"
+#import <MarqueeLabel.h>
 
 
 @class MusicPlaybackController;
@@ -41,6 +42,7 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *currentTimeLabel;
 @property (weak, nonatomic) IBOutlet UILabel *totalDurationLabel;
+@property (weak, nonatomic) IBOutlet MarqueeLabel *songNameLabel;
 @property (weak, nonatomic) IBOutlet ASValueTrackingSlider *playbackSlider;
 
 @property (nonatomic, weak) UIView *thisVCsView;

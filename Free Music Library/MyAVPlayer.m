@@ -245,6 +245,7 @@
 
 - (void)showSpinnerForBasicLoadingOnView:(UIView *)displaySpinnerOnMe
 {
+    /*
     if(![MusicPlaybackController isSimpleSpinnerOnScreen]){
         if([NSThread isMainThread]){
             [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
@@ -259,10 +260,12 @@
             });
         }
     }
+     */
 }
 
 - (void)dismissAllSpinnersForView:(UIView *)dismissViewOnMe
 {
+    /*
     if([NSThread isMainThread]){
         [MRProgressOverlayView dismissAllOverlaysForView:dismissViewOnMe animated:YES];
         [MusicPlaybackController noSpinnersOnScreen];
@@ -272,6 +275,7 @@
             [MusicPlaybackController noSpinnersOnScreen];
         });
     }
+     */
 }
 
 

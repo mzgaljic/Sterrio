@@ -60,6 +60,12 @@
 #define COCOAPODS_VERSION_MINOR_ASValueTrackingSlider 9
 #define COCOAPODS_VERSION_PATCH_ASValueTrackingSlider 4
 
+// CSNotificationView
+#define COCOAPODS_POD_AVAILABLE_CSNotificationView
+#define COCOAPODS_VERSION_MAJOR_CSNotificationView 0
+#define COCOAPODS_VERSION_MINOR_CSNotificationView 5
+#define COCOAPODS_VERSION_PATCH_CSNotificationView 3
+
 // DZNEmptyDataSet
 #define COCOAPODS_POD_AVAILABLE_DZNEmptyDataSet
 #define COCOAPODS_VERSION_MAJOR_DZNEmptyDataSet 1
@@ -101,12 +107,6 @@
 #define COCOAPODS_VERSION_MAJOR_MBProgressHUD 0
 #define COCOAPODS_VERSION_MINOR_MBProgressHUD 9
 #define COCOAPODS_VERSION_PATCH_MBProgressHUD 0
-
-// MCNotificationManager
-#define COCOAPODS_POD_AVAILABLE_MCNotificationManager
-#define COCOAPODS_VERSION_MAJOR_MCNotificationManager 0
-#define COCOAPODS_VERSION_MINOR_MCNotificationManager 1
-#define COCOAPODS_VERSION_PATCH_MCNotificationManager 2
 
 // MRProgress
 #define COCOAPODS_POD_AVAILABLE_MRProgress
@@ -174,6 +174,12 @@
 #define COCOAPODS_VERSION_MINOR_MSCellAccessory 1
 #define COCOAPODS_VERSION_PATCH_MSCellAccessory 2
 
+// MarqueeLabel
+#define COCOAPODS_POD_AVAILABLE_MarqueeLabel
+#define COCOAPODS_VERSION_MAJOR_MarqueeLabel 2
+#define COCOAPODS_VERSION_MINOR_MarqueeLabel 2
+#define COCOAPODS_VERSION_PATCH_MarqueeLabel 0
+
 // RBBAnimation
 #define COCOAPODS_POD_AVAILABLE_RBBAnimation
 #define COCOAPODS_VERSION_MAJOR_RBBAnimation 0
@@ -184,7 +190,7 @@
 #define COCOAPODS_POD_AVAILABLE_SDCAlertView
 #define COCOAPODS_VERSION_MAJOR_SDCAlertView 2
 #define COCOAPODS_VERSION_MINOR_SDCAlertView 1
-#define COCOAPODS_VERSION_PATCH_SDCAlertView 0
+#define COCOAPODS_VERSION_PATCH_SDCAlertView 1
 
 // SDCAutoLayout
 #define COCOAPODS_POD_AVAILABLE_SDCAutoLayout

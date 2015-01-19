@@ -25,7 +25,7 @@
     <entity name="Song" representedClassName="Song" syncable="YES">
         <attribute name="albumArtFileName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="associatedWithAlbum" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
-        <attribute name="duration" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="duration" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="genreCode" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="smartSortSongName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="song_id" optional="YES" attributeType="String" syncable="YES"/>
@@ -39,6 +39,6 @@
         <element name="Album" positionX="-9909" positionY="-81" width="128" height="148"/>
         <element name="Artist" positionX="-9684" positionY="-306" width="128" height="118"/>
         <element name="Playlist" positionX="-9074" positionY="-18" width="128" height="103"/>
-        <element name="Song" positionX="-9450" positionY="-126" width="126" height="208"/>
+        <element name="Song" positionX="-9450" positionY="-126" width="126" height="210"/>
     </elements>
 </model>

@@ -119,6 +119,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         //restore scroll to top button if it was there before segue
         if(_scrollToTopButtonVisible)
             [self showScrollToTopButton:YES];
+        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)    name:UIDeviceOrientationDidChangeNotification  object:nil];
@@ -302,7 +303,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     }
 
     [MRProgressOverlayView dismissOverlayForView:_viewOnTopOfTable animated:YES];
-    [self launchAlertViewWithDialogTitle:@"Network Problem" andMessage:@"Cannot establish connection with YouTube"];
+    [self launchAlertViewWithDialogTitle:@"Network Problem" andMessage:@"Cannot establish connection with YouTube."];
 }
 
 - (void)networkErrorHasOccuredFetchingMorePages

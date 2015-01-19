@@ -1,1 +1,0 @@
-../../../MCNotificationManager/MCNotificationManager/MCTransparentView.h

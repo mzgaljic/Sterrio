@@ -7,6 +7,11 @@
 //
 
 #import "SongPlayerViewController.h"
+typedef enum{
+    DurationLabelStateNotSet,
+    DurationLabelStateMinutes,
+    DurationLabelStateHours
+} DurationLabelStates;
 
 @interface SongPlayerViewController ()
 {
@@ -18,7 +23,7 @@
     NSString *artistAlbumLabel;
     
     BOOL playerButtonsSetUp;
-    BOOL waitingForNextOrPrevVideoToLoad;
+    DurationLabelStates stateOfDurationLabels;
     UIColor *colorOfPlaybackButtons;
     
     //for key value observing
@@ -34,6 +39,8 @@
 static UIInterfaceOrientation lastKnownOrientation;
 static BOOL playAfterMovingSlider = YES;
 static BOOL sliderIsBeingTouched = NO;
+static BOOL waitingForNextOrPrevVideoToLoad;
+static const short longDurationLabelOffset = 15;
 
 NSString * const NEW_SONG_IN_AVPLAYER = @"New song added to AVPlayer, lets hope the interface makes appropriate changes.";
 NSString * const AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
@@ -63,7 +70,7 @@ void *kDidFailKVO               = &kDidFailKVO;
 {
     [super viewDidLoad];
     colorOfPlaybackButtons = [UIColor defaultAppColorScheme];
-    waitingForNextOrPrevVideoToLoad = NO;
+    waitingForNextOrPrevVideoToLoad = YES;
     [self initAndRegisterAllButtons];
     
     //these two observers help us know when this VC must update its GUI due to a new song playing, etc.
@@ -79,7 +86,6 @@ void *kDidFailKVO               = &kDidFailKVO;
                                              selector:@selector(playbackOfVideoHasBegun)
                                                  name:@"PlaybackStartedNotification"
                                                object:nil];
-    //self.playbackSlider.enabled = NO;
     self.playbackSlider.dataSource = self;
     [[SongPlayerCoordinator sharedInstance] setDelegate:self];
     
@@ -122,6 +128,7 @@ static int numTimesVCLoaded = 0;
     
     [self checkDeviceOrientation];
     [self positionPlaybackSliderOnScreen];
+    [self InitSongInfoLabelsOnScreen];
     
     if([MusicPlaybackController obtainRawAVPlayer].rate == 1)  //takes care of duration label, slider, etc.
         [self playbackOfVideoHasBegun];
@@ -163,7 +170,17 @@ static int numTimesVCLoaded = 0;
 //in this VC (song name, updating song index, etc)
 - (void)updateScreenWithInfoForNewSong:(NSNotification *)object
 {
+    CATransition *animation = [CATransition animation];
+    animation.duration = 0.8;
+    animation.type = kCATransitionFade;
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [_songNameLabel.layer addAnimation:animation
+                                forKey:@"changeTextTransition"];
+    [self.navigationController.navigationBar.layer addAnimation:animation
+                                                         forKey:@"changeTextTransition"];
     self.navBar.title = [MusicPlaybackController prettyPrintNavBarTitle];
+    self.songNameLabel.text = [MusicPlaybackController nowPlayingSong].songName;
+    
     /*
     Song *newSong = (Song *)object;
      _songLabel = nowPlayingSong.songName;
@@ -256,10 +273,8 @@ static int numTimesVCLoaded = 0;
     }
     
     lastKnownOrientation = toInterfaceOrientation;
-    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {  //selector works on iOS7+
-        [self prefersStatusBarHidden];
-        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }
+    [self prefersStatusBarHidden];
+    [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
 }
 
 #pragma mark - Responding to Player Playback Events (rate, internet connection, etc.)
@@ -304,7 +319,8 @@ static int numTimesVCLoaded = 0;
         return;
     
     Float64 currentTimeValue = CMTimeGetSeconds([MusicPlaybackController obtainRawAVPlayer].currentItem.currentTime);
-    //sets the value directly from the value, since playback could stutter or pause! So you can't increment by 1 each second.
+    
+    //sets slider directly from avplayer. playback can stutter or pause, can't increment by 1...
     [self.playbackSlider setValue:(currentTimeValue) animated:YES];
 }
 
@@ -329,6 +345,11 @@ static int numTimesVCLoaded = 0;
     else
         returnString = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
     return returnString;
+}
+
+- (void)accomodateInterfaceBasedOnDurationLabels
+{
+#warning no implementation yet
 }
 
 - (void)playbackHasStopped
@@ -381,18 +402,31 @@ static int numTimesVCLoaded = 0;
 }
 
 #pragma mark - Positioning Music Buttons (buttons need to be initialized first)
+//This method also fades the buttons and the time labels back into place on rotation
 - (void)positionMusicButtonsOnScreenAndSetThemUp
 {
     if(playerButtonsSetUp == YES){
         //dont need to set them up, just re-animate a "fade in"
         for(UIButton *aButton in musicButtons){
             aButton.alpha = 0.0;  //make button transparent
-            [UIView animateWithDuration:0.80  //now animate a "fade in"
-                                  delay:0.0
+            [UIView animateWithDuration:0.7  //now animate a "fade in"
+                                  delay:0.2
                                 options:UIViewAnimationOptionAllowUserInteraction
                              animations:^{ aButton.alpha = 1.0; }
                              completion:nil];
         }
+        
+        _currentTimeLabel.alpha = 0.0;
+        _totalDurationLabel.alpha = 0.0;
+        [UIView animateWithDuration:0.7  //now animate a "fade in"
+                              delay:0.2
+                            options:UIViewAnimationOptionAllowUserInteraction
+                         animations:^
+                        {
+                            _currentTimeLabel.alpha = 1.0;
+                            _totalDurationLabel.alpha = 1.0;
+                        }
+                         completion:nil];
     }
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
@@ -466,20 +500,45 @@ static int numTimesVCLoaded = 0;
     
     //add buttons to the viewControllers view
     for(UIButton *aButton in musicButtons){
-        [self.thisVCsView addSubview:aButton];
+        [self.view addSubview:aButton];
         aButton.alpha = 0.0;  //make button transparent
-        [UIView animateWithDuration:0.80  //now animate a "fade in"
-                              delay:0.0
+        [UIView animateWithDuration:0.70  //now animate a "fade in"
+                              delay:0.1
                             options:UIViewAnimationOptionAllowUserInteraction
                          animations:^{ aButton.alpha = 1.0; }
                          completion:nil];
     }
+    _currentTimeLabel.alpha = 0.0;
+    _totalDurationLabel.alpha = 0.0;
+    [UIView animateWithDuration:0.7  //now animate a "fade in"
+                          delay:0.2
+                        options:UIViewAnimationOptionAllowUserInteraction
+                     animations:^
+     {
+         _currentTimeLabel.alpha = 1.0;
+         _totalDurationLabel.alpha = 1.0;
+     }
+                     completion:nil];
     playerButtonsSetUp = YES;
+}
+
+#pragma mark - Initializing Song and Album/Artist labels
+- (void)InitSongInfoLabelsOnScreen
+{
+    short songNameFontSize = 30;
+    self.songNameLabel.scrollDuration = 8.0f;
+    self.songNameLabel.fadeLength = 10.0f;
+    UIFont *font = [UIFont fontWithName:@"HelveticaNeue-Light"
+                                   size:songNameFontSize];
+    self.songNameLabel.font = font;
+    self.songNameLabel.text = [MusicPlaybackController nowPlayingSong].songName;
 }
 
 #pragma mark - Playback Time Slider
 - (void)positionPlaybackSliderOnScreen
 {
+    NSString *nameOfFontForTimeLabels = @"HelveticaNeue-Medium";
+    short timeLabelFontSize = _currentTimeLabel.font.pointSize;
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
         return;
@@ -497,7 +556,9 @@ static int numTimesVCLoaded = 0;
     int yValue = screenHeight * 0.74f;
     [_currentTimeLabel removeFromSuperview];
     [_currentTimeLabel setFrame:CGRectMake(labelXValue, yValue, labelWidth, labelHeight)];
-    [self.thisVCsView addSubview:_currentTimeLabel];
+    _currentTimeLabel.font = [UIFont fontWithName:nameOfFontForTimeLabels
+                                             size:timeLabelFontSize];
+    [self.view addSubview:_currentTimeLabel];
     int currentTimeLabelxValue = labelXValue;
     
     //setup slider
@@ -506,24 +567,27 @@ static int numTimesVCLoaded = 0;
     int sliderWidth = screenWidth - ((labelXValue + labelWidth + padding) * 2);
     int sliderHeight = labelHeight;
     [self.playbackSlider removeFromSuperview];
-    [self.playbackSlider setFrame:CGRectMake(xValue, yValue, sliderWidth, sliderHeight)];
-    [self.thisVCsView addSubview:self.playbackSlider];
+    [self.playbackSlider setFrame:CGRectMake(xValue, yValue +1 , sliderWidth, sliderHeight)];
+    [self.view addSubview:self.playbackSlider];
     
     //slider settings
     self.playbackSlider.minimumValue = 0.0f;
-    self.playbackSlider.popUpViewCornerRadius = 12.0;
+    self.playbackSlider.popUpViewCornerRadius = 5.0;
     [self.playbackSlider setMaxFractionDigitsDisplayed:0];
     self.playbackSlider.popUpViewColor = [[UIColor defaultAppColorScheme] lighterColor];
-    self.playbackSlider.font = [UIFont fontWithName:@"GillSans-Bold" size:24];
+    self.playbackSlider.font = [UIFont fontWithName:nameOfFontForTimeLabels size:timeLabelFontSize+4];
     self.playbackSlider.textColor = [UIColor whiteColor];
-    self.playbackSlider.minimumTrackTintColor = [[UIColor defaultAppColorScheme] lighterColor];
+    self.playbackSlider.minimumTrackTintColor =
+                                [[[UIColor defaultAppColorScheme] lighterColor] lighterColor];
     
     //setup total duration label
     labelXValue = xValue + sliderWidth + padding;
     yValue = yValue;
     [_totalDurationLabel removeFromSuperview];
     [_totalDurationLabel setFrame:CGRectMake(labelXValue, yValue, labelWidth, labelHeight)];
-    [self.thisVCsView addSubview:_totalDurationLabel];
+    _totalDurationLabel.font = [UIFont fontWithName:nameOfFontForTimeLabels
+                                               size:timeLabelFontSize];
+    [self.view addSubview:_totalDurationLabel];
     
     _currentTimeLabel.textAlignment = NSTextAlignmentRight;
     _totalDurationLabel.textAlignment = NSTextAlignmentLeft;
@@ -552,11 +616,19 @@ static int numTimesVCLoaded = 0;
         animation.type = kCATransitionFade;
         animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
         
-        self.playbackSlider.maximumValue = durationInSeconds;
+        _playbackSlider.maximumValue = durationInSeconds;
         
-        //set duration label
-        [_totalDurationLabel.layer addAnimation:animation forKey:@"changeTextTransition"];  //animates the duration once its determined
-        _totalDurationLabel.text = [self convertSecondsToPrintableNSStringWithSliderValue:durationInSeconds];  //just sets duration, already known.
+        NSString *newText = [self convertSecondsToPrintableNSStringWithSliderValue:durationInSeconds];
+        
+        //only want to animate the change if we are also not animating the label width
+        if(stateOfDurationLabels == DurationLabelStateMinutes){
+            if([newText length] <= 5)  //displaying minutes
+                [_totalDurationLabel.layer addAnimation:animation forKey:@"changeTextTransition"];
+        } else if(stateOfDurationLabels == DurationLabelStateHours){
+            if([newText length] > 5)  //displaying hours
+                [_totalDurationLabel.layer addAnimation:animation forKey:@"changeTextTransition"];
+        }
+        _totalDurationLabel.text = newText;
     }
 }
 
@@ -565,7 +637,7 @@ static int numTimesVCLoaded = 0;
 - (void)backwardsButtonTappedOnce
 {
     waitingForNextOrPrevVideoToLoad = YES;
-    [[MusicPlaybackController obtainRawAVPlayer] pause];
+    [MusicPlaybackController pausePlayback];
     self.playbackSlider.enabled = NO;
     [MusicPlaybackController returnToPreviousTrack];
     [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
@@ -614,7 +686,7 @@ static int numTimesVCLoaded = 0;
 - (void)forwardsButtonTappedOnce
 {
     waitingForNextOrPrevVideoToLoad = YES;
-    [[MusicPlaybackController obtainRawAVPlayer] pause];
+    [MusicPlaybackController pausePlayback];
     self.playbackSlider.enabled = NO;
     [MusicPlaybackController skipToNextTrack];
     [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
@@ -677,10 +749,10 @@ static int numTimesVCLoaded = 0;
 
 - (void)showNextTrackButton
 {
-    if([forwardButton isDescendantOfView:self.thisVCsView])
+    if([forwardButton isDescendantOfView:self.view])
         return;
     else
-        [self.thisVCsView addSubview:forwardButton];
+        [self.view addSubview:forwardButton];
 }
 
 - (void)hidePreviousTrackButton
@@ -690,10 +762,10 @@ static int numTimesVCLoaded = 0;
 
 - (void)showPreviousTrackButton
 {
-    if([backwardButton isDescendantOfView:self.thisVCsView])
+    if([backwardButton isDescendantOfView:self.view])
         return;
     else
-        [self.thisVCsView addSubview:backwardButton];
+        [self.view addSubview:backwardButton];
 }
 
 
@@ -735,6 +807,12 @@ static int numTimesVCLoaded = 0;
         //code will be called each 1/10th second....  NSLog(@"Playback time %.5f", CMTimeGetSeconds(time));
         [self updatePlaybackTimeSlider];
     }];
+    
+    //label observers...
+    [_totalDurationLabel addObserver:self
+                          forKeyPath:@"text"
+                             options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+                             context:NULL];
 }
 
 - (void)removeObservers
@@ -749,9 +827,15 @@ static int numTimesVCLoaded = 0;
         [player removeObserver:self forKeyPath:@"currentItem.playbackBufferFull"];
         [player removeObserver:self forKeyPath:@"currentItem.playbackBufferEmpty"];
         [player removeObserver:self forKeyPath:@"currentItem.error"];
-    }@catch(id anException){
-        //do nothing, obviously it wasn't attached because an exception was thrown
     }
+    //do nothing, obviously it wasn't attached because an exception was thrown
+    @catch(id anException){}
+    
+    @try {
+        [_totalDurationLabel removeObserver:self forKeyPath:@"text"];
+    }
+    //do nothing
+    @catch (id anException) {}
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -759,6 +843,67 @@ static int numTimesVCLoaded = 0;
                         change:(NSDictionary *)change
                        context:(void *)context
 {
+    //check for duration label change
+    if ([keyPath isEqualToString:@"text"]) {
+        
+        UILabel *label = (UILabel *)object;
+        short offset = longDurationLabelOffset;
+        CGRect originalCurrTimeLabelFrame = _currentTimeLabel.frame;
+        CGRect newCurrTimeLabelFrame;
+        CGRect originalTotalTimeLabelFrame = _totalDurationLabel.frame;
+        CGRect newTotalTimeLabelFrame;
+        CGRect originalSliderFrame = _playbackSlider.frame;
+        CGRect newSliderFrame;
+        
+        if([label.text length] > 5){
+            //displaying hours
+            if(stateOfDurationLabels == DurationLabelStateHours)
+                return;
+            stateOfDurationLabels = DurationLabelStateHours;
+            
+            //shrink all items on screen, regardless of which label is showing the hours
+            newCurrTimeLabelFrame = CGRectMake(originalCurrTimeLabelFrame.origin.x,
+                                                originalCurrTimeLabelFrame.origin.y,
+                                                originalCurrTimeLabelFrame.size.width + offset,
+                                                originalCurrTimeLabelFrame.size.height);
+            newTotalTimeLabelFrame = CGRectMake(originalTotalTimeLabelFrame.origin.x - offset,
+                                                originalTotalTimeLabelFrame.origin.y,
+                                                originalTotalTimeLabelFrame.size.width + offset,
+                                                originalTotalTimeLabelFrame.size.height);
+            newSliderFrame = CGRectMake(originalSliderFrame.origin.x + offset,
+                                        originalSliderFrame.origin.y,
+                                        originalSliderFrame.size.width - offset * 2,
+                                        originalSliderFrame.size.height);
+        } else{
+            //displaying only minutes
+            if(stateOfDurationLabels == DurationLabelStateMinutes)
+                return;
+            stateOfDurationLabels = DurationLabelStateMinutes;
+            
+            newCurrTimeLabelFrame = CGRectMake(originalCurrTimeLabelFrame.origin.x,
+                                                  originalCurrTimeLabelFrame.origin.y,
+                                                  originalCurrTimeLabelFrame.size.width - offset,
+                                                  originalCurrTimeLabelFrame.size.height);
+            newTotalTimeLabelFrame = CGRectMake(originalTotalTimeLabelFrame.origin.x + offset,
+                                                originalTotalTimeLabelFrame.origin.y,
+                                                originalTotalTimeLabelFrame.size.width - offset,
+                                                originalTotalTimeLabelFrame.size.height);
+            newSliderFrame = CGRectMake(originalSliderFrame.origin.x - offset,
+                                        originalSliderFrame.origin.y,
+                                        originalSliderFrame.size.width + offset * 2,
+                                        originalSliderFrame.size.height);
+        }
+        [_playbackSlider removeConstraints:_playbackSlider.constraints];
+        [_playbackSlider setTranslatesAutoresizingMaskIntoConstraints:YES];
+        
+        [UIView animateWithDuration:1 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+            _currentTimeLabel.frame = newCurrTimeLabelFrame;
+            _totalDurationLabel.frame = newTotalTimeLabelFrame;
+            _playbackSlider.frame = newSliderFrame;
+        } completion:^(BOOL finished) {}];
+        return;
+    }
+    
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     BOOL playbackExplicitlyPaused = [MusicPlaybackController playbackExplicitlyPaused];
@@ -769,8 +914,9 @@ static int numTimesVCLoaded = 0;
                 [self showSpinnerForBasicLoadingOnView:playerView];
                 [self toggleDisplayToPausedState];
             }
-            if(!sliderIsBeingTouched)
+            if(!sliderIsBeingTouched && !waitingForNextOrPrevVideoToLoad){
                 [player play];
+            }
         } else if(player.rate == 1){
             [self dismissAllSpinnersForView:playerView];
             [self toggleDisplayToPlayingState];
@@ -835,6 +981,7 @@ static int numTimesVCLoaded = 0;
 //these methods are also in MyAVPlayer
 - (void)showSpinnerForBasicLoadingOnView:(UIView *)displaySpinnerOnMe
 {
+    /*
     if(![MusicPlaybackController isSimpleSpinnerOnScreen]){
         if([NSThread isMainThread]){
             [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
@@ -849,10 +996,12 @@ static int numTimesVCLoaded = 0;
             });
         }
     }
+     */
 }
 
 - (void)dismissAllSpinnersForView:(UIView *)dismissViewOnMe
 {
+    /*
     if([NSThread isMainThread]){
         [MRProgressOverlayView dismissAllOverlaysForView:dismissViewOnMe animated:YES];
         [MusicPlaybackController noSpinnersOnScreen];
@@ -862,6 +1011,7 @@ static int numTimesVCLoaded = 0;
             [MusicPlaybackController noSpinnersOnScreen];
         });
     }
+     */
 }
 
 #pragma mark - Share Button Tapped

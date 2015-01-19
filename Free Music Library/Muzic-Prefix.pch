@@ -5,11 +5,8 @@
 //
 
 #import <Availability.h>  //An Apple class
-//notification banners/alerts
-#import <MCNotification.h>
-#import <MCNotificationManager.h>
+#import <CSNotificationView.h>  //notification banners/alerts
 #import "MyAlerts.h"  //my custom class for displaying alerts from anywhere
-#import "AFBlurSegue.h"  //a custom modal segue with a blurred style (from external lib)
 #import "SongPlayerViewDisplayUtility.h"  //helps to segue to video player view from anywhere,
                                           //determine aspect ratio for player based on width, etc.
 #import "UIColor+SystemTintColor.h"

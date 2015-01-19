@@ -13,21 +13,24 @@
 
 @implementation PreloadedCoreDataModelUtility
 static NSString * const SONG1_NAME = @"Bleeding Love";
-static NSString * const SONG1_YTID = @"7_weSk0BonM";
+static NSString * const SONG1_YTID = @"Vzo-EL_62fQ";
 static NSString * const ARTIST1_NAME = @"Leona Lewis";
-
+static NSInteger const SONG1_DURATION = 278;
 
 static NSString * const SONG2_NAME = @"Summer of 69";
 static NSString * const SONG2_YTID = @"9f06QZCVUHg";
 static NSString * const ARTIST2_NAME = @"Bryan Adams";
 static NSString * const ALBUM2_NAME = @"Reckless";
+static NSInteger const SONG2_DURATION = 221;
 
 static NSString * const SONG3_NAME = @"Let It Be";
 static NSString * const SONG3_YTID = @"WcBnJw-H2wQ";
 static NSString * const ARTIST3_NAME = @"The Beatles";
+static NSInteger const SONG3_DURATION = 223;
 
 static NSString * const SONG4_NAME = @"Christmas Songs 2014 (1hr Mix Playlist)";
 static NSString * const SONG4_YTID = @"mVp0brA3Hpk";
+static NSInteger const SONG4_DURATION = 3757;
 
 + (void)createCoreDataSampleMusicData
 {

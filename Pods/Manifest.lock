@@ -22,6 +22,7 @@ PODS:
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - ASValueTrackingSlider (0.9.4)
+  - CSNotificationView (0.5.3)
   - DZNEmptyDataSet (1.3.3)
   - DZNPhotoPickerController (1.6.1):
     - DZNPhotoPickerController/Core (= 1.6.1)
@@ -37,8 +38,8 @@ PODS:
     - GROAuth2SessionManager (= 0.2.3)
   - GROAuth2SessionManager (0.2.3):
     - AFNetworking (~> 2.4.1)
+  - MarqueeLabel (2.2.0)
   - MBProgressHUD (0.9)
-  - MCNotificationManager (0.1.2)
   - MRProgress (0.8.1):
     - MRProgress/ActivityIndicator (= 0.8.1)
     - MRProgress/Blur (= 0.8.1)
@@ -69,7 +70,7 @@ PODS:
     - MRProgress/Helper
   - MSCellAccessory (1.1.2)
   - RBBAnimation (0.3.0)
-  - SDCAlertView (2.1):
+  - SDCAlertView (2.1.1):
     - RBBAnimation (~> 0.3)
     - SDCAutoLayout (~> 2.0)
   - SDCAutoLayout (2.0.2)
@@ -83,8 +84,9 @@ PODS:
 DEPENDENCIES:
   - AFBlurSegue (~> 1.2)
   - ASValueTrackingSlider
+  - CSNotificationView (~> 0.5)
   - DZNPhotoPickerController
-  - MCNotificationManager
+  - MarqueeLabel
   - MRProgress
   - MSCellAccessory (~> 1.1)
   - SDCAlertView
@@ -96,15 +98,16 @@ SPEC CHECKSUMS:
   AFBlurSegue: 317204561facdb45be823773c0fefe918c192243
   AFNetworking: 0aabc6fae66d6e5d039eeb21c315843c7aae51ab
   ASValueTrackingSlider: 74a4bbf70c8cf43d29b701ff4c7659fc5d0afd99
+  CSNotificationView: e4d26da44dfb569ab284949c822a8239f23cc13d
   DZNEmptyDataSet: aa20600aff620af3d78edbff4bc47282972e815f
   DZNPhotoPickerController: b160709441243eeed87cd998d2b92da1f6d91840
   GROAuth2SessionManager: d40e386b9e865806687b4b818964efb3ac6db952
+  MarqueeLabel: cd721cabcfce98591ef835e2c5bd29de92d9ebc9
   MBProgressHUD: 2038dbcf3dce73215abed6001657043d53aa79a8
-  MCNotificationManager: 0be8eb1535c914b5f5b8b8c0ffc1d1a7fb6be90b
   MRProgress: cd12726e001ea25dec133322d34cc4754cbc58f8
   MSCellAccessory: 5f5b839e14bbd5de6c3dacb4b0d3ae5a63741778
   RBBAnimation: 243d73be1a526f1b51d266b182e4aa0cfe9cbf64
-  SDCAlertView: a363910a3e851dc1863ee87e20f7762d6164a488
+  SDCAlertView: 542179519acac38917e178013e663cdbf4591475
   SDCAutoLayout: 4a963629725ed2b7d665e789ca4d6cfcd7446822
   SDWebImage: 791cb0f588046cb0bb7802ae8ae8f5462947b773
   TBXML: a279440030ba55c40e1455cafba3b0a44e1963d4

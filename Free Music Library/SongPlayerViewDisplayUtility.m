@@ -10,6 +10,7 @@
 #import "SongPlayerViewDisplayUtility.h"
 #import "SongPlayerNavController.h"
 #import "SongPlayerCoordinator.h"
+#import <AFBlurSegue.h>
 
 @implementation SongPlayerViewDisplayUtility
 
@@ -30,7 +31,9 @@ int nearestEvenInt(int to)
     BOOL expanded = [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded];
     if(! expanded){
         SongPlayerNavController *vc = [[SongPlayerNavController alloc] init];
-        AFBlurSegue *segue = [[AFBlurSegue alloc] initWithIdentifier:@"" source:sourceController destination:vc];
+        AFBlurSegue *segue = [[AFBlurSegue alloc] initWithIdentifier:@""
+                                                              source:sourceController
+                                                         destination:vc];
         [sourceController prepareForSegue:segue sender:nil];
         [segue perform];
         [[SongPlayerCoordinator sharedInstance] begingExpandingVideoPlayer];

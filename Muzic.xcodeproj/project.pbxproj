@@ -21,6 +21,7 @@
 		871BA88F1A5A2F4100FB87A7 /* Artist.m in Sources */ = {isa = PBXBuildFile; fileRef = 871BA88E1A5A2F4100FB87A7 /* Artist.m */; };
 		871BA8921A5A2F4100FB87A7 /* Song.m in Sources */ = {isa = PBXBuildFile; fileRef = 871BA8911A5A2F4100FB87A7 /* Song.m */; };
 		871BA8951A5A2F4100FB87A7 /* Album.m in Sources */ = {isa = PBXBuildFile; fileRef = 871BA8941A5A2F4100FB87A7 /* Album.m */; };
+		8725B1B81A6C938700E58C3E /* UIWindow+VisibleVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 8725B1B71A6C938700E58C3E /* UIWindow+VisibleVC.m */; };
 		87270032199E815000D71204 /* NSString+Levenshtein_Distance.m in Sources */ = {isa = PBXBuildFile; fileRef = 87270031199E815000D71204 /* NSString+Levenshtein_Distance.m */; };
 		87270035199E820700D71204 /* LevenshteinDistanceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 87270034199E820700D71204 /* LevenshteinDistanceItem.m */; };
 		87270038199EB90500D71204 /* StackController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87270037199EB90500D71204 /* StackController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -170,6 +171,8 @@
 		871BA8911A5A2F4100FB87A7 /* Song.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Song.m; sourceTree = "<group>"; };
 		871BA8931A5A2F4100FB87A7 /* Album.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Album.h; sourceTree = "<group>"; };
 		871BA8941A5A2F4100FB87A7 /* Album.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Album.m; sourceTree = "<group>"; };
+		8725B1B61A6C938700E58C3E /* UIWindow+VisibleVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWindow+VisibleVC.h"; sourceTree = "<group>"; };
+		8725B1B71A6C938700E58C3E /* UIWindow+VisibleVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWindow+VisibleVC.m"; sourceTree = "<group>"; };
 		87268E60198B580200FE51D7 /* YouTubeVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YouTubeVideo.h; sourceTree = "<group>"; };
 		87270030199E815000D71204 /* NSString+Levenshtein_Distance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Levenshtein_Distance.h"; sourceTree = "<group>"; };
 		87270031199E815000D71204 /* NSString+Levenshtein_Distance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Levenshtein_Distance.m"; sourceTree = "<group>"; };
@@ -529,6 +532,8 @@
 				87ECF5181A57B50800D58EDF /* UINavigationBar+DarkTint.m */,
 				872EA4DA1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.h */,
 				872EA4DB1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.m */,
+				8725B1B61A6C938700E58C3E /* UIWindow+VisibleVC.h */,
+				8725B1B71A6C938700E58C3E /* UIWindow+VisibleVC.m */,
 			);
 			name = Categories;
 			path = "Free Music Library";
@@ -1307,6 +1312,7 @@
 				87CEDC6519731EF000780D57 /* PlaylistSongAdderTableViewController.m in Sources */,
 				876EC5F01965C9F6006B3C29 /* AppEnvironmentConstants.m in Sources */,
 				875B3826197AFF29008B4409 /* NSString+smartSort.m in Sources */,
+				8725B1B81A6C938700E58C3E /* UIWindow+VisibleVC.m in Sources */,
 				876EDE6019648AA300795767 /* AlbumArtUtilities.m in Sources */,
 				87334407198D8321002B9E18 /* NSString+HTTP_Char_Escape.m in Sources */,
 				87124B9E19A3C392003D29CD /* SongModelHandler.m in Sources */,

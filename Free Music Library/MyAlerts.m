@@ -12,6 +12,7 @@
 #import "SongPlayerCoordinator.h"
 #import "UIColor+LighterAndDarker.h"
 #import "UIImage+colorImages.h"
+#import "UIWindow+VisibleVC.h"
 
 @implementation MyAlerts
 
@@ -21,12 +22,14 @@
         case ALERT_TYPE_CannotConnectToYouTube:
         {
             //alert user to internet problem
-            NSString *title = @"Internet";
             NSString *msg = @"Cannot connect to YouTube.";
-            UIViewController *vc = [MyAlerts topViewController];
-            [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
-            [vc dismissViewControllerAnimated:YES completion:nil];
-            [[SongPlayerCoordinator sharedInstance] beginShrinkingVideoPlayer];
+            
+            UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];
+            [[keyWindow visibleViewController] dismissViewControllerAnimated:YES completion:nil];
+            [[SongPlayerCoordinator sharedInstance] performSelector:@selector(beginShrinkingVideoPlayer)
+                                                         withObject:nil
+                                                         afterDelay:0.3];
+            [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:1];
             break;
         }
         case ALERT_TYPE_LongVideoSkippedOnCellular:
@@ -34,21 +37,18 @@
             [MusicPlaybackController longVideoSkippedOnCellularConnection];
             
             if([[UIApplication sharedApplication] applicationState] == UIApplicationStateActive){
-                MCNotification *notification = [MCNotification notification];
-                UIImage *infoIcon = [UIImage colorOpaquePartOfImage:[UIColor blackColor]
-                                                                   :[UIImage imageNamed:@"Information"]];
-                notification.image = infoIcon;
+                NSString *msg;
+                
                 int numSkipped = [MusicPlaybackController numLongVideosSkippedOnCellularConnection];
                 if(numSkipped == 0)
                     return;
                 else if (numSkipped == 1)
-                    notification.text = @"1 Song Skipped";
+                    msg = @"1 Song was skipped.";
                 else
-                    notification.text = [NSString stringWithFormat:@"%i Songs Skipped", numSkipped];
-                notification.detailText = @"Wi-Fi required for longer videos.";
-                notification.backgroundColor = [[UIColor whiteColor] darkerColor];
-                notification.tintColor = [UIColor blackColor];
-                [[MCNotificationManager sharedInstance] showNotification:notification];
+                    msg = [NSString stringWithFormat:@"%i Songs skipped.", numSkipped];
+                
+                [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleInfo delay:0];
+
                 [MusicPlaybackController resetNumberOfLongVideosSkippedOnCellularConnection];
             }
                 
@@ -57,22 +57,33 @@
             
         case ALERT_TYPE_TroubleSharingVideo:
         {
-            //alert user to internet problem
-            NSString *title = @"Trouble Sharing";
-            NSString *msg = @"Sorry, a problem occured while gathering information to share this video.";
-            [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
+            NSString *msg = @"There was a problem sharing this video.";
+            [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
             break;
         }
         case ALERT_TYPE_TroubleSharingLibrarySong:
         {
-            //alert user to internet problem
-            NSString *title = @"Trouble Sharing";
-            NSString *msg = @"Sorry, a problem occured while gathering information to share this song.";
-            [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
+            NSString *msg = @"There was a problem sharing this song.";
+            [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
             break;
         }
         default:
             break;
+    }
+}
+
++ (void)displayBannerWithMsg:(NSString *)msg style:(CSNotificationViewStyle)style delay:(float)seconds
+{
+    if(seconds == 0){
+        UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];
+        [CSNotificationView showInViewController:[keyWindow visibleViewController]
+                                           style:style
+                                         message:msg];
+    } else{
+        __weak NSString *weakMsg = msg;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (seconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [MyAlerts displayBannerWithMsg:weakMsg style:style delay:0];
+        });
     }
 }
 
@@ -90,6 +101,11 @@
     [alert show];
 }
 
+
+
+//---------------------------------------------------------
+//code below probably not needed because I have a better category for this...
+/*
 + (UIViewController *)topViewController{
     return [MyAlerts topViewController:[UIApplication sharedApplication].keyWindow.rootViewController];
 }
@@ -109,5 +125,6 @@
     UIViewController *presentedViewController = (UIViewController *)rootViewController.presentedViewController;
     return [self topViewController:presentedViewController];
 }
+ */
 
 @end
