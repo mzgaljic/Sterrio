@@ -94,7 +94,9 @@
             [destinationController.view sendSubviewToBack:blurredBackground];
         }
         
-        [sourceController presentViewController:destinationController animated:YES completion:nil];
+        [sourceController presentViewController:destinationController
+                                       animated:self.animate
+                                     completion:nil];
         
         [destinationController.transitionCoordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
             
@@ -119,7 +121,9 @@
         destinationController.view.backgroundColor = [UIColor clearColor];
         destinationController.modalPresentationStyle = UIModalPresentationOverFullScreen;
 
-        [sourceController presentViewController:destinationController animated:YES completion:^{
+        [sourceController presentViewController:destinationController
+                                       animated:self.animate
+                                     completion:^{
             
         }];
 

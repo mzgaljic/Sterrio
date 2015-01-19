@@ -30,14 +30,35 @@ int nearestEvenInt(int to)
 {
     BOOL expanded = [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded];
     if(! expanded){
+        //check orientation. Don't want to animate in landscape
+        BOOL animate = NO;
+        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        if(orientation == UIInterfaceOrientationPortrait)
+            animate = YES;
         SongPlayerNavController *vc = [[SongPlayerNavController alloc] init];
         AFBlurSegue *segue = [[AFBlurSegue alloc] initWithIdentifier:@""
                                                               source:sourceController
                                                          destination:vc];
+        segue.animate = animate;
+        if(! animate)
+            vc.view.hidden = YES;
         [sourceController prepareForSegue:segue sender:nil];
         [segue perform];
+
+        if(!animate){
+            __weak UIViewController *weakVC = vc;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
+                [SongPlayerViewDisplayUtility makeAlphaOne:weakVC];
+            });
+        }
+
         [[SongPlayerCoordinator sharedInstance] begingExpandingVideoPlayer];
     }
+}
+
++ (void)makeAlphaOne:(UIViewController *)vc
+{
+    vc.view.hidden = NO;
 }
 
 @end

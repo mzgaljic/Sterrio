@@ -621,8 +621,8 @@ static int numTimesVCLoaded = 0;
     int sliderWidth = screenWidth - ((labelXValue + labelWidth + padding) * 2);
     int sliderHeight = labelHeight;
     [_playbackSlider removeFromSuperview];
-    [_playbackSlider setFrame:CGRectMake(xValue, yValue +1 , sliderWidth, sliderHeight)];
-    _playbackSlider.transform = CGAffineTransformMakeScale(0.5, 0.5);
+    [_playbackSlider setFrame:CGRectMake(xValue, yValue +2, sliderWidth, sliderHeight)];
+    _playbackSlider.transform = CGAffineTransformMakeScale(0.85, 0.85);  //make knob smaller
     [self.view addSubview:_playbackSlider];
     
     //slider settings
