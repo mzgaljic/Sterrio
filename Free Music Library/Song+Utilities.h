@@ -30,12 +30,15 @@
 @param  genreCode           The genre code to be given to this song after it is created. If genreCode is an invalid genre
                             code, the 'no genre code selected' code will be applied by default; required field.
 @param  context             An NSManagedObjectContext object, which is requied for the backing core data store. If this
-                            parameter is nil, nil shall be returned. Optional (but crucial) argument.*/
+                            parameter is nil, nil shall be returned. Optional (but crucial) argument.
+ @param durationInSeconds   An NSUInteger specifying the duration in seconds of the song to be created.
+ */
 + (Song *)createNewSongWithName:(NSString *)songName
            inNewOrExistingAlbum:(id)albumOrAlbumName
           byNewOrExistingArtist:(id)artistOrArtistName
                         inGenre:(int)genreCode
-               inManagedContext:(NSManagedObjectContext *)context;
+               inManagedContext:(NSManagedObjectContext *)context
+                   withDuration:(NSInteger)durationInSeconds;
 
 /**
  @Description Returns YES if (and only if) both songs in the array are considered to be 'equal', or the 'same'. All

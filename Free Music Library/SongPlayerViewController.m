@@ -620,19 +620,19 @@ static int numTimesVCLoaded = 0;
     //widthValue = self.playbackSlider.frame.size.width; //taken from autolayout
     int sliderWidth = screenWidth - ((labelXValue + labelWidth + padding) * 2);
     int sliderHeight = labelHeight;
-    [self.playbackSlider removeFromSuperview];
-    [self.playbackSlider setFrame:CGRectMake(xValue, yValue +1 , sliderWidth, sliderHeight)];
-    [self.view addSubview:self.playbackSlider];
+    [_playbackSlider removeFromSuperview];
+    [_playbackSlider setFrame:CGRectMake(xValue, yValue +1 , sliderWidth, sliderHeight)];
+    _playbackSlider.transform = CGAffineTransformMakeScale(0.5, 0.5);
+    [self.view addSubview:_playbackSlider];
     
     //slider settings
-    self.playbackSlider.minimumValue = 0.0f;
-    self.playbackSlider.popUpViewCornerRadius = 5.0;
-    [self.playbackSlider setMaxFractionDigitsDisplayed:0];
-    self.playbackSlider.popUpViewColor = [[UIColor defaultAppColorScheme] lighterColor];
-    self.playbackSlider.font = [UIFont fontWithName:nameOfFontForTimeLabels size:timeLabelFontSize+4];
-    self.playbackSlider.textColor = [UIColor whiteColor];
-    self.playbackSlider.minimumTrackTintColor =
-                                [[[UIColor defaultAppColorScheme] lighterColor] lighterColor];
+    _playbackSlider.minimumValue = 0.0f;
+    _playbackSlider.popUpViewCornerRadius = 5.0;
+    [_playbackSlider setMaxFractionDigitsDisplayed:0];
+    _playbackSlider.popUpViewColor = [[UIColor defaultAppColorScheme] lighterColor];
+    _playbackSlider.font = [UIFont fontWithName:nameOfFontForTimeLabels size:timeLabelFontSize+4];
+    _playbackSlider.textColor = [UIColor whiteColor];
+    _playbackSlider.minimumTrackTintColor = [[UIColor defaultAppColorScheme] lighterColor];
     
     //setup total duration label
     labelXValue = xValue + sliderWidth + padding;
@@ -649,9 +649,7 @@ static int numTimesVCLoaded = 0;
 
 - (void)displayTotalSliderAndLabelDuration
 {
-    NSUInteger durationInSeconds = [[MusicPlaybackController nowPlayingSong].duration
-                                                                            unsignedIntegerValue];
-    
+    NSInteger durationInSeconds = [[MusicPlaybackController nowPlayingSong].duration integerValue];
     if(durationInSeconds <= 0.0f || isnan(durationInSeconds)){
         // Handle error
         if(![self isInternetReachable])

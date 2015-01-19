@@ -34,20 +34,43 @@ static NSInteger const SONG4_DURATION = 3757;
 
 + (void)createCoreDataSampleMusicData
 {
-    [PreloadedCoreDataModelUtility createSongWithName:SONG1_NAME byArtistName:ARTIST1_NAME partOfAlbumNamed:nil youtubeID:SONG1_YTID];
-    [PreloadedCoreDataModelUtility createSongWithName:SONG2_NAME byArtistName:ARTIST2_NAME partOfAlbumNamed:ALBUM2_NAME youtubeID:SONG2_YTID];
-    [PreloadedCoreDataModelUtility createSongWithName:SONG3_NAME byArtistName:ARTIST3_NAME partOfAlbumNamed:nil youtubeID:SONG3_YTID];
-    [PreloadedCoreDataModelUtility createSongWithName:SONG4_NAME byArtistName:nil partOfAlbumNamed:nil youtubeID:SONG4_YTID];
+    [PreloadedCoreDataModelUtility createSongWithName:SONG1_NAME
+                                         byArtistName:ARTIST1_NAME
+                                     partOfAlbumNamed:nil
+                                            youtubeID:SONG1_YTID
+                                        videoDuration:SONG1_DURATION];
+    
+    [PreloadedCoreDataModelUtility createSongWithName:SONG2_NAME
+                                         byArtistName:ARTIST2_NAME
+                                     partOfAlbumNamed:ALBUM2_NAME
+                                            youtubeID:SONG2_YTID
+                                        videoDuration:SONG2_DURATION];
+    
+    [PreloadedCoreDataModelUtility createSongWithName:SONG3_NAME
+                                         byArtistName:ARTIST3_NAME
+                                     partOfAlbumNamed:nil
+                                            youtubeID:SONG3_YTID
+                                        videoDuration:SONG3_DURATION];
+    
+    [PreloadedCoreDataModelUtility createSongWithName:SONG4_NAME
+                                         byArtistName:nil
+                                     partOfAlbumNamed:nil
+                                            youtubeID:SONG4_YTID
+                                        videoDuration:SONG4_DURATION];
 }
 
-+ (void)createSongWithName:(NSString *)songName byArtistName:(NSString *)artistName partOfAlbumNamed:(NSString *)albumName youtubeID:(NSString *)ytID
++ (void)createSongWithName:(NSString *)songName
+              byArtistName:(NSString *)artistName
+          partOfAlbumNamed:(NSString *)albumName
+                 youtubeID:(NSString *)ytID videoDuration:(NSUInteger)durationInSecs
 {
     Song *myNewSong;
     myNewSong = [Song createNewSongWithName:songName
                        inNewOrExistingAlbum:albumName
                       byNewOrExistingArtist:artistName
                                     inGenre:[GenreConstants noGenreSelectedGenreCode]
-                           inManagedContext:[CoreDataManager context]];
+                           inManagedContext:[CoreDataManager context]
+                               withDuration:durationInSecs];
     myNewSong.youtube_id = ytID;
     [[CoreDataManager sharedInstance] saveContext];
 }

@@ -14,10 +14,12 @@
           byNewOrExistingArtist:(id)artistOrArtistName
                         inGenre:(int)genreCode
                inManagedContext:(NSManagedObjectContext *)context
+                   withDuration:(NSInteger)durationInSeconds
 {
     if(context == nil)
         return nil;
     Song *newSong = [Song createNewSongWithName:songName inManagedContext:context];
+    newSong.duration = [NSNumber numberWithInteger:durationInSeconds];
     Album *newOrExistingAlbum;
     Artist *newOrExistingArtist;
     

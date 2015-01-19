@@ -35,13 +35,7 @@
         case ALERT_TYPE_FATAL_SONG_DURATION_ERROR:
         {
             //alert user to internet problem
-            NSString *msg = @"Cannot determine song duration, skipping...";
-            
-            UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];
-            [[keyWindow visibleViewController] dismissViewControllerAnimated:YES completion:nil];
-            [[SongPlayerCoordinator sharedInstance] performSelector:@selector(beginShrinkingVideoPlayer)
-                                                         withObject:nil
-                                                         afterDelay:0.3];
+            NSString *msg = @"Error: Cannot determine song duration.";
             [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:1];
             break;
         }
