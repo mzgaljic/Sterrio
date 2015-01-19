@@ -347,9 +347,63 @@ static int numTimesVCLoaded = 0;
     return returnString;
 }
 
-- (void)accomodateInterfaceBasedOnDurationLabels
+- (void)accomodateInterfaceBasedOnDurationLabelSize:(UILabel *)changedLabel
 {
-#warning no implementation yet
+    UILabel *label = changedLabel;
+    short offset = longDurationLabelOffset;
+    CGRect originalCurrTimeLabelFrame = _currentTimeLabel.frame;
+    CGRect newCurrTimeLabelFrame;
+    CGRect originalTotalTimeLabelFrame = _totalDurationLabel.frame;
+    CGRect newTotalTimeLabelFrame;
+    CGRect originalSliderFrame = _playbackSlider.frame;
+    CGRect newSliderFrame;
+    
+    if([label.text length] > 5){
+        //displaying hours
+        if(stateOfDurationLabels == DurationLabelStateHours)
+            return;
+        stateOfDurationLabels = DurationLabelStateHours;
+        
+        //shrink all items on screen, regardless of which label is showing the hours
+        newCurrTimeLabelFrame = CGRectMake(originalCurrTimeLabelFrame.origin.x,
+                                           originalCurrTimeLabelFrame.origin.y,
+                                           originalCurrTimeLabelFrame.size.width + offset,
+                                           originalCurrTimeLabelFrame.size.height);
+        newTotalTimeLabelFrame = CGRectMake(originalTotalTimeLabelFrame.origin.x - offset,
+                                            originalTotalTimeLabelFrame.origin.y,
+                                            originalTotalTimeLabelFrame.size.width + offset,
+                                            originalTotalTimeLabelFrame.size.height);
+        newSliderFrame = CGRectMake(originalSliderFrame.origin.x + offset,
+                                    originalSliderFrame.origin.y,
+                                    originalSliderFrame.size.width - offset * 2,
+                                    originalSliderFrame.size.height);
+    } else{
+        //displaying only minutes
+        if(stateOfDurationLabels == DurationLabelStateMinutes)
+            return;
+        stateOfDurationLabels = DurationLabelStateMinutes;
+        
+        newCurrTimeLabelFrame = CGRectMake(originalCurrTimeLabelFrame.origin.x,
+                                           originalCurrTimeLabelFrame.origin.y,
+                                           originalCurrTimeLabelFrame.size.width - offset,
+                                           originalCurrTimeLabelFrame.size.height);
+        newTotalTimeLabelFrame = CGRectMake(originalTotalTimeLabelFrame.origin.x + offset,
+                                            originalTotalTimeLabelFrame.origin.y,
+                                            originalTotalTimeLabelFrame.size.width - offset,
+                                            originalTotalTimeLabelFrame.size.height);
+        newSliderFrame = CGRectMake(originalSliderFrame.origin.x - offset,
+                                    originalSliderFrame.origin.y,
+                                    originalSliderFrame.size.width + offset * 2,
+                                    originalSliderFrame.size.height);
+    }
+    [_playbackSlider removeConstraints:_playbackSlider.constraints];
+    [_playbackSlider setTranslatesAutoresizingMaskIntoConstraints:YES];
+    
+    [UIView animateWithDuration:1 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        _currentTimeLabel.frame = newCurrTimeLabelFrame;
+        _totalDurationLabel.frame = newTotalTimeLabelFrame;
+        _playbackSlider.frame = newSliderFrame;
+    } completion:^(BOOL finished) {}];
 }
 
 - (void)playbackHasStopped
@@ -595,20 +649,15 @@ static int numTimesVCLoaded = 0;
 
 - (void)displayTotalSliderAndLabelDuration
 {
-    CMTime cmTime = [MusicPlaybackController obtainRawAVPlayer].currentItem.asset.duration;
-    Float64 durationInSeconds = CMTimeGetSeconds(cmTime);
+    NSUInteger durationInSeconds = [[MusicPlaybackController nowPlayingSong].duration
+                                                                            unsignedIntegerValue];
     
     if(durationInSeconds <= 0.0f || isnan(durationInSeconds)){
         // Handle error
-        if(![self isInternetReachable]){
+        if(![self isInternetReachable])
             [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
-
-        } else{
-            NSString *title = @"Trouble Loading Video";
-            NSString *msg = @"A fatal error has occured, please try again.";
-            [self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
-            [self dismissVideoPlayerControllerButtonTapped];
-        }
+        else
+            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_FATAL_SONG_DURATION_ERROR];
     } else{
         //setup total song duration label animations
         CATransition *animation = [CATransition animation];
@@ -845,63 +894,7 @@ static int numTimesVCLoaded = 0;
 {
     //check for duration label change
     if ([keyPath isEqualToString:@"text"]) {
-        
-        UILabel *label = (UILabel *)object;
-        short offset = longDurationLabelOffset;
-        CGRect originalCurrTimeLabelFrame = _currentTimeLabel.frame;
-        CGRect newCurrTimeLabelFrame;
-        CGRect originalTotalTimeLabelFrame = _totalDurationLabel.frame;
-        CGRect newTotalTimeLabelFrame;
-        CGRect originalSliderFrame = _playbackSlider.frame;
-        CGRect newSliderFrame;
-        
-        if([label.text length] > 5){
-            //displaying hours
-            if(stateOfDurationLabels == DurationLabelStateHours)
-                return;
-            stateOfDurationLabels = DurationLabelStateHours;
-            
-            //shrink all items on screen, regardless of which label is showing the hours
-            newCurrTimeLabelFrame = CGRectMake(originalCurrTimeLabelFrame.origin.x,
-                                                originalCurrTimeLabelFrame.origin.y,
-                                                originalCurrTimeLabelFrame.size.width + offset,
-                                                originalCurrTimeLabelFrame.size.height);
-            newTotalTimeLabelFrame = CGRectMake(originalTotalTimeLabelFrame.origin.x - offset,
-                                                originalTotalTimeLabelFrame.origin.y,
-                                                originalTotalTimeLabelFrame.size.width + offset,
-                                                originalTotalTimeLabelFrame.size.height);
-            newSliderFrame = CGRectMake(originalSliderFrame.origin.x + offset,
-                                        originalSliderFrame.origin.y,
-                                        originalSliderFrame.size.width - offset * 2,
-                                        originalSliderFrame.size.height);
-        } else{
-            //displaying only minutes
-            if(stateOfDurationLabels == DurationLabelStateMinutes)
-                return;
-            stateOfDurationLabels = DurationLabelStateMinutes;
-            
-            newCurrTimeLabelFrame = CGRectMake(originalCurrTimeLabelFrame.origin.x,
-                                                  originalCurrTimeLabelFrame.origin.y,
-                                                  originalCurrTimeLabelFrame.size.width - offset,
-                                                  originalCurrTimeLabelFrame.size.height);
-            newTotalTimeLabelFrame = CGRectMake(originalTotalTimeLabelFrame.origin.x + offset,
-                                                originalTotalTimeLabelFrame.origin.y,
-                                                originalTotalTimeLabelFrame.size.width - offset,
-                                                originalTotalTimeLabelFrame.size.height);
-            newSliderFrame = CGRectMake(originalSliderFrame.origin.x - offset,
-                                        originalSliderFrame.origin.y,
-                                        originalSliderFrame.size.width + offset * 2,
-                                        originalSliderFrame.size.height);
-        }
-        [_playbackSlider removeConstraints:_playbackSlider.constraints];
-        [_playbackSlider setTranslatesAutoresizingMaskIntoConstraints:YES];
-        
-        [UIView animateWithDuration:1 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-            _currentTimeLabel.frame = newCurrTimeLabelFrame;
-            _totalDurationLabel.frame = newTotalTimeLabelFrame;
-            _playbackSlider.frame = newSliderFrame;
-        } completion:^(BOOL finished) {}];
-        return;
+        [self accomodateInterfaceBasedOnDurationLabelSize:(UILabel *)object];
     }
     
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];

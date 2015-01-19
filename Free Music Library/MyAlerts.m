@@ -32,6 +32,19 @@
             [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:1];
             break;
         }
+        case ALERT_TYPE_FATAL_SONG_DURATION_ERROR:
+        {
+            //alert user to internet problem
+            NSString *msg = @"Cannot determine song duration, skipping...";
+            
+            UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];
+            [[keyWindow visibleViewController] dismissViewControllerAnimated:YES completion:nil];
+            [[SongPlayerCoordinator sharedInstance] performSelector:@selector(beginShrinkingVideoPlayer)
+                                                         withObject:nil
+                                                         afterDelay:0.3];
+            [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:1];
+            break;
+        }
         case ALERT_TYPE_LongVideoSkippedOnCellular:
         {
             [MusicPlaybackController longVideoSkippedOnCellularConnection];
@@ -54,7 +67,6 @@
                 
             break;
         }
-            
         case ALERT_TYPE_TroubleSharingVideo:
         {
             NSString *msg = @"There was a problem sharing this video.";
