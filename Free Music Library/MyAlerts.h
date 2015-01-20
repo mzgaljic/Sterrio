@@ -13,11 +13,13 @@
 typedef enum {
     ALERT_TYPE_CannotConnectToYouTube,
     ALERT_TYPE_CannotLoadVideo,
-    ALERT_TYPE_FATAL_SONG_DURATION_ERROR,
+    ALERT_TYPE_FatalSongDurationError,
     ALERT_TYPE_LongVideoSkippedOnCellular,
     
     ALERT_TYPE_TroubleSharingVideo,
-    ALERT_TYPE_TroubleSharingLibrarySong
+    ALERT_TYPE_TroubleSharingLibrarySong,
+    
+    ALERT_TYPE_CannotOpenSafariError
 } ALERT_TYPE;
 
 + (void)displayAlertWithAlertType:(ALERT_TYPE)type;

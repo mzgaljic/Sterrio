@@ -39,7 +39,7 @@
             [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
             break;
         }
-        case ALERT_TYPE_FATAL_SONG_DURATION_ERROR:
+        case ALERT_TYPE_FatalSongDurationError:
         {
             //alert user to internet problem
             NSString *msg = @"Error: Cannot determine song duration.";
@@ -76,6 +76,12 @@
         case ALERT_TYPE_TroubleSharingLibrarySong:
         {
             NSString *msg = @"There was a problem sharing this song.";
+            [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
+            break;
+        }
+        case ALERT_TYPE_CannotOpenSafariError:
+        {
+            NSString *msg = @"A problem occured launching Safari.";
             [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
             break;
         }

@@ -608,7 +608,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     UIImagePickerController *photoPickerController = [[UIImagePickerController alloc] init];
     photoPickerController.delegate = self;
     //set tint color specifically for this VC so that the cancel buttons arent invisible
-    [photoPickerController.view setTintColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0]];
+    [photoPickerController.view setTintColor:[UIColor defaultWindowTintColor]];
     [self presentViewController:photoPickerController animated:YES completion:nil];
 }
 
@@ -617,8 +617,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"x-web-search://?%@", [[self buildAlbumArtSearchString] stringForHTTPRequest]]];
     
     if (![[UIApplication sharedApplication] openURL:url])
-        NSLog(@"%@%@",@"Failed to open url:",[url description]);
-#warning display 'failed to open safari' warning to user
+        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotOpenSafariError];
 }
 
 - (NSString *)buildAlbumArtSearchString

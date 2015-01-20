@@ -90,7 +90,7 @@
     
     Reachability *reachability = [Reachability reachabilityForInternetConnection];
     BOOL usingWifi = NO;
-    BOOL allowedToPlayVideo = NO;  //not checking if we can physically play, but legally (Apple's 10 minute streaming rule)
+    BOOL allowedToPlayVideo = YES;  //not checking if we can physically play, but legally (Apple's 10 minute streaming rule)
     
     [MusicPlaybackController declareInternetProblemWhenLoadingSong:NO];
     NetworkStatus status = [reachability currentReachabilityStatus];
@@ -100,8 +100,6 @@
     if(! usingWifi){
         if([weakDuration integerValue] >= 600)  //user cant watch video longer than 10 minutes without wifi
             allowedToPlayVideo = NO;
-        else
-            allowedToPlayVideo = YES;
     }
     
     if(! allowedToPlayVideo){

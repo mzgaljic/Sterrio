@@ -661,7 +661,7 @@ static int numTimesVCLoaded = 0;
         if(![self isInternetReachable])
             [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
         else
-            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_FATAL_SONG_DURATION_ERROR];
+            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_FatalSongDurationError];
     } else{
         //setup total song duration label animations
         CATransition *animation = [CATransition animation];
