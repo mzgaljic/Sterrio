@@ -10,8 +10,8 @@
 
 @implementation MZConstants
 
-
 NSString * const MZKeyNumLikes = @"numLikes";
 NSString * const MZKeyNumDislikes = @"numDislikes";
 NSString * const MZKeyVideoDuration = @"videoDuration";
+
 @end

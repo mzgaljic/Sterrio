@@ -13,6 +13,11 @@ typedef enum{
     DurationLabelStateHours
 } DurationLabelStates;
 
+typedef enum{
+    GUIPlaybackStatePlaying,
+    GUIPlaybackStatePaused
+} GUIPlaybackState;
+
 @interface SongPlayerViewController ()
 {
     NSArray *musicButtons;
@@ -24,6 +29,7 @@ typedef enum{
     
     BOOL playerButtonsSetUp;
     DurationLabelStates stateOfDurationLabels;
+    GUIPlaybackState stateOfGUIPlayback;
     UIColor *colorOfPlaybackButtons;
     
     //for key value observing
@@ -751,18 +757,24 @@ static int numTimesVCLoaded = 0;
 //only toggles the gui! does not mean user hit pause! Used for responding to rate changes during buffering.
 - (void)toggleDisplayToPausedState
 {
-    UIColor *color = [UIColor blackColor];
-    UIImage *tempImage = [UIImage imageNamed:PLAY_IMAGE_FILLED];
-    UIImage *playFilled = [UIImage colorOpaquePartOfImage:color :tempImage];
-    [playButton setImage:playFilled forState:UIControlStateNormal];
+    if(stateOfGUIPlayback == GUIPlaybackStatePlaying){
+        UIColor *color = [UIColor blackColor];
+        UIImage *tempImage = [UIImage imageNamed:PLAY_IMAGE_FILLED];
+        UIImage *playFilled = [UIImage colorOpaquePartOfImage:color :tempImage];
+        [playButton setImage:playFilled forState:UIControlStateNormal];
+    }
+    stateOfGUIPlayback = GUIPlaybackStatePaused;
 }
 //read comment in method above
 - (void)toggleDisplayToPlayingState
 {
-    UIColor *color = [UIColor blackColor];
-    UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
-    UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:color :tempImage];
-    [playButton setImage:pauseFilled forState:UIControlStateNormal];
+    if(stateOfGUIPlayback == GUIPlaybackStatePaused){
+        UIColor *color = [UIColor blackColor];
+        UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
+        UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:color :tempImage];
+        [playButton setImage:pauseFilled forState:UIControlStateNormal];
+    }
+    stateOfGUIPlayback = GUIPlaybackStatePlaying;
 }
 
 //BUTTON SHADOWS
@@ -908,7 +920,10 @@ static int numTimesVCLoaded = 0;
             if(!sliderIsBeingTouched && !waitingForNextOrPrevVideoToLoad){
                 [player play];
             }
-        } else if(player.rate == 1){
+        }
+        if(player.rate == 0)
+            [self toggleDisplayToPausedState];
+        if(player.rate == 1){
             [self dismissAllSpinnersForView:playerView];
             [self toggleDisplayToPlayingState];
         }

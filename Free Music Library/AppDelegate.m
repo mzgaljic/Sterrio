@@ -13,8 +13,8 @@
 @implementation AppDelegate
 
 static BOOL PRODUCTION_MODE;
-static const int APP_LAUNCHED_FIRST_TIME = 0;
-static const int APP_LAUNCHED_ALREADY = 1;
+static const short APP_LAUNCHED_FIRST_TIME = 0;
+static const short APP_LAUNCHED_ALREADY = 1;
 
 - (void)setProductionModeValue
 {
