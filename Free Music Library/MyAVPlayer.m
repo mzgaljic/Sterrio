@@ -71,8 +71,12 @@
     if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more songs in queue
         if(movingForward)
             [MusicPlaybackController skipToNextTrack];
-        else
-            [MusicPlaybackController returnToPreviousTrack];
+        else{
+            if([MusicPlaybackController isSongFirstInQueue:[MusicPlaybackController nowPlayingSong]])
+                [MusicPlaybackController skipToNextTrack];
+            else
+                [MusicPlaybackController returnToPreviousTrack];
+        }
     }
     else{  //last song just ended
         [MusicPlaybackController explicitlyPausePlayback:YES];
@@ -97,15 +101,22 @@
     if (status == ReachableViaWiFi)
         usingWifi = YES;
     
-    if(! usingWifi){
+    if(! usingWifi && status != NotReachable){
         if([weakDuration integerValue] >= 600)  //user cant watch video longer than 10 minutes without wifi
             allowedToPlayVideo = NO;
+    } else if(! usingWifi && status == NotReachable){
+        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
+        [MusicPlaybackController declareInternetProblemWhenLoadingSong:YES];
+        [MusicPlaybackController playbackExplicitlyPaused];
+        [MusicPlaybackController pausePlayback];
     }
     
     if(! allowedToPlayVideo){
-        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
-        //triggers the next song to play (for whatever reason/error)
-        [self performSelector:@selector(songDidFinishPlaying:) withObject:nil afterDelay:0.01];
+        if(status != NotReachable){
+            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
+            //triggers the next song to play (for whatever reason/error)
+            [self performSelector:@selector(songDidFinishPlaying:) withObject:nil afterDelay:0.01];
+        }
         return;
     }
     

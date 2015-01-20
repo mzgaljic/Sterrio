@@ -976,6 +976,8 @@ static int numTimesVCLoaded = 0;
     
     [self displayTotalSliderAndLabelDuration];
     [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
+    if(! [MusicPlaybackController isSongFirstInQueue:[MusicPlaybackController nowPlayingSong]])
+        [self showPreviousTrackButton];
 }
 
 #pragma mark - Loading Spinner & Internet convenience methods
