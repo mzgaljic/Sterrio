@@ -544,7 +544,7 @@
             matchedImage = [UIImage imageWithContentsOfFile:[assetsBundle pathForResource:@"exclamationMark" ofType:@"png"]];
             break;
         case CSNotificationViewStyleInfo:
-            matchedImage = [UIImage imageWithContentsOfFile:[assetsBundle pathForResource:@"checkmark" ofType:@"png"]];
+            matchedImage = [UIImage imageWithContentsOfFile:[assetsBundle pathForResource:@"exclamationMark" ofType:@"png"]];
         default:
             break;
     }

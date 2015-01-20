@@ -43,11 +43,6 @@ static BOOL PRODUCTION_MODE;
     self.navigationItem.leftBarButtonItems = @[settings, posSpaceAdjust, editButton];
 }
 
-- (void)nowPlayingTapped
-{
-    
-}
-
 - (void)editTapped:(id)sender
 {
     if(self.editing)

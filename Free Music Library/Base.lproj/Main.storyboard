@@ -567,7 +567,7 @@
             </objects>
             <point key="canvasLocation" x="2015" y="1289"/>
         </scene>
-        <!--Pick Songs-->
+        <!--Choose Songs-->
         <scene sceneID="GG1-dK-p7c">
             <objects>
                 <tableViewController storyboardIdentifier="playlistSongAdderView" extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Nk6-be-5wM" customClass="PlaylistSongAdderTableViewController" sceneMemberID="viewController">
@@ -607,7 +607,7 @@
                             <outlet property="delegate" destination="Nk6-be-5wM" id="Plm-5Q-95Z"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Pick Songs" id="DkA-qI-3FN">
+                    <navigationItem key="navigationItem" title="Choose Songs" id="DkA-qI-3FN">
                         <barButtonItem key="leftBarButtonItem" title="Cancel" id="A2F-10-9y6">
                             <connections>
                                 <action selector="leftBarButtonTapped:" destination="Nk6-be-5wM" id="E0D-dv-yV7"/>

@@ -84,21 +84,37 @@
 
 - (void)playSong:(Song *)aSong
 {
+    __weak MyAVPlayer *weakSelf = self;
     __weak NSString *weakId = aSong.youtube_id;
+    __weak NSNumber *weakDuration = aSong.duration;
+    
+    Reachability *reachability = [Reachability reachabilityForInternetConnection];
+    BOOL usingWifi = NO;
+    BOOL allowedToPlayVideo = NO;  //not checking if we can physically play, but legally (Apple's 10 minute streaming rule)
+    
+    [MusicPlaybackController declareInternetProblemWhenLoadingSong:NO];
+    NetworkStatus status = [reachability currentReachabilityStatus];
+    if (status == ReachableViaWiFi)
+        usingWifi = YES;
+    
+    if(! usingWifi){
+        if([weakDuration integerValue] >= 600)  //user cant watch video longer than 10 minutes without wifi
+            allowedToPlayVideo = NO;
+        else
+            allowedToPlayVideo = YES;
+    }
+    
+    if(! allowedToPlayVideo){
+        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
+        //triggers the next song to play (for whatever reason/error)
+        [self performSelector:@selector(songDidFinishPlaying:) withObject:nil afterDelay:0.01];
+        return;
+    }
+    
+    
     [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
-        BOOL allowedToPlayVideo = NO;  //not checking if we can physically play, but legally (Apple's 10 minute streaming rule)
-        BOOL usingWifi = NO;
-        Reachability *reachability = [Reachability reachabilityForInternetConnection];
-        //[reachability startNotifier];
-        
         if (video)
         {
-            
-            [MusicPlaybackController declareInternetProblemWhenLoadingSong:NO];
-            NetworkStatus status = [reachability currentReachabilityStatus];
-            if (status == ReachableViaWiFi)
-                usingWifi = YES;
-            
             //find video quality closest to setting preferences
             NSDictionary *vidQualityDict = video.streamURLs;
             NSURL *url;
@@ -122,40 +138,23 @@
                 return;
             } else{
                 [MusicPlaybackController declareInternetProblemWhenLoadingSong:NO];
-                //we know for sure that the video no longer exists, notify user.
-                NSLog(@"Your music video is no longer on YouTube.");
-                
+                //video may no longer exist, or some other problem has occured
+                [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotLoadVideo];
                 [MusicPlaybackController skipToNextTrack];
                 return;
-#warning handle error better
-                // Handle error in a nicer way, maybe with a notification banner when the user re-enters the app
-                //NSString *title = @"Trouble finding your video";
-                //NSString *msg = @"Sorry, it appears your music video is no longer on YouTube.";
-                //[self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
             }
         }
         
         AVURLAsset *asset = [AVURLAsset assetWithURL: currentItemLink];
-        Float64 duration = CMTimeGetSeconds(asset.duration);
-        int otherDuration = video.duration;
-        allowedToPlayVideo = YES;  //temp functionality
-        if(! usingWifi){
-            /*
-            if(duration >= 600)  //user cant watch video longer than 10 minutes without wifi
-                allowedToPlayVideo = NO;
-            else
-                allowedToPlayVideo = YES;
-             */
-        }
+
         if(allowedToPlayVideo && video != nil){
             playerItem = [AVPlayerItem playerItemWithAsset: asset];
-            [self replaceCurrentItemWithPlayerItem:playerItem];
+            [weakSelf replaceCurrentItemWithPlayerItem:playerItem];
             
             // Declare block scope variables to avoid retention cycles from references inside the block
-            __block AVPlayer* weakSelf = self;
             __block id obs;
             // Setup boundary time observer to trigger when audio really begins (specifically after 1/10 of a second of playback)
-            obs = [self addBoundaryTimeObserverForTimes:
+            obs = [weakSelf addBoundaryTimeObserverForTimes:
                    @[[NSValue valueWithCMTime:CMTimeMake(1, 10)]]
                                                   queue:NULL
                                              usingBlock:^{
@@ -167,34 +166,19 @@
                                                  // Remove the boundary time observer
                                                  [weakSelf removeTimeObserver:obs];
                                              }];
-            [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
-            [self play];
+            [weakSelf showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
+            [weakSelf play];
             
         } else{
             if([MusicPlaybackController didPlaybackStopDueToInternetProblemLoadingSong])  //if so, don't do anything...
                 return;
             
             [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
-            [MusicPlaybackController skipToNextTrack];
-            
-            [self songDidFinishPlaying:nil];  //triggers the next song to play (for whatever reason/error)
+            [weakSelf songDidFinishPlaying:nil];  //triggers the next song to play (for whatever reason/error) in the correct direction
         }
     }];
 }
 
-- (void)launchAlertViewWithDialogUsingTitle:(NSString *)title andMessage:(NSString *)msg
-{
-    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:title
-                                                      message:msg
-                                                     delegate:self
-                                            cancelButtonTitle:@"OK"
-                                            otherButtonTitles:nil];
-    
-    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
-    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    [alert show];
-}
 
 - (void)checkInternetStatus
 {
@@ -203,7 +187,14 @@
     if(self.rate == 0 && [MusicPlaybackController playbackExplicitlyPaused])
         return;
     
-    if(secondsSinceWeCheckedInternet < 2){
+    UIApplicationState state = [[UIApplication sharedApplication] applicationState];
+    if (state == UIApplicationStateBackground || state == UIApplicationStateInactive)
+    {
+        return;
+    }
+    
+
+    if(secondsSinceWeCheckedInternet < 3){
         secondsSinceWeCheckedInternet++;
         return;
     }

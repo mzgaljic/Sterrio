@@ -148,7 +148,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     _searchResults = [NSMutableArray array];
     
     self.navigationController.toolbarHidden = NO;
-    _navBar.title = @"Add Music";
+    _navBar.title = @"Adding Music";
     _cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                   target:self
                                                                   action:@selector(cancelTapped)];
@@ -348,7 +348,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)setUpSearchBar
 {
     //create search bar, add to viewController
-    _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search Music On YouTube"];
+    _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0)
+                                    placeholderText:@"Search YouTube for Music"];
     _searchBar.delegate = self;
     self.tableView.tableHeaderView = _searchBar;
 }
@@ -361,7 +362,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     
     //show the cancel button
     self.displaySearchResults = NO;
-    _navBar.title = @"Add Music";
+    _navBar.title = @"Adding Music";
     [_searchBar setShowsCancelButton:YES animated:YES];
     [self.tableView reloadData];
 }

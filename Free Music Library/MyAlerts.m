@@ -32,11 +32,18 @@
             [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:1];
             break;
         }
+        case ALERT_TYPE_CannotLoadVideo:
+        {
+            //alert user to internet problem
+            NSString *msg = @"Error: Could not load song.";
+            [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
+            break;
+        }
         case ALERT_TYPE_FATAL_SONG_DURATION_ERROR:
         {
             //alert user to internet problem
             NSString *msg = @"Error: Cannot determine song duration.";
-            [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:1];
+            [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
             break;
         }
         case ALERT_TYPE_LongVideoSkippedOnCellular:
@@ -54,8 +61,7 @@
                 else
                     msg = [NSString stringWithFormat:@"%i Songs skipped.", numSkipped];
                 
-                [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleInfo delay:0];
-
+                [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleInfo delay:0.6];
                 [MusicPlaybackController resetNumberOfLongVideosSkippedOnCellularConnection];
             }
                 

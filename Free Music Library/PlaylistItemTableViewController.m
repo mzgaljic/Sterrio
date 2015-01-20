@@ -30,6 +30,7 @@
     self.tableView.backgroundColor = [UIColor whiteColor];
     [self setFetchedResultsControllerAndSortStyle];
     [self setUpNavBarItems];
+    [[UITextField appearance] setTintColor:[[UIColor defaultAppColorScheme] lighterColor]];  //sets the cursor color of the playlist name textbox editor
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -165,22 +166,28 @@
     {
         [self.navBar setRightBarButtonItems:_originalRightBarButtonItems animated:YES];
         [self.navBar setLeftBarButtonItems:_originalLeftBarButtonItems animated:YES];
-        self.navBar.titleView = nil;
-        self.navBar.title = _playlist.playlistName;
+        
         _originalLeftBarButtonItems = nil;
         _originalRightBarButtonItems = nil;
         
         [super setEditing:NO animated:YES];
         [self.navigationItem setHidesBackButton:NO animated:YES];
         _currentlyEditingPlaylistName = NO;
+        
+        [UIView animateWithDuration:1 animations:^{
+            self.navBar.titleView = nil;
+            self.navBar.title = _playlist.playlistName;
+        }];
+
     }
     else
     {
         [super setEditing:YES animated:YES];
         _currentlyEditingPlaylistName = YES;
-        
-        //allows for renaming the playlist
-        [self setUpUITextField];
+        [UIView animateWithDuration:1 animations:^{
+            //allows for renaming the playlist
+            [self setUpUITextField];
+        }];
     }
     [self setNeedsStatusBarAppearanceUpdate];
 }
@@ -259,17 +266,17 @@
     _txtField.clearButtonMode = UITextFieldViewModeWhileEditing;
     
     _txtField.backgroundColor = [UIColor whiteColor];
-    [[[[[_txtField.backgroundColor darkerColor] darkerColor]darkerColor] darkerColor] darkerColor];
+    //[[[[[_txtField.backgroundColor darkerColor] darkerColor]darkerColor] darkerColor] darkerColor];
     _txtField.textColor = [UIColor blackColor];
     [_txtField setDelegate:self];
-    _txtField.textAlignment = NSTextAlignmentRight;
+    _txtField.textAlignment = NSTextAlignmentCenter;
     
     UIBarButtonItem *editButton = self.editButtonItem;
     editButton.action = @selector(editTapped:);
     
     [self.navigationItem setHidesBackButton:YES animated:NO];
-    [self.navBar setRightBarButtonItems:@[editButton] animated:YES];
-    [self.navBar setLeftBarButtonItems:nil animated:YES];
+    [self.navBar setRightBarButtonItems:@[editButton] animated:NO];
+    [self.navBar setLeftBarButtonItems:nil animated:NO];
     self.navBar.titleView = _txtField;
 }
 
@@ -308,11 +315,8 @@
 #pragma mark - Rotation status bar methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
-        [self prefersStatusBarHidden];
-        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }
+    [self prefersStatusBarHidden];
+    [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
