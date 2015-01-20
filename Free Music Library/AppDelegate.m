@@ -10,6 +10,12 @@
 #import "PreloadedCoreDataModelUtility.h"
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
+@interface AppDelegate ()
+{
+    AVAudioSession *aSession;
+}
+@end
+
 @implementation AppDelegate
 
 static BOOL PRODUCTION_MODE;
@@ -19,6 +25,11 @@ static const short APP_LAUNCHED_ALREADY = 1;
 - (void)setProductionModeValue
 {
     PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -48,7 +59,8 @@ static const short APP_LAUNCHED_ALREADY = 1;
     
     [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY
                                                forKey:APP_ALREADY_LAUNCHED_KEY];
-    [self activateAudioSession];
+    [self setupAudioSession];
+    [self setupAudioSessionNotifications];
     
     return YES;
 }
@@ -65,9 +77,19 @@ static const short APP_LAUNCHED_ALREADY = 1;
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
-    if(player != nil)
+    if(player != nil){
         if(player.rate == 1 && !resumePlaybackAfterInterruption)
             [player performSelector:@selector(play) withObject:nil afterDelay:0.01];
+    }
+}
+
+- (void)tryPlayingAgain
+{
+    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
+    if(player != nil){
+        if(player.rate == 1 && !resumePlaybackAfterInterruption)
+            [player play];
+    }
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -133,8 +155,38 @@ static const short APP_LAUNCHED_ALREADY = 1;
     return YES;
 }
 
-#pragma mark - AVAudioSession delegate stuff
+
+#pragma mark - AVAudioSession stuff
+/*
+ useful link talking about the following methods:
+ http://stackoverflow.com/questions/20736809/avplayer-handle-when-incoming-call-come
+ */
+
 static BOOL resumePlaybackAfterInterruption = NO;
+
+- (void)setupAudioSession
+{
+    NSError *error;
+    aSession = [AVAudioSession sharedInstance];
+    [aSession setCategory:AVAudioSessionCategoryPlayback
+              withOptions:AVAudioSessionCategoryOptionAllowBluetooth
+                    error:&error];
+    [aSession setMode:AVAudioSessionModeMoviePlayback error:&error];
+    [aSession setActive:YES error: &error];
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    [aSession setDelegate: self];
+    #pragma GCC diagnostic warning "-Wdeprecated-declarations"
+}
+
+- (void)setupAudioSessionNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleMediaServicesReset)
+                                                 name:AVAudioSessionMediaServicesWereResetNotification
+                                               object:aSession];
+}
+
 - (void)beginInterruption
 {
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
@@ -146,7 +198,7 @@ static BOOL resumePlaybackAfterInterruption = NO;
 
 - (void)endInterruption
 {
-    [self activateAudioSession];
+    [self setupAudioSession];
     if(resumePlaybackAfterInterruption){
         [[MusicPlaybackController obtainRawAVPlayer] play];
         resumePlaybackAfterInterruption = NO;
@@ -156,7 +208,7 @@ static BOOL resumePlaybackAfterInterruption = NO;
 - (void)endInterruptionWithFlags:(NSUInteger)flags
 {
     if(flags == AVAudioSessionInterruptionOptionShouldResume){
-        [self activateAudioSession];
+        [self setupAudioSession];
         if(resumePlaybackAfterInterruption){
             [[MusicPlaybackController obtainRawAVPlayer] play];
             resumePlaybackAfterInterruption = NO;
@@ -164,14 +216,15 @@ static BOOL resumePlaybackAfterInterruption = NO;
     }
 }
 
-#pragma mark - General Helper methods
-- (void)activateAudioSession
+- (void)handleMediaServicesReset
 {
-    [[AVAudioSession sharedInstance] setActive:YES error:nil];
-    [[AVAudioSession sharedInstance] setDelegate: self];
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
-    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    [self setupAudioSession];
+    if(resumePlaybackAfterInterruption){
+        AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
+        if(player){
+            [player play];
+        }
+    }
 }
-
 
 @end
