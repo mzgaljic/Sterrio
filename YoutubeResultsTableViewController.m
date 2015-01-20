@@ -119,7 +119,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         //restore scroll to top button if it was there before segue
         if(_scrollToTopButtonVisible)
             [self showScrollToTopButton:YES];
-        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+        if([MusicPlaybackController nowPlayingSong])
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)    name:UIDeviceOrientationDidChangeNotification  object:nil];
@@ -668,14 +669,11 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)turnTableViewIntoUIView:(BOOL)yes
 {
     if(yes){
-        CGFloat screenHeight = [[UIScreen mainScreen] bounds].size.height;
-        float yValue = screenHeight * 0.15f;
-        
         self.tableView.scrollEnabled = NO;
         self.tableView.tableHeaderView = nil;
         _viewOnTopOfTable = [[UIView alloc] initWithFrame:self.tableView.frame];
         _progressViewHere = [[UIView alloc] initWithFrame:
-                                    CGRectMake(0, 0, _viewOnTopOfTable.frame.size.width, _viewOnTopOfTable.frame.size.height - yValue)];
+                                    CGRectMake(0, 0, _viewOnTopOfTable.frame.size.width, _viewOnTopOfTable.frame.size.height)];
         [_viewOnTopOfTable addSubview:_progressViewHere];
         self.tableView.tableHeaderView = _viewOnTopOfTable;
     } else{
