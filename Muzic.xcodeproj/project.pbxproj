@@ -126,6 +126,7 @@
 		87D47DA519345D8E0057D49B /* ArtistItemAlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47DA219345D8E0057D49B /* ArtistItemAlbumViewController.m */; };
 		87DB103219C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DB103119C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m */; };
 		87E1C5A0193A5E8B009AE399 /* GenreConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E1C59F193A5E8B009AE399 /* GenreConstants.m */; };
+		87E5FF3F1A6F42AD00A09652 /* MZSongModifierTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E5FF3E1A6F42AD00A09652 /* MZSongModifierTableView.m */; };
 		87ECF5191A57B50800D58EDF /* UINavigationBar+DarkTint.m in Sources */ = {isa = PBXBuildFile; fileRef = 87ECF5181A57B50800D58EDF /* UINavigationBar+DarkTint.m */; };
 		87FB3A6C1A5A4682006F3163 /* YouTubeSongAdderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FB3A6B1A5A4682006F3163 /* YouTubeSongAdderViewController.m */; };
 		87FCD02C19A5BC0B00C600D3 /* CustomYoutubeTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FCD02B19A5BC0B00C600D3 /* CustomYoutubeTableViewCell.m */; };
@@ -369,6 +370,8 @@
 		87DB103119C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+CustomPushAnimation.m"; sourceTree = "<group>"; };
 		87E1C59E193A5E8B009AE399 /* GenreConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenreConstants.h; sourceTree = "<group>"; };
 		87E1C59F193A5E8B009AE399 /* GenreConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenreConstants.m; sourceTree = "<group>"; };
+		87E5FF3D1A6F42AD00A09652 /* MZSongModifierTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZSongModifierTableView.h; sourceTree = "<group>"; };
+		87E5FF3E1A6F42AD00A09652 /* MZSongModifierTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZSongModifierTableView.m; sourceTree = "<group>"; };
 		87ECF5171A57B50800D58EDF /* UINavigationBar+DarkTint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationBar+DarkTint.h"; sourceTree = "<group>"; };
 		87ECF5181A57B50800D58EDF /* UINavigationBar+DarkTint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationBar+DarkTint.m"; sourceTree = "<group>"; };
 		87FB3A6A1A5A4682006F3163 /* YouTubeSongAdderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YouTubeSongAdderViewController.h; sourceTree = "<group>"; };
@@ -1023,9 +1026,19 @@
 			name = "Core Data Utilities";
 			sourceTree = "<group>";
 		};
+		87E5FF3C1A6F427A00A09652 /* Custom TableViews */ = {
+			isa = PBXGroup;
+			children = (
+				87E5FF3D1A6F42AD00A09652 /* MZSongModifierTableView.h */,
+				87E5FF3E1A6F42AD00A09652 /* MZSongModifierTableView.m */,
+			);
+			name = "Custom TableViews";
+			sourceTree = "<group>";
+		};
 		87ECF5221A57C5FB00D58EDF /* Custom GUI Elements/Classes */ = {
 			isa = PBXGroup;
 			children = (
+				87E5FF3C1A6F427A00A09652 /* Custom TableViews */,
 				87BBBE031A58A77300248E2F /* Custom Search Bar */,
 				872EA4E81A54F42A00F8EE9D /* Custom ViewControllers */,
 				87FCD02D19A5BC0E00C600D3 /* Custom cells */,
@@ -1256,6 +1269,7 @@
 				87DB103219C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m in Sources */,
 				87A453C9199C0891004D1319 /* ELCAsset.m in Sources */,
 				87124BA419A3CBB8003D29CD /* AlbumModelHandler.m in Sources */,
+				87E5FF3F1A6F42AD00A09652 /* MZSongModifierTableView.m in Sources */,
 				87A453D8199C0891004D1319 /* UIImage+EYFixOrientation.m in Sources */,
 				87270032199E815000D71204 /* NSString+Levenshtein_Distance.m in Sources */,
 				87A453CD199C0891004D1319 /* ELCImagePickerController.m in Sources */,
