@@ -46,6 +46,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     //change background color of tableview
     self.tableView.backgroundColor = [UIColor clearColor];
     self.parentViewController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:0.2];
 }
 
 - (void)viewDidLoad
@@ -647,7 +648,6 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(NSDictionary *)editingInfo
 {
     [self dismissModalViewControllerAnimated:YES];
-    
     self.currentAlbumArt = image;
     [self.tableView reloadData];
 }
@@ -655,11 +655,8 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 #pragma mark - Rotation status bar methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
-        [self prefersStatusBarHidden];
-        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }
+    [self prefersStatusBarHidden];
+    [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
@@ -676,7 +673,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 #pragma mark - AlertView
 - (void)launchAlertViewWithDialog
 {
-    NSString * msg = @"This item is specific to this songs current album. To change this item, please edit the album directly, or remove this song from the album.";
+    NSString * msg = @"This album art is associated with this songs album. To make changes, go to the album.";
     SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Cannot Edit Album Art"
                                                       message:msg
                                                      delegate:self
