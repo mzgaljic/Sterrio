@@ -23,16 +23,29 @@
 #import "ExistingArtistPickerTableViewController.h"
 #import "GenrePickerTableViewController.h"
 #import "MyTableViewController.h"
+#import "MZSongModifierDelegate.h"
 
+//This class breaks so much MVC it's not even funny. it's like a sin...but it works lol
 @interface MZSongModifierTableView : UITableView <UIActionSheetDelegate,
                                                 UINavigationControllerDelegate,
-                                                UIImagePickerControllerDelegate>
+                                                UIImagePickerControllerDelegate,
+                                                UITableViewDelegate,
+                                                UITableViewDataSource>
 
 @property (nonatomic, strong) Song *songIAmEditing;
 @property (nonatomic, assign) NSInteger lastTappedRow;  //only used for section 0
 
-@property (nonatomic, strong) UINavigationController *navController;
+@property (nonatomic, strong) UIViewController *VC;
+@property (nonatomic, assign) id<MZSongModifierDelegate>theDelegate;
 
+//Must implement these for the table to work properly
+- (void)initWasCalled;
+- (void)preDealloc;
+- (void)viewWillAppear:(BOOL)animated;
+- (void)viewDidAppear:(BOOL)animated;
+- (void)didReceiveMemoryWarning;
+
+//optional but very important methods
 - (void)cancelEditing;
 - (void)songEditingWasSuccessful;
 

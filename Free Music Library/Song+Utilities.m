@@ -162,12 +162,21 @@
 #pragma mark - private implementation
 + (Song *)createNewSongWithName:(NSString *)name inManagedContext:(NSManagedObjectContext *)context
 {
-    Song *song = [NSEntityDescription insertNewObjectForEntityForName:@"Song" inManagedObjectContext:context];
+    Song *song = [NSEntityDescription insertNewObjectForEntityForName:@"Song"
+                                               inManagedObjectContext:context];
     song.song_id = [[NSObject UUID] copy];
     song.songName = name;
     song.smartSortSongName = [name regularStringToSmartSortString];
     if(song.smartSortSongName.length == 0)  //edge case...if name itself is just something like 'the', dont remove all characters! Keep original name.
         song.smartSortSongName = name;
+    return song;
+}
+
++ (Song *)createNewSongWithNoNameAndManagedContext:(NSManagedObjectContext *)context
+{
+    Song *song = [NSEntityDescription insertNewObjectForEntityForName:@"Song"
+                                               inManagedObjectContext:context];
+    song.song_id = [[NSObject UUID] copy];
     return song;
 }
 

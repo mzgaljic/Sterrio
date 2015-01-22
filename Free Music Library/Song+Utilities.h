@@ -41,6 +41,11 @@
                    withDuration:(NSInteger)durationInSeconds;
 
 /**
+ Creates a song object which has no name (ie: it is in the process of user creation).
+ */
++ (Song *)createNewSongWithNoNameAndManagedContext:(NSManagedObjectContext *)context;
+
+/**
  @Description Returns YES if (and only if) both songs in the array are considered to be 'equal', or the 'same'. All
                 other cases result in NO being returned. Comaprison is accomplished via the objects song id's.
  @param arrayOfTwoSongObjects   Comparisons will only take place if the argument conatins exactly two Song objects.

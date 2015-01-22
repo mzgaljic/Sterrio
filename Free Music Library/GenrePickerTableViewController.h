@@ -17,6 +17,8 @@
 //allows user to pick a genre, and posts the chosen genre via an NSNotification (posting it as an NSString)
 @interface GenrePickerTableViewController : MyTableViewController <UISearchBarDelegate, GenreSearchDelegate>
 
-- (id)initWithGenreCode:(int)aGenreCode notificationNameToPost:(NSString *)notifName;
+- (id)initWithGenreCode:(int)aGenreCode
+ notificationNameToPost:(NSString *)notifName
+             fullScreen:(BOOL)full;
 
 @end

@@ -372,6 +372,7 @@
 		87E1C59F193A5E8B009AE399 /* GenreConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenreConstants.m; sourceTree = "<group>"; };
 		87E5FF3D1A6F42AD00A09652 /* MZSongModifierTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZSongModifierTableView.h; sourceTree = "<group>"; };
 		87E5FF3E1A6F42AD00A09652 /* MZSongModifierTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZSongModifierTableView.m; sourceTree = "<group>"; };
+		87E5FF401A70959A00A09652 /* MZSongModifierDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZSongModifierDelegate.h; sourceTree = "<group>"; };
 		87ECF5171A57B50800D58EDF /* UINavigationBar+DarkTint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationBar+DarkTint.h"; sourceTree = "<group>"; };
 		87ECF5181A57B50800D58EDF /* UINavigationBar+DarkTint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationBar+DarkTint.m"; sourceTree = "<group>"; };
 		87FB3A6A1A5A4682006F3163 /* YouTubeSongAdderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YouTubeSongAdderViewController.h; sourceTree = "<group>"; };
@@ -1031,6 +1032,7 @@
 			children = (
 				87E5FF3D1A6F42AD00A09652 /* MZSongModifierTableView.h */,
 				87E5FF3E1A6F42AD00A09652 /* MZSongModifierTableView.m */,
+				87E5FF401A70959A00A09652 /* MZSongModifierDelegate.h */,
 			);
 			name = "Custom TableViews";
 			sourceTree = "<group>";

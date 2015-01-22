@@ -39,7 +39,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
 }
 
--(void)viewWillAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
@@ -289,8 +289,12 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
             }
             case 4://Genres
                 if([_songIAmEditing.genreCode intValue] == [GenreConstants noGenreSelectedGenreCode]){  //adding genre
-                    GenrePickerTableViewController *vc = [[GenrePickerTableViewController alloc] initWithGenreCode:[_songIAmEditing.genreCode intValue]
-                                                                                            notificationNameToPost:@"new genre has been chosen"];
+                    GenrePickerTableViewController *vc;
+                    int genreCode = [_songIAmEditing.genreCode intValue];
+                    NSString *post = @"new genre has been chosen";
+                    vc = [[GenrePickerTableViewController alloc] initWithGenreCode: genreCode
+                                                            notificationNameToPost:post
+                                                                        fullScreen:NO];
                     [self.navigationController pushViewController:vc animated:YES];
                 } else{  //option to remove genre or choose a different one
                     
@@ -589,8 +593,12 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                 break;
             case 1:  //find a different genre
             {
-                GenrePickerTableViewController *vc = [[GenrePickerTableViewController alloc] initWithGenreCode:[_songIAmEditing.genreCode intValue]
-                                                                                        notificationNameToPost:@"new genre has been chosen"];
+                GenrePickerTableViewController *vc;
+                int genreCode = [_songIAmEditing.genreCode intValue];
+                NSString *post = @"new genre has been chosen";
+                vc = [[GenrePickerTableViewController alloc] initWithGenreCode: genreCode
+                                                        notificationNameToPost:post
+                                                                    fullScreen:NO];
                 [self.navigationController pushViewController:vc animated:YES];
                 break;
             }
@@ -694,4 +702,5 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 
     }
 }
+
 @end

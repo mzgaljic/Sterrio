@@ -9,6 +9,9 @@
 #import "GenrePickerTableViewController.h"
 
 @interface GenrePickerTableViewController ()
+{
+    BOOL fullScreen;
+}
 @property (nonatomic, strong) NSDictionary *dictToGenreByLetter;
 @property (nonatomic, strong) NSArray *dictKeys;  //key is names of headers (ie: 'A', 'B', 'C'...)
 @property (nonatomic, strong) NSString *usersCurrentGenreString;
@@ -24,7 +27,9 @@
 @implementation GenrePickerTableViewController
 @synthesize searchResults = _searchResults;
 
-- (id)initWithGenreCode:(int)aGenreCode notificationNameToPost:(NSString *)notifName;
+- (id)initWithGenreCode:(int)aGenreCode
+ notificationNameToPost:(NSString *)notifName
+             fullScreen:(BOOL)full
 {
     UIStoryboard*  sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     GenrePickerTableViewController* vc = [sb instantiateViewControllerWithIdentifier:@"genrePickerView"];
@@ -33,6 +38,7 @@
         //custom variables init here
         _usersCurrentGenreString = [GenreConstants genreCodeToString:aGenreCode];
         _notificationName = notifName;
+        fullScreen = full;
     }
     return self;
 }
@@ -295,6 +301,8 @@
 
 - (BOOL)prefersStatusBarHidden
 {
+    if(fullScreen)
+        return YES;
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
         return YES;

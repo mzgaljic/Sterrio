@@ -20,10 +20,12 @@
     BOOL playbackFinished;
     BOOL doneTappedInVideo;
     BOOL pausedBeforePopAttempt;
+    BOOL userCreatedHisSong;
+    BOOL dontPreDealloc;
     NSDictionary *videoDetails;
 }
 
-@property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
+@property (nonatomic, strong) MZSongModifierTableView *tableView;
 @end
 
 @implementation YouTubeSongAdderViewController
@@ -31,14 +33,21 @@
 #pragma mark - Custom Initializer
 - (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject
 {
-    UIStoryboard*  sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    YouTubeSongAdderViewController* vc = [sb instantiateViewControllerWithIdentifier:@"ytVideoFieldEntryAndVideoPlayer"];
-    self = vc;
-    if (self) {
+    if ([super init]) {
         if(youtubeVideoObject == nil)
             return nil;
         ytVideo = youtubeVideoObject;
         pausedBeforePopAttempt = YES;
+        MZSongModifierTableView *songEditTable;
+        songEditTable = [[MZSongModifierTableView alloc] initWithFrame:self.view.frame
+                                                                 style:UITableViewStyleGrouped];
+        songEditTable.VC = self;
+        self.tableView = songEditTable;
+        self.tableView.theDelegate = self;
+        self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight |
+                                            UIViewAutoresizingFlexibleWidth;
+        [self.view addSubview:self.tableView];
+        [self.tableView initWasCalled];
     }
     return self;
 }
@@ -47,6 +56,7 @@
 - (void)dealloc
 {
     numberTimesViewHasBeenShown = 0;
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     if(videoPlayerViewController){
         [videoPlayerViewController stop];
@@ -55,6 +65,18 @@
     [[YouTubeVideoSearchService sharedInstance] removeVideoDetailLookupDelegate];
     
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([YouTubeSongAdderViewController class]));
+}
+
+- (void)preDealloc
+{
+    if(dontPreDealloc)
+        return;
+    if(! userCreatedHisSong)
+        [self.tableView songEditingWasSuccessful];
+    else
+        [self.tableView cancelEditing];
+    [self.tableView preDealloc];
+    self.tableView = nil;
 }
 
 - (void)viewDidLoad
@@ -69,6 +91,9 @@ static short numberTimesViewHasBeenShown = 0;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self.tableView viewWillAppear:animated];
+    dontPreDealloc = NO;
+    
     //hack to hide back button text.
     self.navigationController.navigationBar.topItem.title = @"";
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -87,8 +112,10 @@ static short numberTimesViewHasBeenShown = 0;
                                                           action:@selector(shareButtonTapped)];
     
     self.navigationController.toolbarHidden = YES;
-    _navBar.title = ytVideo.videoName;
-     _navBar.backBarButtonItem.title = @"";
+    
+    //set nav bar title
+    UINavigationController *navCon  = (UINavigationController*) [self.navigationController.viewControllers objectAtIndex:1];
+    navCon.navigationItem.title = ytVideo.videoName;
 
     
     if(numberTimesViewHasBeenShown == 0)
@@ -106,10 +133,26 @@ static short numberTimesViewHasBeenShown = 0;
     }
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self.tableView viewDidAppear:animated];
+}
+
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     [self checkCurrentPlaybackState];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [self.tableView didReceiveMemoryWarning];
 }
 
 - (void)checkCurrentPlaybackState
@@ -128,6 +171,7 @@ static short numberTimesViewHasBeenShown = 0;
 - (void)loadVideo
 {
     __weak YouTubeVideo *weakVideo = ytVideo;
+    __weak YouTubeSongAdderViewController *weakSelf = self;
     [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakVideo.videoId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
         if (video)
         {
@@ -168,7 +212,7 @@ static short numberTimesViewHasBeenShown = 0;
                 [videoPlayerViewController setMovieSourceType:(MPMovieSourceTypeStreaming)];
                 [videoPlayerViewController setContentURL:url];
                 [videoPlayerViewController prepareToPlay];
-                [self setUpVideoView];
+                [weakSelf setUpVideoView];
                 [videoPlayerViewController play];
             }
             else{
@@ -188,6 +232,7 @@ static short numberTimesViewHasBeenShown = 0;
 #pragma mark - Video frame and player setup
 - (void)setUpVideoView
 {
+#warning should be done AFTER video is ready to play (if it ever is)
     [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
     
     int widthOfScreenRoationIndependant;
@@ -217,7 +262,7 @@ static short numberTimesViewHasBeenShown = 0;
     UIView *rootHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, viewFrame.size.width, frameHeight)];
     UIView *videoFrameView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
     [videoFrameView setBackgroundColor:[UIColor blackColor]];
-    [self.tableView setTableHeaderView:rootHeaderView];
+    self.tableView.tableHeaderView = rootHeaderView;
 
     [[videoPlayerViewController view] setFrame:videoFrameView.frame]; // player's frame size must match parent's
     [rootHeaderView addSubview:videoFrameView];
@@ -373,6 +418,13 @@ static short numberTimesViewHasBeenShown = 0;
     } else
         //false alarm about a problem that occured with a previous fetch? Disregard.
         return;
+}
+
+#pragma mark - Custom song tableview editor delegate stuff
+- (void)pushThisVC:(UIViewController *)vc
+{
+    dontPreDealloc = YES;
+    [self presentViewController:vc animated:YES completion:nil];
 }
 
 @end

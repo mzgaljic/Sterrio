@@ -11,6 +11,7 @@
 @interface MZSongModifierTableView ()
 @property (nonatomic, strong) UIImage *currentAlbumArt;
 @property (nonatomic, strong) UIImage *currentSmallAlbumArt;
+@property (nonatomic, assign) BOOL creatingANewSong;
 @end
 
 @implementation MZSongModifierTableView
@@ -19,15 +20,63 @@ static BOOL PRODUCTION_MODE;
 static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 
 #pragma mark - Other stuff
+- (void)initWasCalled
+{
+    if(_songIAmEditing == nil){
+        self.creatingANewSong = YES;
+        _songIAmEditing = [Song createNewSongWithNoNameAndManagedContext:[CoreDataManager context]];
+    }
+    
+    self.delegate = self;
+    self.dataSource = self;
+    
+    
+    [self setProductionModeValue];
+    [AppEnvironmentConstants setUserIsEditingSongOrAlbumOrArtist: YES];
+    
+    [CoreDataManager context].undoManager = [[NSUndoManager alloc] init];
+    [[CoreDataManager context].undoManager beginUndoGrouping];
+    
+    self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.albumArtFileName];
+    if(self.currentAlbumArt == nil)  //maybe this songs album (if it has one) has album art
+        if(_songIAmEditing.album != nil)
+            self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.album.albumArtFileName];
+    
+    //remove header gap at top of table, and remove some scrolling space under the delete button (update scroll insets too)
+    if(self.creatingANewSong){
+        [self setContentInset:UIEdgeInsetsMake(-40,0,-38,0)];
+        [self setScrollIndicatorInsets:UIEdgeInsetsMake(-40,0,-38,0)];
+    } else{
+        [self setContentInset:UIEdgeInsetsMake(-32,0,-30,0)];
+        [self setScrollIndicatorInsets:UIEdgeInsetsMake(-32,0,-30,0)];
+    }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(existingAlbumHasBeenChosen:)
+                                                 name:@"existing album chosen" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(existingArtistHasBeenChosen:)
+                                                 name:@"existing artist chosen" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(newGenreHasBeenChosen:)
+                                                 name:@"new genre has been chosen"
+                                               object:nil];
+
+}
+
 - (void)dealloc
 {
-    self.navController = nil;
-    self.songIAmEditing = nil;
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"existing album chosen" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"existing artist chosen" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"new genre has been chosen" object:nil];
     [AppEnvironmentConstants setUserIsEditingSongOrAlbumOrArtist: NO];
+}
+
+- (void)preDealloc
+{
+    self.VC = nil;
+    self.songIAmEditing = nil;
+    self.theDelegate = nil;
 }
 
 - (void)setCurrentAlbumArt:(UIImage *)currentAlbumArt
@@ -51,36 +100,12 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
 }
 
--(void)viewWillAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
     //change background color of tableview
-    self.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.VC.parentViewController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     [self performSelector:@selector(reloadData) withObject:nil afterDelay:0.2];
-}
-
-- (void)viewDidLoad
-{
-    [self setProductionModeValue];
-    [AppEnvironmentConstants setUserIsEditingSongOrAlbumOrArtist: YES];
-    
-    [CoreDataManager context].undoManager = [[NSUndoManager alloc] init];
-    [[CoreDataManager context].undoManager beginUndoGrouping];
-    self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.albumArtFileName];
-    if(self.currentAlbumArt == nil)  //maybe this songs album (if it has one) has album art
-        if(_songIAmEditing.album != nil)
-            self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.album.albumArtFileName];
-    
-    //remove header gap at top of table, and remove some scrolling space under the delete button (update scroll insets too)
-    [self setContentInset:UIEdgeInsetsMake(-32,0,-30,0)];
-    [self setScrollIndicatorInsets:UIEdgeInsetsMake(-32,0,-30,0)];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(existingAlbumHasBeenChosen:)
-                                                 name:@"existing album chosen" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(existingArtistHasBeenChosen:)
-                                                 name:@"existing artist chosen" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newGenreHasBeenChosen:) name:@"new genre has been chosen" object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -91,7 +116,6 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 - (void)didReceiveMemoryWarning
 {
     // Dispose of any resources that can be recreated.
-    
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     [imageCache clearMemory];
 }
@@ -100,7 +124,10 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 #pragma mark - Tableview delegate implementations
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 3;
+    if(self.creatingANewSong)
+        return 1;
+    else
+        return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -110,21 +137,26 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     if(section == 1)  //row to delete this song
         return 1;
     else
-        return -1;
+        return -1;  //crash the app lol
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell;
     if(indexPath.section == 0){
-        cell = [tableView dequeueReusableCellWithIdentifier:@"editingSongCellItemDetail"];
-        if (cell == nil)
-            //right detail cell
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"editingSongCellItemDetail"];
         
+        static NSString *cellIdentifier = @"detail label cell";
+        cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+        if(cell == nil)
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
+                                          reuseIdentifier:cellIdentifier];
         if(indexPath.row == 0){  //song name
             cell.textLabel.text = @"Song Name";
-            cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:_songIAmEditing.songName];
+            if(_songIAmEditing.songName){
+                cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:_songIAmEditing.songName];
+            } else{
+                cell.detailTextLabel.text = @"";
+            }
             
         } else if(indexPath.row == 1){  //artist
             cell.textLabel.text = @"Artist";
@@ -159,11 +191,12 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
         } else
             return nil;
     }
-    if(indexPath.section == 1){
-        cell = [tableView dequeueReusableCellWithIdentifier:@"editingSongCellItemBasic"];
-        if (cell == nil)
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"editingSongCellItemBasic"];
-        
+    else if(indexPath.section == 1){
+        static NSString *cellIdentifier = @"deleteCell";
+        cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+        if(cell == nil)
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                          reuseIdentifier:cellIdentifier];
         if(indexPath.row == 0){  //Delete song text
             cell.textLabel.text = @"Delete Song";
             cell.textLabel.font = [UIFont boldSystemFontOfSize:17.0f];
@@ -194,7 +227,10 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    return @" ";
+    if(section == 0)
+        return @"Create a song below.";
+    else
+        return @" ";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -220,7 +256,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                                                              name:@"DoneEditingSongField" object:nil];
                 EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:_songIAmEditing.songName
                                                                                               notificationNameToPost:@"DoneEditingSongField"];
-                [self.navController pushViewController:vc animated:YES];
+                [self.VC.navigationController pushViewController:vc animated:YES];
                 break;
             }
             case 1:  //editing artist
@@ -235,7 +271,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                 }
                 
                 popup.tag = 1;
-                [popup showInView:self.navController.view];
+                [popup showInView:self.VC.view];
                 _lastTappedRow = 1;
                 break;
             }
@@ -246,7 +282,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                                                          destructiveButtonTitle:@"Remove Song From Album"
                                                               otherButtonTitles:@"Choose Different Album", @"New Album", nil];
                     popup.tag = 2;
-                    [popup showInView:self.navController.view];
+                    [popup showInView:self.VC.view];
                     
                 } else{
                     //album picker
@@ -255,7 +291,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                                                          destructiveButtonTitle:nil
                                                               otherButtonTitles:@"Choose Album", @"New Album", nil];
                     popup.tag = 2;
-                    [popup showInView:self.navController.view];
+                    [popup showInView:self.VC.view];
                 }
                 _lastTappedRow = 2;
                 break;
@@ -270,7 +306,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                                                              destructiveButtonTitle:@"Remove Art"
                                                                   otherButtonTitles:@"Choose Different Photo", @"Search for Art", nil];
                         popup.tag = 3;
-                        [popup showInView:[self.navController view]];
+                        [popup showInView:[self.VC view]];
                     }
                     else
                     {   //album art not picked yet, dont show option to remove album art
@@ -278,7 +314,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                                                              destructiveButtonTitle:nil
                                                                   otherButtonTitles:@"Choose Photo", @"Search for Art", nil];
                         popup.tag = 3;
-                        [popup showInView:[self.navController view]];
+                        [popup showInView:[self.VC view]];
                     }
                 }
                 else
@@ -290,16 +326,25 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
             }
             case 4://Genres
                 if([_songIAmEditing.genreCode intValue] == [GenreConstants noGenreSelectedGenreCode]){  //adding genre
-                    GenrePickerTableViewController *vc = [[GenrePickerTableViewController alloc] initWithGenreCode:[_songIAmEditing.genreCode intValue]
-                                                                                            notificationNameToPost:@"new genre has been chosen"];
-                    [self.navController pushViewController:vc animated:YES];
+                    GenrePickerTableViewController *vc;
+                    int genreCode = [_songIAmEditing.genreCode intValue];
+                    NSString *post = @"new genre has been chosen";
+                    BOOL fullscreen;
+                    if(_creatingANewSong)
+                        fullscreen = YES;
+                    else
+                        fullscreen = NO;
+                    vc = [[GenrePickerTableViewController alloc] initWithGenreCode: genreCode
+                                                            notificationNameToPost:post
+                                                                        fullScreen:fullscreen];
+                    [self.VC.navigationController pushViewController:vc animated:YES];
                 } else{  //option to remove genre or choose a different one
                     
                     UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:@"Genre" delegate:self cancelButtonTitle:@"Cancel"
                                                          destructiveButtonTitle:@"Remove Genre"
                                                               otherButtonTitles:@"Choose Different Genre", nil];
                     popup.tag = 4;
-                    [popup showInView:[self.navController view]];
+                    [popup showInView:[self.VC view]];
                 }
                 
                 _lastTappedRow = 4;
@@ -315,7 +360,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
             
             [[CoreDataManager context] deleteObject:_songIAmEditing];
             [[CoreDataManager sharedInstance] saveContext];
-            [self.navController dismissViewControllerAnimated:YES completion:nil];
+            [self.VC dismissViewControllerAnimated:YES completion:nil];
         } else
             return;
     }
@@ -421,7 +466,8 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 - (void)newGenreHasBeenChosen:(NSNotification *)notification
 {
     if([notification.name isEqualToString:@"new genre has been chosen"]){
-        _songIAmEditing.genreCode = [NSNumber numberWithInt:[GenreConstants genreStringToCode:(NSString *)notification.object]];
+        NSString *genreString = (NSString *)notification.object;
+        _songIAmEditing.genreCode = [NSNumber numberWithInt:[GenreConstants genreStringToCode:genreString]];
         [self reloadData];
     }
 }
@@ -437,7 +483,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                 if(! _songIAmEditing.artist){  //add song to an existing artist
                     ExistingArtistPickerTableViewController *vc = [[ExistingArtistPickerTableViewController alloc]
                                                                    initWithCurrentArtist:_songIAmEditing.artist];
-                    [self.navController pushViewController:vc animated:YES];
+                    [self.VC.navigationController pushViewController:vc animated:YES];
                 } else if(_songIAmEditing.artist){  //remove from current artist
                     _songIAmEditing.artist = nil;
                     [self reloadData];
@@ -451,12 +497,12 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                                                                  name:@"DoneEditingArtistField" object:nil];
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
                                                                                                   notificationNameToPost:@"DoneEditingArtistField"];
-                    [self.navController pushViewController:vc animated:YES];
+                    [self.VC.navigationController pushViewController:vc animated:YES];
                     
                 } else if(_songIAmEditing.artist){//choose different artist
                     ExistingArtistPickerTableViewController *vc = [[ExistingArtistPickerTableViewController alloc]
                                                                    initWithCurrentArtist:_songIAmEditing.artist];
-                    [self.navController pushViewController:vc animated:YES];
+                    [self.VC.navigationController pushViewController:vc animated:YES];
                 }
                 break;
             case 2:
@@ -467,7 +513,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                                                                  name:@"DoneEditingArtistField" object:nil];
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
                                                                                                   notificationNameToPost:@"DoneEditingArtistField"];
-                    [self.navController pushViewController:vc animated:YES];
+                    [self.VC.navigationController pushViewController:vc animated:YES];
                     
                 } else
                     break;
@@ -485,7 +531,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                 } else{ //choose existing album
                     ExistingAlbumPickerTableViewController *vc = [[ExistingAlbumPickerTableViewController alloc]
                                                                   initWithCurrentAlbum:_songIAmEditing.album];
-                    [self.navController pushViewController:vc animated:YES];
+                    [self.VC.navigationController pushViewController:vc animated:YES];
                 }
                 break;
             case 1:
@@ -494,12 +540,12 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                                                                  name:@"DoneEditingAlbumField" object:nil];
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
                                                                                                   notificationNameToPost:@"DoneEditingAlbumField"];
-                    [self.navController pushViewController:vc animated:YES];
+                    [self.VC.navigationController pushViewController:vc animated:YES];
                     break;
                 } else{  //place in different album (existing album picker)
                     ExistingAlbumPickerTableViewController *vc = [[ExistingAlbumPickerTableViewController alloc]
                                                                   initWithCurrentAlbum:_songIAmEditing.album];
-                    [self.navController pushViewController:vc animated:YES];
+                    [self.VC.navigationController pushViewController:vc animated:YES];
                 }
                 
                 break;
@@ -509,7 +555,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                                                                  name:@"DoneEditingAlbumField" object:nil];
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
                                                                                                   notificationNameToPost:@"DoneEditingAlbumField"];
-                    [self.navController pushViewController:vc animated:YES];
+                    [self.VC.navigationController pushViewController:vc animated:YES];
                 } else{
                     //remove song from album
                     _songIAmEditing.album = nil;
@@ -552,9 +598,18 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                 break;
             case 1:  //find a different genre
             {
-                GenrePickerTableViewController *vc = [[GenrePickerTableViewController alloc] initWithGenreCode:[_songIAmEditing.genreCode intValue]
-                                                                                        notificationNameToPost:@"new genre has been chosen"];
-                [self.navController pushViewController:vc animated:YES];
+                GenrePickerTableViewController *vc;
+                int genreCode = [_songIAmEditing.genreCode intValue];
+                NSString *post = @"new genre has been chosen";
+                BOOL fullscreen;
+                if(_creatingANewSong)
+                    fullscreen = YES;
+                else
+                    fullscreen = NO;
+                vc = [[GenrePickerTableViewController alloc] initWithGenreCode: genreCode
+                                                        notificationNameToPost:post
+                                                                    fullScreen:fullscreen];
+                [self.VC.navigationController pushViewController:vc animated:YES];
                 break;
             }
             case 2:  //cancel
@@ -562,7 +617,6 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
             default:
                 break;
         }
-        
     }
 }
 
@@ -573,7 +627,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     photoPickerController.delegate = self;
     //set tint color specifically for this VC so that the cancel buttons arent invisible
     [photoPickerController.view setTintColor:[UIColor defaultWindowTintColor]];
-    [self.navController presentViewController:photoPickerController animated:YES completion:nil];
+    [self.theDelegate pushThisVC:photoPickerController];
 }
 
 - (void)jumpToSafariToFindAlbumArt
@@ -610,7 +664,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(NSDictionary *)editingInfo
 {
-    [self.navController dismissModalViewControllerAnimated:YES];
+    [picker dismissModalViewControllerAnimated:YES];
     self.currentAlbumArt = image;
     [self reloadData];
 }
@@ -630,10 +684,10 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
         [AlbumArtUtilities makeCopyOfArtWithName:@"temp art-editing mode-Mark Zgaljic.png" andNameIt:_songIAmEditing.albumArtFileName];
     [AlbumArtUtilities deleteAlbumArtFileWithName:@"temp art-editing mode-Mark Zgaljic.png"];
     
-    //tell MasterSongsTableViewController that it should leave editing mode since song editing has completed.
+    [[CoreDataManager context] deleteObject:_songIAmEditing];
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
-    [self.navController dismissViewControllerAnimated:YES completion:nil];
-
+    [self.VC dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)songEditingWasSuccessful
@@ -650,10 +704,13 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     //delete temp copy of old art file
     [AlbumArtUtilities deleteAlbumArtFileWithName:@"temp art-editing mode-Mark Zgaljic.png"];
     
+    NSError *error = nil;
+    [[CoreDataManager context] save:&error];  //saves the context to disk
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongSavedDuringEdit" object:_songIAmEditing];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
     
-    [self.navController dismissViewControllerAnimated:YES completion:nil];
+    [self.VC dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - AlertView

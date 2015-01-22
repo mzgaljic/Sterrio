@@ -22,6 +22,8 @@
     EditableCellTableViewController* vc = [sb instantiateViewControllerWithIdentifier:@"editingCellItemView"];
     self = vc;
     if (self) {
+        if(_stringUserIsEditing == nil)
+            _stringUserIsEditing = @"";
         _stringUserIsEditing = [aString copy];
         _notificationName = notifName;
     }
