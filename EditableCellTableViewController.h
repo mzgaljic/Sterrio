@@ -16,6 +16,8 @@
 
 @property (nonatomic, strong) NSString *stringUserIsEditing;
 
-- (id)initWithEditingString:(NSString *)aString notificationNameToPost:(NSString *)notifName;
+- (id)initWithEditingString:(NSString *)aString
+     notificationNameToPost:(NSString *)notifName
+                 fullScreen:(BOOL)full;
 
 @end

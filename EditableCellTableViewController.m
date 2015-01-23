@@ -10,13 +10,18 @@
 
 
 @interface EditableCellTableViewController ()
+{
+    BOOL fullScreen;
+}
 @property (nonatomic, strong) NSString *notificationName;
 @end
 
 @implementation EditableCellTableViewController
 
 //using custom init here
-- (id)initWithEditingString:(NSString *)aString notificationNameToPost:(NSString *)notifName
+- (id)initWithEditingString:(NSString *)aString
+     notificationNameToPost:(NSString *)notifName
+                 fullScreen:(BOOL)full
 {
     UIStoryboard*  sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     EditableCellTableViewController* vc = [sb instantiateViewControllerWithIdentifier:@"editingCellItemView"];
@@ -26,6 +31,7 @@
             _stringUserIsEditing = @"";
         _stringUserIsEditing = [aString copy];
         _notificationName = notifName;
+        fullScreen = full;
     }
     return self;
 }
@@ -67,7 +73,10 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"editMeCell" forIndexPath:indexPath];
     
     // Configure the cell...
-    UITextField * txtField = [[UITextField alloc]initWithFrame:CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height)];
+    UITextField * txtField = [[UITextField alloc]initWithFrame:CGRectMake(0,
+                                                                          0,
+                                                                          cell.frame.size.width,
+                                                                          cell.frame.size.height)];
     txtField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     txtField.autoresizesSubviews = YES;
     txtField.layer.cornerRadius = 10.0;
@@ -98,7 +107,8 @@
 #pragma mark - UITextField methods
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
-    [[NSNotificationCenter defaultCenter] postNotificationName:_notificationName object:textField.text];
+    [[NSNotificationCenter defaultCenter] postNotificationName:_notificationName
+                                                        object:textField.text];
     [self.navigationController popViewControllerAnimated:YES];
     return YES;
 }
@@ -112,16 +122,15 @@
 #pragma mark - Rotation code
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
-        [self prefersStatusBarHidden];
-        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }
+    [self prefersStatusBarHidden];
+    [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
 - (BOOL)prefersStatusBarHidden
 {
+    if(fullScreen)
+        return YES;
     UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
         [self setLandscapeTableViewContentValues];
@@ -135,7 +144,7 @@
 
 - (void)setLandscapeTableViewContentValues
 {
-    //remove header gap at top of table, and remove some scrolling space under the delete button (update scroll insets too)
+    //remove header gap at top of table
     [self.tableView setContentInset:UIEdgeInsetsMake(0,0,0,0)];
     [self.tableView setScrollIndicatorInsets:UIEdgeInsetsMake(0,0,0,0)];
 }

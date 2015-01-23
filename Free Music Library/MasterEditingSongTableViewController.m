@@ -218,7 +218,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                 [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(songNameEditingComplete:)
                                                              name:@"DoneEditingSongField" object:nil];
                 EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:_songIAmEditing.songName
-                                                                                              notificationNameToPost:@"DoneEditingSongField"];
+                                                                                              notificationNameToPost:@"DoneEditingSongField" fullScreen:NO];
                 [self.navigationController pushViewController:vc animated:YES];
                 break;
             }
@@ -491,7 +491,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(artistNameCreationCompleteAndSetUpArtist:)
                                                                  name:@"DoneEditingArtistField" object:nil];
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
-                                                                                                  notificationNameToPost:@"DoneEditingArtistField"];
+                                                                                                  notificationNameToPost:@"DoneEditingArtistField" fullScreen:NO];
                     [self.navigationController pushViewController:vc animated:YES];
                     
                 } else if(_songIAmEditing.artist){//choose different artist
@@ -507,7 +507,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(artistNameCreationCompleteAndSetUpArtist:)
                                                                  name:@"DoneEditingArtistField" object:nil];
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
-                                                                                                  notificationNameToPost:@"DoneEditingArtistField"];
+                                                                                                  notificationNameToPost:@"DoneEditingArtistField" fullScreen:NO];
                     [self.navigationController pushViewController:vc animated:YES];
 
                 } else
@@ -534,7 +534,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(albumNameCreationCompleteAndSetUpAlbum:)
                                                                  name:@"DoneEditingAlbumField" object:nil];
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
-                                                                                                  notificationNameToPost:@"DoneEditingAlbumField"];
+                                                                                                  notificationNameToPost:@"DoneEditingAlbumField" fullScreen:NO];
                     [self.navigationController pushViewController:vc animated:YES];
                     break;
                 } else{  //place in different album (existing album picker)
@@ -549,7 +549,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(albumNameCreationCompleteAndSetUpAlbum:)
                                                                  name:@"DoneEditingAlbumField" object:nil];
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
-                                                                                                  notificationNameToPost:@"DoneEditingAlbumField"];
+                                                                                                  notificationNameToPost:@"DoneEditingAlbumField" fullScreen:NO];
                     [self.navigationController pushViewController:vc animated:YES];
                 } else{
                     //remove song from album

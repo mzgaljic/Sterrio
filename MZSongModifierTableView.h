@@ -25,6 +25,8 @@
 #import "MyTableViewController.h"
 #import "MZSongModifierDelegate.h"
 
+#import <MSCellAccessory.h>
+
 //This class breaks so much MVC it's not even funny. it's like a sin...but it works lol
 @interface MZSongModifierTableView : UITableView <UIActionSheetDelegate,
                                                 UINavigationControllerDelegate,

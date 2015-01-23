@@ -155,7 +155,8 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
             if(_songIAmEditing.songName){
                 cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:_songIAmEditing.songName];
             } else{
-                cell.detailTextLabel.text = @"";
+                cell.detailTextLabel.text = nil;
+                cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[UIColor defaultAppColorScheme] lighterColor]];
             }
             
         } else if(indexPath.row == 1){  //artist
@@ -185,9 +186,10 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
             if([_songIAmEditing.genreCode intValue] != [GenreConstants noGenreSelectedGenreCode]){
                 NSString *genreString = [GenreConstants genreCodeToString:[_songIAmEditing.genreCode intValue]];
                 cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:genreString];
+            }else{
+                cell.detailTextLabel.text = nil;
+                cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[UIColor defaultAppColorScheme] lighterColor]];
             }
-            else
-                cell.detailTextLabel.text = @"";
         } else
             return nil;
     }
@@ -254,8 +256,13 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                 _lastTappedRow = 0;
                 [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(songNameEditingComplete:)
                                                              name:@"DoneEditingSongField" object:nil];
+                BOOL fullscreen;
+                if(_creatingANewSong)
+                    fullscreen = YES;
+                else
+                    fullscreen = NO;
                 EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:_songIAmEditing.songName
-                                                                                              notificationNameToPost:@"DoneEditingSongField"];
+                    notificationNameToPost:@"DoneEditingSongField" fullScreen:fullscreen];
                 [self.VC.navigationController pushViewController:vc animated:YES];
                 break;
             }
@@ -495,8 +502,13 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                     //create a new artist
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(artistNameCreationCompleteAndSetUpArtist:)
                                                                  name:@"DoneEditingArtistField" object:nil];
+                    BOOL fullscreen;
+                    if(_creatingANewSong)
+                        fullscreen = YES;
+                    else
+                        fullscreen = NO;
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
-                                                                                                  notificationNameToPost:@"DoneEditingArtistField"];
+                        notificationNameToPost:@"DoneEditingArtistField" fullScreen:fullscreen];
                     [self.VC.navigationController pushViewController:vc animated:YES];
                     
                 } else if(_songIAmEditing.artist){//choose different artist
@@ -511,8 +523,15 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                     //create new artist
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(artistNameCreationCompleteAndSetUpArtist:)
                                                                  name:@"DoneEditingArtistField" object:nil];
+                    BOOL fullscreen;
+                    if(_creatingANewSong)
+                        fullscreen = YES;
+                    else
+                        fullscreen = NO;
+                    
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
-                                                                                                  notificationNameToPost:@"DoneEditingArtistField"];
+                                    notificationNameToPost:@"DoneEditingArtistField"
+                                               fullScreen:fullscreen];
                     [self.VC.navigationController pushViewController:vc animated:YES];
                     
                 } else
@@ -538,8 +557,13 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                 if(! _songIAmEditing.album){  //create new album
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(albumNameCreationCompleteAndSetUpAlbum:)
                                                                  name:@"DoneEditingAlbumField" object:nil];
+                    BOOL fullscreen;
+                    if(_creatingANewSong)
+                        fullscreen = YES;
+                    else
+                        fullscreen = NO;
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
-                                                                                                  notificationNameToPost:@"DoneEditingAlbumField"];
+                                                                                                  notificationNameToPost:@"DoneEditingAlbumField" fullScreen:fullscreen];
                     [self.VC.navigationController pushViewController:vc animated:YES];
                     break;
                 } else{  //place in different album (existing album picker)
@@ -553,8 +577,17 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                 if(_songIAmEditing.album){  //create new album
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(albumNameCreationCompleteAndSetUpAlbum:)
                                                                  name:@"DoneEditingAlbumField" object:nil];
-                    EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
-                                                                                                  notificationNameToPost:@"DoneEditingAlbumField"];
+                    BOOL fullscreen;
+                    if(_creatingANewSong)
+                        fullscreen = YES;
+                    else
+                        fullscreen = NO;
+
+                    EditableCellTableViewController *vc;
+                    vc = [[EditableCellTableViewController alloc]
+                                   initWithEditingString:nil
+                                   notificationNameToPost:@"DoneEditingAlbumField"
+                                     fullScreen:fullscreen];
                     [self.VC.navigationController pushViewController:vc animated:YES];
                 } else{
                     //remove song from album

@@ -71,6 +71,8 @@
 {
     if(dontPreDealloc)
         return;
+    else   //VC is actually being popped. Must delete the song the user somewhat created
+        [self.tableView cancelEditing];
     if(! userCreatedHisSong)
         [self.tableView songEditingWasSuccessful];
     else
@@ -148,6 +150,12 @@ static short numberTimesViewHasBeenShown = 0;
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
+    BOOL newVcHasBeenPushed = ![self isMovingFromParentViewController];
+    if(newVcHasBeenPushed)
+        return;
+    else
+        if(! dontPreDealloc)
+            [self preDealloc];
 }
 
 - (void)didReceiveMemoryWarning
@@ -373,7 +381,7 @@ static short numberTimesViewHasBeenShown = 0;
                                              UIActivityTypeAssignToContact,
                                              UIActivityTypeSaveToCameraRoll,
                                              UIActivityTypeAirDrop];
-        //set tint color specifically for this VC so that the cancel buttons arent invisible
+        //set tint color specifically for this VC so that the cancel buttons are visible
         [activityVC.view setTintColor:[[UIColor defaultAppColorScheme] lighterColor]];
         [self presentViewController:activityVC animated:YES completion:nil];
     } else{

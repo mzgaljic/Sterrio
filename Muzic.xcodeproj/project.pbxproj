@@ -567,7 +567,6 @@
 				878ACD60192D391E005938F5 /* Playlists tab */,
 				878ACD61192D3931005938F5 /* Genres tab */,
 				87F10BCF19682EDF003EDFB2 /* Settings View */,
-				870EDAE7197F4EB0001901B9 /* Editing Field View */,
 				8750157D198C29CC00382945 /* Adding Music To Library */,
 				877C4B85199FB44E00CE86BC /* ViewController helpers */,
 			);
@@ -1040,6 +1039,7 @@
 		87ECF5221A57C5FB00D58EDF /* Custom GUI Elements/Classes */ = {
 			isa = PBXGroup;
 			children = (
+				870EDAE7197F4EB0001901B9 /* Editing Field View */,
 				87E5FF3C1A6F427A00A09652 /* Custom TableViews */,
 				87BBBE031A58A77300248E2F /* Custom Search Bar */,
 				872EA4E81A54F42A00F8EE9D /* Custom ViewControllers */,
