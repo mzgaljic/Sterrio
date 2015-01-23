@@ -17,11 +17,11 @@
     UIView *placeHolderView;
     UIBarButtonItem *addToLibraryButton;
     BOOL enoughSongInformationGiven;
-    BOOL playbackFinished;
     BOOL doneTappedInVideo;
     BOOL pausedBeforePopAttempt;
     BOOL userCreatedHisSong;
     BOOL dontPreDealloc;
+    BOOL playbackBegan;
     NSDictionary *videoDetails;
 }
 
@@ -29,7 +29,6 @@
 @end
 
 @implementation YouTubeSongAdderViewController
-
 #pragma mark - Custom Initializer
 - (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject
 {
@@ -48,6 +47,12 @@
                                             UIViewAutoresizingFlexibleWidth;
         [self.view addSubview:self.tableView];
         [self.tableView initWasCalled];
+    
+        NSString *playbackStateChangedConst = MPMoviePlayerPlaybackStateDidChangeNotification;
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(playerPlaybackStateChanged:)
+                                                     name:playbackStateChangedConst
+                                                   object:nil];
     }
     return self;
 }
@@ -122,7 +127,6 @@ static short numberTimesViewHasBeenShown = 0;
     
     if(numberTimesViewHasBeenShown == 0)
         [self setPlaceHolderImageForVideoPlayer];  //would do this in viewDidLoad but self.view.frame has incorrect values until viewWillAppear
-    numberTimesViewHasBeenShown++;
     
     if(videoPlayerViewController){
         [self setUpVideoView];
@@ -133,6 +137,13 @@ static short numberTimesViewHasBeenShown = 0;
         }
         [self checkCurrentPlaybackState];
     }
+    if(numberTimesViewHasBeenShown == 0){
+        //makes the tableview start AT the nav bar, not behind it.
+        UIEdgeInsets inset = UIEdgeInsetsMake(44, 0, 0, 0);
+        self.tableView.contentInset = inset;
+        self.tableView.scrollIndicatorInsets = inset;
+    }
+    numberTimesViewHasBeenShown++;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -240,9 +251,7 @@ static short numberTimesViewHasBeenShown = 0;
 #pragma mark - Video frame and player setup
 - (void)setUpVideoView
 {
-#warning should be done AFTER video is ready to play (if it ever is)
-    [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
-    
+    [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:NO];
     int widthOfScreenRoationIndependant;
     int heightOfScreenRotationIndependant;
     int  a = [[UIScreen mainScreen] bounds].size.height;
@@ -276,6 +285,12 @@ static short numberTimesViewHasBeenShown = 0;
     [rootHeaderView addSubview:videoFrameView];
     [videoFrameView addSubview: [videoPlayerViewController view]];
     [videoFrameView bringSubviewToFront:[videoPlayerViewController view]];
+    
+    if(! playbackBegan)
+        [MRProgressOverlayView showOverlayAddedTo:self.tableView.tableHeaderView
+                                            title:@""
+                                             mode:MRProgressOverlayViewModeIndeterminateSmall
+                                         animated:YES];
 }
 
 - (void)setPlaceHolderImageForVideoPlayer
@@ -307,10 +322,21 @@ static short numberTimesViewHasBeenShown = 0;
     [placeHolderView setBackgroundColor:[UIColor colorWithPatternImage:
                                          [UIImage imageWithColor:[UIColor clearColor] width:placeHolderView.frame.size.width height:placeHolderView.frame.size.height]]];
     
-    [MRProgressOverlayView showOverlayAddedTo:placeHolderView title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
+    [MRProgressOverlayView showOverlayAddedTo:placeHolderView
+                                        title:@""
+                                         mode:MRProgressOverlayViewModeIndeterminateSmall
+                                     animated:YES];
     self.tableView.tableHeaderView = placeHolderView;
 }
 
+#pragma mark - Responding to video player events
+- (void)playerPlaybackStateChanged:(NSNotification *)notif
+{
+    if (videoPlayerViewController.playbackState == MPMoviePlaybackStatePlaying){
+        [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
+        playbackBegan = YES;
+    }
+}
 
 #pragma mark - Lock Screen Song Info & Art
 - (void)setUpLockScreenInfoAndArt
@@ -405,6 +431,7 @@ static short numberTimesViewHasBeenShown = 0;
 {
     return UIInterfaceOrientationMaskPortrait;
 }
+
 
 #pragma mark - Managing video detail fetch response
 - (void)detailsHaveBeenFetchedForYouTubeVideo:(YouTubeVideo *)video details:(NSDictionary *)details

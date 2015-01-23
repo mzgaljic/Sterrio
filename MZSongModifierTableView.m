@@ -229,8 +229,8 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    if(section == 0)
-        return @"Create a song below.";
+    if(section == 0 && _creatingANewSong)
+            return @"Create a song";
     else
         return @" ";
 }
