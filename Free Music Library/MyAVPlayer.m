@@ -167,10 +167,10 @@
         }
         
         AVURLAsset *asset = [AVURLAsset assetWithURL: currentItemLink];
-        allowSongDidFinishToExecute = YES;
         
         if(allowedToPlayVideo && video != nil){
             playerItem = [AVPlayerItem playerItemWithAsset: asset];
+            allowSongDidFinishToExecute = YES;
             [weakSelf replaceCurrentItemWithPlayerItem:playerItem];
             
             // Declare block scope variables to avoid retention cycles from references inside the block

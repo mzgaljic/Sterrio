@@ -333,16 +333,16 @@ static int numTimesVCLoaded = 0;
 static NSString *secondsToStringReturn = @"";
 static NSUInteger totalSeconds;
 static NSUInteger totalMinutes;
-static short seconds;
-static short minutes;
-static short hours;
+static int seconds;
+static int minutes;
+static int hours;
 - (NSString *)convertSecondsToPrintableNSStringWithSliderValue:(float)value
 {
     totalSeconds = value;
-    seconds = totalSeconds % MZSecondsInAMinute;
+    seconds = (int)(totalSeconds % MZSecondsInAMinute);
     totalMinutes = totalSeconds / MZSecondsInAMinute;
-    minutes = totalSeconds % MZMinutesInAnHour;
-    hours = (short)totalMinutes / MZMinutesInAnHour;
+    minutes = (int)(totalMinutes % MZMinutesInAnHour);
+    hours = (int)(totalMinutes / MZMinutesInAnHour);
     
     if(minutes < 10 && hours == 0)  //we can shorten the text
         secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
@@ -362,6 +362,7 @@ static short hours;
 - (void)accomodateInterfaceBasedOnDurationLabelSize:(UILabel *)changedLabel
 {
     UILabel *label = changedLabel;
+    NSString *text = label.text;
     short offset = longDurationLabelOffset;
     CGRect originalCurrTimeLabelFrame = _currentTimeLabel.frame;
     CGRect newCurrTimeLabelFrame;
