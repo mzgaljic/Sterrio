@@ -216,10 +216,6 @@ static BOOL lastSortOrder;
 {
     [super viewDidLoad];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(currentSongHasChanged)
-                                                 name:@"current song has changed"
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(editingModeCompleted:)
                                                  name:@"SongEditDone"
                                                object:nil];

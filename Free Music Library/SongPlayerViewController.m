@@ -32,6 +32,8 @@ typedef enum{
     GUIPlaybackState stateOfGUIPlayback;
     UIColor *colorOfPlaybackButtons;
     
+    BOOL firstTimeUpdatingSliderSinceShowingPlayer;
+    
     //for key value observing
     id timeObserver;
     int totalVideoDuration;
@@ -75,6 +77,7 @@ void *kDidFailKVO               = &kDidFailKVO;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    firstTimeUpdatingSliderSinceShowingPlayer = YES;
     colorOfPlaybackButtons = [UIColor defaultAppColorScheme];
     waitingForNextOrPrevVideoToLoad = YES;
     [self initAndRegisterAllButtons];
@@ -136,7 +139,8 @@ static int numTimesVCLoaded = 0;
     [self positionPlaybackSliderOnScreen];
     [self InitSongInfoLabelsOnScreen];
     
-    if([MusicPlaybackController obtainRawAVPlayer].rate == 1)  //takes care of duration label, slider, etc.
+    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
+    if(player.rate == 1)  //takes care of duration label, slider, etc.
         [self playbackOfVideoHasBegun];
     else{
         [_playbackSlider setMaximumValue:0];
@@ -162,14 +166,26 @@ static int numTimesVCLoaded = 0;
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    NSLog(@"Dealloc'ed in %@", NSStringFromClass([SongPlayerViewController class]));
+}
+
+- (void)preDealloc
+{
     [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:timeObserver];
     [self removeObservers];
+    timeObserver = nil;
 }
 
 #pragma mark - Check and update GUI based on device orientation (or responding to events)
 - (void)lastSongHasFinishedPlayback:(NSNotification *)object
 {
-#warning desired behavior after queue finishes playing goes here
+    //seek to end of track, if its not already (just in case)
+    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
+    if(player){
+        if(player.currentItem)
+            [player seekToTime:player.currentItem.asset.duration];
+    }
+    [self toggleDisplayToPausedState];
 }
 
 //NOT the same as updating the lock screen. this is specifically the info shown
@@ -327,7 +343,11 @@ static int numTimesVCLoaded = 0;
     Float64 currentTimeValue = CMTimeGetSeconds([MusicPlaybackController obtainRawAVPlayer].currentItem.currentTime);
     
     //sets slider directly from avplayer. playback can stutter or pause, can't increment by 1...
-    [self.playbackSlider setValue:(currentTimeValue) animated:YES];
+    if(firstTimeUpdatingSliderSinceShowingPlayer)
+        [self.playbackSlider setValue:(currentTimeValue) animated:NO];
+    else
+        [self.playbackSlider setValue:(currentTimeValue) animated:YES];
+    firstTimeUpdatingSliderSinceShowingPlayer = NO;
 }
 
 static NSString *secondsToStringReturn = @"";
@@ -810,6 +830,7 @@ static int hours;
 - (void)dismissVideoPlayerControllerButtonTapped
 {
     [[SongPlayerCoordinator sharedInstance] beginShrinkingVideoPlayer];
+    [self preDealloc];
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -979,6 +1000,11 @@ static int hours;
 - (void)playbackOfVideoHasBegun
 {
     self.playbackSlider.enabled = YES;
+    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
+    if(player.currentItem)
+        [_playbackSlider setValue:CMTimeGetSeconds(player.currentItem.currentTime) animated:NO];
+    else
+        [_playbackSlider setValue:0];
     waitingForNextOrPrevVideoToLoad = NO;
     UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
     UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];

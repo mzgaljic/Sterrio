@@ -136,7 +136,7 @@
 - (NSInteger)numObjectsAfterThisOne:(id)anObject
 {
     //check if object in array at all
-    NSInteger index = [internalArray isEqual:anObject];
+    NSInteger index = [internalArray indexOfObject:anObject];
     if(index == NSNotFound){
         return -1;
     } else{

@@ -34,15 +34,8 @@ static int numLongSongsSkipped = 0;
 + (void)skipToNextTrack
 {
     Song *nextSong = [[MusicPlaybackController playbackQueue] skipForward];
-    if(nextSong != nil){
-        [player startPlaybackOfSong:nextSong goingForward:YES];
-        //NOTE: YTVideoAvPlayer will automatically skip more songs if they cant be played
-    }
-    else
-        //no more songs! Make current player item nil in case there is something playing...
-        [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"current song has changed" object:nil];
+    [player startPlaybackOfSong:nextSong goingForward:YES];
+    //NOTE: YTVideoAvPlayer will automatically skip more songs if they cant be played
 }
 
 /** Stop playback of current song/track, and begin playback of previous track */
@@ -53,8 +46,6 @@ static int numLongSongsSkipped = 0;
     
     [player startPlaybackOfSong:previousSong goingForward:NO];
     //NOTE: YTVideoAvPlayer will automatically rewind further back in the queue if some songs cant be played
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"current song has changed" object:nil];
 }
 
 + (void)songAboutToBeDeleted:(Song *)song;
@@ -184,8 +175,6 @@ static int numLongSongsSkipped = 0;
     
     //start playback with the song that was tapped
     [player startPlaybackOfSong:song goingForward:YES];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"current song has changed" object:nil];
 }
 
 #pragma mark - Playback status

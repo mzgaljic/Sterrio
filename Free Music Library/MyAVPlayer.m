@@ -16,6 +16,7 @@
     BOOL movingForward;  //identifies which direction the user just went (back/forward) in queue
     int secondsSinceWeCheckedInternet;
     BOOL allowSongDidFinishToExecute;
+    BOOL canPostLastSongNotification;
     
     NSString * NEW_SONG_IN_AVPLAYER;
     NSString * AVPLAYER_DONE_PLAYING;
@@ -53,12 +54,21 @@
 - (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)forward
 {
     [MusicPlaybackController printQueueContents];
+    
+    if([MusicPlaybackController numMoreSongsInQueue] == 0)
+        canPostLastSongNotification = YES;
+    else
+        canPostLastSongNotification = NO;
+    
     if(aSong != nil){
         movingForward = forward;
         [[NSNotificationCenter defaultCenter] postNotificationName:NEW_SONG_IN_AVPLAYER
                                                             object:[MusicPlaybackController nowPlayingSong]];
         [self playSong:aSong];
         [MusicPlaybackController updateLockScreenInfoAndArtForSong:aSong];
+    } else{
+        if(canPostLastSongNotification)
+            [self songDidFinishPlaying:nil];
     }
 }
 
@@ -87,7 +97,7 @@
                 [MusicPlaybackController returnToPreviousTrack];
         }
     }
-    else{  //last song just ended
+    else{  //last song just ended (happens when playback ends by itself, not when tracks are skipped)
         [MusicPlaybackController explicitlyPausePlayback:YES];
         [MusicPlaybackController pausePlayback];
         [[NSNotificationCenter defaultCenter] postNotificationName:AVPLAYER_DONE_PLAYING
