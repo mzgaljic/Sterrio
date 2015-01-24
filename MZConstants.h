@@ -13,5 +13,6 @@
 extern NSString * const MZKeyNumLikes;
 extern NSString * const MZKeyNumDislikes;
 extern NSString * const MZKeyVideoDuration;
+extern NSString * const MZEmailBugReport;
 
 @end

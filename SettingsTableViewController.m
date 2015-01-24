@@ -27,7 +27,6 @@ static const int WIFI_STREAM_PICKER_TAG = 106;
 static const int CELL_STREAM_PICKER_TAG = 107;
 
 //could go in AppEnvironmentConstants...
-static NSString *BUG_REPORT_EMAIL;
 
 - (void)dealloc
 {
@@ -54,13 +53,6 @@ static NSString *BUG_REPORT_EMAIL;
     //hide back button, since we are supposed to 'dismiss' modally, not left.
     self.navigationItem.leftBarButtonItem = nil;
     self.navigationItem.hidesBackButton = YES;
-    
-#warning remove my real email before uploading production app. Add real bug report email and real feedback email.
-    if(PRODUCTION_MODE)
-        BUG_REPORT_EMAIL = @"example@example.com";
-    else
-        BUG_REPORT_EMAIL = @"mzgaljic@me.com";
-    
     _attachmentUIImages = [NSMutableArray array];
     
     //remove extra padding placed between first cell and navigation bar
@@ -567,11 +559,11 @@ NSArray *CellStreamOptions;
 {
     MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
     picker.mailComposeDelegate = self;
-    NSString *emailSubject = @"Bug Report [zTunes]";
+    NSString *emailSubject = @"Bug Report";
     [picker setSubject:emailSubject];
 
     // Set up recipients
-    [picker setToRecipients:@[BUG_REPORT_EMAIL]];
+    [picker setToRecipients:@[MZEmailBugReport]];
     [picker setMessageBody:[self buildEmailBodyString] isHTML:NO];
     if(_attachmentUIImages.count > 0){
         int count = 1;
@@ -603,13 +595,13 @@ NSArray *CellStreamOptions;
     NSString *deviceName = [UIDevice deviceName];
     NSString *body;
     if(_attachmentUIImages.count == 1)
-        body = @"Try to provide as much information as possible.\n\nName the bug:\n\nLocation of issue:\n\nSeverity: (High/Medium/Low)\n\nReported By:\n\n=============\nDescription\n\u2022\n\nSteps To Reproduce Bug\n\u2022\n\nExpected result\n\u2022\n=============\ntime&date\nApp Version: appVersion#\niOS Version: iosVersion#\nDevice: deviceName#\n\n[End of bug report]\nScreenshot:";
+        body = @"[Start of bug report]\nName the bug:\n\nLocation (in app) of issue:\n\nSeverity (pick 1): \n(High/Medium/Low)\n\nReported By:\n\n=============\nDescription:\n-\n\nSteps To Reproduce Bug\n-\n\nDescribe the correct (desired) behavior:\n-\n=============\ntime&date\nApp Version: appVersion#\niOS Version: iosVersion#\nDevice: deviceName#\n\n[End of bug report]\nScreenshot:";
 
     else if(_attachmentUIImages.count > 1)
-        body = @"Try to provide as much information as possible.\n\nName the bug:\n\nLocation of issue:\n\nSeverity: (High/Medium/Low)\n\nReported By:\n\n=============\nDescription\n\u2022\n\nSteps To Reproduce Bug\n\u2022\n\nExpected result\n\u2022\n=============\ntime&date\nApp Version: appVersion#\niOS Version: iosVersion#\nDevice: deviceName#\n\n[End of bug report]\nScreenshots:";
+        body = @"[Start of bug report]\nName the bug:\n\nLocation (in app) of issue:\n\nSeverity (pick 1): \n(High/Medium/Low)\n\nReported By:\n\n=============\nDescription:\n-\n\nSteps To Reproduce Bug\n-\n\nDescribe the correct (desired) behavior:\n-\n=============\ntime&date\nApp Version: appVersion#\niOS Version: iosVersion#\nDevice: deviceName#\n\n[End of bug report]\nScreenshots:";
     
     else
-        body = @"Try to provide as much information as possible. Attaching screenshots is optional (but encouraged).\n\nName the bug:\n\nLocation of issue:\n\nSeverity: (High/Medium/Low)\n\nReported By:\n\n=============\nDescription\n\u2022\n\nSteps To Reproduce Bug\n\u2022\n\nExpected result\n\u2022\n=============\ntime&date\nApp Version: appVersion#\niOS Version: iosVersion#\nDevice: deviceName#\n\n[End of bug report]";
+        body = @"[Start of bug report]\nName the bug:\n\nLocation (in app) of issue:\n\nSeverity (pick 1): \n(High/Medium/Low)\n\nReported By:\n\n=============\nDescription:\n-\n\nSteps To Reproduce Bug\n-\n\nDescribe the correct (desired) behavior:\n-\n=============\ntime&date\nApp Version: appVersion#\niOS Version: iosVersion#\nDevice: deviceName#\n\n[End of bug report]";
     body = [body stringByReplacingOccurrencesOfString:@"time&date" withString:[self buildCurrentEstTimeString]];
     body = [body stringByReplacingOccurrencesOfString:@"appVersion#" withString:appVersion];
     body = [body stringByReplacingOccurrencesOfString:@"iosVersion#" withString:iosVersion];
@@ -678,7 +670,7 @@ NSArray *CellStreamOptions;
 -(void)launchMailAppOnDevice
 {
     NSMutableString *recipients = [NSMutableString stringWithString: @"mailto:"];
-    [recipients appendString:BUG_REPORT_EMAIL];
+    [recipients appendString:MZEmailBugReport];
     [recipients appendString:@"?cc=&subject="];
     NSString *body = @"&body=";
     NSString *email = [NSString stringWithFormat:@"%@%@", recipients, body];

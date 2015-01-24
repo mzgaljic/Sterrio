@@ -27,25 +27,36 @@
             [[SongPlayerCoordinator sharedInstance] performSelector:@selector(beginShrinkingVideoPlayer)
                                                          withObject:nil
                                                          afterDelay:0.3];
-            [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:1];
+            [MyAlerts displayBannerWithMsg:msg
+                                     style:CSNotificationViewStyleError
+                                     delay:1
+                             shortDuration:YES];
             break;
         }
         case ALERT_TYPE_CannotLoadVideo:
         {
             NSString *msg = @"An unknown problem occured while loading your song.";
-            [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
+            [MyAlerts displayBannerWithMsg:msg
+                                     style:CSNotificationViewStyleError
+                                     delay:0
+                             shortDuration:YES];
             break;
         }
         case ALERT_TYPE_FatalSongDurationError:
         {
             NSString *msg = @"Total Song duration is not available.";
-            [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleInfo delay:0];
+            [MyAlerts displayBannerWithMsg:msg
+                                     style:CSNotificationViewStyleInfo
+                                     delay:0 shortDuration:YES];
             break;
         }
         case ALERT_TYPE_PotentialVideoDurationFetchFail:
         {
             NSString *msg = @"This video cannot be saved in its current state. An error has occured while fetching the information necessary to save this video.";
-            [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
+            [MyAlerts displayBannerWithMsg:msg
+                                     style:CSNotificationViewStyleError
+                                     delay:0
+                             shortDuration:NO];
             break;
         }
         case ALERT_TYPE_LongVideoSkippedOnCellular:
@@ -64,7 +75,10 @@
                 else
                     msg = [NSString stringWithFormat:@"%i Songs skipped. Long songs are skipped on a cellular connection.", numSkipped];
                 
-                [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleInfo delay:0.6];
+                [MyAlerts displayBannerWithMsg:msg
+                                         style:CSNotificationViewStyleInfo
+                                         delay:0.6
+                                 shortDuration:NO];
                 [MusicPlaybackController resetNumberOfLongVideosSkippedOnCellularConnection];
             }
                 
@@ -73,19 +87,28 @@
         case ALERT_TYPE_TroubleSharingVideo:
         {
             NSString *msg = @"Sorry, this video could not be shared.";
-            [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
+            [MyAlerts displayBannerWithMsg:msg
+                                     style:CSNotificationViewStyleError
+                                     delay:0
+                             shortDuration:YES];
             break;
         }
         case ALERT_TYPE_TroubleSharingLibrarySong:
         {
             NSString *msg = @"Sorry, this song could not be shared.";
-            [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
+            [MyAlerts displayBannerWithMsg:msg
+                                     style:CSNotificationViewStyleError
+                                     delay:0
+                             shortDuration:YES];
             break;
         }
         case ALERT_TYPE_CannotOpenSafariError:
         {
             NSString *msg = @"Whoops, something went wrong trying to launch Safari.";
-            [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
+            [MyAlerts displayBannerWithMsg:msg
+                                     style:CSNotificationViewStyleError
+                                     delay:0
+                             shortDuration:YES];
             break;
         }
         case ALERT_TYPE_SongSaveSuccess:
@@ -93,14 +116,18 @@
             NSString *msg = @"Song saved.";
             [MyAlerts displayBannerWithMsg:msg
                                      style:CSNotificationViewStyleSuccess
-                                     delay:0.6];
+                                     delay:1.0
+                             shortDuration:YES];
+            break;
         }
         case ALERT_TYPE_SongSaveHasFailed:
         {
             NSString *msg = @"Oh no! Something went wrong saving your song.";
             [MyAlerts displayBannerWithMsg:msg
                                      style:CSNotificationViewStyleError
-                                     delay:0.6];
+                                     delay:1.0
+                             shortDuration:NO];
+            break;
         }
         default:
             break;
@@ -116,16 +143,24 @@
 + (void)displayBannerWithMsg:(NSString *)msg
                        style:(CSNotificationViewStyle)style
                        delay:(float)seconds
+               shortDuration:(BOOL)shortduration
 {
+    float duration = 0;
+    if(shortduration)
+        duration = kCSNotificationViewDefaultShowDuration;
+    else
+        duration = kCSNotificationViewLongShowDuration;
+    
     if(seconds == 0){
         UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];
         [CSNotificationView showInViewController:[keyWindow visibleViewController]
                                            style:style
-                                         message:msg];
+                                         message:msg
+                                        duration:duration];
     } else{
         __weak NSString *weakMsg = msg;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (seconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [MyAlerts displayBannerWithMsg:weakMsg style:style delay:0];
+            [MyAlerts displayBannerWithMsg:weakMsg style:style delay:0 shortDuration:shortduration];
         });
     }
 }

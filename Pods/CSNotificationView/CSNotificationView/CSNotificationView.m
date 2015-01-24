@@ -70,15 +70,14 @@
 
 + (void)showInViewController:(UIViewController *)viewController
              style:(CSNotificationViewStyle)style
-           message:(NSString *)message
+                     message:(NSString *)message
+                    duration:(float)duration
 {
-    
-    
     [CSNotificationView showInViewController:viewController
                          tintColor:[CSNotificationView blurTintColorForStyle:style]
                              image:[CSNotificationView imageForStyle:style]
                            message:message
-                          duration:kCSNotificationViewDefaultShowDuration];
+                          duration:duration];
 }
 
 #pragma mark + creators
@@ -556,13 +555,25 @@
     UIColor* blurTintColor;
     switch (style) {
         case CSNotificationViewStyleSuccess:
-            blurTintColor = [UIColor colorWithRed:0.21 green:0.72 blue:0.00 alpha:1.0];
+            //greenish color
+            blurTintColor = [UIColor colorWithRed:98.0f/255.0f
+                                            green:160.0f/255.0f
+                                             blue:72.0f/255.0f
+                                            alpha:1.0f];
             break;
         case CSNotificationViewStyleError:
-            blurTintColor = [UIColor redColor];
+            //redish color...
+            blurTintColor = [UIColor colorWithRed:213.0f/255.0f
+                                            green:73.0f/255.0f
+                                             blue:65.0f/255.0f
+                                            alpha:1.0f];
             break;
         case CSNotificationViewStyleInfo:
-            blurTintColor = [UIColor yellowColor];
+            //yellowish color...
+            blurTintColor = [UIColor colorWithRed:245.0f/255.0f
+                                            green:231.0f/255.0f
+                                             blue:55.0f/255.0f
+                                            alpha:1.0f];
         default:
             break;
     }

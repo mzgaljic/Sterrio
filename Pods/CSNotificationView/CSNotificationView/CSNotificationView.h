@@ -10,7 +10,9 @@
 
 static CGFloat const kCSNotificationViewHeight = 50.0f;
 static CGFloat const kCSNotificationViewSymbolViewSidelength = 44.0f;
+
 static NSTimeInterval const kCSNotificationViewDefaultShowDuration = 2.0;
+static NSTimeInterval const kCSNotificationViewLongShowDuration = 4.0;
 
 typedef NS_ENUM(NSInteger, CSNotificationViewStyle) {
     CSNotificationViewStyleSuccess,
@@ -24,9 +26,10 @@ typedef void(^CSVoidBlock)();
 
 #pragma mark + quick presentation
 
-+ (void)showInViewController:(UIViewController*)viewController
-             style:(CSNotificationViewStyle)style
-           message:(NSString*)message;
++ (void)showInViewController:(UIViewController *)viewController
+                       style:(CSNotificationViewStyle)style
+                     message:(NSString *)message
+                    duration:(float)duration;
 
 + (void)showInViewController:(UIViewController*)viewController
          tintColor:(UIColor*)tintColor

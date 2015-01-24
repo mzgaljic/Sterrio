@@ -82,12 +82,8 @@
 - (void)preDealloc
 {
     if(dontPreDealloc)
-        return;
-    else   //VC is actually being popped. Must delete the song the user somewhat created
-        [self.tableView cancelEditing];
-    if(! userCreatedHisSong)
-        [self.tableView songEditingWasSuccessful];
-    else
+        return;  //VC is actually being popped. Must delete the song the user somewhat created
+    if(!userCreatedHisSong)
         [self.tableView cancelEditing];
     [self.tableView preDealloc];
     self.tableView = nil;
@@ -459,7 +455,8 @@ static short numberTimesViewHasBeenShown = 0;
 {
     NSNumber *duration = [videoDetails valueForKey:MZKeyVideoDuration];
     newLibSong.duration = duration;
-    newLibSong.song_id = ytVideo.videoId;
+    newLibSong.youtube_id = ytVideo.videoId;
+    userCreatedHisSong = YES;
     [self performSelector:@selector(destructThisVCDelayed) withObject:nil afterDelay:0.2];
 }
 
