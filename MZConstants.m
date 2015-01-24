@@ -13,8 +13,10 @@
 NSString * const MZKeyNumLikes = @"numLikes";
 NSString * const MZKeyNumDislikes = @"numDislikes";
 NSString * const MZKeyVideoDuration = @"videoDuration";
-
 #warning Replace with an official email before making app production ready
 NSString * const MZEmailBugReport = @"marksBetaMusicApp@gmail.com";
+
+short const MZMinutesInAnHour = 60;
+short const MZSecondsInAMinute = 60;
 
 @end

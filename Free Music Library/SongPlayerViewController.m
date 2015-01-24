@@ -283,7 +283,7 @@ static int numTimesVCLoaded = 0;
     [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
 }
 
-#pragma mark - Responding to Player Playback Events (rate, internet connection, etc.)
+#pragma mark - Responding to player playback events (rate, internet connection, etc.) Slider and labels.
 - (IBAction)playbackSliderEditingHasBegun:(id)sender
 {
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
@@ -330,27 +330,33 @@ static int numTimesVCLoaded = 0;
     [self.playbackSlider setValue:(currentTimeValue) animated:YES];
 }
 
+static NSString *secondsToStringReturn = @"";
+static NSUInteger totalSeconds;
+static NSUInteger totalMinutes;
+static short seconds;
+static short minutes;
+static short hours;
 - (NSString *)convertSecondsToPrintableNSStringWithSliderValue:(float)value
 {
-    NSUInteger totalSeconds = value;
-    NSString *returnString;
-    short  seconds = totalSeconds % 60;
-    short minutes = (totalSeconds / 60) % 60;
-    short hours = (short)totalSeconds / 3600;
+    totalSeconds = value;
+    seconds = totalSeconds % MZSecondsInAMinute;
+    totalMinutes = totalSeconds / MZSecondsInAMinute;
+    minutes = totalSeconds % MZMinutesInAnHour;
+    hours = (short)totalMinutes / MZMinutesInAnHour;
     
     if(minutes < 10 && hours == 0)  //we can shorten the text
-        returnString = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
+        secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
     
     else if(hours > 0)
     {
-        if(hours < 9)
-            returnString = [NSString stringWithFormat:@"%i:%02d:%02d",hours, minutes, seconds];
+        if(hours <= 9)
+            secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d:%02d",hours,minutes,seconds];
         else
-            returnString = [NSString stringWithFormat:@"%02d:%02d:%02d",hours, minutes, seconds];
+            secondsToStringReturn = [NSString stringWithFormat:@"%02d:%02d:%02d",hours,minutes, seconds];
     }
     else
-        returnString = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
-    return returnString;
+        secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
+    return secondsToStringReturn;
 }
 
 - (void)accomodateInterfaceBasedOnDurationLabelSize:(UILabel *)changedLabel

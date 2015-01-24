@@ -15,4 +15,7 @@ extern NSString * const MZKeyNumDislikes;
 extern NSString * const MZKeyVideoDuration;
 extern NSString * const MZEmailBugReport;
 
+extern short const MZMinutesInAnHour;
+extern short const MZSecondsInAMinute;
+
 @end
