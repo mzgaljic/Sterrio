@@ -14,8 +14,6 @@
 {
     YouTubeVideo *ytVideo;
     MPMoviePlayerController *videoPlayerViewController;
-    UIView *placeHolderView;
-    UIBarButtonItem *addToLibraryButton;
     BOOL enoughSongInformationGiven;
     BOOL doneTappedInVideo;
     BOOL pausedBeforePopAttempt;
@@ -318,7 +316,7 @@ static short numberTimesViewHasBeenShown = 0;
         frameHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:frameWidth];
     }
     
-    placeHolderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
+    UIView *placeHolderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
     [placeHolderView setBackgroundColor:[UIColor colorWithPatternImage:
                                          [UIImage imageWithColor:[UIColor clearColor] width:placeHolderView.frame.size.width height:placeHolderView.frame.size.height]]];
     
@@ -366,30 +364,6 @@ static short numberTimesViewHasBeenShown = 0;
      }];
 }
 
-#pragma mark - Toolbar button code
-- (void)setUpAddToLibraryButton
-{
-    addToLibraryButton = [[UIBarButtonItem alloc] initWithTitle:@"Add To Library"
-                                                           style:UIBarButtonItemStyleDone
-                                                          target:self
-                                                          action:@selector(addToLibraryButtonTapped)];
-    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
-    [self makeBarButtonItemGrey:addToLibraryButton];
-    [self.navigationController.toolbar setItems:@[flexibleSpace, addToLibraryButton] animated:YES];
-}
-
-- (void)makeBarButtonItemGrey:(UIBarButtonItem *)barButton
-{
-    barButton.style = UIBarButtonItemStylePlain;
-    barButton.enabled = false;
-}
-
-- (void)makeBarButtonItemNormal:(UIBarButtonItem *)barButton
-{
-    barButton.style = UIBarButtonItemStyleDone;
-    barButton.enabled = true;
-}
-
 #pragma mark - Share Button Tapped
 - (void)shareButtonTapped
 {
@@ -427,12 +401,6 @@ static short numberTimesViewHasBeenShown = 0;
     return YES;
 }
 
--(NSUInteger)supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationMaskPortrait;
-}
-
-
 #pragma mark - Managing video detail fetch response
 - (void)detailsHaveBeenFetchedForYouTubeVideo:(YouTubeVideo *)video details:(NSDictionary *)details
 {
@@ -440,6 +408,7 @@ static short numberTimesViewHasBeenShown = 0;
         if(details){
             videoDetails = [details copy];
             details = nil;
+            //[self.tableView canShowAddToLibraryButton];
         }
     }else
         return;
@@ -447,11 +416,11 @@ static short numberTimesViewHasBeenShown = 0;
 
 - (void)networkErrorHasOccuredFetchingVideoDetailsForVideo:(YouTubeVideo *)video
 {
-    if([video.videoId isEqualToString:ytVideo.videoId]){
-        //notify user about the problem
-#warning not implemented
-    } else
-        //false alarm about a problem that occured with a previous fetch? Disregard.
+    if([video.videoId isEqualToString:ytVideo.videoId])
+        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_PotentialVideoDurationFetchFail];
+    else
+        //false alarm about a problem that occured with a previous fetch?
+        //who knows when this would happen lol. Disregard this case.
         return;
 }
 
@@ -460,6 +429,14 @@ static short numberTimesViewHasBeenShown = 0;
 {
     dontPreDealloc = YES;
     [self presentViewController:vc animated:YES completion:nil];
+}
+
+- (void)performCleanupBeforeSongIsSaved:(Song *)newLibSong
+{
+    NSNumber *duration = [videoDetails valueForKey:MZKeyVideoDuration];
+    newLibSong.duration = duration;
+    [self preDealloc];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

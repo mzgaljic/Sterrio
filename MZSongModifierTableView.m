@@ -9,6 +9,10 @@
 #import "MZSongModifierTableView.h"
 
 @interface MZSongModifierTableView ()
+{
+    BOOL canShowAddtoLibButton;
+    UIActivityIndicatorView *spinner;
+}
 @property (nonatomic, strong) UIImage *currentAlbumArt;
 @property (nonatomic, strong) UIImage *currentSmallAlbumArt;
 @property (nonatomic, assign) BOOL creatingANewSong;
@@ -105,12 +109,17 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     //change background color of tableview
     self.backgroundColor = [UIColor groupTableViewBackgroundColor];
     self.VC.parentViewController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    [self performSelector:@selector(reloadData) withObject:nil afterDelay:0.2];
+    //[self performSelector:@selector(reloadData) withObject:nil afterDelay:0.2];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [[NSNotificationCenter defaultCenter]removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+}
+
+- (void)canShowAddToLibraryButton
+{
+    canShowAddtoLibButton = YES;
 }
 
 - (void)didReceiveMemoryWarning
@@ -124,18 +133,24 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 #pragma mark - Tableview delegate implementations
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    if(self.creatingANewSong)
-        return 1;
-    else
+    if(_creatingANewSong && _songIAmEditing.songName.length > 0)
         return 2;
+    else
+        return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if(section == 0)  //rows for editing
         return 5;
-    if(section == 1)  //row to delete this song
-        return 1;
+    if(section == 1){  //row to delete this song
+        if(_creatingANewSong && _songIAmEditing.songName.length > 0)
+            return 1;
+        else if(_creatingANewSong)
+            return 0;
+        else
+            return 1;
+    }
     else
         return -1;  //crash the app lol
 }
@@ -144,7 +159,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 {
     UITableViewCell *cell;
     if(indexPath.section == 0){
-        
+
         static NSString *cellIdentifier = @"detail label cell";
         cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
         if(cell == nil)
@@ -152,12 +167,11 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                                           reuseIdentifier:cellIdentifier];
         if(indexPath.row == 0){  //song name
             cell.textLabel.text = @"Song Name";
-            if(_songIAmEditing.songName){
+            if(_songIAmEditing.songName)
                 cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:_songIAmEditing.songName];
-            } else{
+            else
                 cell.detailTextLabel.text = nil;
-                cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[UIColor defaultAppColorScheme] lighterColor]];
-            }
+            cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[UIColor defaultAppColorScheme] lighterColor]];
             
         } else if(indexPath.row == 1){  //artist
             cell.textLabel.text = @"Artist";
@@ -194,16 +208,33 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
             return nil;
     }
     else if(indexPath.section == 1){
-        static NSString *cellIdentifier = @"deleteCell";
+        static NSString *cellIdentifier = @"bottomActionCell";  //delete button or "add to lib" button
         cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
         if(cell == nil)
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                           reuseIdentifier:cellIdentifier];
-        if(indexPath.row == 0){  //Delete song text
-            cell.textLabel.text = @"Delete Song";
-            cell.textLabel.font = [UIFont boldSystemFontOfSize:17.0f];
+        if(indexPath.row == 0){
+            if(! _creatingANewSong){
+                cell.textLabel.text = @"Delete Song";
+                cell.textLabel.textColor = [UIColor redColor];
+                
+            } else if(_creatingANewSong && _songIAmEditing.songName.length > 0
+                      && canShowAddtoLibButton){
+                cell.textLabel.text = @"Add to library";
+                cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+                [spinner stopAnimating];
+                spinner = nil;
+                
+            } else if(_creatingANewSong && _songIAmEditing.songName.length > 0){
+                //song name provided, but not all video info needed has loaded
+                cell.textLabel.text = @"   Loading additional video info...";
+                cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+                spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                cell.accessoryView = spinner;
+                [spinner startAnimating];
+            }
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
-            cell.textLabel.textColor = [UIColor redColor];
+            cell.textLabel.font = [UIFont boldSystemFontOfSize:17.0f];
         }
     }
     
@@ -227,12 +258,9 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     return NO;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+- (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if(section == 0 && _creatingANewSong)
-            return @"Create a song";
-    else
-        return @" ";
+    return 10;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -361,13 +389,29 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     
     if(indexPath.section == 1){
         if(indexPath.row == 0){
-            //check if song is in queue
-            [MusicPlaybackController songAboutToBeDeleted:_songIAmEditing];
-            [_songIAmEditing removeAlbumArt];
-            
-            [[CoreDataManager context] deleteObject:_songIAmEditing];
-            [[CoreDataManager sharedInstance] saveContext];
-            [self.VC dismissViewControllerAnimated:YES completion:nil];
+            if(! _creatingANewSong){
+                //check if song is in queue, we are about to delete it
+                [MusicPlaybackController songAboutToBeDeleted:_songIAmEditing];
+                [_songIAmEditing removeAlbumArt];
+                
+                [[CoreDataManager context] deleteObject:_songIAmEditing];
+                [[CoreDataManager sharedInstance] saveContext];
+                [self.VC dismissViewControllerAnimated:YES completion:nil];
+            } else{
+                if(! canShowAddtoLibButton)
+                    return;
+                
+                //save song into library
+                NSError *error;
+                [[CoreDataManager context] save:&error];
+                
+                if(error)
+                    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveHasFailed];
+                else
+                    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveSuccess];
+                
+                [self.theDelegate leaveSongCreation];
+            }
         } else
             return;
     }
@@ -383,14 +427,29 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     
     if([_songIAmEditing.songName isEqualToString:newName])
         return;
-    if(newName.length == 0)  //was all whitespace, or user gave us an empty string
+    if(newName.length == 0){  //was all whitespace, or user gave us an empty string
+        if(_creatingANewSong){
+            _songIAmEditing.songName = nil;
+            _songIAmEditing.smartSortSongName = nil;
+        }
+        [self performSelector:@selector(reloadSongNameCell) withObject:nil afterDelay:0.5];
         return;
+    }
     
     _songIAmEditing.songName = newName;
     _songIAmEditing.smartSortSongName = [newName regularStringToSmartSortString];
-    if(_songIAmEditing.smartSortSongName.length == 0)  //edge case...if name itself is just something like 'the', dont remove all characters! Keep original name.
+    //edge case, if name is something like 'the', dont remove all characters! Keep original name.
+    if(_songIAmEditing.smartSortSongName.length == 0)
         _songIAmEditing.smartSortSongName = newName;
-    [self reloadData];
+    [self performSelector:@selector(reloadSongNameCell) withObject:nil afterDelay:0.5];
+}
+
+- (void)reloadSongNameCell
+{
+    [self beginUpdates];
+    [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]]
+                withRowAnimation:UITableViewRowAnimationAutomatic];
+    [self endUpdates];
 }
 
 - (void)artistNameCreationCompleteAndSetUpArtist:(NSNotification *)notification
@@ -404,14 +463,18 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
         return;
     
     Artist *newArtist;
-    if(_songIAmEditing.album)
-        newArtist = [Artist createNewArtistWithName:artistName usingAlbum:_songIAmEditing.album inManagedContext:[CoreDataManager context]];
+    if(_songIAmEditing.album){  //song had album
+        if(! _songIAmEditing.album.artist){  //album does NOT have an artist
+            newArtist = [Artist createNewArtistWithName:artistName usingAlbum:_songIAmEditing.album inManagedContext:[CoreDataManager context]];
+        } else{  //album already has artist, remove this song from the album.
+            _songIAmEditing.album = nil;
+        }
+    }
     else
         newArtist = [Artist createNewArtistWithName:artistName inManagedContext:[CoreDataManager context]];
     if(_songIAmEditing.artist)
         [[CoreDataManager context] deleteObject:_songIAmEditing.artist];
     _songIAmEditing.artist = newArtist;
-    
     [self reloadData];
 }
 
@@ -435,7 +498,6 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     _songIAmEditing.album = newAlbum;
     if(_songIAmEditing.artist)
         newAlbum.artist = _songIAmEditing.artist;
-    
     [self reloadData];
 }
 

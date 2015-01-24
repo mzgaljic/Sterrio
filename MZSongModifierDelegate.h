@@ -11,5 +11,6 @@
 @protocol MZSongModifierDelegate <NSObject>
 
 - (void)pushThisVC:(UIViewController *)vc;
+- (void)leaveSongCreation;
 
 @end

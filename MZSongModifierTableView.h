@@ -47,6 +47,8 @@
 - (void)viewDidAppear:(BOOL)animated;
 - (void)didReceiveMemoryWarning;
 
+- (void)canShowAddToLibraryButton;
+
 //optional but very important methods
 - (void)cancelEditing;
 - (void)songEditingWasSuccessful;

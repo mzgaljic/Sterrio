@@ -12,7 +12,6 @@
 #import "YouTubeVideoDetailLookupDelegate.h"
 #import "YouTubeVideo.h"
 #import "TBXML.h"
-#import "MZConstants.h"
 
 @interface YouTubeVideoSearchService : NSObject <NSURLConnectionDelegate>
 

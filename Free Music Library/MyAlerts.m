@@ -23,9 +23,7 @@
         {
             //alert user to internet problem
             NSString *msg = @"Cannot connect to YouTube.";
-            
-            UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];
-            [[keyWindow visibleViewController] dismissViewControllerAnimated:YES completion:nil];
+            [MyAlerts dismissCurrentViewController];
             [[SongPlayerCoordinator sharedInstance] performSelector:@selector(beginShrinkingVideoPlayer)
                                                          withObject:nil
                                                          afterDelay:0.3];
@@ -34,15 +32,19 @@
         }
         case ALERT_TYPE_CannotLoadVideo:
         {
-            //alert user to internet problem
-            NSString *msg = @"Error: Could not load song.";
+            NSString *msg = @"An unknown problem occured while loading your song.";
             [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
             break;
         }
         case ALERT_TYPE_FatalSongDurationError:
         {
-            //alert user to internet problem
-            NSString *msg = @"Error: Cannot determine song duration.";
+            NSString *msg = @"Total Song duration is not available.";
+            [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleInfo delay:0];
+            break;
+        }
+        case ALERT_TYPE_PotentialVideoDurationFetchFail:
+        {
+            NSString *msg = @"This video cannot be saved in its current state. An error has occured while fetching the information necessary to save this video.";
             [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
             break;
         }
@@ -50,16 +52,17 @@
         {
             [MusicPlaybackController longVideoSkippedOnCellularConnection];
             
-            if([[UIApplication sharedApplication] applicationState] == UIApplicationStateActive){
+            if([[UIApplication sharedApplication] applicationState] == UIApplicationStateActive)
+            {
                 NSString *msg;
                 
                 int numSkipped = [MusicPlaybackController numLongVideosSkippedOnCellularConnection];
                 if(numSkipped == 0)
                     return;
                 else if (numSkipped == 1)
-                    msg = @"1 Song was skipped.";
+                    msg = @"1 Song was skipped. Long songs are skipped on a cellular connection.";
                 else
-                    msg = [NSString stringWithFormat:@"%i Songs skipped.", numSkipped];
+                    msg = [NSString stringWithFormat:@"%i Songs skipped. Long songs are skipped on a cellular connection.", numSkipped];
                 
                 [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleInfo delay:0.6];
                 [MusicPlaybackController resetNumberOfLongVideosSkippedOnCellularConnection];
@@ -69,28 +72,50 @@
         }
         case ALERT_TYPE_TroubleSharingVideo:
         {
-            NSString *msg = @"There was a problem sharing this video.";
+            NSString *msg = @"Sorry, this video could not be shared.";
             [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
             break;
         }
         case ALERT_TYPE_TroubleSharingLibrarySong:
         {
-            NSString *msg = @"There was a problem sharing this song.";
+            NSString *msg = @"Sorry, this song could not be shared.";
             [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
             break;
         }
         case ALERT_TYPE_CannotOpenSafariError:
         {
-            NSString *msg = @"A problem occured launching Safari.";
+            NSString *msg = @"Whoops, something went wrong trying to launch Safari.";
             [MyAlerts displayBannerWithMsg:msg style:CSNotificationViewStyleError delay:0];
             break;
+        }
+        case ALERT_TYPE_SongSaveSuccess:
+        {
+            NSString *msg = @"Song saved.";
+            [MyAlerts displayBannerWithMsg:msg
+                                     style:CSNotificationViewStyleSuccess
+                                     delay:0.6];
+        }
+        case ALERT_TYPE_SongSaveHasFailed:
+        {
+            NSString *msg = @"Oh no! Something went wrong saving your song.";
+            [MyAlerts displayBannerWithMsg:msg
+                                     style:CSNotificationViewStyleError
+                                     delay:0.6];
         }
         default:
             break;
     }
 }
 
-+ (void)displayBannerWithMsg:(NSString *)msg style:(CSNotificationViewStyle)style delay:(float)seconds
++ (void)dismissCurrentViewController
+{
+    UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];
+    [[keyWindow visibleViewController] dismissViewControllerAnimated:YES completion:nil];
+}
+
++ (void)displayBannerWithMsg:(NSString *)msg
+                       style:(CSNotificationViewStyle)style
+                       delay:(float)seconds
 {
     if(seconds == 0){
         UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];

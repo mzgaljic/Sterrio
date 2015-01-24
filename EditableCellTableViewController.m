@@ -150,7 +150,7 @@
 }
 - (void)setPortraitTableViewContentValues
 {
-    //remove header gap at top of table, and remove some scrolling space under the delete button (update scroll insets too)
+    //remove header gap at top of table
     [self.tableView setContentInset:UIEdgeInsetsMake(68,0,-68,0)];
     [self.tableView setScrollIndicatorInsets:UIEdgeInsetsMake(68,0,-68,0)];
 }

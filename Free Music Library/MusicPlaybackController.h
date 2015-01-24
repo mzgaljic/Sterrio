@@ -27,7 +27,7 @@
 
 /** Stops playback if the song (x) to be deleted is the now playing song. If x is in the playback queue,
  it is removed. All deletions (of songs, artists, etc) taking place ANYWHERE in the application should
- call this method as a "heads up" to avoid potential problems. **/
+ call this method as a "heads up" to avoid potential problems. */
 + (void)songAboutToBeDeleted:(Song *)song;
 
 /** Stops playback if any of the songs in the group (x) to be deleted is the now playing song. Any songs

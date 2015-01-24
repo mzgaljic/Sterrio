@@ -7,8 +7,12 @@
 #import <Availability.h>  //An Apple class
 #import <CSNotificationView.h>  //notification banners/alerts
 #import "MyAlerts.h"  //my custom class for displaying alerts from anywhere
-#import "SongPlayerViewDisplayUtility.h"  //helps to segue to video player view from anywhere,
-                                          //determine aspect ratio for player based on width, etc.
+
+//helps to segue to video player view from anywhere,
+//determine aspect ratio for player based on width, etc.
+#import "SongPlayerViewDisplayUtility.h"
+
+#import "MZConstants.h"
 #import "UIColor+SystemTintColor.h"
 
 #ifndef __IPHONE_5_0
