@@ -29,6 +29,7 @@
 #import "MyViewController.h"
 #import <MarqueeLabel.h>
 #import <JAMAccurateSlider.h>
+#import <GCDiscreetNotificationView.h>
 
 
 @class MusicPlaybackController;

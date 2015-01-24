@@ -981,7 +981,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="youtubeResultCell" rowHeight="85" id="Tmz-oB-veX" customClass="CustomYoutubeTableViewCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="youtubeResultCell" rowHeight="85" id="Tmz-oB-veX" customClass="CustomYoutubeTableViewCell">
                                 <rect key="frame" x="0.0" y="119" width="320" height="85"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Tmz-oB-veX" id="E6x-Yk-50v">
@@ -989,11 +989,11 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="if9-zZ-fs5">
-                                            <rect key="frame" x="2" y="2" width="142" height="80"/>
+                                            <rect key="frame" x="2" y="2" width="109" height="80"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         </imageView>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="EIo-UR-IOF">
-                                            <rect key="frame" x="152" y="58" width="170" height="21"/>
+                                            <rect key="frame" x="152" y="58" width="137" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -1013,6 +1013,7 @@
                                     <outlet property="videoChannel" destination="EIo-UR-IOF" id="ekf-aG-yoP"/>
                                     <outlet property="videoThumbnail" destination="if9-zZ-fs5" id="uVB-J2-Pvd"/>
                                     <outlet property="videoTitle" destination="QxY-xQ-Ffm" id="CSs-st-eeV"/>
+                                    <segue destination="eu9-xL-U3Q" kind="push" identifier="fakeUnusedSegue" id="SS0-Io-Hxy"/>
                                 </connections>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="youtubeSuggsestCell" textLabel="TaK-SK-AqN" style="IBUITableViewCellStyleDefault" id="uic-nJ-JbA">
@@ -1060,7 +1061,6 @@
                     <navigationItem key="navigationItem" title="Add Music" id="1ir-IH-i0n"/>
                     <connections>
                         <outlet property="navBar" destination="1ir-IH-i0n" id="1z7-dg-CB9"/>
-                        <segue destination="eu9-xL-U3Q" kind="push" id="wtQ-Or-n5k"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dhL-xL-Ac8" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1080,7 +1080,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yPc-CM-KrZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-339" y="2639"/>
+            <point key="canvasLocation" x="-375" y="2639"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="b6l-XS-vJ8">
@@ -1152,8 +1152,8 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="pPM-be-vV0"/>
-        <segue reference="Mvp-5d-lNL"/>
+        <segue reference="Ng7-YK-K4e"/>
+        <segue reference="cmg-e5-xSB"/>
         <segue reference="7Sy-qq-35y"/>
     </inferredMetricsTieBreakers>
 </document>

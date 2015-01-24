@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EA32AFCEEDCA94AFAACA2E52"
-               BuildableName = "libPods-SDCAutoLayout.a"
-               BlueprintName = "Pods-SDCAutoLayout"
+               BlueprintIdentifier = "789D4CD9C624FE44BC0C3064"
+               BuildableName = "libPods-GCDiscreetNotificationView.a"
+               BlueprintName = "Pods-GCDiscreetNotificationView"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

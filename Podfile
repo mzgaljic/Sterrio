@@ -36,3 +36,6 @@ pod 'AFBlurSegue', '~> 1.2'
 
 #drop in uislider replacement allowing fine grain selection
 pod 'JAMAccurateSlider', '~> 1.1'
+
+#discrete message at top of screen for user (used for slider touch)
+pod 'GCDiscreetNotificationView', '~> 1.0'

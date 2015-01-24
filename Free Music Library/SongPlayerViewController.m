@@ -27,6 +27,8 @@ typedef enum{
     NSString *songLabel;
     NSString *artistAlbumLabel;
     
+    GCDiscreetNotificationView *sliderHint;  //slider hint
+    
     BOOL playerButtonsSetUp;
     DurationLabelStates stateOfDurationLabels;
     GUIPlaybackState stateOfGUIPlayback;
@@ -307,6 +309,16 @@ static int numTimesVCLoaded = 0;
 #pragma mark - Responding to player playback events (rate, internet connection, etc.) Slider and labels.
 - (IBAction)playbackSliderEditingHasBegun:(id)sender
 {
+    NSString *hint = @"Slide ↑ or ↓ to fine-tune accuracy.";
+    int presentationMode = GCDiscreetNotificationViewPresentationModeTop;
+    if(! sliderHint)
+        sliderHint = [[GCDiscreetNotificationView alloc] initWithText:hint
+                                                         showActivity:NO
+                                                   inPresentationMode:presentationMode
+                                                               inView:self.view];
+    if(sliderHint)
+        [sliderHint showAnimated];
+    
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     if(player.rate == 0)
         playAfterMovingSlider = NO;
@@ -320,6 +332,7 @@ static int numTimesVCLoaded = 0;
     if(playAfterMovingSlider)
         [[MusicPlaybackController obtainRawAVPlayer] play];
     playAfterMovingSlider = YES;  //reset value
+    [sliderHint hideAnimated];
 }
 - (IBAction)playbackSliderEditingHasEndedB:(id)sender  //touch up outside
 {

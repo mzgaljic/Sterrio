@@ -36,6 +36,7 @@ PODS:
   - DZNPhotoPickerController/Services (1.6.1):
     - AFNetworking (= 2.4.1)
     - GROAuth2SessionManager (= 0.2.3)
+  - GCDiscreetNotificationView (1.0.2)
   - GROAuth2SessionManager (0.2.3):
     - AFNetworking (~> 2.4.1)
   - JAMAccurateSlider (1.1.0)
@@ -87,6 +88,7 @@ DEPENDENCIES:
   - ASValueTrackingSlider
   - CSNotificationView (~> 0.5)
   - DZNPhotoPickerController
+  - GCDiscreetNotificationView (~> 1.0)
   - JAMAccurateSlider (~> 1.1)
   - MarqueeLabel
   - MRProgress
@@ -103,6 +105,7 @@ SPEC CHECKSUMS:
   CSNotificationView: e4d26da44dfb569ab284949c822a8239f23cc13d
   DZNEmptyDataSet: aa20600aff620af3d78edbff4bc47282972e815f
   DZNPhotoPickerController: b160709441243eeed87cd998d2b92da1f6d91840
+  GCDiscreetNotificationView: e74f7fe64167edab50b00641e054929315d59af5
   GROAuth2SessionManager: d40e386b9e865806687b4b818964efb3ac6db952
   JAMAccurateSlider: e810f5397ec6735ae9d6d443528e63491cf62f35
   MarqueeLabel: cd721cabcfce98591ef835e2c5bd29de92d9ebc9
