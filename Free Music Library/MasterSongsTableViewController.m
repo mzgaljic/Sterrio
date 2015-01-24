@@ -210,27 +210,6 @@ static BOOL lastSortOrder;
     [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
-    [self performSelector:@selector(showFailAlert) withObject:nil afterDelay:1];
-    [self performSelector:@selector(showSuccessAlert) withObject:nil afterDelay:8];
-    [self performSelector:@selector(showInfoAlert) withObject:nil afterDelay:15];
-}
-
-- (void)showFailAlert
-{
-    //long alert
-    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveHasFailed];
-}
-
-- (void)showSuccessAlert
-{
-    //default length alert
-    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveSuccess];
-}
-
-- (void)showInfoAlert
-{
-    //long alert
-    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
 }
 
 - (void)viewDidLoad

@@ -83,15 +83,6 @@ static const short APP_LAUNCHED_ALREADY = 1;
     }
 }
 
-- (void)tryPlayingAgain
-{
-    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
-    if(player != nil){
-        if(player.rate == 1 && !resumePlaybackAfterInterruption)
-            [player play];
-    }
-}
-
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     //display how many songs were skipped while user was in background (long videos skipped)

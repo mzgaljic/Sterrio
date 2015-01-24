@@ -15,6 +15,7 @@
     NSURL *currentItemLink;
     BOOL movingForward;  //identifies which direction the user just went (back/forward) in queue
     int secondsSinceWeCheckedInternet;
+    BOOL allowSongDidFinishToExecute;
     
     NSString * NEW_SONG_IN_AVPLAYER;
     NSString * AVPLAYER_DONE_PLAYING;
@@ -34,7 +35,11 @@
         playerItem = self.currentItem;
         secondsSinceWeCheckedInternet = 0;
         
-        [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(checkInternetStatus) userInfo:nil repeats:YES];
+        [NSTimer scheduledTimerWithTimeInterval:1.0f
+                                         target:self
+                                       selector:@selector(checkInternetStatus)
+                                       userInfo:nil
+                                        repeats:YES];
         [self begingListeningForNotifications];
     }
     return self;
@@ -68,6 +73,10 @@
 //Will be called when YTVideoAvPlayer finishes playing a YTVideoPlayerItem
 - (void)songDidFinishPlaying:(NSNotification *) notification
 {
+    if(! allowSongDidFinishToExecute)
+        return;
+    allowSongDidFinishToExecute = NO;
+    
     if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more songs in queue
         if(movingForward)
             [MusicPlaybackController skipToNextTrack];
@@ -102,7 +111,8 @@
         usingWifi = YES;
     
     if(! usingWifi && status != NotReachable){
-        if([weakDuration integerValue] >= 600)  //user cant watch video longer than 10 minutes without wifi
+        if([weakDuration integerValue] >= 600)
+            //user cant watch video longer than 10 minutes without wifi
             allowedToPlayVideo = NO;
     } else if(! usingWifi && status == NotReachable){
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
@@ -116,6 +126,7 @@
             [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
             //triggers the next song to play (for whatever reason/error)
             [self performSelector:@selector(songDidFinishPlaying:) withObject:nil afterDelay:0.01];
+            allowSongDidFinishToExecute = YES;
         }
         return;
     }
@@ -139,6 +150,7 @@
         else
         {
             NetworkStatus internetStatus = [reachability currentReachabilityStatus];
+            allowSongDidFinishToExecute = YES;
             if (internetStatus == NotReachable){
                 [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
                 [MusicPlaybackController declareInternetProblemWhenLoadingSong:YES];
@@ -155,7 +167,8 @@
         }
         
         AVURLAsset *asset = [AVURLAsset assetWithURL: currentItemLink];
-
+        allowSongDidFinishToExecute = YES;
+        
         if(allowedToPlayVideo && video != nil){
             playerItem = [AVPlayerItem playerItemWithAsset: asset];
             [weakSelf replaceCurrentItemWithPlayerItem:playerItem];

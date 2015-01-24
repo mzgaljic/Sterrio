@@ -15,11 +15,10 @@
 {
     [super viewWillAppear:animated];
     //set color of tab bar
-    //self.tabBar.barTintColor = [UIColor defaultAppColorScheme];
-    self.tabBar.barTintColor = [UIColor whiteColor];
+    self.tabBar.barTintColor = [UIColor defaultAppColorScheme];
     
     //set color of buttons
-    self.tabBar.tintColor = [[[[UIColor defaultAppColorScheme] lighterColor] lighterColor] lighterColor];
+    self.tabBar.tintColor = [UIColor defaultWindowTintColor];
 }
 
 - (void)viewWillDisappear:(BOOL)animated

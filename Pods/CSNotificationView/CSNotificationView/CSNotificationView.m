@@ -557,21 +557,21 @@
         case CSNotificationViewStyleSuccess:
             //greenish color
             blurTintColor = [UIColor colorWithRed:98.0f/255.0f
-                                            green:160.0f/255.0f
+                                            green:175.0f/255.0f
                                              blue:72.0f/255.0f
                                             alpha:1.0f];
             break;
         case CSNotificationViewStyleError:
             //redish color...
-            blurTintColor = [UIColor colorWithRed:213.0f/255.0f
-                                            green:73.0f/255.0f
-                                             blue:65.0f/255.0f
+            blurTintColor = [UIColor colorWithRed:210.0f/255.0f
+                                            green:29.0f/255.0f
+                                             blue:3.0f/255.0f
                                             alpha:1.0f];
             break;
         case CSNotificationViewStyleInfo:
             //yellowish color...
             blurTintColor = [UIColor colorWithRed:245.0f/255.0f
-                                            green:231.0f/255.0f
+                                            green:215.0f/255.0f
                                              blue:55.0f/255.0f
                                             alpha:1.0f];
         default:
