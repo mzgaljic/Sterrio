@@ -403,14 +403,13 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                 
                 //save song into library
                 NSError *error;
+                [self.theDelegate performCleanupBeforeSongIsSaved:_songIAmEditing];
                 [[CoreDataManager context] save:&error];
                 
                 if(error)
                     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveHasFailed];
                 else
                     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveSuccess];
-                
-                [self.theDelegate performCleanupBeforeSongIsSaved:_songIAmEditing];
             }
         } else
             return;

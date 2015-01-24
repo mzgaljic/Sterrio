@@ -459,6 +459,12 @@ static short numberTimesViewHasBeenShown = 0;
 {
     NSNumber *duration = [videoDetails valueForKey:MZKeyVideoDuration];
     newLibSong.duration = duration;
+    newLibSong.song_id = ytVideo.videoId;
+    [self performSelector:@selector(destructThisVCDelayed) withObject:nil afterDelay:0.2];
+}
+
+- (void)destructThisVCDelayed
+{
     [self preDealloc];
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
