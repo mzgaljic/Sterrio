@@ -410,7 +410,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                 else
                     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveSuccess];
                 
-                [self.theDelegate leaveSongCreation];
+                [self.theDelegate performCleanupBeforeSongIsSaved:_songIAmEditing];
             }
         } else
             return;

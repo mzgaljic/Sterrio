@@ -274,4 +274,22 @@ static const short SMALL_VIDEO_WIDTH = 200;
     return CGPointMake(widthOfScreenRoationIndependant, heightOfScreenRotationIndependant);
 }
 
+- (void)temporarilyDisablePlayer
+{
+    __weak PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    [UIView animateWithDuration:1.0 animations:^{
+        playerView.alpha = 0.25;
+        playerView.userInteractionEnabled = NO;
+    }];
+}
+
+- (void)enablePlayerAgain
+{
+    __weak PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    [UIView animateWithDuration:1.0 animations:^{
+        playerView.alpha = 1.0;
+        playerView.userInteractionEnabled = YES;
+    }];
+}
+
 @end

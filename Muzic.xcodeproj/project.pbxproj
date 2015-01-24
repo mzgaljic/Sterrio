@@ -76,7 +76,6 @@
 		877C4BAA199FE4CF00CE86BC /* Artist+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 877C4BA9199FE4CF00CE86BC /* Artist+Utilities.m */; };
 		877C4BAD199FE4E700CE86BC /* Playlist+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 877C4BAC199FE4E700CE86BC /* Playlist+Utilities.m */; };
 		8780134F199C854E004727A0 /* ExistingArtistPickerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8780134E199C854E004727A0 /* ExistingArtistPickerTableViewController.m */; };
-		878519C9199400C200A573A9 /* YouTubeVideoPlaybackTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878519C8199400C200A573A9 /* YouTubeVideoPlaybackTableViewController.m */; };
 		878519D21994327C00A573A9 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 878519D01994327C00A573A9 /* Reachability.m */; };
 		878ACD64192D48EF005938F5 /* MasterSongsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878ACD63192D48EF005938F5 /* MasterSongsTableViewController.m */; };
 		879112FF197EF90E00DFC2DB /* PlaylistTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 879112FE197EF90E00DFC2DB /* PlaylistTableViewFormatter.m */; };
@@ -269,8 +268,6 @@
 		877C4BAC199FE4E700CE86BC /* Playlist+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Playlist+Utilities.m"; sourceTree = "<group>"; };
 		8780134D199C854E004727A0 /* ExistingArtistPickerTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExistingArtistPickerTableViewController.h; sourceTree = "<group>"; };
 		8780134E199C854E004727A0 /* ExistingArtistPickerTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExistingArtistPickerTableViewController.m; sourceTree = "<group>"; };
-		878519C7199400C200A573A9 /* YouTubeVideoPlaybackTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YouTubeVideoPlaybackTableViewController.h; sourceTree = "<group>"; };
-		878519C8199400C200A573A9 /* YouTubeVideoPlaybackTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YouTubeVideoPlaybackTableViewController.m; sourceTree = "<group>"; };
 		878519D01994327C00A573A9 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		878519D11994327C00A573A9 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		878ACD62192D48EF005938F5 /* MasterSongsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterSongsTableViewController.h; sourceTree = "<group>"; };
@@ -678,7 +675,6 @@
 			children = (
 				8750157E198C3D5300382945 /* YoutubeResultsTableViewController.h */,
 				8750157F198C3D5300382945 /* YoutubeResultsTableViewController.m */,
-				87FB3A6D1A5A468A006F3163 /* Old */,
 				87FB3A6A1A5A4682006F3163 /* YouTubeSongAdderViewController.h */,
 				87FB3A6B1A5A4682006F3163 /* YouTubeSongAdderViewController.m */,
 			);
@@ -1058,15 +1054,6 @@
 			name = "Settings View";
 			sourceTree = "<group>";
 		};
-		87FB3A6D1A5A468A006F3163 /* Old */ = {
-			isa = PBXGroup;
-			children = (
-				878519C7199400C200A573A9 /* YouTubeVideoPlaybackTableViewController.h */,
-				878519C8199400C200A573A9 /* YouTubeVideoPlaybackTableViewController.m */,
-			);
-			name = Old;
-			sourceTree = "<group>";
-		};
 		87FCD02D19A5BC0E00C600D3 /* Custom cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -1346,7 +1333,6 @@
 				870D49E71A6324F2004496A9 /* MZConstants.m in Sources */,
 				871BA88C1A5A2F4000FB87A7 /* Playlist.m in Sources */,
 				87A9AF53199DA36F005B9A5B /* GenreSearchService.m in Sources */,
-				878519C9199400C200A573A9 /* YouTubeVideoPlaybackTableViewController.m in Sources */,
 				870EDAE6197F4EAD001901B9 /* EditableCellTableViewController.m in Sources */,
 				8703442519A01C10002E5077 /* CoreDataTableViewController.m in Sources */,
 				877C4BAA199FE4CF00CE86BC /* Artist+Utilities.m in Sources */,

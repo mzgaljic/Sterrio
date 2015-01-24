@@ -21,6 +21,9 @@
     BOOL dontPreDealloc;
     BOOL playbackBegan;
     NSDictionary *videoDetails;
+    
+    BOOL musicWasPlayingBeforePreviewBegan;
+    BOOL prevMusicPlaybackStateAlreadySaved;
 }
 
 @property (nonatomic, strong) MZSongModifierTableView *tableView;
@@ -51,6 +54,7 @@
                                                  selector:@selector(playerPlaybackStateChanged:)
                                                      name:playbackStateChangedConst
                                                    object:nil];
+        [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
     }
     return self;
 }
@@ -66,6 +70,11 @@
         videoPlayerViewController = nil;
     }
     [[YouTubeVideoSearchService sharedInstance] removeVideoDetailLookupDelegate];
+    if(musicWasPlayingBeforePreviewBegan){
+        [MusicPlaybackController resumePlayback];
+        [MusicPlaybackController explicitlyPausePlayback:NO];
+    }
+    [[SongPlayerCoordinator sharedInstance] enablePlayerAgain];
     
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([YouTubeSongAdderViewController class]));
 }
@@ -333,6 +342,21 @@ static short numberTimesViewHasBeenShown = 0;
     if (videoPlayerViewController.playbackState == MPMoviePlaybackStatePlaying){
         [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
         playbackBegan = YES;
+        
+        if(! prevMusicPlaybackStateAlreadySaved){
+            AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
+            if(player){
+                if(player.rate == 1){
+                    [player performSelector:@selector(pause) withObject:nil afterDelay:0.3];
+                    [MusicPlaybackController pausePlayback];
+                    [MusicPlaybackController explicitlyPausePlayback:YES];
+                    musicWasPlayingBeforePreviewBegan = YES;
+                }
+                else
+                    musicWasPlayingBeforePreviewBegan = NO;
+                prevMusicPlaybackStateAlreadySaved = YES;
+            }
+        }
     }
 }
 
@@ -408,7 +432,7 @@ static short numberTimesViewHasBeenShown = 0;
         if(details){
             videoDetails = [details copy];
             details = nil;
-            //[self.tableView canShowAddToLibraryButton];
+            [self.tableView canShowAddToLibraryButton];
         }
     }else
         return;

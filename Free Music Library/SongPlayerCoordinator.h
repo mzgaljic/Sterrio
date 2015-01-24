@@ -15,6 +15,7 @@
 
 @interface SongPlayerCoordinator : NSObject
 @property (nonatomic, weak) id<VideoPlayerControlInterfaceDelegate>delegate;
+
 + (instancetype)sharedInstance;
 
 - (void)setDelegate:(id<VideoPlayerControlInterfaceDelegate>)theDelegate;
@@ -24,5 +25,8 @@
 - (void)shrunkenVideoPlayerNeedsToBeRotated;
 - (void)shrunkenVideoPlayerShouldRespectToolbar;
 - (void)shrunkenVideoPlayerCanIgnoreToolbar;
+
+- (void)temporarilyDisablePlayer;
+- (void)enablePlayerAgain;
 
 @end
