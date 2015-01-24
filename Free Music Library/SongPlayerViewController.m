@@ -46,7 +46,7 @@ static UIInterfaceOrientation lastKnownOrientation;
 static BOOL playAfterMovingSlider = YES;
 static BOOL sliderIsBeingTouched = NO;
 static BOOL waitingForNextOrPrevVideoToLoad;
-static const short longDurationLabelOffset = 15;
+static const short longDurationLabelOffset = 24;
 
 NSString * const NEW_SONG_IN_AVPLAYER = @"New song added to AVPlayer, lets hope the interface makes appropriate changes.";
 NSString * const AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
@@ -361,8 +361,14 @@ static int hours;
 
 - (void)accomodateInterfaceBasedOnDurationLabelSize:(UILabel *)changedLabel
 {
+    //duration state not set yet, and we are displaying minutes.
+    if(stateOfDurationLabels == DurationLabelStateNotSet && [changedLabel.text length] <= 5){
+        stateOfDurationLabels = DurationLabelStateMinutes;
+        return;
+        //dont need to check for the oppsosite condition here because it works already for hours.
+    }
+
     UILabel *label = changedLabel;
-    NSString *text = label.text;
     short offset = longDurationLabelOffset;
     CGRect originalCurrTimeLabelFrame = _currentTimeLabel.frame;
     CGRect newCurrTimeLabelFrame;
