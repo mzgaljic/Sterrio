@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "117625107CE5089705E8E2F2"
+               BlueprintIdentifier = "93563CFE530A2135459084E1"
                BuildableName = "libPods-DZNEmptyDataSet.a"
                BlueprintName = "Pods-DZNEmptyDataSet"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -42,7 +42,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "117625107CE5089705E8E2F2"
+            BlueprintIdentifier = "93563CFE530A2135459084E1"
             BuildableName = "libPods-DZNEmptyDataSet.a"
             BlueprintName = "Pods-DZNEmptyDataSet"
             ReferencedContainer = "container:Pods.xcodeproj">

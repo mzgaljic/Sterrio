@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "387223C302DEC7ABBD5DBE93"
-               BuildableName = "libPods-CSNotificationView.a"
-               BlueprintName = "Pods-CSNotificationView"
+               BlueprintIdentifier = "A5DA8646F99F2E1FAB961363"
+               BuildableName = "libPods-JAMAccurateSlider.a"
+               BlueprintName = "Pods-JAMAccurateSlider"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -42,9 +42,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "387223C302DEC7ABBD5DBE93"
-            BuildableName = "libPods-CSNotificationView.a"
-            BlueprintName = "Pods-CSNotificationView"
+            BlueprintIdentifier = "A5DA8646F99F2E1FAB961363"
+            BuildableName = "libPods-JAMAccurateSlider.a"
+            BlueprintName = "Pods-JAMAccurateSlider"
             ReferencedContainer = "container:Pods.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

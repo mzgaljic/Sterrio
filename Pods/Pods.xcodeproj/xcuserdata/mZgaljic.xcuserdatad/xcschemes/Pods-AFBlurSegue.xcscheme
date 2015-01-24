@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "162DEA789D5AB3FBA68EB939"
+               BlueprintIdentifier = "574BBA812552ACAC5ADDB019"
                BuildableName = "libPods-AFBlurSegue.a"
                BlueprintName = "Pods-AFBlurSegue"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -42,7 +42,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "162DEA789D5AB3FBA68EB939"
+            BlueprintIdentifier = "574BBA812552ACAC5ADDB019"
             BuildableName = "libPods-AFBlurSegue.a"
             BlueprintName = "Pods-AFBlurSegue"
             ReferencedContainer = "container:Pods.xcodeproj">

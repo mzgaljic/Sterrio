@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0295F61169E6CA5C7E538177"
+               BlueprintIdentifier = "CCE97E1E4E5E7B030279E078"
                BuildableName = "libPods-MarqueeLabel.a"
                BlueprintName = "Pods-MarqueeLabel"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -42,7 +42,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0295F61169E6CA5C7E538177"
+            BlueprintIdentifier = "CCE97E1E4E5E7B030279E078"
             BuildableName = "libPods-MarqueeLabel.a"
             BlueprintName = "Pods-MarqueeLabel"
             ReferencedContainer = "container:Pods.xcodeproj">

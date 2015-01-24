@@ -28,6 +28,7 @@
 #import "MyAlerts.h"
 #import "MyViewController.h"
 #import <MarqueeLabel.h>
+#import <JAMAccurateSlider.h>
 
 
 @class MusicPlaybackController;
@@ -44,6 +45,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *totalDurationLabel;
 @property (weak, nonatomic) IBOutlet MarqueeLabel *songNameLabel;
 @property (weak, nonatomic) IBOutlet ASValueTrackingSlider *playbackSlider;
+
+
 
 - (IBAction)playbackSliderValueHasChanged:(id)sender;
 - (IBAction)playbackSliderEditingHasBegun:(id)sender;

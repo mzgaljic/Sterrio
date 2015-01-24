@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <JAMAccurateSlider.h>
 @protocol ASValueTrackingSliderDelegate;
 @protocol ASValueTrackingSliderDataSource;
 
-@interface ASValueTrackingSlider : UISlider
+@interface ASValueTrackingSlider : JAMAccurateSlider
 
 // present the popUpView manually, without touch event.
 - (void)showPopUpViewAnimated:(BOOL)animated;

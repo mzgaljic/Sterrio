@@ -38,6 +38,7 @@ PODS:
     - GROAuth2SessionManager (= 0.2.3)
   - GROAuth2SessionManager (0.2.3):
     - AFNetworking (~> 2.4.1)
+  - JAMAccurateSlider (1.1.0)
   - MarqueeLabel (2.2.0)
   - MBProgressHUD (0.9)
   - MRProgress (0.8.1):
@@ -86,6 +87,7 @@ DEPENDENCIES:
   - ASValueTrackingSlider
   - CSNotificationView (~> 0.5)
   - DZNPhotoPickerController
+  - JAMAccurateSlider (~> 1.1)
   - MarqueeLabel
   - MRProgress
   - MSCellAccessory (~> 1.1)
@@ -102,6 +104,7 @@ SPEC CHECKSUMS:
   DZNEmptyDataSet: aa20600aff620af3d78edbff4bc47282972e815f
   DZNPhotoPickerController: b160709441243eeed87cd998d2b92da1f6d91840
   GROAuth2SessionManager: d40e386b9e865806687b4b818964efb3ac6db952
+  JAMAccurateSlider: e810f5397ec6735ae9d6d443528e63491cf62f35
   MarqueeLabel: cd721cabcfce98591ef835e2c5bd29de92d9ebc9
   MBProgressHUD: 2038dbcf3dce73215abed6001657043d53aa79a8
   MRProgress: cd12726e001ea25dec133322d34cc4754cbc58f8

@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "058E187B0FEBD3DB65D562D3"
+               BlueprintIdentifier = "604E11A9DFF315A58BD4B75E"
                BuildableName = "libPods-TransitionKit.a"
                BlueprintName = "Pods-TransitionKit"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -42,7 +42,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "058E187B0FEBD3DB65D562D3"
+            BlueprintIdentifier = "604E11A9DFF315A58BD4B75E"
             BuildableName = "libPods-TransitionKit.a"
             BlueprintName = "Pods-TransitionKit"
             ReferencedContainer = "container:Pods.xcodeproj">

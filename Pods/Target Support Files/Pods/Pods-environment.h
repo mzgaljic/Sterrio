@@ -102,6 +102,12 @@
 #define COCOAPODS_VERSION_MINOR_GROAuth2SessionManager 2
 #define COCOAPODS_VERSION_PATCH_GROAuth2SessionManager 3
 
+// JAMAccurateSlider
+#define COCOAPODS_POD_AVAILABLE_JAMAccurateSlider
+#define COCOAPODS_VERSION_MAJOR_JAMAccurateSlider 1
+#define COCOAPODS_VERSION_MINOR_JAMAccurateSlider 1
+#define COCOAPODS_VERSION_PATCH_JAMAccurateSlider 0
+
 // MBProgressHUD
 #define COCOAPODS_POD_AVAILABLE_MBProgressHUD
 #define COCOAPODS_VERSION_MAJOR_MBProgressHUD 0

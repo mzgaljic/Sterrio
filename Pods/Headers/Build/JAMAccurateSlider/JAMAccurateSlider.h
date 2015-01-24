@@ -1,0 +1,1 @@
+../../../JAMAccurateSlider/Classes/JAMAccurateSlider/JAMAccurateSlider.h

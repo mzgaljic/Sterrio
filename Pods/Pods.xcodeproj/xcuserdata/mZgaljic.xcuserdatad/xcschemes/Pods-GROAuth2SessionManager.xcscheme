@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F9AF15F4705F27C6F87462F4"
+               BlueprintIdentifier = "843CB2C9A43D47CC86DEC44B"
                BuildableName = "libPods-GROAuth2SessionManager.a"
                BlueprintName = "Pods-GROAuth2SessionManager"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -42,7 +42,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F9AF15F4705F27C6F87462F4"
+            BlueprintIdentifier = "843CB2C9A43D47CC86DEC44B"
             BuildableName = "libPods-GROAuth2SessionManager.a"
             BlueprintName = "Pods-GROAuth2SessionManager"
             ReferencedContainer = "container:Pods.xcodeproj">

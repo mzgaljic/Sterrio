@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BB888D6B03B96DFCA07C256C"
+               BlueprintIdentifier = "DCC286D68BEE7E2921906198"
                BuildableName = "libPods-XCDYouTubeKit.a"
                BlueprintName = "Pods-XCDYouTubeKit"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -42,7 +42,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BB888D6B03B96DFCA07C256C"
+            BlueprintIdentifier = "DCC286D68BEE7E2921906198"
             BuildableName = "libPods-XCDYouTubeKit.a"
             BlueprintName = "Pods-XCDYouTubeKit"
             ReferencedContainer = "container:Pods.xcodeproj">

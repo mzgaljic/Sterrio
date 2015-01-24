@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0A3BB9CE9194E95425CE5790"
+               BlueprintIdentifier = "B38B06264C493ACC0A583299"
                BuildableName = "libPods-ASValueTrackingSlider.a"
                BlueprintName = "Pods-ASValueTrackingSlider"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -42,7 +42,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0A3BB9CE9194E95425CE5790"
+            BlueprintIdentifier = "B38B06264C493ACC0A583299"
             BuildableName = "libPods-ASValueTrackingSlider.a"
             BlueprintName = "Pods-ASValueTrackingSlider"
             ReferencedContainer = "container:Pods.xcodeproj">

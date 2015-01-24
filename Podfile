@@ -33,3 +33,6 @@ pod 'MarqueeLabel'
 
 #blur modal segue (not used but DO NOT delete)
 pod 'AFBlurSegue', '~> 1.2'
+
+#drop in uislider replacement allowing fine grain selection
+pod 'JAMAccurateSlider', '~> 1.1'
