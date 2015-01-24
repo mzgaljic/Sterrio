@@ -160,6 +160,16 @@ static int numTimesVCLoaded = 0;
         [self hideNextTrackButton];
     if([MusicPlaybackController isSongFirstInQueue:nowPlaying])
         [self hidePreviousTrackButton];
+    
+    //make sure slider hint view is at the same height as the nav bar
+    short statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+    short navBarHeight = self.navigationController.navigationBar.frame.size.height;
+    CGRect frame = self.sliderHintView.frame;
+    CGRect newFrame = CGRectMake(frame.origin.x,
+                                 navBarHeight+statusBarHeight,
+                                 frame.size.width,
+                                 frame.size.height);
+    self.sliderHintView.frame = newFrame;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
@@ -315,7 +325,7 @@ static int numTimesVCLoaded = 0;
         sliderHint = [[GCDiscreetNotificationView alloc] initWithText:hint
                                                          showActivity:NO
                                                    inPresentationMode:presentationMode
-                                                               inView:self.view];
+                                                               inView:self.sliderHintView];
     if(sliderHint)
         [sliderHint showAnimated];
     

@@ -63,6 +63,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
+                            <view contentMode="scaleToFill" id="58F-t2-9cv">
+                                <rect key="frame" x="16" y="67" width="288" height="34"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="vwG-hB-hqU">
                                 <rect key="frame" x="7" y="395" width="43" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -101,6 +106,7 @@
                         <outlet property="currentTimeLabel" destination="vwG-hB-hqU" id="JIl-WH-4Db"/>
                         <outlet property="navBar" destination="B6K-mw-sf0" id="xnq-2a-haq"/>
                         <outlet property="playbackSlider" destination="rJz-c4-T55" id="zKP-GA-dt4"/>
+                        <outlet property="sliderHintView" destination="58F-t2-9cv" id="cuo-Kx-wyc"/>
                         <outlet property="songNameLabel" destination="jS1-ux-L8o" id="hhk-2G-xqf"/>
                         <outlet property="totalDurationLabel" destination="L3D-0t-UZe" id="DYu-N8-KJC"/>
                     </connections>
@@ -989,11 +995,11 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="if9-zZ-fs5">
-                                            <rect key="frame" x="2" y="2" width="109" height="80"/>
+                                            <rect key="frame" x="2" y="2" width="76" height="80"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         </imageView>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="EIo-UR-IOF">
-                                            <rect key="frame" x="152" y="58" width="137" height="21"/>
+                                            <rect key="frame" x="152" y="58" width="110" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -1013,7 +1019,6 @@
                                     <outlet property="videoChannel" destination="EIo-UR-IOF" id="ekf-aG-yoP"/>
                                     <outlet property="videoThumbnail" destination="if9-zZ-fs5" id="uVB-J2-Pvd"/>
                                     <outlet property="videoTitle" destination="QxY-xQ-Ffm" id="CSs-st-eeV"/>
-                                    <segue destination="eu9-xL-U3Q" kind="push" identifier="fakeUnusedSegue" id="SS0-Io-Hxy"/>
                                 </connections>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="youtubeSuggsestCell" textLabel="TaK-SK-AqN" style="IBUITableViewCellStyleDefault" id="uic-nJ-JbA">

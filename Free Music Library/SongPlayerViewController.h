@@ -46,6 +46,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *totalDurationLabel;
 @property (weak, nonatomic) IBOutlet MarqueeLabel *songNameLabel;
 @property (weak, nonatomic) IBOutlet ASValueTrackingSlider *playbackSlider;
+@property (weak, nonatomic) IBOutlet UIView *sliderHintView;
 
 
 
