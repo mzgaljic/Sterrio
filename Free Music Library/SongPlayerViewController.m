@@ -190,9 +190,7 @@ static int numTimesVCLoaded = 0;
     [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:timeObserver];
     [self removeObservers];
     timeObserver = nil;
-    ASValueTrackingSlider *slider = self.playbackSlider;
-    JAMAccurateSlider *superSlider = (JAMAccurateSlider *)slider;
-    [slider preDealloc];
+    JAMAccurateSlider *superSlider = (JAMAccurateSlider *)self.playbackSlider;
     [superSlider preDealloc];
 }
 
@@ -692,7 +690,7 @@ static int hours;
     int sliderHeight = labelHeight;
     [_playbackSlider removeFromSuperview];
     [_playbackSlider setFrame:CGRectMake(xValue, yValue +2, sliderWidth, sliderHeight)];
-    _playbackSlider.transform = CGAffineTransformMakeScale(0.85, 0.85);  //make knob smaller
+    _playbackSlider.transform = CGAffineTransformMakeScale(0.88, 0.88);  //make knob smaller
     [self.view addSubview:_playbackSlider];
     
     //slider settings
@@ -700,7 +698,7 @@ static int hours;
     _playbackSlider.popUpViewCornerRadius = 5.0;
     [_playbackSlider setMaxFractionDigitsDisplayed:0];
     _playbackSlider.popUpViewColor = [[UIColor defaultAppColorScheme] lighterColor];
-    _playbackSlider.font = [UIFont fontWithName:nameOfFontForTimeLabels size:timeLabelFontSize+4];
+    _playbackSlider.font = [UIFont fontWithName:nameOfFontForTimeLabels size:24];
     _playbackSlider.textColor = [UIColor whiteColor];
     _playbackSlider.minimumTrackTintColor = [[UIColor defaultAppColorScheme] lighterColor];
     
