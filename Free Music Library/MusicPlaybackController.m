@@ -292,8 +292,10 @@ static int numLongSongsSkipped = 0;
                 [songInfo setObject:nowPlayingSong.artist.artistName forKey:MPMediaItemPropertyArtist];
             if(nowPlayingSong.album.albumName != nil)
                 [songInfo setObject:nowPlayingSong.album.albumName forKey:MPMediaItemPropertyAlbumTitle];
+            NSInteger duration = [nowPlayingSong.duration integerValue];
+            [songInfo setObject:[NSNumber numberWithInteger:duration]
+                         forKey:MPMediaItemPropertyPlaybackDuration];
             [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
-         
         }
     });
 }
