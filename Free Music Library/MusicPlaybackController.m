@@ -264,6 +264,22 @@ static int numLongSongsSkipped = 0;
 {
     dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
+
+        NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+        NSString *artDirPath = [documentsPath stringByAppendingPathComponent:@"Album Art"];
+        NSString *path = artDirPath;
+        //-----> LIST ALL FILES <-----//
+        NSLog(@"LISTING ALL FILES FOUND");
+        
+        int count;
+        NSArray *directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path
+                                                                                        error:NULL];
+        for (count = 0; count < (int)[directoryContent count]; count++)
+        {
+            NSLog(@"File %d: %@", (count + 1), [directoryContent objectAtIndex:count]);
+        }
+        
+        //actual code below
         Song *nowPlayingSong = [MusicPlaybackController nowPlayingSong];
         NSURL *url = [AlbumArtUtilities albumArtFileNameToNSURL:nowPlayingSong.albumArtFileName];
         

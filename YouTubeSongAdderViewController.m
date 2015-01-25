@@ -82,7 +82,8 @@
 - (void)preDealloc
 {
     if(dontPreDealloc)
-        return;  //VC is actually being popped. Must delete the song the user somewhat created
+        return;
+    //VC is actually being popped. Must delete the song the user somewhat created
     if(!userCreatedHisSong)
         [self.tableView cancelEditing];
     [self.tableView preDealloc];

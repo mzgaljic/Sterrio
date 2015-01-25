@@ -781,8 +781,14 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
         [AlbumArtUtilities makeCopyOfArtWithName:@"temp art-editing mode-Mark Zgaljic.png" andNameIt:_songIAmEditing.albumArtFileName];
     [AlbumArtUtilities deleteAlbumArtFileWithName:@"temp art-editing mode-Mark Zgaljic.png"];
     
-    [[CoreDataManager context] deleteObject:_songIAmEditing];
+    if(self.creatingANewSong){
+        [MusicPlaybackController songAboutToBeDeleted:_songIAmEditing];
+        [[CoreDataManager context] deleteObject:_songIAmEditing];
+    }
     
+    NSError *error = nil;
+    [[CoreDataManager context] save:&error];  //saves the context to disk
+
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
     [self.VC dismissViewControllerAnimated:YES completion:nil];
 }

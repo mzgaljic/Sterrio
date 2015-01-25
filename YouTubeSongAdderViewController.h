@@ -9,7 +9,6 @@
 #import "MyViewController.h"
 #import <MediaPlayer/MediaPlayer.h>
 #import <XCDYouTubeKit/XCDYouTubeClient.h>
-#import "XCDYouTubeVideoPlayerViewController.h"
 #import "YouTubeVideo.h"
 #import "Reachability.h"
 #import "MusicPlaybackController.h"
