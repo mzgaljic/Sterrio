@@ -15,4 +15,6 @@
 
 @interface JAMAccurateSlider : UISlider
 
+- (void)preDealloc;
+
 @end

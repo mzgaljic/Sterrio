@@ -136,7 +136,8 @@ static void * kObservationContext = &kObservationContext;
 - (BOOL)beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event;
 {
     [self resetCaliperRects];
-    [UIView animateWithDuration:kAnimationFadeInDuration animations:^{ self.caliperAndTrackAlpha = 1; }];
+    __weak JAMAccurateSlider *weakSelf = self;
+    [UIView animateWithDuration:kAnimationFadeInDuration animations:^{ weakSelf.caliperAndTrackAlpha = 1; }];
     return [super beginTrackingWithTouch:touch withEvent:event];
 }
 
@@ -148,7 +149,8 @@ static void * kObservationContext = &kObservationContext;
     CGFloat verticalTouchDelta = fabsf([touch locationInView:self].y - (height / 2.f));
     
     if (verticalTouchDelta < height * 2.f) { // normal tracking
-        [UIView animateWithDuration:kAnimationFadeOutDuration animations:^{ [self resetCaliperRects]; }];
+        __weak JAMAccurateSlider *weakSelf = self;
+        [UIView animateWithDuration:kAnimationFadeOutDuration animations:^{ [weakSelf resetCaliperRects]; }];
         return [super continueTrackingWithTouch:touch withEvent:event];
     }
     
@@ -187,14 +189,27 @@ static void * kObservationContext = &kObservationContext;
 
 - (void)finishTracking;
 {
+    __weak JAMAccurateSlider *weakSelf = self;
     [UIView animateWithDuration:kAnimationFadeOutDuration animations:^{
-        [self resetCaliperRects];
-        self.caliperAndTrackAlpha = 0;
+        [weakSelf resetCaliperRects];
+        weakSelf.caliperAndTrackAlpha = 0;
     }];
 }
 
-- (void)dealloc {
-    [self.superview removeObserver:self forKeyPath:@"backgroundColor"];
+- (void)dealloc
+{
+}
+
+- (void)preDealloc
+{
+    //turns out we had multiple observers (for some reason). Just iterate through all into a failure.
+    @try {
+        while(true)
+            [self.superview removeObserver:self forKeyPath:@"backgroundColor" context:kObservationContext];
+    }
+    @catch (NSException *exception) {
+        //dont do anything
+    }
 }
 
 @end

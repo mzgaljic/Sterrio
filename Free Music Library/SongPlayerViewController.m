@@ -75,7 +75,6 @@ void *kBufferEmptyKVO           = &kBufferEmptyKVO;
 void *kDidFailKVO               = &kDidFailKVO;
 
 #pragma mark - VC Life Cycle
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -191,6 +190,10 @@ static int numTimesVCLoaded = 0;
     [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:timeObserver];
     [self removeObservers];
     timeObserver = nil;
+    ASValueTrackingSlider *slider = self.playbackSlider;
+    JAMAccurateSlider *superSlider = (JAMAccurateSlider *)slider;
+    [slider preDealloc];
+    [superSlider preDealloc];
 }
 
 #pragma mark - Check and update GUI based on device orientation (or responding to events)
@@ -924,9 +927,10 @@ static int hours;
                 options:NSKeyValueObservingOptionNew
                 context:kDidFailKVO];
     
+    __weak SongPlayerViewController *weakSelf = self;
     timeObserver = [player addPeriodicTimeObserverForInterval:CMTimeMakeWithSeconds(0.1, 100) queue:nil usingBlock:^(CMTime time) {
-        //code will be called each 1/10th second....  NSLog(@"Playback time %.5f", CMTimeGetSeconds(time));
-        [self updatePlaybackTimeSlider];
+        //code will be called each 1/10th second...
+        [weakSelf updatePlaybackTimeSlider];
     }];
     
     //label observers...
