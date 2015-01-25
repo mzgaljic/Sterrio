@@ -564,6 +564,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
                 }
             }];
             ytVideo = nil;
+            customCell.accessoryType = UITableViewCellAccessoryNone;
             return customCell;
             
         } else if(indexPath.section == 1){  //the "load more" button is in this section

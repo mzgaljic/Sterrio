@@ -22,6 +22,7 @@
 #import "AppEnvironmentConstants.h"
 #import "UIColor+LighterAndDarker.h"
 #import "MusicPlaybackController.h"
+#import "MyTabBarController.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, AVAudioSessionDelegate, AVAudioPlayerDelegate>
 

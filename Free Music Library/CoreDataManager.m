@@ -20,8 +20,8 @@ static CoreDataManager __strong *manager = nil;
 // store added to it.
 @property (readonly,strong,nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
-// Returns the URL to the application's Library directory.
-- (NSURL *)applicationLibraryDirectory;
+// Returns the URL to the application's core data sql directory.
+- (NSURL *)applicationSQLDirectory;
 @end
 
 
@@ -51,7 +51,7 @@ static NSString *MODEL_NAME = @"Model 1.0";
     }
 }
 
-+(NSManagedObjectContext *)context
++ (NSManagedObjectContext *)context
 {
     return [[CoreDataManager sharedInstance] managedObjectContext];
 }
@@ -114,7 +114,7 @@ static NSString *MODEL_NAME = @"Model 1.0";
                                         NSMigratePersistentStoresAutomaticallyOption:@YES,
                                         NSInferMappingModelAutomaticallyOption:@YES
                                         };
-    NSURL *storeURL = [[self applicationLibraryDirectory] URLByAppendingPathComponent:SQL_FILE_NAME];
+    NSURL *storeURL = [[self applicationSQLDirectory] URLByAppendingPathComponent:SQL_FILE_NAME];
     NSError *error = nil;
     
     // try to initialize persistent store coordinator with options defined below
@@ -122,25 +122,36 @@ static NSString *MODEL_NAME = @"Model 1.0";
                                     initWithManagedObjectModel:self.managedObjectModel];
     [__persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
                                                configuration:nil URL:storeURL options:persistentOptions error:&error];
-    if (error)
+    if(error)
     {
         NSLog(@"[ERROR] Problem initializing persistent store coordinator:\n %@, %@", error,
                                                             [error localizedDescription]);
+        
         //usually happens when the underlying model is different than the one our program is using.
-#warning warn user with a normal error so the app crashes AFTER he/she makes a choice lol
-        abort();
-    }    
-
-    return __persistentStoreCoordinator;
+        //I test for this in StartupViewController.h
+        return nil;
+    }
+    else
+        return __persistentStoreCoordinator;
 }
 
 // Returns the URL to the application's Library directory (original method returned documents dir)
-- (NSURL *)applicationLibraryDirectory
+- (NSURL *)applicationSQLDirectory
 {
-    //return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
     NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    NSString *fullSqlPathWithNewDir = [self createDirectory:@"Core Data" atFilePath:libPath];
-    return [NSURL fileURLWithPath:fullSqlPathWithNewDir];  //not checking for nil on purpose. want it to crash if this doesn't work.
+    NSString *coreDataPath = [libPath stringByAppendingPathComponent:@"Core Data"];
+    
+    NSError * error = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:coreDataPath
+                              withIntermediateDirectories:YES
+                                               attributes:nil
+                                                    error:&error];
+    if (error != nil) {
+        NSLog(@"error creating core data directory: %@", error);
+        return nil;  //returning nil will allow the app to catch the error and inform the user.
+    }
+    
+    return [NSURL fileURLWithPath:coreDataPath];
 }
 
 - (NSString *)createDirectory:(NSString *)directoryName atFilePath:(NSString *)filePath
@@ -155,5 +166,18 @@ static NSString *MODEL_NAME = @"Model 1.0";
         return filePath;  //couldn't create directory, just return the original dir and let app crash (nothing i can do here)
     return filePathAndDirectory;
 }
+
+- (NSManagedObjectContext *)deleteOldStoreAndMakeNewOne
+{
+    //delete the old sqlite DB file
+    NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *coreDataFolder = [libPath stringByAppendingPathComponent:@"Core Data"];
+    BOOL success = [[NSFileManager defaultManager] removeItemAtPath:coreDataFolder
+                                                              error:nil];
+    if(! success)  //if we didn't delete the old store then clearly the whole operation failed.
+        return nil;
+    return [self managedObjectContext];
+}
+
 
 @end

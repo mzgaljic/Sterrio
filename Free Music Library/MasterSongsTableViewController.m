@@ -16,6 +16,7 @@
 
 @implementation MasterSongsTableViewController
 static BOOL PRODUCTION_MODE;
+static BOOL haveCheckedCoreDataInit = NO;
 
 #pragma mark - Miscellaneous
 - (void)setProductionModeValue
@@ -175,6 +176,19 @@ static BOOL lastSortOrder;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    if(!haveCheckedCoreDataInit){
+        //need to check if core data even works before i try loading the songs in this VC
+        //force core data to attempt to initialze itself by asking for its context
+        
+        if([CoreDataManager context]){
+            haveCheckedCoreDataInit = YES;
+        } else{
+            [self performSegueWithIdentifier:@"coreDataProblem" sender:nil];
+            haveCheckedCoreDataInit = YES;
+            return;
+        }
+    }
+        
     [self setUpSearchBar];
     //must be called in viewWillAppear, and after allSongsLibrary is refreshed
     if(self.searchFetchedResultsController)
@@ -207,9 +221,11 @@ static BOOL lastSortOrder;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
-    //need to check because when user presses back button, tab bar isnt always hidden
-    [self prefersStatusBarHidden];
+    if(haveCheckedCoreDataInit){
+        [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
+        //need to check because when user presses back button, tab bar isnt always hidden
+        [self prefersStatusBarHidden];
+    }
 }
 
 - (void)viewDidLoad

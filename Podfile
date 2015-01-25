@@ -5,19 +5,17 @@ pod 'SDCAlertView'
 pod 'MRProgress'
 
 #youtube id video url extractor
-pod 'XCDYouTubeKit', '~> 2.0'
+#pod 'XCDYouTubeKit', '~> 2.0' ----temporarily broken
+pod 'XCDYouTubeKit', :git => 'https://github.com/psycotica0/XCDYouTubeKit.git', :commit => '898d3105f424ba61a11bd1c7c8c88d3dbb386e94'
 
-#I use it for image 'square' cropping and editing.
-pod 'DZNPhotoPickerController'
-
-#MPMoviePlayerController alternative library
-#pod 'ALMoviePlayerController', '~>0.3.0'
+#used by very few classes but still necessary (yt result VC, etc)
+pod 'SDWebImage', '~>3.6'
 
 #Percentage when sliding a tracking bar
 pod 'ASValueTrackingSlider'
 
 #TransitionKit -state machine library
-pod 'TransitionKit', '~> 2.0.0'
+#pod 'TransitionKit', '~> 2.0.0'  ---not needed yet
 
 #MSCellAccessory - used for customizable accessory icons
 pod 'MSCellAccessory', '~> 1.1'
@@ -31,7 +29,7 @@ pod 'TBXML', '~> 1.5'
 #scrolling label (Marquee)
 pod 'MarqueeLabel'
 
-#blur modal segue (not used but DO NOT delete)
+#blur modal segue (not used much DO NOT delete)
 pod 'AFBlurSegue', '~> 1.2'
 
 #drop in uislider replacement allowing fine grain selection

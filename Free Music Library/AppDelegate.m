@@ -50,7 +50,6 @@ static const short APP_LAUNCHED_ALREADY = 1;
                             setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                 [[UIColor defaultAppColorScheme] lighterColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
     
-    
     [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime:[self appLaunchedFirstTime]];
     if([self appLaunchedFirstTime]){
         //do stuff that you'd want to see the first time you launch!

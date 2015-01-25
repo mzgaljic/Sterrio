@@ -34,6 +34,7 @@
 		872EA4E71A54F1FC00F8EE9D /* MyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4E61A54F1FC00F8EE9D /* MyViewController.m */; };
 		872EA4EB1A54F4CA00F8EE9D /* MyTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4EA1A54F4CA00F8EE9D /* MyTabBarController.m */; };
 		872F78771A47B17900288FDD /* SongPlayerCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = 872F78761A47B17900288FDD /* SongPlayerCoordinator.m */; };
+		873001BB1A74950000C9921A /* CoreDataErrorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 873001BA1A74950000C9921A /* CoreDataErrorViewController.m */; };
 		87334407198D8321002B9E18 /* NSString+HTTP_Char_Escape.m in Sources */ = {isa = PBXBuildFile; fileRef = 87334406198D8321002B9E18 /* NSString+HTTP_Char_Escape.m */; };
 		8733440B198DC915002B9E18 /* UIImage+colorImages.m in Sources */ = {isa = PBXBuildFile; fileRef = 8733440A198DC915002B9E18 /* UIImage+colorImages.m */; };
 		87334418198E0332002B9E18 /* UIColor+SystemTintColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 87334417198E0332002B9E18 /* UIColor+SystemTintColor.m */; };
@@ -52,7 +53,6 @@
 		87480DB3192C1FBD005CC0A4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 87480DB1192C1FBD005CC0A4 /* InfoPlist.strings */; };
 		87480DB5192C1FBD005CC0A4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 87480DB4192C1FBD005CC0A4 /* main.m */; };
 		87480DB9192C1FBD005CC0A4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87480DB8192C1FBD005CC0A4 /* AppDelegate.m */; };
-		87480DBC192C1FBD005CC0A4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 87480DBA192C1FBD005CC0A4 /* Main.storyboard */; };
 		87480DC4192C1FBD005CC0A4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 87480DC3192C1FBD005CC0A4 /* Images.xcassets */; };
 		87480DCB192C1FBD005CC0A4 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DCA192C1FBD005CC0A4 /* XCTest.framework */; };
 		87480DCC192C1FBD005CC0A4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DA8192C1FBD005CC0A4 /* Foundation.framework */; };
@@ -124,6 +124,7 @@
 		87D47DA419345D8E0057D49B /* MasterArtistsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47DA019345D8E0057D49B /* MasterArtistsTableViewController.m */; };
 		87D47DA519345D8E0057D49B /* ArtistItemAlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47DA219345D8E0057D49B /* ArtistItemAlbumViewController.m */; };
 		87DB103219C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DB103119C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m */; };
+		87DD2A2B1A74B5F60014E115 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 87DD2A2A1A74B5F60014E115 /* Main.storyboard */; };
 		87E1C5A0193A5E8B009AE399 /* GenreConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E1C59F193A5E8B009AE399 /* GenreConstants.m */; };
 		87E5FF3F1A6F42AD00A09652 /* MZSongModifierTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E5FF3E1A6F42AD00A09652 /* MZSongModifierTableView.m */; };
 		87ECF5191A57B50800D58EDF /* UINavigationBar+DarkTint.m in Sources */ = {isa = PBXBuildFile; fileRef = 87ECF5181A57B50800D58EDF /* UINavigationBar+DarkTint.m */; };
@@ -198,6 +199,8 @@
 		872F78751A47B17900288FDD /* SongPlayerCoordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SongPlayerCoordinator.h; sourceTree = "<group>"; };
 		872F78761A47B17900288FDD /* SongPlayerCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SongPlayerCoordinator.m; sourceTree = "<group>"; };
 		872F78781A47B91500288FDD /* VideoPlayerControlInterfaceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoPlayerControlInterfaceDelegate.h; sourceTree = "<group>"; };
+		873001B91A74950000C9921A /* CoreDataErrorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataErrorViewController.h; sourceTree = "<group>"; };
+		873001BA1A74950000C9921A /* CoreDataErrorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataErrorViewController.m; sourceTree = "<group>"; };
 		8732FB111999D7E300FE6693 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		87334405198D8321002B9E18 /* NSString+HTTP_Char_Escape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+HTTP_Char_Escape.h"; sourceTree = "<group>"; };
 		87334406198D8321002B9E18 /* NSString+HTTP_Char_Escape.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+HTTP_Char_Escape.m"; sourceTree = "<group>"; };
@@ -228,7 +231,6 @@
 		87480DB6192C1FBD005CC0A4 /* Muzic-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Muzic-Prefix.pch"; sourceTree = "<group>"; };
 		87480DB7192C1FBD005CC0A4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = "Free Music Library/AppDelegate.h"; sourceTree = "<group>"; };
 		87480DB8192C1FBD005CC0A4 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = "Free Music Library/AppDelegate.m"; sourceTree = "<group>"; };
-		87480DBB192C1FBD005CC0A4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		87480DC3192C1FBD005CC0A4 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "Free Music Library/Images.xcassets"; sourceTree = "<group>"; };
 		87480DC9192C1FBD005CC0A4 /* MuzicTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MuzicTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		87480DCA192C1FBD005CC0A4 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -365,6 +367,7 @@
 		87D9EB9919392DFF004F3885 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		87DB103019C53CC000B190E5 /* UINavigationController+CustomPushAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+CustomPushAnimation.h"; sourceTree = "<group>"; };
 		87DB103119C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+CustomPushAnimation.m"; sourceTree = "<group>"; };
+		87DD2A2A1A74B5F60014E115 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		87E1C59E193A5E8B009AE399 /* GenreConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenreConstants.h; sourceTree = "<group>"; };
 		87E1C59F193A5E8B009AE399 /* GenreConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenreConstants.m; sourceTree = "<group>"; };
 		87E5FF3D1A6F42AD00A09652 /* MZSongModifierTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZSongModifierTableView.h; sourceTree = "<group>"; };
@@ -499,6 +502,15 @@
 			name = "Custom ViewControllers";
 			sourceTree = "<group>";
 		};
+		873001B81A7494D800C9921A /* Core Data Error Handler */ = {
+			isa = PBXGroup;
+			children = (
+				873001B91A74950000C9921A /* CoreDataErrorViewController.h */,
+				873001BA1A74950000C9921A /* CoreDataErrorViewController.m */,
+			);
+			name = "Core Data Error Handler";
+			sourceTree = "<group>";
+		};
 		87334408198D8349002B9E18 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
@@ -565,6 +577,7 @@
 				878ACD61192D3931005938F5 /* Genres tab */,
 				87F10BCF19682EDF003EDFB2 /* Settings View */,
 				8750157D198C29CC00382945 /* Adding Music To Library */,
+				873001B81A7494D800C9921A /* Core Data Error Handler */,
 				877C4B85199FB44E00CE86BC /* ViewController helpers */,
 			);
 			name = "GUI and GUI Controllers";
@@ -587,7 +600,7 @@
 			isa = PBXGroup;
 			children = (
 				87BD42A219CD1A4C005ED8CD /* Muzic.entitlements */,
-				87480DBA192C1FBD005CC0A4 /* Main.storyboard */,
+				87DD2A2A1A74B5F60014E115 /* Main.storyboard */,
 				87480DB7192C1FBD005CC0A4 /* AppDelegate.h */,
 				87480DB8192C1FBD005CC0A4 /* AppDelegate.m */,
 				870D49E51A6324F2004496A9 /* MZConstants.h */,
@@ -1192,6 +1205,7 @@
 				87A453D2199C0891004D1319 /* Overlay.png in Resources */,
 				87A453CF199C0891004D1319 /* ELCAlbumPickerController.xib in Resources */,
 				87A453D3199C0891004D1319 /* Overlay@2x.png in Resources */,
+				87DD2A2B1A74B5F60014E115 /* Main.storyboard in Resources */,
 				87480DC4192C1FBD005CC0A4 /* Images.xcassets in Resources */,
 				87A453D9199C0891004D1319 /* README_multi image picker.txt in Resources */,
 				87BD42A319CD1A4C005ED8CD /* Muzic.entitlements in Resources */,
@@ -1200,7 +1214,6 @@
 				87A453D1199C0891004D1319 /* ELCAssetTablePicker.xib in Resources */,
 				872EA4DE1A54CAAB00F8EE9D /* iOSDeviceModelMapping.plist in Resources */,
 				87D16D621931B7EE00DB6A34 /* Podfile in Resources */,
-				87480DBC192C1FBD005CC0A4 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1266,6 +1279,7 @@
 				8733440B198DC915002B9E18 /* UIImage+colorImages.m in Sources */,
 				87D47D93193428350057D49B /* MasterPlaylistTableViewController.m in Sources */,
 				877C4BA3199FCCE000CE86BC /* Song+Utilities.m in Sources */,
+				873001BB1A74950000C9921A /* CoreDataErrorViewController.m in Sources */,
 				87D3743B199B13B300D3B70B /* UIButton+ExpandedHitArea.m in Sources */,
 				873EEA871A4BBA210092A6DF /* YouTubeVideo.m in Sources */,
 				871BA8921A5A2F4100FB87A7 /* Song.m in Sources */,
@@ -1379,15 +1393,6 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		87480DBA192C1FBD005CC0A4 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				87480DBB192C1FBD005CC0A4 /* Base */,
-			);
-			name = Main.storyboard;
-			path = "Free Music Library";
-			sourceTree = "<group>";
-		};
 		87480DD3192C1FBD005CC0A4 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -1479,10 +1484,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Free Music Library/Muzic-Prefix.pch";
 				INFOPLIST_FILE = "Free Music Library/Muzic-Info.plist";
@@ -1504,10 +1506,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Free Music Library/Muzic-Prefix.pch";
 				INFOPLIST_FILE = "Free Music Library/Muzic-Info.plist";
