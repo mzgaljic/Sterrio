@@ -19,4 +19,9 @@ NSString * const MZEmailBugReport = @"marksBetaMusicApp@gmail.com";
 short const MZMinutesInAnHour = 60;
 short const MZSecondsInAMinute = 60;
 
+//used to figuring out what a "valid" swipe up and down is on the player
+int const MZMinVideoPlayerSwipeLengthDown = 120;
+int const MZMinVideoPlayerSwipeLengthUp = 85;
+int const MZMaxVideoPlayerSwipeVariance = 60;
+
 @end

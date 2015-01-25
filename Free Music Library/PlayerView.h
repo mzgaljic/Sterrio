@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import "SongPlayerCoordinator.h"
+#import "UIWindow+VisibleVC.h"
 
 @interface PlayerView : UIView
 

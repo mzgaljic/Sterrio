@@ -18,4 +18,8 @@ extern NSString * const MZEmailBugReport;
 extern short const MZMinutesInAnHour;
 extern short const MZSecondsInAMinute;
 
+extern int const MZMinVideoPlayerSwipeLengthDown;
+extern int const MZMinVideoPlayerSwipeLengthUp;
+extern int const MZMaxVideoPlayerSwipeVariance;
+
 @end

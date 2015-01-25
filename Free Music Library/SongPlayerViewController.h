@@ -55,5 +55,6 @@
 - (IBAction)playbackSliderEditingHasEndedA:(id)sender;  //touch up inside
 - (IBAction)playbackSliderEditingHasEndedB:(id)sender;  //touch up outside
 
+- (void)preDealloc;  //used by the PlayerView.h when it needs to pop this VC.
 
 @end

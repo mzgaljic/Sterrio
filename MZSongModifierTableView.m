@@ -401,6 +401,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                 
                 //save song into library
                 [self.theDelegate performCleanupBeforeSongIsSaved:_songIAmEditing];
+                [_songIAmEditing setAlbumArt:self.currentAlbumArt];
                 
                 BOOL saved = YES;
                 NSError *error;

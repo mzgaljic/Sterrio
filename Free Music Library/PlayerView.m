@@ -7,7 +7,14 @@
 //
 
 #import "PlayerView.h"
+#import "SongPlayerViewController.h"
 
+@interface PlayerView ()
+{
+    CGPoint gestureStartPoint;
+    BOOL didFailToExpandWithSwipe;
+}
+@end
 @implementation PlayerView
 
 #pragma mark - UIView lifecycle
@@ -20,10 +27,20 @@
                                                  selector:@selector(orientationNeedsToChanged)
                                                      name:UIDeviceOrientationDidChangeNotification object:nil];
         
-        UISwipeGestureRecognizer *upSwipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self
-                                                                                                action:@selector(userSwipedUp)];
-        upSwipeRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
-        [self addGestureRecognizer:upSwipeRecognizer];
+        UISwipeGestureRecognizer *upSwipe;
+        upSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self
+                                                            action:@selector(userSwipedUp)];
+        UIPanGestureRecognizer *downPan;
+        downPan = [[UIPanGestureRecognizer alloc] initWithTarget:self
+                                                          action:@selector(userSwipedDown)];
+        UISwipeGestureRecognizer *downSwipe;
+        downSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self
+                                                              action:@selector(userSwipedDown)];
+        
+        upSwipe.direction = UISwipeGestureRecognizerDirectionUp;
+        //downSwipe.direction = UISwipeGestureRecognizerDirectionDown;
+        //[self addGestureRecognizer:upSwipe];
+        //[self addGestureRecognizer:downSwipe];
     }
     return self;
 }
@@ -53,20 +70,68 @@
     [self segueToPlayerViewControllerIfAppropriate];
 }
 
+- (void)userSwipedDown
+{
+    [self popPlayerViewControllerIfAppropriate];
+}
 
-#pragma mark - Other useful miscellaneous stuff
 
+#pragma mark - Orientation and view "touch" code
 //detects when view (this AVPlayer) was tapped (fires when touch is released)
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    CGPoint touchLocation = [[[event allTouches] anyObject] locationInView:self];
-    CGRect frame = self.frame;
-    int x = touchLocation.x;
-    int y = touchLocation.y;
-    BOOL touchWithinVideoBounds = (x > 0 && y > 0 && x <= frame.size.width && y <= frame.size.height);
-    if(touchWithinVideoBounds){
-        [self segueToPlayerViewControllerIfAppropriate];
+    if(! [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded]){
+        CGPoint touchLocation = [[[event allTouches] anyObject] locationInView:self];
+        CGRect frame = self.frame;
+        int x = touchLocation.x;
+        int y = touchLocation.y;
+        BOOL touchWithinVideoBounds = (x > 0 && y > 0 && x <= frame.size.width && y <= frame.size.height);
+        //also check to avoid the situation where a swipe was too small but is still within
+        //the view bounds. in this case we would NOT want to expand until a direct touch or
+        //better swipe is performed.
+        if(touchWithinVideoBounds && !didFailToExpandWithSwipe){
+            //same code as in "segueToPlayerViewControllerIfAppropriate", just skipping extra calls...
+            [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:[self topViewController]];
+        }
     }
+}
+
+//used to help the touchesMoved method below get the swipe length
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    UITouch *touch = [touches anyObject];
+    gestureStartPoint = [touch locationInView:self];
+    didFailToExpandWithSwipe = NO;
+}
+
+//used to get a "length" for each swipe gesture
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    UITouch *touch = [touches anyObject];
+    CGPoint currentPosition = [touch locationInView:self];
+
+    CGFloat deltaYY = (gestureStartPoint.y - currentPosition.y); // positive = up, negative = down
+    
+    CGFloat deltaX = fabsf(gestureStartPoint.x - currentPosition.x); // will always be positive
+    CGFloat deltaY = fabsf(gestureStartPoint.y - currentPosition.y); // will always be positive
+    
+    if (deltaY >= MZMinVideoPlayerSwipeLengthDown && deltaX <= MZMaxVideoPlayerSwipeVariance) {
+        if (deltaYY <= 0) {
+            //Vertical down swipe detected
+            [self userSwipedDown];
+            didFailToExpandWithSwipe = NO;
+            return;
+        }
+    }
+    else if (deltaY >= MZMinVideoPlayerSwipeLengthUp && deltaX <= MZMaxVideoPlayerSwipeVariance) {
+        if (deltaYY > 0) {
+            //Vertical up swipe detected
+            [self userSwipedUp];
+            didFailToExpandWithSwipe = NO;
+            return;
+        }
+    }
+    didFailToExpandWithSwipe = YES;
 }
 
 //will rotate the video ONLY when it is small.
@@ -79,13 +144,28 @@
         [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerNeedsToBeRotated];
 }
 
+#pragma mark - Handling Poping and pushing of the player VC along with this view
 - (void)segueToPlayerViewControllerIfAppropriate
 {
     if(! [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded])
         [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:[self topViewController]];
 }
 
+- (void)popPlayerViewControllerIfAppropriate
+{
+    if([[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded]){
+        //same code as in MyAlerts...this code is better than
+        UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];
+        SongPlayerViewController *vc =  (SongPlayerViewController *)[keyWindow visibleViewController];
+        [vc preDealloc];
+        [vc dismissViewControllerAnimated:YES completion:nil];
+        [[SongPlayerCoordinator sharedInstance] beginShrinkingVideoPlayer];
+    }
+}
 
+
+
+#pragma mark - Boring utility methods
 - (UIViewController *)topViewController{
     return [self topViewController:[UIApplication sharedApplication].keyWindow.rootViewController];
 }
