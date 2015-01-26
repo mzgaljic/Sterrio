@@ -51,7 +51,7 @@ static int timesVCHasAppeared = 0;
     if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
         padding = 50;
     else
-        padding = 55;
+        padding = 24;
     
     //makes the tableview start below the nav bar
     if(timesVCHasAppeared == 0 || dontPreDealloc){
