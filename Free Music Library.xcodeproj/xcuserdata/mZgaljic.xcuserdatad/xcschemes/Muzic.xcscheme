@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "87480DA4192C1FBD005CC0A4"
-               BuildableName = "Muzic.app"
-               BlueprintName = "Muzic"
-               ReferencedContainer = "container:Muzic.xcodeproj">
+               BuildableName = "Free Music Library.app"
+               BlueprintName = "Free Music Library"
+               ReferencedContainer = "container:Free Music Library.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
                BlueprintIdentifier = "8703443619A19E3E002E5077"
                BuildableName = "Core Data Static LibraryTests.xctest"
                BlueprintName = "Core Data Static LibraryTests"
-               ReferencedContainer = "container:Muzic.xcodeproj">
+               ReferencedContainer = "container:Free Music Library.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -43,9 +43,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "87480DC8192C1FBD005CC0A4"
-               BuildableName = "MuzicTests.xctest"
-               BlueprintName = "MuzicTests"
-               ReferencedContainer = "container:Muzic.xcodeproj">
+               BuildableName = "Free Music LibraryTests.xctest"
+               BlueprintName = "Free Music LibraryTests"
+               ReferencedContainer = "container:Free Music Library.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -53,9 +53,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "87480DA4192C1FBD005CC0A4"
-            BuildableName = "Muzic.app"
-            BlueprintName = "Muzic"
-            ReferencedContainer = "container:Muzic.xcodeproj">
+            BuildableName = "Free Music Library.app"
+            BlueprintName = "Free Music Library"
+            ReferencedContainer = "container:Free Music Library.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "87480DA4192C1FBD005CC0A4"
-            BuildableName = "Muzic.app"
-            BlueprintName = "Muzic"
-            ReferencedContainer = "container:Muzic.xcodeproj">
+            BuildableName = "Free Music Library.app"
+            BlueprintName = "Free Music Library"
+            ReferencedContainer = "container:Free Music Library.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -90,9 +90,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "87480DA4192C1FBD005CC0A4"
-            BuildableName = "Muzic.app"
-            BlueprintName = "Muzic"
-            ReferencedContainer = "container:Muzic.xcodeproj">
+            BuildableName = "Free Music Library.app"
+            BlueprintName = "Free Music Library"
+            ReferencedContainer = "container:Free Music Library.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
