@@ -46,10 +46,15 @@ static int timesVCHasAppeared = 0;
     UINavigationController *navCon  = (UINavigationController*) [self.navigationController.viewControllers objectAtIndex:0];
     navCon.navigationItem.title = @"Song Edit";
     
+    short navBarHeight = 44;
+    short padding;
+    if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
+        padding = 50;
+    else
+        padding = 55;
+    
     //makes the tableview start below the nav bar
-    if(timesVCHasAppeared == 0){
-        short navBarHeight = 44;
-        short padding = 45;
+    if(timesVCHasAppeared == 0 || dontPreDealloc){
         UIEdgeInsets inset = UIEdgeInsetsMake(navBarHeight + padding, 0, 0, 0);
         self.tableView.contentInset = inset;
         self.tableView.scrollIndicatorInsets = inset;
@@ -106,11 +111,13 @@ static int timesVCHasAppeared = 0;
 
 - (void)saveTapped
 {
+    timesVCHasAppeared = 0;
     [self.tableView songEditingWasSuccessful];
 }
 
 - (void)cancelTapped
 {
+    timesVCHasAppeared = 0;
     [self.tableView cancelEditing];
 }
 

@@ -135,6 +135,8 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 {
     if(_creatingANewSong && _songIAmEditing.songName.length > 0)
         return 2;
+    else if(! _creatingANewSong)
+        return 2;
     else
         return 1;
 }

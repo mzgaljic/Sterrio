@@ -248,15 +248,6 @@ static BOOL lastSortOrder;
     self.tableView.allowsSelectionDuringEditing = YES;
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-    
-    SDImageCache *imageCache = [SDImageCache sharedImageCache];
-    [imageCache clearMemory];
-}
-
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -401,7 +392,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     if([[segue identifier] isEqualToString:@"editingSongMasterSegue"]){
         //set the songIAmEditing property in the modal view controller
-        MasterEditingSongTableViewController* controller = (MasterEditingSongTableViewController*)[[segue destinationViewController] topViewController];
+        MasterSongEditorViewController* controller = (MasterSongEditorViewController*)[[segue destinationViewController] topViewController];
         [controller setSongIAmEditing:(Song *)sender];
         self.indexOfEditingSong = self.selectedRowIndexValue;
     }

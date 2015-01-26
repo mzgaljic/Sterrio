@@ -85,7 +85,6 @@
 		87A0FD91197DD594008FBBF7 /* PreferredFontSizeUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FD90197DD594008FBBF7 /* PreferredFontSizeUtility.m */; };
 		87A0FDD2197DFA2C008FBBF7 /* ArtistTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FDD1197DFA2C008FBBF7 /* ArtistTableViewFormatter.m */; };
 		87A41FEB19F0D9C800C037D9 /* MyAVPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A41FEA19F0D9C800C037D9 /* MyAVPlayer.m */; };
-		87A43E7E1978C413001B4367 /* MasterEditingSongTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A43E7D1978C413001B4367 /* MasterEditingSongTableViewController.m */; };
 		87A453C8199C0891004D1319 /* ELCAlbumPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A453A5199C0891004D1319 /* ELCAlbumPickerController.m */; };
 		87A453C9199C0891004D1319 /* ELCAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A453A7199C0891004D1319 /* ELCAsset.m */; };
 		87A453CA199C0891004D1319 /* ELCAssetCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A453A9199C0891004D1319 /* ELCAssetCell.m */; };
@@ -289,8 +288,6 @@
 		87A0FDD1197DFA2C008FBBF7 /* ArtistTableViewFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArtistTableViewFormatter.m; sourceTree = "<group>"; };
 		87A41FE919F0D9C800C037D9 /* MyAVPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyAVPlayer.h; sourceTree = "<group>"; };
 		87A41FEA19F0D9C800C037D9 /* MyAVPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyAVPlayer.m; sourceTree = "<group>"; };
-		87A43E7C1978C413001B4367 /* MasterEditingSongTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MasterEditingSongTableViewController.h; path = "Free Music Library/MasterEditingSongTableViewController.h"; sourceTree = "<group>"; };
-		87A43E7D1978C413001B4367 /* MasterEditingSongTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MasterEditingSongTableViewController.m; path = "Free Music Library/MasterEditingSongTableViewController.m"; sourceTree = "<group>"; };
 		87A453A4199C0891004D1319 /* ELCAlbumPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAlbumPickerController.h; sourceTree = "<group>"; };
 		87A453A5199C0891004D1319 /* ELCAlbumPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCAlbumPickerController.m; sourceTree = "<group>"; };
 		87A453A6199C0891004D1319 /* ELCAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAsset.h; sourceTree = "<group>"; };
@@ -1004,8 +1001,6 @@
 			children = (
 				87E980BD1A759DD900B428F0 /* MasterSongEditorViewController.h */,
 				87E980BE1A759DD900B428F0 /* MasterSongEditorViewController.m */,
-				87A43E7C1978C413001B4367 /* MasterEditingSongTableViewController.h */,
-				87A43E7D1978C413001B4367 /* MasterEditingSongTableViewController.m */,
 				87A9AF4C199D8429005B9A5B /* GenrePickerTableViewController.h */,
 				87A9AF4D199D8429005B9A5B /* GenrePickerTableViewController.m */,
 				8780134D199C854E004727A0 /* ExistingArtistPickerTableViewController.h */,
@@ -1307,7 +1302,6 @@
 				872EA4E41A54F1EA00F8EE9D /* MyTableViewController.m in Sources */,
 				87362AFD194E68A5004DB544 /* Deque.m in Sources */,
 				87033B871996965E0077C7AD /* MusicPlaybackController.m in Sources */,
-				87A43E7E1978C413001B4367 /* MasterEditingSongTableViewController.m in Sources */,
 				87CEDC6519731EF000780D57 /* PlaylistSongAdderTableViewController.m in Sources */,
 				876EC5F01965C9F6006B3C29 /* AppEnvironmentConstants.m in Sources */,
 				875B3826197AFF29008B4409 /* NSString+smartSort.m in Sources */,

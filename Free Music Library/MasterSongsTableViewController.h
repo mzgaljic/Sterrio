@@ -13,7 +13,6 @@
 #import "CoreDataTableViewController.h"
 #import "AppEnvironmentConstants.h"
 #import "AlbumArtUtilities.h"
-#import "MasterEditingSongTableViewController.h"
 #import "Song.h"
 #import "Song+Utilities.h"
 #import "SongTableViewFormatter.h"
@@ -21,6 +20,7 @@
 #import "UIImage+colorImages.h"
 #import "UIColor+ColorComparison.h"
 #import "MusicPlaybackController.h"
+#import "MasterSongEditorViewController.h"
 
 @class StackController;
 @interface MasterSongsTableViewController : CoreDataTableViewController <UISearchBarDelegate>

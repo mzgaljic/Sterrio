@@ -88,6 +88,7 @@
         [self.tableView cancelEditing];
     [self.tableView preDealloc];
     self.tableView = nil;
+    [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
 }
 
 - (void)viewDidLoad
