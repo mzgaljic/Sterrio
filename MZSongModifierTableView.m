@@ -801,11 +801,16 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     [[CoreDataManager context].undoManager endUndoGrouping];
     [CoreDataManager context].undoManager = nil;
     
-    //make sure album art file name is what it should be (on disk)...this updates it
+    //delete current album art on disk in case there was one set. Skipping this would cause
+    //the new art to not be saved (setAlbumArt method tries to optimize the saving...)
+    NSString *artFileName = [NSString stringWithFormat:@"%@.png", _songIAmEditing.song_id];
+    [AlbumArtUtilities deleteAlbumArtFileWithName:artFileName];
+    
+    //save the new album art
     if(_songIAmEditing.album)
-        [_songIAmEditing.album setAlbumArt:_currentAlbumArt];
+        [_songIAmEditing.album setAlbumArt:self.currentAlbumArt];
     else
-        [_songIAmEditing setAlbumArt:_currentAlbumArt];
+        [_songIAmEditing setAlbumArt:self.currentAlbumArt];
     
     //delete temp copy of old art file
     [AlbumArtUtilities deleteAlbumArtFileWithName:@"temp art-editing mode-Mark Zgaljic.png"];
