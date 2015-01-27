@@ -18,6 +18,7 @@
 #import "UIColor+LighterAndDarker.h"
 #import "CoreDataTableViewController.h"
 #import "MusicPlaybackController.h"
+#import <SDCAlertView.h>
 
 @interface MasterAlbumsTableViewController : CoreDataTableViewController <UISearchBarDelegate>
 {

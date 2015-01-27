@@ -498,7 +498,7 @@ static tempIcloudSwitchCount = 0;
     [self.tableView reloadData];
     
     if(tempIcloudSwitchCount == 0){
-        NSString *msg = @"This is feature does not work. I am ot sure when this will work to be honest.";
+        NSString *msg = @"This is feature does not work. I am not sure when this will work to be honest.";
         SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"iCloud Sync"
                                                           message:msg
                                                          delegate:nil

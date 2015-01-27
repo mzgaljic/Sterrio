@@ -16,6 +16,7 @@
 #import "SDWebImageManager.h"
 #import "MusicPlaybackController.h"
 #import "UIColor+LighterAndDarker.h"
+#import <SDCAlertView.h>
 
 @interface MasterArtistsTableViewController : CoreDataTableViewController <UISearchBarDelegate>
 

@@ -254,13 +254,13 @@ static BOOL lastSortOrder;
                                                          delegate:nil
                                                 cancelButtonTitle:@"OK"
                                                 otherButtonTitles: nil];
-        NSString *msg2 = @"Some things to note:\n-The settings view will receive a complete overhaul at some point. I don't like it, and many of the settings seem a bit useless.\n-Playing a saved video will NOT display a loading spinner. The spinner caused my app to crash and I am working to bring the loading spinner back. The same applies when skipping songs.\nThe process of adding album art to a song is tedious at the moment. I apologize, and I am working on verhauling this step as well.";
+        NSString *msg2 = @"Some things to note:\n-The settings view will receive a complete overhaul at some point. I don't like it, and many of the settings seem a bit useless.\n-Playing a saved video will NOT display a loading spinner. The spinner caused my app to crash and I am working to bring the loading spinner back. The same applies when skipping songs.\n-The process of adding album art to a song is tedious at the moment. I apologize, and I am working on verhauling this step as well.";
         SDCAlertView *alert2 = [[SDCAlertView alloc] initWithTitle:@"One more thing"
                                                           message:msg2
                                                          delegate:nil
                                                 cancelButtonTitle:@"OK"
                                                 otherButtonTitles: nil];
-        NSString *msg3 = @"This is important. Do NOT spent a significant amount of time trying to make the library perfect. Expect that data may be possibly corrupted or lost as this is a Beta application. Reinstalling the app will erase all song data.";
+        NSString *msg3 = @"This is important. Do NOT spend a significant amount of time trying to make the library perfect. Expect that data may be possibly corrupted or lost as this is a Beta application. Reinstalling the app will erase all song data.\n\nTap the plus sign in the songs, albums, or artists tabs to add additional songs into the library.";
         SDCAlertView *alert3 = [[SDCAlertView alloc] initWithTitle:@"Last thing, I promise"
                                                            message:msg3
                                                           delegate:nil
