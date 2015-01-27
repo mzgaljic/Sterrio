@@ -409,10 +409,8 @@ NSArray *CellStreamOptions;
         case FONT_SIZE_PICKER_TAG:
         {
             _lastSelectedFontSize = (short)[[fontOptions objectAtIndex:row] intValue];
-            _alertView.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility
-                                                                      hypotheticalLabelFontSizeForPreferredSize:_lastSelectedFontSize]];
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"settingFontPickerScrolled" object:nil];
+            //_alertView.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility
+              //                                                        hypotheticalLabelFontSizeForPreferredSize:_lastSelectedFontSize]];
             break;
         }
         case WIFI_STREAM_PICKER_TAG:
