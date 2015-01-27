@@ -30,6 +30,7 @@ static const int CELL_STREAM_PICKER_TAG = 107;
 
 - (void)dealloc
 {
+    tempIcloudSwitchCount = 0;
     _alertView = nil;
     _attachmentImage = nil;
     _attachmentUIImages = nil;
@@ -489,11 +490,26 @@ NSArray *CellStreamOptions;
 
 
 #pragma mark - Toggle switch ibActions
+static tempIcloudSwitchCount = 0;
 - (IBAction)icloudSyncSwitchToggled:(id)sender
 {
     //update settings
     [AppEnvironmentConstants set_iCloudSettingsSync:_syncSettingViaIcloudSwitch.on];
     [self.tableView reloadData];
+    
+    if(tempIcloudSwitchCount == 0){
+        NSString *msg = @"This is feature does not work. I am ot sure when this will work to be honest.";
+        SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"iCloud Sync"
+                                                          message:msg
+                                                         delegate:nil
+                                                cancelButtonTitle:@"OK"
+                                                otherButtonTitles: nil];
+        alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        [alert show];
+    }
+    tempIcloudSwitchCount++;
 }
 
 - (IBAction)boldSongsSwitchToggled:(id)sender

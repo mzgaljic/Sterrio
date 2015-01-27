@@ -8,12 +8,29 @@
 
 #import "MasterGenreTableViewController.h"
 #import "Album.h"  //import songs!!
+#import "PreferredFontSizeUtility.h"
+#import <SDCAlertView.h>
 
 @interface MasterGenreTableViewController ()
 @property(nonatomic, strong) NSMutableArray* allSongsInLibrary;
 @end
 
 @implementation MasterGenreTableViewController
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Unfinished"
+                                             message:@"This tab is not functional yet"
+                                            delegate:nil
+                                   cancelButtonTitle:@"OK"
+                                   otherButtonTitles: nil];
+    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    [alert show];
+}
+
 /*
 @synthesize allSongsInLibrary = _allSongsInLibrary;
 static BOOL PRODUCTION_MODE;

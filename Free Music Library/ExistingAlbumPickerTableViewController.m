@@ -7,6 +7,7 @@
 //
 
 #import "ExistingAlbumPickerTableViewController.h"
+#import <SDCAlertView.h>
 
 @interface ExistingAlbumPickerTableViewController ()
 @property (nonatomic, strong) NSMutableArray *albums;

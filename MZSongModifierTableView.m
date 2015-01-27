@@ -633,9 +633,20 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                     [self.VC.navigationController pushViewController:vc animated:YES];
                     break;
                 } else{  //place in different album (existing album picker)
+                    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Unfinished"
+                                                                      message:@"This action is not yet supported."
+                                                                     delegate:nil
+                                                            cancelButtonTitle:@"OK"
+                                                            otherButtonTitles: nil];
+                    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+                    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+                    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+                    [alert show];
+                    /*
                     ExistingAlbumPickerTableViewController *vc = [[ExistingAlbumPickerTableViewController alloc]
                                                                   initWithCurrentAlbum:_songIAmEditing.album];
                     [self.VC.navigationController pushViewController:vc animated:YES];
+                     */
                 }
                 
                 break;
@@ -827,7 +838,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 #pragma mark - AlertView
 - (void)launchAlertViewWithDialog
 {
-    NSString * msg = @"This album art is associated with this songs album. To make changes, go to the album.";
+    NSString * msg = @"Changes to this album art must be made on the album itself.";
     SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Cannot Edit Album Art"
                                                       message:msg
                                                      delegate:self

@@ -82,8 +82,10 @@ static const short APP_LAUNCHED_ALREADY = 1;
 - (BOOL)appLaunchedFirstTime
 {
     NSInteger code = [[NSUserDefaults standardUserDefaults] integerForKey:APP_ALREADY_LAUNCHED_KEY];
-    if(code == APP_LAUNCHED_FIRST_TIME)
+    if(code == APP_LAUNCHED_FIRST_TIME){
+        [AppEnvironmentConstants markAppAsLaunchedForFirstTime];
         return YES;
+    }
     else
         return NO;
 }

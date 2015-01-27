@@ -26,6 +26,8 @@ typedef enum {
 @interface AppEnvironmentConstants : NSObject
 
 + (BOOL)isAppInProductionMode;
++ (BOOL)isFirstTimeAppLaunched;
++ (void)markAppAsLaunchedForFirstTime;
 
 + (BOOL)isUserEditingSongOrAlbumOrArtist;
 + (void)setUserIsEditingSongOrAlbumOrArtist:(BOOL)aValue;

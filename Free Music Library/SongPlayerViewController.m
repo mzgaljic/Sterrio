@@ -1117,36 +1117,4 @@ static int hours;
     }
 }
 
-#pragma mark - AlertView
-- (void)launchAlertViewWithDialogUsingTitle:(NSString *)aTitle andMessage:(NSString *)aMessage
-{
-    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:aTitle
-                                                      message:aMessage
-                                                     delegate:self
-                                            cancelButtonTitle:@"OK"
-                                            otherButtonTitles:nil];
-    
-    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
-    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    [alert show];
-}
-
-- (void)alertView:(SDCAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    return;
-}
-
-#pragma mark - Navigation Stack accessor
-- (UIViewController *)backViewController
-{
-    NSInteger numberOfViewControllers = self.navigationController.viewControllers.count;
-    
-    if (numberOfViewControllers < 2)
-        return nil;
-    else
-        return [self.navigationController.viewControllers objectAtIndex:numberOfViewControllers - 2];
-}
-
-
 @end

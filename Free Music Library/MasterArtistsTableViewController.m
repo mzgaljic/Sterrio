@@ -279,6 +279,15 @@ static BOOL lastSortOrder;
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
+    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Unfinished"
+                                                      message:@"This action is coming soon."
+                                                     delegate:nil
+                                            cancelButtonTitle:@"OK"
+                                            otherButtonTitles: nil];
+    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    [alert show];
     /*
     //get the index of the tapped artist
     UITableView *tableView = self.tableView;

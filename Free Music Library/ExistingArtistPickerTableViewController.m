@@ -7,7 +7,7 @@
 //
 
 #import "ExistingArtistPickerTableViewController.h"
-
+#import <SDCAlertView.h>
 @interface ExistingArtistPickerTableViewController ()
 @property(nonatomic, strong) NSMutableArray *allArtists;
 @property (nonatomic, strong) Artist *usersCurrentArtist;
@@ -15,6 +15,20 @@
 
 @implementation ExistingArtistPickerTableViewController
 static BOOL PRODUCTION_MODE;
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Unfinished"
+                                                      message:@"This action is not yet supported."
+                                                     delegate:nil
+                                            cancelButtonTitle:@"OK"
+                                            otherButtonTitles: nil];
+    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    [alert show];
+}
 
 - (id)initWithCurrentArtist:(Artist *)anArtist
 {
@@ -41,6 +55,7 @@ static BOOL PRODUCTION_MODE;
     [self setProductionModeValue];
 }
 
+/*
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -49,7 +64,7 @@ static BOOL PRODUCTION_MODE;
     //_allArtists = [NSMutableArray arrayWithArray:[Artist loadAll]];
     [self.tableView reloadData];
 }
-
+*/
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];

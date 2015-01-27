@@ -11,6 +11,7 @@
 @implementation AppEnvironmentConstants
 
 static const BOOL PRODUCTION_MODE = YES;
+static BOOL isFirstTimeAppLaunched = NO;
 static BOOL USER_EDITING_MEDIA = YES;
 static BOOL userIsPreviewingAVideo = NO;
 static PREVIEW_PLAYBACK_STATE currentPreviewPlayerState = PREVIEW_PLAYBACK_STATE_Uninitialized;
@@ -25,6 +26,16 @@ static BOOL icloudSettingsSync;
 + (BOOL)isAppInProductionMode
 {
     return PRODUCTION_MODE;
+}
+
++ (BOOL)isFirstTimeAppLaunched
+{
+    return isFirstTimeAppLaunched;
+}
+
++ (void)markAppAsLaunchedForFirstTime
+{
+    isFirstTimeAppLaunched = YES;
 }
 
 + (BOOL)isUserEditingSongOrAlbumOrArtist

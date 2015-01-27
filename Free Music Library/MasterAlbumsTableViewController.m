@@ -329,6 +329,15 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 #pragma mark - other stuff
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
+    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Unfinished"
+                                                      message:@"This action is coming soon."
+                                                     delegate:nil
+                                            cancelButtonTitle:@"OK"
+                                            otherButtonTitles: nil];
+    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    [alert show];
     /*
     if([[segue identifier] isEqualToString: @"albumItemSegue"]){
         [[segue destinationViewController] setAlbum:self.albums[self.selectedRowIndexValue]];

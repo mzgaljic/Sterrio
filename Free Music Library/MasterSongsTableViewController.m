@@ -246,6 +246,41 @@ static BOOL lastSortOrder;
     [self setProductionModeValue];
     [self setUpNavBarItems];
     self.tableView.allowsSelectionDuringEditing = YES;
+    
+    if([AppEnvironmentConstants isFirstTimeAppLaunched]){
+        NSString *msg = @"Thanks for being a beta tester. The ugly tab bar below will be changed soon, pardon the hideous look. The rest of the application should look great though! Bugs may be reported via the settings view or the Testflight app itself I believe.";
+        SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Welcome"
+                                                          message:msg
+                                                         delegate:nil
+                                                cancelButtonTitle:@"OK"
+                                                otherButtonTitles: nil];
+        NSString *msg2 = @"Some things to note:\n-The settings view will receive a complete overhaul at some point. I don't like it, and many of the settings seem a bit useless.\n-Playing a saved video will NOT display a loading spinner. The spinner caused my app to crash and I am working to bring the loading spinner back. The same applies when skipping songs.\nThe process of adding album art to a song is tedious at the moment. I apologize, and I am working on verhauling this step as well.";
+        SDCAlertView *alert2 = [[SDCAlertView alloc] initWithTitle:@"One more thing"
+                                                          message:msg2
+                                                         delegate:nil
+                                                cancelButtonTitle:@"OK"
+                                                otherButtonTitles: nil];
+        NSString *msg3 = @"This is important. Do NOT spent a significant amount of time trying to make the library perfect. Expect that data may be possibly corrupted or lost as this is a Beta application. Reinstalling the app will erase all song data.";
+        SDCAlertView *alert3 = [[SDCAlertView alloc] initWithTitle:@"Last thing, I promise"
+                                                           message:msg3
+                                                          delegate:nil
+                                                 cancelButtonTitle:@"OK"
+                                                 otherButtonTitles: nil];
+        alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        
+        alert2.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert2.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert2.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        
+        alert3.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert3.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert3.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        [alert3 show];
+        [alert2 show];
+        [alert show];
+    }
 }
 
 - (void)dealloc
