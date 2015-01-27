@@ -40,7 +40,7 @@ static NSInteger const SONG5_DURATION = 219;
 
 static NSString * const SONG6_NAME = @"The Days";
 static NSString * const ARTIST6_NAME = @"Avicii";
-static NSString * const SONG6_YTID = @"UL_EXAyGCkw";
+static NSString * const SONG6_YTID = @"JDglMK9sgIQ";
 static NSInteger const SONG6_DURATION = 247;
 
 static NSString * const SONG7_NAME = @"Hound Dog";

@@ -158,6 +158,7 @@ static const int CELL_STREAM_PICKER_TAG = 107;
         switch (indexPath.row)
         {
             case 0:
+            {
                 cell.textLabel.text = @"Sync Settings Via iCloud";
                 //setup toggle switch
                 _syncSettingViaIcloudSwitch = [[UISwitch alloc] init];
@@ -166,35 +167,43 @@ static const int CELL_STREAM_PICKER_TAG = 107;
                 cell.accessoryView = [[UIView alloc] initWithFrame:_syncSettingViaIcloudSwitch.frame];
                 [cell.accessoryView addSubview:_syncSettingViaIcloudSwitch];
                 
-                cell.detailTextLabel.text = @"";
+                cell.detailTextLabel.text = @" ";
                 [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
                 
                 [_syncSettingViaIcloudSwitch addTarget:self action:@selector(icloudSyncSwitchToggled:)forControlEvents:UIControlEventValueChanged];
                 break;
+            }
         }
     } else if(indexPath.section == 1){
         switch (indexPath.row)
         {
             case 0:
+            {
                 cell.textLabel.text = @"Wifi Stream Quality";
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%hup",[AppEnvironmentConstants preferredWifiStreamSetting]];
                 cell.accessoryView = nil;
                 break;
+            }
             case 1:
+            {
                 cell.textLabel.text = @"Cellular Stream Quality";
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%hup",[AppEnvironmentConstants preferredCellularStreamSetting]];
                 cell.accessoryView = nil;
                 break;
+            }
         }
     } else if(indexPath.section == 2){
         switch (indexPath.row)
         {
             case 0:
+            {
                 cell.textLabel.text = @"Font Size";
                 cell.detailTextLabel.text = [self convertFontSizeToString];
                 cell.accessoryView = nil;
                 break;
+            }
             case 1:
+            {
                 cell.textLabel.text = @"Bold Names";
                 //setup toggle switch
                 _boldSongSwitch = [[UISwitch alloc] init];
@@ -203,16 +212,18 @@ static const int CELL_STREAM_PICKER_TAG = 107;
                 cell.accessoryView = [[UIView alloc] initWithFrame:_boldSongSwitch.frame];
                 [cell.accessoryView addSubview:_boldSongSwitch];
                 
-                cell.detailTextLabel.text = @"";
+                cell.detailTextLabel.text = @" ";
                 [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
                 
                 [_boldSongSwitch addTarget:self action:@selector(boldSongsSwitchToggled:)forControlEvents:UIControlEventValueChanged];
                 break;
+            }
         }
     } else if(indexPath.section == 3){
         switch (indexPath.row)
         {
             case 0:
+            {
                 cell.textLabel.text = @"Smart Alphabetical Sort";
                 //setup toggle switch
                 _smartSortSwitch = [[UISwitch alloc] init];
@@ -220,21 +231,25 @@ static const int CELL_STREAM_PICKER_TAG = 107;
                 [_smartSortSwitch setOn:[AppEnvironmentConstants smartAlphabeticalSort] animated:NO];
                 cell.accessoryView = [[UIView alloc] initWithFrame:_smartSortSwitch.frame];
                 [cell.accessoryView addSubview:_smartSortSwitch];
-                cell.detailTextLabel.text = @"";
+                cell.detailTextLabel.text = @" ";
                 [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
                 
                 [_smartSortSwitch addTarget:self action:@selector(smartSortSwitchToggled:)forControlEvents:UIControlEventValueChanged];
                 break;
+            }
         }
     } else if(indexPath.section == 4){
         switch (indexPath.row)
         {
             case 0:
+            {
+                cell.accessoryView = nil;
+                [cell setAccessoryType:UITableViewCellAccessoryNone];
                 cell.textLabel.text = @"Report a Bug";
                 cell.detailTextLabel.text = @"🐞";
-                cell.accessoryView = nil;
                 cell.selectionStyle = UITableViewCellSelectionStyleBlue;
                 break;
+            }
         }
     }
     return cell;
@@ -572,6 +587,7 @@ static tempIcloudSwitchCount = 0;
 -(void)displayComposerModalView
 {
     MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
+    picker.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
     picker.mailComposeDelegate = self;
     NSString *emailSubject = @"Bug Report";
     [picker setSubject:emailSubject];

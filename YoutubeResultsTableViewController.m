@@ -20,6 +20,10 @@
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 @interface YoutubeResultsTableViewController ()
+{
+    UIActivityIndicatorView *cellImgSpinner;
+    UIActivityIndicatorView *cellAccessorySpinner;
+}
 @property (nonatomic, strong) MySearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray *searchResults;
 @property (nonatomic, strong) NSMutableArray *searchSuggestions;
@@ -61,6 +65,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)myPreDealloc
 {
     _searchBar.delegate = nil;
+    cellImgSpinner = nil;
+    cellAccessorySpinner = nil;
     _searchBar = nil;
     _searchResults = nil;
     _searchSuggestions = nil;
@@ -259,9 +265,9 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     moreYouTubeVideoObjects = nil;
     
     _networkErrorLoadingMoreResults = NO;
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
-    UITableViewCell *loadMoreCell = [self.tableView cellForRowAtIndexPath:indexPath];
-    [loadMoreCell setAccessoryView:nil];
+    cellImgSpinner = nil;
+    [cellAccessorySpinner stopAnimating];
+    cellAccessorySpinner.hidden = YES;
 }
 
 - (void)ytvideoResultsNoMorePagesToView
@@ -270,7 +276,9 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     UITableViewCell *loadMoreCell = [self.tableView cellForRowAtIndexPath:indexPath];
     //change "Load More" button
     loadMoreCell.textLabel.text = No_More_Results_To_Display_Msg;
-    loadMoreCell.accessoryView = nil;
+    cellImgSpinner = nil;
+    [cellAccessorySpinner stopAnimating];
+    cellAccessorySpinner.hidden = YES;
     _noMoreResultsToDisplay = YES;
 }
 
@@ -315,7 +323,9 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     loadMoreCell.textLabel.text = Network_Error_Loading_More_Results_Msg;
     loadMoreCell.textLabel.font = [UIFont systemFontOfSize:19];
     loadMoreCell.textLabel.textColor = [UIColor redColor];
-    loadMoreCell.accessoryView = nil;
+    cellImgSpinner = nil;
+    [cellAccessorySpinner stopAnimating];
+    cellAccessorySpinner.hidden = YES;
     _networkErrorLoadingMoreResults = YES;
 }
 
@@ -475,7 +485,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         if(orientation != UIInterfaceOrientationPortrait)
             return 0;
         else
-            return 36.0f;
+            return 38.0f;
     }
     else{
         if(section == 0)  //dont want a gap betweent table and search bar
@@ -518,8 +528,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
             return 1;
         else
             return -1;
-    }
-    else{
+    }else{
         //user has not pressed "search" yet, only showing autosuggestions
         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
         if(orientation != UIInterfaceOrientationPortrait)
@@ -569,7 +578,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
             
         } else if(indexPath.section == 1){  //the "load more" button is in this section
             if(indexPath.row == 0){
-                cell = [tableView dequeueReusableCellWithIdentifier:@"loadMoreButtonCell" forIndexPath:indexPath];
+                //cell = [tableView dequeueReusableCellWithIdentifier:@"loadMoreButtonCell" forIndexPath:indexPath];
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"loadMoreButtonCell"];
                 cell.textLabel.font = [UIFont boldSystemFontOfSize:20];
                 cell.textLabel.textAlignment = NSTextAlignmentCenter;
                 if(_networkErrorLoadingMoreResults){
@@ -581,14 +591,29 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
                     cell.textLabel.textColor = [UIColor blackColor];
                 }
                 else{
-                    cell.textLabel.text = @"  Load more";
+                    cell.textLabel.text = @"Load more";
                     cell.textLabel.textColor = [[UIColor defaultAppColorScheme] lighterColor];
                     cell.textLabel.textAlignment = NSTextAlignmentCenter;
+                    
+                    //will be activated if avplayer is currently on screen
+                    if(!cellImgSpinner){
+                        cellImgSpinner = [[UIActivityIndicatorView alloc]
+                                          initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                        
+                        UIImage *clearImg = [UIImage imageWithColor:[UIColor clearColor]
+                                                              width:cellImgSpinner.frame.size.width
+                                                             height:cellImgSpinner.frame.size.height];
+                        cell.imageView.image = clearImg;
+                        [cell.imageView addSubview:cellImgSpinner];
+                    }
+                    //activated if avplayer is NOT on screen
+                    cellAccessorySpinner= [[UIActivityIndicatorView alloc]
+                                           initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                    [cell setAccessoryView:cellAccessorySpinner];
                 }
             }
         }
-    }
-    else{  //auto suggestions will populate the table
+    }else{  //auto suggestions will populate the table
         cell = [tableView dequeueReusableCellWithIdentifier:@"youtubeSuggsestCell" forIndexPath:indexPath];
         cell.textLabel.text = [_searchSuggestions objectAtIndex:indexPath.row];
         cell.imageView.image = nil;
@@ -630,12 +655,12 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         } else if(indexPath.section == 1){
             //Load More button tapped
             if(indexPath.row == 0){
-                UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
-                                                         UIActivityIndicatorViewStyleGray];
-                [activityView startAnimating];
-                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
-                UITableViewCell *loadMoreCell = [self.tableView cellForRowAtIndexPath:indexPath];
-                [loadMoreCell setAccessoryView:activityView];
+                if([MusicPlaybackController obtainRawPlayerView] != nil)  //player on screen
+                    [cellImgSpinner startAnimating];
+                else{
+                    cellAccessorySpinner.hidden = NO;
+                    [cellAccessorySpinner startAnimating];
+                }
                 
                 //try to load more results
                 [[YouTubeVideoSearchService sharedInstance] fetchNextYouTubePageUsingLastQueryString];
@@ -718,18 +743,13 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
         
         toolbarItems = [NSArray arrayWithObjects:_cancelButton,flexibleSpace, scrollToTopButton, nil];
-        if(! _scrollToTopButtonVisible){  //not visible, need to animate
-            _scrollToTopButtonVisible = YES;
-            [self.navigationController.toolbar setItems:toolbarItems animated:YES];
-        }
+        _scrollToTopButtonVisible = YES;
+        [self.navigationController.toolbar setItems:toolbarItems animated:YES];
     }
     else{  //hiding scroll to top button
         toolbarItems = [NSArray arrayWithObjects:_cancelButton, nil];
-        if(_scrollToTopButtonVisible){
-            _scrollToTopButtonVisible = NO;
-            [self.navigationController.toolbar setItems:toolbarItems animated:YES];
-        }
-        //otherwise already not on screen, no need to change toolbar.
+        _scrollToTopButtonVisible = NO;
+        [self.navigationController.toolbar setItems:toolbarItems animated:YES];
     }
 }
 
