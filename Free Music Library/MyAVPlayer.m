@@ -121,7 +121,7 @@
         usingWifi = YES;
     
     if(! usingWifi && status != NotReachable){
-        if([weakDuration integerValue] >= 600)
+        if([weakDuration integerValue] >= MZLongestCellularPlayableDuration)
             //user cant watch video longer than 10 minutes without wifi
             allowedToPlayVideo = NO;
     } else if(! usingWifi && status == NotReachable){

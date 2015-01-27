@@ -12,6 +12,8 @@
 
 static const BOOL PRODUCTION_MODE = YES;
 static BOOL USER_EDITING_MEDIA = YES;
+static BOOL userIsPreviewingAVideo = NO;
+static PREVIEW_PLAYBACK_STATE currentPreviewPlayerState = PREVIEW_PLAYBACK_STATE_Uninitialized;
 
 static short preferredSizeValue;
 static short preferredWifiStreamValue;
@@ -33,6 +35,26 @@ static BOOL icloudSettingsSync;
 + (void)setUserIsEditingSongOrAlbumOrArtist:(BOOL)aValue
 {
     USER_EDITING_MEDIA = aValue;
+}
+
++ (BOOL)isUserPreviewingAVideo
+{
+    return userIsPreviewingAVideo;
+}
+
++ (void)setUserIsPreviewingAVideo:(BOOL)aValue
+{
+    userIsPreviewingAVideo = aValue;
+}
+
++ (void)setCurrentPreviewPlayerState:(PREVIEW_PLAYBACK_STATE)state
+{
+    currentPreviewPlayerState = state;
+}
+
++ (PREVIEW_PLAYBACK_STATE)currrentPreviewPlayerState
+{
+    return currentPreviewPlayerState;
 }
 
 //app settings

@@ -17,6 +17,7 @@ typedef enum {
     ALERT_TYPE_FatalSongDurationError,
     ALERT_TYPE_PotentialVideoDurationFetchFail,
     ALERT_TYPE_LongVideoSkippedOnCellular,
+    ALERT_TYPE_LongPreviewVideoSkippedOnCellular,
     
     ALERT_TYPE_TroubleSharingVideo,
     ALERT_TYPE_TroubleSharingLibrarySong,

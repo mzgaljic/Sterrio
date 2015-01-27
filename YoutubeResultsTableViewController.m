@@ -622,7 +622,10 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     if(self.displaySearchResults){  //video search results in table
         if(indexPath.section == 0){
             YouTubeVideo *ytVideo = [_searchResults objectAtIndex:indexPath.row];
-            [self.navigationController pushViewController:[[YouTubeSongAdderViewController alloc] initWithYouTubeVideo:ytVideo] animated:YES];
+            CustomYoutubeTableViewCell *cell;
+            cell = (CustomYoutubeTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+            UIImage *img = [UIImage imageWithCGImage:cell.videoThumbnail.image.CGImage];
+            [self.navigationController pushViewController:[[YouTubeSongAdderViewController alloc] initWithYouTubeVideo:ytVideo thumbnail:img] animated:YES];
             
         } else if(indexPath.section == 1){
             //Load More button tapped

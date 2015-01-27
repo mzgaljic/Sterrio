@@ -84,6 +84,15 @@
                 
             break;
         }
+        case ALERT_TYPE_LongPreviewVideoSkippedOnCellular:
+        {
+            NSString *msg = @"This video is too long to preview on a cellular connection.";
+            [MyAlerts displayBannerWithMsg:msg
+                                     style:CSNotificationViewStyleInfo
+                                     delay:0.6
+                             shortDuration:NO];
+            break;
+        }
         case ALERT_TYPE_TroubleSharingVideo:
         {
             NSString *msg = @"Sorry, this video could not be shared.";

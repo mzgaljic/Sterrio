@@ -106,12 +106,19 @@ static const short APP_LAUNCHED_ALREADY = 1;
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
+    if([AppEnvironmentConstants isUserPreviewingAVideo]){
+        if(resumePlaybackAfterInterruptionPreviewPlayer){
+            [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay object:nil];
+            resumePlaybackAfterInterruptionPreviewPlayer = NO;
+        }
+    }
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
-    if(player != nil)
+    if(player != nil){
         if(resumePlaybackAfterInterruption){
             [player performSelector:@selector(play) withObject:nil afterDelay:0.03];
             resumePlaybackAfterInterruption = NO;
         }
+    }
 }
 
 #pragma mark - AVAudio Player delegate stuff
@@ -120,7 +127,9 @@ static const short APP_LAUNCHED_ALREADY = 1;
     switch (event.subtype)
     {
         case UIEventSubtypeRemoteControlTogglePlayPause:
-            if([player rate] == 0){
+            if([AppEnvironmentConstants isUserPreviewingAVideo])
+               [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerTogglePlayPause object:nil];
+            else if([player rate] == 0){
                 if([MusicPlaybackController didPlaybackStopDueToInternetProblemLoadingSong]){
                     [player startPlaybackOfSong:[MusicPlaybackController nowPlayingSong] goingForward:YES];
                 } else{
@@ -131,9 +140,12 @@ static const short APP_LAUNCHED_ALREADY = 1;
                 [MusicPlaybackController explicitlyPausePlayback:YES];
                 [player pause];
             }
+            
             break;
         case UIEventSubtypeRemoteControlPlay:
-            if([MusicPlaybackController didPlaybackStopDueToInternetProblemLoadingSong]){
+            if([AppEnvironmentConstants isUserPreviewingAVideo])
+                [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay object:nil];
+            else if([MusicPlaybackController didPlaybackStopDueToInternetProblemLoadingSong]){
                 [player startPlaybackOfSong:[MusicPlaybackController nowPlayingSong] goingForward:YES];
             } else{
                 [MusicPlaybackController explicitlyPausePlayback:NO];
@@ -141,13 +153,21 @@ static const short APP_LAUNCHED_ALREADY = 1;
             }
             break;
         case UIEventSubtypeRemoteControlPause:
-            [MusicPlaybackController explicitlyPausePlayback:YES];
-            [player pause];
+            if([AppEnvironmentConstants isUserPreviewingAVideo])
+                [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPause object:nil];
+            else{
+                [MusicPlaybackController explicitlyPausePlayback:YES];
+                [player pause];
+            }
             break;
         case UIEventSubtypeRemoteControlNextTrack:
+            if([AppEnvironmentConstants isUserPreviewingAVideo])
+                return;
             [MusicPlaybackController skipToNextTrack];
             break;
         case UIEventSubtypeRemoteControlPreviousTrack:
+            if([AppEnvironmentConstants isUserPreviewingAVideo])
+                return;
             [MusicPlaybackController returnToPreviousTrack];
             break;
         default:
@@ -168,6 +188,7 @@ static const short APP_LAUNCHED_ALREADY = 1;
  */
 
 static BOOL resumePlaybackAfterInterruption = NO;
+static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
 
 - (void)setupAudioSession
 {
@@ -194,6 +215,11 @@ static BOOL resumePlaybackAfterInterruption = NO;
 
 - (void)beginInterruption
 {
+    if([AppEnvironmentConstants isUserPreviewingAVideo]){
+        if([AppEnvironmentConstants currentPreviewPlayerState] == PREVIEW_PLAYBACK_STATE_Playing)
+            resumePlaybackAfterInterruptionPreviewPlayer = YES;
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPause object:nil];
+    }
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     if([player rate] == 1){  //only works in foreground or when app is on screen
         resumePlaybackAfterInterruption = YES;
@@ -204,6 +230,10 @@ static BOOL resumePlaybackAfterInterruption = NO;
 - (void)endInterruption
 {
     [self setupAudioSession];
+    if(resumePlaybackAfterInterruptionPreviewPlayer){
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay object:nil];
+        resumePlaybackAfterInterruptionPreviewPlayer = NO;
+    }
     if(resumePlaybackAfterInterruption){
         [[MusicPlaybackController obtainRawAVPlayer] play];
         resumePlaybackAfterInterruption = NO;
@@ -214,6 +244,10 @@ static BOOL resumePlaybackAfterInterruption = NO;
 {
     if(flags == AVAudioSessionInterruptionOptionShouldResume){
         [self setupAudioSession];
+        if(resumePlaybackAfterInterruptionPreviewPlayer){
+            [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay object:nil];
+            resumePlaybackAfterInterruptionPreviewPlayer = NO;
+        }
         if(resumePlaybackAfterInterruption){
             [[MusicPlaybackController obtainRawAVPlayer] play];
             resumePlaybackAfterInterruption = NO;
@@ -224,6 +258,10 @@ static BOOL resumePlaybackAfterInterruption = NO;
 - (void)handleMediaServicesReset
 {
     [self setupAudioSession];
+    if(resumePlaybackAfterInterruptionPreviewPlayer){
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay object:nil];
+        resumePlaybackAfterInterruptionPreviewPlayer = NO;
+    }
     if(resumePlaybackAfterInterruption){
         AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
         if(player){

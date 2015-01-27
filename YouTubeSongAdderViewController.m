@@ -14,6 +14,7 @@
 {
     YouTubeVideo *ytVideo;
     MPMoviePlayerController *videoPlayerViewController;
+    UIImage *lockScreenImg;
     BOOL enoughSongInformationGiven;
     BOOL doneTappedInVideo;
     BOOL pausedBeforePopAttempt;
@@ -24,6 +25,7 @@
     
     BOOL musicWasPlayingBeforePreviewBegan;
     BOOL prevMusicPlaybackStateAlreadySaved;
+    __block NSURL *url;
 }
 
 @property (nonatomic, strong) MZSongModifierTableView *tableView;
@@ -31,14 +33,21 @@
 
 @implementation YouTubeSongAdderViewController
 #pragma mark - Custom Initializer
-- (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject
+- (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject thumbnail:(UIImage *)img
 {
     if ([super init]) {
         if(youtubeVideoObject == nil)
             return nil;
+        
         ytVideo = youtubeVideoObject;
+        
+        //fire off network request for video duration ASAP
+        [[YouTubeVideoSearchService sharedInstance] setVideoDetailLookupDelegate:self];
+        [[YouTubeVideoSearchService sharedInstance] fetchDetailsForVideo:ytVideo];
+        
         pausedBeforePopAttempt = YES;
         MZSongModifierTableView *songEditTable;
+        lockScreenImg = img;
         songEditTable = [[MZSongModifierTableView alloc] initWithFrame:self.view.frame
                                                                  style:UITableViewStyleGrouped];
         songEditTable.VC = self;
@@ -88,15 +97,36 @@
         [self.tableView cancelEditing];
     [self.tableView preDealloc];
     self.tableView = nil;
+    lockScreenImg = nil;
+    url = nil;
+    [AppEnvironmentConstants setUserIsPreviewingAVideo:NO];
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self loadVideo];
-    [[YouTubeVideoSearchService sharedInstance] setVideoDetailLookupDelegate:self];
-    [[YouTubeVideoSearchService sharedInstance] fetchDetailsForVideo:ytVideo];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleAppMovingToBackground)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(orientationHasChanged)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(lockscreenPauseTapped)
+                                                 name:MZPreviewPlayerPause
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(lockscreenPlayTapped)
+                                                 name:MZPreviewPlayerPlay
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(lockscreenTogglePlayPause)
+                                                 name:MZPreviewPlayerTogglePlayPause
+                                               object:nil];
 }
 
 static short numberTimesViewHasBeenShown = 0;
@@ -108,16 +138,6 @@ static short numberTimesViewHasBeenShown = 0;
     
     //hack to hide back button text.
     self.navigationController.navigationBar.topItem.title = @"";
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(setUpLockScreenInfoAndArt)
-                                                 name:UIApplicationWillResignActiveNotification
-                                               object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(orientationHasChanged)
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object:nil];
-    
     self.navigationItem.rightBarButtonItem =
             [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                                                           target:self
@@ -138,7 +158,7 @@ static short numberTimesViewHasBeenShown = 0;
         //this sequence avoids a bug when user cancels "swipe to pop" gesture
         if(pausedBeforePopAttempt){
             [videoPlayerViewController pause];
-            [videoPlayerViewController play];
+            //[videoPlayerViewController play];
         }
         [self checkCurrentPlaybackState];
     }
@@ -194,69 +214,94 @@ static short numberTimesViewHasBeenShown = 0;
 #pragma mark - Loading video
 - (void)loadVideo
 {
+    videoPlayerViewController = [[MPMoviePlayerController alloc] init];
+    
+    __weak NSNumber *weakDuration = [videoDetails valueForKey:MZKeyVideoDuration];
     __weak YouTubeVideo *weakVideo = ytVideo;
     __weak YouTubeSongAdderViewController *weakSelf = self;
-    [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakVideo.videoId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
-        if (video)
-        {
-            BOOL allowedToPlayVideo = NO;  //not checking if we can physically play, but legally (apples 10 minute streaming rule)
-            BOOL usingWifi = NO;
-            Reachability *reachability = [Reachability reachabilityForInternetConnection];
-            [reachability startNotifier];
-            NetworkStatus status = [reachability currentReachabilityStatus];
-            if (status == ReachableViaWiFi){
-                //WiFi
-                allowedToPlayVideo = YES;
-                usingWifi = YES;
-            }
-            else if (status == ReachableViaWWAN)
-            {
-                //3G
-                if(video.duration >= 600)  //user cant watch video longer than 10 minutes without wifi
-                    allowedToPlayVideo = NO;
-                else
-                    allowedToPlayVideo = YES;
-            }
-            if(allowedToPlayVideo){
-                //find video quality closest to setting preferences
-                NSDictionary *vidQualityDict = video.streamURLs;
-                NSURL *url;
-                if(usingWifi){
-                    short maxDesiredQuality = [AppEnvironmentConstants preferredWifiStreamSetting];
-                    url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
-                }else{
-                    short maxDesiredQuality = [AppEnvironmentConstants preferredCellularStreamSetting];
-                    url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
-                }
-                
-                videoPlayerViewController = [[MPMoviePlayerController alloc] init];
-                [videoPlayerViewController setRepeatMode:(MPMovieRepeatModeNone)];
-                [videoPlayerViewController setControlStyle:MPMovieControlStyleEmbedded];
-                [videoPlayerViewController setScalingMode:MPMovieScalingModeAspectFit];
-                [videoPlayerViewController setMovieSourceType:(MPMovieSourceTypeStreaming)];
-                [videoPlayerViewController setContentURL:url];
-                [videoPlayerViewController prepareToPlay];
-                [weakSelf setUpVideoView];
-                [videoPlayerViewController play];
-            }
-            else{
-                [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
-            }
+    __weak __block MPMoviePlayerController *weakVideoPlayerViewController = videoPlayerViewController;
+    
+    Reachability *reachability = [Reachability reachabilityForInternetConnection];
+    BOOL usingWifi = NO;
+    //not checking if we can physically play, but legally (Apple's 10 minute streaming rule)
+    BOOL allowedToPlayVideo = YES;
+    
+    NetworkStatus status = [reachability currentReachabilityStatus];
+    if (status == ReachableViaWiFi)
+        usingWifi = YES;
+    
+    if(! usingWifi && status != NotReachable){
+        if([weakDuration integerValue] >= MZLongestCellularPlayableDuration)
+            //user cant watch video longer than 10 minutes without wifi
+            allowedToPlayVideo = NO;
+    } else if(! usingWifi && status == NotReachable){
+        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
+        [MRProgressOverlayView dismissAllOverlaysForView:weakSelf.tableView.tableHeaderView
+                                                animated:YES];
+    }
+    if(! allowedToPlayVideo){
+        if(status != NotReachable){
+            [self videoPreviewCannotBeShownDurationTooLong];
         }
-        else
-        {
-            // Handle error
-            NSString *title = @"Trouble Loading Video";
-            NSString *msg = @"Sorry, something whacky is going on, please try again.";
-            //[self launchAlertViewWithDialogUsingTitle:title andMessage:msg];
+        else{
+            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
+            [MRProgressOverlayView dismissAllOverlaysForView:weakSelf.tableView.tableHeaderView
+                                                    animated:YES];
+        }
+        return;
+    }
+    
+    [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakVideo.videoId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
+        if(video){
+            //find video quality closest to setting preferences
+            NSDictionary *vidQualityDict = video.streamURLs;
+            if(usingWifi){
+                short maxDesiredQuality = [AppEnvironmentConstants preferredWifiStreamSetting];
+                url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
+            }else{
+                short maxDesiredQuality = [AppEnvironmentConstants preferredCellularStreamSetting];
+                url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
+            }
+        }else{
+            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
+            [MRProgressOverlayView dismissAllOverlaysForView:weakSelf.tableView.tableHeaderView
+                                                    animated:YES];
+            return;
+        }
+        
+        if(allowedToPlayVideo && video != nil){
+            [weakVideoPlayerViewController setRepeatMode:(MPMovieRepeatModeNone)];
+            [weakVideoPlayerViewController setControlStyle:MPMovieControlStyleEmbedded];
+            [weakVideoPlayerViewController setScalingMode:MPMovieScalingModeAspectFit];
+            [weakVideoPlayerViewController setMovieSourceType:(MPMovieSourceTypeStreaming)];
+            [weakVideoPlayerViewController setContentURL:url];
+            [weakVideoPlayerViewController prepareToPlay];
+            [weakSelf setUpVideoView];
+            [weakVideoPlayerViewController play];
         }
     }];
+}
+
+#pragma mark - Video Player problems encountered code
+- (void)videoPreviewCannotBeShownDurationTooLong
+{
+    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongPreviewVideoSkippedOnCellular];
+    [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView
+                                            animated:YES];
+    self.tableView.tableHeaderView.backgroundColor = [UIColor grayColor];
+}
+
+- (void)videoDurationFetchFailedShowConnectionToYTIssueMsg
+{
+    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
+    [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView
+                                            animated:YES];
 }
 
 #pragma mark - Video frame and player setup
 - (void)setUpVideoView
 {
-    [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:NO];
+    [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
     int widthOfScreenRoationIndependant;
     int heightOfScreenRotationIndependant;
     int  a = [[UIScreen mainScreen] bounds].size.height;
@@ -337,7 +382,10 @@ static short numberTimesViewHasBeenShown = 0;
 #pragma mark - Responding to video player events
 - (void)playerPlaybackStateChanged:(NSNotification *)notif
 {
-    if (videoPlayerViewController.playbackState == MPMoviePlaybackStatePlaying){
+    if(videoPlayerViewController.playbackState == MPMoviePlaybackStatePlaying){
+        [AppEnvironmentConstants setUserIsPreviewingAVideo:YES];
+        [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
+        
         [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
         playbackBegan = YES;
         
@@ -355,36 +403,74 @@ static short numberTimesViewHasBeenShown = 0;
                 prevMusicPlaybackStateAlreadySaved = YES;
             }
         }
+    } else if(videoPlayerViewController.playbackState == MPMoviePlaybackStatePaused){
+        [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Paused];
     }
 }
 
-#pragma mark - Lock Screen Song Info & Art
+#pragma mark - Handling all background interaction (playback, lockscreen, etc)
+- (void)handleAppMovingToBackground
+{
+    if(videoPlayerViewController.playbackState == MPMoviePlaybackStatePlaying){
+        [self performSelector:@selector(forcePlayOfVideoInBackground)
+                   withObject:nil
+                   afterDelay:0.1];
+        [self setUpLockScreenInfoAndArt];
+    }
+}
+
+- (void)forcePlayOfVideoInBackground
+{
+    [videoPlayerViewController play];
+}
+
 - (void)setUpLockScreenInfoAndArt
 {
-    __weak YouTubeVideo *weakVideo = ytVideo;
-    [SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:weakVideo.videoThumbnailUrlHighQuality]
-                                                        options:0
-                                                       progress:^(NSInteger receivedSize, NSInteger expectedSize) {}
-                                                      completed:^(UIImage *image, NSData *data, NSError *error, BOOL finished)
-     {
-         if (image && finished)
-         {
-             // do something with image
-             Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
-             if (playingInfoCenter) {
-                 NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
-                 
-                 MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage: image];
-                 
-                 [songInfo setObject:weakVideo.videoName forKey:MPMediaItemPropertyTitle];
-                 if(weakVideo.channelTitle)
-                     [songInfo setObject:weakVideo.channelTitle forKey:MPMediaItemPropertyArtist];
-                 [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
-                 [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
-             }
-         }
-     }];
+    //lockScreenImg
+    if(lockScreenImg && url){
+        // do something with image
+        Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
+        if (playingInfoCenter) {
+            NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
+            UIImage *art = lockScreenImg;
+            MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage:art];
+            
+            [songInfo setObject:ytVideo.videoName forKey:MPMediaItemPropertyTitle];
+            if(ytVideo.channelTitle)
+                [songInfo setObject:ytVideo.channelTitle forKey:MPMediaItemPropertyArtist];
+            [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
+            NSInteger duration = [[videoDetails valueForKey:MZKeyVideoDuration] integerValue];
+            [songInfo setObject:[NSNumber numberWithInteger:duration]
+                         forKey:MPMediaItemPropertyPlaybackDuration];
+            [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
+        }
+    }
 }
+
+- (void)lockscreenPlayTapped
+{
+    [videoPlayerViewController play];
+    [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
+}
+
+- (void)lockscreenPauseTapped
+{
+    [videoPlayerViewController pause];
+    [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Paused];
+}
+
+- (void)lockscreenTogglePlayPause
+{
+    if(videoPlayerViewController.playbackState == MPMoviePlaybackStatePlaying){
+        [videoPlayerViewController pause];
+        [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Paused];
+    } else if(videoPlayerViewController.playbackState == MPMoviePlaybackStatePaused){
+        [videoPlayerViewController play];
+        [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
+    } else
+        return;
+}
+
 
 #pragma mark - Share Button Tapped
 - (void)shareButtonTapped
@@ -431,6 +517,7 @@ static short numberTimesViewHasBeenShown = 0;
             videoDetails = [details copy];
             details = nil;
             [self.tableView canShowAddToLibraryButton];
+            [self loadVideo];
         }
     }else
         return;
@@ -438,9 +525,12 @@ static short numberTimesViewHasBeenShown = 0;
 
 - (void)networkErrorHasOccuredFetchingVideoDetailsForVideo:(YouTubeVideo *)video
 {
-    if([video.videoId isEqualToString:ytVideo.videoId])
+    if([video.videoId isEqualToString:ytVideo.videoId]){
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_PotentialVideoDurationFetchFail];
-    else
+        [self performSelector:@selector(videoDurationFetchFailedShowConnectionToYTIssueMsg)
+                   withObject:nil
+                   afterDelay:1];
+    }else
         //false alarm about a problem that occured with a previous fetch?
         //who knows when this would happen lol. Disregard this case.
         return;

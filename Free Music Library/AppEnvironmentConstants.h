@@ -16,12 +16,24 @@
 
 #import <Foundation/Foundation.h>
 
+//states of the preview player
+typedef enum {
+    PREVIEW_PLAYBACK_STATE_Uninitialized,
+    PREVIEW_PLAYBACK_STATE_Playing,
+    PREVIEW_PLAYBACK_STATE_Paused
+} PREVIEW_PLAYBACK_STATE;
+
 @interface AppEnvironmentConstants : NSObject
 
 + (BOOL)isAppInProductionMode;
 
 + (BOOL)isUserEditingSongOrAlbumOrArtist;
 + (void)setUserIsEditingSongOrAlbumOrArtist:(BOOL)aValue;
+
++ (BOOL)isUserPreviewingAVideo;
++ (void)setUserIsPreviewingAVideo:(BOOL)aValue;
++ (void)setCurrentPreviewPlayerState:(PREVIEW_PLAYBACK_STATE)state;
++ (PREVIEW_PLAYBACK_STATE)currentPreviewPlayerState;
 
 //app settings
 + (short)preferredSizeSetting;

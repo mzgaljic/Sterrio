@@ -10,6 +10,11 @@
 
 @interface MZConstants : NSObject
 
+//used for sending playback signals to video preview player if it exists
+extern NSString * const MZPreviewPlayerTogglePlayPause;
+extern NSString * const MZPreviewPlayerPlay;
+extern NSString * const MZPreviewPlayerPause;
+
 extern NSString * const MZKeyNumLikes;
 extern NSString * const MZKeyNumDislikes;
 extern NSString * const MZKeyVideoDuration;
@@ -18,6 +23,7 @@ extern NSString * const MZUserCanTransitionToMainInterface;
 
 extern short const MZMinutesInAnHour;
 extern short const MZSecondsInAMinute;
+extern short const MZLongestCellularPlayableDuration;
 
 extern int const MZMinVideoPlayerSwipeLengthDown;
 extern int const MZMinVideoPlayerSwipeLengthUp;

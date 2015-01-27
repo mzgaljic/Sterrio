@@ -25,6 +25,6 @@
 @interface YouTubeSongAdderViewController : MyViewController <YouTubeVideoDetailLookupDelegate,
                                                             MZSongModifierDelegate>
 
-- (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject;
+- (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject thumbnail:(UIImage *)img;
 
 @end
