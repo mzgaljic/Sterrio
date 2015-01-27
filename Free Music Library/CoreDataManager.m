@@ -143,27 +143,11 @@ static NSString *MODEL_NAME = @"Model 1.0";
     NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString *coreDataPath = [libPath stringByAppendingPathComponent:@"Core Data"];
     
-    //permission 975 for core data folder
-    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[fileManager attributesOfItemAtPath:libPath error:nil]];
-    [attributes setValue:[NSNumber numberWithShort:975]
-                  forKey:NSFilePosixPermissions];
-    [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
-    
     NSError * error = nil;
     [fileManager createDirectoryAtPath:coreDataPath
                               withIntermediateDirectories:YES
-                                               attributes:attributes
+                                               attributes:nil
                                                     error:&error];
-    if(error == nil){
-        //core data dir has been created. set all files in this dir to permission 975
-        NSArray *files = [fileManager contentsOfDirectoryAtPath:coreDataPath error:&error];
-        for(int i = 0; i < files.count; i++){
-            attributes = [NSMutableDictionary dictionaryWithDictionary:[fileManager attributesOfItemAtPath:files[i] error:nil]];
-            [attributes setValue:[NSNumber numberWithShort:975]
-                          forKey:NSFilePosixPermissions];
-            [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
-        }
-    }
     if (error != nil) {
         NSLog(@"error creating core data directory: %@", error);
         return nil;  //returning nil will allow the app to catch the error and inform the user.

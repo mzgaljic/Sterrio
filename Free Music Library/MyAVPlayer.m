@@ -64,8 +64,8 @@
         movingForward = forward;
         [[NSNotificationCenter defaultCenter] postNotificationName:NEW_SONG_IN_AVPLAYER
                                                             object:[MusicPlaybackController nowPlayingSong]];
-        [self playSong:aSong];
         [MusicPlaybackController updateLockScreenInfoAndArtForSong:aSong];
+        [self playSong:aSong];
     } else{
         if(canPostLastSongNotification)
             [self songDidFinishPlaying:nil];

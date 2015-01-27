@@ -55,20 +55,7 @@ static const short APP_LAUNCHED_ALREADY = 1;
         //do stuff that you'd want to see the first time you launch!
         [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
         
-        //set application directory permissions to 975
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-        NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[fileManager attributesOfItemAtPath:documentsPath error:nil]];
-        [attributes setValue:[NSNumber numberWithShort:975]
-                      forKey:NSFilePosixPermissions];
-        [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
-        
-        //set library directory permissions to 975
-        NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-        attributes = [NSMutableDictionary dictionaryWithDictionary:[fileManager attributesOfItemAtPath:libPath error:nil]];
-        [attributes setValue:[NSNumber numberWithShort:975]
-                      forKey:NSFilePosixPermissions];
-        [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
+        [self reduceEncryptionStrengthOnRelevantDirs];
     }
     
     [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY
@@ -77,6 +64,19 @@ static const short APP_LAUNCHED_ALREADY = 1;
     [self setupAudioSessionNotifications];
     
     return YES;
+}
+
+
+/*The Album Art dir must have an encryption level of
+ NSFileProtectionCompleteUntilFirstUserAuthentication, otherwise the images for the lockscreen
+ will not be able to load. */
+- (void)reduceEncryptionStrengthOnRelevantDirs
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    //now set documents dir encryption to a weaker value
+    NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[fileManager attributesOfItemAtPath:documentsPath error:nil]];
+    [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
 }
 
 - (BOOL)appLaunchedFirstTime
@@ -145,23 +145,11 @@ static const short APP_LAUNCHED_ALREADY = 1;
             [player pause];
             break;
         case UIEventSubtypeRemoteControlNextTrack:
-        {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [MusicPlaybackController skipToNextTrack];
-                
-            }
-                           );
+            [MusicPlaybackController skipToNextTrack];
             break;
-        }
         case UIEventSubtypeRemoteControlPreviousTrack:
-        {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [MusicPlaybackController returnToPreviousTrack];
-
-                }
-            );
+            [MusicPlaybackController returnToPreviousTrack];
             break;
-        }
         default:
             break;
     }
