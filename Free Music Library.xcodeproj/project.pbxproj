@@ -109,7 +109,7 @@
 		87AE39751A4A8E6400C278BA /* PreloadedCoreDataModelUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AE39741A4A8E6400C278BA /* PreloadedCoreDataModelUtility.m */; };
 		87BBBE061A58A78A00248E2F /* MySearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 87BBBE051A58A78A00248E2F /* MySearchBar.m */; };
 		87BC1B891A071979000D9B0C /* PlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87BC1B881A071979000D9B0C /* PlayerView.m */; };
-		87BD42A319CD1A4C005ED8CD /* Muzic.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 87BD42A219CD1A4C005ED8CD /* Muzic.entitlements */; };
+		87BD42A319CD1A4C005ED8CD /* Free Music Library.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 87BD42A219CD1A4C005ED8CD /* Free Music Library.entitlements */; };
 		87C0BD5819C564CA00EB7D91 /* AutoScrollLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C0BD5719C564CA00EB7D91 /* AutoScrollLabel.m */; };
 		87CB302F1A4A070C004E5158 /* SongPlayerNavController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87CB302E1A4A070C004E5158 /* SongPlayerNavController.m */; };
 		87CEDC6519731EF000780D57 /* PlaylistSongAdderTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87CEDC6419731EF000780D57 /* PlaylistSongAdderTableViewController.m */; };
@@ -338,7 +338,7 @@
 		87BC1B871A071979000D9B0C /* PlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerView.h; sourceTree = "<group>"; };
 		87BC1B881A071979000D9B0C /* PlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerView.m; sourceTree = "<group>"; };
 		87BC1B8A1A07215B000D9B0C /* NSNull+AVPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNull+AVPlayer.h"; sourceTree = "<group>"; };
-		87BD42A219CD1A4C005ED8CD /* Muzic.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Muzic.entitlements; sourceTree = "<group>"; };
+		87BD42A219CD1A4C005ED8CD /* Free Music Library.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Free Music Library.entitlements"; sourceTree = "<group>"; };
 		87C0BD5619C564CA00EB7D91 /* AutoScrollLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutoScrollLabel.h; sourceTree = "<group>"; };
 		87C0BD5719C564CA00EB7D91 /* AutoScrollLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AutoScrollLabel.m; sourceTree = "<group>"; };
 		87CB302B1A4A05F1004E5158 /* SongPlayerNavController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SongPlayerNavController.h; sourceTree = "<group>"; };
@@ -600,7 +600,7 @@
 		87480D9C192C1FBD005CC0A4 = {
 			isa = PBXGroup;
 			children = (
-				87BD42A219CD1A4C005ED8CD /* Muzic.entitlements */,
+				87BD42A219CD1A4C005ED8CD /* Free Music Library.entitlements */,
 				87DD2A2A1A74B5F60014E115 /* Main.storyboard */,
 				87480DB7192C1FBD005CC0A4 /* AppDelegate.h */,
 				87480DB8192C1FBD005CC0A4 /* AppDelegate.m */,
@@ -1184,7 +1184,7 @@
 				87DD2A2B1A74B5F60014E115 /* Main.storyboard in Resources */,
 				87480DC4192C1FBD005CC0A4 /* Images.xcassets in Resources */,
 				87A453D9199C0891004D1319 /* README_multi image picker.txt in Resources */,
-				87BD42A319CD1A4C005ED8CD /* Muzic.entitlements in Resources */,
+				87BD42A319CD1A4C005ED8CD /* Free Music Library.entitlements in Resources */,
 				87480DB3192C1FBD005CC0A4 /* InfoPlist.strings in Resources */,
 				87A453D0199C0891004D1319 /* ELCAssetPicker.xib in Resources */,
 				87A453D1199C0891004D1319 /* ELCAssetTablePicker.xib in Resources */,

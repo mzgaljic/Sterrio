@@ -54,6 +54,21 @@ static const short APP_LAUNCHED_ALREADY = 1;
     if([self appLaunchedFirstTime]){
         //do stuff that you'd want to see the first time you launch!
         [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
+        
+        //set application directory permissions to 975
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+        NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[fileManager attributesOfItemAtPath:documentsPath error:nil]];
+        [attributes setValue:[NSNumber numberWithShort:975]
+                      forKey:NSFilePosixPermissions];
+        [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
+        
+        //set library directory permissions to 975
+        NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+        attributes = [NSMutableDictionary dictionaryWithDictionary:[fileManager attributesOfItemAtPath:libPath error:nil]];
+        [attributes setValue:[NSNumber numberWithShort:975]
+                      forKey:NSFilePosixPermissions];
+        [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
     }
     
     [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY
@@ -130,11 +145,23 @@ static const short APP_LAUNCHED_ALREADY = 1;
             [player pause];
             break;
         case UIEventSubtypeRemoteControlNextTrack:
-            [MusicPlaybackController skipToNextTrack];
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [MusicPlaybackController skipToNextTrack];
+                
+            }
+                           );
             break;
+        }
         case UIEventSubtypeRemoteControlPreviousTrack:
-            [MusicPlaybackController returnToPreviousTrack];
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [MusicPlaybackController returnToPreviousTrack];
+
+                }
+            );
             break;
+        }
         default:
             break;
     }

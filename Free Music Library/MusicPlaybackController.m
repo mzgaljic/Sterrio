@@ -262,58 +262,37 @@ static int numLongSongsSkipped = 0;
 #pragma mark - Lock Screen Song Info & Art
 + (void)updateLockScreenInfoAndArtForSong:(Song *)song
 {
-    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-
-        NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-        NSString *artDirPath = [documentsPath stringByAppendingPathComponent:@"Album Art"];
-        NSString *path = artDirPath;
-        //-----> LIST ALL FILES <-----//
-        NSLog(@"LISTING ALL FILES FOUND");
-        
-        int count;
-        NSArray *directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path
-                                                                                        error:NULL];
-        for (count = 0; count < (int)[directoryContent count]; count++)
-        {
-            NSLog(@"File %d: %@", (count + 1), [directoryContent objectAtIndex:count]);
-        }
-        
-        //actual code below
+    Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
+    if (playingInfoCenter){
         Song *nowPlayingSong = [MusicPlaybackController nowPlayingSong];
-        NSURL *url = [AlbumArtUtilities albumArtFileNameToNSURL:nowPlayingSong.albumArtFileName];
+        NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
         
-        // do something with image
-        Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
-        if (playingInfoCenter) {
-            NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
-            
-            UIImage *albumArtImage = [UIImage imageWithData:[NSData dataWithContentsOfURL:url]];
-            if(albumArtImage == nil){  //song has no album art, check if its album does
-                Album *songsAlbum = song.album;
-                if(songsAlbum){
-                    NSURL *url = [AlbumArtUtilities albumArtFileNameToNSURL:songsAlbum.albumArtFileName];
-                    albumArtImage = [UIImage imageWithData:[NSData dataWithContentsOfURL:url]];
-                }
+        UIImage *albumArtImage = [AlbumArtUtilities albumArtFileNameToUiImage:nowPlayingSong.albumArtFileName];
+        if(albumArtImage == nil){
+            //song has no album art, check if its album does
+            Album *songsAlbum = song.album;
+            if(songsAlbum){
+                albumArtImage = [AlbumArtUtilities albumArtFileNameToUiImage:songsAlbum.albumArtFileName];
             }
-            
-            if(albumArtImage != nil){
-                MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage: albumArtImage];
-                [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
-            }
-            
-            [songInfo setObject:nowPlayingSong.songName forKey:MPMediaItemPropertyTitle];
-            
-            if(nowPlayingSong.artist.artistName != nil)
-                [songInfo setObject:nowPlayingSong.artist.artistName forKey:MPMediaItemPropertyArtist];
-            if(nowPlayingSong.album.albumName != nil)
-                [songInfo setObject:nowPlayingSong.album.albumName forKey:MPMediaItemPropertyAlbumTitle];
-            NSInteger duration = [nowPlayingSong.duration integerValue];
-            [songInfo setObject:[NSNumber numberWithInteger:duration]
-                         forKey:MPMediaItemPropertyPlaybackDuration];
-            [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
         }
-    });
+        
+        if(albumArtImage != nil){
+            MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage: albumArtImage];
+            [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
+        }
+        
+        [songInfo setObject:nowPlayingSong.songName forKey:MPMediaItemPropertyTitle];
+        
+        if(nowPlayingSong.artist.artistName != nil)
+            [songInfo setObject:nowPlayingSong.artist.artistName forKey:MPMediaItemPropertyArtist];
+        if(nowPlayingSong.album.albumName != nil)
+            [songInfo setObject:nowPlayingSong.album.albumName forKey:MPMediaItemPropertyAlbumTitle];
+        NSInteger duration = [nowPlayingSong.duration integerValue];
+        [songInfo setObject:[NSNumber numberWithInteger:duration]
+                     forKey:MPMediaItemPropertyPlaybackDuration];
+        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
+    }
+
 }
 
 #pragma mark - Heavy lifting of figuring out which songs go into a new queue
@@ -432,6 +411,7 @@ static int numLongSongsSkipped = 0;
 #pragma mark - DEBUG
 + (void)printQueueContents
 {
+    /*
     NSArray *array = [[MusicPlaybackController playbackQueue] listOfEntireQueueAsArray];
     NSMutableString *output = [NSMutableString stringWithString:@"["];
     Song *aSong = nil;
@@ -448,6 +428,7 @@ static int numLongSongsSkipped = 0;
     else
         [output appendFormat:@"]----Now Playing[%i]\n\n", indexOfNowPlaying];
     NSLog(@"%@", output);
+     */
 }
 
 @end

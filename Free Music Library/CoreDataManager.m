@@ -112,7 +112,8 @@ static NSString *MODEL_NAME = @"Model 1.0";
         return __persistentStoreCoordinator;
     NSDictionary *persistentOptions = @{
                                         NSMigratePersistentStoresAutomaticallyOption:@YES,
-                                        NSInferMappingModelAutomaticallyOption:@YES
+                                        NSInferMappingModelAutomaticallyOption:@YES,
+                        NSFileProtectionKey:NSFileProtectionCompleteUntilFirstUserAuthentication
                                         };
     NSURL *storeURL = [[self applicationSQLDirectory] URLByAppendingPathComponent:SQL_FILE_NAME];
     NSError *error = nil;
@@ -138,33 +139,37 @@ static NSString *MODEL_NAME = @"Model 1.0";
 // Returns the URL to the application's Library directory (original method returned documents dir)
 - (NSURL *)applicationSQLDirectory
 {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString *coreDataPath = [libPath stringByAppendingPathComponent:@"Core Data"];
     
+    //permission 975 for core data folder
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[fileManager attributesOfItemAtPath:libPath error:nil]];
+    [attributes setValue:[NSNumber numberWithShort:975]
+                  forKey:NSFilePosixPermissions];
+    [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
+    
     NSError * error = nil;
-    [[NSFileManager defaultManager] createDirectoryAtPath:coreDataPath
+    [fileManager createDirectoryAtPath:coreDataPath
                               withIntermediateDirectories:YES
-                                               attributes:nil
+                                               attributes:attributes
                                                     error:&error];
+    if(error == nil){
+        //core data dir has been created. set all files in this dir to permission 975
+        NSArray *files = [fileManager contentsOfDirectoryAtPath:coreDataPath error:&error];
+        for(int i = 0; i < files.count; i++){
+            attributes = [NSMutableDictionary dictionaryWithDictionary:[fileManager attributesOfItemAtPath:files[i] error:nil]];
+            [attributes setValue:[NSNumber numberWithShort:975]
+                          forKey:NSFilePosixPermissions];
+            [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
+        }
+    }
     if (error != nil) {
         NSLog(@"error creating core data directory: %@", error);
         return nil;  //returning nil will allow the app to catch the error and inform the user.
     }
     
     return [NSURL fileURLWithPath:coreDataPath];
-}
-
-- (NSString *)createDirectory:(NSString *)directoryName atFilePath:(NSString *)filePath
-{
-    NSString *filePathAndDirectory = [filePath stringByAppendingPathComponent:directoryName];
-    NSError *error;
-    [[NSFileManager defaultManager] createDirectoryAtPath:filePathAndDirectory
-                              withIntermediateDirectories:YES
-                                               attributes:nil
-                                                    error:&error];
-    if (error != nil)
-        return filePath;  //couldn't create directory, just return the original dir and let app crash (nothing i can do here)
-    return filePathAndDirectory;
 }
 
 - (NSManagedObjectContext *)deleteOldStoreAndMakeNewOne

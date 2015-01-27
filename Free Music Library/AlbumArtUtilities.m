@@ -14,11 +14,8 @@
 {
     NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString *artDirPath = [documentsPath stringByAppendingPathComponent:@"Album Art"];
-    
     NSString* path = [artDirPath stringByAppendingPathComponent: albumArtFileName];
-    NSData *data = [[NSFileManager defaultManager] contentsAtPath:path];
-    
-    return [[UIImage alloc] initWithData:data];
+    return [[UIImage alloc] initWithContentsOfFile:path];
 }
 
 + (NSURL *)albumArtFileNameToNSURL:(NSString *)albumArtFileName
@@ -54,10 +51,19 @@
         NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"Album Art"];
         NSFileManager *fileManager = [NSFileManager defaultManager];
         
-        if (![fileManager fileExistsAtPath:dataPath])
-            //Create folder
+        if (![fileManager fileExistsAtPath:dataPath]){
+            NSArray *keys = [NSArray arrayWithObjects:NSFilePosixPermissions,
+                             NSFileProtectionKey, nil];
+            NSArray *objects = [NSArray arrayWithObjects:[NSNumber numberWithShort:975],
+                                NSFileProtectionCompleteUntilFirstUserAuthentication, nil];
+            NSDictionary *permission = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
+            
+            //Create folder with 975 permissions
             [fileManager createDirectoryAtPath:dataPath
-                   withIntermediateDirectories:NO attributes:nil error:nil];
+                   withIntermediateDirectories:YES
+                                    attributes:permission
+                                         error:nil];
+        }
         
         NSString *filePath = [dataPath stringByAppendingPathComponent:fileName];
         
@@ -72,7 +78,14 @@
         
         //NSData * data = UIImagePNGRepresentation(albumArtImage);
         
-        return [fileManager createFileAtPath:filePath contents:data attributes:nil];
+        BOOL success = [fileManager createFileAtPath:filePath contents:data attributes:nil];
+        
+        //now set permissions of this file to 777 as well
+        NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[fileManager attributesOfItemAtPath:filePath error:nil]];
+        [attributes setValue:[NSNumber numberWithShort:777]
+                      forKey:NSFilePosixPermissions];
+        [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
+        return success;
     }
     return YES;
 }
@@ -110,7 +123,7 @@
         
         NSString *originalFilePath = [dataPath stringByAppendingPathComponent:original];
         NSString *newFilePath = [dataPath stringByAppendingPathComponent:newName];
-        
+#warning need to also change encryption protection off when creating this new file
         return [fileManager moveItemAtPath:originalFilePath toPath:newFilePath error:nil];
     }
     return YES;
