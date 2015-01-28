@@ -14,6 +14,7 @@
 NSString * const MZPreviewPlayerTogglePlayPause = @"togglePlayPauseVideoPreviewPlayer";
 NSString * const MZPreviewPlayerPlay = @"playVideoPreviewPlayer";
 NSString * const MZPreviewPlayerPause = @"pauseVideoPreviewPlayer";
+NSString * const MZAppWasBackgrounded = @"appEnteredBackgroundState";
 
 NSString * const MZKeyNumLikes = @"numLikes";
 NSString * const MZKeyNumDislikes = @"numDislikes";

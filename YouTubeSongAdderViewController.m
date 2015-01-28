@@ -63,7 +63,6 @@
                                                  selector:@selector(playerPlaybackStateChanged:)
                                                      name:playbackStateChangedConst
                                                    object:nil];
-        [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
     }
     return self;
 }
@@ -110,7 +109,10 @@
                                              selector:@selector(handleAppMovingToBackground)
                                                  name:UIApplicationWillResignActiveNotification
                                                object:nil];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleAppMovingToBackground)
+                                                 name:MZAppWasBackgrounded
+                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(orientationHasChanged)
                                                  name:UIDeviceOrientationDidChangeNotification
@@ -175,6 +177,7 @@ static short numberTimesViewHasBeenShown = 0;
 {
     [super viewDidAppear:animated];
     [self.tableView viewDidAppear:animated];
+    playerStateBeforeEnteringBackground = videoPlayerViewController.playbackState;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -220,6 +223,7 @@ static short numberTimesViewHasBeenShown = 0;
     __weak YouTubeVideo *weakVideo = ytVideo;
     __weak YouTubeSongAdderViewController *weakSelf = self;
     __weak __block MPMoviePlayerController *weakVideoPlayerViewController = videoPlayerViewController;
+    __weak SongPlayerCoordinator *weakAvplayerCoordinator = [SongPlayerCoordinator sharedInstance];
     
     Reachability *reachability = [Reachability reachabilityForInternetConnection];
     BOOL usingWifi = NO;
@@ -278,6 +282,7 @@ static short numberTimesViewHasBeenShown = 0;
             [weakVideoPlayerViewController prepareToPlay];
             [weakSelf setUpVideoView];
             [weakVideoPlayerViewController play];
+            [weakAvplayerCoordinator temporarilyDisablePlayer];
         }
     }];
 }
@@ -409,14 +414,16 @@ static short numberTimesViewHasBeenShown = 0;
 }
 
 #pragma mark - Handling all background interaction (playback, lockscreen, etc)
+static MPMoviePlaybackState playerStateBeforeEnteringBackground;
 - (void)handleAppMovingToBackground
 {
-    if(videoPlayerViewController.playbackState == MPMoviePlaybackStatePlaying){
+    if(playerStateBeforeEnteringBackground == MPMoviePlaybackStatePlaying){
         [self performSelector:@selector(forcePlayOfVideoInBackground)
                    withObject:nil
-                   afterDelay:0.1];
+                   afterDelay:0.3];
         [self setUpLockScreenInfoAndArt];
     }
+    playerStateBeforeEnteringBackground = videoPlayerViewController.playbackState;
 }
 
 - (void)forcePlayOfVideoInBackground

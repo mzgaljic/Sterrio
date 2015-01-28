@@ -38,7 +38,6 @@ static const short APP_LAUNCHED_ALREADY = 1;
     
     // Override point for customization after application launch.
     [[SDImageCache sharedImageCache] setMaxCacheSize:1000000];  //1 mb cache size
-    
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     
     //set global default "AppColorScheme"
@@ -51,6 +50,7 @@ static const short APP_LAUNCHED_ALREADY = 1;
                                 [[UIColor defaultAppColorScheme] lighterColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
     
     [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime:[self appLaunchedFirstTime]];
+    
     if([self appLaunchedFirstTime]){
         //do stuff that you'd want to see the first time you launch!
         [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
@@ -92,6 +92,8 @@ static const short APP_LAUNCHED_ALREADY = 1;
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZAppWasBackgrounded object:nil];
+    
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     if(player != nil){
         if(player.rate == 1 && !resumePlaybackAfterInterruption)
