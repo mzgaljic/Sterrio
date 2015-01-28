@@ -204,6 +204,7 @@ static int numTimesVCLoaded = 0;
     JAMAccurateSlider *superSlider = (JAMAccurateSlider *)self.playbackSlider;
     [superSlider preDealloc];
     self.playbackSlider = nil;
+    numTimesSetupKeyValueObservers = 0;
 }
 
 #pragma mark - Check and update GUI based on device orientation (or responding to events)
@@ -986,6 +987,9 @@ static int hours;
                         change:(NSDictionary *)change
                        context:(void *)context
 {
+    if(numTimesSetupKeyValueObservers != 1)
+        [self removeObservers];
+    
     //check for duration label change
     if ([keyPath isEqualToString:@"text"]) {
         [self accomodateInterfaceBasedOnDurationLabelSize:(UILabel *)object];
@@ -1132,18 +1136,11 @@ static int hours;
         [activityVC.view setTintColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0]];
         JAMAccurateSlider *superSlider = (JAMAccurateSlider *)self.playbackSlider;
         [superSlider preDealloc];
-        [self performSelector:@selector(presentMyShareSheet:)
-                   withObject:activityVC
-                   afterDelay:0.5];
+        [self presentViewController:activityVC animated:YES completion:nil];
     } else{
         // Handle error
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_TroubleSharingLibrarySong];
     }
-}
-
-- (void)presentMyShareSheet:(UIActivityViewController *)activityVC
-{
-    [self presentViewController:activityVC animated:YES completion:nil];
 }
 
 @end
