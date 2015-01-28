@@ -556,7 +556,8 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                 if(! _songIAmEditing.artist){  //add song to an existing artist
                     ExistingArtistPickerTableViewController *vc = [[ExistingArtistPickerTableViewController alloc]
                                                                    initWithCurrentArtist:_songIAmEditing.artist];
-                    [self.VC.navigationController pushViewController:vc animated:YES];
+                    //[self.VC.navigationController pushViewController:vc animated:YES];
+                    [self performSelector:@selector(showUnsupportedAlert) withObject:nil afterDelay:0.7];
                 } else if(_songIAmEditing.artist){  //remove from current artist
                     _songIAmEditing.artist = nil;
                     [self reloadData];
@@ -614,9 +615,11 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                     _songIAmEditing.album = nil;
                     [self reloadData];
                 } else{ //choose existing album
+                    /*
                     ExistingAlbumPickerTableViewController *vc = [[ExistingAlbumPickerTableViewController alloc]
                                                                   initWithCurrentAlbum:_songIAmEditing.album];
-                    [self.VC.navigationController pushViewController:vc animated:YES];
+                    //[self.VC.navigationController pushViewController:vc animated:YES];*/
+                    [self performSelector:@selector(showUnsupportedAlert) withObject:nil afterDelay:0.7];
                 }
                 break;
             case 1:
@@ -633,15 +636,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                     [self.VC.navigationController pushViewController:vc animated:YES];
                     break;
                 } else{  //place in different album (existing album picker)
-                    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Unfinished"
-                                                                      message:@"This action is not yet supported."
-                                                                     delegate:nil
-                                                            cancelButtonTitle:@"OK"
-                                                            otherButtonTitles: nil];
-                    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-                    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-                    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-                    [alert show];
+                    [self performSelector:@selector(showUnsupportedAlert) withObject:nil afterDelay:0.7];
                     /*
                     ExistingAlbumPickerTableViewController *vc = [[ExistingAlbumPickerTableViewController alloc]
                                                                   initWithCurrentAlbum:_songIAmEditing.album];
@@ -728,6 +723,20 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                 break;
         }
     }
+}
+
+#pragma mark - Unsupported actions code
+- (void)showUnsupportedAlert
+{
+    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Unfinished"
+                                                      message:@"This action is not yet supported."
+                                                     delegate:nil
+                                            cancelButtonTitle:@"OK"
+                                            otherButtonTitles: nil];
+    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    [alert show];
 }
 
 #pragma mark - Album Art Methods

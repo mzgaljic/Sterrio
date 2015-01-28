@@ -158,7 +158,11 @@
         UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];
         SongPlayerViewController *vc =  (SongPlayerViewController *)[keyWindow visibleViewController];
         [vc preDealloc];
-        [vc dismissViewControllerAnimated:YES completion:nil];
+        BOOL animated = NO;
+        if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
+            animated = YES;
+        
+        [vc dismissViewControllerAnimated:animated completion:nil];
         [[SongPlayerCoordinator sharedInstance] beginShrinkingVideoPlayer];
     }
 }

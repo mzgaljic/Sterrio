@@ -99,7 +99,6 @@
     lockScreenImg = nil;
     url = nil;
     [AppEnvironmentConstants setUserIsPreviewingAVideo:NO];
-    [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
 }
 
 - (void)viewDidLoad
@@ -557,6 +556,7 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
     newLibSong.youtube_id = ytVideo.videoId;
     userCreatedHisSong = YES;
     [self performSelector:@selector(destructThisVCDelayed) withObject:nil afterDelay:0.2];
+    [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
 }
 
 - (void)destructThisVCDelayed

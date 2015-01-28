@@ -86,7 +86,7 @@ static const short SMALL_VIDEO_WIDTH = 200;
     }
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    [UIView animateWithDuration:0.42f animations:^{
+    [UIView animateWithDuration:0.39f animations:^{
         if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
         {
             //entering view controller in landscape (fullscreen video)
@@ -118,11 +118,18 @@ static const short SMALL_VIDEO_WIDTH = 200;
         return;
     
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    
+    __weak SongPlayerCoordinator *weakSelf = self;
+    BOOL needLandscapeFrame = YES;
+    if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
+        needLandscapeFrame = NO;
     [UIView animateWithDuration:0.6f animations:^{
-        playerView.frame = [self smallPlayerFrameInPortrait];
+        if(needLandscapeFrame)
+            playerView.frame = [weakSelf smallPlayerFrameInLandscape];
+        else
+            playerView.frame = [weakSelf smallPlayerFrameInPortrait];
     } completion:^(BOOL finished) {
         dispatch_async(dispatch_get_main_queue(), ^{
+            //what the hell does this do???? lol
             [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
         });
     }];

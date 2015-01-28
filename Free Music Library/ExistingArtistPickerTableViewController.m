@@ -19,16 +19,8 @@ static BOOL PRODUCTION_MODE;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Unfinished"
-                                                      message:@"This action is not yet supported."
-                                                     delegate:nil
-                                            cancelButtonTitle:@"OK"
-                                            otherButtonTitles: nil];
-    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    [alert show];
 }
+
 
 - (id)initWithCurrentArtist:(Artist *)anArtist
 {

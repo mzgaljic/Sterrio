@@ -140,13 +140,16 @@ static int numTimesVCLoaded = 0;
                                                                             action:@selector(dismissVideoPlayerControllerButtonTapped)];
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    BOOL positionedSliderAlready = NO;
     if(orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown){
         [self positionMusicButtonsOnScreenAndSetThemUp];
         [self positionPlaybackSliderOnScreen];
+        positionedSliderAlready = YES;
     }
     
     [self checkDeviceOrientation];
-    [self positionPlaybackSliderOnScreen];
+    if(! positionedSliderAlready)
+        [self positionPlaybackSliderOnScreen];
     [self InitSongInfoLabelsOnScreen];
     
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
@@ -734,6 +737,16 @@ static int hours;
     
     _currentTimeLabel.textAlignment = NSTextAlignmentRight;
     _totalDurationLabel.textAlignment = NSTextAlignmentLeft;
+    
+    _playbackSlider.alpha = 0.0;
+    [UIView animateWithDuration:0.7  //now animate a "fade in"
+                          delay:0.2
+                        options:UIViewAnimationOptionAllowUserInteraction
+                     animations:^
+     {
+         _playbackSlider.alpha = 1.0;
+     }
+                     completion:nil];
 }
 
 - (void)displayTotalSliderAndLabelDuration
@@ -881,7 +894,8 @@ static int hours;
 {
     [[SongPlayerCoordinator sharedInstance] beginShrinkingVideoPlayer];
     [self preDealloc];
-    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Adding and removing GUI buttons on the fly
