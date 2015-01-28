@@ -24,8 +24,6 @@ typedef enum{
     UIButton *playButton;
     UIButton *forwardButton;
     UIButton *backwardButton;
-    NSString *songLabel;
-    NSString *artistAlbumLabel;
     
     GCDiscreetNotificationView *sliderHint;  //slider hint
     
@@ -51,6 +49,7 @@ static BOOL playAfterMovingSlider = YES;
 static BOOL sliderIsBeingTouched = NO;
 static BOOL waitingForNextOrPrevVideoToLoad;
 static const short longDurationLabelOffset = 24;
+static int numTimesSetupKeyValueObservers = 0;
 
 NSString * const NEW_SONG_IN_AVPLAYER = @"New song added to AVPlayer, lets hope the interface makes appropriate changes.";
 NSString * const AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
@@ -109,7 +108,12 @@ void *kDidFailKVO               = &kDidFailKVO;
     _currentTimeLabel.textColor = [UIColor blackColor];
     _totalDurationLabel.textColor = [UIColor blackColor];
     self.navBar.title = [MusicPlaybackController prettyPrintNavBarTitle];
-    [self setupKeyvalueObservers];
+    
+    //app crashes shortly after dismissing this VC if the share sheet was selected. Need
+    //this if statement!
+    if(numTimesSetupKeyValueObservers == 0)
+        [self setupKeyvalueObservers];
+    numTimesSetupKeyValueObservers++;
 }
 
 static int numTimesVCLoaded = 0;
@@ -181,6 +185,8 @@ static int numTimesVCLoaded = 0;
 
 - (void)dealloc
 {
+    if(! self)
+        return;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([SongPlayerViewController class]));
 }
@@ -189,9 +195,15 @@ static int numTimesVCLoaded = 0;
 {
     [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:timeObserver];
     [self removeObservers];
+    sliderHint = nil;
     timeObserver = nil;
+    self.playbackSlider.dataSource = nil;
+    _totalDurationLabel = nil;
+    _currentTimeLabel = nil;
+    self.navBar = nil;
     JAMAccurateSlider *superSlider = (JAMAccurateSlider *)self.playbackSlider;
     [superSlider preDealloc];
+    self.playbackSlider = nil;
 }
 
 #pragma mark - Check and update GUI based on device orientation (or responding to events)
@@ -214,40 +226,28 @@ static int numTimesVCLoaded = 0;
     animation.duration = 0.8;
     animation.type = kCATransitionFade;
     animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    
     [_songNameLabel.layer addAnimation:animation
                                 forKey:@"changeTextTransition"];
+    [_artistAndAlbumLabel.layer addAnimation:animation
+                                      forKey:@"changeTextTransition"];
+    
     [self.navigationController.navigationBar.layer addAnimation:animation
                                                          forKey:@"changeTextTransition"];
-    self.navBar.title = [MusicPlaybackController prettyPrintNavBarTitle];
-    self.songNameLabel.text = [MusicPlaybackController nowPlayingSong].songName;
     
-    /*
-    Song *newSong = (Song *)object;
-     _songLabel = nowPlayingSong.songName;
-     self.scrollingSongView.text = _songLabel;
-     self.scrollingSongView.textColor = [UIColor blackColor];
-     self.scrollingSongView.font = [UIFont fontWithName:@"HelveticaNeue" size:40.0f];
-     
-     NSMutableString *artistAlbumLabel = [NSMutableString string];
-     if(nowPlayingSong.artist != nil)
-     [artistAlbumLabel appendString:nowPlayingSong.artist.artistName];
-     if(nowPlayingSong.album != nil)
-     {
-     if(nowPlayingSong.artist != nil)
-     [artistAlbumLabel appendString:@" ・ "];
-     [artistAlbumLabel appendString:nowPlayingSong.album.albumName];
-     }
-     _artistAlbumLabel = artistAlbumLabel;
-     self.scrollingArtistAlbumView.text = _artistAlbumLabel;
-     self.scrollingArtistAlbumView.textColor = [UIColor blackColor];
-     self.scrollingArtistAlbumView.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:self.scrollingSongView.font.pointSize];
-     self.scrollingArtistAlbumView.scrollSpeed = 20.0;
-     
-     NSString *navBarTitle = [NSString stringWithFormat:@"%i of %i",
-     [[self printFriendlySongIndex] intValue],
-     [self numberOfSongsInCoreDataModel]];
-     self.navBar.title = navBarTitle;
-     */
+    NSMutableString *artistAndAlbum = [NSMutableString string];
+    if([MusicPlaybackController nowPlayingSong].artist != nil)
+        [artistAndAlbum appendString:[MusicPlaybackController nowPlayingSong].artist.artistName];
+    if([MusicPlaybackController nowPlayingSong].album != nil)
+    {
+        if([MusicPlaybackController nowPlayingSong].artist != nil)
+            [artistAndAlbum appendString:@" ・ "];
+        [artistAndAlbum appendString:[MusicPlaybackController nowPlayingSong].album.albumName];
+    }
+
+    _artistAndAlbumLabel.text = artistAndAlbum;
+    self.navBar.title = [MusicPlaybackController prettyPrintNavBarTitle];
+    _songNameLabel.text = [MusicPlaybackController nowPlayingSong].songName;
 }
 
 - (void)checkDeviceOrientation
@@ -648,12 +648,32 @@ static int hours;
 - (void)InitSongInfoLabelsOnScreen
 {
     short songNameFontSize = 30;
-    self.songNameLabel.scrollDuration = 8.0f;
-    self.songNameLabel.fadeLength = 10.0f;
+    _songNameLabel.scrollDuration = 8.0f;
+    _songNameLabel.fadeLength = 6.0f;
+    _artistAndAlbumLabel.scrollDuration = 8.0f;
+    _artistAndAlbumLabel.fadeLength = 6.0f;
     UIFont *font = [UIFont fontWithName:@"HelveticaNeue-Light"
                                    size:songNameFontSize];
-    self.songNameLabel.font = font;
-    self.songNameLabel.text = [MusicPlaybackController nowPlayingSong].songName;
+    _songNameLabel.font = font;
+    _artistAndAlbumLabel.font = font;
+    
+    NSMutableString *artistAndAlbum = [NSMutableString string];
+    if([MusicPlaybackController nowPlayingSong].artist != nil)
+        [artistAndAlbum appendString:[MusicPlaybackController nowPlayingSong].artist.artistName];
+    if([MusicPlaybackController nowPlayingSong].album != nil)
+    {
+        if([MusicPlaybackController nowPlayingSong].artist != nil)
+            [artistAndAlbum appendString:@" ・ "];
+        [artistAndAlbum appendString:[MusicPlaybackController nowPlayingSong].album.albumName];
+    }
+
+    _songNameLabel.text = [MusicPlaybackController nowPlayingSong].songName;
+    _artistAndAlbumLabel.text = artistAndAlbum;
+    UIColor *niceGrey = [[UIColor alloc] initWithRed:106.0/255
+                                               green:114.0/255
+                                                blue:121.0/255
+                                               alpha:1];
+    _artistAndAlbumLabel.textColor = niceGrey;
 }
 
 #pragma mark - Playback Time Slider
@@ -934,7 +954,7 @@ static int hours;
     //label observers...
     [_totalDurationLabel addObserver:self
                           forKeyPath:@"text"
-                             options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+                             options:NSKeyValueObservingOptionNew
                              context:NULL];
 }
 
@@ -1110,11 +1130,20 @@ static int hours;
                                              UIActivityTypeAirDrop];
         //set tint color specifically for this VC so that the cancel buttons arent invisible
         [activityVC.view setTintColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0]];
-        [self presentViewController:activityVC animated:YES completion:nil];
+        JAMAccurateSlider *superSlider = (JAMAccurateSlider *)self.playbackSlider;
+        [superSlider preDealloc];
+        [self performSelector:@selector(presentMyShareSheet:)
+                   withObject:activityVC
+                   afterDelay:0.5];
     } else{
         // Handle error
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_TroubleSharingLibrarySong];
     }
+}
+
+- (void)presentMyShareSheet:(UIActivityViewController *)activityVC
+{
+    [self presentViewController:activityVC animated:YES completion:nil];
 }
 
 @end
