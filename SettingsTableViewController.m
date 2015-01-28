@@ -620,21 +620,23 @@ static tempIcloudSwitchCount = 0;
 - (NSString *)buildEmailBodyString
 {
     //\u2022 is Unicode for a bullet
-    NSString *appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"];
+    NSString *appVersion = [UIDevice appVersionString];
     NSString *iosVersion = [[UIDevice currentDevice] systemVersion];
+    NSString *buildNum = [UIDevice appBuildString];
     NSString *deviceName = [UIDevice deviceName];
     NSString *body;
     if(_attachmentUIImages.count == 1)
-        body = @"[Start of bug report]\nName the bug:\n\nLocation (in app) of issue:\n\nSeverity (pick 1): \n(High/Medium/Low)\n\nReported By:\n\n=============\nDescription:\n-\n\nSteps To Reproduce Bug\n-\n\nDescribe the correct (desired) behavior:\n-\n=============\ntime&date\nApp Version: appVersion#\niOS Version: iosVersion#\nDevice: deviceName#\n\n[End of bug report]\nScreenshot:";
+        body = @"[Start of bug report]\nName the bug:\n\nLocation (in app) of issue:\n\nSeverity (pick 1): \n(High/Medium/Low)\n\nReported By:\n\n=============\nDescription:\n-\n\nSteps To Reproduce Bug\n-\n\nDescribe the correct (desired) behavior:\n-\n=============\ntime&date\nApp Version: appVersion# (build build#)\niOS Version: iosVersion#\nDevice: deviceName#\n\n[End of bug report]\nScreenshot:";
 
     else if(_attachmentUIImages.count > 1)
-        body = @"[Start of bug report]\nName the bug:\n\nLocation (in app) of issue:\n\nSeverity (pick 1): \n(High/Medium/Low)\n\nReported By:\n\n=============\nDescription:\n-\n\nSteps To Reproduce Bug\n-\n\nDescribe the correct (desired) behavior:\n-\n=============\ntime&date\nApp Version: appVersion#\niOS Version: iosVersion#\nDevice: deviceName#\n\n[End of bug report]\nScreenshots:";
+        body = @"[Start of bug report]\nName the bug:\n\nLocation (in app) of issue:\n\nSeverity (pick 1): \n(High/Medium/Low)\n\nReported By:\n\n=============\nDescription:\n-\n\nSteps To Reproduce Bug\n-\n\nDescribe the correct (desired) behavior:\n-\n=============\ntime&date\nApp Version: appVersion# (build build#)\niOS Version: iosVersion#\nDevice: deviceName#\n\n[End of bug report]\nScreenshots:";
     
     else
-        body = @"[Start of bug report]\nName the bug:\n\nLocation (in app) of issue:\n\nSeverity (pick 1): \n(High/Medium/Low)\n\nReported By:\n\n=============\nDescription:\n-\n\nSteps To Reproduce Bug\n-\n\nDescribe the correct (desired) behavior:\n-\n=============\ntime&date\nApp Version: appVersion#\niOS Version: iosVersion#\nDevice: deviceName#\n\n[End of bug report]";
+        body = @"[Start of bug report]\nName the bug:\n\nLocation (in app) of issue:\n\nSeverity (pick 1): \n(High/Medium/Low)\n\nReported By:\n\n=============\nDescription:\n-\n\nSteps To Reproduce Bug\n-\n\nDescribe the correct (desired) behavior:\n-\n=============\ntime&date\nApp Version: appVersion# (build build#)\niOS Version: iosVersion#\nDevice: deviceName#\n\n[End of bug report]";
     body = [body stringByReplacingOccurrencesOfString:@"time&date" withString:[self buildCurrentEstTimeString]];
     body = [body stringByReplacingOccurrencesOfString:@"appVersion#" withString:appVersion];
     body = [body stringByReplacingOccurrencesOfString:@"iosVersion#" withString:iosVersion];
+    body = [body stringByReplacingOccurrencesOfString:@"build#" withString:buildNum];
     body = [body stringByReplacingOccurrencesOfString:@"deviceName#" withString:deviceName];
     return body;
 }

@@ -11,5 +11,7 @@
 @interface UIDevice (DeviceName)
 
 + (NSString *)deviceName;
++ (NSString *)appBuildString;
++ (NSString *)appVersionString;
 
 @end

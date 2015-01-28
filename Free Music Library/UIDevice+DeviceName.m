@@ -25,4 +25,14 @@
     return [iOSDevices valueForKey:deviceModel];
 }
 
++ (NSString *)appBuildString
+{
+    return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+}
+
++ (NSString *)appVersionString
+{
+    return [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"];
+}
+
 @end

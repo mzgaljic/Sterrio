@@ -172,15 +172,17 @@
 
 - (NSString *)buildEmailBodyString
 {
-    NSString *appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"];
+    NSString *appVersion = [UIDevice appVersionString];
+    NSString *buildNum = [UIDevice appBuildString];
     NSString *iosVersion = [[UIDevice currentDevice] systemVersion];
     NSString *deviceName = [UIDevice deviceName];
-    NSString *body = @"Please provide as much information as possible...\n\n\n\n\ntime&date\nApp Version: appVersion#\niOS Version: iosVersion#\nDevice: deviceName#\n";
+    NSString *body = @"Please provide as much information as possible...\n\n\n\n\ntime&date\nApp Version: appVersion# (build build#)\niOS Version: iosVersion#\nDevice: deviceName#\n";
     
     body = [body stringByReplacingOccurrencesOfString:@"time&date"
                                            withString:[self buildCurrentEstTimeString]];
     body = [body stringByReplacingOccurrencesOfString:@"appVersion#" withString:appVersion];
     body = [body stringByReplacingOccurrencesOfString:@"iosVersion#" withString:iosVersion];
+    body = [body stringByReplacingOccurrencesOfString:@"build#" withString:buildNum];
     body = [body stringByReplacingOccurrencesOfString:@"deviceName#" withString:deviceName];
     
     return body;
