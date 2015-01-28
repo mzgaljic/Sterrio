@@ -120,6 +120,15 @@
                              shortDuration:YES];
             break;
         }
+        case ALERT_TYPE_CannotOpenSelectedImageError:
+        {
+            NSString *msg = @"The selected picture could not be opened. Please select a different picture.";
+            [MyAlerts displayBannerWithMsg:msg
+                                     style:CSNotificationViewStyleError
+                                     delay:1.0
+                             shortDuration:NO];
+            break;
+        }
         case ALERT_TYPE_SongSaveSuccess:
         {
             NSString *msg = @"Song saved.";

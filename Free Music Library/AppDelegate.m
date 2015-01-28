@@ -48,6 +48,11 @@ static const short APP_LAUNCHED_ALREADY = 1;
     [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
                             setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                 [[UIColor defaultAppColorScheme] lighterColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
+    //set nav bar title color of all navbars
+    NSDictionary *navbarTitleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                               [UIColor defaultWindowTintColor],NSForegroundColorAttributeName,nil];
+    
+    [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
     
     [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime:[self appLaunchedFirstTime]];
     

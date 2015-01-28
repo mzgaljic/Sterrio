@@ -24,6 +24,8 @@ typedef enum {
     
     ALERT_TYPE_CannotOpenSafariError,
     
+    ALERT_TYPE_CannotOpenSelectedImageError,
+    
     ALERT_TYPE_SongSaveSuccess,
     ALERT_TYPE_SongSaveHasFailed
 } ALERT_TYPE;

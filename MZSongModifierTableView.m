@@ -744,7 +744,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 {
     UIImagePickerController *photoPickerController = [[UIImagePickerController alloc] init];
     photoPickerController.delegate = self;
-    //set tint color specifically for this VC so that the cancel buttons arent invisible
+    //set tint color specifically for this VC so that the cancel buttons are invisible
     [photoPickerController.view setTintColor:[UIColor defaultWindowTintColor]];
     [self.theDelegate pushThisVC:photoPickerController];
 }
@@ -781,10 +781,13 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     [_songIAmEditing removeAlbumArt];
 }
 
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(NSDictionary *)editingInfo
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    [picker dismissModalViewControllerAnimated:YES];
-    self.currentAlbumArt = image;
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    UIImage *img = [info objectForKey:UIImagePickerControllerOriginalImage];
+    if(img == nil)
+        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotOpenSelectedImageError];
+    self.currentAlbumArt = img;
     [self reloadData];
 }
 
@@ -847,7 +850,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 #pragma mark - AlertView
 - (void)launchAlertViewWithDialog
 {
-    NSString * msg = @"Changes to this album art must be made on the album itself.";
+    NSString * msg = @"This song is part of an album in your library. Therefore, any changes to the album art must be made on the album itself.";
     SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Cannot Edit Album Art"
                                                       message:msg
                                                      delegate:self
@@ -865,7 +868,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     if(buttonIndex == 0)  //ok tapped
         return;
     if(buttonIndex == 1){  //segue to album edit (user wants to change album art i guess?)
-        
+        [self performSelector:@selector(showUnsupportedAlert) withObject:nil afterDelay:0.7];
     }
 }
 
