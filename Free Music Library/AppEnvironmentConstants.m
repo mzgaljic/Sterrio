@@ -12,6 +12,7 @@
 
 static const BOOL PRODUCTION_MODE = YES;
 static BOOL shouldShowWhatsNewScreen = NO;
+static BOOL shouldDisplayWelcomeScreen = NO;
 static BOOL isFirstTimeAppLaunched = NO;
 static BOOL whatsNewMsgIsNew = NO;
 static BOOL USER_EDITING_MEDIA = YES;
@@ -38,6 +39,16 @@ static BOOL icloudSettingsSync;
 + (void)markShouldDisplayWhatsNewScreenTrue
 {
     shouldShowWhatsNewScreen = YES;
+}
+
++ (BOOL)shouldDisplayWelcomeScreen
+{
+    return shouldDisplayWelcomeScreen;
+}
+
++ (void)markShouldDisplayWelcomeScreenTrue
+{
+    shouldDisplayWelcomeScreen = YES;
 }
 
 + (BOOL)whatsNewMsgIsActuallyNew

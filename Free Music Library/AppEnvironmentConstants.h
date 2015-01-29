@@ -30,6 +30,10 @@ typedef enum {
 + (BOOL)shouldDisplayWhatsNewScreen;
 + (void)markShouldDisplayWhatsNewScreenTrue;
 
++ (BOOL)shouldDisplayWelcomeScreen;
++ (void)markShouldDisplayWelcomeScreenTrue;
+
+//used to avoid accidentally shipping an app with the same whats new message (and displaying it again)
 + (BOOL)whatsNewMsgIsActuallyNew;
 + (void)marksWhatsNewMsgAsNew;
 

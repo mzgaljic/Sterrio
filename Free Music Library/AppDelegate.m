@@ -54,9 +54,10 @@ static const short APP_LAUNCHED_ALREADY = 1;
     
     [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
     
-    [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime:[self appLaunchedFirstTime]];
+    BOOL appLaunchedFirstTime = [self appLaunchedFirstTime];
+    [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime: appLaunchedFirstTime];
     
-    if([self appLaunchedFirstTime]){
+    if(appLaunchedFirstTime){
         //do stuff that you'd want to see the first time you launch!
         [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
         
@@ -84,9 +85,16 @@ static const short APP_LAUNCHED_ALREADY = 1;
     [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
 }
 
+static short appLaunchedFirstTimeDefensiveCount = 0;
 - (BOOL)appLaunchedFirstTime
 {
-    //determine if whats new constant in this build is actually new.
+    //this counter helps us prevent the code beneath from being executed more than once per app launch.
+    //doing so would cause the "whats new screen" to be messed up...displayed at wrong times.
+    if(appLaunchedFirstTimeDefensiveCount > 0)
+        return [AppEnvironmentConstants isFirstTimeAppLaunched];
+    appLaunchedFirstTimeDefensiveCount++;
+    
+    //determine if "whats new" constant in this build is actually new.
     NSString *lastWhatsNewMsg = [[NSUserDefaults standardUserDefaults] stringForKey:LAST_WhatsNewMsg];
     if(lastWhatsNewMsg == nil)
         [AppEnvironmentConstants marksWhatsNewMsgAsNew];
@@ -97,14 +105,15 @@ static const short APP_LAUNCHED_ALREADY = 1;
     [[NSUserDefaults standardUserDefaults] setObject:MZWhatsNewUserMsg
                                               forKey:LAST_WhatsNewMsg];
     
-    //determining whether or not whats new screen should be shown on this run of the app
+    //determining whether or not "whats new" screen should be shown on this run of the app
     NSString *lastBuild = [[NSUserDefaults standardUserDefaults] stringForKey:LAST_INSTALLED_BUILD];
     NSString *currentBuild = [UIDevice appBuildString];
     if(lastBuild == nil){
         lastBuild = currentBuild;
         [[NSUserDefaults standardUserDefaults] setObject:currentBuild
                                                   forKey:LAST_INSTALLED_BUILD];
-    } else if(! [lastBuild isEqualToString:currentBuild]){
+    } else if(! [lastBuild isEqualToString:currentBuild] &&
+                [AppEnvironmentConstants whatsNewMsgIsActuallyNew]){
         [AppEnvironmentConstants markShouldDisplayWhatsNewScreenTrue];
     }
     
@@ -112,6 +121,12 @@ static const short APP_LAUNCHED_ALREADY = 1;
     
     NSInteger code = [[NSUserDefaults standardUserDefaults] integerForKey:APP_ALREADY_LAUNCHED_KEY];
     if(code == APP_LAUNCHED_FIRST_TIME){
+        
+        //I want to only display one or the either, never the same on. Placement of this
+        //if must stay exactly here, placement matters!
+        if(! [AppEnvironmentConstants shouldDisplayWhatsNewScreen])
+            [AppEnvironmentConstants markShouldDisplayWelcomeScreenTrue];
+        
         [AppEnvironmentConstants markAppAsLaunchedForFirstTime];
         return YES;
     }

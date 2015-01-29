@@ -248,7 +248,8 @@ static BOOL lastSortOrder;
     [self setUpNavBarItems];
     self.tableView.allowsSelectionDuringEditing = YES;
     
-    if([AppEnvironmentConstants isFirstTimeAppLaunched]){
+    //This is a ghetto version of an official welcome screen.
+    if([AppEnvironmentConstants shouldDisplayWelcomeScreen]){
         NSString *msg = @"Thanks for being a beta tester. The ugly tab bar below will be changed soon, pardon the hideous look. The rest of the application should look great though! Bugs may be reported via the settings view or the Testflight app itself I believe.";
         SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Welcome"
                                                           message:msg
