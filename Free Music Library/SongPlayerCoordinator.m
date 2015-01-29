@@ -12,6 +12,7 @@
 {
     BOOL videoPlayerIsExpanded;
     BOOL canIgnoreToolbar;  //navigation controller toolbar
+    CGRect currentPlayerFrame;
 }
 @end
 
@@ -95,17 +96,20 @@ static const short SMALL_VIDEO_WIDTH = 200;
             CGFloat screenHeight = screenRect.size.height;
             
             //+1 is because the view ALMOST covered the full screen.
-            [playerView setFrame:CGRectMake(0, 0, screenWidth, ceil(screenHeight +1))];
+            currentPlayerFrame = CGRectMake(0, 0, screenWidth, ceil(screenHeight +1));
+            [playerView setFrame:currentPlayerFrame];
             //hide status bar
             [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
         }
         else
         {
             //show portrait player
-            [playerView setFrame: [self bigPlayerFrameInPortrait]];
+            currentPlayerFrame = [self bigPlayerFrameInPortrait];
+            [playerView setFrame: currentPlayerFrame];
         }
     } completion:^(BOOL finished) {
         dispatch_async(dispatch_get_main_queue(), ^{
+            //make spinner redraw itself
             [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
         });
     }];
@@ -124,12 +128,13 @@ static const short SMALL_VIDEO_WIDTH = 200;
         needLandscapeFrame = NO;
     [UIView animateWithDuration:0.6f animations:^{
         if(needLandscapeFrame)
-            playerView.frame = [weakSelf smallPlayerFrameInLandscape];
+            currentPlayerFrame = [weakSelf smallPlayerFrameInLandscape];
         else
-            playerView.frame = [weakSelf smallPlayerFrameInPortrait];
+            currentPlayerFrame = [weakSelf smallPlayerFrameInPortrait];
+        playerView.frame = currentPlayerFrame;
     } completion:^(BOOL finished) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            //what the hell does this do???? lol
+            //make spinner redraw itself
             [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
         });
     }];
@@ -143,34 +148,40 @@ static const short SMALL_VIDEO_WIDTH = 200;
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
         //landscape rotation...
-        [videoPlayer setFrame:[self smallPlayerFrameInLandscape]];
+        currentPlayerFrame = [self smallPlayerFrameInLandscape];
     else
         //portrait rotation...
-        [videoPlayer setFrame:[self smallPlayerFrameInPortrait]];
+        currentPlayerFrame = [self smallPlayerFrameInPortrait];
+    [videoPlayer setFrame:currentPlayerFrame];
 }
 
 - (void)shrunkenVideoPlayerShouldRespectToolbar
 {
     canIgnoreToolbar = NO;
-    //need to re-animate playerView
+    //need to re-animate playerView into a new position
+    
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
         //landscape rotation...
         [UIView animateWithDuration:0.6f animations:^{
-            playerView.frame = [self smallPlayerFrameInLandscape];
+            currentPlayerFrame = [self smallPlayerFrameInLandscape];
+            playerView.frame = currentPlayerFrame;
         } completion:^(BOOL finished) {
             dispatch_async(dispatch_get_main_queue(), ^{
+                //make spinner redraw itself
                 [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
             });
         }];
     } else{
         //portrait
         [UIView animateWithDuration:0.6f animations:^{
-            playerView.frame = [self smallPlayerFrameInPortrait];
+            currentPlayerFrame = [self smallPlayerFrameInPortrait];
+            playerView.frame = currentPlayerFrame;
         } completion:^(BOOL finished) {
             dispatch_async(dispatch_get_main_queue(), ^{
+                //make spinner redraw itself
                 [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
             });
         }];
@@ -180,25 +191,30 @@ static const short SMALL_VIDEO_WIDTH = 200;
 - (void)shrunkenVideoPlayerCanIgnoreToolbar
 {
     canIgnoreToolbar = YES;
-    //need to re-animate playerView
+    //need to re-animate playerView into new position
+    
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
         //landscape rotation...
         [UIView animateWithDuration:0.6f animations:^{
-            playerView.frame = [self smallPlayerFrameInLandscape];
+            currentPlayerFrame = [self smallPlayerFrameInLandscape];
+            playerView.frame = currentPlayerFrame;
         } completion:^(BOOL finished) {
             dispatch_async(dispatch_get_main_queue(), ^{
+                //make spinner redraw itself
                 [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
             });
         }];
     } else{
         //portrait
         [UIView animateWithDuration:0.6f animations:^{
-            playerView.frame = [self smallPlayerFrameInPortrait];
+            currentPlayerFrame = [self smallPlayerFrameInPortrait];
+            playerView.frame = currentPlayerFrame;
         } completion:^(BOOL finished) {
             dispatch_async(dispatch_get_main_queue(), ^{
+                //make spinner redraw itself
                 [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
             });
         }];
@@ -297,6 +313,16 @@ static const short SMALL_VIDEO_WIDTH = 200;
         playerView.alpha = 1.0;
         playerView.userInteractionEnabled = YES;
     }];
+}
+
+- (CGRect)currentPlayerViewFrame
+{
+    return currentPlayerFrame;
+}
+
+- (void)recordCurrentPlayerViewFrame:(CGRect)newFrame
+{
+    currentPlayerFrame = newFrame;
 }
 
 @end

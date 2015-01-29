@@ -33,6 +33,8 @@ typedef enum{
     UIColor *colorOfPlaybackButtons;
     
     BOOL firstTimeUpdatingSliderSinceShowingPlayer;
+    BOOL doneSettingUpViewOnPush;
+    BOOL firstTimeInPortrait;
     
     //for key value observing
     id timeObserver;
@@ -150,7 +152,8 @@ static int numTimesVCLoaded = 0;
     [self checkDeviceOrientation];
     if(! positionedSliderAlready)
         [self positionPlaybackSliderOnScreen];
-    [self InitSongInfoLabelsOnScreen];
+    
+    [self InitSongInfoLabelsOnScreenAnimated:NO onRotation:NO];
     
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     if(player.rate == 1)  //takes care of duration label, slider, etc.
@@ -167,23 +170,20 @@ static int numTimesVCLoaded = 0;
     if([MusicPlaybackController isSongFirstInQueue:nowPlaying])
         [self hidePreviousTrackButton];
     
-    //make sure slider hint view is at the same height as the nav bar
-    short statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
-    short navBarHeight = self.navigationController.navigationBar.frame.size.height;
-    CGRect frame = self.sliderHintView.frame;
-    CGRect newFrame = CGRectMake(frame.origin.x,
-                                 navBarHeight+statusBarHeight,
-                                 frame.size.width,
-                                 frame.size.height);
-    self.sliderHintView.frame = newFrame;
+     //make sure slider hint view is at the same height as the nav bar...only in portrait
+    if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
+        [self setupSliderHintView];
+    UIColor *niceGrey = [[UIColor alloc] initWithRed:106.0/255
+                                               green:114.0/255
+                                                blue:121.0/255
+                                               alpha:1];
+    _artistAndAlbumLabel.textColor = niceGrey;
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+- (void)viewDidAppear:(BOOL)animated
 {
-    if(playerButtonsSetUp == NO){
-        [self positionMusicButtonsOnScreenAndSetThemUp];
-        [self positionPlaybackSliderOnScreen];
-    }
+    [super viewDidAppear:animated];
+    doneSettingUpViewOnPush = YES;
 }
 
 - (void)dealloc
@@ -238,20 +238,28 @@ static int numTimesVCLoaded = 0;
     
     [self.navigationController.navigationBar.layer addAnimation:animation
                                                          forKey:@"changeTextTransition"];
-    
-    NSMutableString *artistAndAlbum = [NSMutableString string];
-    if([MusicPlaybackController nowPlayingSong].artist != nil)
-        [artistAndAlbum appendString:[MusicPlaybackController nowPlayingSong].artist.artistName];
-    if([MusicPlaybackController nowPlayingSong].album != nil)
-    {
-        if([MusicPlaybackController nowPlayingSong].artist != nil)
-            [artistAndAlbum appendString:@" ・ "];
-        [artistAndAlbum appendString:[MusicPlaybackController nowPlayingSong].album.albumName];
-    }
 
-    _artistAndAlbumLabel.text = artistAndAlbum;
+    _artistAndAlbumLabel.text = [self generateArtistAndAlbumString];
     self.navBar.title = [MusicPlaybackController prettyPrintNavBarTitle];
     _songNameLabel.text = [MusicPlaybackController nowPlayingSong].songName;
+    
+    CGRect playerFrame = [[SongPlayerCoordinator sharedInstance] currentPlayerViewFrame];
+    if(playerFrame.size.height != [UIScreen mainScreen].bounds.size.height){
+        //currently in portrait mode, can show new frame
+        [self configureSongAndArtistAlbumLabelFramesAnimated:YES onRotation:NO];
+    }
+}
+
+- (void)setupSliderHintView
+{
+    short statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+    short navBarHeight = self.navigationController.navigationBar.frame.size.height;
+    CGRect frame = self.sliderHintView.frame;
+    CGRect newFrame = CGRectMake(frame.origin.x,
+                                 navBarHeight+statusBarHeight,
+                                 frame.size.width,
+                                 frame.size.height);
+    self.sliderHintView.frame = newFrame;
 }
 
 - (void)checkDeviceOrientation
@@ -274,6 +282,16 @@ static int numTimesVCLoaded = 0;
     }
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    if(playerButtonsSetUp == NO){
+        [self positionMusicButtonsOnScreenAndSetThemUp];
+        [self positionPlaybackSliderOnScreen];
+    }
+    if(fromInterfaceOrientation != UIInterfaceOrientationPortrait && doneSettingUpViewOnPush)
+        [self setupSliderHintView];
+}
+
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     if(lastKnownOrientation == UIInterfaceOrientationLandscapeLeft && toInterfaceOrientation == UIInterfaceOrientationLandscapeRight)
@@ -288,7 +306,9 @@ static int numTimesVCLoaded = 0;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     
     if(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight || toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft){
-        [playerView setFrame:CGRectMake(0, 0, ceil(screenHeight +1), screenWidth)];  //make frame full screen
+        CGRect newFrame = CGRectMake(0, 0, ceil(screenHeight +1), screenWidth);
+        [[SongPlayerCoordinator sharedInstance] recordCurrentPlayerViewFrame:newFrame];
+        [playerView setFrame:newFrame];  //make frame full screen
     }
     else{
         //show portrait player
@@ -309,9 +329,12 @@ static int numTimesVCLoaded = 0;
         float videoFrameHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:widthOfScreenRoationIndependant];
         float playerFrameYTempValue = roundf(((heightOfScreenRotationIndependant / 2.0) /1.5));
         int playerYValue = nearestEvenInt((int)playerFrameYTempValue);
-        [playerView setFrame:CGRectMake(0,   playerYValue,
-                                             widthOfScreenRoationIndependant,
-                                             videoFrameHeight)];
+        CGRect newFrame = CGRectMake(0,   playerYValue,
+                                     widthOfScreenRoationIndependant,
+                                     videoFrameHeight);
+        [[SongPlayerCoordinator sharedInstance] recordCurrentPlayerViewFrame:newFrame];
+        [playerView setFrame:newFrame];
+
         [self positionMusicButtonsOnScreenAndSetThemUp];
         [self positionPlaybackSliderOnScreen];
     }
@@ -319,18 +342,27 @@ static int numTimesVCLoaded = 0;
     lastKnownOrientation = toInterfaceOrientation;
     [self prefersStatusBarHidden];
     [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+    [self performSelector:@selector(initLabelsOnScreenDelayed)
+               withObject:nil
+               afterDelay:0.05f];
+}
+
+- (void)initLabelsOnScreenDelayed
+{
+    [self InitSongInfoLabelsOnScreenAnimated:YES onRotation:YES];
 }
 
 #pragma mark - Responding to player playback events (rate, internet connection, etc.) Slider and labels.
 - (IBAction)playbackSliderEditingHasBegun:(id)sender
 {
-    NSString *hint = @"Slide ↑ or ↓ to fine-tune accuracy.";
+    NSString *hint = @"Slide ↑ or ↓ for more accuracy.";
     int presentationMode = GCDiscreetNotificationViewPresentationModeTop;
     if(! sliderHint)
         sliderHint = [[GCDiscreetNotificationView alloc] initWithText:hint
                                                          showActivity:NO
                                                    inPresentationMode:presentationMode
                                                                inView:self.sliderHintView];
+    _sliderHintView.hidden = NO;
     if(sliderHint)
         [sliderHint showAnimated];
     
@@ -348,6 +380,7 @@ static int numTimesVCLoaded = 0;
         [[MusicPlaybackController obtainRawAVPlayer] play];
     playAfterMovingSlider = YES;  //reset value
     [sliderHint hideAnimated];
+    [self performSelector:@selector(hideSliderHintView) withObject:nil afterDelay:0.5];
 }
 - (IBAction)playbackSliderEditingHasEndedB:(id)sender  //touch up outside
 {
@@ -360,6 +393,13 @@ static int numTimesVCLoaded = 0;
     [[MusicPlaybackController obtainRawAVPlayer] seekToTime:newTime];
 }
 
+- (void)hideSliderHintView
+{
+    if(sliderHint.isShowing)
+        return;
+    else
+        _sliderHintView.hidden = YES;
+}
 
 - (NSString *)slider:(ASValueTrackingSlider *)slider stringForValue:(float)value
 {
@@ -649,10 +689,16 @@ static int hours;
 }
 
 #pragma mark - Initializing Song and Album/Artist labels
-- (void)InitSongInfoLabelsOnScreen
+- (void)InitSongInfoLabelsOnScreenAnimated:(BOOL)animate onRotation:(BOOL)rotating
 {
+    int iphone5Height = 568;
+    int phoneHeight = self.view.frame.size.height;
+    if(self.view.frame.size.width > phoneHeight)
+        phoneHeight = self.view.frame.size.width;
     short songNameFontSize = 30;
-    _songNameLabel.scrollDuration = 8.0f;
+    if(phoneHeight < iphone5Height)
+        songNameFontSize = 20;
+    _songNameLabel.scrollDuration = 10.0f;
     _songNameLabel.fadeLength = 6.0f;
     _artistAndAlbumLabel.scrollDuration = 8.0f;
     _artistAndAlbumLabel.fadeLength = 6.0f;
@@ -661,6 +707,13 @@ static int hours;
     _songNameLabel.font = font;
     _artistAndAlbumLabel.font = font;
     
+    _songNameLabel.text = [MusicPlaybackController nowPlayingSong].songName;
+    _artistAndAlbumLabel.text = [self generateArtistAndAlbumString];
+    [self configureSongAndArtistAlbumLabelFramesAnimated:animate onRotation:rotating];
+}
+
+- (NSString *)generateArtistAndAlbumString
+{
     NSMutableString *artistAndAlbum = [NSMutableString string];
     if([MusicPlaybackController nowPlayingSong].artist != nil)
         [artistAndAlbum appendString:[MusicPlaybackController nowPlayingSong].artist.artistName];
@@ -670,14 +723,85 @@ static int hours;
             [artistAndAlbum appendString:@" ・ "];
         [artistAndAlbum appendString:[MusicPlaybackController nowPlayingSong].album.albumName];
     }
+    return artistAndAlbum;
+}
 
-    _songNameLabel.text = [MusicPlaybackController nowPlayingSong].songName;
-    _artistAndAlbumLabel.text = artistAndAlbum;
-    UIColor *niceGrey = [[UIColor alloc] initWithRed:106.0/255
-                                               green:114.0/255
-                                                blue:121.0/255
-                                               alpha:1];
-    _artistAndAlbumLabel.textColor = niceGrey;
+//assumes the labels text has already been set.
+- (void)configureSongAndArtistAlbumLabelFramesAnimated:(BOOL)animated
+                                            onRotation:(BOOL)rotating
+{
+    //VC has just been pushed, dont need to animate into place!
+    if(! animated){
+        [self performSongArtistAlbumLabelFrameChanges];
+    } else{
+        if(rotating){
+            [self performSongArtistAlbumLabelFrameChanges];
+            _songNameLabel.alpha = 0;
+            _artistAndAlbumLabel.alpha = 0;
+            [UIView animateWithDuration:0.8
+                                  delay:0.2
+                                options:UIViewAnimationOptionAllowUserInteraction
+                             animations:^{
+                                 _songNameLabel.alpha = 1;
+                                 _artistAndAlbumLabel.alpha = 1;
+                             } completion:^(BOOL finished) {}];
+
+        } else{
+            __weak SongPlayerViewController *weakSelf = self;
+            [UIView animateWithDuration:0.8
+                                  delay:0.2
+                                options:UIViewAnimationOptionAllowUserInteraction
+                             animations:^{
+                                 [weakSelf performSongArtistAlbumLabelFrameChanges];
+                             } completion:^(BOOL finished) {}];
+        }
+    }
+}
+
+- (void)performSongArtistAlbumLabelFrameChanges
+{
+    BOOL displayingBothLabels = YES;
+    if(_artistAndAlbumLabel.text.length == 0)
+        displayingBothLabels = NO;
+    //make sure frames are good
+    CGRect playerViewFrameInWindow = [[SongPlayerCoordinator sharedInstance] currentPlayerViewFrame];
+    
+    short navBarHeight = self.navigationController.navigationBar.frame.size.height;
+    short statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+    int playerYValue = playerViewFrameInWindow.origin.y - navBarHeight -
+    statusBarHeight;
+    if([UIApplication sharedApplication].statusBarOrientation != UIInterfaceOrientationPortrait)
+        playerYValue -= statusBarHeight;
+    int topOfView = 0;
+    
+    int mid1 = (topOfView + playerYValue)/2;  //mid of top and player
+    int mid2 = (topOfView + mid1)/2;  //mid of mid1 and top
+    int mid3 = (mid1 + playerYValue)/2;  //mid of mid 1 and player
+    __block CGRect songLabelFrame;
+    __block CGRect artistAlbumLabelFrame;
+    
+    if(displayingBothLabels)
+    {
+        songLabelFrame = CGRectMake(_songNameLabel.frame.origin.x,
+                                    mid2 + (_songNameLabel.frame.size.height/2),
+                                    _songNameLabel.frame.size.width,
+                                    _songNameLabel.frame.size.height);
+        
+        artistAlbumLabelFrame = CGRectMake(_artistAndAlbumLabel.frame.origin.x,
+                                           mid3 + (_artistAndAlbumLabel.frame.size.height/2),
+                                           _artistAndAlbumLabel.frame.size.width,
+                                           _artistAndAlbumLabel.frame.size.height);
+        [_artistAndAlbumLabel setFrame:artistAlbumLabelFrame];
+    }
+    else
+    {
+        //only display song label, make it centered.
+        songLabelFrame = CGRectMake(_songNameLabel.frame.origin.x,
+                                    mid1 + (_songNameLabel.frame.size.height/2),
+                                    _songNameLabel.frame.size.width,
+                                    _songNameLabel.frame.size.height);
+    }
+    [_songNameLabel setFrame:songLabelFrame];
 }
 
 #pragma mark - Playback Time Slider

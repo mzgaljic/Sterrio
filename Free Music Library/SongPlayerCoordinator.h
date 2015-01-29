@@ -29,4 +29,9 @@
 - (void)temporarilyDisablePlayer;
 - (void)enablePlayerAgain;
 
+- (CGRect)currentPlayerViewFrame;
+/* This does NOT actually change the frame. simply a way to log the latest changes if the 
+  frame was changed via code other than the methods in the SongPlayerCoordinator class. */
+- (void)recordCurrentPlayerViewFrame:(CGRect)newFrame;
+
 @end
