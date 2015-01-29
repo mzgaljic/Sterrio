@@ -28,6 +28,7 @@
 
 - (void)temporarilyDisablePlayer;
 - (void)enablePlayerAgain;
+- (BOOL)isPlayerEnabled;
 
 - (CGRect)currentPlayerViewFrame;
 /* This does NOT actually change the frame. simply a way to log the latest changes if the 

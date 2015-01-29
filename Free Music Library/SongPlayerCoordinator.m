@@ -315,6 +315,11 @@ static const short SMALL_VIDEO_WIDTH = 200;
     }];
 }
 
+- (BOOL)isPlayerEnabled
+{
+    return ([MusicPlaybackController obtainRawPlayerView].alpha == 1) ? YES : NO;
+}
+
 - (CGRect)currentPlayerViewFrame
 {
     return currentPlayerFrame;

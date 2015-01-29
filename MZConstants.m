@@ -10,6 +10,8 @@
 
 @implementation MZConstants
 
+NSString * const MZWhatsNewUserMsg = @"-Song and artist/album text positioning has been vastly improved (notably on older devices).\n-";
+
 //used for sending playback signals to video preview player if it exists
 NSString * const MZPreviewPlayerTogglePlayPause = @"togglePlayPauseVideoPreviewPlayer";
 NSString * const MZPreviewPlayerPlay = @"playVideoPreviewPlayer";
@@ -31,5 +33,6 @@ short const MZLongestCellularPlayableDuration = 600;
 int const MZMinVideoPlayerSwipeLengthDown = 120;
 int const MZMinVideoPlayerSwipeLengthUp = 85;
 int const MZMaxVideoPlayerSwipeVariance = 60;
+
 
 @end

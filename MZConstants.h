@@ -10,6 +10,8 @@
 
 @interface MZConstants : NSObject
 
+extern NSString * const MZWhatsNewUserMsg;
+
 //used for sending playback signals to video preview player if it exists
 extern NSString * const MZPreviewPlayerTogglePlayPause;
 extern NSString * const MZPreviewPlayerPlay;

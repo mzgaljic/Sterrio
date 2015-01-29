@@ -77,6 +77,7 @@ void *kDidFailKVO               = &kDidFailKVO;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     //make sure ASValueTrackingSlider is still using the superclass JAMAccurateSlider
     if(! [ASValueTrackingSlider isSubclassOfClass:[JAMAccurateSlider class]]){
         NSLog(@"ASValueTrackingSlider HAS BEEN UPDATED. THE SUPER CLASS IS NO LONGER JAMAccurateSlider, PLEASE FIX THIS ASAP.");

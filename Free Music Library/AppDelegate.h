@@ -23,6 +23,7 @@
 #import "UIColor+LighterAndDarker.h"
 #import "MusicPlaybackController.h"
 #import "MyTabBarController.h"
+#import "UIDevice+DeviceName.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, AVAudioSessionDelegate, AVAudioPlayerDelegate>
 

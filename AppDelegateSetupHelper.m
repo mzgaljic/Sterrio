@@ -45,6 +45,7 @@ static BOOL PRODUCTION_MODE;
                                                 forKey:SMART_SORT];
         [[NSUserDefaults standardUserDefaults] setBool:icloudSync
                                                 forKey:ICLOUD_SYNC];
+        [[NSUserDefaults standardUserDefaults] synchronize];
     } else{
         //load users last settings from disk before setting these values.
         [AppEnvironmentConstants setPreferredSizeSetting:

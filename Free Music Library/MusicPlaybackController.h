@@ -42,6 +42,10 @@
 /** Stop playback of current song/track, and begin playback of the next track */
 + (void)skipToNextTrack;
 
+/* Used to jump ahead or back in a video to an exact point. The player playback state
+ (playing or paused) remains unaffected. */
++ (void)seekToVideoSecond:(NSNumber *)second;
+
 /** Stop playback of current song/track, and begin playback of previous track */
 + (void)returnToPreviousTrack;
 

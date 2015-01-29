@@ -55,11 +55,6 @@
 {
     [MusicPlaybackController printQueueContents];
     
-    if([MusicPlaybackController numMoreSongsInQueue] == 0)
-        canPostLastSongNotification = YES;
-    else
-        canPostLastSongNotification = NO;
-    
     if(aSong != nil){
         movingForward = forward;
         [[NSNotificationCenter defaultCenter] postNotificationName:NEW_SONG_IN_AVPLAYER
@@ -67,6 +62,10 @@
         [MusicPlaybackController updateLockScreenInfoAndArtForSong:aSong];
         [self playSong:aSong];
     } else{
+        if([MusicPlaybackController numMoreSongsInQueue] == 0)
+            canPostLastSongNotification = YES;
+        else
+            canPostLastSongNotification = NO;
         if(canPostLastSongNotification)
             [self songDidFinishPlaying:nil];
     }
@@ -140,7 +139,7 @@
         }
         return;
     }
-    
+    __weak SongPlayerCoordinator *weakCoordinator = [SongPlayerCoordinator sharedInstance];
     
     [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
         if (video)
@@ -179,6 +178,7 @@
         AVURLAsset *asset = [AVURLAsset assetWithURL: currentItemLink];
         
         if(allowedToPlayVideo && video != nil){
+            [weakCoordinator enablePlayerAgain];
             playerItem = [AVPlayerItem playerItemWithAsset: asset];
             allowSongDidFinishToExecute = YES;
             [weakSelf replaceCurrentItemWithPlayerItem:playerItem];

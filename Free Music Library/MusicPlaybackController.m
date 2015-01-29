@@ -38,6 +38,21 @@ static int numLongSongsSkipped = 0;
     //NOTE: YTVideoAvPlayer will automatically skip more songs if they cant be played
 }
 
+/* Used to jump ahead or back in a video to an exact point. The player playback state
+ (playing or paused) remains unaffected. */
++ (void)seekToVideoSecond:(NSNumber *)numAsSecond
+{
+    Song *currentSong = [MusicPlaybackController nowPlayingSong];
+    if([currentSong.duration integerValue] < [numAsSecond integerValue])
+        //setting to second before end to be safe
+        numAsSecond = [NSNumber numberWithInteger:[currentSong.duration integerValue] -1];
+    
+    AVPlayer *player = [self obtainRawAVPlayer];
+    Float64 seconds = [numAsSecond floatValue];
+    CMTime targetTime = CMTimeMakeWithSeconds(seconds, NSEC_PER_SEC);
+    [player seekToTime:targetTime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+}
+
 /** Stop playback of current song/track, and begin playback of previous track */
 + (void)returnToPreviousTrack
 {
@@ -51,14 +66,19 @@ static int numLongSongsSkipped = 0;
 + (void)songAboutToBeDeleted:(Song *)song;
 {
     if([[MusicPlaybackController playbackQueue] isSongInQueue:song]){
-        [player pause];
-        
         if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more items to play
             if([[MusicPlaybackController nowPlayingSong].song_id isEqual:song.song_id])
                 [self skipToNextTrack];
         }
-        else
-            [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+        else{
+            if([self isSongLastInQueue:song] && [[self nowPlayingSong].song_id isEqual: song.song_id]){
+                [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+                [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
+                if([MusicPlaybackController sizeOfEntireQueue] > 0)
+                    [[MusicPlaybackController playbackQueue] skipToPrevious];
+            }
+        }
+        
         [[MusicPlaybackController playbackQueue] removeSongFromQueue:song];
         
         [MusicPlaybackController printQueueContents];
@@ -79,17 +99,27 @@ static int numLongSongsSkipped = 0;
                     [MusicPlaybackController explicitlyPausePlayback:YES];
                 }
             }
-            else
-                shouldMoveBackwardAndPause = YES;
+            else{
+                //both cant be true! lol
+                if(willNeedToAdvanceInQueue == NO)
+                    shouldMoveBackwardAndPause = YES;
+            }
         }
         [[MusicPlaybackController playbackQueue] removeSongFromQueue:aSong];
     }
-    if(willNeedToAdvanceInQueue)
+    //need to advance in queue AND it is save to do so
+    if(willNeedToAdvanceInQueue && [MusicPlaybackController sizeOfEntireQueue] > 0)
         [self skipToNextTrack];
     else if(shouldMoveBackwardAndPause){
-        [self returnToPreviousTrack];
-        [MusicPlaybackController pausePlayback];
-        [MusicPlaybackController explicitlyPausePlayback:YES];
+        [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+        [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
+        if([MusicPlaybackController sizeOfEntireQueue] > 0)
+            [[MusicPlaybackController playbackQueue] skipToPrevious];
+    } else{
+        [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+        [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
+        if([MusicPlaybackController sizeOfEntireQueue] > 0)
+            [[MusicPlaybackController playbackQueue] skipToPrevious];
     }
     
     [MusicPlaybackController printQueueContents];
@@ -161,7 +191,9 @@ static int numLongSongsSkipped = 0;
                genreCode:(int)code
          skipCurrentSong:(BOOL)skipNow;
 {
-    if([[MusicPlaybackController nowPlayingSong].song_id isEqual:song.song_id]){  //selected song is already playing...
+    BOOL playerEnabled = [[SongPlayerCoordinator sharedInstance] isPlayerEnabled];
+    //selected song is already playing...
+    if([[MusicPlaybackController nowPlayingSong].song_id isEqual:song.song_id] && playerEnabled){
         //ignore new queue request (SongPlayerViewController will still be able to open)
         return;
     }

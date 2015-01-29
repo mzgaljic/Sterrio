@@ -86,6 +86,30 @@ static const short APP_LAUNCHED_ALREADY = 1;
 
 - (BOOL)appLaunchedFirstTime
 {
+    //determine if whats new constant in this build is actually new.
+    NSString *lastWhatsNewMsg = [[NSUserDefaults standardUserDefaults] stringForKey:LAST_WhatsNewMsg];
+    if(lastWhatsNewMsg == nil)
+        [AppEnvironmentConstants marksWhatsNewMsgAsNew];
+    else{
+        if(! [lastWhatsNewMsg isEqualToString:MZWhatsNewUserMsg])
+            [AppEnvironmentConstants marksWhatsNewMsgAsNew];
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:MZWhatsNewUserMsg
+                                              forKey:LAST_WhatsNewMsg];
+    
+    //determining whether or not whats new screen should be shown on this run of the app
+    NSString *lastBuild = [[NSUserDefaults standardUserDefaults] stringForKey:LAST_INSTALLED_BUILD];
+    NSString *currentBuild = [UIDevice appBuildString];
+    if(lastBuild == nil){
+        lastBuild = currentBuild;
+        [[NSUserDefaults standardUserDefaults] setObject:currentBuild
+                                                  forKey:LAST_INSTALLED_BUILD];
+    } else if(! [lastBuild isEqualToString:currentBuild]){
+        [AppEnvironmentConstants markShouldDisplayWhatsNewScreenTrue];
+    }
+    
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
     NSInteger code = [[NSUserDefaults standardUserDefaults] integerForKey:APP_ALREADY_LAUNCHED_KEY];
     if(code == APP_LAUNCHED_FIRST_TIME){
         [AppEnvironmentConstants markAppAsLaunchedForFirstTime];

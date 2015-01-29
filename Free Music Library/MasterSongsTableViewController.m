@@ -176,19 +176,6 @@ static BOOL lastSortOrder;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    if(!haveCheckedCoreDataInit){
-        //need to check if core data even works before i try loading the songs in this VC
-        //force core data to attempt to initialze itself by asking for its context
-        
-        if([CoreDataManager context]){
-            haveCheckedCoreDataInit = YES;
-        } else{
-            [self performSegueWithIdentifier:@"coreDataProblem" sender:nil];
-            haveCheckedCoreDataInit = YES;
-            return;
-        }
-    }
-        
     [self setUpSearchBar];
     //must be called in viewWillAppear, and after allSongsLibrary is refreshed
     if(self.searchFetchedResultsController)
@@ -231,6 +218,20 @@ static BOOL lastSortOrder;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    if(!haveCheckedCoreDataInit){
+        //need to check if core data even works before i try loading the songs in this VC
+        //force core data to attempt to initialze itself by asking for its context
+        
+        if([CoreDataManager context]){
+            haveCheckedCoreDataInit = YES;
+        } else{
+            [self performSegueWithIdentifier:@"coreDataProblem" sender:nil];
+            haveCheckedCoreDataInit = YES;
+            return;
+        }
+    }
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(editingModeCompleted:)
                                                  name:@"SongEditDone"
@@ -279,6 +280,16 @@ static BOOL lastSortOrder;
         alert3.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
         [alert3 show];
         [alert2 show];
+        [alert show];
+    } else if([AppEnvironmentConstants shouldDisplayWhatsNewScreen]){
+        SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Whats New"
+                                                           message:MZWhatsNewUserMsg
+                                                          delegate:nil
+                                                 cancelButtonTitle:@"OK"
+                                                 otherButtonTitles: nil];
+        alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
         [alert show];
     }
 }

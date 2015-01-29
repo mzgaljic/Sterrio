@@ -11,7 +11,9 @@
 @implementation AppEnvironmentConstants
 
 static const BOOL PRODUCTION_MODE = YES;
+static BOOL shouldShowWhatsNewScreen = NO;
 static BOOL isFirstTimeAppLaunched = NO;
+static BOOL whatsNewMsgIsNew = NO;
 static BOOL USER_EDITING_MEDIA = YES;
 static BOOL userIsPreviewingAVideo = NO;
 static PREVIEW_PLAYBACK_STATE currentPreviewPlayerState = PREVIEW_PLAYBACK_STATE_Uninitialized;
@@ -26,6 +28,26 @@ static BOOL icloudSettingsSync;
 + (BOOL)isAppInProductionMode
 {
     return PRODUCTION_MODE;
+}
+
++ (BOOL)shouldDisplayWhatsNewScreen
+{
+    return shouldShowWhatsNewScreen;
+}
+
++ (void)markShouldDisplayWhatsNewScreenTrue
+{
+    shouldShowWhatsNewScreen = YES;
+}
+
++ (BOOL)whatsNewMsgIsActuallyNew
+{
+    return whatsNewMsgIsNew;
+}
+
++ (void)marksWhatsNewMsgAsNew
+{
+    whatsNewMsgIsNew = YES;
 }
 
 + (BOOL)isFirstTimeAppLaunched

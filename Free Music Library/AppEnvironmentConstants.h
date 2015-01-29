@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
 #define APP_ALREADY_LAUNCHED_KEY @"AppLaunchedAlready"
+#define LAST_INSTALLED_BUILD @"lastInstalledBuild"
+#define LAST_WhatsNewMsg @"lastSavedWhatsNewMsg"  //prevents displaying a msg twice by accident
 //settings keys
 #define PREFERRED_SIZE_KEY @"preferredSizeValue"
 #define PREFERRED_WIFI_VALUE_KEY @"preferredWifiStreamValue"
@@ -24,6 +26,12 @@ typedef enum {
 } PREVIEW_PLAYBACK_STATE;
 
 @interface AppEnvironmentConstants : NSObject
+
++ (BOOL)shouldDisplayWhatsNewScreen;
++ (void)markShouldDisplayWhatsNewScreenTrue;
+
++ (BOOL)whatsNewMsgIsActuallyNew;
++ (void)marksWhatsNewMsgAsNew;
 
 + (BOOL)isAppInProductionMode;
 + (BOOL)isFirstTimeAppLaunched;
