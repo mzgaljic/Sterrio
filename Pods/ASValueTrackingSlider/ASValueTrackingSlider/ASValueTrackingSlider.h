@@ -13,6 +13,8 @@
 
 @interface ASValueTrackingSlider : JAMAccurateSlider
 
+- (void)disablePopupSliderCompletely:(BOOL)disable;
+
 // present the popUpView manually, without touch event.
 - (void)showPopUpViewAnimated:(BOOL)animated;
 // the popUpView will not hide again until you call 'hidePopUpViewAnimated:'

@@ -47,6 +47,12 @@
 
 #pragma mark - public
 
+- (void)disablePopupSliderCompletely:(BOOL)disable;
+{
+    if(disable)
+        self.popUpView = nil;
+}
+
 - (void)setAutoAdjustTrackColor:(BOOL)autoAdjust
 {
     if (_autoAdjustTrackColor == autoAdjust) return;

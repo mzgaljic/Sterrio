@@ -33,8 +33,6 @@ typedef enum{
     UIColor *colorOfPlaybackButtons;
     
     BOOL firstTimeUpdatingSliderSinceShowingPlayer;
-    BOOL doneSettingUpViewOnPush;
-    BOOL firstTimeInPortrait;
     
     //for key value observing
     id timeObserver;
@@ -84,6 +82,18 @@ void *kDidFailKVO               = &kDidFailKVO;
         NSLog(@"ASValueTrackingSlider HAS BEEN UPDATED. THE SUPER CLASS IS NO LONGER JAMAccurateSlider, PLEASE FIX THIS ASAP.");
         abort();
     }
+    
+    //this allows me to discover if AVSValueTrackingSlider changes, even on a new device.
+    [_playbackSlider disablePopupSliderCompletely:NO];
+    
+    //disabling popup on slider for small screens since the interface is too small
+    int iphone5Height = 568;
+    int phoneHeight = [UIScreen mainScreen].bounds.size.height;
+    if(self.view.frame.size.width > phoneHeight)
+        phoneHeight = [UIScreen mainScreen].bounds.size.width;
+    if(phoneHeight < iphone5Height)
+        [_playbackSlider disablePopupSliderCompletely:YES];
+    
     firstTimeUpdatingSliderSinceShowingPlayer = YES;
     colorOfPlaybackButtons = [UIColor defaultAppColorScheme];
     waitingForNextOrPrevVideoToLoad = YES;
@@ -178,12 +188,6 @@ static int numTimesVCLoaded = 0;
                                                 blue:121.0/255
                                                alpha:1];
     _artistAndAlbumLabel.textColor = niceGrey;
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    doneSettingUpViewOnPush = YES;
 }
 
 - (void)dealloc
@@ -288,7 +292,7 @@ static int numTimesVCLoaded = 0;
         [self positionMusicButtonsOnScreenAndSetThemUp];
         [self positionPlaybackSliderOnScreen];
     }
-    if(fromInterfaceOrientation != UIInterfaceOrientationPortrait && doneSettingUpViewOnPush)
+    if(fromInterfaceOrientation != UIInterfaceOrientationPortrait)
         [self setupSliderHintView];
 }
 
@@ -777,18 +781,20 @@ static int hours;
     int mid1 = (topOfView + playerYValue)/2;  //mid of top and player
     int mid2 = (topOfView + mid1)/2;  //mid of mid1 and top
     int mid3 = (mid1 + playerYValue)/2;  //mid of mid 1 and player
-    __block CGRect songLabelFrame;
-    __block CGRect artistAlbumLabelFrame;
+    CGRect songLabelFrame;
+    CGRect artistAlbumLabelFrame;
     
+    //the +2 and -2 at the end of the y values (in CGRectMake) are just offsets
+    //which compensate for the sldierhintview getting in the way
     if(displayingBothLabels)
     {
         songLabelFrame = CGRectMake(_songNameLabel.frame.origin.x,
-                                    mid2 + (_songNameLabel.frame.size.height/2),
+                                    mid2+(_songNameLabel.frame.size.height/2)+2,
                                     _songNameLabel.frame.size.width,
                                     _songNameLabel.frame.size.height);
         
         artistAlbumLabelFrame = CGRectMake(_artistAndAlbumLabel.frame.origin.x,
-                                           mid3 + (_artistAndAlbumLabel.frame.size.height/2),
+                                           mid3+(_artistAndAlbumLabel.frame.size.height/2)-2,
                                            _artistAndAlbumLabel.frame.size.width,
                                            _artistAndAlbumLabel.frame.size.height);
         [_artistAndAlbumLabel setFrame:artistAlbumLabelFrame];
@@ -797,7 +803,7 @@ static int hours;
     {
         //only display song label, make it centered.
         songLabelFrame = CGRectMake(_songNameLabel.frame.origin.x,
-                                    mid1 + (_songNameLabel.frame.size.height/2),
+                                    mid1+(_songNameLabel.frame.size.height/2),
                                     _songNameLabel.frame.size.width,
                                     _songNameLabel.frame.size.height);
     }
@@ -849,6 +855,18 @@ static int hours;
     _playbackSlider.font = [UIFont fontWithName:nameOfFontForTimeLabels size:24];
     _playbackSlider.textColor = [UIColor whiteColor];
     _playbackSlider.minimumTrackTintColor = [[UIColor defaultAppColorScheme] lighterColor];
+    
+    //check if device is older than 5, need to disable the popup on small screen sizes
+    //since it doesnt fit well
+    int iphone5Height = 568;
+    int phoneHeight = self.view.frame.size.height;
+    if(self.view.frame.size.width > phoneHeight)
+        phoneHeight = self.view.frame.size.width;
+    BOOL runningiPhone5orNewer = YES;
+    if(phoneHeight < iphone5Height)
+        runningiPhone5orNewer = NO;
+    if(! runningiPhone5orNewer)
+       [_playbackSlider hidePopUpViewAnimated:NO];
     
     //setup total duration label
     labelXValue = xValue + sliderWidth + padding;
