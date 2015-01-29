@@ -192,14 +192,18 @@ static int numLongSongsSkipped = 0;
          skipCurrentSong:(BOOL)skipNow;
 {
     BOOL playerEnabled = [[SongPlayerCoordinator sharedInstance] isPlayerEnabled];
+    
     //selected song is already playing...
     if([[MusicPlaybackController nowPlayingSong].song_id isEqual:song.song_id] && playerEnabled){
-        //ignore new queue request (SongPlayerViewController will still be able to open)
+        //ignore new queue request, SongPlayerViewController will will be unaffected by this...
         return;
     }
+    
     if(skipNow){
         [[MusicPlaybackController playbackQueue] clearQueue];
-        [MusicPlaybackController pausePlayback];  //current song should be skipped! ...stop playback
+        //current song should be skipped! ...stopping playback
+        [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+        //if the above line crashes, just pause the player instead.
     }
     NSArray *songsForQueue = [MusicPlaybackController songArrayGivenSong:song album:album artist:artist playlist:playlist genreCode:code];
     [[MusicPlaybackController playbackQueue] insertSongsAfterNowPlaying:songsForQueue];
@@ -341,9 +345,12 @@ static int numLongSongsSkipped = 0;
     #warning unfinished
     //song tapped in song tab
     if(!album && !artist && !playlist && code == [GenreConstants noGenreSelectedGenreCode]){
-        NSArray *allSongs = [MusicPlaybackController arrayOfAllSongsInSongTab];
+        songArray = [MusicPlaybackController arrayOfAllSongsInSongTab];
+        /*
+         code in this comment would be useful if i wanted to only add songs after the current one
         NSUInteger songIndex = [allSongs indexOfObject:song];
         songArray = [[MusicPlaybackController arrayOfAllSongsInSongTab] subarrayWithRange:NSMakeRange(songIndex, allSongs.count-songIndex)];
+         */
         
     }
     //a standalone song was tapped in the artist tab (song not part of an album but has an artist)
