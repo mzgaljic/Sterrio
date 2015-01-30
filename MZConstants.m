@@ -10,7 +10,7 @@
 
 @implementation MZConstants
 
-NSString * const MZWhatsNewUserMsg = @"Improvements\n-Song and artist/album text positioning (inside song player) has been improved (especially old devices).\n\nFixed Bugs\n-Songs from the Songs tab queue up correctly now.\n-Deleting a playlist containing the now playing song used to crash the app. Not anymore.\n-Deleting the last song in the playback queue no longer results in strange behavior when opening up the player screen.";
+NSString * const MZWhatsNewUserMsg = @"Improvements\n-Song and artist/album text positioning (inside song player) has been improved (especially old devices).\n-This Whats New message. :)\n\nFixed Bugs\n-Songs from the Songs tab queue up correctly now.\n-Deleting a playlist containing the now playing song used to crash the app. Not anymore.\n-Deleting the last song in the playback queue no longer results in strange behavior when opening up the player screen.";
 
 //used for sending playback signals to video preview player if it exists
 NSString * const MZPreviewPlayerTogglePlayPause = @"togglePlayPauseVideoPreviewPlayer";

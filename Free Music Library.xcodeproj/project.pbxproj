@@ -47,9 +47,8 @@
 		873EEA871A4BBA210092A6DF /* YouTubeVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EEA861A4BBA210092A6DF /* YouTubeVideo.m */; };
 		8740723F19798129004C5C57 /* SongTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8740723E19798129004C5C57 /* SongTableViewFormatter.m */; };
 		87449AF419971A58009F01EA /* AppDelegateSetupHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 87449AF319971A58009F01EA /* AppDelegateSetupHelper.m */; };
-		87480DA9192C1FBD005CC0A4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DA8192C1FBD005CC0A4 /* Foundation.framework */; };
 		87480DAB192C1FBD005CC0A4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DAA192C1FBD005CC0A4 /* CoreGraphics.framework */; };
-		87480DAD192C1FBD005CC0A4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DAC192C1FBD005CC0A4 /* UIKit.framework */; };
+		87480DAD192C1FBD005CC0A4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DAC192C1FBD005CC0A4 /* UIKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		87480DB3192C1FBD005CC0A4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 87480DB1192C1FBD005CC0A4 /* InfoPlist.strings */; };
 		87480DB5192C1FBD005CC0A4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 87480DB4192C1FBD005CC0A4 /* main.m */; };
 		87480DB9192C1FBD005CC0A4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87480DB8192C1FBD005CC0A4 /* AppDelegate.m */; };
@@ -107,6 +106,7 @@
 		87A9AF4E199D8429005B9A5B /* GenrePickerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9AF4D199D8429005B9A5B /* GenrePickerTableViewController.m */; };
 		87A9AF53199DA36F005B9A5B /* GenreSearchService.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9AF52199DA36F005B9A5B /* GenreSearchService.m */; };
 		87AE39751A4A8E6400C278BA /* PreloadedCoreDataModelUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AE39741A4A8E6400C278BA /* PreloadedCoreDataModelUtility.m */; };
+		87B2B5C21A7B3936009E910C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DA8192C1FBD005CC0A4 /* Foundation.framework */; };
 		87BBBE061A58A78A00248E2F /* MySearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 87BBBE051A58A78A00248E2F /* MySearchBar.m */; };
 		87BC1B891A071979000D9B0C /* PlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87BC1B881A071979000D9B0C /* PlayerView.m */; };
 		87BD42A319CD1A4C005ED8CD /* Free Music Library.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 87BD42A219CD1A4C005ED8CD /* Free Music Library.entitlements */; };
@@ -390,14 +390,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87B2B5C21A7B3936009E910C /* Foundation.framework in Frameworks */,
 				873CF45C1A45435E00716B52 /* QuartzCore.framework in Frameworks */,
 				8727003E199F0C1F00D71204 /* CoreData.framework in Frameworks */,
 				8768E53C19929343004708C4 /* AVFoundation.framework in Frameworks */,
 				8768E53A19928AD5004708C4 /* MediaPlayer.framework in Frameworks */,
 				8715AC4D19846AB900A51165 /* MessageUI.framework in Frameworks */,
-				87480DAB192C1FBD005CC0A4 /* CoreGraphics.framework in Frameworks */,
 				87480DAD192C1FBD005CC0A4 /* UIKit.framework in Frameworks */,
-				87480DA9192C1FBD005CC0A4 /* Foundation.framework in Frameworks */,
+				87480DAB192C1FBD005CC0A4 /* CoreGraphics.framework in Frameworks */,
 				4E84E32E6B78490A99C7EFDB /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1413,7 +1413,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
@@ -1446,7 +1446,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1464,7 +1464,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Free Music Library/Free Music Library-Prefix.pch";
 				INFOPLIST_FILE = "Free Music Library/Free Music Library-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = "Free Music Library";
 				PROVISIONING_PROFILE = "";
@@ -1486,7 +1486,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Free Music Library/Free Music Library-Prefix.pch";
 				INFOPLIST_FILE = "Free Music Library/Free Music Library-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = "Free Music Library";
 				PROVISIONING_PROFILE = "";
