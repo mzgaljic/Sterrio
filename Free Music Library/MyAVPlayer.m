@@ -359,29 +359,28 @@
         if([keyPath isEqualToString:@"currentItem.playbackBufferEmpty"]){
             BOOL explicitlyPaused = [MusicPlaybackController playbackExplicitlyPaused];
             if(newSecondsBuff == secondsLoaded && secondsLoaded != totalSeconds && !explicitlyPaused){
-                stallHasOccured = YES;
                 NSLog(@"In stall");
-                 [MusicPlaybackController pausePlayback];
+                stallHasOccured = YES;
+                [MusicPlaybackController pausePlayback];
                 if(! [MusicPlaybackController isSpinnerOnScreen]){
                     [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
                 }
             }
 
         } else if([keyPath isEqualToString:@"currentItem.loadedTimeRanges"]){
-            CMTime currentTime = self.currentItem.currentTime;
-            NSUInteger currentPlaybackSecond = CMTimeGetSeconds(currentTime);
-#warning should do more sophisticated check here! Need to iterate through all loaded time ranges, comparing if my current time falls in one of the ranges. Test after implementing this (see if slider always produces a spinner when unloaded time is requested.
-            if(currentPlaybackSecond > newSecondsBuff){
-                stallHasOccured = YES;
+            NSUInteger currentTime = CMTimeGetSeconds(self.currentItem.currentTime);
+            
+            if(currentTime > newSecondsBuff){
                 NSLog(@"In stall");
+                stallHasOccured = YES;
+                [MusicPlaybackController pausePlayback];
                 //user must be skipping ahead with the slider. show the spinner!
                 if(! [MusicPlaybackController isSpinnerOnScreen]){
                     [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
                 }
             } else if(newSecondsBuff > secondsLoaded && stallHasOccured){
-                //out of stall now
-                stallHasOccured = NO;
                 NSLog(@"left stall");
+                stallHasOccured = NO;
                 [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
                 if(! [MusicPlaybackController playbackExplicitlyPaused])
                     [MusicPlaybackController resumePlayback];

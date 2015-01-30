@@ -87,7 +87,7 @@ static const short SMALL_VIDEO_WIDTH = 200;
     }
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    [UIView animateWithDuration:0.39f animations:^{
+    [UIView animateWithDuration:0.405f animations:^{
         if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
         {
             //entering view controller in landscape (fullscreen video)
@@ -126,7 +126,7 @@ static const short SMALL_VIDEO_WIDTH = 200;
     BOOL needLandscapeFrame = YES;
     if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
         needLandscapeFrame = NO;
-    [UIView animateWithDuration:0.6f animations:^{
+    [UIView animateWithDuration:0.7f animations:^{
         if(needLandscapeFrame)
             currentPlayerFrame = [weakSelf smallPlayerFrameInLandscape];
         else

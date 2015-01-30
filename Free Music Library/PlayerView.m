@@ -13,6 +13,7 @@
 {
     CGPoint gestureStartPoint;
     BOOL didFailToExpandWithSwipe;
+    BOOL userTouchedDown;
 }
 @end
 @implementation PlayerView
@@ -27,20 +28,6 @@
                                                  selector:@selector(orientationNeedsToChanged)
                                                      name:UIDeviceOrientationDidChangeNotification object:nil];
         
-        UISwipeGestureRecognizer *upSwipe;
-        upSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self
-                                                            action:@selector(userSwipedUp)];
-        UIPanGestureRecognizer *downPan;
-        downPan = [[UIPanGestureRecognizer alloc] initWithTarget:self
-                                                          action:@selector(userSwipedDown)];
-        UISwipeGestureRecognizer *downSwipe;
-        downSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self
-                                                              action:@selector(userSwipedDown)];
-        
-        upSwipe.direction = UISwipeGestureRecognizerDirectionUp;
-        //downSwipe.direction = UISwipeGestureRecognizerDirectionDown;
-        //[self addGestureRecognizer:upSwipe];
-        //[self addGestureRecognizer:downSwipe];
     }
     return self;
 }
@@ -80,7 +67,10 @@
 //detects when view (this AVPlayer) was tapped (fires when touch is released)
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    if(! [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded]){
+    BOOL alreadySegued = NO;
+    if(userTouchedDown)
+        alreadySegued = [self segueToPlayerViewControllerIfAppropriate];
+    if(! [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded] && !alreadySegued){
         CGPoint touchLocation = [[[event allTouches] anyObject] locationInView:self];
         CGRect frame = self.frame;
         int x = touchLocation.x;
@@ -99,6 +89,8 @@
 //used to help the touchesMoved method below get the swipe length
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    userTouchedDown = YES;
+    
     UITouch *touch = [touches anyObject];
     gestureStartPoint = [touch locationInView:self];
     didFailToExpandWithSwipe = NO;
@@ -145,10 +137,14 @@
 }
 
 #pragma mark - Handling Poping and pushing of the player VC along with this view
-- (void)segueToPlayerViewControllerIfAppropriate
+- (BOOL)segueToPlayerViewControllerIfAppropriate
 {
-    if(! [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded])
+    BOOL willSegue = NO;
+    if(! [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded]){
+        willSegue = YES;
         [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:[self topViewController]];
+    }
+    return willSegue;
 }
 
 - (void)popPlayerViewControllerIfAppropriate
