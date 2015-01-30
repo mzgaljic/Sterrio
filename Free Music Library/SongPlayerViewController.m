@@ -71,7 +71,7 @@ void *kStatusDidChangeKVO       = &kStatusDidChangeKVO;
 void *kDurationDidChangeKVO     = &kDurationDidChangeKVO;
 void *kTimeRangesKVO            = &kTimeRangesKVO;
 void *kBufferFullKVO            = &kBufferFullKVO;
-void *kBufferEmptyKVO           = &kBufferEmptyKVO;
+//void *kBufferEmptyKVO           = &kBufferEmptyKVO;  this is used in MyAVPlayer instead
 void *kDidFailKVO               = &kDidFailKVO;
 
 #pragma mark - VC Life Cycle
@@ -81,7 +81,7 @@ void *kDidFailKVO               = &kDidFailKVO;
     
     //make sure ASValueTrackingSlider is still using the superclass JAMAccurateSlider
     if(! [ASValueTrackingSlider isSubclassOfClass:[JAMAccurateSlider class]]){
-        NSLog(@"ASValueTrackingSlider HAS BEEN UPDATED. THE SUPER CLASS IS NO LONGER JAMAccurateSlider, PLEASE FIX THIS ASAP.");
+        NSLog(@"ASValueTrackingSlider HAS BEEN UPDATED/CHANGED. THE SUPER CLASS IS NO LONGER JAMAccurateSlider, PLEASE FIX THIS ASAP.");
         abort();
     }
     
@@ -1116,7 +1116,7 @@ static int hours;
 - (void)setupKeyvalueObservers
 {
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-    
+    //not all observers are actually used, but keep in case I have a need down the road.
     [player addObserver:self
              forKeyPath:@"rate"
                 options:NSKeyValueObservingOptionNew
@@ -1137,10 +1137,6 @@ static int hours;
              forKeyPath:@"currentItem.playbackBufferFull"
                 options:NSKeyValueObservingOptionNew
                 context:kBufferFullKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.playbackBufferEmpty"
-                options:NSKeyValueObservingOptionNew
-                context:kBufferEmptyKVO];
     [player addObserver:self
              forKeyPath:@"currentItem.error"
                 options:NSKeyValueObservingOptionNew
@@ -1169,7 +1165,7 @@ static int hours;
         [player removeObserver:self forKeyPath:@"currentItem.duration"];
         [player removeObserver:self forKeyPath:@"currentItem.loadedTimeRanges"];
         [player removeObserver:self forKeyPath:@"currentItem.playbackBufferFull"];
-        [player removeObserver:self forKeyPath:@"currentItem.playbackBufferEmpty"];
+        //[player removeObserver:self forKeyPath:@"currentItem.playbackBufferEmpty"];  not used
         [player removeObserver:self forKeyPath:@"currentItem.error"];
     }
     //do nothing, obviously it wasn't attached because an exception was thrown

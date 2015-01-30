@@ -13,6 +13,7 @@
 #import "UIColor+LighterAndDarker.h"
 #import "UIImage+colorImages.h"
 #import "UIWindow+VisibleVC.h"
+#import "SongPlayerViewController.h"  //needed just to call preDealloc
 
 @implementation MyAlerts
 
@@ -154,8 +155,14 @@
 
 + (void)dismissCurrentViewController
 {
+#warning add better code here! Look at "TO DO"
     UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];
-    [[keyWindow visibleViewController] dismissViewControllerAnimated:YES completion:nil];
+    UIViewController *vc = [keyWindow visibleViewController];
+    if([vc isMemberOfClass:[SongPlayerViewController class]]){
+        SongPlayerViewController *vc2 = (SongPlayerViewController *)vc;
+        [vc2 preDealloc];
+    }
+    [vc dismissViewControllerAnimated:YES completion:nil];
 }
 
 + (void)displayBannerWithMsg:(NSString *)msg

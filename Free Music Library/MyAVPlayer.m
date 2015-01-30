@@ -7,7 +7,7 @@
 //
 
 #import "MyAVPlayer.h"
-
+#import "MZConstants.h"
 
 @interface MyAVPlayer ()
 {
@@ -18,6 +18,9 @@
     BOOL allowSongDidFinishToExecute;
     BOOL canPostLastSongNotification;
     
+    BOOL stallHasOccured;
+    NSUInteger secondsLoaded;
+    
     NSString *NEW_SONG_IN_AVPLAYER;
     NSString *AVPLAYER_DONE_PLAYING;  //queue has finished
     NSString *CURRENT_SONG_DONE_PLAYING;
@@ -26,7 +29,6 @@
 
 @implementation MyAVPlayer
 
-
 - (id)init
 {
     if(self = [super init]){
@@ -34,6 +36,8 @@
         AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
         CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update gui please!";
         movingForward = YES;
+        stallHasOccured = NO;
+        secondsLoaded = 0;
         currentItemLink = nil;
         playerItem = self.currentItem;
         secondsSinceWeCheckedInternet = 0;
@@ -111,6 +115,8 @@
 
 - (void)playSong:(Song *)aSong
 {
+    secondsLoaded = 0;
+    stallHasOccured = NO;
     [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
     __weak MyAVPlayer *weakSelf = self;
     __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
@@ -166,7 +172,6 @@
         }
         else
         {
-            [weakSelf dismissAllSpinnersForView:weakPlayerView];
             NetworkStatus internetStatus = [reachability currentReachabilityStatus];
             allowSongDidFinishToExecute = YES;
             if (internetStatus == NotReachable){
@@ -191,6 +196,7 @@
             playerItem = [AVPlayerItem playerItemWithAsset: asset];
             allowSongDidFinishToExecute = YES;
             [weakSelf replaceCurrentItemWithPlayerItem:playerItem];
+            [weakSelf registerForObservers];
             
             // Declare block scope variables to avoid retention cycles from references inside the block
             __block id obs;
@@ -226,9 +232,9 @@
 
 - (void)checkInternetStatus
 {
-    if(self.rate == 1)
+    if(!stallHasOccured)
         return;
-    if(self.rate == 0 && [MusicPlaybackController playbackExplicitlyPaused])
+    if(stallHasOccured && [MusicPlaybackController playbackExplicitlyPaused])
         return;
     
     UIApplicationState state = [[UIApplication sharedApplication] applicationState];
@@ -244,6 +250,7 @@
         secondsSinceWeCheckedInternet = 0;
     
     if([self isInternetReachable]){
+        [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
         [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
     } else{
         [self showSpinnerForInternetConnectionIssueOnView:[MusicPlaybackController obtainRawPlayerView]];
@@ -266,12 +273,11 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
                 [MRProgressOverlayView showOverlayAddedTo:displaySpinnerOnMe
-                                                    title:@"Internet connection lost..."
+                                                    title:@"Internet connection lost."
                                                      mode:MRProgressOverlayViewModeIndeterminateSmall
                                                  animated:YES];
                 [MusicPlaybackController internetProblemSpinnerOnScreen:YES];
             });
-
         }
     }
 }
@@ -311,7 +317,78 @@
 #pragma mark -Internet convenience methods
 - (BOOL)isInternetReachable
 {
-    return ([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == NotReachable) ? NO : YES;
+    Reachability *reachability = [Reachability reachabilityForInternetConnection];
+    return ([reachability currentReachabilityStatus] == NotReachable) ? NO : YES;
+}
+
+#pragma mark - Key value observing magic here  :D
+- (void)registerForObservers
+{
+    [self addObserver:self
+           forKeyPath:@"currentItem.playbackBufferEmpty"
+              options:NSKeyValueObservingOptionNew
+              context:nil];
+    [self addObserver:self
+           forKeyPath:@"currentItem.loadedTimeRanges"
+              options:NSKeyValueObservingOptionNew
+              context:nil];
+}
+
+/*Not actually needed now since this class is in existance the entire time, it is never deallocated.
+- (void)deregisterForObservers
+{
+    @try{
+        [self removeObserver:self forKeyPath:@"currentItem.playbackBufferEmpty"];
+    }
+    //do nothing, obviously it wasn't attached because an exception was thrown
+    @catch(id anException){}
+}
+*/
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+    NSArray * timeRanges = self.currentItem.loadedTimeRanges;
+    if (timeRanges && [timeRanges count]){
+        CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
+        NSUInteger newSecondsBuff = CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration));
+        NSUInteger totalSeconds = [[MusicPlaybackController nowPlayingSong].duration integerValue];
+        
+        if([keyPath isEqualToString:@"currentItem.playbackBufferEmpty"]){
+            BOOL explicitlyPaused = [MusicPlaybackController playbackExplicitlyPaused];
+            if(newSecondsBuff == secondsLoaded && secondsLoaded != totalSeconds && !explicitlyPaused){
+                stallHasOccured = YES;
+                NSLog(@"In stall");
+                 [MusicPlaybackController pausePlayback];
+                if(! [MusicPlaybackController isSpinnerOnScreen]){
+                    [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
+                }
+            }
+
+        } else if([keyPath isEqualToString:@"currentItem.loadedTimeRanges"]){
+            CMTime currentTime = self.currentItem.currentTime;
+            NSUInteger currentPlaybackSecond = CMTimeGetSeconds(currentTime);
+#warning should do more sophisticated check here! Need to iterate through all loaded time ranges, comparing if my current time falls in one of the ranges. Test after implementing this (see if slider always produces a spinner when unloaded time is requested.
+            if(currentPlaybackSecond > newSecondsBuff){
+                stallHasOccured = YES;
+                NSLog(@"In stall");
+                //user must be skipping ahead with the slider. show the spinner!
+                if(! [MusicPlaybackController isSpinnerOnScreen]){
+                    [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
+                }
+            } else if(newSecondsBuff > secondsLoaded && stallHasOccured){
+                //out of stall now
+                stallHasOccured = NO;
+                NSLog(@"left stall");
+                [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
+                if(! [MusicPlaybackController playbackExplicitlyPaused])
+                    [MusicPlaybackController resumePlayback];
+            }
+            secondsLoaded = newSecondsBuff;
+        }
+    }
 }
 
 @end

@@ -34,5 +34,4 @@ int const MZMinVideoPlayerSwipeLengthDown = 120;
 int const MZMinVideoPlayerSwipeLengthUp = 85;
 int const MZMaxVideoPlayerSwipeVariance = 60;
 
-
 @end
