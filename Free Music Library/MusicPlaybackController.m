@@ -327,9 +327,15 @@ static int numLongSongsSkipped = 0;
         NSInteger duration = [nowPlayingSong.duration integerValue];
         [songInfo setObject:[NSNumber numberWithInteger:duration]
                      forKey:MPMediaItemPropertyPlaybackDuration];
+        AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
+        NSNumber *currenTime;
+        currenTime = [NSNumber numberWithInteger:CMTimeGetSeconds(player.currentItem.currentTime)];
+        [songInfo setObject:currenTime
+                     forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+        [songInfo setObject:[NSNumber numberWithFloat:player.rate]
+                     forKey:MPNowPlayingInfoPropertyPlaybackRate];
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
     }
-
 }
 
 #pragma mark - Heavy lifting of figuring out which songs go into a new queue

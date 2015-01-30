@@ -25,6 +25,7 @@
     NSString *AVPLAYER_DONE_PLAYING;  //queue has finished
     NSString *CURRENT_SONG_DONE_PLAYING;
     NSString * CURRENT_SONG_STOPPED_PLAYBACK;
+    NSString * CURRENT_SONG_RESUMED_PLAYBACK;
 }
 @end
 
@@ -37,6 +38,7 @@
         AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
         CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update gui please!";
         CURRENT_SONG_STOPPED_PLAYBACK = @"playback has stopped for some unknown reason (stall?)";
+        CURRENT_SONG_RESUMED_PLAYBACK = @"playback has resumed from a stall probably";
         movingForward = YES;
         stallHasOccured = NO;
         secondsLoaded = 0;
@@ -67,7 +69,6 @@
         movingForward = forward;
         [[NSNotificationCenter defaultCenter] postNotificationName:NEW_SONG_IN_AVPLAYER
                                                             object:[MusicPlaybackController nowPlayingSong]];
-        [MusicPlaybackController updateLockScreenInfoAndArtForSong:aSong];
         [self playSong:aSong];
     } else{
         if([MusicPlaybackController numMoreSongsInQueue] == 0)
@@ -124,6 +125,7 @@
     __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
     __weak NSString *weakId = aSong.youtube_id;
     __weak NSNumber *weakDuration = aSong.duration;
+    __weak Song *weakNowPlaying = [MusicPlaybackController nowPlayingSong];
     
     Reachability *reachability = [Reachability reachabilityForInternetConnection];
     BOOL usingWifi = NO;
@@ -214,6 +216,7 @@
                                                  [[NSNotificationCenter defaultCenter]
                                                   postNotificationName:@"PlaybackStartedNotification"
                                                   object:nil];
+                                                 [MusicPlaybackController updateLockScreenInfoAndArtForSong:weakNowPlaying];
                                                  
                                                  // Remove the boundary time observer
                                                  [weakSelf removeTimeObserver:obs];
@@ -252,8 +255,10 @@
         secondsSinceWeCheckedInternet = 0;
     
     if([self isInternetReachable]){
-        [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
-        [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
+        if(![MusicPlaybackController isSimpleSpinnerOnScreen]){
+            [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
+            [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
+        }
     } else{
         [self showSpinnerForInternetConnectionIssueOnView:[MusicPlaybackController obtainRawPlayerView]];
     }
@@ -376,8 +381,19 @@
 
         } else if([keyPath isEqualToString:@"currentItem.loadedTimeRanges"]){
             NSUInteger currentTime = CMTimeGetSeconds(self.currentItem.currentTime);
+            CMTimeRange aTimeRange;
+            NSUInteger lowBound;
+            NSUInteger upperBound;
+            BOOL inALoadedRange = NO;
+            for(int i = 0; i < timeRanges.count; i++){
+                aTimeRange = [timeRanges[i] CMTimeRangeValue];
+                lowBound = CMTimeGetSeconds(timerange.start);
+                upperBound = CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration));
+                if(currentTime >= lowBound && currentTime < upperBound)
+                    inALoadedRange = YES;
+            }
             
-            if(currentTime > newSecondsBuff){
+            if(! inALoadedRange){
                 NSLog(@"In stall");
                 stallHasOccured = YES;
                 [MusicPlaybackController setPlayerInStall:YES];
@@ -396,6 +412,8 @@
                 [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
                 if(! [MusicPlaybackController playbackExplicitlyPaused])
                     [MusicPlaybackController resumePlayback];
+                [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_RESUMED_PLAYBACK
+                                                                    object:nil];
             }
             secondsLoaded = newSecondsBuff;
         }

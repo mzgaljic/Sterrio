@@ -448,6 +448,9 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
             NSInteger duration = [[videoDetails valueForKey:MZKeyVideoDuration] integerValue];
             [songInfo setObject:[NSNumber numberWithInteger:duration]
                          forKey:MPMediaItemPropertyPlaybackDuration];
+           // NSNumber *currenTime;
+           // currenTime = [NSNumber numberWithInteger:[videoPlayerViewController.lastRecordedPlaybackTime]];
+            //[songInfo setObject:currenTime forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
             [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
         }
     }

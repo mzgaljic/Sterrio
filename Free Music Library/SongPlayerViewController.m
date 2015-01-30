@@ -55,6 +55,7 @@ NSString * const NEW_SONG_IN_AVPLAYER = @"New song added to AVPlayer, lets hope 
 NSString * const AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
 NSString * const CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update gui please!";
 NSString * const CURRENT_SONG_STOPPED_PLAYBACK = @"playback has stopped for some unknown reason (stall?)";
+NSString * const CURRENT_SONG_RESUMED_PLAYBACK = @"playback has resumed from a stall probably";
 
 NSString * const PAUSE_IMAGE_FILLED = @"Pause-Filled";
 NSString * const PAUSE_IMAGE_UNFILLED = @"Pause-Line";
@@ -126,6 +127,10 @@ void *kDidFailKVO               = &kDidFailKVO;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(playbackHasStopped)
                                                  name:CURRENT_SONG_STOPPED_PLAYBACK
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(playbackHasResumed)
+                                                 name:CURRENT_SONG_RESUMED_PLAYBACK
                                                object:nil];
     self.playbackSlider.dataSource = self;
     [[SongPlayerCoordinator sharedInstance] setDelegate:self];
@@ -402,7 +407,7 @@ static int numTimesVCLoaded = 0;
         sliderHint = [[GCDiscreetNotificationView alloc] initWithText:hint
                                                          showActivity:NO
                                                    inPresentationMode:presentationMode
-                                                               inView:self.sliderHintView];
+                                                               inView:_sliderHintView];
     _sliderHintView.hidden = NO;
     if(sliderHint)
         [sliderHint showAnimated];
@@ -424,6 +429,8 @@ static int numTimesVCLoaded = 0;
     }
     playAfterMovingSlider = YES;  //reset value
     [sliderHint hideAnimated];
+    //need to update lock screen again to keep elapsed time correct
+    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     [self performSelector:@selector(hideSliderHintView) withObject:nil afterDelay:0.5];
 }
 - (IBAction)playbackSliderEditingHasEndedB:(id)sender  //touch up outside
@@ -565,12 +572,14 @@ static int hours;
 - (void)playbackHasStopped
 {
     [self toggleDisplayToPausedState];
+    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
 }
 
 - (void)playbackHasResumed
 {
     [self toggleDisplayToPlayingState];
     playButton.enabled = YES;  //in case it isnt
+    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
 }
 
 - (void)currentSongInQueueHasEndedPlayback
