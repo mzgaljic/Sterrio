@@ -67,10 +67,12 @@
 //detects when view (this AVPlayer) was tapped (fires when touch is released)
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    BOOL alreadySegued = NO;
-    if(userTouchedDown)
-        alreadySegued = [self segueToPlayerViewControllerIfAppropriate];
-    if(! [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded] && !alreadySegued){
+    //this if statement only executes IF the player is alreay
+    if(userTouchedDown && [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded]){
+        [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:[self topViewController]];
+        return;
+    }
+    if(! [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded]){
         CGPoint touchLocation = [[[event allTouches] anyObject] locationInView:self];
         CGRect frame = self.frame;
         int x = touchLocation.x;

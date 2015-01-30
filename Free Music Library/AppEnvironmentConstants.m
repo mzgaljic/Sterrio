@@ -89,6 +89,8 @@ static BOOL icloudSettingsSync;
 + (void)setUserIsPreviewingAVideo:(BOOL)aValue
 {
     userIsPreviewingAVideo = aValue;
+    if(! userIsPreviewingAVideo)
+        [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Uninitialized];
 }
 
 + (void)setCurrentPreviewPlayerState:(PREVIEW_PLAYBACK_STATE)state

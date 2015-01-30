@@ -264,7 +264,7 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
 - (void)beginInterruption
 {
     if([AppEnvironmentConstants isUserPreviewingAVideo]){
-        if([AppEnvironmentConstants currentPreviewPlayerState] == PREVIEW_PLAYBACK_STATE_Playing)
+        if([AppEnvironmentConstants currrentPreviewPlayerState] == PREVIEW_PLAYBACK_STATE_Playing)
             resumePlaybackAfterInterruptionPreviewPlayer = YES;
         [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPause object:nil];
     }

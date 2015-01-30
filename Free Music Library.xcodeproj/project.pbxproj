@@ -832,19 +832,19 @@
 				872F78781A47B91500288FDD /* VideoPlayerControlInterfaceDelegate.h */,
 				872F78751A47B17900288FDD /* SongPlayerCoordinator.h */,
 				872F78761A47B17900288FDD /* SongPlayerCoordinator.m */,
-				879F62161A7BFFCF008D8A2A /* Player interaction */,
+				879F62161A7BFFCF008D8A2A /* AVPlayer (Player) interaction */,
 			);
 			name = "The Player";
 			path = "Free Music Library";
 			sourceTree = "<group>";
 		};
-		879F62161A7BFFCF008D8A2A /* Player interaction */ = {
+		879F62161A7BFFCF008D8A2A /* AVPlayer (Player) interaction */ = {
 			isa = PBXGroup;
 			children = (
 				87033B851996965E0077C7AD /* MusicPlaybackController.h */,
 				87033B861996965E0077C7AD /* MusicPlaybackController.m */,
 			);
-			name = "Player interaction";
+			name = "AVPlayer (Player) interaction";
 			sourceTree = "<group>";
 		};
 		87A0FD93197DD932008FBBF7 /* Song Formatter */ = {

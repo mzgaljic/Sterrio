@@ -47,7 +47,7 @@ typedef enum {
 + (BOOL)isUserPreviewingAVideo;
 + (void)setUserIsPreviewingAVideo:(BOOL)aValue;
 + (void)setCurrentPreviewPlayerState:(PREVIEW_PLAYBACK_STATE)state;
-+ (PREVIEW_PLAYBACK_STATE)currentPreviewPlayerState;
++ (PREVIEW_PLAYBACK_STATE)currrentPreviewPlayerState;
 
 //app settings
 + (short)preferredSizeSetting;

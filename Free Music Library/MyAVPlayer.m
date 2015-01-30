@@ -88,9 +88,12 @@
                                                object:playerItem];
 }
 
-//Will be called when YTVideoAvPlayer finishes playing a YTVideoPlayerItem
+//Will be called when MyAVPlayer finishes playing an item
 - (void)songDidFinishPlaying:(NSNotification *) notification
 {
+    //dont want to respond if this was just the preview player.
+    if([AppEnvironmentConstants isUserPreviewingAVideo])
+        return;
     [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_DONE_PLAYING object:nil];
     [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
     
