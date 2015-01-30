@@ -424,15 +424,6 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
-		87033B88199696630077C7AD /* Music Playback (player) */ = {
-			isa = PBXGroup;
-			children = (
-				87033B851996965E0077C7AD /* MusicPlaybackController.h */,
-				87033B861996965E0077C7AD /* MusicPlaybackController.m */,
-			);
-			name = "Music Playback (player)";
-			sourceTree = "<group>";
-		};
 		8703442319A01909002E5077 /* Core Data tableview integreation */ = {
 			isa = PBXGroup;
 			children = (
@@ -607,11 +598,11 @@
 				870D49E51A6324F2004496A9 /* MZConstants.h */,
 				870D49E61A6324F2004496A9 /* MZConstants.m */,
 				877C4B87199FB5E800CE86BC /* App Delegate and Environment Helpers */,
-				87FE09F21933ED9B001A5FB7 /* Services */,
-				87362AF6194E3B41004DB544 /* Data Structures */,
 				87334408198D8349002B9E18 /* Categories */,
-				872EA4D31A54A96900F8EE9D /* Alerts */,
+				87362AF6194E3B41004DB544 /* Data Structures */,
 				87FE09F31933F39B001A5FB7 /* Models */,
+				87FE09F21933ED9B001A5FB7 /* Services */,
+				872EA4D31A54A96900F8EE9D /* Alerts */,
 				87362AFA194E3F27004DB544 /* GUI and GUI Controllers */,
 				87ECF5221A57C5FB00D58EDF /* Custom GUI Elements/Classes */,
 				87480DC3192C1FBD005CC0A4 /* Images.xcassets */,
@@ -841,9 +832,19 @@
 				872F78781A47B91500288FDD /* VideoPlayerControlInterfaceDelegate.h */,
 				872F78751A47B17900288FDD /* SongPlayerCoordinator.h */,
 				872F78761A47B17900288FDD /* SongPlayerCoordinator.m */,
+				879F62161A7BFFCF008D8A2A /* Player interaction */,
 			);
 			name = "The Player";
 			path = "Free Music Library";
+			sourceTree = "<group>";
+		};
+		879F62161A7BFFCF008D8A2A /* Player interaction */ = {
+			isa = PBXGroup;
+			children = (
+				87033B851996965E0077C7AD /* MusicPlaybackController.h */,
+				87033B861996965E0077C7AD /* MusicPlaybackController.m */,
+			);
+			name = "Player interaction";
 			sourceTree = "<group>";
 		};
 		87A0FD93197DD932008FBBF7 /* Song Formatter */ = {
@@ -1064,7 +1065,6 @@
 				870D49E41A62E685004496A9 /* YouTubeVideoDetailLookupDelegate.h */,
 				8772517319888F1A00A2156B /* YouTubeVideoSearchService.h */,
 				8772517419888F1A00A2156B /* YouTubeVideoSearchService.m */,
-				87033B88199696630077C7AD /* Music Playback (player) */,
 				878519D31994328200A573A9 /* Apple Sample Code */,
 			);
 			name = Services;

@@ -5,6 +5,8 @@
 //  Created by Mark Zgaljic on 8/9/14.
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
+//This class is the go-to way of controlling and communicating with MyAVPlayer, outside
+//of the MyAVPlayer class itself.
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
@@ -95,6 +97,9 @@
 + (void)longVideoSkippedOnCellularConnection;
 + (int)numLongVideosSkippedOnCellularConnection;
 + (void)resetNumberOfLongVideosSkippedOnCellularConnection;
+
++ (BOOL)isPlayerStalled;
++ (void)setPlayerInStall:(BOOL)stalled;
 
 #pragma mark - DEBUG
 + (void)printQueueContents;

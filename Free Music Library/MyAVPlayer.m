@@ -24,6 +24,7 @@
     NSString *NEW_SONG_IN_AVPLAYER;
     NSString *AVPLAYER_DONE_PLAYING;  //queue has finished
     NSString *CURRENT_SONG_DONE_PLAYING;
+    NSString * CURRENT_SONG_STOPPED_PLAYBACK;
 }
 @end
 
@@ -35,6 +36,7 @@
         NEW_SONG_IN_AVPLAYER = @"New song added to AVPlayer, lets hope the interface makes appropriate changes.";
         AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
         CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update gui please!";
+        CURRENT_SONG_STOPPED_PLAYBACK = @"playback has stopped for some unknown reason (stall?)";
         movingForward = YES;
         stallHasOccured = NO;
         secondsLoaded = 0;
@@ -345,6 +347,7 @@
 }
 */
 
+//CURRENT_SONG_STOPPED_PLAYBACK
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
                         change:(NSDictionary *)change
@@ -361,7 +364,11 @@
             if(newSecondsBuff == secondsLoaded && secondsLoaded != totalSeconds && !explicitlyPaused){
                 NSLog(@"In stall");
                 stallHasOccured = YES;
+                [MusicPlaybackController setPlayerInStall:YES];
                 [MusicPlaybackController pausePlayback];
+                [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_STOPPED_PLAYBACK
+                                                                    object:nil];
+                
                 if(! [MusicPlaybackController isSpinnerOnScreen]){
                     [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
                 }
@@ -373,7 +380,11 @@
             if(currentTime > newSecondsBuff){
                 NSLog(@"In stall");
                 stallHasOccured = YES;
+                [MusicPlaybackController setPlayerInStall:YES];
                 [MusicPlaybackController pausePlayback];
+                [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_STOPPED_PLAYBACK
+                                                                    object:nil];
+                
                 //user must be skipping ahead with the slider. show the spinner!
                 if(! [MusicPlaybackController isSpinnerOnScreen]){
                     [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
@@ -381,6 +392,7 @@
             } else if(newSecondsBuff > secondsLoaded && stallHasOccured){
                 NSLog(@"left stall");
                 stallHasOccured = NO;
+                [MusicPlaybackController setPlayerInStall:NO];
                 [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
                 if(! [MusicPlaybackController playbackExplicitlyPaused])
                     [MusicPlaybackController resumePlayback];

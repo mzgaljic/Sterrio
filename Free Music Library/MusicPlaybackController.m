@@ -15,6 +15,7 @@ static BOOL initialized = NO;
 static BOOL internetProblemLoadingSong = NO;
 static BOOL simpleSpinnerOnScreen = NO;
 static BOOL internetConnectionSpinnerOnScreen = NO;
+static BOOL isPlayerStalled = NO;
 static int numLongSongsSkipped = 0;
 
 @implementation MusicPlaybackController
@@ -445,6 +446,16 @@ static int numLongSongsSkipped = 0;
 + (void)resetNumberOfLongVideosSkippedOnCellularConnection
 {
     numLongSongsSkipped = 0;
+}
+
++ (BOOL)isPlayerStalled
+{
+    return isPlayerStalled;
+}
+
++ (void)setPlayerInStall:(BOOL)stalled
+{
+    isPlayerStalled = stalled;
 }
 
 #pragma mark - DEBUG

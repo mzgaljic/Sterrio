@@ -54,6 +54,7 @@ static int numTimesSetupKeyValueObservers = 0;
 NSString * const NEW_SONG_IN_AVPLAYER = @"New song added to AVPlayer, lets hope the interface makes appropriate changes.";
 NSString * const AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
 NSString * const CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update gui please!";
+NSString * const CURRENT_SONG_STOPPED_PLAYBACK = @"playback has stopped for some unknown reason (stall?)";
 
 NSString * const PAUSE_IMAGE_FILLED = @"Pause-Filled";
 NSString * const PAUSE_IMAGE_UNFILLED = @"Pause-Line";
@@ -121,6 +122,10 @@ void *kDidFailKVO               = &kDidFailKVO;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(currentSongInQueueHasEndedPlayback)
                                                  name:CURRENT_SONG_DONE_PLAYING
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(playbackHasStopped)
+                                                 name:CURRENT_SONG_STOPPED_PLAYBACK
                                                object:nil];
     self.playbackSlider.dataSource = self;
     [[SongPlayerCoordinator sharedInstance] setDelegate:self];
@@ -1039,7 +1044,8 @@ static int hours;
 //only toggles the gui! does not mean user hit pause! Used for responding to rate changes during buffering.
 - (void)toggleDisplayToPausedState
 {
-    if(stateOfGUIPlayback == GUIPlaybackStatePlaying){
+    if(stateOfGUIPlayback == GUIPlaybackStatePlaying ||
+       (stateOfGUIPlayback == GUIPlaybackStatePaused && [MusicPlaybackController isPlayerStalled])){
         UIColor *color = [UIColor blackColor];
         UIImage *tempImage = [UIImage imageNamed:PLAY_IMAGE_FILLED];
         UIImage *playFilled = [UIImage colorOpaquePartOfImage:color :tempImage];
@@ -1050,13 +1056,16 @@ static int hours;
 //read comment in method above
 - (void)toggleDisplayToPlayingState
 {
-    if(stateOfGUIPlayback == GUIPlaybackStatePaused){
+    if(stateOfGUIPlayback == GUIPlaybackStatePaused && ![MusicPlaybackController isPlayerStalled]){
         UIColor *color = [UIColor blackColor];
         UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
         UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:color :tempImage];
         [playButton setImage:pauseFilled forState:UIControlStateNormal];
     }
-    stateOfGUIPlayback = GUIPlaybackStatePlaying;
+    if(![MusicPlaybackController isPlayerStalled])
+        stateOfGUIPlayback = GUIPlaybackStatePlaying;
+    else
+        [self toggleDisplayToPausedState];
 }
 
 //BUTTON SHADOWS
@@ -1207,10 +1216,12 @@ static int hours;
         }
         if(player.rate == 0)
             [self toggleDisplayToPausedState];
-        if(player.rate == 1){
+        if(player.rate == 1 && ![MusicPlaybackController isPlayerStalled]){
             [self dismissAllSpinnersForView:playerView];
             [self toggleDisplayToPlayingState];
         }
+        if([MusicPlaybackController isPlayerStalled])
+            [self toggleDisplayToPausedState];;
     } else if (kStatusDidChangeKVO == context) {
         //player "status" has changed. Not particulary useful information.
         if (player.status == AVPlayerStatusReadyToPlay) {
@@ -1243,7 +1254,7 @@ static int hours;
             NSLog(@"New loaded range: %i -> %i", (int)CMTimeGetSeconds(timerange.start), secondsLoaded);
             */
             
-            if(player.rate == 0 && !playbackExplicitlyPaused && !waitingForNextOrPrevVideoToLoad && !sliderIsBeingTouched){
+            if(player.rate == 0 && !playbackExplicitlyPaused && !waitingForNextOrPrevVideoToLoad && !sliderIsBeingTouched && ![MusicPlaybackController isPlayerStalled]){
                 //continue where playback left off...
                 [self dismissAllSpinnersForView:playerView];
                 [MusicPlaybackController resumePlayback];
