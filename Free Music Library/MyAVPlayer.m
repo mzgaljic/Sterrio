@@ -18,8 +18,9 @@
     BOOL allowSongDidFinishToExecute;
     BOOL canPostLastSongNotification;
     
-    NSString * NEW_SONG_IN_AVPLAYER;
-    NSString * AVPLAYER_DONE_PLAYING;
+    NSString *NEW_SONG_IN_AVPLAYER;
+    NSString *AVPLAYER_DONE_PLAYING;  //queue has finished
+    NSString *CURRENT_SONG_DONE_PLAYING;
 }
 @end
 
@@ -31,6 +32,7 @@
     if(self = [super init]){
         NEW_SONG_IN_AVPLAYER = @"New song added to AVPlayer, lets hope the interface makes appropriate changes.";
         AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
+        CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update gui please!";
         movingForward = YES;
         currentItemLink = nil;
         playerItem = self.currentItem;
@@ -82,6 +84,9 @@
 //Will be called when YTVideoAvPlayer finishes playing a YTVideoPlayerItem
 - (void)songDidFinishPlaying:(NSNotification *) notification
 {
+    [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_DONE_PLAYING object:nil];
+    [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
+    
     if(! allowSongDidFinishToExecute)
         return;
     allowSongDidFinishToExecute = NO;
@@ -106,7 +111,9 @@
 
 - (void)playSong:(Song *)aSong
 {
+    [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
     __weak MyAVPlayer *weakSelf = self;
+    __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
     __weak NSString *weakId = aSong.youtube_id;
     __weak NSNumber *weakDuration = aSong.duration;
     
@@ -125,6 +132,7 @@
             allowedToPlayVideo = NO;
     } else if(! usingWifi && status == NotReachable){
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
+        [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
         [MusicPlaybackController declareInternetProblemWhenLoadingSong:YES];
         [MusicPlaybackController playbackExplicitlyPaused];
         [MusicPlaybackController pausePlayback];
@@ -158,6 +166,7 @@
         }
         else
         {
+            [weakSelf dismissAllSpinnersForView:weakPlayerView];
             NetworkStatus internetStatus = [reachability currentReachabilityStatus];
             allowSongDidFinishToExecute = YES;
             if (internetStatus == NotReachable){
@@ -186,10 +195,13 @@
             // Declare block scope variables to avoid retention cycles from references inside the block
             __block id obs;
             // Setup boundary time observer to trigger when audio really begins (specifically after 1/10 of a second of playback)
+            __weak MyAVPlayer *weakSelf = self;
+            __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
             obs = [weakSelf addBoundaryTimeObserverForTimes:
                    @[[NSValue valueWithCMTime:CMTimeMake(1, 10)]]
                                                   queue:NULL
                                              usingBlock:^{
+                                                 [weakSelf dismissAllSpinnersForView:weakPlayerView];
                                                  // Raise a notificaiton when playback has started
                                                  [[NSNotificationCenter defaultCenter]
                                                   postNotificationName:@"PlaybackStartedNotification"
@@ -198,7 +210,6 @@
                                                  // Remove the boundary time observer
                                                  [weakSelf removeTimeObserver:obs];
                                              }];
-            [weakSelf showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
             [weakSelf play];
             
         } else{
@@ -206,6 +217,7 @@
                 return;
             
             [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
+            [weakSelf dismissAllSpinnersForView:weakPlayerView];
             [weakSelf songDidFinishPlaying:nil];  //triggers the next song to play (for whatever reason/error) in the correct direction
         }
     }];
@@ -220,12 +232,10 @@
         return;
     
     UIApplicationState state = [[UIApplication sharedApplication] applicationState];
-    if (state == UIApplicationStateBackground || state == UIApplicationStateInactive)
-    {
+    if (state == UIApplicationStateBackground || state == UIApplicationStateInactive){
         return;
     }
     
-
     if(secondsSinceWeCheckedInternet < 3){
         secondsSinceWeCheckedInternet++;
         return;
@@ -268,7 +278,6 @@
 
 - (void)showSpinnerForBasicLoadingOnView:(UIView *)displaySpinnerOnMe
 {
-    /*
     if(![MusicPlaybackController isSimpleSpinnerOnScreen]){
         if([NSThread isMainThread]){
             [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
@@ -283,12 +292,10 @@
             });
         }
     }
-     */
 }
 
 - (void)dismissAllSpinnersForView:(UIView *)dismissViewOnMe
 {
-    /*
     if([NSThread isMainThread]){
         [MRProgressOverlayView dismissAllOverlaysForView:dismissViewOnMe animated:YES];
         [MusicPlaybackController noSpinnersOnScreen];
@@ -298,7 +305,6 @@
             [MusicPlaybackController noSpinnersOnScreen];
         });
     }
-     */
 }
 
 

@@ -37,7 +37,7 @@ typedef enum{
     //for key value observing
     id timeObserver;
     int totalVideoDuration;
-    int mostRecentLoadedDuration;
+    //int mostRecentLoadedDuration;  unneeded for now. Used in observeValueForKeyPath
 }
 @end
 
@@ -53,6 +53,7 @@ static int numTimesSetupKeyValueObservers = 0;
 
 NSString * const NEW_SONG_IN_AVPLAYER = @"New song added to AVPlayer, lets hope the interface makes appropriate changes.";
 NSString * const AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
+NSString * const CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update gui please!";
 
 NSString * const PAUSE_IMAGE_FILLED = @"Pause-Filled";
 NSString * const PAUSE_IMAGE_UNFILLED = @"Pause-Line";
@@ -84,6 +85,10 @@ void *kDidFailKVO               = &kDidFailKVO;
         abort();
     }
     
+    //clear out garbage values from storyboard
+    _songNameLabel.text = @"";
+    _artistAndAlbumLabel.text = @"";
+    
     //this allows me to discover if AVSValueTrackingSlider changes, even on a new device.
     [_playbackSlider disablePopupSliderCompletely:NO];
     
@@ -112,6 +117,10 @@ void *kDidFailKVO               = &kDidFailKVO;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(playbackOfVideoHasBegun)
                                                  name:@"PlaybackStartedNotification"
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(currentSongInQueueHasEndedPlayback)
+                                                 name:CURRENT_SONG_DONE_PLAYING
                                                object:nil];
     self.playbackSlider.dataSource = self;
     [[SongPlayerCoordinator sharedInstance] setDelegate:self];
@@ -167,9 +176,20 @@ static int numTimesVCLoaded = 0;
     [self InitSongInfoLabelsOnScreenAnimated:NO onRotation:NO];
     
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
-    if(player.rate == 1)  //takes care of duration label, slider, etc.
-        [self playbackOfVideoHasBegun];
-    else{
+    
+    //check if at least 1 second of video has loaded. If so, we should consider the video as
+    //playing back, or at least trying to. We can then set up the slider and totalDuration label.
+    BOOL playbackUnderway = NO;
+    NSArray * timeRanges = player.currentItem.loadedTimeRanges;
+    if (timeRanges && [timeRanges count]){
+        CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
+        NSUInteger secondsBuffed = CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration));
+        if(secondsBuffed > 0){
+            [self playbackOfVideoHasBegunRespectPlayPauseState];
+            playbackUnderway = YES;
+        }
+    }
+    if(! playbackUnderway){
         [_playbackSlider setMaximumValue:0];
         [_playbackSlider setValue:0];
         _playbackSlider.enabled = NO;
@@ -193,6 +213,8 @@ static int numTimesVCLoaded = 0;
 
 - (void)dealloc
 {
+    //fixes a strange bug when a modal view is presented on top of this player
+    //(like the share sheet messages or mail VC's.
     if(! self)
         return;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -244,6 +266,7 @@ static int numTimesVCLoaded = 0;
     [self.navigationController.navigationBar.layer addAnimation:animation
                                                          forKey:@"changeTextTransition"];
 
+    BOOL prevArtistLabelHadATextValue = ([_artistAndAlbumLabel.text length] > 0);
     _artistAndAlbumLabel.text = [self generateArtistAndAlbumString];
     self.navBar.title = [MusicPlaybackController prettyPrintNavBarTitle];
     _songNameLabel.text = [MusicPlaybackController nowPlayingSong].songName;
@@ -251,7 +274,15 @@ static int numTimesVCLoaded = 0;
     CGRect playerFrame = [[SongPlayerCoordinator sharedInstance] currentPlayerViewFrame];
     if(playerFrame.size.height != [UIScreen mainScreen].bounds.size.height){
         //currently in portrait mode, can show new frame
-        [self configureSongAndArtistAlbumLabelFramesAnimated:YES onRotation:NO];
+        if([_artistAndAlbumLabel.text length] > 0)
+            [self configureSongAndArtistAlbumLabelFramesAnimated:YES onRotation:NO];
+        else{
+            if(prevArtistLabelHadATextValue)
+                [self configureSongAndArtistAlbumLabelFramesAnimated:YES onRotation:NO];
+            else
+                [self configureSongAndArtistAlbumLabelFramesAnimated:NO onRotation:NO];
+        }
+        
     }
 }
 
@@ -376,13 +407,16 @@ static int numTimesVCLoaded = 0;
         playAfterMovingSlider = NO;
     sliderIsBeingTouched = YES;
     [player pause];
+    [MusicPlaybackController explicitlyPausePlayback:YES];
     [self toggleDisplayToPausedState];
 }
 - (IBAction)playbackSliderEditingHasEndedA:(id)sender  //touch up inside
 {
     sliderIsBeingTouched = NO;
-    if(playAfterMovingSlider)
+    if(playAfterMovingSlider){
         [[MusicPlaybackController obtainRawAVPlayer] play];
+        [MusicPlaybackController explicitlyPausePlayback:NO];
+    }
     playAfterMovingSlider = YES;  //reset value
     [sliderHint hideAnimated];
     [self performSelector:@selector(hideSliderHintView) withObject:nil afterDelay:0.5];
@@ -532,6 +566,15 @@ static int hours;
 {
     [self toggleDisplayToPlayingState];
     playButton.enabled = YES;  //in case it isnt
+}
+
+- (void)currentSongInQueueHasEndedPlayback
+{
+    BOOL moreSongsInQueue = ([MusicPlaybackController numMoreSongsInQueue] != 0);
+    //disabling until the next song in the queue is loaded.
+    //another method will reenable it when necessary
+    if(moreSongsInQueue)
+        self.playbackSlider.enabled = NO;
 }
 
 #pragma mark - Initializing & Registering Buttons
@@ -1176,6 +1219,7 @@ static int hours;
         //player "status" has changed. Not particulary useful information.
         if (player.status == AVPlayerStatusReadyToPlay) {
             //line above is new?
+            /*
             NSArray * timeRanges = player.currentItem.loadedTimeRanges;
             if (timeRanges && [timeRanges count]){
                 CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
@@ -1184,11 +1228,15 @@ static int hours;
                     //NSLog(@"Min buffer reached to continue playback.");
                 }
             }
+             */
         }
         
     } else if (kTimeRangesKVO == context) {
         NSArray *timeRanges = (NSArray *)[change objectForKey:NSKeyValueChangeNewKey];
         if (timeRanges && [timeRanges count]) {
+            /*
+             code unneeded for now...
+             
             CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
             
             int secondsLoaded = (int)CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration));
@@ -1196,8 +1244,9 @@ static int hours;
                 return;
             else
                 mostRecentLoadedDuration = secondsLoaded;
+            NSLog(@"New loaded range: %i -> %i", (int)CMTimeGetSeconds(timerange.start), secondsLoaded);
+            */
             
-            //NSLog(@"New loaded range: %i -> %i", (int)CMTimeGetSeconds(timerange.start), secondsLoaded);
             if(player.rate == 0 && !playbackExplicitlyPaused && !waitingForNextOrPrevVideoToLoad && !sliderIsBeingTouched){
                 //continue where playback left off...
                 [self dismissAllSpinnersForView:playerView];
@@ -1208,6 +1257,37 @@ static int hours;
     }
 }
 
+//same thing as method beneath this one, except the playback state is not touched
+- (void)playbackOfVideoHasBegunRespectPlayPauseState
+{
+    self.playbackSlider.enabled = YES;
+    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
+    
+    //want to make the gui respect the current playback state here
+    if(player.rate == 1){
+        UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
+        UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];
+        [playButton setImage:pauseFilled forState:UIControlStateNormal];
+    } else{
+        UIImage *tempImage = [UIImage imageNamed:PLAY_IMAGE_FILLED];
+        UIImage *playFilled = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];
+        [playButton setImage:playFilled forState:UIControlStateNormal];
+    }
+    
+    [self displayTotalSliderAndLabelDuration];
+    
+    NSUInteger test = CMTimeGetSeconds(player.currentItem.currentTime);
+    if(player.currentItem)
+        [_playbackSlider setValue:test animated:NO];
+    else
+        [_playbackSlider setValue:0];
+    waitingForNextOrPrevVideoToLoad = NO;
+    
+    if(! [MusicPlaybackController isSongFirstInQueue:[MusicPlaybackController nowPlayingSong]])
+        [self showPreviousTrackButton];
+}
+
+//this is the one called from the notification when the player starts, hence it forces the "play" state.
 - (void)playbackOfVideoHasBegun
 {
     self.playbackSlider.enabled = YES;
@@ -1225,7 +1305,6 @@ static int hours;
     [MusicPlaybackController resumePlayback];
     
     [self displayTotalSliderAndLabelDuration];
-    [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
     if(! [MusicPlaybackController isSongFirstInQueue:[MusicPlaybackController nowPlayingSong]])
         [self showPreviousTrackButton];
 }
