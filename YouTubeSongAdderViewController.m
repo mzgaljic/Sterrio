@@ -23,6 +23,10 @@
     BOOL playbackBegan;
     NSDictionary *videoDetails;
     
+    BOOL currentlySeeking;
+    
+    NSTimer *timer;  //used to check if the video started playing (spinner, etc)
+    
     BOOL musicWasPlayingBeforePreviewBegan;
     BOOL prevMusicPlaybackStateAlreadySaved;
     __block NSURL *url;
@@ -32,7 +36,6 @@
 @end
 
 @implementation YouTubeSongAdderViewController
-@synthesize isPreparedToPlay, currentPlaybackTime, currentPlaybackRate;
 #pragma mark - Custom Initializer
 - (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject thumbnail:(UIImage *)img
 {
@@ -64,6 +67,11 @@
                                                  selector:@selector(playerPlaybackStateChanged:)
                                                      name:playbackStateChangedConst
                                                    object:nil];
+        timer = [NSTimer scheduledTimerWithTimeInterval:1.0
+                                         target:self
+                                       selector:@selector(hasPlaybackStartedTimerCheck)
+                                       userInfo:nil
+                                        repeats:YES];
     }
     return self;
 }
@@ -99,6 +107,8 @@
     self.tableView = nil;
     lockScreenImg = nil;
     url = nil;
+    [timer invalidate];
+    timer = nil;
     [AppEnvironmentConstants setUserIsPreviewingAVideo:NO];
 }
 
@@ -223,7 +233,6 @@ static short numberTimesViewHasBeenShown = 0;
     __weak YouTubeSongAdderViewController *weakSelf = self;
     __weak __block MPMoviePlayerController *weakVideoPlayerViewController = videoPlayerViewController;
     __weak SongPlayerCoordinator *weakAvplayerCoordinator = [SongPlayerCoordinator sharedInstance];
-    __weak UIView *weakHeaderView = self.tableView.tableHeaderView;
     
     Reachability *reachability = [Reachability reachabilityForInternetConnection];
     BOOL usingWifi = NO;
@@ -283,8 +292,6 @@ static short numberTimesViewHasBeenShown = 0;
             [weakSelf setUpVideoView];
             [weakVideoPlayerViewController play];
             [weakAvplayerCoordinator temporarilyDisablePlayer];
-            [MRProgressOverlayView dismissAllOverlaysForView:weakHeaderView animated:YES];
-            [weakSelf setUpLockScreenInfoAndArt];
         }
     }];
 }
@@ -308,7 +315,6 @@ static short numberTimesViewHasBeenShown = 0;
 #pragma mark - Video frame and player setup
 - (void)setUpVideoView
 {
-    [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
     int widthOfScreenRoationIndependant;
     int heightOfScreenRotationIndependant;
     int  a = [[UIScreen mainScreen] bounds].size.height;
@@ -387,12 +393,24 @@ static short numberTimesViewHasBeenShown = 0;
 }
 
 #pragma mark - Responding to video player events
+- (void)hasPlaybackStartedTimerCheck
+{
+    //this is called by the timer and done here because if the app goes into the foreground
+    //while the video is loading, the spinner will never go away! This could have easily been
+    //reproduced by simply opening control center
+    if(playbackBegan){
+        [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView
+                                                animated:YES];
+        [self setUpLockScreenInfoAndArt];
+        [timer invalidate];
+    }
+}
+
 - (void)playerPlaybackStateChanged:(NSNotification *)notif
 {
     if(videoPlayerViewController.playbackState == MPMoviePlaybackStatePlaying && [AppEnvironmentConstants currrentPreviewPlayerState] != PREVIEW_PLAYBACK_STATE_Paused){
         [AppEnvironmentConstants setUserIsPreviewingAVideo:YES];
         [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
-        
         playbackBegan = YES;
         
         if(! prevMusicPlaybackStateAlreadySaved){
@@ -403,8 +421,6 @@ static short numberTimesViewHasBeenShown = 0;
                     [MusicPlaybackController pausePlayback];
                     [MusicPlaybackController explicitlyPausePlayback:YES];
                     musicWasPlayingBeforePreviewBegan = YES;
-                    [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView
-                                                            animated:YES];
                 }
                 else
                     musicWasPlayingBeforePreviewBegan = NO;
@@ -416,6 +432,12 @@ static short numberTimesViewHasBeenShown = 0;
     }
     if([AppEnvironmentConstants currrentPreviewPlayerState] != PREVIEW_PLAYBACK_STATE_Paused)
         [videoPlayerViewController pause];
+    
+    if(videoPlayerViewController.playbackState == MPMoviePlaybackStateSeekingForward ||
+       videoPlayerViewController.playbackState == MPMoviePlaybackStateSeekingBackward)
+        currentlySeeking = YES;
+    else
+        [self setUpLockScreenInfoAndArt];
 }
 
 #pragma mark - Handling all background interaction (playback, lockscreen, etc)
@@ -440,25 +462,24 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
 - (void)setUpLockScreenInfoAndArt
 {
     //lockScreenImg
-    if(lockScreenImg && url){
-        // do something with image
-        Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
-        if (playingInfoCenter) {
-            NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
-            UIImage *art = lockScreenImg;
-            MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage:art];
-            
-            [songInfo setObject:ytVideo.videoName forKey:MPMediaItemPropertyTitle];
-            if(ytVideo.channelTitle)
-                [songInfo setObject:ytVideo.channelTitle forKey:MPMediaItemPropertyArtist];
-            [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
-            NSInteger duration = [[videoDetails valueForKey:MZKeyVideoDuration] integerValue];
-            [songInfo setObject:[NSNumber numberWithInteger:duration]
-                         forKey:MPMediaItemPropertyPlaybackDuration];
-            NSNumber *currentTime = [NSNumber numberWithDouble:self.currentPlaybackTime];
-            [songInfo setObject:currentTime forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
-            [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
-        }
+    // do something with image
+    Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
+    if (playingInfoCenter) {
+        NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
+        UIImage *art = lockScreenImg;
+        MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage:art];
+        
+        [songInfo setObject:ytVideo.videoName forKey:MPMediaItemPropertyTitle];
+        if(ytVideo.channelTitle)
+            [songInfo setObject:ytVideo.channelTitle forKey:MPMediaItemPropertyArtist];
+        [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
+        NSInteger duration = [[videoDetails valueForKey:MZKeyVideoDuration] integerValue];
+        [songInfo setObject:[NSNumber numberWithInteger:duration]
+                     forKey:MPMediaItemPropertyPlaybackDuration];
+        
+        NSNumber *currentTime = [NSNumber numberWithDouble:[videoPlayerViewController currentPlaybackTime]];
+        [songInfo setObject:currentTime forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
     }
 }
 
@@ -549,36 +570,6 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
         //false alarm about a problem that occured with a previous fetch?
         //who knows when this would happen lol. Disregard this case.
         return;
-}
-
-#pragma mark - MPMediaPlayback Delegates
-- (void)prepareToPlay
-{
-    return;
-}
-- (void)play
-{
-    return;
-}
-- (void)pause
-{
-    return;
-}
-- (void)stop
-{
-    return;
-}
-- (void)beginSeekingForward
-{
-    return;
-}
-- (void)beginSeekingBackward
-{
-    return;
-}
-- (void)endSeeking
-{
-    [self setUpLockScreenInfoAndArt];
 }
 
 #pragma mark - Custom song tableview editor delegate stuff

@@ -23,8 +23,7 @@
 #import "SongPlayerCoordinator.h"
 
 @interface YouTubeSongAdderViewController : MyViewController <YouTubeVideoDetailLookupDelegate,
-                                                            MZSongModifierDelegate,
-                                                            MPMediaPlayback>
+                                                            MZSongModifierDelegate>
 
 - (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject thumbnail:(UIImage *)img;
 
