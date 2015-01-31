@@ -161,7 +161,6 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 {
     UITableViewCell *cell;
     if(indexPath.section == 0){
-
         static NSString *cellIdentifier = @"detail label cell";
         cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
         if(cell == nil)
@@ -169,8 +168,15 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
                                           reuseIdentifier:cellIdentifier];
         if(indexPath.row == 0){  //song name
             cell.textLabel.text = @"Song Name";
-            if(_songIAmEditing.songName)
+            if(_songIAmEditing.songName){
+                NSString *detailLabelValue = nil;
+                if([_songIAmEditing.songName isEqual:@"Fake value telling table a real value is on its way (animating)"]){
+                    detailLabelValue = @"";  //new value will be animated soon, dont worry
+                } else{
+                    detailLabelValue = _songIAmEditing.songName;
+                }
                 cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:_songIAmEditing.songName];
+            }
             else
                 cell.detailTextLabel.text = nil;
             cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[UIColor defaultAppColorScheme] lighterColor]];
@@ -440,14 +446,27 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
         return;
     }
     
+    //add temp value to allow table to load second section. After it loads it, then make animation for
+    //song label
+    _songIAmEditing.songName = @"Fake value telling table a real value is on its way (animating)";
+    [self performSelectorOnMainThread:@selector(reloadTableWaitUntilDone)
+                           withObject:nil
+                        waitUntilDone:YES];
+    [self performSelector:@selector(reloadSongNameCell) withObject:nil afterDelay:0.45];
+    
     _songIAmEditing.songName = newName;
     _songIAmEditing.smartSortSongName = [newName regularStringToSmartSortString];
     //edge case, if name is something like 'the', dont remove all characters! Keep original name.
     if(_songIAmEditing.smartSortSongName.length == 0)
         _songIAmEditing.smartSortSongName = newName;
-    [self performSelector:@selector(reloadSongNameCell) withObject:nil afterDelay:0.5];
 }
 
+- (void)reloadTableWaitUntilDone
+{
+    [self reloadData];
+}
+
+//added this since it caused a crash on iphone 4s
 - (void)reloadSongNameCell
 {
     [self beginUpdates];

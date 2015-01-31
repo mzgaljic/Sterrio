@@ -2,7 +2,9 @@ PODS:
   - AFBlurSegue (1.2)
   - ASValueTrackingSlider (0.9.4)
   - CSNotificationView (0.5.3)
+  - DKScrollingTabController (1.1.2)
   - GCDiscreetNotificationView (1.0.2)
+  - GTScrollNavigationBar (0.1.2)
   - JAMAccurateSlider (1.1.0)
   - MarqueeLabel (2.2.0)
   - MRProgress (0.8.1):
@@ -49,7 +51,9 @@ DEPENDENCIES:
   - AFBlurSegue (~> 1.2)
   - ASValueTrackingSlider
   - CSNotificationView (~> 0.5)
+  - DKScrollingTabController
   - GCDiscreetNotificationView (~> 1.0)
+  - GTScrollNavigationBar (~> 0.1)
   - JAMAccurateSlider (~> 1.1)
   - MarqueeLabel
   - MRProgress
@@ -73,7 +77,9 @@ SPEC CHECKSUMS:
   AFBlurSegue: 317204561facdb45be823773c0fefe918c192243
   ASValueTrackingSlider: 74a4bbf70c8cf43d29b701ff4c7659fc5d0afd99
   CSNotificationView: e4d26da44dfb569ab284949c822a8239f23cc13d
+  DKScrollingTabController: 7ccac24d3d4109821465fcf9429e0df763126505
   GCDiscreetNotificationView: e74f7fe64167edab50b00641e054929315d59af5
+  GTScrollNavigationBar: 837e4481076638eabafd64b94546a1b4c05058ca
   JAMAccurateSlider: e810f5397ec6735ae9d6d443528e63491cf62f35
   MarqueeLabel: cd721cabcfce98591ef835e2c5bd29de92d9ebc9
   MRProgress: cd12726e001ea25dec133322d34cc4754cbc58f8

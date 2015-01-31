@@ -24,11 +24,23 @@
 #define COCOAPODS_VERSION_MINOR_CSNotificationView 5
 #define COCOAPODS_VERSION_PATCH_CSNotificationView 3
 
+// DKScrollingTabController
+#define COCOAPODS_POD_AVAILABLE_DKScrollingTabController
+#define COCOAPODS_VERSION_MAJOR_DKScrollingTabController 1
+#define COCOAPODS_VERSION_MINOR_DKScrollingTabController 1
+#define COCOAPODS_VERSION_PATCH_DKScrollingTabController 2
+
 // GCDiscreetNotificationView
 #define COCOAPODS_POD_AVAILABLE_GCDiscreetNotificationView
 #define COCOAPODS_VERSION_MAJOR_GCDiscreetNotificationView 1
 #define COCOAPODS_VERSION_MINOR_GCDiscreetNotificationView 0
 #define COCOAPODS_VERSION_PATCH_GCDiscreetNotificationView 2
+
+// GTScrollNavigationBar
+#define COCOAPODS_POD_AVAILABLE_GTScrollNavigationBar
+#define COCOAPODS_VERSION_MAJOR_GTScrollNavigationBar 0
+#define COCOAPODS_VERSION_MINOR_GTScrollNavigationBar 1
+#define COCOAPODS_VERSION_PATCH_GTScrollNavigationBar 2
 
 // JAMAccurateSlider
 #define COCOAPODS_POD_AVAILABLE_JAMAccurateSlider

@@ -8,6 +8,7 @@
 
 #import <Availability.h>
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0
+#warning Rewrite JavaScriptCore code with JSContext + JSValue (available since iOS 7) instead the verbose C API.
 #elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED) && __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_9
 #warning Rewrite JavaScriptCore code with JSContext + JSValue (available since OS X 10.9) instead the verbose C API.
 #endif

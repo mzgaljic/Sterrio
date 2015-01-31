@@ -37,3 +37,9 @@ pod 'JAMAccurateSlider', '~> 1.1'
 
 #discrete message at top of screen for user (used for slider touch)
 pod 'GCDiscreetNotificationView', '~> 1.0'
+
+#scrolling nav bar - like in safari, nav bar goes away while scrolling
+pod 'GTScrollNavigationBar', '~> 0.1'
+
+#scrolling tab bar - Spotify inspired
+pod 'DKScrollingTabController'
