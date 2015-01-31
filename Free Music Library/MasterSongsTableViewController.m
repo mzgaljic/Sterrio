@@ -256,7 +256,7 @@ static BOOL lastSortOrder;
                                                          delegate:nil
                                                 cancelButtonTitle:@"OK"
                                                 otherButtonTitles: nil];
-        NSString *msg2 = @"Some things to note:\n-The settings view will receive a complete overhaul at some point. I don't like it, and many of the settings seem a bit useless.\n-Playing a saved video will NOT display a loading spinner. The spinner caused my app to crash and I am working to bring the loading spinner back. The same applies when skipping songs.\n-The process of adding album art to a song is tedious at the moment. I apologize, and I am working on verhauling this step as well.";
+        NSString *msg2 = @"Some things to note:\n-The settings view will receive a complete overhaul at some point. I don't like it, and many of the settings seem a bit useless.\n-The process of adding album art to a song is tedious at the moment. I apologize, and I am working on verhauling this step as well.";
         SDCAlertView *alert2 = [[SDCAlertView alloc] initWithTitle:@"One more thing"
                                                           message:msg2
                                                          delegate:nil
@@ -268,17 +268,17 @@ static BOOL lastSortOrder;
                                                           delegate:nil
                                                  cancelButtonTitle:@"OK"
                                                  otherButtonTitles: nil];
-        alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert.titleLabelFont = [UIFont boldSystemFontOfSize:20];
+        alert.messageLabelFont = [UIFont systemFontOfSize:20];
+        alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:20];
         
-        alert2.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        alert2.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        alert2.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert2.titleLabelFont = [UIFont boldSystemFontOfSize:20];
+        alert2.messageLabelFont = [UIFont systemFontOfSize:20];
+        alert2.suggestedButtonFont = [UIFont boldSystemFontOfSize:20];
         
-        alert3.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        alert3.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        alert3.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert3.titleLabelFont = [UIFont boldSystemFontOfSize:20];
+        alert3.messageLabelFont = [UIFont systemFontOfSize:20];
+        alert3.suggestedButtonFont = [UIFont boldSystemFontOfSize:20];
         [alert3 show];
         [alert2 show];
         [alert show];
@@ -288,9 +288,9 @@ static BOOL lastSortOrder;
                                                           delegate:nil
                                                  cancelButtonTitle:@"OK"
                                                  otherButtonTitles: nil];
-        alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert.titleLabelFont = [UIFont boldSystemFontOfSize:20];
+        alert.messageLabelFont = [UIFont systemFontOfSize:20];
+        alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:20];
         [alert show];
     }
 }

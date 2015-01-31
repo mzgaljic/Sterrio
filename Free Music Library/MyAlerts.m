@@ -155,13 +155,14 @@
 
 + (void)dismissCurrentViewController
 {
-#warning add better code here! Look at "TO DO"
+    //If the class has a preDealloc method, call it to avoid a retain cycle or worse a crash.
     UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];
-    UIViewController *vc = [keyWindow visibleViewController];
-    if([vc isMemberOfClass:[SongPlayerViewController class]]){
-        SongPlayerViewController *vc2 = (SongPlayerViewController *)vc;
-        [vc2 preDealloc];
+    id someVC = [keyWindow visibleViewController];
+    
+    if ([someVC respondsToSelector:@selector(preDealloc)]) {
+        [someVC preDealloc];
     }
+    UIViewController *vc = (UIViewController *)someVC;
     [vc dismissViewControllerAnimated:YES completion:nil];
 }
 

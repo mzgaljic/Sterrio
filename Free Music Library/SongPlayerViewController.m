@@ -757,7 +757,7 @@ static int hours;
     int phoneHeight = self.view.frame.size.height;
     if(self.view.frame.size.width > phoneHeight)
         phoneHeight = self.view.frame.size.width;
-    short songNameFontSize = 30;
+    short songNameFontSize = 32;
     if(phoneHeight < iphone5Height)
         songNameFontSize = 20;
     _songNameLabel.scrollDuration = 10.0f;

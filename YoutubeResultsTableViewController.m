@@ -591,23 +591,21 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
                     cell.textLabel.textColor = [UIColor blackColor];
                 }
                 else{
-                    cell.textLabel.text = @"Load more";
+                    cell.textLabel.text = @"More";
                     cell.textLabel.textColor = [[UIColor defaultAppColorScheme] lighterColor];
                     cell.textLabel.textAlignment = NSTextAlignmentCenter;
                     
                     //will be activated if avplayer is currently on screen
-                    if(!cellImgSpinner){
-                        cellImgSpinner = [[UIActivityIndicatorView alloc]
-                                          initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                        
-                        UIImage *clearImg = [UIImage imageWithColor:[UIColor clearColor]
-                                                              width:cellImgSpinner.frame.size.width
-                                                             height:cellImgSpinner.frame.size.height];
-                        cell.imageView.image = clearImg;
-                        [cell.imageView addSubview:cellImgSpinner];
-                    }
+                    cellImgSpinner = [[UIActivityIndicatorView alloc]
+                                      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                    
+                    UIImage *clearImg = [UIImage imageWithColor:[UIColor clearColor]
+                                                          width:cellImgSpinner.frame.size.width
+                                                         height:cellImgSpinner.frame.size.height];
+                    cell.imageView.image = clearImg;
+                    [cell.imageView addSubview:cellImgSpinner];
                     //activated if avplayer is NOT on screen
-                    cellAccessorySpinner= [[UIActivityIndicatorView alloc]
+                    cellAccessorySpinner = [[UIActivityIndicatorView alloc]
                                            initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
                     [cell setAccessoryView:cellAccessorySpinner];
                 }
