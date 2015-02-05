@@ -14,6 +14,8 @@
 @interface ASValueTrackingSlider : JAMAccurateSlider
 
 - (void)disablePopupSliderCompletely:(BOOL)disable;
+- (BOOL)isPopupSliderCompletelyDisabled;
+- (void)setParentValue:(float)value animated:(BOOL)animated;
 
 // present the popUpView manually, without touch event.
 - (void)showPopUpViewAnimated:(BOOL)animated;

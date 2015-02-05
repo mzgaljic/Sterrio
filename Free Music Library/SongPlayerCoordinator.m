@@ -87,6 +87,7 @@ static const short SMALL_VIDEO_WIDTH = 200;
     }
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    __weak PlayerView *weakPlayerView = playerView;
     [UIView animateWithDuration:0.405f animations:^{
         if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
         {
@@ -97,7 +98,7 @@ static const short SMALL_VIDEO_WIDTH = 200;
             
             //+1 is because the view ALMOST covered the full screen.
             currentPlayerFrame = CGRectMake(0, 0, screenWidth, ceil(screenHeight +1));
-            [playerView setFrame:currentPlayerFrame];
+            [weakPlayerView setFrame:currentPlayerFrame];
             //hide status bar
             [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
         }
@@ -105,7 +106,7 @@ static const short SMALL_VIDEO_WIDTH = 200;
         {
             //show portrait player
             currentPlayerFrame = [self bigPlayerFrameInPortrait];
-            [playerView setFrame: currentPlayerFrame];
+            [weakPlayerView setFrame: currentPlayerFrame];
         }
     } completion:^(BOOL finished) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -121,7 +122,7 @@ static const short SMALL_VIDEO_WIDTH = 200;
     if(videoPlayerIsExpanded == NO)
         return;
     
-    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
     __weak SongPlayerCoordinator *weakSelf = self;
     BOOL needLandscapeFrame = YES;
     if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
@@ -131,7 +132,8 @@ static const short SMALL_VIDEO_WIDTH = 200;
             currentPlayerFrame = [weakSelf smallPlayerFrameInLandscape];
         else
             currentPlayerFrame = [weakSelf smallPlayerFrameInPortrait];
-        playerView.frame = currentPlayerFrame;
+        weakPlayerView.frame = currentPlayerFrame;
+        [weakPlayerView layoutIfNeeded];
     } completion:^(BOOL finished) {
         dispatch_async(dispatch_get_main_queue(), ^{
             //make spinner redraw itself

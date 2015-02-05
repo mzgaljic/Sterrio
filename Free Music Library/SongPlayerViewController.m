@@ -18,6 +18,7 @@ typedef enum{
     GUIPlaybackStatePaused
 } GUIPlaybackState;
 
+
 @interface SongPlayerViewController ()
 {
     NSArray *musicButtons;
@@ -50,6 +51,7 @@ static BOOL sliderIsBeingTouched = NO;
 static BOOL waitingForNextOrPrevVideoToLoad;
 static const short longDurationLabelOffset = 24;
 static int numTimesSetupKeyValueObservers = 0;
+const CGFloat observationsPerSecond = 15.0f;  //for timeObserver var
 
 NSString * const NEW_SONG_IN_AVPLAYER = @"New song added to AVPlayer, lets hope the interface makes appropriate changes.";
 NSString * const AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
@@ -236,7 +238,6 @@ static int numTimesVCLoaded = 0;
     [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:timeObserver];
     [self removeObservers];
     sliderHint = nil;
-    timeObserver = nil;
     self.playbackSlider.dataSource = nil;
     _totalDurationLabel = nil;
     _currentTimeLabel = nil;
@@ -466,11 +467,19 @@ static int numTimesVCLoaded = 0;
     
     Float64 currentTimeValue = CMTimeGetSeconds([MusicPlaybackController obtainRawAVPlayer].currentItem.currentTime);
     
-    //sets slider directly from avplayer. playback can stutter or pause, can't increment by 1...
+    //sets slider directly from avplayer. playback can stutter or pause, so we can't just increment by 1...
     if(firstTimeUpdatingSliderSinceShowingPlayer)
         [self.playbackSlider setValue:(currentTimeValue) animated:NO];
-    else
-        [self.playbackSlider setValue:(currentTimeValue) animated:YES];
+    else{
+        if([_playbackSlider isPopupSliderCompletelyDisabled]){
+            //popup slider is disabled on devices smaller than iPhone 5. This messes with internals of ASValueTrackingSlider
+            //in this case we want to manually perform animation updates (dont let ASValueTrackingSlider handle it)
+            [_playbackSlider setParentValue:(currentTimeValue) animated:YES];  //custom method i created
+        }
+        else
+            [_playbackSlider setValue:(currentTimeValue) animated:YES];
+    }
+    
     firstTimeUpdatingSliderSinceShowingPlayer = NO;
 }
 
@@ -1160,17 +1169,22 @@ static int hours;
                 options:NSKeyValueObservingOptionNew
                 context:kDidFailKVO];
     
-    __weak SongPlayerViewController *weakSelf = self;
-    timeObserver = [player addPeriodicTimeObserverForInterval:CMTimeMakeWithSeconds(0.1, 100) queue:nil usingBlock:^(CMTime time) {
-        //code will be called each 1/10th second...
-        [weakSelf updatePlaybackTimeSlider];
-    }];
+    [self restoreTimeObserver];
     
     //label observers...
     [_totalDurationLabel addObserver:self
                           forKeyPath:@"text"
                              options:NSKeyValueObservingOptionNew
                              context:NULL];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(killTimeObserver)
+                                                 name:MZAppWasBackgrounded
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(restoreTimeObserver)
+                                                 name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
 }
 
 - (void)removeObservers
@@ -1194,6 +1208,8 @@ static int hours;
     }
     //do nothing
     @catch (id anException) {}
+    
+    [self killTimeObserver];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -1365,6 +1381,25 @@ static int hours;
         });
     }
      */
+}
+
+#pragma mark - Responding to app state
+- (void)killTimeObserver
+{
+    timeObserver = nil;
+}
+
+- (void)restoreTimeObserver
+{
+    if(timeObserver != nil)
+        return;
+    __weak SongPlayerViewController *weakSelf = self;
+    __weak AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
+    CMTime timeInterval = CMTimeMake(1, observationsPerSecond);
+    timeObserver = [player addPeriodicTimeObserverForInterval:timeInterval queue:nil usingBlock:^(CMTime time) {
+        //code will be called each 1/10th second...
+        [weakSelf updatePlaybackTimeSlider];
+    }];
 }
 
 #pragma mark - Share Button Tapped

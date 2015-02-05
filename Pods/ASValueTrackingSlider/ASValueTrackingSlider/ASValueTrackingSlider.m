@@ -53,6 +53,11 @@
         self.popUpView = nil;
 }
 
+- (BOOL)isPopupSliderCompletelyDisabled
+{
+    return (self.popUpView == nil) ? YES : NO;
+}
+
 - (void)setAutoAdjustTrackColor:(BOOL)autoAdjust
 {
     if (_autoAdjustTrackColor == autoAdjust) return;
@@ -349,6 +354,11 @@
     } else {
         [super setValue:value animated:animated];
     }
+}
+
+- (void)setParentValue:(float)value animated:(BOOL)animated
+{
+    [super setValue:value animated:animated];
 }
 
 - (void)setMinimumTrackTintColor:(UIColor *)color
