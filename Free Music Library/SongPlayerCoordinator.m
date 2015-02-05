@@ -88,6 +88,7 @@ static const short SMALL_VIDEO_WIDTH = 200;
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     __weak PlayerView *weakPlayerView = playerView;
+    
     [UIView animateWithDuration:0.405f animations:^{
         if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
         {
@@ -108,12 +109,9 @@ static const short SMALL_VIDEO_WIDTH = 200;
             currentPlayerFrame = [self bigPlayerFrameInPortrait];
             [weakPlayerView setFrame: currentPlayerFrame];
         }
-    } completion:^(BOOL finished) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            //make spinner redraw itself
-            [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
-        });
-    }];
+        [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
+    } completion:nil];
+    
     videoPlayerIsExpanded = YES;
 }
 
@@ -127,19 +125,16 @@ static const short SMALL_VIDEO_WIDTH = 200;
     BOOL needLandscapeFrame = YES;
     if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
         needLandscapeFrame = NO;
-    [UIView animateWithDuration:0.7f animations:^{
+    
+    [UIView animateWithDuration:0.7f delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
         if(needLandscapeFrame)
             currentPlayerFrame = [weakSelf smallPlayerFrameInLandscape];
         else
             currentPlayerFrame = [weakSelf smallPlayerFrameInPortrait];
         weakPlayerView.frame = currentPlayerFrame;
-        [weakPlayerView layoutIfNeeded];
-    } completion:^(BOOL finished) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            //make spinner redraw itself
-            [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
-        });
-    }];
+        [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
+    } completion:nil];
+    
     videoPlayerIsExpanded = NO;
 }
 
@@ -163,30 +158,24 @@ static const short SMALL_VIDEO_WIDTH = 200;
     //need to re-animate playerView into a new position
     
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
+    __weak SongPlayerCoordinator *weakSelf = self;
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
         //landscape rotation...
         [UIView animateWithDuration:0.6f animations:^{
-            currentPlayerFrame = [self smallPlayerFrameInLandscape];
-            playerView.frame = currentPlayerFrame;
-        } completion:^(BOOL finished) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                //make spinner redraw itself
-                [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
-            });
-        }];
+            currentPlayerFrame = [weakSelf smallPlayerFrameInLandscape];
+            weakPlayerView.frame = currentPlayerFrame;
+            [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
+        } completion:nil];
     } else{
         //portrait
         [UIView animateWithDuration:0.6f animations:^{
-            currentPlayerFrame = [self smallPlayerFrameInPortrait];
+            currentPlayerFrame = [weakSelf smallPlayerFrameInPortrait];
             playerView.frame = currentPlayerFrame;
-        } completion:^(BOOL finished) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                //make spinner redraw itself
-                [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
-            });
-        }];
+            [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
+        } completion:nil];
     }
 }
 
@@ -196,6 +185,8 @@ static const short SMALL_VIDEO_WIDTH = 200;
     //need to re-animate playerView into new position
     
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
+    __weak SongPlayerCoordinator *weakSelf = self;
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
@@ -203,23 +194,15 @@ static const short SMALL_VIDEO_WIDTH = 200;
         [UIView animateWithDuration:0.6f animations:^{
             currentPlayerFrame = [self smallPlayerFrameInLandscape];
             playerView.frame = currentPlayerFrame;
-        } completion:^(BOOL finished) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                //make spinner redraw itself
-                [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
-            });
-        }];
+            [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
+        } completion:nil];
     } else{
         //portrait
         [UIView animateWithDuration:0.6f animations:^{
-            currentPlayerFrame = [self smallPlayerFrameInPortrait];
+            currentPlayerFrame = [weakSelf smallPlayerFrameInPortrait];
             playerView.frame = currentPlayerFrame;
-        } completion:^(BOOL finished) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                //make spinner redraw itself
-                [[MRProgressOverlayView overlayForView:[MusicPlaybackController obtainRawPlayerView]] manualLayoutSubviews];
-            });
-        }];
+            [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
+        } completion:nil];
     }
 }
 

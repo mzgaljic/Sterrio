@@ -655,7 +655,7 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
         self.transform = self.transformForOrientation;
     }
     
-    CGRect bounds = self.superview.bounds;
+    CGSize size = self.superview.bounds.size;
     UIEdgeInsets insets = UIEdgeInsetsZero;
     
     if ([self.superview isKindOfClass:[UIScrollView class]]) {
@@ -663,17 +663,17 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
         insets = scrollView.contentInset;
     }
     
-    self.center = CGPointMake((bounds.size.width - insets.left - insets.right) / 2.0f,
-                              (bounds.size.height - insets.top - insets.bottom) / 2.0f);
+    self.center = CGPointMake((size.width - insets.left - insets.right) / 2.0f,
+                              (size.height - insets.top - insets.bottom) / 2.0f);
 
     if (MRSystemVersionGreaterThanOrEqualTo8()) {
-        self.bounds = (CGRect){CGPointZero, bounds.size};
+        self.bounds = (CGRect){CGPointZero, size};
     } else {
         if ([self.superview isKindOfClass:UIWindow.class] && UIInterfaceOrientationIsLandscape(UIApplication.sharedApplication.statusBarOrientation)) {
             // Swap width and height
-            self.bounds = (CGRect){CGPointZero, {bounds.size.height, bounds.size.width}};
+            self.bounds = (CGRect){CGPointZero, {size.height, size.width}};
         } else {
-            self.bounds = (CGRect){CGPointZero, bounds.size};
+            self.bounds = (CGRect){CGPointZero, size};
         }
     }
     
@@ -682,13 +682,13 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
     const CGFloat dialogMargin = 10;
     const CGFloat dialogMinWidth = 150;
     
-    const BOOL hasSmallIndicator = self.mode == MRProgressOverlayViewModeIndeterminateSmall
-        || self.mode == MRProgressOverlayViewModeIndeterminateSmallDefault;
-    const BOOL isTextNonEmpty = self.titleLabel.text.length > 0;
+    const BOOL hasSmallIndicator = _mode == MRProgressOverlayViewModeIndeterminateSmall
+        || _mode == MRProgressOverlayViewModeIndeterminateSmallDefault;
+    const BOOL isTextNonEmpty = _titleLabel.text.length > 0;
     
-    CGFloat dialogWidth = hasSmallIndicator ? CGRectGetWidth(bounds) - dialogMargin * 2 : dialogMinWidth;
-    if (self.mode == MRProgressOverlayViewModeCustom) {
-        dialogWidth = self.modeView.frame.size.width + 2*modePadding;
+    CGFloat dialogWidth = hasSmallIndicator ? CGRectGetWidth(self.superview.bounds) - dialogMargin * 2 : dialogMinWidth;
+    if (_mode == MRProgressOverlayViewModeCustom) {
+        dialogWidth = _modeView.frame.size.width + 2*modePadding;
     }
     
     CGFloat y = (isTextNonEmpty || hasSmallIndicator) ? 7 : modePadding;
@@ -698,7 +698,7 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
         modeViewSize = CGSizeMake(20, 20);
     }
     
-    if (!self.titleLabel.hidden && isTextNonEmpty) {
+    if (!_titleLabel.hidden && isTextNonEmpty) {
         const CGFloat innerViewWidth = dialogWidth - 2*dialogPadding;
         
         CGFloat titleLabelMinX = dialogPadding;
@@ -715,7 +715,7 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
         y += 3;
         
         CGSize titleLabelMaxSize = CGSizeMake(titleLabelMaxWidth, self.bounds.size.height);
-        CGRect boundingRect = [self.titleLabel.attributedText boundingRectWithSize:titleLabelMaxSize
+        CGRect boundingRect = [_titleLabel.attributedText boundingRectWithSize:titleLabelMaxSize
                                                                            options:NSStringDrawingUsesLineFragmentOrigin
                                                                            context:nil];
         CGSize titleLabelSize = CGSizeMake(MRCGFloatCeil(boundingRect.size.width),
@@ -734,13 +734,13 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
             CGPoint modeViewOrigin = CGPointMake(titleLabelOrigin.x - offset,
                                                  y + (titleLabelSize.height - modeViewSize.height) / 2.0f);
             CGRect modeViewFrame = {modeViewOrigin, modeViewSize};
-            self.modeView.frame = modeViewFrame;
+            _modeView.frame = modeViewFrame;
         } else {
             titleLabelOrigin = CGPointMake(titleLabelMinX + (titleLabelMaxWidth - titleLabelSize.width) / 2.0f, y);
         }
         
         CGRect titleLabelFrame = {titleLabelOrigin, titleLabelSize};
-        self.titleLabel.frame = titleLabelFrame;
+        _titleLabel.frame = titleLabelFrame;
         
         y += CGRectGetMaxY(titleLabelFrame);
     } else if (hasSmallIndicator) {
@@ -772,17 +772,17 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
     }
     
     {
-        self.dialogView.frame = MRCenterCGSizeInCGRect(CGSizeMake(dialogWidth, y), self.bounds);
+        _dialogView.frame = MRCenterCGSizeInCGRect(CGSizeMake(dialogWidth, y), self.bounds);
         
-        if (!CGRectEqualToRect(self.blurView.frame, self.dialogView.frame)) {
-            self.blurView.frame = self.dialogView.frame;
+        if (!CGRectEqualToRect(_blurView.frame, _dialogView.frame)) {
+            _blurView.frame = _dialogView.frame;
             
             if (MR_UIEffectViewIsAvailable) {
                 #if MR_UIEffectViewIsAllowed
                     // As the blurMaskView will be copied internally by UIKit, we have to re-assign
                     // it to the blurView, after we change its layout
-                    self.blurMaskView.frame = self.dialogView.bounds;
-                    self.blurView.maskView = self.blurMaskView;
+                    _blurMaskView.frame = _dialogView.bounds;
+                    _blurView.maskView = _blurMaskView;
                 #endif
             }
         }
