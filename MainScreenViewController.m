@@ -14,7 +14,6 @@ const short navigationOrientation = UIPageViewControllerNavigationOrientationHor
 
 
 @interface MainScreenViewController()
-@property (nonatomic, strong) UIPageViewController *pageViewController;
 
 //controls which view controller is displayed at any given moment.
 @property (nonatomic, strong) HMSegmentedControl *segmentedVcControl;
@@ -32,7 +31,12 @@ const short navigationOrientation = UIPageViewControllerNavigationOrientationHor
 #pragma mark - ViewController Lifecycle
 - (instancetype)initWithSegmentedControlItems:(NSArray *)segmentedControlItems
 {
-    if([super init]){
+    NSDictionary *options = [[NSMutableDictionary alloc] initWithCapacity:1];
+    CGFloat spacingVal = 4;
+    NSNumber *spacing = [NSNumber numberWithFloat:spacingVal];
+    [options setValue:spacing forKey:UIPageViewControllerOptionInterPageSpacingKey];
+
+    if([super initWithTransitionStyle:transitionStyle navigationOrientation:navigationOrientation options:options]){
         _allSegmentedControlItems = segmentedControlItems;
         [self setupViewControllerIndexesAndTags];
     }
@@ -45,26 +49,14 @@ const short navigationOrientation = UIPageViewControllerNavigationOrientationHor
     self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     
     self.currentVCIndex = 0;
-    NSDictionary *options = [[NSMutableDictionary alloc] initWithCapacity:1];
-    CGFloat spacingVal = 4;
-    NSNumber *spacing = [NSNumber numberWithFloat:spacingVal];
-    [options setValue:spacing forKey:UIPageViewControllerOptionInterPageSpacingKey];
-    self.pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:transitionStyle
-                                                              navigationOrientation:navigationOrientation
-                                                                            options:options];
-    self.pageViewController.dataSource = self;
-    self.pageViewController.delegate = self;
+    self.dataSource = self;
+    self.delegate = self;
     
     //can only add 1 VC on initialization!
-    [self.pageViewController setViewControllers:@[[self allViewControllers][self.currentVCIndex]]
+    [self setViewControllers:@[[self allViewControllers][self.currentVCIndex]]
                                       direction:UIPageViewControllerNavigationDirectionForward
                                        animated:NO
                                      completion:nil];
-    
-    self.pageViewController.view.frame = self.view.frame;
-    [self addChildViewController:self.pageViewController];
-    [self.view addSubview:self.pageViewController.view];
-    [self.pageViewController didMoveToParentViewController:self];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -81,21 +73,19 @@ const short navigationOrientation = UIPageViewControllerNavigationOrientationHor
     self.segmentedVcControl.frame = CGRectMake(0, 70, self.view.frame.size.width, 60);
     self.segmentedVcControl.selectionStyle = HMSegmentedControlSelectionStyleFullWidthStripe;
     self.segmentedVcControl.selectionIndicatorLocation = HMSegmentedControlSelectionIndicatorLocationDown;
-    [self.view addSubview:self.segmentedVcControl];
-    [self.view bringSubviewToFront:self.segmentedVcControl];
-    
     [self.segmentedVcControl addTarget:self
                                 action:@selector(indexDidChangeForCustomSegmentedControl:)
                       forControlEvents:UIControlEventValueChanged];
-
+    [self.shyNavBarManager setExtensionView:self.segmentedVcControl];
+    
     //taking advantage of TLYShyBar library capabilities if possible...
     UIViewController *onScreenVc = [self allViewControllers][self.currentVCIndex];
     if ([onScreenVc respondsToSelector:@selector(tableView)]) {
         UITableView *vcTableView = [onScreenVc performSelector:@selector(tableView)];
-        onScreenVc.shyNavBarManager.scrollView = vcTableView;
+        self.shyNavBarManager.scrollView = vcTableView;
     }else if ([onScreenVc respondsToSelector:@selector(scrollView)]) {
         UIScrollView *vcScrollView = [onScreenVc performSelector:@selector(scrollView)];
-        onScreenVc.shyNavBarManager.scrollView = vcScrollView;
+        self.shyNavBarManager.scrollView = vcScrollView;
     }
 }
 
@@ -138,7 +128,7 @@ const short navigationOrientation = UIPageViewControllerNavigationOrientationHor
     if(! completed)
         return;
     UIViewController *currentController;
-    currentController = [self.pageViewController.viewControllers objectAtIndex:0];
+    currentController = [self.viewControllers objectAtIndex:0];
     self.currentVCIndex = currentController.view.tag;
     [self.segmentedVcControl setSelectedSegmentIndex:self.currentVCIndex animated:YES];
 }
@@ -155,7 +145,7 @@ const short navigationOrientation = UIPageViewControllerNavigationOrientationHor
         animateDirection = UIPageViewControllerNavigationDirectionForward;
     else
         animateDirection =UIPageViewControllerNavigationDirectionReverse;
-    [self.pageViewController setViewControllers:@[[self allViewControllers][index]]
+    [self setViewControllers:@[[self allViewControllers][index]]
                                       direction:animateDirection
                                        animated:YES
                                      completion:nil];

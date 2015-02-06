@@ -317,6 +317,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         // Without this code, previous images are displayed against the new people during rapid scrolling.
         cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
     }
+    cell.layoutMargins = UIEdgeInsetsZero;
+    cell.preservesSuperviewLayoutMargins = NO;
     
     // Set up other aspects of the cell content.
     Song *song;

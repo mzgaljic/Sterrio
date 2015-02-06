@@ -10,9 +10,8 @@
 #import <HMSegmentedControl/HMSegmentedControl.h>
 #import "MasterSongsTableViewController.h"
 #import "SegmentedControlItem.h"
-#import "CustomizedTableViewController.h"
 
-@interface MainScreenViewController : UIViewController <UIPageViewControllerDataSource,
+@interface MainScreenViewController : UIPageViewController <UIPageViewControllerDataSource,
                                                         UIPageViewControllerDelegate>
 
 /**
