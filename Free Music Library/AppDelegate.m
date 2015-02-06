@@ -19,7 +19,8 @@
 @implementation AppDelegate
 
 static BOOL PRODUCTION_MODE;
-static NSString * const mainVcSbId = @"Awesome Sliding SegmentedControl Main Screen";
+static NSString * const songsVcSbId = @"songs view controller storyboard ID";
+
 
 - (void)setProductionModeValue
 {
@@ -34,6 +35,7 @@ static NSString * const mainVcSbId = @"Awesome Sliding SegmentedControl Main Scr
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     [self setProductionModeValue];
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     // Override point for customization after application launch.
     [[SDImageCache sharedImageCache] setMaxCacheSize:1000000];  //1 mb cache size
@@ -78,8 +80,8 @@ static NSString * const mainVcSbId = @"Awesome Sliding SegmentedControl Main Scr
     UINavigationController *navController;
     MainScreenViewController *mainVC;
     
-    UIViewController *vc1 = [UIViewController new];
-    vc1.view.backgroundColor = [UIColor redColor];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
+    MasterSongsTableViewController *vc1 = [storyboard instantiateViewControllerWithIdentifier:songsVcSbId];
     UIViewController *vc2 = [UIViewController new];
     vc2.view.backgroundColor = [UIColor brownColor];
     UIViewController *vc3 = [UIViewController new];
@@ -99,8 +101,6 @@ static NSString * const mainVcSbId = @"Awesome Sliding SegmentedControl Main Scr
     mainVC = [[MainScreenViewController alloc] initWithSegmentedControlItems:segmentedControls];
     
     navController = [[UINavigationController alloc] initWithRootViewController:mainVC];
-    
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     [self.window setRootViewController:navController];
     [self.window setBackgroundColor:[UIColor whiteColor]];
     [self.window makeKeyAndVisible];

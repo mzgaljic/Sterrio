@@ -16,7 +16,8 @@ static UIColor* appColorScheme;
     static UIColor* systemTintColor = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        systemTintColor = [[[UIApplication sharedApplication] delegate] window].tintColor;
+        UIWindow *window = [[[UIApplication sharedApplication] delegate] window];
+        systemTintColor = window.tintColor;
     });
     return systemTintColor;
 }

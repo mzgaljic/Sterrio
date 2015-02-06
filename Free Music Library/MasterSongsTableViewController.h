@@ -10,7 +10,7 @@
 #import <objc/runtime.h>
 #import "StackController.h"
 #import "NSString+smartSort.h"
-#import "CoreDataTableViewController.h"
+#import "CoreDataCustomTableViewController.h"
 #import "AppEnvironmentConstants.h"
 #import "AlbumArtUtilities.h"
 #import "Song.h"
@@ -23,7 +23,10 @@
 #import "MasterSongEditorViewController.h"
 
 @class StackController;
-@interface MasterSongsTableViewController : CoreDataTableViewController <UISearchBarDelegate>
+@interface MasterSongsTableViewController : CoreDataCustomTableViewController
+                                                            <UISearchBarDelegate,
+                                                            UITableViewDataSource,
+                                                            UITableViewDelegate>
 {
     StackController *stackController;
 }

@@ -6,56 +6,54 @@
     </dependencies>
     <scenes>
         <!--Songs-->
-        <scene sceneID="JxM-OT-aUc">
+        <scene sceneID="lYM-dN-2b5">
             <objects>
-                <tableViewController extendedLayoutIncludesOpaqueBars="YES" id="C05-aT-A4x" customClass="MasterSongsTableViewController" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="b07-O9-4Xg">
+                <viewController storyboardIdentifier="songs view controller storyboard ID" title="Songs" useStoryboardIdentifierAsRestorationIdentifier="YES" id="N0e-Z5-hdL" customClass="MasterSongsTableViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="JCT-JW-L1E">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="ldN-Sb-KAY">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="SongItemCell" textLabel="ALm-AO-GTG" detailTextLabel="dgK-Tl-aeJ" style="IBUITableViewCellStyleSubtitle" id="Wlz-Cl-ctX">
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Wlz-Cl-ctX" id="Jc7-Y4-n9t">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ALm-AO-GTG">
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="dgK-Tl-aeJ">
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="SongItemCell" editingAccessoryType="disclosureIndicator" textLabel="lGf-wg-9qc" detailTextLabel="Ydb-9i-DyK" rowHeight="65" style="IBUITableViewCellStyleSubtitle" id="1zB-MX-OxD">
-                                <rect key="frame" x="0.0" y="86" width="320" height="65"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1zB-MX-OxD" id="rBH-N0-rGS">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="64"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="lGf-wg-9qc">
-                                            <rect key="frame" x="15" y="14" width="34" height="22"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Ydb-9i-DyK">
-                                            <rect key="frame" x="15" y="36" width="43" height="15"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                </tableViewCellContentView>
-                                <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="C05-aT-A4x" id="snC-yL-X71"/>
-                            <outlet property="delegate" destination="C05-aT-A4x" id="bks-iV-BkC"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" title="Songs" id="Oyd-HO-iMf"/>
+                    </view>
                     <connections>
-                        <segue destination="5sU-IG-zJp" kind="modal" identifier="editingSongMasterSegue" modalTransitionStyle="coverVertical" id="i6u-By-3UM"/>
-                        <segue destination="Lxg-v4-Z1q" kind="modal" identifier="settingsSegue" modalTransitionStyle="coverVertical" id="o0x-vp-6sV"/>
-                        <segue destination="V5K-xF-P6M" kind="modal" identifier="addMusicToLibSegue" modalTransitionStyle="coverVertical" id="fFN-xo-skq"/>
-                        <segue destination="3Uz-T4-v7l" kind="modal" identifier="coreDataProblem" id="7h6-iK-alc"/>
+                        <outlet property="tableView" destination="ldN-Sb-KAY" id="r33-CV-H21"/>
+                        <segue destination="3Uz-T4-v7l" kind="modal" identifier="coreDataProblem" id="EIV-il-cBz"/>
+                        <segue destination="5sU-IG-zJp" kind="modal" identifier="editingSongMasterSegue" modalTransitionStyle="coverVertical" id="pcS-p1-vd3"/>
+                        <segue destination="Lxg-v4-Z1q" kind="modal" identifier="settingsSegue" modalTransitionStyle="coverVertical" id="gkr-Yw-cad"/>
+                        <segue destination="V5K-xF-P6M" kind="modal" identifier="addMusicToLibSegue" modalTransitionStyle="coverVertical" id="mNA-W8-wpb"/>
                     </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="YCe-C6-ZmT" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZEl-et-cnY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1459" y="-819"/>
+            <point key="canvasLocation" x="1454" y="-851"/>
         </scene>
         <!--Song Player View Controller-->
         <scene sceneID="aB0-HZ-Jc6">
@@ -189,27 +187,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5eE-xZ-2aG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1978" y="-1400"/>
-        </scene>
-        <!--Songs-->
-        <scene sceneID="ckA-Oq-9Mg">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="ZWq-Z9-URc" sceneMemberID="viewController">
-                    <extendedEdge key="edgesForExtendedLayout"/>
-                    <tabBarItem key="tabBarItem" title="Songs" image="songs" id="FbW-ae-jfH"/>
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="aX3-lk-F3P">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="C05-aT-A4x" kind="relationship" relationship="rootViewController" id="ZjE-8B-2Zm"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="RSg-0g-odC" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1009" y="-819"/>
+            <point key="canvasLocation" x="1868" y="-2094"/>
         </scene>
         <!--Genres-->
         <scene sceneID="vUt-9J-pjQ">
@@ -894,7 +872,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ffq-2h-bd7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3793" y="-1358"/>
+            <point key="canvasLocation" x="2993" y="-1358"/>
         </scene>
         <!--Master Song Editor View Controller-->
         <scene sceneID="IVR-fT-X9f">
@@ -937,7 +915,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         </imageView>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="EIo-UR-IOF">
-                                            <rect key="frame" x="152" y="58" width="45" height="21"/>
+                                            <rect key="frame" x="149" y="58" width="38" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -1087,7 +1065,6 @@
         <image name="artists" width="39" height="32"/>
         <image name="genres" width="36" height="33"/>
         <image name="playlists" width="37" height="32"/>
-        <image name="songs" width="60" height="67"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
@@ -1096,7 +1073,7 @@
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
         <segue reference="7Sy-qq-35y"/>
-        <segue reference="o0x-vp-6sV"/>
-        <segue reference="fFN-xo-skq"/>
+        <segue reference="mNA-W8-wpb"/>
+        <segue reference="gkr-Yw-cad"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -18,6 +18,7 @@
 #import "SDWebImageManager.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "CoreDataManager.h"
+#import "CoreDataTableViewController.h"
 
 @interface PlaylistSongAdderTableViewController : CoreDataTableViewController
 {

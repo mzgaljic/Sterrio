@@ -1,27 +1,38 @@
 //
-//  CoreDataTableViewController.m
-//  Muzic
+//  CoreDataCustomTableViewController.m
+//  Free Music Library
 //
-//  Created by Mark Zgaljic on 8/16/14.
-//  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
+//  Created by Mark Zgaljic on 2/5/15.
+//  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
-#import "CoreDataTableViewController.h"
+#import "CoreDataCustomTableViewController.h"
 
-@interface CoreDataTableViewController()
+@interface CoreDataCustomTableViewController ()
+{
+    UITableView *tableView;  //this is the subviews tableview (gets set on the fly)
+}
 
 @property (nonatomic) BOOL beganUpdates;
-
 @end
 
-@implementation CoreDataTableViewController
-
-@synthesize fetchedResultsController = _fetchedResultsController;
-@synthesize beganUpdates = _beganUpdates;
+@implementation CoreDataCustomTableViewController
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return YES;
+}
+
+//crucial for this to work (Marks add-on)
+- (void)setTableForCoreDataView:(UITableView *)aTableView;
+{
+    tableView = aTableView;
+}
+
+- (void)alertUserAboutSetupErrorAndAbort
+{
+    NSLog(@"YOU ARE ATTEMPTING TO USE CoreDataCustomTableViewController WITHOUT INITIALIZING ITS TABLEVIEW FIRST. Aborting...");
+    abort();
 }
 
 #pragma mark - Fetching
@@ -47,11 +58,13 @@
                       [error localizedDescription], [error localizedFailureReason]);
         }
     }
-    [self.tableView reloadData];
+    [tableView reloadData];
 }
 
 - (void)setSearchFetchedResultsController:(NSFetchedResultsController *)newfrc
 {
+    if(tableView == nil && newfrc != nil)
+        [self alertUserAboutSetupErrorAndAbort];
     NSFetchedResultsController *oldfrc = _searchFetchedResultsController;
     if (newfrc != oldfrc)
     {
@@ -68,13 +81,15 @@
         }
         else
         {
-            [self.tableView reloadData];
+            [tableView reloadData];
         }
     }
 }
 
 - (void)setFetchedResultsController:(NSFetchedResultsController *)newfrc
 {
+    if(tableView == nil && newfrc != nil)
+        [self alertUserAboutSetupErrorAndAbort];
     NSFetchedResultsController *oldfrc = _fetchedResultsController;
     if (newfrc != oldfrc)
     {
@@ -91,13 +106,12 @@
         }
         else
         {
-            [self.tableView reloadData];
+            [tableView reloadData];
         }
     }
 }
 
 #pragma mark - UITableViewDataSource
-
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     if(_displaySearchResults){
@@ -146,23 +160,23 @@
 #pragma mark - NSFetchedResultsControllerDelegate
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
 {
-    [self.tableView beginUpdates];
+    [tableView beginUpdates];
     self.beganUpdates = YES;
 }
 
 - (void)controller:(NSFetchedResultsController *)controller
   didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo
-		   atIndex:(NSUInteger)sectionIndex
-	 forChangeType:(NSFetchedResultsChangeType)type
+           atIndex:(NSUInteger)sectionIndex
+     forChangeType:(NSFetchedResultsChangeType)type
 {
     switch(type)
     {
         case NSFetchedResultsChangeInsert:
-            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
+            [tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
             break;
             
         case NSFetchedResultsChangeDelete:
-            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
+            [tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
             break;
             //I added the next 2 cases in myself. xcode was complaining.
         case NSFetchedResultsChangeMove:
@@ -172,34 +186,33 @@
     }
 }
 
-
 - (void)controller:(NSFetchedResultsController *)controller
    didChangeObject:(id)anObject
        atIndexPath:(NSIndexPath *)indexPath
      forChangeType:(NSFetchedResultsChangeType)type
-	  newIndexPath:(NSIndexPath *)newIndexPath
+      newIndexPath:(NSIndexPath *)newIndexPath
 {
     switch(type)
     {
         case NSFetchedResultsChangeInsert:
-            [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
+            [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
                                   withRowAnimation:UITableViewRowAnimationFade];
             break;
             
         case NSFetchedResultsChangeDelete:
-            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+            [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                                   withRowAnimation:UITableViewRowAnimationFade];
             break;
             
         case NSFetchedResultsChangeUpdate:
-            [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+            [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                                   withRowAnimation:UITableViewRowAnimationFade];
             break;
             
         case NSFetchedResultsChangeMove:
-            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+            [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                                   withRowAnimation:UITableViewRowAnimationFade];
-            [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
+            [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
                                   withRowAnimation:UITableViewRowAnimationFade];
             break;
     }
@@ -208,7 +221,7 @@
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
     if (self.beganUpdates)
-        [self.tableView endUpdates];
+        [tableView endUpdates];
 }
 
 #pragma mark - overriden methods for default behavior across tableviews
@@ -219,21 +232,21 @@
     self.navigationController.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
     
     //force tableview to only show cells with content (hide the invisible stuff at the bottom of the table)
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-
+    tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
     //set nav bar title color and transparency
     self.navigationController.navigationBar.translucent = YES;
-    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObject:[UIColor defaultWindowTintColor]
-                                                                                                forKey:UITextAttributeTextColor]];
-    #pragma clang diagnostic warning "-Wdeprecated-declarations"
+                        forKey:UITextAttributeTextColor]];
+#pragma clang diagnostic warning "-Wdeprecated-declarations"
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;  //makes status bar text light and readable
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
+    [tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -241,5 +254,5 @@
     [super viewDidDisappear:animated];
 }
 
-@end
 
+@end

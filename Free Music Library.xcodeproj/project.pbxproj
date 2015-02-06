@@ -67,6 +67,7 @@
 		8763351B1A84052600A229C4 /* MainScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8763351A1A84052600A229C4 /* MainScreenViewController.m */; };
 		8763351E1A845A0B00A229C4 /* SegmentedControlItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8763351D1A845A0B00A229C4 /* SegmentedControlItem.m */; };
 		876335211A84754400A229C4 /* CustomizedTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 876335201A84754400A229C4 /* CustomizedTableViewController.m */; };
+		876335241A847B9D00A229C4 /* CoreDataCustomTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 876335231A847B9D00A229C4 /* CoreDataCustomTableViewController.m */; };
 		8768E53A19928AD5004708C4 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8768E53919928AD5004708C4 /* MediaPlayer.framework */; };
 		8768E53C19929343004708C4 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8768E53B19929343004708C4 /* AVFoundation.framework */; };
 		876EC5F01965C9F6006B3C29 /* AppEnvironmentConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 876EC5EF1965C9F6006B3C29 /* AppEnvironmentConstants.m */; };
@@ -257,6 +258,8 @@
 		8763351D1A845A0B00A229C4 /* SegmentedControlItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SegmentedControlItem.m; sourceTree = "<group>"; };
 		8763351F1A84754400A229C4 /* CustomizedTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomizedTableViewController.h; sourceTree = "<group>"; };
 		876335201A84754400A229C4 /* CustomizedTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomizedTableViewController.m; sourceTree = "<group>"; };
+		876335221A847B9D00A229C4 /* CoreDataCustomTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataCustomTableViewController.h; sourceTree = "<group>"; };
+		876335231A847B9D00A229C4 /* CoreDataCustomTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataCustomTableViewController.m; sourceTree = "<group>"; };
 		8768E53919928AD5004708C4 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		8768E53B19929343004708C4 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		876EC5EE1965C9F6006B3C29 /* AppEnvironmentConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppEnvironmentConstants.h; path = "Free Music Library/AppEnvironmentConstants.h"; sourceTree = "<group>"; };
@@ -435,6 +438,8 @@
 			children = (
 				8703442019A01901002E5077 /* CoreDataTableViewController.h */,
 				8703442419A01C10002E5077 /* CoreDataTableViewController.m */,
+				876335221A847B9D00A229C4 /* CoreDataCustomTableViewController.h */,
+				876335231A847B9D00A229C4 /* CoreDataCustomTableViewController.m */,
 			);
 			name = "Core Data tableview integreation";
 			sourceTree = "<group>";
@@ -1289,6 +1294,7 @@
 				874C535F19844201000382FA /* NSObject+ObjectUUID.m in Sources */,
 				87FD38D71990A89200C8D5C3 /* UIImage+ColoringExistingImage.m in Sources */,
 				871BA88F1A5A2F4100FB87A7 /* Artist.m in Sources */,
+				876335241A847B9D00A229C4 /* CoreDataCustomTableViewController.m in Sources */,
 				878519D21994327C00A573A9 /* Reachability.m in Sources */,
 				87334418198E0332002B9E18 /* UIColor+SystemTintColor.m in Sources */,
 				877C4BAD199FE4E700CE86BC /* Playlist+Utilities.m in Sources */,

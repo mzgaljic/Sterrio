@@ -11,7 +11,8 @@
 @interface MasterSongsTableViewController ()
 @property (nonatomic, assign) int indexOfEditingSong;
 @property (nonatomic, assign) int selectedRowIndexValue;
-@property (nonatomic, strong) MySearchBar* searchBar;
+@property (nonatomic, strong) MySearchBar *searchBar;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
 @end
 
 @implementation MasterSongsTableViewController
@@ -177,6 +178,7 @@ static BOOL lastSortOrder;
 {
     [super viewWillAppear:animated];
     [self setUpSearchBar];
+    
     //must be called in viewWillAppear, and after allSongsLibrary is refreshed
     if(self.searchFetchedResultsController)
     {
@@ -190,12 +192,6 @@ static BOOL lastSortOrder;
         [self setFetchedResultsControllerAndSortStyle];
         lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
     }
-    
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation != UIInterfaceOrientationPortrait)
-        [self setTabBarVisible:NO animated:YES];
-    else
-        [self setTabBarVisible:YES animated:YES];
     
     if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
@@ -218,6 +214,10 @@ static BOOL lastSortOrder;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.view addSubview:self.tableView];
+    [self setTableForCoreDataView:self.tableView];
     
     if(!haveCheckedCoreDataInit){
         //need to check if core data even works before i try loading the songs in this VC
@@ -305,10 +305,12 @@ static BOOL lastSortOrder;
 static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SongItemCell" forIndexPath:indexPath];
-
-    if (cell == nil)
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"SongItemCell"];
+    static NSString *cellIdentifier = @"SongItemCell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier
+                                                            forIndexPath:indexPath];
+    if (!cell)
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                      reuseIdentifier:cellIdentifier];
     else
     {
         // If an existing cell is being reused, reset the image to the default until it is populated.
@@ -434,6 +436,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     }
 }
 
+- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section {
+    id <NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController.sections objectAtIndex:section];
+    return sectionInfo.numberOfObjects;
+}
+
 #pragma mark - segue
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
@@ -504,39 +511,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
-        [self setTabBarVisible:NO animated:NO];
         return YES;
     }
     else{
-        [self setTabBarVisible:YES animated:NO];
-        //fixes a bug when using another viewController with all these "hiding" nav bar features...and returning to this viewController
-        self.tabBarController.tabBar.hidden = NO;
         return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
     }
-}
-
-#pragma mark - Rotation tab bar methods
-- (void)setTabBarVisible:(BOOL)visible animated:(BOOL)animated
-{
-    // bail if the current state matches the desired state
-    if ([self tabBarIsVisible] == visible) return;
-    
-    // get a frame calculation ready
-    CGRect frame = self.tabBarController.tabBar.frame;
-    CGFloat height = frame.size.height;
-    CGFloat offsetY = (visible)? -height : height;
-    
-    // zero duration means no animation
-    CGFloat duration = (animated)? 0.3 : 0.0;
-    
-    [UIView animateWithDuration:duration animations:^{
-        self.tabBarController.tabBar.frame = CGRectOffset(frame, 0, offsetY);
-    }];
-}
-
-- (BOOL)tabBarIsVisible
-{
-    return self.tabBarController.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame);
 }
 
 #pragma mark - Counting Songs in core data
