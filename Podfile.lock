@@ -2,9 +2,8 @@ PODS:
   - AFBlurSegue (1.2)
   - ASValueTrackingSlider (0.9.4)
   - CSNotificationView (0.5.3)
-  - DKScrollingTabController (1.1.2)
   - GCDiscreetNotificationView (1.0.2)
-  - GTScrollNavigationBar (0.1.2)
+  - HMSegmentedControl (1.4.0)
   - JAMAccurateSlider (1.1.0)
   - MarqueeLabel (2.2.0)
   - MRProgress (0.8.1):
@@ -45,15 +44,15 @@ PODS:
     - SDWebImage/Core (= 3.7.1)
   - SDWebImage/Core (3.7.1)
   - TBXML (1.5)
+  - TLYShyNavBar (0.9.8)
   - XCDYouTubeKit (2.0.3)
 
 DEPENDENCIES:
   - AFBlurSegue (~> 1.2)
   - ASValueTrackingSlider
   - CSNotificationView (~> 0.5)
-  - DKScrollingTabController
   - GCDiscreetNotificationView (~> 1.0)
-  - GTScrollNavigationBar (~> 0.1)
+  - HMSegmentedControl
   - JAMAccurateSlider (~> 1.1)
   - MarqueeLabel
   - MRProgress
@@ -61,6 +60,7 @@ DEPENDENCIES:
   - SDCAlertView
   - SDWebImage (~> 3.6)
   - TBXML (~> 1.5)
+  - TLYShyNavBar
   - XCDYouTubeKit (from `https://github.com/psycotica0/XCDYouTubeKit.git`, commit `898d3105f424ba61a11bd1c7c8c88d3dbb386e94`)
 
 EXTERNAL SOURCES:
@@ -77,9 +77,8 @@ SPEC CHECKSUMS:
   AFBlurSegue: 317204561facdb45be823773c0fefe918c192243
   ASValueTrackingSlider: 74a4bbf70c8cf43d29b701ff4c7659fc5d0afd99
   CSNotificationView: e4d26da44dfb569ab284949c822a8239f23cc13d
-  DKScrollingTabController: 7ccac24d3d4109821465fcf9429e0df763126505
   GCDiscreetNotificationView: e74f7fe64167edab50b00641e054929315d59af5
-  GTScrollNavigationBar: 837e4481076638eabafd64b94546a1b4c05058ca
+  HMSegmentedControl: c0517a8d4b80c978b8386f863f1c44729cfd7d6f
   JAMAccurateSlider: e810f5397ec6735ae9d6d443528e63491cf62f35
   MarqueeLabel: cd721cabcfce98591ef835e2c5bd29de92d9ebc9
   MRProgress: cd12726e001ea25dec133322d34cc4754cbc58f8
@@ -89,6 +88,7 @@ SPEC CHECKSUMS:
   SDCAutoLayout: 4a963629725ed2b7d665e789ca4d6cfcd7446822
   SDWebImage: 116e88633b5b416ea0ca4b334a4ac59cf72dd38d
   TBXML: a279440030ba55c40e1455cafba3b0a44e1963d4
+  TLYShyNavBar: cf15a919cf7f6e79080ac5b95b56580a752cf64d
   XCDYouTubeKit: 50125d3882e98791ac8ebc3171b286023a9a2572
 
 COCOAPODS: 0.35.0

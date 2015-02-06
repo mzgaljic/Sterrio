@@ -13,6 +13,7 @@
 #import "SongPlayerViewDisplayUtility.h"
 
 #import "MZConstants.h"
+#import "TLYShyNavBarManager.h"
 #import "UIColor+SystemTintColor.h"
 
 #ifndef __IPHONE_5_0

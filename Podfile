@@ -15,7 +15,7 @@ pod 'SDWebImage', '~>3.6'
 pod 'ASValueTrackingSlider'
 
 #TransitionKit -state machine library
-#pod 'TransitionKit', '~> 2.0.0'  ---not needed yet
+#pod 'TransitionKit', '~> 2.0.0'  ---not used yet
 
 #MSCellAccessory - used for customizable accessory icons
 pod 'MSCellAccessory', '~> 1.1'
@@ -38,8 +38,8 @@ pod 'JAMAccurateSlider', '~> 1.1'
 #discrete message at top of screen for user (used for slider touch)
 pod 'GCDiscreetNotificationView', '~> 1.0'
 
-#scrolling nav bar - like in safari, nav bar goes away while scrolling
-pod 'GTScrollNavigationBar', '~> 0.1'
+#scrolling nav bar - breaks uitableviewcontrollers, need to use regular tableview.
+pod 'TLYShyNavBar'
 
-#scrolling tab bar - Spotify inspired
-pod 'DKScrollingTabController'
+#scrolling segmented control (like a tab bar almost). Spotify inspired.
+pod 'HMSegmentedControl'

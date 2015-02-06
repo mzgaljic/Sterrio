@@ -11,7 +11,6 @@
 #import <MediaPlayer/MediaPlayer.h>
 
 #import "AppDelegateSetupHelper.h"
-
 #import "Song.h"
 #import "Album.h"
 #import "Artist.h"
@@ -22,8 +21,9 @@
 #import "AppEnvironmentConstants.h"
 #import "UIColor+LighterAndDarker.h"
 #import "MusicPlaybackController.h"
-#import "MyTabBarController.h"
-#import "UIDevice+DeviceName.h"
+
+#import "MainScreenViewController.h"
+
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, AVAudioSessionDelegate, AVAudioPlayerDelegate>
 

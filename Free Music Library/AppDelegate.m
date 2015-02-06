@@ -19,8 +19,7 @@
 @implementation AppDelegate
 
 static BOOL PRODUCTION_MODE;
-static const short APP_LAUNCHED_FIRST_TIME = 0;
-static const short APP_LAUNCHED_ALREADY = 1;
+static NSString * const mainVcSbId = @"Awesome Sliding SegmentedControl Main Screen";
 
 - (void)setProductionModeValue
 {
@@ -54,14 +53,14 @@ static const short APP_LAUNCHED_ALREADY = 1;
     
     [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
     
-    BOOL appLaunchedFirstTime = [self appLaunchedFirstTime];
+    BOOL appLaunchedFirstTime = [AppDelegateSetupHelper appLaunchedFirstTime];
     [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime: appLaunchedFirstTime];
     
     if(appLaunchedFirstTime){
         //do stuff that you'd want to see the first time you launch!
         [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
         
-        [self reduceEncryptionStrengthOnRelevantDirs];
+        [AppDelegateSetupHelper reduceEncryptionStrengthOnRelevantDirs];
     }
     
     [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY
@@ -69,70 +68,44 @@ static const short APP_LAUNCHED_ALREADY = 1;
     [self setupAudioSession];
     [self setupAudioSessionNotifications];
     
+    [self setupMainVC];
+    
     return YES;
 }
 
-
-/*The Album Art dir must have an encryption level of
- NSFileProtectionCompleteUntilFirstUserAuthentication, otherwise the images for the lockscreen
- will not be able to load. */
-- (void)reduceEncryptionStrengthOnRelevantDirs
+- (void)setupMainVC
 {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    //now set documents dir encryption to a weaker value
-    NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[fileManager attributesOfItemAtPath:documentsPath error:nil]];
-    [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
+    UINavigationController *navController;
+    MainScreenViewController *mainVC;
+    
+    UIViewController *vc1 = [UIViewController new];
+    vc1.view.backgroundColor = [UIColor redColor];
+    UIViewController *vc2 = [UIViewController new];
+    vc2.view.backgroundColor = [UIColor brownColor];
+    UIViewController *vc3 = [UIViewController new];
+    vc3.view.backgroundColor = [UIColor purpleColor];
+    UIViewController *vc4 = [UIViewController new];
+    vc4.view.backgroundColor = [UIColor greenColor];
+    
+    SegmentedControlItem *item1 = [[SegmentedControlItem alloc] initWithViewController:vc1
+                                                                              itemName:@"Songs"];
+    SegmentedControlItem *item2 = [[SegmentedControlItem alloc] initWithViewController:vc2
+                                                                              itemName:@"Albums"];
+    SegmentedControlItem *item3 = [[SegmentedControlItem alloc] initWithViewController:vc3
+                                                                              itemName:@"Artists"];
+    SegmentedControlItem *item4 = [[SegmentedControlItem alloc] initWithViewController:vc4
+                                                                              itemName:@"Playlists"];
+    NSArray *segmentedControls = @[item1, item2, item3, item4];
+    mainVC = [[MainScreenViewController alloc] initWithSegmentedControlItems:segmentedControls];
+    
+    navController = [[UINavigationController alloc] initWithRootViewController:mainVC];
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    [self.window setRootViewController:navController];
+    [self.window setBackgroundColor:[UIColor whiteColor]];
+    [self.window makeKeyAndVisible];
 }
 
-static short appLaunchedFirstTimeDefensiveCount = 0;
-- (BOOL)appLaunchedFirstTime
-{
-    //this counter helps us prevent the code beneath from being executed more than once per app launch.
-    //doing so would cause the "whats new screen" to be messed up...displayed at wrong times.
-    if(appLaunchedFirstTimeDefensiveCount > 0)
-        return [AppEnvironmentConstants isFirstTimeAppLaunched];
-    appLaunchedFirstTimeDefensiveCount++;
-    
-    //determine if "whats new" constant in this build is actually new.
-    NSString *lastWhatsNewMsg = [[NSUserDefaults standardUserDefaults] stringForKey:LAST_WhatsNewMsg];
-    if(lastWhatsNewMsg == nil)
-        [AppEnvironmentConstants marksWhatsNewMsgAsNew];
-    else{
-        if(! [lastWhatsNewMsg isEqualToString:MZWhatsNewUserMsg])
-            [AppEnvironmentConstants marksWhatsNewMsgAsNew];
-    }
-    [[NSUserDefaults standardUserDefaults] setObject:MZWhatsNewUserMsg
-                                              forKey:LAST_WhatsNewMsg];
-    
-    //determining whether or not "whats new" screen should be shown on this run of the app
-    NSString *lastBuild = [[NSUserDefaults standardUserDefaults] stringForKey:LAST_INSTALLED_BUILD];
-    NSString *currentBuild = [UIDevice appBuildString];
-    if(lastBuild == nil){
-        lastBuild = currentBuild;
-        [[NSUserDefaults standardUserDefaults] setObject:currentBuild
-                                                  forKey:LAST_INSTALLED_BUILD];
-    } else if(! [lastBuild isEqualToString:currentBuild] &&
-                [AppEnvironmentConstants whatsNewMsgIsActuallyNew]){
-        [AppEnvironmentConstants markShouldDisplayWhatsNewScreenTrue];
-    }
-    
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    
-    NSInteger code = [[NSUserDefaults standardUserDefaults] integerForKey:APP_ALREADY_LAUNCHED_KEY];
-    if(code == APP_LAUNCHED_FIRST_TIME){
-        
-        //I want to only display one or the either, never the same on. Placement of this
-        //if must stay exactly here, placement matters!
-        if(! [AppEnvironmentConstants shouldDisplayWhatsNewScreen])
-            [AppEnvironmentConstants markShouldDisplayWelcomeScreenTrue];
-        
-        [AppEnvironmentConstants markAppAsLaunchedForFirstTime];
-        return YES;
-    }
-    else
-        return NO;
-}
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {

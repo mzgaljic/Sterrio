@@ -63,6 +63,69 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
+/*The Album Art dir must have an encryption level of
+ NSFileProtectionCompleteUntilFirstUserAuthentication, otherwise the images for the lockscreen
+ will not be able to load. */
++ (void)reduceEncryptionStrengthOnRelevantDirs
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    //now set documents dir encryption to a weaker value
+    NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[fileManager attributesOfItemAtPath:documentsPath error:nil]];
+    [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
+}
+
+static short appLaunchedFirstTimeDefensiveCount = 0;
++ (BOOL)appLaunchedFirstTime
+{
+    //this counter helps us prevent the code beneath from being executed more than once per app launch.
+    //doing so would cause the "whats new screen" to be messed up...displayed at wrong times.
+    if(appLaunchedFirstTimeDefensiveCount > 0)
+        return [AppEnvironmentConstants isFirstTimeAppLaunched];
+    appLaunchedFirstTimeDefensiveCount++;
+    
+    //determine if "whats new" constant in this build is actually new.
+    NSString *lastWhatsNewMsg = [[NSUserDefaults standardUserDefaults] stringForKey:LAST_WhatsNewMsg];
+    if(lastWhatsNewMsg == nil)
+        [AppEnvironmentConstants marksWhatsNewMsgAsNew];
+    else{
+        if(! [lastWhatsNewMsg isEqualToString:MZWhatsNewUserMsg])
+            [AppEnvironmentConstants marksWhatsNewMsgAsNew];
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:MZWhatsNewUserMsg
+                                              forKey:LAST_WhatsNewMsg];
+    
+    //determining whether or not "whats new" screen should be shown on this run of the app
+    NSString *lastBuild = [[NSUserDefaults standardUserDefaults] stringForKey:LAST_INSTALLED_BUILD];
+    NSString *currentBuild = [UIDevice appBuildString];
+    if(lastBuild == nil){
+        lastBuild = currentBuild;
+        [[NSUserDefaults standardUserDefaults] setObject:currentBuild
+                                                  forKey:LAST_INSTALLED_BUILD];
+    } else if(! [lastBuild isEqualToString:currentBuild] &&
+              [AppEnvironmentConstants whatsNewMsgIsActuallyNew]){
+        [AppEnvironmentConstants markShouldDisplayWhatsNewScreenTrue];
+    }
+    
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    NSInteger code = [[NSUserDefaults standardUserDefaults] integerForKey:APP_ALREADY_LAUNCHED_KEY];
+    if(code == APP_LAUNCHED_FIRST_TIME){
+        
+        //I want to only display one or the either, never the same on. Placement of this
+        //if must stay exactly here, placement matters!
+        if(! [AppEnvironmentConstants shouldDisplayWhatsNewScreen])
+            [AppEnvironmentConstants markShouldDisplayWelcomeScreenTrue];
+        
+        [AppEnvironmentConstants markAppAsLaunchedForFirstTime];
+        return YES;
+    }
+    else
+        return NO;
+}
+
+
+//used for debugging
 + (void)logGlobalAppTintColor
 {
     UIColor *uicolor = [UIColor defaultAppColorScheme];

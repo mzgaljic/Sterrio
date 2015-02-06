@@ -24,23 +24,17 @@
 #define COCOAPODS_VERSION_MINOR_CSNotificationView 5
 #define COCOAPODS_VERSION_PATCH_CSNotificationView 3
 
-// DKScrollingTabController
-#define COCOAPODS_POD_AVAILABLE_DKScrollingTabController
-#define COCOAPODS_VERSION_MAJOR_DKScrollingTabController 1
-#define COCOAPODS_VERSION_MINOR_DKScrollingTabController 1
-#define COCOAPODS_VERSION_PATCH_DKScrollingTabController 2
-
 // GCDiscreetNotificationView
 #define COCOAPODS_POD_AVAILABLE_GCDiscreetNotificationView
 #define COCOAPODS_VERSION_MAJOR_GCDiscreetNotificationView 1
 #define COCOAPODS_VERSION_MINOR_GCDiscreetNotificationView 0
 #define COCOAPODS_VERSION_PATCH_GCDiscreetNotificationView 2
 
-// GTScrollNavigationBar
-#define COCOAPODS_POD_AVAILABLE_GTScrollNavigationBar
-#define COCOAPODS_VERSION_MAJOR_GTScrollNavigationBar 0
-#define COCOAPODS_VERSION_MINOR_GTScrollNavigationBar 1
-#define COCOAPODS_VERSION_PATCH_GTScrollNavigationBar 2
+// HMSegmentedControl
+#define COCOAPODS_POD_AVAILABLE_HMSegmentedControl
+#define COCOAPODS_VERSION_MAJOR_HMSegmentedControl 1
+#define COCOAPODS_VERSION_MINOR_HMSegmentedControl 4
+#define COCOAPODS_VERSION_PATCH_HMSegmentedControl 0
 
 // JAMAccurateSlider
 #define COCOAPODS_POD_AVAILABLE_JAMAccurateSlider
@@ -155,6 +149,12 @@
 #define COCOAPODS_VERSION_MAJOR_TBXML 1
 #define COCOAPODS_VERSION_MINOR_TBXML 5
 #define COCOAPODS_VERSION_PATCH_TBXML 0
+
+// TLYShyNavBar
+#define COCOAPODS_POD_AVAILABLE_TLYShyNavBar
+#define COCOAPODS_VERSION_MAJOR_TLYShyNavBar 0
+#define COCOAPODS_VERSION_MINOR_TLYShyNavBar 9
+#define COCOAPODS_VERSION_PATCH_TLYShyNavBar 8
 
 // XCDYouTubeKit
 #define COCOAPODS_POD_AVAILABLE_XCDYouTubeKit

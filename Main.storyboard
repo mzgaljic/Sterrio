@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="8YX-ce-x5E">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
@@ -191,29 +191,6 @@
             </objects>
             <point key="canvasLocation" x="1978" y="-1400"/>
         </scene>
-        <!--My Tab Bar Controller-->
-        <scene sceneID="Vex-rW-GRa">
-            <objects>
-                <tabBarController storyboardIdentifier="mainTabBar" useStoryboardIdentifierAsRestorationIdentifier="YES" id="8YX-ce-x5E" customClass="MyTabBarController" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="HSw-eo-P8v"/>
-                    <nil key="simulatedBottomBarMetrics"/>
-                    <tabBar key="tabBar" contentMode="scaleToFill" id="JQR-rB-NYL">
-                        <rect key="frame" x="0.0" y="431" width="320" height="49"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                    </tabBar>
-                    <connections>
-                        <segue destination="ZWq-Z9-URc" kind="relationship" relationship="viewControllers" id="rCj-c0-oBV"/>
-                        <segue destination="N8U-tP-Z8r" kind="relationship" relationship="viewControllers" id="GuD-o3-FnD"/>
-                        <segue destination="CtG-eT-64A" kind="relationship" relationship="viewControllers" id="vVJ-bq-V8p"/>
-                        <segue destination="d6y-Vn-oTB" kind="relationship" relationship="viewControllers" id="nQ6-JS-CKW"/>
-                        <segue destination="rUd-Wq-cn2" kind="relationship" relationship="viewControllers" id="llf-ie-tjI"/>
-                    </connections>
-                </tabBarController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="FNP-y4-bzi" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="130" y="180"/>
-        </scene>
         <!--Songs-->
         <scene sceneID="ckA-Oq-9Mg">
             <objects>
@@ -232,7 +209,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RSg-0g-odC" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="981" y="-819"/>
+            <point key="canvasLocation" x="1009" y="-819"/>
         </scene>
         <!--Genres-->
         <scene sceneID="vUt-9J-pjQ">
@@ -957,11 +934,10 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="if9-zZ-fs5">
-                                            <rect key="frame" x="2" y="1" width="9" height="80"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         </imageView>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="EIo-UR-IOF">
-                                            <rect key="frame" x="152" y="58" width="71" height="21"/>
+                                            <rect key="frame" x="152" y="58" width="45" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>

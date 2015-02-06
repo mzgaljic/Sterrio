@@ -32,7 +32,6 @@
 		872EA4E11A54CAF200F8EE9D /* UIDevice+DeviceName.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4E01A54CAF200F8EE9D /* UIDevice+DeviceName.m */; };
 		872EA4E41A54F1EA00F8EE9D /* MyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4E31A54F1EA00F8EE9D /* MyTableViewController.m */; };
 		872EA4E71A54F1FC00F8EE9D /* MyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4E61A54F1FC00F8EE9D /* MyViewController.m */; };
-		872EA4EB1A54F4CA00F8EE9D /* MyTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4EA1A54F4CA00F8EE9D /* MyTabBarController.m */; };
 		872F78771A47B17900288FDD /* SongPlayerCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = 872F78761A47B17900288FDD /* SongPlayerCoordinator.m */; };
 		873001BB1A74950000C9921A /* CoreDataErrorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 873001BA1A74950000C9921A /* CoreDataErrorViewController.m */; };
 		87334407198D8321002B9E18 /* NSString+HTTP_Char_Escape.m in Sources */ = {isa = PBXBuildFile; fileRef = 87334406198D8321002B9E18 /* NSString+HTTP_Char_Escape.m */; };
@@ -65,6 +64,9 @@
 		875984A8195D775500015243 /* GenreItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875984A7195D775500015243 /* GenreItemTableViewController.m */; };
 		875B3820197ACBC0008B4409 /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B381F197ACBC0008B4409 /* SettingsTableViewController.m */; };
 		875B3826197AFF29008B4409 /* NSString+smartSort.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B3825197AFF29008B4409 /* NSString+smartSort.m */; };
+		8763351B1A84052600A229C4 /* MainScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8763351A1A84052600A229C4 /* MainScreenViewController.m */; };
+		8763351E1A845A0B00A229C4 /* SegmentedControlItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8763351D1A845A0B00A229C4 /* SegmentedControlItem.m */; };
+		876335211A84754400A229C4 /* CustomizedTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 876335201A84754400A229C4 /* CustomizedTableViewController.m */; };
 		8768E53A19928AD5004708C4 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8768E53919928AD5004708C4 /* MediaPlayer.framework */; };
 		8768E53C19929343004708C4 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8768E53B19929343004708C4 /* AVFoundation.framework */; };
 		876EC5F01965C9F6006B3C29 /* AppEnvironmentConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 876EC5EF1965C9F6006B3C29 /* AppEnvironmentConstants.m */; };
@@ -194,8 +196,6 @@
 		872EA4E31A54F1EA00F8EE9D /* MyTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTableViewController.m; sourceTree = "<group>"; };
 		872EA4E51A54F1FC00F8EE9D /* MyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyViewController.h; sourceTree = "<group>"; };
 		872EA4E61A54F1FC00F8EE9D /* MyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyViewController.m; sourceTree = "<group>"; };
-		872EA4E91A54F4CA00F8EE9D /* MyTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyTabBarController.h; sourceTree = "<group>"; };
-		872EA4EA1A54F4CA00F8EE9D /* MyTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTabBarController.m; sourceTree = "<group>"; };
 		872F78751A47B17900288FDD /* SongPlayerCoordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SongPlayerCoordinator.h; sourceTree = "<group>"; };
 		872F78761A47B17900288FDD /* SongPlayerCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SongPlayerCoordinator.m; sourceTree = "<group>"; };
 		872F78781A47B91500288FDD /* VideoPlayerControlInterfaceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoPlayerControlInterfaceDelegate.h; sourceTree = "<group>"; };
@@ -251,6 +251,12 @@
 		875B381F197ACBC0008B4409 /* SettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTableViewController.m; sourceTree = "<group>"; };
 		875B3824197AFF29008B4409 /* NSString+smartSort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+smartSort.h"; sourceTree = "<group>"; };
 		875B3825197AFF29008B4409 /* NSString+smartSort.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+smartSort.m"; sourceTree = "<group>"; };
+		876335191A84052600A229C4 /* MainScreenViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainScreenViewController.h; sourceTree = "<group>"; };
+		8763351A1A84052600A229C4 /* MainScreenViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainScreenViewController.m; sourceTree = "<group>"; };
+		8763351C1A845A0B00A229C4 /* SegmentedControlItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SegmentedControlItem.h; sourceTree = "<group>"; };
+		8763351D1A845A0B00A229C4 /* SegmentedControlItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SegmentedControlItem.m; sourceTree = "<group>"; };
+		8763351F1A84754400A229C4 /* CustomizedTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomizedTableViewController.h; sourceTree = "<group>"; };
+		876335201A84754400A229C4 /* CustomizedTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomizedTableViewController.m; sourceTree = "<group>"; };
 		8768E53919928AD5004708C4 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		8768E53B19929343004708C4 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		876EC5EE1965C9F6006B3C29 /* AppEnvironmentConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppEnvironmentConstants.h; path = "Free Music Library/AppEnvironmentConstants.h"; sourceTree = "<group>"; };
@@ -487,8 +493,8 @@
 				872EA4E31A54F1EA00F8EE9D /* MyTableViewController.m */,
 				872EA4E51A54F1FC00F8EE9D /* MyViewController.h */,
 				872EA4E61A54F1FC00F8EE9D /* MyViewController.m */,
-				872EA4E91A54F4CA00F8EE9D /* MyTabBarController.h */,
-				872EA4EA1A54F4CA00F8EE9D /* MyTabBarController.m */,
+				8763351F1A84754400A229C4 /* CustomizedTableViewController.h */,
+				876335201A84754400A229C4 /* CustomizedTableViewController.m */,
 			);
 			name = "Custom ViewControllers";
 			sourceTree = "<group>";
@@ -560,6 +566,8 @@
 		87362AFA194E3F27004DB544 /* GUI and GUI Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				876335191A84052600A229C4 /* MainScreenViewController.h */,
+				8763351A1A84052600A229C4 /* MainScreenViewController.m */,
 				87E980BB1A759CF300B428F0 /* Song Editor/Creator */,
 				879AB33E19F2188B00FD6582 /* The Player */,
 				878ACD5E192D38B6005938F5 /* Songs tab */,
@@ -1081,6 +1089,8 @@
 				87E1C59F193A5E8B009AE399 /* GenreConstants.m */,
 				87268E60198B580200FE51D7 /* YouTubeVideo.h */,
 				873EEA861A4BBA210092A6DF /* YouTubeVideo.m */,
+				8763351C1A845A0B00A229C4 /* SegmentedControlItem.h */,
+				8763351D1A845A0B00A229C4 /* SegmentedControlItem.m */,
 			);
 			name = Models;
 			path = "Free Music Library";
@@ -1248,6 +1258,7 @@
 				87A453C9199C0891004D1319 /* ELCAsset.m in Sources */,
 				87124BA419A3CBB8003D29CD /* AlbumModelHandler.m in Sources */,
 				87E5FF3F1A6F42AD00A09652 /* MZSongModifierTableView.m in Sources */,
+				8763351B1A84052600A229C4 /* MainScreenViewController.m in Sources */,
 				87A453D8199C0891004D1319 /* UIImage+EYFixOrientation.m in Sources */,
 				87270032199E815000D71204 /* NSString+Levenshtein_Distance.m in Sources */,
 				87A453CD199C0891004D1319 /* ELCImagePickerController.m in Sources */,
@@ -1272,6 +1283,7 @@
 				874C535C19831825000382FA /* NSString+WhiteSpace_Utility.m in Sources */,
 				873E14621A49ED0A008A385D /* SongPlayerViewDisplayUtility.m in Sources */,
 				8740723F19798129004C5C57 /* SongTableViewFormatter.m in Sources */,
+				876335211A84754400A229C4 /* CustomizedTableViewController.m in Sources */,
 				87E980BF1A759DD900B428F0 /* MasterSongEditorViewController.m in Sources */,
 				875B3820197ACBC0008B4409 /* SettingsTableViewController.m in Sources */,
 				874C535F19844201000382FA /* NSObject+ObjectUUID.m in Sources */,
@@ -1294,9 +1306,9 @@
 				87A453CE199C0891004D1319 /* ELCOverlayImageView.m in Sources */,
 				879112FF197EF90E00DFC2DB /* PlaylistTableViewFormatter.m in Sources */,
 				87A9AF4E199D8429005B9A5B /* GenrePickerTableViewController.m in Sources */,
+				8763351E1A845A0B00A229C4 /* SegmentedControlItem.m in Sources */,
 				879AB34119F225F300FD6582 /* SongPlayerViewController.m in Sources */,
 				87D47D8C19340F8B0057D49B /* AlbumItemViewController.m in Sources */,
-				872EA4EB1A54F4CA00F8EE9D /* MyTabBarController.m in Sources */,
 				87A0FD8A197DCEDF008FBBF7 /* AlbumTableViewFormatter.m in Sources */,
 				87FCD02C19A5BC0B00C600D3 /* CustomYoutubeTableViewCell.m in Sources */,
 				872EA4E41A54F1EA00F8EE9D /* MyTableViewController.m in Sources */,
