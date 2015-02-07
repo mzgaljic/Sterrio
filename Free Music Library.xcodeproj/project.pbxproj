@@ -587,7 +587,7 @@
 				87F10BCF19682EDF003EDFB2 /* Settings View */,
 				8750157D198C29CC00382945 /* Adding Music To Library */,
 				873001B81A7494D800C9921A /* Core Data Error Handler */,
-				877C4B85199FB44E00CE86BC /* ViewController helpers */,
+				877C4B85199FB44E00CE86BC /* ViewController utility stuff */,
 			);
 			name = "GUI and GUI Controllers";
 			sourceTree = "<group>";
@@ -712,14 +712,14 @@
 			name = Old;
 			sourceTree = "<group>";
 		};
-		877C4B85199FB44E00CE86BC /* ViewController helpers */ = {
+		877C4B85199FB44E00CE86BC /* ViewController utility stuff */ = {
 			isa = PBXGroup;
 			children = (
 				8740724019798130004C5C57 /* GUI (VC) consistent style helpers */,
 				87270039199EB9DB00D71204 /* LIFO Stack Controller - for VC */,
 				8703442319A01909002E5077 /* Core Data tableview integreation */,
 			);
-			name = "ViewController helpers";
+			name = "ViewController utility stuff";
 			sourceTree = "<group>";
 		};
 		877C4B87199FB5E800CE86BC /* App Delegate and Environment Helpers */ = {

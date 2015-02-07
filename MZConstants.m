@@ -10,10 +10,7 @@
 
 @implementation MZConstants
 
-/*
 NSString * const MZWhatsNewUserMsg = @"⌾New Features:\n•Loading spinner! Its finally here and its gorgeous. :) I think you'll love it.\n•Loss of internet connection is detected while videos are playing back.\n\n⌾Bug Fixes:\n•Video player glitches (very erratic behavior with slider and time labels)\n•Song label animations in the video player have been improved.\n•Quick taps on minimized video player would go undetected.\n•Lockscreen and Control center would display incorrect elapsed (current) playback values, especially when skipping forwards or backwards in a song.\n•A previewed YouTube video reaching the end of its playback duration would cause any existing minimized  video players to become active again; potentially causing two songs to play at once.\n\n⌾NOW BROKEN\n•Leaving the app while previewing a video (song not yet saved) will cause it to be paused. User must manually re-enable playback using control center (swiping up from bottom of screen).\n•Loading spinner animations are glitchy when changing the players size.";
-*/
-NSString * const MZWhatsNewUserMsg = @"⌾Bug Fixes:\n•Changing a songs name would cause the app to crash on an iPhone 4S.\n⌾NOW BROKEN\n•Leaving the app while previewing a video (song not yet saved) will cause it to be paused. User must manually re-enable playback using control center (swiping up from bottom of screen).\n•Loading spinner animations are glitchy when changing the players size.";
 
 //used for sending playback signals to video preview player if it exists
 NSString * const MZPreviewPlayerTogglePlayPause = @"togglePlayPauseVideoPreviewPlayer";
@@ -27,6 +24,7 @@ NSString * const MZKeyVideoDuration = @"videoDuration";
 #warning Replace with an official email before making app production ready
 NSString * const MZEmailBugReport = @"marksBetaMusicApp@gmail.com";
 NSString * const MZUserCanTransitionToMainInterface = @"user can transition to main interface";
+NSString * const MZUserFinishedWithReviewingSettings = @"User finished looking at Settings VC";
 
 short const MZMinutesInAnHour = 60;
 short const MZSecondsInAMinute = 60;

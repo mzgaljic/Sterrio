@@ -15,6 +15,4 @@
 - (NSArray *)rightBarButtonItemsForNavigationBar;
 - (NSString *)titleOfNavigationBar;
 
-- (void)performActionForBarButtonItem:(UIBarButtonItem *)button;
-
 @end

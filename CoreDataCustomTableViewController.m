@@ -11,6 +11,7 @@
 @interface CoreDataCustomTableViewController ()
 {
     UITableView *tableView;  //this is the subviews tableview (gets set on the fly)
+    MySearchBar *searchBar;  //also set on the fly
 }
 
 @property (nonatomic) BOOL beganUpdates;
@@ -27,6 +28,11 @@
 - (void)setTableForCoreDataView:(UITableView *)aTableView;
 {
     tableView = aTableView;
+}
+
+- (void)setSearchBar:(MySearchBar *)aSearchBar
+{
+    searchBar = aSearchBar;
 }
 
 - (void)alertUserAboutSetupErrorAndAbort
@@ -248,9 +254,24 @@
     [super viewDidAppear:animated];
 }
 
-- (void)viewDidDisappear:(BOOL)animated
+- (void)dealloc
 {
-    [super viewDidDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(settingsPossiblyChanged)
+                                                 name:MZUserFinishedWithReviewingSettings
+                                               object:nil];
+}
+
+- (void)settingsPossiblyChanged
+{
+    [tableView reloadData];
+    [searchBar updateFontSizeIfNecessary];
 }
 
 

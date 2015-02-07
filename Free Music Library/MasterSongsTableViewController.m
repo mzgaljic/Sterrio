@@ -23,7 +23,7 @@
 static BOOL PRODUCTION_MODE;
 static BOOL haveCheckedCoreDataInit = NO;
 
-#pragma mark - MainScreenNavBarItem Delegate
+#pragma mark - NavBarItem Delegate
 - (NSArray *)leftBarButtonItemsForNavigationBar
 {
     UIBarButtonItem *editButton = self.editButtonItem;
@@ -98,10 +98,9 @@ static BOOL haveCheckedCoreDataInit = NO;
 
 - (void)currentSongHasChanged
 {
-    //want the now playing song to always be a specific colo
+    //want the now playing song to always be a specific color
     [self.tableView reloadData];
 }
-
 
 #pragma mark - UISearchBar
 - (void)setUpSearchBar
@@ -122,6 +121,7 @@ static BOOL haveCheckedCoreDataInit = NO;
             } completion:nil];
         }
     }
+    [self setSearchBar:self.searchBar];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
@@ -190,62 +190,34 @@ static BOOL haveCheckedCoreDataInit = NO;
                                                             selector:@selector(localizedStandardCompare:)];
         request.sortDescriptors = @[sortDescriptor];
         //searchResults
-        self.searchFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
-                                                                                  managedObjectContext:context
-                                                                                    sectionNameKeyPath:nil
-                                                                                             cacheName:nil];
+        self.searchFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
     }
 }
 
 
 #pragma mark - View Controller life cycle
-static BOOL lastSortOrder;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     [self setUpSearchBar];
-    BOOL fetchedStyle = NO;
     
     //must be called in viewWillAppear, and after allSongsLibrary is refreshed
-    if(self.searchFetchedResultsController)
-    {
-        self.searchFetchedResultsController = nil;
-        [self setFetchedResultsControllerAndSortStyle];
-        fetchedStyle = YES;
-        lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
-    }
+    self.searchFetchedResultsController = nil;
+    [self setFetchedResultsControllerAndSortStyle];
     
     if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
         self.tableView.tableHeaderView = nil;
     }
-    
-    if(lastSortOrder != [AppEnvironmentConstants smartAlphabeticalSort])
-    {
-        if(! fetchedStyle)
-            [self setFetchedResultsControllerAndSortStyle];
-        lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
-        [self setFetchedResultsControllerAndSortStyle];
-    }
-    if(self.fetchedResultsController == nil)
-        [self setFetchedResultsControllerAndSortStyle];
+    [self setUpSearchBar];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    if(haveCheckedCoreDataInit){
-        //needed to update the font sizes and bold font (if changed in settings)
-        if(lastSortOrder != [AppEnvironmentConstants smartAlphabeticalSort])
-        {
-            [self.tableView reloadData];
-        }
-        //need to check because when user presses back button, tab bar isnt always hidden
-        [self prefersStatusBarHidden];
-    }
     
-    [self.searchBar updateFontSizeIfNecessary];
-    [self setUpSearchBar];
+    //need to check because when user presses back button, tab bar isnt always hidden
+    [self prefersStatusBarHidden];
 }
 
 - (void)viewDidLoad
@@ -277,8 +249,6 @@ static BOOL lastSortOrder;
                                              selector:@selector(songWasSavedDuringEditing:)
                                                  name:@"SongSavedDuringEdit"
                                                object:nil];
-    lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
-    
     stackController = [[StackController alloc] init];
     
     [self setProductionModeValue];

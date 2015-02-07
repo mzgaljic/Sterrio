@@ -31,5 +31,6 @@
 
 //crucial for this to work (Marks add-on)
 - (void)setTableForCoreDataView:(UITableView *)tableView;
+- (void)setSearchBar:(MySearchBar *)searchBar;
 
 @end
