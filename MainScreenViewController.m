@@ -133,6 +133,7 @@ const short segmentedControlHeight = 50;
     currentController = [self.pageViewController.viewControllers objectAtIndex:0];
     self.currentVCIndex = currentController.view.tag;
     [self.segmentedVcControl setSelectedSegmentIndex:self.currentVCIndex animated:YES];
+    [self setupNavBarForCurrentVc];
 }
 
 #pragma mark - Page Controller added functions
@@ -249,10 +250,15 @@ const short segmentedControlHeight = 50;
         NSArray *rightBarButtonItems = [currentVC rightBarButtonItemsForNavigationBar];
         NSString *navBarTitle = [currentVC titleOfNavigationBar];
         
-        self.navigationItem.leftBarButtonItems = leftBarButtonItems;
+        [self.navigationItem setLeftBarButtonItems:leftBarButtonItems animated:YES];
         self.navigationItem.leftItemsSupplementBackButton = YES;
-        self.navigationItem.rightBarButtonItems = rightBarButtonItems;
+        [self.navigationItem setRightBarButtonItems:rightBarButtonItems animated:YES];
         self.navigationItem.title = navBarTitle;
+    } else{
+        [self.navigationItem setLeftBarButtonItems:nil animated:YES];
+        self.navigationItem.leftItemsSupplementBackButton = YES;
+        [self.navigationItem setRightBarButtonItems:nil animated:YES];
+        self.navigationItem.title = nil;
     }
 }
 

@@ -13,13 +13,13 @@
     BOOL videoPlayerIsExpanded;
     BOOL canIgnoreToolbar;  //navigation controller toolbar
     CGRect currentPlayerFrame;
+    short SMALL_VIDEO_WIDTH;
+    short SMALL_VIDEO_FRAME_PADDING;
 }
 @end
 
 @implementation SongPlayerCoordinator
 @synthesize delegate = _delegate;
-
-static const short SMALL_VIDEO_WIDTH = 200;
 
 #pragma mark - Class lifecycle stuff
 + (instancetype)sharedInstance
@@ -41,6 +41,12 @@ static const short SMALL_VIDEO_WIDTH = 200;
         else
             videoPlayerIsExpanded = NO;
         canIgnoreToolbar = YES;
+        SMALL_VIDEO_FRAME_PADDING = 10;
+        
+        //make small video width smaller than usual on older (small) devices
+        SMALL_VIDEO_WIDTH = [UIScreen mainScreen].bounds.size.width/2.0 - SMALL_VIDEO_FRAME_PADDING;
+        if(SMALL_VIDEO_WIDTH > 200)
+            SMALL_VIDEO_WIDTH = 200;
     }
     return self;
 }
@@ -209,8 +215,6 @@ static const short SMALL_VIDEO_WIDTH = 200;
 - (CGRect)smallPlayerFrameInPortrait
 {
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
-    short padding = 10;
-    short tabBarHeight = 49;
     short toolbarHeight = 44;
     int width, height, x, y;
     
@@ -218,13 +222,13 @@ static const short SMALL_VIDEO_WIDTH = 200;
     if(canIgnoreToolbar){
         width = SMALL_VIDEO_WIDTH;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
-        x = window.frame.size.width - width - padding;
-        y = window.frame.size.height - tabBarHeight - height - padding;
+        x = window.frame.size.width - width - SMALL_VIDEO_FRAME_PADDING;
+        y = window.frame.size.height - height - SMALL_VIDEO_FRAME_PADDING;
     } else{
         width = SMALL_VIDEO_WIDTH - 70;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
-        x = window.frame.size.width - width - padding;
-        y = window.frame.size.height - toolbarHeight - height - padding;
+        x = window.frame.size.width - width - SMALL_VIDEO_FRAME_PADDING;
+        y = window.frame.size.height - toolbarHeight - height - SMALL_VIDEO_FRAME_PADDING;
     }
 
     return CGRectMake(x, y, width, height);
@@ -233,7 +237,6 @@ static const short SMALL_VIDEO_WIDTH = 200;
 - (CGRect)smallPlayerFrameInLandscape
 {
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
-    short padding = 10;
     short toolbarHeight = 34;
     int width, height, x, y;
     
@@ -241,13 +244,13 @@ static const short SMALL_VIDEO_WIDTH = 200;
     if(canIgnoreToolbar){
         width = SMALL_VIDEO_WIDTH;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
-        x = window.frame.size.width - width - padding;
-        y = window.frame.size.height - height - padding;
+        x = window.frame.size.width - width - SMALL_VIDEO_FRAME_PADDING;
+        y = window.frame.size.height - height - SMALL_VIDEO_FRAME_PADDING;
     } else{
         width = SMALL_VIDEO_WIDTH - 70;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
-        x = window.frame.size.width - width - padding;
-        y = window.frame.size.height - toolbarHeight - height - padding;
+        x = window.frame.size.width - width - SMALL_VIDEO_FRAME_PADDING;
+        y = window.frame.size.height - toolbarHeight - height - SMALL_VIDEO_FRAME_PADDING;
     }
     
     return CGRectMake(x, y, width, height);
