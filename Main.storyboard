@@ -47,9 +47,9 @@
                     <connections>
                         <outlet property="tableView" destination="ldN-Sb-KAY" id="r33-CV-H21"/>
                         <segue destination="3Uz-T4-v7l" kind="modal" identifier="coreDataProblem" id="EIV-il-cBz"/>
-                        <segue destination="5sU-IG-zJp" kind="modal" identifier="editingSongMasterSegue" modalTransitionStyle="coverVertical" id="pcS-p1-vd3"/>
                         <segue destination="Lxg-v4-Z1q" kind="modal" identifier="settingsSegue" modalTransitionStyle="coverVertical" id="gkr-Yw-cad"/>
                         <segue destination="V5K-xF-P6M" kind="modal" identifier="addMusicToLibSegue" modalTransitionStyle="coverVertical" id="mNA-W8-wpb"/>
+                        <segue destination="5sU-IG-zJp" kind="modal" identifier="editingSongMasterSegue" id="uGA-Vg-kq2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZEl-et-cnY" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -873,7 +873,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ffq-2h-bd7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2993" y="-1358"/>
+            <point key="canvasLocation" x="2889" y="-1358"/>
         </scene>
         <!--Master Song Editor View Controller-->
         <scene sceneID="IVR-fT-X9f">
@@ -1074,7 +1074,7 @@
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
         <segue reference="7Sy-qq-35y"/>
-        <segue reference="mNA-W8-wpb"/>
         <segue reference="gkr-Yw-cad"/>
+        <segue reference="mNA-W8-wpb"/>
     </inferredMetricsTieBreakers>
 </document>

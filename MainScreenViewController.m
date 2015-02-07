@@ -243,14 +243,17 @@ const short segmentedControlHeight = 50;
 {
     //MainScreenNavBarDelegate
     id<NavBarViewControllerDelegate> currentVC = [self allViewControllers][self.currentVCIndex];
-    NSArray *leftBarButtonItems = [currentVC leftBarButtonItemsForNavigationBar];
-    NSArray *rightBarButtonItems = [currentVC rightBarButtonItemsForNavigationBar];
-    NSString *navBarTitle = [currentVC titleOfNavigationBar];
     
-    self.navigationItem.leftBarButtonItems = leftBarButtonItems;
-    self.navigationItem.leftItemsSupplementBackButton = YES;
-    self.navigationItem.rightBarButtonItems = rightBarButtonItems;
-    self.navigationItem.title = navBarTitle;
+    if([currentVC conformsToProtocol:@protocol(NavBarViewControllerDelegate)]){
+        NSArray *leftBarButtonItems = [currentVC leftBarButtonItemsForNavigationBar];
+        NSArray *rightBarButtonItems = [currentVC rightBarButtonItemsForNavigationBar];
+        NSString *navBarTitle = [currentVC titleOfNavigationBar];
+        
+        self.navigationItem.leftBarButtonItems = leftBarButtonItems;
+        self.navigationItem.leftItemsSupplementBackButton = YES;
+        self.navigationItem.rightBarButtonItems = rightBarButtonItems;
+        self.navigationItem.title = navBarTitle;
+    }
 }
 
 - (void)setupSegmentedControl

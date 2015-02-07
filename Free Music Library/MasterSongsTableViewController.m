@@ -13,6 +13,10 @@
 @property (nonatomic, assign) int selectedRowIndexValue;
 @property (nonatomic, strong) MySearchBar *searchBar;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+//used so i can retain control over the "greying out" effect from this VC.
+@property (nonatomic, strong) NSArray *rightBarButtonItems;
+@property (nonatomic, strong) UIBarButtonItem *editButton;
 @end
 
 @implementation MasterSongsTableViewController
@@ -30,7 +34,7 @@ static BOOL haveCheckedCoreDataInit = NO;
                                                                 action:@selector(settingsButtonTapped)];
     UIBarButtonItem *posSpaceAdjust = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     [posSpaceAdjust setWidth:28];
-
+    self.editButton = editButton;
     return @[settings, posSpaceAdjust, editButton];
 }
 
@@ -41,7 +45,8 @@ static BOOL haveCheckedCoreDataInit = NO;
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:addItem
                                                                                target:self
                                                                                action:@selector(addButtonPressed)];
-    return @[addButton];
+    self.rightBarButtonItems = @[addButton];
+    return self.rightBarButtonItems;
 }
 
 - (NSString *)titleOfNavigationBar
@@ -60,16 +65,18 @@ static BOOL haveCheckedCoreDataInit = NO;
     if(self.editing)
     {
         //leaving editing mode now
-        [super setEditing:NO animated:YES];
-        for(UIBarButtonItem *abutton in self.navigationItem.rightBarButtonItems){
+        [self setEditing:NO animated:YES];
+        [self.tableView setEditing:NO animated:YES];
+        for(UIBarButtonItem *abutton in self.rightBarButtonItems){
             [self makeBarButtonItemNormal:abutton];
         }
     }
     else
     {
         //entering editing mode now
-        [super setEditing:YES animated:YES];
-        for(UIBarButtonItem *abutton in self.navigationItem.rightBarButtonItems){
+        [self setEditing:YES animated:YES];
+        [self.tableView setEditing:YES animated:YES];
+        for(UIBarButtonItem *abutton in self.rightBarButtonItems){
             [self makeBarButtonItemGrey: abutton];
         }
     }
@@ -341,6 +348,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
     }
     
+    cell.editingAccessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
+                                                             color:[[UIColor defaultAppColorScheme] lighterColor]];
     // Set up other aspects of the cell content.
     Song *song;
     if(self.displaySearchResults)
@@ -384,12 +393,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             if ([indexPath isEqual:cellIndexPath]) {
                 // Only set cell image if the cell currently being displayed is the one that actually required this image.
                 // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
-                UIImage* cellImg = cell.imageView.image;
-                NSData *cellImgData = UIImagePNGRepresentation(cellImg);
-                NSData *newImgData = UIImagePNGRepresentation(albumArt);
-                if ([cellImgData isEqualToData:newImgData]){
-                    return;
-                }
                 
                 [UIView transitionWithView:cell.imageView
                                   duration:MZCellImageViewFadeDuration
@@ -452,19 +455,18 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     self.selectedRowIndexValue = (int)indexPath.row;
-    UIBarButtonItem *editButton = self.navigationItem.leftBarButtonItems[2];
     Song *selectedSong;
     if(self.displaySearchResults)
         selectedSong = [self.searchFetchedResultsController objectAtIndexPath:indexPath];
     else
         selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
-    if([editButton.title isEqualToString:@"Edit"]){  //tapping song plays the song
+    if([self.editButton.title isEqualToString:@"Edit"]){  //tapping song plays the song
         short code = [GenreConstants noGenreSelectedGenreCode];
         [MusicPlaybackController newQueueWithSong:selectedSong album:nil artist:nil playlist:nil genreCode:code skipCurrentSong:YES];
         [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:self];
         
-    } else if([editButton.title isEqualToString:@"Done"]){  //tapping song triggers edit segue
+    } else if([self.editButton.title isEqualToString:@"Done"]){  //tapping song triggers edit segue
         
         //now segue to modal view where user can edit the tapped song
         [self performSegueWithIdentifier:@"editingSongMasterSegue" sender:selectedSong];
