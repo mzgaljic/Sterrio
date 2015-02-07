@@ -246,7 +246,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
 }
 
 - (void)viewDidDisappear:(BOOL)animated

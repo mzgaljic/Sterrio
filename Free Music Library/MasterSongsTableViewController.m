@@ -108,9 +108,9 @@ static BOOL haveCheckedCoreDataInit = NO;
         //now hide it by default
         __weak UISearchBar *weakSearchBar = self.searchBar;
         __weak UITableView *weakTableView = self.tableView;
-        [UIView animateWithDuration:0.8 animations:^{
+        [UIView animateWithDuration:0.5f delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             weakTableView.contentOffset = CGPointMake(0, weakSearchBar.frame.size.height);
-        }];
+        } completion:nil];
     }
 }
 
@@ -194,18 +194,14 @@ static BOOL lastSortOrder;
 {
     [super viewWillAppear:animated];
     [self setUpSearchBar];
+    BOOL fetchedStyle = NO;
     
     //must be called in viewWillAppear, and after allSongsLibrary is refreshed
     if(self.searchFetchedResultsController)
     {
         self.searchFetchedResultsController = nil;
         [self setFetchedResultsControllerAndSortStyle];
-        lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
-    }
-    
-    if(lastSortOrder != [AppEnvironmentConstants smartAlphabeticalSort])
-    {
-        [self setFetchedResultsControllerAndSortStyle];
+        fetchedStyle = YES;
         lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
     }
     
@@ -214,14 +210,26 @@ static BOOL lastSortOrder;
         self.tableView.tableHeaderView = nil;
     }
     
-    [self setFetchedResultsControllerAndSortStyle];
+    if(lastSortOrder != [AppEnvironmentConstants smartAlphabeticalSort])
+    {
+        if(! fetchedStyle)
+            [self setFetchedResultsControllerAndSortStyle];
+        lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
+        [self setFetchedResultsControllerAndSortStyle];
+    }
+    if(self.fetchedResultsController == nil)
+        [self setFetchedResultsControllerAndSortStyle];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     if(haveCheckedCoreDataInit){
-        [self.tableView reloadData];  //needed to update the font sizes and bold font (if changed in settings)
+        //needed to update the font sizes and bold font (if changed in settings)
+        if(lastSortOrder != [AppEnvironmentConstants smartAlphabeticalSort])
+        {
+            [self.tableView reloadData];
+        }
         //need to check because when user presses back button, tab bar isnt always hidden
         [self prefersStatusBarHidden];
     }
@@ -376,6 +384,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             if ([indexPath isEqual:cellIndexPath]) {
                 // Only set cell image if the cell currently being displayed is the one that actually required this image.
                 // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
+                UIImage* cellImg = cell.imageView.image;
+                NSData *cellImgData = UIImagePNGRepresentation(cellImg);
+                NSData *newImgData = UIImagePNGRepresentation(albumArt);
+                if ([cellImgData isEqualToData:newImgData]){
+                    return;
+                }
+                
                 [UIView transitionWithView:cell.imageView
                                   duration:MZCellImageViewFadeDuration
                                    options:UIViewAnimationOptionTransitionCrossDissolve

@@ -449,7 +449,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
             [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:YES];
             [self.tableView insertSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:YES];
             [self.tableView endUpdates];
-
             return;
         }
         
