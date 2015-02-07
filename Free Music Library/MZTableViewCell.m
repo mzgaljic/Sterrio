@@ -33,7 +33,7 @@ short const textLabelPaddingFromImage = 15;
 
     //now do the same for detail text label
     CGRect detailTextlabelFrame = self.detailTextLabel.frame;
-    detailTextlabelFrame.size.width = textlabelFrame.size.width;
+    detailTextlabelFrame.size.width = detailTextlabelFrame.size.width + detailTextlabelFrame.origin.x - self.imageView.frame.size.width;
     detailTextlabelFrame.origin.x = textlabelFrame.origin.x;
     self.detailTextLabel.frame = detailTextlabelFrame;
 }

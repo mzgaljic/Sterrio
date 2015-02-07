@@ -293,7 +293,6 @@ static int numTimesVCLoaded = 0;
             else
                 [self configureSongAndArtistAlbumLabelFramesAnimated:NO onRotation:NO];
         }
-        
     }
 }
 
