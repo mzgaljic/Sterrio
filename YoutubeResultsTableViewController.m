@@ -31,6 +31,7 @@
 @property (nonatomic, assign) BOOL searchInitiatedAlready;
 @property (nonatomic, assign) BOOL activityIndicatorOnScreen;
 @property (nonatomic, strong) NSString *lastSuccessfullSearchString;
+@property (nonatomic, strong) NSMutableArray *lastSuccessfullSuggestions;
 @property (nonatomic, assign) float heightOfScreenRotationIndependant;
 //view isn't actually on top of tableView, but it looks like it. Call "turnTableViewIntoUIView" prior to setting this value!
 @property (nonatomic, strong) UIView *viewOnTopOfTable;
@@ -70,6 +71,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     _searchBar = nil;
     _searchResults = nil;
     _searchSuggestions = nil;
+    _lastSuccessfullSuggestions = nil;
     _cancelButton = nil;
     _scrollToTopButton = nil;
     _viewOnTopOfTable = nil;
@@ -152,6 +154,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     
     _searchSuggestions = [NSMutableArray array];
     _searchResults = [NSMutableArray array];
+    _lastSuccessfullSuggestions = [NSMutableArray array];
     
     self.navigationController.toolbarHidden = NO;
     _navBar.title = @"Adding Music";
@@ -286,6 +289,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 {
     //only going to use 5 of the 10 results returned. 10 is too much (searchSuggestions array is already empty-emptied in search bar text did change)
     [_searchSuggestions removeAllObjects];
+    [_lastSuccessfullSuggestions removeAllObjects];
     
     int upperBound = -1;
     if(arrayOfNSStrings.count >= 5)
@@ -293,8 +297,10 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     else
         upperBound = (int)arrayOfNSStrings.count;
     
-    for(int i = 0; i < upperBound; i++)
+    for(int i = 0; i < upperBound; i++){
         [_searchSuggestions addObject:[arrayOfNSStrings[i] copy]];
+        [_lastSuccessfullSuggestions addObject:[arrayOfNSStrings[i] copy]];
+    }
     arrayOfNSStrings = nil;
     
     [self.tableView reloadData];
@@ -374,6 +380,14 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     self.displaySearchResults = NO;
     _navBar.title = @"Adding Music";
     [_searchBar setShowsCancelButton:YES animated:YES];
+
+    if(self.searchInitiatedAlready){
+        [self.tableView beginUpdates];
+        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:YES];
+        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:YES];
+        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:YES];
+        [self.tableView endUpdates];
+    }
     [self.tableView reloadData];
 }
 
@@ -406,15 +420,22 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         [self myPreDealloc];
         [self dismissViewControllerAnimated:YES completion:nil];
     }else{
-        //setting it both ways, do to nav bar title bug
+        //setting it both ways, due to nav bar title bug
         self.navigationController.navigationBar.topItem.title = @"Search Results";
         _navBar.title = @"Search Results";
+        
+        //restore state of search bar and table before uncommited search bar edit began
+        [_searchBar setText:_lastSuccessfullSearchString];
+        if(userClearedTextField)
+            [_searchSuggestions addObjectsFromArray:_lastSuccessfullSuggestions];
+        userClearedTextField = NO;
         
         if(self.displaySearchResults == NO && _searchResults.count > 0){  //bring user back to previous results
             //restore state of search bar before uncommited search bar edit began
             [_searchBar setText:_lastSuccessfullSearchString];
             
-            [_searchSuggestions removeAllObjects];
+            //[_searchSuggestions removeAllObjects];
+            
             [_searchBar resignFirstResponder];
             self.displaySearchResults = YES;
             self.tableView.scrollEnabled = YES;
@@ -423,25 +444,27 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
             [_searchBar setShowsCancelButton:NO animated:YES];
             [_searchBar resignFirstResponder];
             
-            [self.tableView reloadData];
+            [self.tableView beginUpdates];
+            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:YES];
+            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:YES];
+            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:YES];
+            [self.tableView endUpdates];
+
             return;
         }
-        //restore state of search bar before uncommited search bar edit began
-        [_searchBar setText:_lastSuccessfullSearchString];
         
         //dismiss search bar and hide cancel button
         [_searchBar setShowsCancelButton:NO animated:YES];
         [_searchBar resignFirstResponder];
         
-        [_searchResults removeAllObjects];
-        [_searchSuggestions removeAllObjects];
+        userClearedTextField = NO;
     }
 }
 
+static BOOL userClearedTextField = NO;
 //User typing as we speak, fetch latest results to populate results as they type
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    
     if(searchText.length != 0){
         if(! self.displaySearchResults)
             self.tableView.scrollEnabled = YES;
@@ -453,8 +476,11 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     }
     
     else{  //user cleared the textField
+        userClearedTextField = YES;
         if(! self.displaySearchResults)
             self.tableView.scrollEnabled = NO;
+        
+        int numSearchSuggestions = (int)_searchSuggestions.count;
         
         if([searchBar isFirstResponder])  //keyboard on screen
             [_searchSuggestions removeAllObjects];
@@ -463,10 +489,16 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
             [_searchSuggestions removeAllObjects];
         }
         self.displaySearchResults = NO;
-        [self.tableView reloadData];
+        
+        NSMutableArray *paths = [NSMutableArray array];
+        for(int i = 0; i < numSearchSuggestions; i++)
+            [paths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
+        
+        [self.tableView beginUpdates];
+        [self.tableView deleteRowsAtIndexPaths:paths withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView endUpdates];
     }
 }
-
 
 #pragma mark - TableView deleagte
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView

@@ -1,5 +1,5 @@
 //
-//  MainScreenNavBarDelegate.h
+//  MainScreenNavBarViewController.h
 //  Free Music Library
 //
 //  Created by Mark Zgaljic on 2/6/15.
@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@protocol MainScreenNavBarDelegate <NSObject>
+@protocol NavBarViewControllerDelegate <NSObject>
 
 - (NSArray *)leftBarButtonItemsForNavigationBar;
 - (NSArray *)rightBarButtonItemsForNavigationBar;

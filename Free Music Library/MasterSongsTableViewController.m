@@ -22,37 +22,6 @@ static BOOL haveCheckedCoreDataInit = NO;
 #pragma mark - MainScreenNavBarItem Delegate
 - (NSArray *)leftBarButtonItemsForNavigationBar
 {
-    return nil;
-}
-
-- (NSArray *)rightBarButtonItemsForNavigationBar
-{
-    return nil;
-}
-
-- (NSString *)titleOfNavigationBar
-{
-    return nil;
-}
-
-#pragma mark - Miscellaneous
-- (void)setProductionModeValue
-{
-    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
-}
-
-- (void)setUpNavBarItems
-{
-    //right side of nav bar
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self
-                                                                               action:@selector(addButtonPressed)];
-    UINavigationController *navController = self.navigationController;
-    UINavigationItem *navItem = navController.navigationItem;
-    
-    NSArray *rightBarButtonItems = @[addButton];
-    self.navigationItem.rightBarButtonItems = rightBarButtonItems;
-    
-    //left side of nav bar
     UIBarButtonItem *editButton = self.editButtonItem;
     editButton.action = @selector(editTapped:);
     
@@ -61,8 +30,29 @@ static BOOL haveCheckedCoreDataInit = NO;
                                                                 action:@selector(settingsButtonTapped)];
     UIBarButtonItem *posSpaceAdjust = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     [posSpaceAdjust setWidth:28];
-    
-    self.navigationController.navigationItem.leftBarButtonItems = @[settings, posSpaceAdjust, editButton];
+
+    return @[settings, posSpaceAdjust, editButton];
+}
+
+- (NSArray *)rightBarButtonItemsForNavigationBar
+{
+    //right side of nav bar
+    NSInteger addItem = UIBarButtonSystemItemAdd;
+    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:addItem
+                                                                               target:self
+                                                                               action:@selector(addButtonPressed)];
+    return @[addButton];
+}
+
+- (NSString *)titleOfNavigationBar
+{
+    return @"Songs";
+}
+
+#pragma mark - Miscellaneous
+- (void)setProductionModeValue
+{
+    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
 }
                                    
 - (void)editTapped:(id)sender
@@ -114,6 +104,13 @@ static BOOL haveCheckedCoreDataInit = NO;
         _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search Songs"];
         _searchBar.delegate = self;
         self.tableView.tableHeaderView = _searchBar;
+        
+        //now hide it by default
+        __weak UISearchBar *weakSearchBar = self.searchBar;
+        __weak UITableView *weakTableView = self.tableView;
+        [UIView animateWithDuration:0.8 animations:^{
+            weakTableView.contentOffset = CGPointMake(0, weakSearchBar.frame.size.height);
+        }];
     }
 }
 
@@ -264,7 +261,6 @@ static BOOL lastSortOrder;
     stackController = [[StackController alloc] init];
     
     [self setProductionModeValue];
-    [self setUpNavBarItems];
     self.tableView.allowsSelectionDuringEditing = YES;
     
     //This is a ghetto version of an official welcome screen.

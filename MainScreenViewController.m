@@ -81,8 +81,6 @@ const short segmentedControlHeight = 50;
     self.pageViewController.view.frame = pageVcFrame;
     [self.view addSubview:self.pageViewController.view];
     [self.pageViewController didMoveToParentViewController:self];
-    
-    [self setupSegmentedControl];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -90,6 +88,7 @@ const short segmentedControlHeight = 50;
     [super viewWillAppear:animated];
     [self hideNavBarOnScrollIfPossible];
     [self setupNavBarForCurrentVc];
+    [self setupSegmentedControl];
 }
 
 #pragma mark - Page Controller Data Source
@@ -178,10 +177,12 @@ const short segmentedControlHeight = 50;
 - (void)setupViewControllerIndexesAndTags
 {
     SegmentedControlItem *item;
+    UIViewController *someVc;
     for(int i = 0; i < self.allSegmentedControlItems.count; i++){
         item = self.allSegmentedControlItems[i];
         item.indexAndTag = i;
-        item.viewController.view.tag = i;
+        someVc = (UIViewController *)item.viewController;
+        someVc.view.tag = i;
     }
 }
 
@@ -241,9 +242,15 @@ const short segmentedControlHeight = 50;
 - (void)setupNavBarForCurrentVc
 {
     //MainScreenNavBarDelegate
-    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Yo!" style:UIBarButtonItemStyleBordered target:nil action:nil];
-    self.navigationItem.leftBarButtonItems = @[item];
+    id<NavBarViewControllerDelegate> currentVC = [self allViewControllers][self.currentVCIndex];
+    NSArray *leftBarButtonItems = [currentVC leftBarButtonItemsForNavigationBar];
+    NSArray *rightBarButtonItems = [currentVC rightBarButtonItemsForNavigationBar];
+    NSString *navBarTitle = [currentVC titleOfNavigationBar];
+    
+    self.navigationItem.leftBarButtonItems = leftBarButtonItems;
     self.navigationItem.leftItemsSupplementBackButton = YES;
+    self.navigationItem.rightBarButtonItems = rightBarButtonItems;
+    self.navigationItem.title = navBarTitle;
 }
 
 - (void)setupSegmentedControl

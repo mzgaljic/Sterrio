@@ -7,12 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "MainScreenNavBarDelegate.h"
+#import "NavBarViewControllerDelegate.h"
 
 @interface SegmentedControlItem : NSObject
 
 ///The UIViewController associated with this item in the SegmentedControl.
-@property(nonatomic, strong) UIViewController *viewController;
+@property(nonatomic, strong) id<NavBarViewControllerDelegate> viewController;
 
 ///Text to display for this item in the SegmentedControl.
 @property(nonatomic, strong) NSString *itemName;
@@ -21,6 +21,6 @@
 ///within the implementation of the SegmentedControl.
 @property(nonatomic, assign) NSUInteger indexAndTag;
 
-- (instancetype)initWithViewController:(id<MainScreenNavBarDelegate>)vc itemName:(NSString *)name;
+- (instancetype)initWithViewController:(id<NavBarViewControllerDelegate>)vc itemName:(NSString *)name;
 
 @end

@@ -21,14 +21,14 @@
 #import "UIColor+ColorComparison.h"
 #import "MusicPlaybackController.h"
 #import "MasterSongEditorViewController.h"
-#import "MainScreenNavBarDelegate.h"
+#import "NavBarViewControllerDelegate.h"
 
 @class StackController;
 @interface MasterSongsTableViewController : CoreDataCustomTableViewController
                                                             <UISearchBarDelegate,
                                                             UITableViewDataSource,
                                                             UITableViewDelegate,
-                                                            MainScreenNavBarDelegate>
+                                                            NavBarViewControllerDelegate>
 {
     StackController *stackController;
 }

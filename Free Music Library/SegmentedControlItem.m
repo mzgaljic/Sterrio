@@ -10,7 +10,7 @@
 
 @implementation SegmentedControlItem
 
-- (instancetype)initWithViewController:(UIViewController *)vc itemName:(NSString *)name
+- (instancetype)initWithViewController:(id<NavBarViewControllerDelegate>)vc itemName:(NSString *)name
 {
     if([super init]){
         _itemName = name;
