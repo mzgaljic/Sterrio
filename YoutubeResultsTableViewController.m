@@ -365,7 +365,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 {
     //create search bar, add to viewController
     _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0)
-                                    placeholderText:@"Search YouTube for Music"];
+                                    placeholderText:@"Search YouTube"];
     _searchBar.delegate = self;
     self.tableView.tableHeaderView = _searchBar;
 }

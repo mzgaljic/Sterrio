@@ -11,6 +11,8 @@
 #import "PreferredFontSizeUtility.h"
 #import <SDCAlertView.h>
 
+//DONT FORGET TO ANIMATE SEARCH BAR IN VIEWDIDAPPEAR!!!!!
+
 @interface MasterGenreTableViewController ()
 @property(nonatomic, strong) NSMutableArray* allSongsInLibrary;
 @end

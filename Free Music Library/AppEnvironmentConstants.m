@@ -109,6 +109,7 @@ static BOOL icloudSettingsSync;
     return preferredSizeValue;
 }
 
+//integer between [1,6]
 + (void)setPreferredSizeSetting:(short)numUpToSix
 {
     [[NSUserDefaults standardUserDefaults] setInteger:numUpToSix forKey:PREFERRED_SIZE_KEY];

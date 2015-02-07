@@ -170,6 +170,7 @@ static BOOL lastSortOrder;
     
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
+    [self.searchBar updateFontSizeIfNecessary];
 }
 
 - (void)viewDidLoad

@@ -106,18 +106,21 @@ static BOOL haveCheckedCoreDataInit = NO;
 #pragma mark - UISearchBar
 - (void)setUpSearchBar
 {
-    if([self numberOfSongsInCoreDataModel] > 0 && _searchBar == nil){
+    if([self numberOfSongsInCoreDataModel] > 0){
+        BOOL needToAnimateUp = (self.searchBar == nil);
         //create search bar, add to viewController
-        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search Songs"];
+        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search Songs in My Library"];
         _searchBar.delegate = self;
         self.tableView.tableHeaderView = _searchBar;
         
-        //now hide it by default
-        __weak UISearchBar *weakSearchBar = self.searchBar;
-        __weak UITableView *weakTableView = self.tableView;
-        [UIView animateWithDuration:0.5f delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-            weakTableView.contentOffset = CGPointMake(0, weakSearchBar.frame.size.height);
-        } completion:nil];
+        if(needToAnimateUp){
+            //now hide it by default
+            __weak UISearchBar *weakSearchBar = self.searchBar;
+            __weak UITableView *weakTableView = self.tableView;
+            [UIView animateWithDuration:0.5f delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+                weakTableView.contentOffset = CGPointMake(0, weakSearchBar.frame.size.height);
+            } completion:nil];
+        }
     }
 }
 
@@ -240,6 +243,9 @@ static BOOL lastSortOrder;
         //need to check because when user presses back button, tab bar isnt always hidden
         [self prefersStatusBarHidden];
     }
+    
+    [self.searchBar updateFontSizeIfNecessary];
+    [self setUpSearchBar];
 }
 
 - (void)viewDidLoad

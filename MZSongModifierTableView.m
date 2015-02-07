@@ -99,6 +99,11 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     }
 }
 
+- (void)provideDefaultAlbumArt:(UIImage *)image
+{
+    [self setCurrentAlbumArt:image];
+}
+
 - (void)setProductionModeValue
 {
     PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];

@@ -47,6 +47,8 @@
 - (void)viewDidAppear:(BOOL)animated;
 - (void)didReceiveMemoryWarning;
 
+- (void)provideDefaultAlbumArt:(UIImage *)image;
+
 - (void)canShowAddToLibraryButton;
 
 //optional but very important methods

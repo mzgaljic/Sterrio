@@ -9,7 +9,11 @@
 #import <UIKit/UIKit.h>
 #import "UIImage+colorImages.h"
 #import "UIColor+LighterAndDarker.h"
+#import "SongTableViewFormatter.h"
 
 @interface MySearchBar : UISearchBar
 - (id)initWithFrame:(CGRect)frame placeholderText:(NSString *)text;
+
+- (void)updateFontSizeIfNecessary;
+
 @end

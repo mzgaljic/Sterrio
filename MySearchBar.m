@@ -8,14 +8,22 @@
 
 #import "MySearchBar.h"
 
+@interface MySearchBar ()
+{
+    UIColor *textAndCursorColor;
+}
+@end
 @implementation MySearchBar
 
 - (id)initWithFrame:(CGRect)frame
 {
     if([super initWithFrame:frame]){
+        textAndCursorColor = [[UIColor defaultAppColorScheme] lighterColor];
         self.placeholder = @"Search";
         self.keyboardType = UIKeyboardTypeASCIICapable;
         [self sizeToFit];
+        
+        [self customizeSearchBar];
     }
     return self;
 }
@@ -23,27 +31,77 @@
 - (id)initWithFrame:(CGRect)frame placeholderText:(NSString *)text
 {
     if([super initWithFrame:frame]){
+        textAndCursorColor = [[UIColor defaultAppColorScheme] lighterColor];
         self.placeholder = text;
         self.keyboardType = UIKeyboardTypeASCIICapable;
         [self sizeToFit];
         
-        //textfield background color   (rectangular white(=)
-        CGSize size = CGSizeMake(30, 30);
-        UIGraphicsBeginImageContextWithOptions(size, NO, 1);
-        //clip goes away for some reason..doesnt work  :(
-        //[[UIBezierPath bezierPathWithRoundedRect:CGRectMake(0,0,30,30) cornerRadius:4.0] addClip];
-        [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0,0,30,30) cornerRadius:4.0];
-        UIColor *prettyGreyColor = [UIColor whiteColor];
-        [prettyGreyColor setFill];
-        UIRectFill(CGRectMake(0, 0, size.width, size.height));
-        UIImage *prettyGreyBackgroundImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        [self setSearchFieldBackgroundImage:prettyGreyBackgroundImage forState:UIControlStateNormal];
-        
-        //blinking cursor color
-        self.tintColor = [[UIColor defaultAppColorScheme] lighterColor];
+        [self customizeSearchBar];
     }
     return self;
+}
+
+- (void)updateFontSizeIfNecessary
+{
+    [self setFontSizeBasedOnUserSettings];
+    [self setNeedsDisplay];
+}
+
+- (void)customizeSearchBar
+{
+    [self setFontSizeBasedOnUserSettings];
+    int prefSize = [AppEnvironmentConstants preferredSizeSetting];
+    short height;
+    switch (prefSize) {
+        case 1:
+            height = 28;
+            break;
+        case 2:
+            height = 28;
+            break;
+        case 3:
+            height = 28;
+            break;
+        case 4:
+            height = 28;
+            break;
+        case 5:
+            height = 30;
+            break;
+        case 6:
+            height = 35;
+            break;
+        default:
+            height = 28;
+            break;
+    }
+    //textfield background color, size of white fill, etc.
+    CGSize size = CGSizeMake(30, height);
+    UIGraphicsBeginImageContextWithOptions(size, NO, 1);
+    [[UIBezierPath bezierPathWithRoundedRect:CGRectMake(0,0,30,height) cornerRadius:3.0] addClip];
+    [[UIColor whiteColor] setFill];
+    UIRectFill(CGRectMake(0, 0, size.width, size.height));
+    UIImage *prettyGreyBackgroundImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    [self setSearchFieldBackgroundImage:prettyGreyBackgroundImage forState:UIControlStateNormal];
+    
+    //blinking cursor color
+    self.tintColor = textAndCursorColor;
+}
+
+- (void)setFontSizeBasedOnUserSettings
+{
+    float fontSize = [SongTableViewFormatter nonBoldSongLabelFontSize];
+    if(fontSize > 25)
+        fontSize = 25;
+    else if(fontSize < 18)
+        fontSize = 18;
+    //font size
+    NSDictionary *dict = @{
+                           NSFontAttributeName: [UIFont systemFontOfSize:fontSize],
+                           NSForegroundColorAttributeName : textAndCursorColor};
+    [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil]
+     setDefaultTextAttributes:dict];
 }
 
 @end

@@ -40,6 +40,7 @@
 		8734885319A1BBF4008CC6A5 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8727003F199F0F5600D71204 /* Model.xcdatamodeld */; };
 		87362AFD194E68A5004DB544 /* Deque.m in Sources */ = {isa = PBXBuildFile; fileRef = 87362AFC194E68A5004DB544 /* Deque.m */; };
 		87362B03194E9CDF004DB544 /* Stack.m in Sources */ = {isa = PBXBuildFile; fileRef = 87362B01194E9CDF004DB544 /* Stack.m */; };
+		873784DD1A85FCD200AA78A3 /* UIImage+Cropping.m in Sources */ = {isa = PBXBuildFile; fileRef = 873784DC1A85FCD200AA78A3 /* UIImage+Cropping.m */; };
 		87394BE31965FFE100E750B1 /* Queue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87394BE21965FFE100E750B1 /* Queue.m */; };
 		873CF45C1A45435E00716B52 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 873CF45B1A45435E00716B52 /* QuartzCore.framework */; };
 		873E14621A49ED0A008A385D /* SongPlayerViewDisplayUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 873E14611A49ED0A008A385D /* SongPlayerViewDisplayUtility.m */; };
@@ -214,6 +215,8 @@
 		87362B01194E9CDF004DB544 /* Stack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Stack.m; sourceTree = "<group>"; };
 		87362B02194E9CDF004DB544 /* Stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stack.h; sourceTree = "<group>"; };
 		873784DA1A85B79E00AA78A3 /* NavBarViewControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavBarViewControllerDelegate.h; sourceTree = "<group>"; };
+		873784DB1A85FCD200AA78A3 /* UIImage+Cropping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Cropping.h"; sourceTree = "<group>"; };
+		873784DC1A85FCD200AA78A3 /* UIImage+Cropping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Cropping.m"; sourceTree = "<group>"; };
 		87394BE11965FFE100E750B1 /* Queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Queue.h; sourceTree = "<group>"; };
 		87394BE21965FFE100E750B1 /* Queue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Queue.m; sourceTree = "<group>"; };
 		873CF45B1A45435E00716B52 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -522,6 +525,8 @@
 				87D37437199AA99700D3B70B /* UIColor+ColorComparison.m */,
 				87334409198DC915002B9E18 /* UIImage+colorImages.h */,
 				8733440A198DC915002B9E18 /* UIImage+colorImages.m */,
+				873784DB1A85FCD200AA78A3 /* UIImage+Cropping.h */,
+				873784DC1A85FCD200AA78A3 /* UIImage+Cropping.m */,
 				87FD38D51990A89200C8D5C3 /* UIImage+ColoringExistingImage.h */,
 				87FD38D61990A89200C8D5C3 /* UIImage+ColoringExistingImage.m */,
 				875B3824197AFF29008B4409 /* NSString+smartSort.h */,
@@ -1277,6 +1282,7 @@
 				87A453D8199C0891004D1319 /* UIImage+EYFixOrientation.m in Sources */,
 				87270032199E815000D71204 /* NSString+Levenshtein_Distance.m in Sources */,
 				87A453CD199C0891004D1319 /* ELCImagePickerController.m in Sources */,
+				873784DD1A85FCD200AA78A3 /* UIImage+Cropping.m in Sources */,
 				87BBBE061A58A78A00248E2F /* MySearchBar.m in Sources */,
 				8733440B198DC915002B9E18 /* UIImage+colorImages.m in Sources */,
 				87D47D93193428350057D49B /* MasterPlaylistTableViewController.m in Sources */,
