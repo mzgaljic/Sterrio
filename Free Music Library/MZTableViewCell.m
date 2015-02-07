@@ -9,24 +9,33 @@
 #import "MZTableViewCell.h"
 
 @implementation MZTableViewCell
+short const textLabelPaddingFromImage = 15;
 
 - (void) layoutSubviews
 {
     [super layoutSubviews];
     // Makes imageView get placed in the corner
-    self.imageView.frame = CGRectMake( 0, 0, 80, 80 );
+    CGRect originalImgFrame = self.imageView.frame;
+    self.imageView.frame = CGRectMake(0,
+                                      originalImgFrame.origin.y,
+                                      originalImgFrame.size.width,
+                                      originalImgFrame.size.height);
     
     // Get textlabel frame
-    //self.textLabel.backgroundColor = [UIColor blackColor];
     CGRect textlabelFrame = self.textLabel.frame;
-    
     // Figure out new width
-    textlabelFrame.size.width = textlabelFrame.size.width + textlabelFrame.origin.x - 90;
+    textlabelFrame.size.width = textlabelFrame.size.width + textlabelFrame.origin.x - self.imageView.frame.size.width;
     // Change origin to what we want
-    textlabelFrame.origin.x = 90;
-    
+    textlabelFrame.origin.x = originalImgFrame.origin.x + originalImgFrame.size.width;
     // Assign the the new frame to textLabel
     self.textLabel.frame = textlabelFrame;
+    
+
+    //now do the same for detail text label
+    CGRect detailTextlabelFrame = self.detailTextLabel.frame;
+    detailTextlabelFrame.size.width = textlabelFrame.size.width;
+    detailTextlabelFrame.origin.x = textlabelFrame.origin.x;
+    self.detailTextLabel.frame = detailTextlabelFrame;
 }
 
 @end

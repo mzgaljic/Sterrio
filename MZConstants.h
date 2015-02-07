@@ -28,6 +28,8 @@ extern short const MZMinutesInAnHour;
 extern short const MZSecondsInAMinute;
 extern short const MZLongestCellularPlayableDuration;
 
+extern float const MZCellImageViewFadeDuration;
+
 extern int const MZMinVideoPlayerSwipeLengthDown;
 extern int const MZMinVideoPlayerSwipeLengthUp;
 extern int const MZMaxVideoPlayerSwipeVariance;

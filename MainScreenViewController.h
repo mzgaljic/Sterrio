@@ -11,7 +11,7 @@
 #import "MasterSongsTableViewController.h"
 #import "SegmentedControlItem.h"
 
-@interface MainScreenViewController : UIPageViewController <UIPageViewControllerDataSource,
+@interface MainScreenViewController : MyViewController <UIPageViewControllerDataSource,
                                                         UIPageViewControllerDelegate>
 
 /**

@@ -29,7 +29,7 @@
 		<string>audio</string>
 	</array>
 	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
+	<string></string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -37,7 +37,7 @@
 	<key>UIStatusBarHidden</key>
 	<true/>
 	<key>UIStatusBarStyle</key>
-	<string>UIStatusBarStyleBlackTranslucent</string>
+	<string>UIStatusBarStyleBlackOpaque</string>
 	<key>UIStatusBarTintParameters</key>
 	<dict>
 		<key>UINavigationBar</key>

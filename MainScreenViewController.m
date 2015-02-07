@@ -11,18 +11,25 @@
 //page view controller constants
 const short transitionStyle = UIPageViewControllerTransitionStyleScroll;
 const short navigationOrientation = UIPageViewControllerNavigationOrientationHorizontal;
+const short segmentedControlHeight = 50;
 
 
 @interface MainScreenViewController()
 
+@property (nonatomic, strong) UIPageViewController *pageViewController;
+
 //controls which view controller is displayed at any given moment.
 @property (nonatomic, strong) HMSegmentedControl *segmentedVcControl;
+
+//Used in this case to contain an instance of HMSegmentedControl.
+@property (nonatomic, strong) UIView *stickyHeaderView;
 
 //Array of SegmentedControl items to switch between (contains VC pointers)
 @property (nonatomic, strong) NSArray *allSegmentedControlItems;
 
 //Currently selected view controller
 @property(nonatomic, assign) NSUInteger currentVCIndex;
+
 @end
 
 
@@ -31,14 +38,19 @@ const short navigationOrientation = UIPageViewControllerNavigationOrientationHor
 #pragma mark - ViewController Lifecycle
 - (instancetype)initWithSegmentedControlItems:(NSArray *)segmentedControlItems
 {
-    NSDictionary *options = [[NSMutableDictionary alloc] initWithCapacity:1];
-    CGFloat spacingVal = 4;
-    NSNumber *spacing = [NSNumber numberWithFloat:spacingVal];
-    [options setValue:spacing forKey:UIPageViewControllerOptionInterPageSpacingKey];
-
-    if([super initWithTransitionStyle:transitionStyle navigationOrientation:navigationOrientation options:options]){
+    if([super init]){
         _allSegmentedControlItems = segmentedControlItems;
         [self setupViewControllerIndexesAndTags];
+        
+        NSDictionary *options = [[NSMutableDictionary alloc] initWithCapacity:1];
+        CGFloat spacingVal = 4;
+        NSNumber *spacing = [NSNumber numberWithFloat:spacingVal];
+        [options setValue:spacing forKey:UIPageViewControllerOptionInterPageSpacingKey];
+        _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:transitionStyle
+                                                              navigationOrientation:navigationOrientation
+                                                                            options:options];
+        self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+        self.edgesForExtendedLayout = UIRectEdgeNone;
     }
     return self;
 }
@@ -46,47 +58,38 @@ const short navigationOrientation = UIPageViewControllerNavigationOrientationHor
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     
     self.currentVCIndex = 0;
-    self.dataSource = self;
-    self.delegate = self;
+    self.pageViewController.dataSource = self;
+    self.pageViewController.delegate = self;
     
     //can only add 1 VC on initialization!
-    [self setViewControllers:@[[self allViewControllers][self.currentVCIndex]]
+    [self.pageViewController setViewControllers:@[[self allViewControllers][self.currentVCIndex]]
                                       direction:UIPageViewControllerNavigationDirectionForward
                                        animated:NO
                                      completion:nil];
+    
+    int navBarHeight = self.navigationController.navigationBar.frame.size.height;
+    int heightFromTopOfScreen = navBarHeight + segmentedControlHeight;
+    
+    //containing the UIPageViewController within a container
+    CGRect pageVcFrame = CGRectMake(0,
+                                    heightFromTopOfScreen,
+                                    self.view.frame.size.width,
+                                    self.view.frame.size.height);
+    [self addChildViewController:self.pageViewController];
+    self.pageViewController.view.frame = pageVcFrame;
+    [self.view addSubview:self.pageViewController.view];
+    [self.pageViewController didMoveToParentViewController:self];
+    
+    [self setupSegmentedControl];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    NSMutableArray *sectionTitles;
-    sectionTitles = [[NSMutableArray alloc] initWithCapacity:self.allSegmentedControlItems.count];
-    for(SegmentedControlItem *item in self.allSegmentedControlItems){
-        [sectionTitles addObject:item.itemName];
-    }
-    
-    self.segmentedVcControl = [[HMSegmentedControl alloc] initWithSectionTitles:sectionTitles];
-    self.segmentedVcControl.frame = CGRectMake(0, 70, self.view.frame.size.width, 60);
-    self.segmentedVcControl.selectionStyle = HMSegmentedControlSelectionStyleFullWidthStripe;
-    self.segmentedVcControl.selectionIndicatorLocation = HMSegmentedControlSelectionIndicatorLocationDown;
-    [self.segmentedVcControl addTarget:self
-                                action:@selector(indexDidChangeForCustomSegmentedControl:)
-                      forControlEvents:UIControlEventValueChanged];
-    [self.shyNavBarManager setExtensionView:self.segmentedVcControl];
-    
-    //taking advantage of TLYShyBar library capabilities if possible...
-    UIViewController *onScreenVc = [self allViewControllers][self.currentVCIndex];
-    if ([onScreenVc respondsToSelector:@selector(tableView)]) {
-        UITableView *vcTableView = [onScreenVc performSelector:@selector(tableView)];
-        self.shyNavBarManager.scrollView = vcTableView;
-    }else if ([onScreenVc respondsToSelector:@selector(scrollView)]) {
-        UIScrollView *vcScrollView = [onScreenVc performSelector:@selector(scrollView)];
-        self.shyNavBarManager.scrollView = vcScrollView;
-    }
+    [self hideNavBarOnScrollIfPossible];
+    [self setupNavBarForCurrentVc];
 }
 
 #pragma mark - Page Controller Data Source
@@ -128,7 +131,7 @@ const short navigationOrientation = UIPageViewControllerNavigationOrientationHor
     if(! completed)
         return;
     UIViewController *currentController;
-    currentController = [self.viewControllers objectAtIndex:0];
+    currentController = [self.pageViewController.viewControllers objectAtIndex:0];
     self.currentVCIndex = currentController.view.tag;
     [self.segmentedVcControl setSelectedSegmentIndex:self.currentVCIndex animated:YES];
 }
@@ -138,19 +141,34 @@ const short navigationOrientation = UIPageViewControllerNavigationOrientationHor
 {
     if(self.currentVCIndex == index)
         return;
-    BOOL forward = (self.currentVCIndex < index);
-    self.currentVCIndex = index;
+    
+    int numVcsToPageThrough = abs((int)self.currentVCIndex - (int)index);
     NSInteger animateDirection;
-    if(forward)
-        animateDirection = UIPageViewControllerNavigationDirectionForward;
-    else
-        animateDirection =UIPageViewControllerNavigationDirectionReverse;
-    [self setViewControllers:@[[self allViewControllers][index]]
-                                      direction:animateDirection
-                                       animated:YES
-                                     completion:nil];
+    int forward = UIPageViewControllerNavigationDirectionForward;
+    int backward = UIPageViewControllerNavigationDirectionReverse;
+    BOOL animateForwards;
+    animateDirection = (animateForwards = self.currentVCIndex < index) ? forward : backward;
+
+    int iteratorIndex = (int)self.currentVCIndex;
+    UIViewController *currentIndexVc;
+    while(numVcsToPageThrough){
+        if(animateForwards)
+            currentIndexVc = [self allViewControllers][++iteratorIndex];
+        else
+            currentIndexVc = [self allViewControllers][--iteratorIndex];
+        
+        [self.pageViewController setViewControllers:@[currentIndexVc]
+                                          direction:animateDirection
+                                           animated:YES
+                                         completion:nil];
+        numVcsToPageThrough--;
+    }
+    
+    self.currentVCIndex = index;
+    [self setupNavBarForCurrentVc];
 }
 
+#pragma mark - Segmented Control targets
 - (void)indexDidChangeForCustomSegmentedControl:(UISegmentedControl *)sender
 {
     [self animatePageViewControllerScrollToIndex:[sender selectedSegmentIndex]];
@@ -175,6 +193,114 @@ const short navigationOrientation = UIPageViewControllerNavigationOrientationHor
         [allViewControllers addObject:item.viewController];
     }
     return allViewControllers;
+}
+
+- (HMSegmentedControl *)createNewSegmentedControlWithFrame:(CGRect)frame
+{
+    NSMutableArray *sectionTitles;
+    sectionTitles = [[NSMutableArray alloc] initWithCapacity:self.allSegmentedControlItems.count];
+    for(SegmentedControlItem *item in self.allSegmentedControlItems){
+        [sectionTitles addObject:item.itemName];
+    }
+    
+    if(self.segmentedVcControl != nil){
+        [self.segmentedVcControl removeFromSuperview];
+        self.segmentedVcControl = [[HMSegmentedControl alloc] initWithSectionTitles:sectionTitles];
+        self.segmentedVcControl.type = HMSegmentedControlTypeText;
+        self.segmentedVcControl.frame = frame;
+        self.segmentedVcControl.selectionStyle = HMSegmentedControlSelectionStyleFullWidthStripe;
+        short indicatorBelow = HMSegmentedControlSelectionIndicatorLocationDown;
+        //self.segmentedVcControl.selectionIndicatorColor
+        self.segmentedVcControl.selectionIndicatorLocation = indicatorBelow;
+        [self.segmentedVcControl addTarget:self
+                                    action:@selector(indexDidChangeForCustomSegmentedControl:)
+                          forControlEvents:UIControlEventValueChanged];
+        self.stickyHeaderView.frame = frame;
+        [self.stickyHeaderView addSubview:self.segmentedVcControl];
+
+    } else{
+        self.segmentedVcControl = [[HMSegmentedControl alloc] initWithSectionTitles:sectionTitles];
+        self.segmentedVcControl.type = HMSegmentedControlTypeText;
+        self.segmentedVcControl.frame = frame;
+        self.segmentedVcControl.selectionStyle = HMSegmentedControlSelectionStyleFullWidthStripe;
+        short indicatorBelow = HMSegmentedControlSelectionIndicatorLocationDown;
+        //self.segmentedVcControl.selectionIndicatorColor
+        self.segmentedVcControl.selectionIndicatorLocation = indicatorBelow;
+        [self.segmentedVcControl addTarget:self
+                                    action:@selector(indexDidChangeForCustomSegmentedControl:)
+                          forControlEvents:UIControlEventValueChanged];
+        self.stickyHeaderView = [[UIView alloc] initWithFrame:frame];
+        [self.view addSubview:self.stickyHeaderView];
+        [self.stickyHeaderView addSubview:self.segmentedVcControl];
+    }
+    [self.segmentedVcControl setSelectedSegmentIndex:self.currentVCIndex animated:NO];
+    return self.segmentedVcControl;
+}
+
+#pragma mark - GUI helpers
+- (void)setupNavBarForCurrentVc
+{
+    //MainScreenNavBarDelegate
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Yo!" style:UIBarButtonItemStyleBordered target:nil action:nil];
+    self.navigationItem.leftBarButtonItems = @[item];
+    self.navigationItem.leftItemsSupplementBackButton = YES;
+}
+
+- (void)setupSegmentedControl
+{
+    [self createNewSegmentedControlWithFrame:CGRectMake(0,
+                                                        0,
+                                                        self.view.frame.size.width,
+                                                        segmentedControlHeight)];
+}
+
+- (void)hideNavBarOnScrollIfPossible
+{
+    /*
+    NSOperatingSystemVersion ios8_0_1 = (NSOperatingSystemVersion){8, 0, 0};
+    if ([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:ios8_0_1]) {
+        // iOS 8 and above
+        self.pageViewController.navigationController.hidesBarsOnSwipe = YES;
+        self.pageViewController.navigationController.hidesBarsOnTap = NO;
+    }
+    */
+}
+
+#pragma mark - VC Rotation
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                duration:(NSTimeInterval)duration
+{
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    
+    float widthOfScreenRoationIndependant;
+    float heightOfScreenRotationIndependant;
+    float  a = [[UIScreen mainScreen] bounds].size.height;
+    float b = [[UIScreen mainScreen] bounds].size.width;
+    if(a < b)
+    {
+        heightOfScreenRotationIndependant = b;
+        widthOfScreenRoationIndependant = a;
+    }
+    else
+    {
+        widthOfScreenRoationIndependant = b;
+        heightOfScreenRotationIndependant = a;
+    }
+    
+    if(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight ||
+       toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft){
+        //landscape
+        [self createNewSegmentedControlWithFrame:CGRectMake(0,
+                                                            0,
+                                                            heightOfScreenRotationIndependant,
+                                                            segmentedControlHeight)];
+    } else{
+        //portrait
+        [self createNewSegmentedControlWithFrame:CGRectMake(0,
+                                                            0,
+                                                            widthOfScreenRoationIndependant,
+                                                            segmentedControlHeight)];
+    }
 }
 
 @end

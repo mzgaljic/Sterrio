@@ -39,7 +39,7 @@ pod 'JAMAccurateSlider', '~> 1.1'
 pod 'GCDiscreetNotificationView', '~> 1.0'
 
 #scrolling nav bar - breaks uitableviewcontrollers, need to use regular tableview.
-pod 'TLYShyNavBar'
+#pod 'TLYShyNavBar'
 
 #scrolling segmented control (like a tab bar almost). Spotify inspired.
 pod 'HMSegmentedControl'

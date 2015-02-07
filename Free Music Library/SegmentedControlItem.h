@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "MainScreenNavBarDelegate.h"
 
 @interface SegmentedControlItem : NSObject
 
@@ -20,6 +21,6 @@
 ///within the implementation of the SegmentedControl.
 @property(nonatomic, assign) NSUInteger indexAndTag;
 
-- (instancetype)initWithViewController:(UIViewController *)vc itemName:(NSString *)name;
+- (instancetype)initWithViewController:(id<MainScreenNavBarDelegate>)vc itemName:(NSString *)name;
 
 @end

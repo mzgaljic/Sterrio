@@ -213,6 +213,7 @@
 		87362AFC194E68A5004DB544 /* Deque.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Deque.m; sourceTree = "<group>"; };
 		87362B01194E9CDF004DB544 /* Stack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Stack.m; sourceTree = "<group>"; };
 		87362B02194E9CDF004DB544 /* Stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stack.h; sourceTree = "<group>"; };
+		873784DA1A85B79E00AA78A3 /* MainScreenNavBarDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainScreenNavBarDelegate.h; sourceTree = "<group>"; };
 		87394BE11965FFE100E750B1 /* Queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Queue.h; sourceTree = "<group>"; };
 		87394BE21965FFE100E750B1 /* Queue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Queue.m; sourceTree = "<group>"; };
 		873CF45B1A45435E00716B52 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -570,6 +571,7 @@
 			children = (
 				876335191A84052600A229C4 /* MainScreenViewController.h */,
 				8763351A1A84052600A229C4 /* MainScreenViewController.m */,
+				873784DA1A85B79E00AA78A3 /* MainScreenNavBarDelegate.h */,
 				87E980BB1A759CF300B428F0 /* Song Editor/Creator */,
 				879AB33E19F2188B00FD6582 /* The Player */,
 				878ACD5E192D38B6005938F5 /* Songs tab */,

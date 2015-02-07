@@ -569,7 +569,12 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
                 if (succeeded) {
                     // change the image in the cell
                     customCell.videoThumbnail.image = nil;
-                    customCell.videoThumbnail.image = image;
+                    [UIView transitionWithView:customCell.videoThumbnail
+                                      duration:MZCellImageViewFadeDuration
+                                       options:UIViewAnimationOptionTransitionCrossDissolve
+                                    animations:^{
+                                        customCell.videoThumbnail.image = image;
+                                    } completion:nil];
                 }
             }];
             ytVideo = nil;

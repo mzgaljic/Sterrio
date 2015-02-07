@@ -19,6 +19,22 @@
 static BOOL PRODUCTION_MODE;
 static BOOL haveCheckedCoreDataInit = NO;
 
+#pragma mark - MainScreenNavBarItem Delegate
+- (NSArray *)leftBarButtonItemsForNavigationBar
+{
+    return nil;
+}
+
+- (NSArray *)rightBarButtonItemsForNavigationBar
+{
+    return nil;
+}
+
+- (NSString *)titleOfNavigationBar
+{
+    return nil;
+}
+
 #pragma mark - Miscellaneous
 - (void)setProductionModeValue
 {
@@ -30,6 +46,9 @@ static BOOL haveCheckedCoreDataInit = NO;
     //right side of nav bar
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self
                                                                                action:@selector(addButtonPressed)];
+    UINavigationController *navController = self.navigationController;
+    UINavigationItem *navItem = navController.navigationItem;
+    
     NSArray *rightBarButtonItems = @[addButton];
     self.navigationItem.rightBarButtonItems = rightBarButtonItems;
     
@@ -43,7 +62,7 @@ static BOOL haveCheckedCoreDataInit = NO;
     UIBarButtonItem *posSpaceAdjust = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     [posSpaceAdjust setWidth:28];
     
-    self.navigationItem.leftBarButtonItems = @[settings, posSpaceAdjust, editButton];
+    self.navigationController.navigationItem.leftBarButtonItems = @[settings, posSpaceAdjust, editButton];
 }
                                    
 - (void)editTapped:(id)sender
@@ -317,8 +336,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         // Without this code, previous images are displayed against the new people during rapid scrolling.
         cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
     }
-    cell.layoutMargins = UIEdgeInsetsZero;
-    cell.preservesSuperviewLayoutMargins = NO;
     
     // Set up other aspects of the cell content.
     Song *song;
@@ -363,7 +380,12 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             if ([indexPath isEqual:cellIndexPath]) {
                 // Only set cell image if the cell currently being displayed is the one that actually required this image.
                 // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
-                cell.imageView.image = albumArt;
+                [UIView transitionWithView:cell.imageView
+                                  duration:MZCellImageViewFadeDuration
+                                   options:UIViewAnimationOptionTransitionCrossDissolve
+                                animations:^{
+                                    cell.imageView.image = albumArt;
+                                } completion:nil];
             }
         });
     }];
