@@ -21,8 +21,7 @@
 
 @interface YoutubeResultsTableViewController ()
 {
-    UIActivityIndicatorView *cellImgSpinner;
-    UIActivityIndicatorView *cellAccessorySpinner;
+    UIActivityIndicatorView *loadingMoreResultsSpinner;
 }
 @property (nonatomic, strong) MySearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray *searchResults;
@@ -43,6 +42,7 @@
 @property (nonatomic, assign) BOOL scrollToTopButtonVisible;
 @property (nonatomic, assign) BOOL networkErrorLoadingMoreResults;
 @property (nonatomic, assign) BOOL noMoreResultsToDisplay;
+@property (nonatomic, assign) BOOL waitingOnNextPageResults;
 @end
 
 @implementation YoutubeResultsTableViewController
@@ -66,8 +66,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)myPreDealloc
 {
     _searchBar.delegate = nil;
-    cellImgSpinner = nil;
-    cellAccessorySpinner = nil;
+    loadingMoreResultsSpinner = nil;
     _searchBar = nil;
     _searchResults = nil;
     _searchSuggestions = nil;
@@ -245,6 +244,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 //"loading more" results for the current search has completed, and we got the additional results
 - (void)ytVideoNextPageResultsDidCompleteWithResults:(NSArray *)moreYouTubeVideoObjects
 {
+    self.waitingOnNextPageResults = NO;
     NSUInteger count = _searchResults.count;
     NSUInteger moreResultsCount = moreYouTubeVideoObjects.count;
     
@@ -268,20 +268,17 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     moreYouTubeVideoObjects = nil;
     
     _networkErrorLoadingMoreResults = NO;
-    cellImgSpinner = nil;
-    [cellAccessorySpinner stopAnimating];
-    cellAccessorySpinner.hidden = YES;
+    [loadingMoreResultsSpinner stopAnimating];
 }
 
 - (void)ytvideoResultsNoMorePagesToView
 {
+    self.waitingOnNextPageResults = NO;
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
     UITableViewCell *loadMoreCell = [self.tableView cellForRowAtIndexPath:indexPath];
     //change "Load More" button
     loadMoreCell.textLabel.text = No_More_Results_To_Display_Msg;
-    cellImgSpinner = nil;
-    [cellAccessorySpinner stopAnimating];
-    cellAccessorySpinner.hidden = YES;
+    [loadingMoreResultsSpinner stopAnimating];
     _noMoreResultsToDisplay = YES;
 }
 
@@ -323,15 +320,14 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 - (void)networkErrorHasOccuredFetchingMorePages
 {
+    self.waitingOnNextPageResults = NO;
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
     UITableViewCell *loadMoreCell = [self.tableView cellForRowAtIndexPath:indexPath];
     //change "Load More" button
     loadMoreCell.textLabel.text = Network_Error_Loading_More_Results_Msg;
     loadMoreCell.textLabel.font = [UIFont systemFontOfSize:19];
     loadMoreCell.textLabel.textColor = [UIColor redColor];
-    cellImgSpinner = nil;
-    [cellAccessorySpinner stopAnimating];
-    cellAccessorySpinner.hidden = YES;
+    [loadingMoreResultsSpinner stopAnimating];
     _networkErrorLoadingMoreResults = YES;
 }
 
@@ -614,7 +610,6 @@ static BOOL userClearedTextField = NO;
             
         } else if(indexPath.section == 1){  //the "load more" button is in this section
             if(indexPath.row == 0){
-                //cell = [tableView dequeueReusableCellWithIdentifier:@"loadMoreButtonCell" forIndexPath:indexPath];
                 cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"loadMoreButtonCell"];
                 cell.textLabel.font = [UIFont boldSystemFontOfSize:20];
                 cell.textLabel.textAlignment = NSTextAlignmentCenter;
@@ -625,25 +620,14 @@ static BOOL userClearedTextField = NO;
                 else if(_noMoreResultsToDisplay){
                     cell.textLabel.text = No_More_Results_To_Display_Msg;
                     cell.textLabel.textColor = [UIColor blackColor];
-                }
-                else{
-                    cell.textLabel.text = @"More";
-                    cell.textLabel.textColor = [[UIColor defaultAppColorScheme] lighterColor];
-                    cell.textLabel.textAlignment = NSTextAlignmentCenter;
+                } else if(self.waitingOnNextPageResults){
                     
-                    //will be activated if avplayer is currently on screen
-                    cellImgSpinner = [[UIActivityIndicatorView alloc]
-                                      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                    loadingMoreResultsSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                    UIView *contentView = cell.contentView;
+                    loadingMoreResultsSpinner.center = cell.center;
                     
-                    UIImage *clearImg = [UIImage imageWithColor:[UIColor clearColor]
-                                                          width:cellImgSpinner.frame.size.width
-                                                         height:cellImgSpinner.frame.size.height];
-                    cell.imageView.image = clearImg;
-                    [cell.imageView addSubview:cellImgSpinner];
-                    //activated if avplayer is NOT on screen
-                    cellAccessorySpinner = [[UIActivityIndicatorView alloc]
-                                           initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                    [cell setAccessoryView:cellAccessorySpinner];
+                    [contentView addSubview:loadingMoreResultsSpinner];
+                    [loadingMoreResultsSpinner startAnimating];
                 }
             }
         }
@@ -705,19 +689,6 @@ static BOOL userClearedTextField = NO;
             UIImage *img = [UIImage imageWithCGImage:cell.videoThumbnail.image.CGImage];
             [self.navigationController pushViewController:[[YouTubeSongAdderViewController alloc] initWithYouTubeVideo:ytVideo thumbnail:img] animated:YES];
             
-        } else if(indexPath.section == 1){
-            //Load More button tapped
-            if(indexPath.row == 0){
-                if([MusicPlaybackController obtainRawPlayerView] != nil)  //player on screen
-                    [cellImgSpinner startAnimating];
-                else{
-                    cellAccessorySpinner.hidden = NO;
-                    [cellAccessorySpinner startAnimating];
-                }
-                
-                //try to load more results
-                [[YouTubeVideoSearchService sharedInstance] fetchNextYouTubePageUsingLastQueryString];
-            }
         }
     }
     else{  //auto suggestions in table
@@ -754,9 +725,12 @@ static BOOL userClearedTextField = NO;
     if(yes){
         self.tableView.scrollEnabled = NO;
         self.tableView.tableHeaderView = nil;
+        int navBarHeight = self.navigationController.navigationBar.frame.size.height;
+        short statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+        int offset = navBarHeight + statusBarHeight;
         _viewOnTopOfTable = [[UIView alloc] initWithFrame:self.tableView.frame];
         _progressViewHere = [[UIView alloc] initWithFrame:
-                                    CGRectMake(0, 0, _viewOnTopOfTable.frame.size.width, _viewOnTopOfTable.frame.size.height)];
+                                    CGRectMake(0, -offset, _viewOnTopOfTable.frame.size.width, _viewOnTopOfTable.frame.size.height)];
         [_viewOnTopOfTable addSubview:_progressViewHere];
         self.tableView.tableHeaderView = _viewOnTopOfTable;
     } else{
@@ -768,18 +742,34 @@ static BOOL userClearedTextField = NO;
     }
 }
 
-#pragma mark - Scrolling method implementation
+#pragma mark - Scrolling methods
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     if (self.isViewLoaded && self.view.window){
         //viewController is visible on screen (dont want pushed viewcontrollers to be affected by scrolling!
         CGPoint offset = [scrollView contentOffset];
         
-        // Are we less than 2 screen-size worths from the top of the contentView? (measurd in pixels)...that was a mouthful lol
+        // Are we less than 2 screen-size worths from the top of the contentView? (measured in pixels)...that was a mouthful lol
         if (offset.y <= (_heightOfScreenRotationIndependant * 2))
             [self showScrollToTopButton:NO];
         else
             [self showScrollToTopButton:YES];
+        
+        //now check if the user scrolled to the bottom to load more
+        
+        CGFloat scrollViewHeight = scrollView.bounds.size.height;
+        CGFloat scrollContentSizeHeight = scrollView.contentSize.height;
+        CGFloat bottomInset = scrollView.contentInset.bottom;
+        CGFloat scrollViewBottomOffset = scrollContentSizeHeight + bottomInset - scrollViewHeight;
+        
+        if (scrollView.contentOffset.y >= scrollViewBottomOffset){
+            if(self.waitingOnNextPageResults)
+                return;
+            self.waitingOnNextPageResults = YES;
+            //try to load more results
+            [[YouTubeVideoSearchService sharedInstance] fetchNextYouTubePageUsingLastQueryString];
+            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:1]] withRowAnimation:UITableViewRowAnimationNone];
+        }
     }
 }
 
@@ -793,7 +783,7 @@ static BOOL userClearedTextField = NO;
                                                                              target:self
                                                                              action:@selector(scrollToTopTapped)];
         //provides spacing so each button is on its respective side of the toolbar.
-        UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+        UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         
         toolbarItems = [NSArray arrayWithObjects:_cancelButton,flexibleSpace, scrollToTopButton, nil];
         _scrollToTopButtonVisible = YES;
