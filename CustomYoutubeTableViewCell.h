@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PreferredFontSizeUtility.h"
 
 @interface CustomYoutubeTableViewCell : UITableViewCell
 

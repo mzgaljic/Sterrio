@@ -10,8 +10,6 @@
 
 @interface CustomYoutubeTableViewCell ()
 {
-    float uiLabelWithA;
-    float uiLabelWithB;
 }
 @end
 
@@ -36,6 +34,13 @@
     [self adjustViewsForOrientation];
 }
 
+- (UIEdgeInsets)layoutMargins
+{
+    //it should match the padding (created in the method above), so the line starts exactly where
+    //the album art starts
+    return UIEdgeInsetsMake(0, 2, 0, 0);
+}
+
 - (void)orientationNeedsToChanged
 {
     [self adjustViewsForOrientation];
@@ -43,20 +48,41 @@
 
 - (void)adjustViewsForOrientation
 {
-    self.videoThumbnail.frame = CGRectMake(2, 4, 142, 80);  //same size in both orientations
-    CGRect videoTitleFrame = self.videoTitle.frame;
-    float currentX = videoTitleFrame.origin.x;
-    float currentY = videoTitleFrame.origin.y;
-    float currentHeight = videoTitleFrame.size.height;
+    float widthOfScreenRoationIndependant;
+    float heightOfScreenRotationIndependant;
+    float  a = [[UIScreen mainScreen] bounds].size.height;
+    float b = [[UIScreen mainScreen] bounds].size.width;
+    if(a < b)
+    {
+        heightOfScreenRotationIndependant = b;
+        widthOfScreenRoationIndependant = a;
+    }
+    else
+    {
+        widthOfScreenRoationIndependant = b;
+        heightOfScreenRotationIndependant = a;
+    }
     
-    //-10 is to account for the width that the thumbnail takes up,
-    //and the space between it and the uilabel.
-    float newDesiredWidth = (self.frame.size.width - (self.videoThumbnail.frame.size.width)) - 10;
-    self.videoTitle.frame = CGRectMake(currentX, currentY, newDesiredWidth, currentHeight);
+    int oneThirdDisplayWidth = widthOfScreenRoationIndependant * 0.45;
+    int height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:oneThirdDisplayWidth];
+    //same size in both orientations
+    self.videoThumbnail.frame = CGRectMake(2, 4, oneThirdDisplayWidth, height);
     
-    currentY = self.videoChannel.frame.origin.y;
-    currentHeight = self.videoChannel.frame.size.height;
-    self.videoChannel.frame = CGRectMake(currentX, currentY, newDesiredWidth, currentHeight);
+    short labelPadding = 10;
+    int labelOriginX = self.videoThumbnail.frame.origin.x + self.videoThumbnail.frame.size.width + labelPadding;
+    int labelWidths = (self.frame.size.width - (self.videoThumbnail.frame.size.width)) - labelPadding;
+    
+    self.videoTitle.frame = CGRectMake(labelOriginX,
+                                       self.videoTitle.frame.origin.y,
+                                       labelWidths,
+                                       self.videoTitle.frame.size.height);
+    self.videoChannel.frame = CGRectMake(labelOriginX,
+                                       self.videoChannel.frame.origin.y,
+                                       labelWidths,
+                                       self.videoChannel.frame.size.height);
+    
+    self.videoTitle.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    self.videoChannel.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
 }
 
 @end

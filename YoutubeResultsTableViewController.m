@@ -667,8 +667,27 @@ static BOOL userClearedTextField = NO;
     if(! self.displaySearchResults)
         return 45;
     else{
-        if(indexPath.section == 0)
-            return 90.0f;
+        if(indexPath.section == 0){
+            //show portrait player
+            float widthOfScreenRoationIndependant;
+            float heightOfScreenRotationIndependant;
+            float  a = [[UIScreen mainScreen] bounds].size.height;
+            float b = [[UIScreen mainScreen] bounds].size.width;
+            if(a < b)
+            {
+                heightOfScreenRotationIndependant = b;
+                widthOfScreenRoationIndependant = a;
+            }
+            else
+            {
+                widthOfScreenRoationIndependant = b;
+                heightOfScreenRotationIndependant = a;
+            }
+            
+            int oneThirdDisplayWidth = widthOfScreenRoationIndependant * 0.45;
+            int height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:oneThirdDisplayWidth];
+            return height + 8;
+        }
         else
             return 70.0f;
     }
