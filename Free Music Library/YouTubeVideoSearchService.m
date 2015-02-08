@@ -320,6 +320,13 @@
                                                 parentElement:mediaGroup];
         NSString *durationText = [TBXML valueOfAttributeNamed:@"duration"
                                                    forElement:mediaContent];
+        
+        //getting view count
+        TBXMLElement *stats = [TBXML childElementNamed:@"yt:statistics"
+                                              parentElement:root];
+        NSString *viewCountText = [TBXML valueOfAttributeNamed:@"viewCount"
+                                                   forElement:stats];
+#warning extracted video view count...do something with this lol.
 
         NSNumber *duration = [NSNumber numberWithInteger:[durationText integerValue]];
         NSDictionary *details = @{

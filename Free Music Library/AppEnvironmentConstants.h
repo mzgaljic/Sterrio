@@ -67,4 +67,9 @@ typedef enum {
 + (BOOL)icloudSettingsSync;
 + (void)set_iCloudSettingsSync:(BOOL)yesOrNo;
 
++ (int)navBarHeight;
++ (void)setNavBarHeight:(int)height;
++ (int)statusBarHeight;
++ (void)setStatusBarHeight:(int)height;
+
 @end

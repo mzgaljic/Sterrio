@@ -210,6 +210,14 @@ static BOOL haveCheckedCoreDataInit = NO;
         self.tableView.tableHeaderView = nil;
     }
     [self setUpSearchBar];
+    
+    //need to somewhat compesate since the last row was cut off (because in storyboard
+    //it thinks the tableview should also span under the nav bar...which i dont want lol).
+    int navBarHeight = [AppEnvironmentConstants navBarHeight];
+    self.tableView.frame = CGRectMake(0,
+                                      0,
+                                      self.view.frame.size.width,
+                                      self.view.frame.size.height - navBarHeight);
 }
 
 - (void)viewDidAppear:(BOOL)animated

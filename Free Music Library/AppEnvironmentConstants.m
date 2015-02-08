@@ -26,6 +26,9 @@ static BOOL boldName;
 static BOOL smartAlphabeticalSort;
 static BOOL icloudSettingsSync;
 
+static int navBarHeight;
+static short statusBarHeight;
+
 + (BOOL)isAppInProductionMode
 {
     return PRODUCTION_MODE;
@@ -175,6 +178,26 @@ static BOOL icloudSettingsSync;
 {
     [[NSUserDefaults standardUserDefaults] setBool:yesOrNo forKey:ICLOUD_SYNC];
     icloudSettingsSync = yesOrNo;
+}
+
++ (int)navBarHeight
+{
+    return navBarHeight;
+}
+
++ (void)setNavBarHeight:(int)height
+{
+    navBarHeight = height;
+}
+
++ (int)statusBarHeight
+{
+    return statusBarHeight;
+}
+
++ (void)setStatusBarHeight:(int)height
+{
+    statusBarHeight = height;
 }
 
 @end

@@ -58,6 +58,9 @@ const short segmentedControlHeight = 50;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    int navBarHeight = self.navigationController.navigationBar.frame.size.height;
+    [AppEnvironmentConstants setNavBarHeight:navBarHeight];
+    [AppEnvironmentConstants setStatusBarHeight:[UIApplication sharedApplication].statusBarFrame.size.height];
     
     self.currentVCIndex = 0;
     self.pageViewController.dataSource = self;
@@ -69,7 +72,7 @@ const short segmentedControlHeight = 50;
                                        animated:NO
                                      completion:nil];
     
-    int navBarHeight = self.navigationController.navigationBar.frame.size.height;
+    
     int heightFromTopOfScreen = navBarHeight + segmentedControlHeight;
     
     //containing the UIPageViewController within a container
