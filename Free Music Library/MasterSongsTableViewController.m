@@ -361,7 +361,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             if(song.album != nil)
                 albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
                                                    [AlbumArtUtilities albumArtFileNameToNSURL:song.album.albumArtFileName]]];
-        albumArt = [AlbumArtUtilities imageWithImage:albumArt scaledToSize:CGSizeMake(cell.frame.size.height, cell.frame.size.height)];
+        albumArt = [AlbumArtUtilities imageWithImage:albumArt
+                                        scaledToSize:CGSizeMake(cell.frame.size.height,
+                                                                cell.frame.size.height)];
         // The block will be processed on a background Grand Central Dispatch queue.
         // Therefore, ensure that this code that updates the UI will run on the main queue.
         dispatch_async(dispatch_get_main_queue(), ^{

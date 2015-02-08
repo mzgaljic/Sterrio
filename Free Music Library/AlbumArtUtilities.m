@@ -15,7 +15,7 @@
     NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString *artDirPath = [documentsPath stringByAppendingPathComponent:@"Album Art"];
     NSString* path = [artDirPath stringByAppendingPathComponent: albumArtFileName];
-    return [[UIImage alloc] initWithContentsOfFile:path];
+    return [AlbumArtUtilities getImageWithoutLazyLoadingAtPath:path];
 }
 
 + (NSURL *)albumArtFileNameToNSURL:(NSString *)albumArtFileName
@@ -62,18 +62,7 @@
         }
         
         NSString *filePath = [dataPath stringByAppendingPathComponent:fileName];
-        
-        //this block of code is able to save the PNG every time. even if the data is corrupted (good so i dont need to avoid broken NSurls)
-        UIImage *originalImage = albumArtImage;
-        CGSize destinationSize = CGSizeMake(albumArtImage.size.width, albumArtImage.size.height); // Give your Desired thumbnail Size
-        UIGraphicsBeginImageContext(destinationSize);
-        [originalImage drawInRect:CGRectMake(0,0,destinationSize.width,destinationSize.height)];
-        UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-        NSData *data = UIImagePNGRepresentation(newImage);
-        UIGraphicsEndImageContext();
-        
-        //NSData * data = UIImagePNGRepresentation(albumArtImage);
-        
+        NSData *data = UIImagePNGRepresentation(albumArtImage);        
         BOOL success = [fileManager createFileAtPath:filePath contents:data attributes:nil];
         
         //now set encryption to a weaker value
@@ -164,6 +153,50 @@
     UIGraphicsEndImageContext();
     image = nil;
     return newImage;
+}
+
+
+//ideally improve this to eventually be async like this:
+//http://stackoverflow.com/questions/5266272/non-lazy-image-loading-in-ios
++ (UIImage *)getImageWithoutLazyLoadingAtPath:(NSString *)path
+{
+    // get a data provider referencing the relevant file
+    CGDataProviderRef dataProvider = CGDataProviderCreateWithFilename([path UTF8String]);
+    
+    // use the data provider to get a CGImage; release the data provider
+    CGImageRef image = CGImageCreateWithPNGDataProvider(dataProvider, NULL, NO,
+                                                        kCGRenderingIntentDefault);
+    CGDataProviderRelease(dataProvider);
+    
+    // make a bitmap context of a suitable size to draw to, forcing decode
+    size_t width = CGImageGetWidth(image);
+    size_t height = CGImageGetHeight(image);
+    unsigned char *imageBuffer = (unsigned char *)malloc(width*height*4);
+    
+    CGColorSpaceRef colourSpace = CGColorSpaceCreateDeviceRGB();
+    
+    CGContextRef imageContext =
+    CGBitmapContextCreate(imageBuffer, width, height, 8, width*4, colourSpace,
+                          kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little);
+    
+    CGColorSpaceRelease(colourSpace);
+    
+    // draw the image to the context, release it
+    CGContextDrawImage(imageContext, CGRectMake(0, 0, width, height), image);
+    CGImageRelease(image);
+    
+    // now get an image ref from the context
+    CGImageRef outputImage = CGBitmapContextCreateImage(imageContext);
+    
+    // post that off to the main thread, where you might do something like
+    // [UIImage imageWithCGImage:outputImage]
+    UIImage *returnImg = [UIImage imageWithCGImage:outputImage];
+    // clean up
+    CGImageRelease(outputImage);
+    CGContextRelease(imageContext);
+    free(imageBuffer);
+
+    return returnImg;
 }
 
 @end

@@ -114,7 +114,6 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     //change background color of tableview
     self.backgroundColor = [UIColor groupTableViewBackgroundColor];
     self.VC.parentViewController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    //[self performSelector:@selector(reloadData) withObject:nil afterDelay:0.2];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -848,6 +847,12 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     [[CoreDataManager context].undoManager endUndoGrouping];
     [CoreDataManager context].undoManager = nil;
     
+    //need to create copy of image in memory since we are deleting the original
+    UIImage *currImg = self.currentAlbumArt;
+    CGRect placeholderImgRect = CGRectMake(0, 0, currImg.size.width, currImg.size.height);
+    CGImageRef imageRef = CGImageCreateWithImageInRect(currImg.CGImage, placeholderImgRect);
+    UIImage *tempPlaceHolder = [UIImage imageWithCGImage:imageRef];
+    
     //delete current album art on disk in case there was one set. Skipping this would cause
     //the new art to not be saved (setAlbumArt method tries to optimize the saving...)
     NSString *artFileName = [NSString stringWithFormat:@"%@.png", _songIAmEditing.song_id];
@@ -855,12 +860,14 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     
     //save the new album art
     if(_songIAmEditing.album)
-        [_songIAmEditing.album setAlbumArt:self.currentAlbumArt];
+        [_songIAmEditing.album setAlbumArt:tempPlaceHolder];
     else
-        [_songIAmEditing setAlbumArt:self.currentAlbumArt];
+        [_songIAmEditing setAlbumArt:tempPlaceHolder];
     
     //delete temp copy of old art file
-    [AlbumArtUtilities deleteAlbumArtFileWithName:@"temp art-editing mode-Mark Zgaljic.png"];
+    if([AlbumArtUtilities isAlbumArtAlreadySavedOnDisk:@"temp art-editing mode-Mark Zgaljic"]){
+        [AlbumArtUtilities deleteAlbumArtFileWithName:@"temp art-editing mode-Mark Zgaljic.png"];
+    }
     
     NSError *error = nil;
     [[CoreDataManager context] save:&error];  //saves the context to disk
