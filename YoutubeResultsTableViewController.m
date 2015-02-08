@@ -285,6 +285,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)ytVideoAutoCompleteResultsDidDownload:(NSArray *)arrayOfNSStrings
 {
     //only going to use 5 of the 10 results returned. 10 is too much (searchSuggestions array is already empty-emptied in search bar text did change)
+    int searchSuggestionsCountBefore = _searchSuggestions.count;
     [_searchSuggestions removeAllObjects];
     [_lastSuccessfullSuggestions removeAllObjects];
     
@@ -300,7 +301,26 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     }
     arrayOfNSStrings = nil;
     
-    [self.tableView reloadData];
+    if(upperBound != searchSuggestionsCountBefore){
+        //animate the change in number of rows
+        
+        NSMutableArray *oldPaths = [NSMutableArray array];
+        for(int i = 0; i < searchSuggestionsCountBefore; i++){
+            [oldPaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
+        }
+        
+        NSMutableArray *newPaths = [NSMutableArray array];
+        for(int i = 0; i < upperBound; i++){
+            [newPaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
+        }
+        
+        [self.tableView beginUpdates];
+        [self.tableView deleteRowsAtIndexPaths:oldPaths withRowAnimation:UITableViewRowAnimationNone];
+        [self.tableView insertRowsAtIndexPaths:newPaths withRowAnimation:UITableViewRowAnimationAutomatic];
+        [self.tableView endUpdates];
+    }
+    else
+        [self.tableView reloadData];
 }
 
 - (void)networkErrorHasOccuredSearchingYoutube
@@ -384,7 +404,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:YES];
         [self.tableView endUpdates];
     }
-    [self.tableView reloadData];
+    else
+        [self.tableView reloadData];
 }
 
 //user tapped "Search"
@@ -467,7 +488,6 @@ static BOOL userClearedTextField = NO;
         //fetch auto suggestions
         [[YouTubeVideoSearchService sharedInstance] fetchYouTubeAutoCompleteResultsForString:searchText];
         self.displaySearchResults = NO;
-        [self.tableView reloadData];
     }
     
     else{  //user cleared the textField
@@ -762,7 +782,7 @@ static BOOL userClearedTextField = NO;
         CGFloat bottomInset = scrollView.contentInset.bottom;
         CGFloat scrollViewBottomOffset = scrollContentSizeHeight + bottomInset - scrollViewHeight;
         
-        if (scrollView.contentOffset.y >= scrollViewBottomOffset){
+        if (scrollView.contentOffset.y >= scrollViewBottomOffset && self.displaySearchResults){
             if(self.waitingOnNextPageResults)
                 return;
             self.waitingOnNextPageResults = YES;
