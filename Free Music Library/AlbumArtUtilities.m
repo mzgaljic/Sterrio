@@ -41,11 +41,10 @@
 
 + (BOOL)saveAlbumArtFileWithName:(NSString *)fileName andImage:(UIImage *)albumArtImage
 {
-    if(fileName){
+    if(fileName && albumArtImage){
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         
         NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
-        
         NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"Album Art"];
         NSFileManager *fileManager = [NSFileManager defaultManager];
         
@@ -62,7 +61,8 @@
         }
         
         NSString *filePath = [dataPath stringByAppendingPathComponent:fileName];
-        NSData *data = UIImagePNGRepresentation(albumArtImage);        
+        NSData *data = [AlbumArtUtilities dataWithCompressionOnImage:albumArtImage];
+        
         BOOL success = [fileManager createFileAtPath:filePath contents:data attributes:nil];
         
         //now set encryption to a weaker value
@@ -164,8 +164,11 @@
     CGDataProviderRef dataProvider = CGDataProviderCreateWithFilename([path UTF8String]);
     
     // use the data provider to get a CGImage; release the data provider
-    CGImageRef image = CGImageCreateWithPNGDataProvider(dataProvider, NULL, NO,
-                                                        kCGRenderingIntentDefault);
+    
+    CGImageRef image = CGImageCreateWithJPEGDataProvider(dataProvider,
+                                                         NULL,
+                                                         NO,
+                                                         kCGRenderingIntentDefault);
     CGDataProviderRelease(dataProvider);
     
     // make a bitmap context of a suitable size to draw to, forcing decode
@@ -197,6 +200,27 @@
     free(imageBuffer);
 
     return returnImg;
+}
+
+#pragma mark -File compression
++ (NSData *)dataWithCompressionOnImage:(UIImage *)compressMe
+{
+    
+    CGFloat compression = 0.95f;
+    CGFloat maxCompression = 0.5f;
+    int oneKB = 1000;
+    int maxFileSize = 100 * oneKB;
+    
+    NSData *imageData = UIImageJPEGRepresentation(compressMe, compression);
+    if([imageData length] < maxFileSize)
+        return imageData;
+    
+    //else we try to compress without losing too much quality
+    while ([imageData length] > maxFileSize && compression > maxCompression){
+        compression -= 0.1;
+        imageData = UIImageJPEGRepresentation(compressMe, compression);
+    }
+    return imageData;
 }
 
 @end

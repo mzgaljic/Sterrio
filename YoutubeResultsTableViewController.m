@@ -214,6 +214,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 //searching for keyword on youtube finished and we have the results
 - (void)ytVideoSearchDidCompleteWithResults:(NSArray *)youTubeVideoObjects
 {
+    self.searchInitiatedAlready = YES;
+    
     // dismiss loading popup if enough time has passed
     NSTimeInterval executionTime = [self timeOnExecutionTimer];
     NSTimeInterval additionalDelay;
@@ -244,6 +246,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 //"loading more" results for the current search has completed, and we got the additional results
 - (void)ytVideoNextPageResultsDidCompleteWithResults:(NSArray *)moreYouTubeVideoObjects
 {
+    self.searchInitiatedAlready = YES;
     self.waitingOnNextPageResults = NO;
     NSUInteger count = _searchResults.count;
     NSUInteger moreResultsCount = moreYouTubeVideoObjects.count;
@@ -273,6 +276,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 - (void)ytvideoResultsNoMorePagesToView
 {
+    self.searchInitiatedAlready = YES;
     self.waitingOnNextPageResults = NO;
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
     UITableViewCell *loadMoreCell = [self.tableView cellForRowAtIndexPath:indexPath];
@@ -336,6 +340,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
     [MRProgressOverlayView dismissOverlayForView:_viewOnTopOfTable animated:YES];
     [self launchAlertViewWithDialogTitle:@"Network Problem" andMessage:@"Cannot establish connection with YouTube."];
+    self.searchInitiatedAlready = NO;
 }
 
 - (void)networkErrorHasOccuredFetchingMorePages
@@ -411,7 +416,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 //user tapped "Search"
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-    _searchInitiatedAlready = YES;
     self.displaySearchResults = YES;
     self.tableView.scrollEnabled = YES;
     _lastSuccessfullSearchString = searchBar.text;
@@ -433,7 +437,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 //User tapped "Cancel"
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
-    if(! _searchInitiatedAlready){
+    if(! self.searchInitiatedAlready){
         [self myPreDealloc];
         [self dismissViewControllerAnimated:YES completion:nil];
     }else{

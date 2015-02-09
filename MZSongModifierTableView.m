@@ -518,7 +518,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     Album *newAlbum = [Album createNewAlbumWithName:albumName usingSong:_songIAmEditing inManagedContext:[CoreDataManager context]];
     if(_songIAmEditing.album)
     {
-        [AlbumArtUtilities makeCopyOfArtWithName:_songIAmEditing.album.albumArtFileName andNameIt:@"temp art-editing mode-Mark Zgaljic.png"];
+        [AlbumArtUtilities makeCopyOfArtWithName:_songIAmEditing.album.albumArtFileName andNameIt:@"temp art-editing mode-Mark Zgaljic.jpg"];
         [AlbumArtUtilities deleteAlbumArtFileWithName:_songIAmEditing.album.albumArtFileName];
         [[CoreDataManager context] deleteObject:_songIAmEditing.album];
     }
@@ -534,7 +534,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     if([notification.name isEqualToString:@"existing album chosen"]){
         if(_songIAmEditing.album)
         {
-            [AlbumArtUtilities makeCopyOfArtWithName:_songIAmEditing.album.albumArtFileName andNameIt:@"temp art-editing mode-Mark Zgaljic.png"];
+            [AlbumArtUtilities makeCopyOfArtWithName:_songIAmEditing.album.albumArtFileName andNameIt:@"temp art-editing mode-Mark Zgaljic.jpg"];
             [AlbumArtUtilities deleteAlbumArtFileWithName:_songIAmEditing.album.albumArtFileName];
             [[CoreDataManager context] deleteObject:_songIAmEditing.album];
         }
@@ -824,10 +824,10 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     
     //restore old album art file
     if(_songIAmEditing.album)
-        [AlbumArtUtilities makeCopyOfArtWithName:@"temp art-editing mode-Mark Zgaljic.png" andNameIt:_songIAmEditing.album.albumArtFileName];
+        [AlbumArtUtilities makeCopyOfArtWithName:@"temp art-editing mode-Mark Zgaljic.jpg" andNameIt:_songIAmEditing.album.albumArtFileName];
     else
-        [AlbumArtUtilities makeCopyOfArtWithName:@"temp art-editing mode-Mark Zgaljic.png" andNameIt:_songIAmEditing.albumArtFileName];
-    [AlbumArtUtilities deleteAlbumArtFileWithName:@"temp art-editing mode-Mark Zgaljic.png"];
+        [AlbumArtUtilities makeCopyOfArtWithName:@"temp art-editing mode-Mark Zgaljic.jpg" andNameIt:_songIAmEditing.albumArtFileName];
+    [AlbumArtUtilities deleteAlbumArtFileWithName:@"temp art-editing mode-Mark Zgaljic.jpg"];
     
     if(self.creatingANewSong){
         [MusicPlaybackController songAboutToBeDeleted:_songIAmEditing];
@@ -855,7 +855,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     
     //delete current album art on disk in case there was one set. Skipping this would cause
     //the new art to not be saved (setAlbumArt method tries to optimize the saving...)
-    NSString *artFileName = [NSString stringWithFormat:@"%@.png", _songIAmEditing.song_id];
+    NSString *artFileName = [NSString stringWithFormat:@"%@.jpg", _songIAmEditing.song_id];
     [AlbumArtUtilities deleteAlbumArtFileWithName:artFileName];
     
     //save the new album art
@@ -866,7 +866,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     
     //delete temp copy of old art file
     if([AlbumArtUtilities isAlbumArtAlreadySavedOnDisk:@"temp art-editing mode-Mark Zgaljic"]){
-        [AlbumArtUtilities deleteAlbumArtFileWithName:@"temp art-editing mode-Mark Zgaljic.png"];
+        [AlbumArtUtilities deleteAlbumArtFileWithName:@"temp art-editing mode-Mark Zgaljic.jpg"];
     }
     
     NSError *error = nil;

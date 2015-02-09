@@ -369,9 +369,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             if(song.album != nil)
                 albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
                                                    [AlbumArtUtilities albumArtFileNameToNSURL:song.album.albumArtFileName]]];
-        albumArt = [AlbumArtUtilities imageWithImage:albumArt
-                                        scaledToSize:CGSizeMake(cell.frame.size.height,
-                                                                cell.frame.size.height)];
         // The block will be processed on a background Grand Central Dispatch queue.
         // Therefore, ensure that this code that updates the UI will run on the main queue.
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -380,17 +377,41 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                 // Only set cell image if the cell currently being displayed is the one that actually required this image.
                 // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
                 
+                __weak UIImage *cellImg = albumArt;
+                if([cell.textLabel.text isEqualToString:@"Geronimo"])
+                    NSLog(@"Do stuff");
+                //calculate how much one length varies from the other.
+                int diff = abs(albumArt.size.width != albumArt.size.height);
+                if(diff > 10){
+                    //image is not a perfect (or close to perfect) square. Compensate for this...
+                    cellImg = [albumArt imageScaledToFitSize:cell.imageView.frame.size];
+                }
                 [UIView transitionWithView:cell.imageView
                                   duration:MZCellImageViewFadeDuration
                                    options:UIViewAnimationOptionTransitionCrossDissolve
                                 animations:^{
-                                    cell.imageView.image = albumArt;
+                                    cell.imageView.image = cellImg;
                                 } completion:nil];
             }
         });
     }];
     
     return cell;
+}
+
++ (UIImage*)imageWithImage: (UIImage*) sourceImage scaledToWidth: (float) i_width
+{
+    float oldWidth = sourceImage.size.width;
+    float scaleFactor = i_width / oldWidth;
+    
+    float newHeight = sourceImage.size.height * scaleFactor;
+    float newWidth = oldWidth * scaleFactor;
+    
+    UIGraphicsBeginImageContext(CGSizeMake(newWidth, newHeight));
+    [sourceImage drawInRect:CGRectMake(0, 0, newWidth, newHeight)];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImage;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath

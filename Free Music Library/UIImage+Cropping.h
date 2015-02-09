@@ -26,6 +26,10 @@
 
 + (UIImage *)imageWithImage:(UIImage *)image cropInRelativeRect:(CGRect)rect;
 
+//-------------
+//-------------
+- (UIImage *)imageByScalingProportionallyToSize:(CGSize)targetSize;
+
 @end
 
 // Used by +[UIImage imageWithImage:cropInRelativeRect]

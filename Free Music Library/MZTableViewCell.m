@@ -37,6 +37,7 @@ short const editingModeChevronWidthCompensation = 55;
                                       currentImageViewPadding/2,
                                       self.imageView.frame.size.width - currentImageViewPadding,
                                       self.imageView.frame.size.height - currentImageViewPadding);
+    self.imageView.contentMode = UIViewContentModeScaleAspectFit;
     [self setLabelsFramesBasedOnEditingMode];
     layoutSubviewCount++;
 }

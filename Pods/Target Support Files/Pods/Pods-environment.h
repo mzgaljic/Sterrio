@@ -24,6 +24,12 @@
 #define COCOAPODS_VERSION_MINOR_CSNotificationView 5
 #define COCOAPODS_VERSION_PATCH_CSNotificationView 3
 
+// FXImageView
+#define COCOAPODS_POD_AVAILABLE_FXImageView
+#define COCOAPODS_VERSION_MAJOR_FXImageView 1
+#define COCOAPODS_VERSION_MINOR_FXImageView 3
+#define COCOAPODS_VERSION_PATCH_FXImageView 5
+
 // GCDiscreetNotificationView
 #define COCOAPODS_POD_AVAILABLE_GCDiscreetNotificationView
 #define COCOAPODS_VERSION_MAJOR_GCDiscreetNotificationView 1

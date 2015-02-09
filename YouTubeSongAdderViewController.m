@@ -74,9 +74,9 @@
                                         repeats:YES];
         //provide default album art (making deep copy of album art)
         //need to crop it into a square!
-        CGRect rect = CGRectMake(0, 0, lockScreenImg.size.height, lockScreenImg.size.height);
-        UIImage *croppedImg = [UIImage imageWithImage:lockScreenImg cropInRect:rect];
-        [self.tableView provideDefaultAlbumArt:croppedImg];
+//CGRect rect = CGRectMake(0, 0, lockScreenImg.size.height, lockScreenImg.size.height);
+        //UIImage *croppedImg = [UIImage imageWithImage:lockScreenImg cropInRect:rect];
+        [self.tableView provideDefaultAlbumArt:lockScreenImg];
     }
     return self;
 }

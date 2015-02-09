@@ -32,15 +32,15 @@
             //finally, override old album art file name...possibly deleting the old album art if the two vary.
             //check if album has album art already. if not, make this the default for the album!
             if(selfSong.album.albumArtFileName){
-                BOOL onDisk = [AlbumArtUtilities isAlbumArtAlreadySavedOnDisk:[NSString stringWithFormat:@"%@.png", selfSong.song_id]];
+                BOOL onDisk = [AlbumArtUtilities isAlbumArtAlreadySavedOnDisk:[NSString stringWithFormat:@"%@.jpg", selfSong.song_id]];
                 //old album art (from this song before it was linked to the album) is on disk
                 if(onDisk)
                     [selfSong removeAlbumArt];
             }else{
                 //reuse the album art as the new art for the album. Rename the file on disk though!
-                [AlbumArtUtilities renameAlbumArtFileFrom:[NSString stringWithFormat:@"%@.png", selfSong.song_id]
-                                                       to:[NSString stringWithFormat:@"%@.png", selfSong.album.album_id]];
-                [selfSong.album setAlbumArt:[AlbumArtUtilities albumArtFileNameToUiImage:[NSString stringWithFormat:@"%@.png", selfSong.album.album_id]]];
+                [AlbumArtUtilities renameAlbumArtFileFrom:[NSString stringWithFormat:@"%@.jpg", selfSong.song_id]
+                                                       to:[NSString stringWithFormat:@"%@.jpg", selfSong.album.album_id]];
+                [selfSong.album setAlbumArt:[AlbumArtUtilities albumArtFileNameToUiImage:[NSString stringWithFormat:@"%@.jpg", selfSong.album.album_id]]];
             }
             selfSong.albumArtFileName = selfSong.album.albumArtFileName;
             
@@ -98,8 +98,8 @@
 //private
 + (BOOL)makeCopyOfArtAndRenameUsingSong:(Song *)selfSong
 {
-    return [AlbumArtUtilities makeCopyOfArtWithName:[NSString stringWithFormat:@"%@.png", selfSong.album.album_id]
-                                          andNameIt:[NSString stringWithFormat:@"%@.png", selfSong.song_id]];
+    return [AlbumArtUtilities makeCopyOfArtWithName:[NSString stringWithFormat:@"%@.jpg", selfSong.album.album_id]
+                                          andNameIt:[NSString stringWithFormat:@"%@.jpg", selfSong.song_id]];
 }
 
 static NSDate *lastTime_artist;

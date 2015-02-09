@@ -24,22 +24,25 @@ pod 'MSCellAccessory', '~> 1.1'
 pod 'CSNotificationView', '~> 0.5'
 
 #VERY high performance XML parser for youtube
-pod 'TBXML', '~> 1.5'
+pod 'TBXML'
 
 #scrolling label (Marquee)
 pod 'MarqueeLabel'
 
 #blur modal segue (not used much DO NOT delete)
-pod 'AFBlurSegue', '~> 1.2'
+pod 'AFBlurSegue'
 
 #drop in uislider replacement allowing fine grain selection
-pod 'JAMAccurateSlider', '~> 1.1'
+pod 'JAMAccurateSlider'
 
 #discrete message at top of screen for user (used for slider touch)
-pod 'GCDiscreetNotificationView', '~> 1.0'
+pod 'GCDiscreetNotificationView'
 
 #scrolling nav bar - breaks uitableviewcontrollers, need to use regular tableview.
 #pod 'TLYShyNavBar'
 
 #scrolling segmented control (like a tab bar almost). Spotify inspired.
 pod 'HMSegmentedControl'
+
+#uiimage effect lib (I used it to apply AspectRatioFit style to images)
+pod 'FXImageView'

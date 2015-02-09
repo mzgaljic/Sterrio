@@ -53,7 +53,7 @@
         return YES;
     }
     
-    NSString *artFileName = [NSString stringWithFormat:@"%@.png", self.album_id];
+    NSString *artFileName = [NSString stringWithFormat:@"%@.jpg", self.album_id];
     
     //save the UIImage to disk
     if([AlbumArtUtilities isAlbumArtAlreadySavedOnDisk:artFileName])

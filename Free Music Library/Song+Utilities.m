@@ -91,7 +91,7 @@
     }
     
     if(! [self.associatedWithAlbum boolValue]){
-        artFileName = [NSString stringWithFormat:@"%@.png", self.song_id];
+        artFileName = [NSString stringWithFormat:@"%@.jpg", self.song_id];
         
         //save the UIImage to disk
         if([AlbumArtUtilities isAlbumArtAlreadySavedOnDisk: artFileName])

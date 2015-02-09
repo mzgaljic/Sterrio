@@ -33,8 +33,8 @@ short const MZLongestCellularPlayableDuration = 600;
 float const MZCellImageViewFadeDuration = 0.49;
 
 //used to figuring out what a "valid" swipe up and down is on the player
-int const MZMinVideoPlayerSwipeLengthDown = 120;
-int const MZMinVideoPlayerSwipeLengthUp = 85;
+int const MZMinVideoPlayerSwipeLengthDown = 110;
+int const MZMinVideoPlayerSwipeLengthUp = 82;
 int const MZMaxVideoPlayerSwipeVariance = 60;
 
 @end
