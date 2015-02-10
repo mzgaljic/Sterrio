@@ -12,12 +12,12 @@
 {
     int layoutSubviewCount;
     int currentImageViewPadding;
+    CGRect imgViewFrameBeforeEditingMode;
 }
 @end
 @implementation MZTableViewCell
 short const textLabelsPaddingFromImgView = 10;
 short const editingModeChevronWidthCompensation = 55;
-static CGRect imgViewFrameBeforeEditingMode;
 
 - (void)awakeFromNib
 {
@@ -39,11 +39,12 @@ static CGRect imgViewFrameBeforeEditingMode;
                                           currentImageViewPadding/2,
                                           self.imageView.frame.size.width - currentImageViewPadding,
                                           self.imageView.frame.size.height - currentImageViewPadding);
+        imgViewFrameBeforeEditingMode = self.imageView.frame;
     }
     if(self.editing)
         self.imageView.frame = imgViewFrameBeforeEditingMode;
     else{
-        imgViewFrameBeforeEditingMode = self.imageView.frame;
+        self.imageView.frame = imgViewFrameBeforeEditingMode;
     }
 
     
