@@ -17,6 +17,7 @@
 @implementation MZTableViewCell
 short const textLabelsPaddingFromImgView = 10;
 short const editingModeChevronWidthCompensation = 55;
+static CGRect imgViewFrameBeforeEditingMode;
 
 - (void)awakeFromNib
 {
@@ -33,12 +34,22 @@ short const editingModeChevronWidthCompensation = 55;
     currentImageViewPadding = self.frame.size.height * 0.12;  //12% of height
     
     // Makes imageView get placed in the corner
-    self.imageView.frame = CGRectMake(currentImageViewPadding,
-                                      currentImageViewPadding/2,
-                                      self.imageView.frame.size.width - currentImageViewPadding,
-                                      self.imageView.frame.size.height - currentImageViewPadding);
+    if(layoutSubviewCount == 0){
+        self.imageView.frame = CGRectMake(currentImageViewPadding,
+                                          currentImageViewPadding/2,
+                                          self.imageView.frame.size.width - currentImageViewPadding,
+                                          self.imageView.frame.size.height - currentImageViewPadding);
+    }
+    if(self.editing)
+        self.imageView.frame = imgViewFrameBeforeEditingMode;
+    else{
+        imgViewFrameBeforeEditingMode = self.imageView.frame;
+    }
+
+    
     self.imageView.contentMode = UIViewContentModeScaleAspectFit;
     [self setLabelsFramesBasedOnEditingMode];
+    
     layoutSubviewCount++;
 }
 
