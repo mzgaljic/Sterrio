@@ -242,10 +242,12 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     [_searchBar setText:_lastSuccessfullSearchString];
 
     [self.tableView beginUpdates];
+    //first deleting the auto-suggest section, then adding the new results section
     [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0]
                   withRowAnimation:UITableViewRowAnimationNone];
     [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0]
                   withRowAnimation:UITableViewRowAnimationAutomatic];
+    //also adding the "load more spinner cell" section
     [self.tableView insertSections:[NSIndexSet indexSetWithIndex:1]
                   withRowAnimation:UITableViewRowAnimationAutomatic];
     [self.tableView endUpdates];

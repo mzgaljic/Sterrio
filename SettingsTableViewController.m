@@ -765,7 +765,15 @@ static tempIcloudSwitchCount = 0;
 
 - (IBAction)doneDismissButtonTapped:(id)sender
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    //[self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES completion:^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZUserFinishedWithReviewingSettings
+                                                            object:nil];
+    }];
+}
+
+- (void)postSettingsMayHaveChangedNotification
+{
     [[NSNotificationCenter defaultCenter] postNotificationName:MZUserFinishedWithReviewingSettings
                                                         object:nil];
 }

@@ -26,6 +26,20 @@ short const editingModeChevronWidthCompensation = 55;
     //add observer
     [self addObserver:self forKeyPath:@"editing" options:NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(settingsMayHaveChanged)
+                                                 name:MZUserFinishedWithReviewingSettings
+                                               object:nil];
+}
+
+- (void)settingsMayHaveChanged
+{
+    int cellHeight = self.frame.size.height;
+    self.imageView.frame = CGRectMake(currentImageViewPadding,
+                                      currentImageViewPadding/2,
+                                      cellHeight - currentImageViewPadding,
+                                      cellHeight - currentImageViewPadding);
+    imgViewFrameBeforeEditingMode = self.imageView.frame;
 }
 
 - (void)layoutSubviews
@@ -35,10 +49,11 @@ short const editingModeChevronWidthCompensation = 55;
     
     // Makes imageView get placed in the corner
     if(layoutSubviewCount == 0){
+        int cellHeight = self.frame.size.height;
         self.imageView.frame = CGRectMake(currentImageViewPadding,
                                           currentImageViewPadding/2,
-                                          self.imageView.frame.size.width - currentImageViewPadding,
-                                          self.imageView.frame.size.height - currentImageViewPadding);
+                                          cellHeight - currentImageViewPadding,
+                                          cellHeight - currentImageViewPadding);
         imgViewFrameBeforeEditingMode = self.imageView.frame;
     }
     if(self.editing)
@@ -71,15 +86,14 @@ short const editingModeChevronWidthCompensation = 55;
         [self setLabelsFramesBasedOnEditingMode];
     else if([keyPath isEqualToString:@"frame"]){
         //just reload the whole layout
-        if(layoutSubviewCount > 0)
-            [self layoutSubviews];
+        //if(layoutSubviewCount > 0)
+          //  [self layoutSubviews];
     }
 }
 
 - (void)prepareForReuse
 {
     [super prepareForReuse];
-    [self removeObservers];
 }
 
 - (void)dealloc
@@ -103,6 +117,7 @@ short const editingModeChevronWidthCompensation = 55;
         }
     }
     @catch(id anException){}
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)setLabelsFramesBasedOnEditingMode

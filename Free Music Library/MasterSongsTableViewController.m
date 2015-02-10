@@ -108,7 +108,7 @@ static BOOL haveCheckedCoreDataInit = NO;
     if([self numberOfSongsInCoreDataModel] > 0){
         BOOL needToAnimateUp = (self.searchBar == nil);
         //create search bar, add to viewController
-        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search Songs in My Library"];
+        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Library"];
         _searchBar.delegate = self;
         self.tableView.tableHeaderView = _searchBar;
         
