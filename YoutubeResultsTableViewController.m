@@ -240,7 +240,15 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     }else
         [self turnTableViewIntoUIView:NO];
     [_searchBar setText:_lastSuccessfullSearchString];
-    [self.tableView reloadData];
+
+    [self.tableView beginUpdates];
+    [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0]
+                  withRowAnimation:UITableViewRowAnimationNone];
+    [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0]
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
+    [self.tableView insertSections:[NSIndexSet indexSetWithIndex:1]
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
+    [self.tableView endUpdates];
 }
 
 //"loading more" results for the current search has completed, and we got the additional results
