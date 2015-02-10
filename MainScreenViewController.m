@@ -58,9 +58,6 @@ const short segmentedControlHeight = 50;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    int navBarHeight = self.navigationController.navigationBar.frame.size.height;
-    [AppEnvironmentConstants setNavBarHeight:navBarHeight];
-    [AppEnvironmentConstants setStatusBarHeight:[UIApplication sharedApplication].statusBarFrame.size.height];
     
     self.currentVCIndex = 0;
     self.pageViewController.dataSource = self;
@@ -71,24 +68,27 @@ const short segmentedControlHeight = 50;
                                       direction:UIPageViewControllerNavigationDirectionForward
                                        animated:NO
                                      completion:nil];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
     
-    
-    int heightFromTopOfScreen = navBarHeight + segmentedControlHeight;
+    int navBarHeight = self.navigationController.navigationBar.frame.size.height;
+    int statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+    [AppEnvironmentConstants setNavBarHeight:navBarHeight];
+    [AppEnvironmentConstants setStatusBarHeight:statusBarHeight];
     
     //containing the UIPageViewController within a container
     CGRect pageVcFrame = CGRectMake(0,
-                                    heightFromTopOfScreen,
+                                    segmentedControlHeight,
                                     self.view.frame.size.width,
                                     self.view.frame.size.height);
     [self addChildViewController:self.pageViewController];
     self.pageViewController.view.frame = pageVcFrame;
     [self.view addSubview:self.pageViewController.view];
     [self.pageViewController didMoveToParentViewController:self];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
+    
     [self hideNavBarOnScrollIfPossible];
     [self setupNavBarForCurrentVc];
     [self setupSegmentedControl];

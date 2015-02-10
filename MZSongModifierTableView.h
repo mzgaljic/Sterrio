@@ -26,6 +26,7 @@
 #import "MZSongModifierDelegate.h"
 
 #import <MSCellAccessory.h>
+#import <FXImageView/UIImage+FX.h>
 
 //This class breaks so much MVC it's not even funny. it's like a sin...but it works lol
 @interface MZSongModifierTableView : UITableView <UIActionSheetDelegate,

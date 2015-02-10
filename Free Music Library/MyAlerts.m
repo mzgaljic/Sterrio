@@ -53,7 +53,7 @@
         }
         case ALERT_TYPE_PotentialVideoDurationFetchFail:
         {
-            NSString *msg = @"This video cannot be saved in its current state. An error has occured while fetching the information necessary to save this video.";
+            NSString *msg = @"This video cannot be saved in its current state. An error has occured fetching information.";
             [MyAlerts displayBannerWithMsg:msg
                                      style:CSNotificationViewStyleError
                                      delay:0

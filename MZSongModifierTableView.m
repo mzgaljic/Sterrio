@@ -21,7 +21,7 @@
 @implementation MZSongModifierTableView
 @synthesize songIAmEditing = _songIAmEditing;
 static BOOL PRODUCTION_MODE;
-static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
+static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
 
 #pragma mark - Other stuff
 - (void)initWasCalled
@@ -41,10 +41,12 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     [CoreDataManager context].undoManager = [[NSUndoManager alloc] init];
     [[CoreDataManager context].undoManager beginUndoGrouping];
     
-    self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.albumArtFileName];
-    if(self.currentAlbumArt == nil)  //maybe this songs album (if it has one) has album art
-        if(_songIAmEditing.album != nil)
-            self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.album.albumArtFileName];
+    if(! self.creatingANewSong){
+        self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.albumArtFileName];
+        if(self.currentAlbumArt == nil)  //maybe this songs album (if it has one) has album art
+            if(_songIAmEditing.album != nil)
+                self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.album.albumArtFileName];
+    }
     
     //remove header gap at top of table, and remove some scrolling space under the delete button (update scroll insets too)
     if(self.creatingANewSong){
@@ -83,18 +85,28 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     self.theDelegate = nil;
 }
 
-- (void)setCurrentAlbumArt:(UIImage *)currentAlbumArt
+- (void)setCurrentAlbumArt:(UIImage *)newArt
 {
-    if(currentAlbumArt == nil){
+    if(newArt == nil){
         _currentAlbumArt = nil;
-        currentAlbumArt = nil;
+        newArt = nil;
         _currentSmallAlbumArt = nil;
         return;
     } else{
-        _currentAlbumArt = currentAlbumArt;
-        currentAlbumArt = nil;
-        _currentSmallAlbumArt = [AlbumArtUtilities imageWithImage:_currentAlbumArt
-                                                     scaledToSize:CGSizeMake(HEIGHT_OF_ALBUM_ART_CELL - 2, HEIGHT_OF_ALBUM_ART_CELL - 2)];
+        _currentAlbumArt = newArt;
+        CGSize size = CGSizeMake(HEIGHT_OF_ALBUM_ART_CELL - 4, HEIGHT_OF_ALBUM_ART_CELL - 4);
+        
+        //calculate how much one length varies from the other.
+        int diff = abs(newArt.size.width - newArt.size.height);
+        if(diff > 10){
+            //image is not a perfect (or close to perfect) square. Compensate for this...
+            _currentSmallAlbumArt = [newArt imageScaledToFitSize:size];
+        } else{
+            _currentSmallAlbumArt = [AlbumArtUtilities imageWithImage:_currentAlbumArt
+                                                         scaledToSize:size];
+        }
+        
+        newArt = nil;
         return;
     }
 }
@@ -174,15 +186,12 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
             cell.textLabel.text = @"Song Name";
             if(_songIAmEditing.songName){
                 NSString *detailLabelValue = nil;
-                if([_songIAmEditing.songName isEqual:@"Fake value telling table a real value is on its way (animating)"]){
-                    detailLabelValue = @"";  //new value will be animated soon, dont worry
-                } else{
-                    detailLabelValue = _songIAmEditing.songName;
-                }
+                detailLabelValue = _songIAmEditing.songName;
                 cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:_songIAmEditing.songName];
             }
-            else
+            else{
                 cell.detailTextLabel.text = nil;
+            }
             cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[UIColor defaultAppColorScheme] lighterColor]];
             
         } else if(indexPath.row == 1){  //artist
@@ -201,8 +210,10 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
             
         } else if(indexPath.row == 3){  //Album Art
             cell.textLabel.text = @"Album Art";
-            if(_currentSmallAlbumArt)
-                cell.accessoryView = [[ UIImageView alloc ] initWithImage:_currentSmallAlbumArt];
+            if(_currentSmallAlbumArt){
+                cell.accessoryView.contentMode = UIViewContentModeScaleAspectFit;
+                cell.accessoryView = [[UIImageView alloc] initWithImage:_currentSmallAlbumArt];
+            }
             else
                 cell.accessoryView = nil;
             cell.detailTextLabel.text = @"";
@@ -272,7 +283,10 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
 
 - (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 10;
+    if(section == 0)
+        return 10;
+    else
+        return 0;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -450,19 +464,20 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
         return;
     }
     
-    //add temp value to allow table to load second section. After it loads it, then make animation for
-    //song label
-    _songIAmEditing.songName = @"Fake value telling table a real value is on its way (animating)";
-    [self performSelectorOnMainThread:@selector(reloadTableWaitUntilDone)
-                           withObject:nil
-                        waitUntilDone:YES];
-    [self performSelector:@selector(reloadSongNameCell) withObject:nil afterDelay:0.45];
-    
     _songIAmEditing.songName = newName;
     _songIAmEditing.smartSortSongName = [newName regularStringToSmartSortString];
     //edge case, if name is something like 'the', dont remove all characters! Keep original name.
     if(_songIAmEditing.smartSortSongName.length == 0)
         _songIAmEditing.smartSortSongName = newName;
+    [self beginUpdates];
+    [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]]
+                withRowAnimation:UITableViewRowAnimationFade];
+    [self insertSections:[NSIndexSet indexSetWithIndex:1]
+        withRowAnimation:UITableViewRowAnimationNone];
+    [self endUpdates];
+    
+    [self scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+                atScrollPosition:UITableViewScrollPositionTop animated:NO];
 }
 
 - (void)reloadTableWaitUntilDone
@@ -811,7 +826,8 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 66;
     if(img == nil)
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotOpenSelectedImageError];
     self.currentAlbumArt = img;
-    [self reloadData];
+    NSArray *paths = @[[NSIndexPath indexPathForRow:3 inSection:0]];
+    [self reloadRowsAtIndexPaths:paths withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 

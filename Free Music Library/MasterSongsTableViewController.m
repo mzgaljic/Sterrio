@@ -378,10 +378,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                 // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
                 
                 __weak UIImage *cellImg = albumArt;
-                if([cell.textLabel.text isEqualToString:@"Geronimo"])
-                    NSLog(@"Do stuff");
                 //calculate how much one length varies from the other.
-                int diff = abs(albumArt.size.width != albumArt.size.height);
+                int diff = abs(albumArt.size.width - albumArt.size.height);
                 if(diff > 10){
                     //image is not a perfect (or close to perfect) square. Compensate for this...
                     cellImg = [albumArt imageScaledToFitSize:cell.imageView.frame.size];

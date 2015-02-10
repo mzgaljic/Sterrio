@@ -73,9 +73,6 @@
                                        userInfo:nil
                                         repeats:YES];
         //provide default album art (making deep copy of album art)
-        //need to crop it into a square!
-//CGRect rect = CGRectMake(0, 0, lockScreenImg.size.height, lockScreenImg.size.height);
-        //UIImage *croppedImg = [UIImage imageWithImage:lockScreenImg cropInRect:rect];
         [self.tableView provideDefaultAlbumArt:lockScreenImg];
     }
     return self;
@@ -308,13 +305,6 @@ static short numberTimesViewHasBeenShown = 0;
     [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView
                                             animated:YES];
     self.tableView.tableHeaderView.backgroundColor = [UIColor grayColor];
-}
-
-- (void)videoDurationFetchFailedShowConnectionToYTIssueMsg
-{
-    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
-    [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView
-                                            animated:YES];
 }
 
 #pragma mark - Video frame and player setup
@@ -568,9 +558,7 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
 {
     if([video.videoId isEqualToString:ytVideo.videoId]){
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_PotentialVideoDurationFetchFail];
-        [self performSelector:@selector(videoDurationFetchFailedShowConnectionToYTIssueMsg)
-                   withObject:nil
-                   afterDelay:1];
+        [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
     }else
         //false alarm about a problem that occured with a previous fetch?
         //who knows when this would happen lol. Disregard this case.
