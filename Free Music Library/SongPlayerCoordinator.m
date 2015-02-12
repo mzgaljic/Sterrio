@@ -74,6 +74,9 @@
     if(videoPlayerIsExpanded == YES)
         return;
     
+    //I want this to be set "too early", just playing it safe.
+    videoPlayerIsExpanded = YES;
+    
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
@@ -120,9 +123,7 @@
                          }
                          weakPlayerView.alpha = 1;  //in case player was killed.
                          [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
-                     } completion:^(BOOL finished) {
-                         videoPlayerIsExpanded = YES;
-                     }];
+                     } completion:^(BOOL finished) {}];
 }
 
 - (void)beginShrinkingVideoPlayer

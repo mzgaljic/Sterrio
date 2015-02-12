@@ -99,7 +99,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 {
     [self.timer invalidate];
     self.timer = nil;
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.25
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.5
                                                   target:self
                                                 selector:@selector(manualTouchesEnded:)
                                                 userInfo:@[touches, event]
@@ -121,36 +121,34 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     else
         [lastTouchesDirection addObject:[NSNumber numberWithInt:rightDirection]];
     
-    if (deltaY >= MZMinVideoPlayerSwipeLengthDown && deltaX <= MZMaxVideoPlayerSwipeVariance) {
-        if (deltaYY <= 0) {
-            //Vertical down swipe detected
-            [self userSwipedDown];
-            didFailToExpandWithSwipe = NO;
-            return;
-        }
+    if (deltaY >= MZMinVideoPlayerSwipeLengthDown && deltaX <= MZMaxVideoPlayerSwipeVariance && deltaYY <= 0) {
+        //Vertical down swipe detected
+        [self userSwipedDown];
+        didFailToExpandWithSwipe = NO;
+        return;
     }
-    else if (deltaY >= MZMinVideoPlayerSwipeLengthUp && deltaX <= MZMaxVideoPlayerSwipeVariance) {
-        if (deltaYY > 0) {
-            //Vertical up swipe detected
-            [self userSwipedUp];
-            didFailToExpandWithSwipe = NO;
-            return;
-        }
+    else if (deltaY >= MZMinVideoPlayerSwipeLengthUp && deltaX <= MZMaxVideoPlayerSwipeVariance && deltaYY > 0) {
+        //Vertical up swipe detected
+        [self userSwipedUp];
+        didFailToExpandWithSwipe = NO;
+        return;
     }
-    else if(deltaY <= MZMaxVideoPlayerSwipeVariance){
-        //detect if user is in progress of making a swipe up gesture
-        if(deltaX < 20 && deltaYY > (MZMinVideoPlayerSwipeLengthUp / 3))
-            return;
+    else if(deltaY <= MZMinVideoPlayerSwipeLengthUp){
         
-        //user is not really moving finger up, just follow path of finger left or right
         if([[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded])
             return;
         
+        //make view follow finger
         CGRect frame = self.frame;
         self.frame = CGRectMake(frame.origin.x - deltaXX,
                                 frame.origin.y,
                                 frame.size.width,
                                 frame.size.height);
+        
+        CGRect startFrame = [[SongPlayerCoordinator sharedInstance] smallPlayerFrameInPortrait];
+        //detect if user is in progress of making a swipe up gesture (avoid setting didFailToExpandWithSwipe = YES)
+        if(MZMaxVideoPlayerSwipeVariance >= abs((currentPosition.x - startFrame.origin.x)) && deltaYY > (MZMinVideoPlayerSwipeLengthUp / 10))
+            return;
     }
     didFailToExpandWithSwipe = YES;
 }
@@ -161,14 +159,14 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     [self.timer invalidate];
     self.timer = nil;
     
-    BOOL playerExpended = [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded];
+    BOOL playerExpanded = [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded];
     //this if statement only executes IF the player is already expanded
-    if(userTouchedDown && playerExpended){
+    if(userTouchedDown && playerExpanded){
         [lastTouchesDirection removeAllObjects];
         return;
     }
     
-    if(! playerExpended){
+    if(! playerExpanded){
         CGPoint touchLocation = [[[event allTouches] anyObject] locationInView:self];
         CGRect frame = self.frame;
         int x = touchLocation.x;
@@ -183,6 +181,10 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
             [lastTouchesDirection removeAllObjects];
             return;
         } else{
+            if(! didFailToExpandWithSwipe)
+                return;
+            
+            //code below here should only be executed if the user did not successfully expand the player via a swipe
             __weak PlayerView *weakSelf = self;
             int width = weakSelf.frame.size.width;
             int screenWidth = [UIScreen mainScreen].bounds.size.width;
@@ -201,13 +203,13 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
             //this will be the real "kill" boundary if the user let go
             //before reaching the real boundary and was heading in the direction
             //of the kill boundary.
-            int motionBoundaryKill = screenWidth/2;
+            int motionBoundaryKill = screenWidth/2.5;
             if(lastOrientation == UIInterfaceOrientationPortrait ||
                lastOrientation == UIInterfaceOrientationPortraitUpsideDown)
                 motionBoundaryKill = killSlideXBoundary;
             //user has moved player past "kill" boundary
-            if((x <= killSlideXBoundary && endMotionSwipeLeft) ||
-               (endMotionSwipeLeft && x <= motionBoundaryKill)){
+            if((self.frame.origin.x <= killSlideXBoundary && endMotionSwipeLeft) ||
+               (endMotionSwipeLeft && self.frame.origin.x <= motionBoundaryKill)){
                 [UIView animateWithDuration:0.65
                                       delay:0
                                     options:UIViewAnimationOptionCurveEaseOut
@@ -231,7 +233,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
             }
             
             //return player to original frame since the user has decided not to kill the player
-            else if(x > killSlideXBoundary || !endMotionSwipeLeft){
+            else if(self.frame.origin.x > killSlideXBoundary || !endMotionSwipeLeft){
                 [UIView animateWithDuration:0.3
                                       delay:0
                                     options:UIViewAnimationOptionCurveEaseIn
@@ -280,14 +282,9 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 }
 
 #pragma mark - Handling Poping and pushing of the player VC along with this view
-- (BOOL)segueToPlayerViewControllerIfAppropriate
+- (void)segueToPlayerViewControllerIfAppropriate
 {
-    BOOL willSegue = NO;
-    if(! [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded]){
-        willSegue = YES;
-        [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:[self topViewController]];
-    }
-    return willSegue;
+    [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:[self topViewController]];
 }
 
 - (void)popPlayerViewControllerIfAppropriate

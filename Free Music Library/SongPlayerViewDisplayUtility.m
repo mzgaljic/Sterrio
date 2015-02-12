@@ -43,8 +43,11 @@ int nearestEvenInt(int to)
         if(! animate)
             vc.view.hidden = YES;
         [sourceController prepareForSegue:segue sender:nil];
+        
         vc.view.layer.speed = 0.85;  //slows down the modal transition
         [segue perform];
+        
+        [[SongPlayerCoordinator sharedInstance] begingExpandingVideoPlayer];
 
         if(!animate){
             __weak UIViewController *weakVC = vc;
@@ -52,8 +55,6 @@ int nearestEvenInt(int to)
                 [SongPlayerViewDisplayUtility makeAlphaOne:weakVC];
             });
         }
-
-        [[SongPlayerCoordinator sharedInstance] begingExpandingVideoPlayer];
     }
 }
 
