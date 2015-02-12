@@ -20,12 +20,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "YoutubeResultsTableViewController.m"
-            timestampString = "445375904.021549"
+            timestampString = "445413151.480339"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "560"
-            endingLineNumber = "560"
-            landmarkName = "-tableView:titleForHeaderInSection:"
+            startingLineNumber = "310"
+            endingLineNumber = "310"
+            landmarkName = "-ytVideoAutoCompleteResultsDidDownload:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

@@ -246,10 +246,10 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0]
                   withRowAnimation:UITableViewRowAnimationNone];
     [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0]
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
+                  withRowAnimation:UITableViewRowAnimationRight];
     //also adding the "load more spinner cell" section
     [self.tableView insertSections:[NSIndexSet indexSetWithIndex:1]
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
+                  withRowAnimation:UITableViewRowAnimationRight];
     [self.tableView endUpdates];
 }
 
@@ -414,9 +414,12 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
     if(self.searchInitiatedAlready){
         [self.tableView beginUpdates];
-        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:YES];
-        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:YES];
-        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:YES];
+        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0]
+                      withRowAnimation:UITableViewRowAnimationRight];
+        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:1]
+                      withRowAnimation:UITableViewRowAnimationRight];
+        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0]
+                      withRowAnimation:UITableViewRowAnimationRight];
         [self.tableView endUpdates];
     }
     else
@@ -586,11 +589,7 @@ static BOOL userClearedTextField = NO;
             return -1;
     }else{
         //user has not pressed "search" yet, only showing autosuggestions
-        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-        if(orientation != UIInterfaceOrientationPortrait)
-            return _searchSuggestions.count - 1;
-        else
-            return _searchSuggestions.count;
+        return _searchSuggestions.count;
     }
 }
 
