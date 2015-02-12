@@ -770,12 +770,7 @@ static tempIcloudSwitchCount = 0;
         [[NSNotificationCenter defaultCenter] postNotificationName:MZUserFinishedWithReviewingSettings
                                                             object:nil];
     }];
-}
 
-- (void)postSettingsMayHaveChangedNotification
-{
-    [[NSNotificationCenter defaultCenter] postNotificationName:MZUserFinishedWithReviewingSettings
-                                                        object:nil];
 }
 
 @end

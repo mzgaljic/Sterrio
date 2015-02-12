@@ -40,7 +40,6 @@
 		8734885319A1BBF4008CC6A5 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8727003F199F0F5600D71204 /* Model.xcdatamodeld */; };
 		87362AFD194E68A5004DB544 /* Deque.m in Sources */ = {isa = PBXBuildFile; fileRef = 87362AFC194E68A5004DB544 /* Deque.m */; };
 		87362B03194E9CDF004DB544 /* Stack.m in Sources */ = {isa = PBXBuildFile; fileRef = 87362B01194E9CDF004DB544 /* Stack.m */; };
-		873784DD1A85FCD200AA78A3 /* UIImage+Cropping.m in Sources */ = {isa = PBXBuildFile; fileRef = 873784DC1A85FCD200AA78A3 /* UIImage+Cropping.m */; };
 		87394BE31965FFE100E750B1 /* Queue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87394BE21965FFE100E750B1 /* Queue.m */; };
 		873CF45C1A45435E00716B52 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 873CF45B1A45435E00716B52 /* QuartzCore.framework */; };
 		873E14621A49ED0A008A385D /* SongPlayerViewDisplayUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 873E14611A49ED0A008A385D /* SongPlayerViewDisplayUtility.m */; };
@@ -87,6 +86,7 @@
 		87A0FD8A197DCEDF008FBBF7 /* AlbumTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FD89197DCEDF008FBBF7 /* AlbumTableViewFormatter.m */; };
 		87A0FD91197DD594008FBBF7 /* PreferredFontSizeUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FD90197DD594008FBBF7 /* PreferredFontSizeUtility.m */; };
 		87A0FDD2197DFA2C008FBBF7 /* ArtistTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FDD1197DFA2C008FBBF7 /* ArtistTableViewFormatter.m */; };
+		87A3903D1A8BDD8A00E56A1E /* UIToolbar+DarkTint.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A3903C1A8BDD8A00E56A1E /* UIToolbar+DarkTint.m */; };
 		87A41FEB19F0D9C800C037D9 /* MyAVPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A41FEA19F0D9C800C037D9 /* MyAVPlayer.m */; };
 		87A453C8199C0891004D1319 /* ELCAlbumPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A453A5199C0891004D1319 /* ELCAlbumPickerController.m */; };
 		87A453C9199C0891004D1319 /* ELCAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A453A7199C0891004D1319 /* ELCAsset.m */; };
@@ -215,8 +215,6 @@
 		87362B01194E9CDF004DB544 /* Stack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Stack.m; sourceTree = "<group>"; };
 		87362B02194E9CDF004DB544 /* Stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stack.h; sourceTree = "<group>"; };
 		873784DA1A85B79E00AA78A3 /* NavBarViewControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavBarViewControllerDelegate.h; sourceTree = "<group>"; };
-		873784DB1A85FCD200AA78A3 /* UIImage+Cropping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Cropping.h"; sourceTree = "<group>"; };
-		873784DC1A85FCD200AA78A3 /* UIImage+Cropping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Cropping.m"; sourceTree = "<group>"; };
 		87394BE11965FFE100E750B1 /* Queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Queue.h; sourceTree = "<group>"; };
 		87394BE21965FFE100E750B1 /* Queue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Queue.m; sourceTree = "<group>"; };
 		873CF45B1A45435E00716B52 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -299,6 +297,8 @@
 		87A0FD90197DD594008FBBF7 /* PreferredFontSizeUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferredFontSizeUtility.m; sourceTree = "<group>"; };
 		87A0FDD0197DFA2C008FBBF7 /* ArtistTableViewFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArtistTableViewFormatter.h; sourceTree = "<group>"; };
 		87A0FDD1197DFA2C008FBBF7 /* ArtistTableViewFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArtistTableViewFormatter.m; sourceTree = "<group>"; };
+		87A3903B1A8BDD8A00E56A1E /* UIToolbar+DarkTint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIToolbar+DarkTint.h"; sourceTree = "<group>"; };
+		87A3903C1A8BDD8A00E56A1E /* UIToolbar+DarkTint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIToolbar+DarkTint.m"; sourceTree = "<group>"; };
 		87A41FE919F0D9C800C037D9 /* MyAVPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyAVPlayer.h; sourceTree = "<group>"; };
 		87A41FEA19F0D9C800C037D9 /* MyAVPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyAVPlayer.m; sourceTree = "<group>"; };
 		87A453A4199C0891004D1319 /* ELCAlbumPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAlbumPickerController.h; sourceTree = "<group>"; };
@@ -525,8 +525,6 @@
 				87D37437199AA99700D3B70B /* UIColor+ColorComparison.m */,
 				87334409198DC915002B9E18 /* UIImage+colorImages.h */,
 				8733440A198DC915002B9E18 /* UIImage+colorImages.m */,
-				873784DB1A85FCD200AA78A3 /* UIImage+Cropping.h */,
-				873784DC1A85FCD200AA78A3 /* UIImage+Cropping.m */,
 				87FD38D51990A89200C8D5C3 /* UIImage+ColoringExistingImage.h */,
 				87FD38D61990A89200C8D5C3 /* UIImage+ColoringExistingImage.m */,
 				875B3824197AFF29008B4409 /* NSString+smartSort.h */,
@@ -548,6 +546,8 @@
 				87DB103119C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m */,
 				87ECF5171A57B50800D58EDF /* UINavigationBar+DarkTint.h */,
 				87ECF5181A57B50800D58EDF /* UINavigationBar+DarkTint.m */,
+				87A3903B1A8BDD8A00E56A1E /* UIToolbar+DarkTint.h */,
+				87A3903C1A8BDD8A00E56A1E /* UIToolbar+DarkTint.m */,
 				872EA4DA1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.h */,
 				872EA4DB1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.m */,
 				8725B1B61A6C938700E58C3E /* UIWindow+VisibleVC.h */,
@@ -588,6 +588,7 @@
 				8750157D198C29CC00382945 /* Adding Music To Library */,
 				873001B81A7494D800C9921A /* Core Data Error Handler */,
 				877C4B85199FB44E00CE86BC /* ViewController utility stuff */,
+				87ECF5221A57C5FB00D58EDF /* Custom GUI Elements/Classes */,
 			);
 			name = "GUI and GUI Controllers";
 			sourceTree = "<group>";
@@ -621,7 +622,6 @@
 				87FE09F21933ED9B001A5FB7 /* Services */,
 				872EA4D31A54A96900F8EE9D /* Alerts */,
 				87362AFA194E3F27004DB544 /* GUI and GUI Controllers */,
-				87ECF5221A57C5FB00D58EDF /* Custom GUI Elements/Classes */,
 				87480DC3192C1FBD005CC0A4 /* Images.xcassets */,
 				87A453A0199C0825004D1319 /* Imported Libraries */,
 				87480DAF192C1FBD005CC0A4 /* Supporting Files */,
@@ -1282,7 +1282,6 @@
 				87A453D8199C0891004D1319 /* UIImage+EYFixOrientation.m in Sources */,
 				87270032199E815000D71204 /* NSString+Levenshtein_Distance.m in Sources */,
 				87A453CD199C0891004D1319 /* ELCImagePickerController.m in Sources */,
-				873784DD1A85FCD200AA78A3 /* UIImage+Cropping.m in Sources */,
 				87BBBE061A58A78A00248E2F /* MySearchBar.m in Sources */,
 				8733440B198DC915002B9E18 /* UIImage+colorImages.m in Sources */,
 				87D47D93193428350057D49B /* MasterPlaylistTableViewController.m in Sources */,
@@ -1370,6 +1369,7 @@
 				87A453D6199C0891004D1319 /* EYLargePhoto.m in Sources */,
 				87D47D8D19340F8B0057D49B /* MasterAlbumsTableViewController.m in Sources */,
 				87394BE31965FFE100E750B1 /* Queue.m in Sources */,
+				87A3903D1A8BDD8A00E56A1E /* UIToolbar+DarkTint.m in Sources */,
 				872F78771A47B17900288FDD /* SongPlayerCoordinator.m in Sources */,
 				878ACD64192D48EF005938F5 /* MasterSongsTableViewController.m in Sources */,
 				872EA4E71A54F1FC00F8EE9D /* MyViewController.m in Sources */,

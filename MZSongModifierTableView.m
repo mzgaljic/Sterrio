@@ -312,7 +312,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                                                              name:@"DoneEditingSongField" object:nil];
                 BOOL fullscreen;
                 if(_creatingANewSong)
-                    fullscreen = YES;
+                    fullscreen = NO;
                 else
                     fullscreen = NO;
                 EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:_songIAmEditing.songName
@@ -609,7 +609,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                                                                  name:@"DoneEditingArtistField" object:nil];
                     BOOL fullscreen;
                     if(_creatingANewSong)
-                        fullscreen = YES;
+                        fullscreen = NO;
                     else
                         fullscreen = NO;
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
@@ -630,7 +630,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                                                                  name:@"DoneEditingArtistField" object:nil];
                     BOOL fullscreen;
                     if(_creatingANewSong)
-                        fullscreen = YES;
+                        fullscreen = NO;
                     else
                         fullscreen = NO;
                     
@@ -666,7 +666,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                                                                  name:@"DoneEditingAlbumField" object:nil];
                     BOOL fullscreen;
                     if(_creatingANewSong)
-                        fullscreen = YES;
+                        fullscreen = NO;
                     else
                         fullscreen = NO;
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
@@ -689,7 +689,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                                                                  name:@"DoneEditingAlbumField" object:nil];
                     BOOL fullscreen;
                     if(_creatingANewSong)
-                        fullscreen = YES;
+                        fullscreen = NO;
                     else
                         fullscreen = NO;
 
@@ -746,7 +746,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                 NSString *post = @"new genre has been chosen";
                 BOOL fullscreen;
                 if(_creatingANewSong)
-                    fullscreen = YES;
+                    fullscreen = NO;
                 else
                     fullscreen = NO;
                 vc = [[GenrePickerTableViewController alloc] initWithGenreCode: genreCode

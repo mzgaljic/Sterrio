@@ -265,6 +265,11 @@
     } else{
         [self showSpinnerForInternetConnectionIssueOnView:[MusicPlaybackController obtainRawPlayerView]];
     }
+    
+    if(! stallHasOccured){
+        if(![MusicPlaybackController isSimpleSpinnerOnScreen])
+            [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
+    }
 }
 
 #pragma mark - Spinner convenience methods

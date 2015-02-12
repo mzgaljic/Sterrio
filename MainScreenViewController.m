@@ -11,7 +11,7 @@
 //page view controller constants
 const short transitionStyle = UIPageViewControllerTransitionStyleScroll;
 const short navigationOrientation = UIPageViewControllerNavigationOrientationHorizontal;
-const short segmentedControlHeight = 50;
+const short segmentedControlHeight = 42;
 
 
 @interface MainScreenViewController()
@@ -80,10 +80,11 @@ const short segmentedControlHeight = 50;
     [AppEnvironmentConstants setStatusBarHeight:statusBarHeight];
     
     //containing the UIPageViewController within a container
+    short weirdOffsetAtBottom = 2;
     CGRect pageVcFrame = CGRectMake(0,
                                     segmentedControlHeight,
                                     self.view.frame.size.width,
-                                    self.view.frame.size.height);
+                                    self.view.frame.size.height + weirdOffsetAtBottom);
     [self addChildViewController:self.pageViewController];
     self.pageViewController.view.frame = pageVcFrame;
     [self.view addSubview:self.pageViewController.view];

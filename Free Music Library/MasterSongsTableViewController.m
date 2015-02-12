@@ -16,6 +16,7 @@
 
 //used so i can retain control over the "greying out" effect from this VC.
 @property (nonatomic, strong) NSArray *rightBarButtonItems;
+@property (nonatomic, strong) NSArray *leftBarButtonItems;
 @property (nonatomic, strong) UIBarButtonItem *editButton;
 @end
 
@@ -35,7 +36,8 @@ static BOOL haveCheckedCoreDataInit = NO;
     UIBarButtonItem *posSpaceAdjust = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     [posSpaceAdjust setWidth:28];
     self.editButton = editButton;
-    return @[settings, posSpaceAdjust, editButton];
+    self.leftBarButtonItems = @[settings, posSpaceAdjust, editButton];
+    return self.leftBarButtonItems;
 }
 
 - (NSArray *)rightBarButtonItemsForNavigationBar
@@ -67,8 +69,14 @@ static BOOL haveCheckedCoreDataInit = NO;
         //leaving editing mode now
         [self setEditing:NO animated:YES];
         [self.tableView setEditing:NO animated:YES];
-        for(UIBarButtonItem *abutton in self.rightBarButtonItems){
-            [self makeBarButtonItemNormal:abutton];
+        
+        if(self.rightBarButtonItems.count > 0){
+            UIBarButtonItem *rightMostItem = self.rightBarButtonItems[self.rightBarButtonItems.count-1];
+            [self makeBarButtonItemNormal:rightMostItem];
+        }
+        if(self.leftBarButtonItems.count > 0){
+            UIBarButtonItem *leftMostItem = self.leftBarButtonItems[0];
+            [self makeBarButtonItemNormal:leftMostItem];
         }
     }
     else
@@ -76,8 +84,14 @@ static BOOL haveCheckedCoreDataInit = NO;
         //entering editing mode now
         [self setEditing:YES animated:YES];
         [self.tableView setEditing:YES animated:YES];
-        for(UIBarButtonItem *abutton in self.rightBarButtonItems){
-            [self makeBarButtonItemGrey: abutton];
+
+        if(self.rightBarButtonItems.count > 0){
+            UIBarButtonItem *rightMostItem = self.rightBarButtonItems[self.rightBarButtonItems.count-1];
+            [self makeBarButtonItemGrey:rightMostItem];
+        }
+        if(self.leftBarButtonItems.count > 0){
+            UIBarButtonItem *leftMostItem = self.leftBarButtonItems[0];
+            [self makeBarButtonItemGrey:leftMostItem];
         }
     }
 }
@@ -201,9 +215,7 @@ static BOOL haveCheckedCoreDataInit = NO;
     [super viewWillAppear:animated];
     [self setUpSearchBar];
     
-    //must be called in viewWillAppear, and after allSongsLibrary is refreshed
-    self.searchFetchedResultsController = nil;
-    [self setFetchedResultsControllerAndSortStyle];
+    //must be called in viewWillAppear?
     
     if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
@@ -236,6 +248,9 @@ static BOOL haveCheckedCoreDataInit = NO;
     [self.view addSubview:self.tableView];
     [self setTableForCoreDataView:self.tableView];
     
+    self.searchFetchedResultsController = nil;
+    [self setFetchedResultsControllerAndSortStyle];
+    
     if(!haveCheckedCoreDataInit){
         //need to check if core data even works before i try loading the songs in this VC
         //force core data to attempt to initialze itself by asking for its context
@@ -264,13 +279,13 @@ static BOOL haveCheckedCoreDataInit = NO;
     
     //This is a ghetto version of an official welcome screen.
     if([AppEnvironmentConstants shouldDisplayWelcomeScreen]){
-        NSString *msg = @"Thanks for being a beta tester. The ugly tab bar below will be changed soon, pardon the hideous look. The rest of the application should look great though! Bugs may be reported via the settings view or the Testflight app itself I believe.";
+        NSString *msg = @"Thanks for being a beta tester. Bugs may be reported via the settings view or the Testflight app itself I believe.";
         SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Welcome"
                                                           message:msg
                                                          delegate:nil
                                                 cancelButtonTitle:@"OK"
                                                 otherButtonTitles: nil];
-        NSString *msg2 = @"Some things to note:\n-The settings view will receive a complete overhaul at some point. I don't like it, and many of the settings seem a bit useless.\n-The process of adding album art to a song is tedious at the moment. I apologize, and I am working on verhauling this step as well.";
+        NSString *msg2 = @"Some things to note:\n-The settings view will receive a complete overhaul at some point. I don't like it, and many of the settings seem a bit useless.\n-The process of adding album art to a song is tedious at the moment. I apologize, and I am working on improving this.";
         SDCAlertView *alert2 = [[SDCAlertView alloc] initWithTitle:@"One more thing"
                                                           message:msg2
                                                          delegate:nil
@@ -384,6 +399,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                     //image is not a perfect (or close to perfect) square. Compensate for this...
                     cellImg = [albumArt imageScaledToFitSize:cell.imageView.frame.size];
                 }
+                if([cell.textLabel.text isEqualToString:@"bleeding love"])
+                    NSLog(@"hi");
                 [UIView transitionWithView:cell.imageView
                                   duration:MZCellImageViewFadeDuration
                                    options:UIViewAnimationOptionTransitionCrossDissolve

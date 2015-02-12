@@ -35,4 +35,9 @@
   frame was changed via code other than the methods in the SongPlayerCoordinator class. */
 - (void)recordCurrentPlayerViewFrame:(CGRect)newFrame;
 
+
+//This is mainly exposed for the PlayerView class
+- (CGRect)smallPlayerFrameInLandscape;
+- (CGRect)smallPlayerFrameInPortrait;
+
 @end

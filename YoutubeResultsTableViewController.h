@@ -12,6 +12,7 @@
 #import "UIImageView+WebCache.h"
 #import "MyTableViewController.h"
 #import "SongPlayerCoordinator.h"
+#import "UIToolbar+DarkTint.h"
 
 @interface YoutubeResultsTableViewController : MyTableViewController <UISearchBarDelegate,
                                                                     YouTubeVideoQueryDelegate,

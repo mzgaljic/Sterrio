@@ -1,18 +1,17 @@
 //
-//  UINavigationBar+DarkTint.m
-//  Muzic
+//  UIToolbar+DarkTint.m
+//  Free Music Library
 //
-//  Created by Mark Zgaljic on 1/3/15.
+//  Created by Mark Zgaljic on 2/11/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
-#import "UINavigationBar+DarkTint.h"
+#import "UIToolbar+DarkTint.h"
 #import <objc/runtime.h>
 
-@implementation UINavigationBar (DarkTint)
+@implementation UIToolbar (DarkTint)
 @dynamic colorLayer;
-static CGFloat const kSpaceToCoverStatusBars = 20.0f;
-
+static CGFloat const kSpaceToCoverStatusBars = 0.0f;
 
 - (void)swizlayoutSubviews {
     [self swizlayoutSubviews];
@@ -23,7 +22,6 @@ static CGFloat const kSpaceToCoverStatusBars = 20.0f;
         [self.layer addSublayer:self.colorLayer];
         
         self.colorLayer.backgroundColor = [[UIColor colorWithRed:.26 green:.50 blue:.76 alpha:1] CGColor];
-
     }
     if (self.colorLayer != nil) {
         self.colorLayer.frame = CGRectMake(0, 0 - kSpaceToCoverStatusBars, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds) + kSpaceToCoverStatusBars);

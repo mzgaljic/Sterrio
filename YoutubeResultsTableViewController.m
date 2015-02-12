@@ -17,7 +17,7 @@
 #import "PreferredFontSizeUtility.h"
 #import "YouTubeSongAdderViewController.h"
 #import "CustomYoutubeTableViewCell.h"
-#define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
+
 
 @interface YoutubeResultsTableViewController ()
 {
@@ -503,7 +503,6 @@ static BOOL userClearedTextField = NO;
         [[YouTubeVideoSearchService sharedInstance] fetchYouTubeAutoCompleteResultsForString:searchText];
         self.displaySearchResults = NO;
     }
-    
     else{  //user cleared the textField
         userClearedTextField = YES;
         if(! self.displaySearchResults)
@@ -560,11 +559,7 @@ static BOOL userClearedTextField = NO;
 {
     if(! self.displaySearchResults){
         if(section == 0 && _searchSuggestions.count > 0){
-            UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-            if(orientation != UIInterfaceOrientationPortrait)
-                return @"";
-            else
-                return @"Top Hits";
+            return @"Top Hits";
         }
     }
     return @"";
@@ -865,7 +860,7 @@ static NSDate *finish;
 
 - (BOOL)prefersStatusBarHidden
 {
-    return YES;
+    return NO;
 }
 
 @end

@@ -21,7 +21,6 @@
 #import "MZSongModifierTableView.h"
 #import "MZSongModifierDelegate.h"
 #import "SongPlayerCoordinator.h"
-#import "UIImage+Cropping.h"
 
 @interface YouTubeSongAdderViewController : MyViewController <YouTubeVideoDetailLookupDelegate,
                                                             MZSongModifierDelegate>

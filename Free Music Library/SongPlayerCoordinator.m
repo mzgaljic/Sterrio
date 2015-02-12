@@ -95,30 +95,34 @@
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     __weak PlayerView *weakPlayerView = playerView;
     
-    [UIView animateWithDuration:0.405f animations:^{
-        if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
-        {
-            //entering view controller in landscape (fullscreen video)
-            CGRect screenRect = [appWindow bounds];
-            CGFloat screenWidth = screenRect.size.width;
-            CGFloat screenHeight = screenRect.size.height;
-            
-            //+1 is because the view ALMOST covered the full screen.
-            currentPlayerFrame = CGRectMake(0, 0, screenWidth, ceil(screenHeight +1));
-            [weakPlayerView setFrame:currentPlayerFrame];
-            //hide status bar
-            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-        }
-        else
-        {
-            //show portrait player
-            currentPlayerFrame = [self bigPlayerFrameInPortrait];
-            [weakPlayerView setFrame: currentPlayerFrame];
-        }
-        [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
-    } completion:nil];
-    
-    videoPlayerIsExpanded = YES;
+    [UIView animateWithDuration:0.425f
+                          delay:0
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+                         {
+                             //entering view controller in landscape (fullscreen video)
+                             CGRect screenRect = [appWindow bounds];
+                             CGFloat screenWidth = screenRect.size.width;
+                             CGFloat screenHeight = screenRect.size.height;
+                             
+                             //+1 is because the view ALMOST covered the full screen.
+                             currentPlayerFrame = CGRectMake(0, 0, screenWidth, ceil(screenHeight +1));
+                             [weakPlayerView setFrame:currentPlayerFrame];
+                             //hide status bar
+                             [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+                         }
+                         else
+                         {
+                             //show portrait player
+                             currentPlayerFrame = [self bigPlayerFrameInPortrait];
+                             [weakPlayerView setFrame: currentPlayerFrame];
+                         }
+                         weakPlayerView.alpha = 1;  //in case player was killed.
+                         [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
+                     } completion:^(BOOL finished) {
+                         videoPlayerIsExpanded = YES;
+                     }];
 }
 
 - (void)beginShrinkingVideoPlayer
@@ -132,16 +136,19 @@
     if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
         needLandscapeFrame = NO;
     
-    [UIView animateWithDuration:0.7f delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
-        if(needLandscapeFrame)
-            currentPlayerFrame = [weakSelf smallPlayerFrameInLandscape];
-        else
-            currentPlayerFrame = [weakSelf smallPlayerFrameInPortrait];
-        weakPlayerView.frame = currentPlayerFrame;
-        [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
-    } completion:nil];
-    
-    videoPlayerIsExpanded = NO;
+    [UIView animateWithDuration:0.56
+                          delay:0
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         if(needLandscapeFrame)
+                             currentPlayerFrame = [weakSelf smallPlayerFrameInLandscape];
+                         else
+                             currentPlayerFrame = [weakSelf smallPlayerFrameInPortrait];
+                         weakPlayerView.frame = currentPlayerFrame;
+                         [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
+                     } completion:^(BOOL finished) {
+                         videoPlayerIsExpanded = NO;
+                     }];
 }
 
 - (void)shrunkenVideoPlayerNeedsToBeRotated

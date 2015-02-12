@@ -537,7 +537,7 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
 
 - (BOOL)prefersStatusBarHidden
 {
-    return YES;
+    return NO;
 }
 
 #pragma mark - Managing video detail fetch response

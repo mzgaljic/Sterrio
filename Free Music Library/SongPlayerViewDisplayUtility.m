@@ -43,6 +43,7 @@ int nearestEvenInt(int to)
         if(! animate)
             vc.view.hidden = YES;
         [sourceController prepareForSegue:segue sender:nil];
+        vc.view.layer.speed = 0.85;  //slows down the modal transition
         [segue perform];
 
         if(!animate){

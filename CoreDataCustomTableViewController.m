@@ -270,9 +270,15 @@
 
 - (void)settingsPossiblyChanged
 {
-    [tableView reloadData];
+    //this isnt a constant because it is very rarely used.
+    [tableView beginUpdates];
+    [tableView deleteSections:[NSIndexSet indexSetWithIndex:0]
+             withRowAnimation:UITableViewRowAnimationFade];
+    [tableView insertSections:[NSIndexSet indexSetWithIndex:0]
+             withRowAnimation:UITableViewRowAnimationFade];
+    [tableView endUpdates];
+    [tableView layoutMargins];
     [searchBar updateFontSizeIfNecessary];
 }
-
 
 @end

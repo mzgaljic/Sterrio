@@ -5,6 +5,10 @@
 //  Created by Mark Zgaljic on 2/6/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
+//There is a small bug in this implementation. If the font size is changed WHILE the cell
+//is in editing mode, the y origin values of the textlabels will be screwed up until the cells
+//leave editing mode. The simple fix i am using is to basically block the settings page while in
+//editing mode by disabling the button.
 
 #import "MZTableViewCell.h"
 
@@ -13,6 +17,8 @@
     int layoutSubviewCount;
     int currentImageViewPadding;
     CGRect imgViewFrameBeforeEditingMode;
+    CGRect textLabelFrameWithoutEditingMode;
+    CGRect detailTextLabelFrameWithoutEditingMode;
 }
 @end
 @implementation MZTableViewCell
@@ -25,7 +31,6 @@ short const editingModeChevronWidthCompensation = 55;
     layoutSubviewCount = 0;
     //add observer
     [self addObserver:self forKeyPath:@"editing" options:NSKeyValueObservingOptionNew context:nil];
-    [self addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(settingsMayHaveChanged)
                                                  name:MZUserFinishedWithReviewingSettings
@@ -40,6 +45,7 @@ short const editingModeChevronWidthCompensation = 55;
                                       cellHeight - currentImageViewPadding,
                                       cellHeight - currentImageViewPadding);
     imgViewFrameBeforeEditingMode = self.imageView.frame;
+    [self layoutSubviews];
 }
 
 - (void)layoutSubviews
@@ -55,15 +61,13 @@ short const editingModeChevronWidthCompensation = 55;
                                           cellHeight - currentImageViewPadding,
                                           cellHeight - currentImageViewPadding);
         imgViewFrameBeforeEditingMode = self.imageView.frame;
+        self.imageView.contentMode = UIViewContentModeScaleAspectFit;
     }
     if(self.editing)
         self.imageView.frame = imgViewFrameBeforeEditingMode;
-    else{
+    else
         self.imageView.frame = imgViewFrameBeforeEditingMode;
-    }
-
     
-    self.imageView.contentMode = UIViewContentModeScaleAspectFit;
     [self setLabelsFramesBasedOnEditingMode];
     
     layoutSubviewCount++;
@@ -84,11 +88,6 @@ short const editingModeChevronWidthCompensation = 55;
 {
     if([keyPath isEqualToString:@"editing"])
         [self setLabelsFramesBasedOnEditingMode];
-    else if([keyPath isEqualToString:@"frame"]){
-        //just reload the whole layout
-        //if(layoutSubviewCount > 0)
-          //  [self layoutSubviews];
-    }
 }
 
 - (void)prepareForReuse
@@ -111,12 +110,7 @@ short const editingModeChevronWidthCompensation = 55;
     }
     //do nothing, obviously it wasn't attached because an exception was thrown
     @catch(id anException){}
-    @try{
-        while(true){
-            [self removeObserver:self forKeyPath:@"frame"];
-        }
-    }
-    @catch(id anException){}
+
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -135,14 +129,14 @@ short const editingModeChevronWidthCompensation = 55;
 {
     int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
     int width = self.frame.size.width - xOrigin;
-    
-    return CGRectMake(xOrigin, self.textLabel.frame.origin.y, width, self.textLabel.frame.size.height);
+    textLabelFrameWithoutEditingMode = CGRectMake(xOrigin, self.textLabel.frame.origin.y, width, self.textLabel.frame.size.height);
+    return textLabelFrameWithoutEditingMode;
 }
 
 - (CGRect)textLabelFrameInEditingMode
 {
     int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
-    int yOrigin = (currentImageViewPadding/2);
+    int yOrigin = textLabelFrameWithoutEditingMode.origin.y;
     //padding so we dont hit the chevron
     int width = self.frame.size.width - xOrigin - editingModeChevronWidthCompensation;
     
@@ -153,18 +147,17 @@ short const editingModeChevronWidthCompensation = 55;
 {
     int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
     int width = self.frame.size.width - xOrigin;
-    
-    // Assign the the new frame to textLabel
-    return CGRectMake(xOrigin,
-                      self.detailTextLabel.frame.origin.y,
-                      width,
-                      self.detailTextLabel.frame.size.height);
+    detailTextLabelFrameWithoutEditingMode = CGRectMake(xOrigin,
+                                                        self.detailTextLabel.frame.origin.y,
+                                                        width,
+                                                        self.detailTextLabel.frame.size.height);
+    return detailTextLabelFrameWithoutEditingMode;
 }
 
 - (CGRect)detailTextLabelFrameInEditingMode
 {
     int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
-    int yOrigin = (currentImageViewPadding/2) + self.detailTextLabel.frame.size.height;
+    int yOrigin = detailTextLabelFrameWithoutEditingMode.origin.y;
     int width = self.frame.size.width - xOrigin - editingModeChevronWidthCompensation;
     
     // Assign the the new frame to textLabel

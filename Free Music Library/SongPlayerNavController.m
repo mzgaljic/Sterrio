@@ -24,4 +24,9 @@
     [[[[UIApplication sharedApplication] delegate] window] addSubview:[MusicPlaybackController obtainRawPlayerView]];
 }
 
+- (BOOL)prefersStatusBarHidden
+{
+    return NO;
+}
+
 @end
