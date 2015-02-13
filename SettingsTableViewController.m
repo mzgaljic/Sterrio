@@ -588,6 +588,7 @@ static tempIcloudSwitchCount = 0;
 {
     MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
     picker.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
+    picker.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor defaultAppColorScheme]};
     picker.mailComposeDelegate = self;
     NSString *emailSubject = @"Bug Report";
     [picker setSubject:emailSubject];
