@@ -71,15 +71,16 @@
     short labelPadding = 10;
     int labelOriginX = self.videoThumbnail.frame.origin.x + self.videoThumbnail.frame.size.width + labelPadding;
     int labelWidths = (self.frame.size.width - (self.videoThumbnail.frame.size.width)) - labelPadding;
+    int labelHeight = 28.0f;
     
     self.videoTitle.frame = CGRectMake(labelOriginX,
                                        self.videoTitle.frame.origin.y,
                                        labelWidths,
-                                       self.videoTitle.frame.size.height);
+                                       labelHeight);
     self.videoChannel.frame = CGRectMake(labelOriginX,
                                        self.videoChannel.frame.origin.y,
                                        labelWidths,
-                                       self.videoChannel.frame.size.height);
+                                       labelHeight);
     
     self.videoTitle.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
     self.videoChannel.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];

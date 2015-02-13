@@ -177,11 +177,13 @@ static short numberTimesViewHasBeenShown = 0;
     }
     if(numberTimesViewHasBeenShown == 0){
         //makes the tableview start AT the nav bar, not behind it.
-        UIEdgeInsets inset = UIEdgeInsetsMake(44, 0, 0, 0);
+        UIEdgeInsets inset = UIEdgeInsetsMake([AppEnvironmentConstants statusBarHeight], 0, 0, 0);
         self.tableView.contentInset = inset;
         self.tableView.scrollIndicatorInsets = inset;
     }
     numberTimesViewHasBeenShown++;
+    
+    [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -537,7 +539,13 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
 
 - (BOOL)prefersStatusBarHidden
 {
-    return NO;
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+        return YES;
+    }
+    else{
+        return NO;
+    }
 }
 
 #pragma mark - Managing video detail fetch response

@@ -221,6 +221,8 @@ static int numTimesVCLoaded = 0;
                                                 blue:121.0/255
                                                alpha:1];
     _artistAndAlbumLabel.textColor = niceGrey;
+    
+    [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)dealloc

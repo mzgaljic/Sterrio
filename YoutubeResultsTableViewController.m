@@ -134,6 +134,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     
     if(self.displaySearchResults)
         _navBar.title = @"Search Results";
+    [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -848,18 +849,23 @@ static NSDate *finish;
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
-        [self prefersStatusBarHidden];
-        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }
+
+    [self prefersStatusBarHidden];
+    [self setNeedsStatusBarAppearanceUpdate];
+    
     if(!_displaySearchResults)  //want to reload the section headers during orientation so it fits ("top hits")
         [self.tableView reloadData];
 }
 
 - (BOOL)prefersStatusBarHidden
 {
-    return NO;
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+        return YES;
+    }
+    else{
+        return NO;
+    }
 }
 
 @end
