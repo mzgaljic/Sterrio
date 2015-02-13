@@ -300,7 +300,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)ytVideoAutoCompleteResultsDidDownload:(NSArray *)arrayOfNSStrings
 {
     //only going to use 5 of the 10 results returned. 10 is too much (searchSuggestions array is already empty-emptied in search bar text did change)
-    int searchSuggestionsCountBefore = _searchSuggestions.count;
+    int searchSuggestionsCountBefore = (int)_searchSuggestions.count;
     [_searchSuggestions removeAllObjects];
     [_lastSuccessfullSuggestions removeAllObjects];
     
@@ -753,7 +753,7 @@ static BOOL userClearedTextField = NO;
 {
     if(yes){
         self.tableView.scrollEnabled = NO;
-        self.tableView.tableHeaderView = nil;
+        [self.searchBar removeFromSuperview];
         int navBarHeight = self.navigationController.navigationBar.frame.size.height;
         short statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
         int offset = navBarHeight + statusBarHeight;
@@ -764,7 +764,7 @@ static BOOL userClearedTextField = NO;
         self.tableView.tableHeaderView = _viewOnTopOfTable;
     } else{
         self.tableView.scrollEnabled = YES;
-        self.tableView.tableHeaderView = nil;
+        [self.searchBar removeFromSuperview];
         _progressViewHere = nil;
         _viewOnTopOfTable = nil;
         [self setUpSearchBar];
