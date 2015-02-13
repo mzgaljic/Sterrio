@@ -12,6 +12,6 @@
 
 @interface UIWindow (VisibleVC)
 
-- (UIViewController *) visibleViewController;
+- (UIViewController *)visibleViewController;
 
 @end

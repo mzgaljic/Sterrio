@@ -1381,8 +1381,10 @@ static int hours;
                                              UIActivityTypeAssignToContact,
                                              UIActivityTypeSaveToCameraRoll,
                                              UIActivityTypeAirDrop];
-        //set tint color specifically for this VC so that the cancel buttons arent invisible
-        [activityVC.view setTintColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0]];
+        //set tint color specifically for this VC so that the text and buttons are visible
+        [activityVC.view setTintColor:[UIColor defaultAppColorScheme]];
+        //activityVC.barTintColor = [UIColor defaultAppColorScheme];
+        //activityVC.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor defaultAppColorScheme]};
         JAMAccurateSlider *superSlider = (JAMAccurateSlider *)self.playbackSlider;
         [superSlider preDealloc];
         [self presentViewController:activityVC animated:YES completion:nil];
