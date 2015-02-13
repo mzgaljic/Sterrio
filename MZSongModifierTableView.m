@@ -472,9 +472,12 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     [self beginUpdates];
     [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]]
                 withRowAnimation:UITableViewRowAnimationFade];
-    [self insertSections:[NSIndexSet indexSetWithIndex:1]
-        withRowAnimation:UITableViewRowAnimationNone];
+    if(_creatingANewSong){
+        [self insertSections:[NSIndexSet indexSetWithIndex:1]
+            withRowAnimation:UITableViewRowAnimationNone];
+    }
     [self endUpdates];
+    [self reloadData];
     
     [self scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
                 atScrollPosition:UITableViewScrollPositionTop animated:NO];
@@ -517,6 +520,11 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     if(_songIAmEditing.artist)
         [[CoreDataManager context] deleteObject:_songIAmEditing.artist];
     _songIAmEditing.artist = newArtist;
+    
+    [self beginUpdates];
+    [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]]
+                withRowAnimation:UITableViewRowAnimationFade];
+    [self endUpdates];
     [self reloadData];
 }
 
@@ -540,6 +548,11 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     _songIAmEditing.album = newAlbum;
     if(_songIAmEditing.artist)
         newAlbum.artist = _songIAmEditing.artist;
+
+    [self beginUpdates];
+    [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
+                withRowAnimation:UITableViewRowAnimationFade];
+    [self endUpdates];
     [self reloadData];
 }
 
@@ -559,6 +572,10 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
         _songIAmEditing.artist = _songIAmEditing.album.artist;
         _songIAmEditing.genreCode = _songIAmEditing.album.genreCode;
         
+        [self beginUpdates];
+        [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
+                    withRowAnimation:UITableViewRowAnimationFade];
+        [self endUpdates];
         [self reloadData];
     }
 }
@@ -570,6 +587,10 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
             [[CoreDataManager context] deleteObject:_songIAmEditing.artist];
         _songIAmEditing.artist = (Artist *)notification.object;
         
+        [self beginUpdates];
+        [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]]
+                    withRowAnimation:UITableViewRowAnimationFade];
+        [self endUpdates];
         [self reloadData];
     }
 }
@@ -579,6 +600,11 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     if([notification.name isEqualToString:@"new genre has been chosen"]){
         NSString *genreString = (NSString *)notification.object;
         _songIAmEditing.genreCode = [NSNumber numberWithInt:[GenreConstants genreStringToCode:genreString]];
+        
+        [self beginUpdates];
+        [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:4 inSection:0]]
+                    withRowAnimation:UITableViewRowAnimationFade];
+        [self endUpdates];
         [self reloadData];
     }
 }

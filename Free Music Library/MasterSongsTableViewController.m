@@ -399,8 +399,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                     //image is not a perfect (or close to perfect) square. Compensate for this...
                     cellImg = [albumArt imageScaledToFitSize:cell.imageView.frame.size];
                 }
-                if([cell.textLabel.text isEqualToString:@"bleeding love"])
-                    NSLog(@"hi");
                 [UIView transitionWithView:cell.imageView
                                   duration:MZCellImageViewFadeDuration
                                    options:UIViewAnimationOptionTransitionCrossDissolve
