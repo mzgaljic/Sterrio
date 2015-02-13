@@ -214,6 +214,9 @@
                    @[[NSValue valueWithCMTime:CMTimeMake(1, 10)]]
                                                   queue:NULL
                                              usingBlock:^{
+                                                 //playback was successful, reset the direction of the queue
+                                                 movingForward = YES;
+                                                 
                                                  [weakSelf dismissAllSpinnersForView:weakPlayerView];
                                                  // Raise a notificaiton when playback has started
                                                  [[NSNotificationCenter defaultCenter]

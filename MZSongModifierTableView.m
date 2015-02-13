@@ -473,14 +473,28 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]]
                 withRowAnimation:UITableViewRowAnimationFade];
     if(_creatingANewSong){
-        [self insertSections:[NSIndexSet indexSetWithIndex:1]
-            withRowAnimation:UITableViewRowAnimationNone];
+        if(! [self isRowPresentInTableView:0 withSection:1]){
+            [self insertSections:[NSIndexSet indexSetWithIndex:1]
+                withRowAnimation:UITableViewRowAnimationNone];
+        }
     }
     [self endUpdates];
     [self reloadData];
     
     [self scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
                 atScrollPosition:UITableViewScrollPositionTop animated:NO];
+}
+
+- (BOOL)isRowPresentInTableView:(int)row withSection:(int)section
+{
+    if(section < [self numberOfSections])
+    {
+        if(row < [self numberOfRowsInSection:section])
+        {
+            return YES;
+        }
+    }
+    return NO;
 }
 
 - (void)reloadTableWaitUntilDone
