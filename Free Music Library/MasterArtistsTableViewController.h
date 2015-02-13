@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "CoreDataTableViewController.h"
 #import "AppEnvironmentConstants.h"
 #import "Album.h"
 #import "Song+Utilities.h"
@@ -17,7 +16,14 @@
 #import "MusicPlaybackController.h"
 #import "UIColor+LighterAndDarker.h"
 #import <SDCAlertView.h>
+#import "CoreDataCustomTableViewController.h"
+#import "NavBarViewControllerDelegate.h"
+#import <MSCellAccessory.h>
 
-@interface MasterArtistsTableViewController : CoreDataTableViewController <UISearchBarDelegate>
+@interface MasterArtistsTableViewController : CoreDataCustomTableViewController
+                                                            <UISearchBarDelegate,
+                                                            UITableViewDataSource,
+                                                            UITableViewDelegate,
+                                                            NavBarViewControllerDelegate>
 
 @end

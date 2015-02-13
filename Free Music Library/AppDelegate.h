@@ -25,6 +25,8 @@
 #import "MainScreenViewController.h"
 #import "MasterSongsTableViewController.h"
 #import "MasterAlbumsTableViewController.h"
+#import "MasterArtistsTableViewController.h"
+#import "MasterPlaylistTableViewController.h"
 
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, AVAudioSessionDelegate, AVAudioPlayerDelegate>

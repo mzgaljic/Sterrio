@@ -57,7 +57,7 @@ static BOOL PRODUCTION_MODE;
 
 - (NSString *)titleOfNavigationBar
 {
-    return @"Songs";
+    return @"Albums";
 }
 
 #pragma mark - Miscellaneous
@@ -195,8 +195,6 @@ static BOOL PRODUCTION_MODE;
     [super viewWillAppear:animated];
     [self setUpSearchBar];
     
-    //must be called in viewWillAppear?
-    
     if([self numberOfAlbumsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
         self.tableView.tableHeaderView = nil;
@@ -269,8 +267,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
     }
     
-    cell.editingAccessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
-                                                             color:[[UIColor defaultAppColorScheme] lighterColor]];
+    MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
+                                                                               color:[[UIColor defaultAppColorScheme] lighterColor]];
+    cell.editingAccessoryView = coloredDisclosureIndicator;
+    cell.accessoryView = coloredDisclosureIndicator;
     
     // Set up other aspects of the cell content.
     Album *album;
@@ -343,7 +343,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //could also selectively choose which rows may be deleted here.
     if(self.displaySearchResults)
         return NO;
     else

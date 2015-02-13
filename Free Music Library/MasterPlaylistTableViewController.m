@@ -10,29 +10,85 @@
 
 @interface MasterPlaylistTableViewController ()
 @property(nonatomic, strong) UIAlertView *createPlaylistAlert;
-
-@property (nonatomic, assign) int indexOfEditingSong;
-@property (nonatomic, assign) int selectedRowIndexValue;
 @property (nonatomic, strong) MySearchBar* searchBar;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+//used so i can retain control over the "greying out" effect from this VC.
+@property (nonatomic, strong) NSArray *rightBarButtonItems;
+@property (nonatomic, strong) NSArray *leftBarButtonItems;
+@property (nonatomic, strong) UIBarButtonItem *editButton;
 @end
 
 @implementation MasterPlaylistTableViewController
 @synthesize createPlaylistAlert = _createPlaylistAlert;
 
-- (void)setUpNavBarItems
+#pragma mark - NavBarItem Delegate
+- (NSArray *)leftBarButtonItemsForNavigationBar
 {
-    //right side of nav bar
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self
-                                                                               action:@selector(addButtonPressed)];
-    NSArray *rightBarButtonItems = @[addButton];
-    self.navigationItem.rightBarButtonItems = rightBarButtonItems;
+    UIBarButtonItem *editButton = self.editButtonItem;
+    editButton.action = @selector(editTapped:);
     
-    //left side of nav bar
     UIImage *image = [UIImage imageNamed:@"Settings-Line"];
     UIBarButtonItem *settings = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self
                                                                 action:@selector(settingsButtonTapped)];
+    UIBarButtonItem *posSpaceAdjust = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    [posSpaceAdjust setWidth:28];
+    self.editButton = editButton;
     
-    self.navigationItem.leftBarButtonItems = @[settings];
+    self.leftBarButtonItems = @[settings, posSpaceAdjust, editButton];
+    return self.leftBarButtonItems;
+}
+
+- (NSArray *)rightBarButtonItemsForNavigationBar
+{
+    //right side of nav bar
+    NSInteger addItem = UIBarButtonSystemItemAdd;
+    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:addItem
+                                                                               target:self
+                                                                               action:@selector(addButtonPressed)];
+    self.rightBarButtonItems = @[addButton];
+    return self.rightBarButtonItems;
+}
+
+- (NSString *)titleOfNavigationBar
+{
+    return @"Playlists";
+}
+
+#pragma mark - Miscellaneous
+#pragma mark - Miscellaneous
+- (void)editTapped:(id)sender
+{
+    if(self.editing)
+    {
+        //leaving editing mode now
+        [self setEditing:NO animated:YES];
+        [self.tableView setEditing:NO animated:YES];
+        
+        if(self.rightBarButtonItems.count > 0){
+            UIBarButtonItem *rightMostItem = self.rightBarButtonItems[self.rightBarButtonItems.count-1];
+            [self makeBarButtonItemNormal:rightMostItem];
+        }
+        if(self.leftBarButtonItems.count > 0){
+            UIBarButtonItem *leftMostItem = self.leftBarButtonItems[0];
+            [self makeBarButtonItemNormal:leftMostItem];
+        }
+    }
+    else
+    {
+        //entering editing mode now
+        [self setEditing:YES animated:YES];
+        [self.tableView setEditing:YES animated:YES];
+        
+        if(self.rightBarButtonItems.count > 0){
+            UIBarButtonItem *rightMostItem = self.rightBarButtonItems[self.rightBarButtonItems.count-1];
+            [self makeBarButtonItemGrey:rightMostItem];
+        }
+        if(self.leftBarButtonItems.count > 0){
+            UIBarButtonItem *leftMostItem = self.leftBarButtonItems[0];
+            [self makeBarButtonItemGrey:leftMostItem];
+        }
+    }
 }
 
 - (UIBarButtonItem *)makeBarButtonItemGrey:(UIBarButtonItem *)barButton
@@ -49,20 +105,39 @@
     return barButton;
 }
 
+- (void)currentSongHasChanged
+{
+#warning needs implementation. should check which if the current song is in a playlist AND if it was actually played back from the playlist or not
+    //want the now playing album to always be a specific color
+    [self.tableView reloadData];
+}
+
 #pragma mark - UISearchBar
 - (void)setUpSearchBar
 {
-    if([self numberOfPlaylistsInCoreDataModel] > 0 && _searchBar == nil){
+    //playlists tab is never the first one on screen. no need to animate it
+    if([self numberOfPlaylistsInCoreDataModel] > 0){
         //create search bar, add to viewController
-        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search Playlists"];
+        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Library"];
         _searchBar.delegate = self;
         self.tableView.tableHeaderView = _searchBar;
+        self.tableView.contentOffset = CGPointMake(0, self.searchBar.frame.size.height);
     }
+    [self setSearchBar:self.searchBar];
+}
+
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
+{
+    self.searchFetchedResultsController = nil;
+    [self setFetchedResultsControllerAndSortStyle];
 }
 
 //User tapped the search box
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
+    self.searchFetchedResultsController = nil;
+    self.fetchedResultsController = nil;
+    
     //show the cancel button
     [_searchBar setShowsCancelButton:YES animated:YES];
 }
@@ -77,6 +152,8 @@
 //User tapped "Cancel"
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
+    [self setFetchedResultsControllerAndSortStyle];
+    
     //dismiss search bar and hide cancel button
     [_searchBar setShowsCancelButton:NO animated:YES];
     [_searchBar resignFirstResponder];
@@ -85,6 +162,8 @@
 //User typing as we speak, fetch latest results to populate results as they type
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
+    #warning implementation incomplete
+    
     if(searchText.length == 0)
     {
         self.displaySearchResults = NO;
@@ -125,52 +204,44 @@
 }
 
 #pragma mark - View Controller life cycle
-static BOOL lastSortOrder;
 - (void)viewWillAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
-    
-    if(lastSortOrder != [AppEnvironmentConstants smartAlphabeticalSort])
-    {
-        [self setFetchedResultsControllerAndSortStyle];
-        lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
-    }
-    
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft ||
-       orientation == UIInterfaceOrientationLandscapeRight||
-       orientation == UIInterfaceOrientationPortraitUpsideDown)
-    {
-        self.tabBarController.tabBar.hidden = YES;
-    }
-    else
-        self.tabBarController.tabBar.hidden = NO;
+    [self setUpSearchBar];
     
     if([self numberOfPlaylistsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
         self.tableView.tableHeaderView = nil;
     }
+    [self setUpSearchBar];
+    
+    //need to somewhat compesate since the last row was cut off (because in storyboard
+    //it thinks the tableview should also span under the nav bar...which i dont want lol).
+    int navBarHeight = [AppEnvironmentConstants navBarHeight];
+    self.tableView.frame = CGRectMake(0,
+                                      0,
+                                      self.view.frame.size.width,
+                                      self.view.frame.size.height - navBarHeight);
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    [super viewDidAppear:animated];
-    self.navigationController.navigationBar.topItem.title = @"Playlists";
-    
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
-    [self.searchBar updateFontSizeIfNecessary];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
-    [self setFetchedResultsControllerAndSortStyle];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.view addSubview:self.tableView];
+    [self setTableForCoreDataView:self.tableView];
     
-    [self setUpNavBarItems];
+    self.searchFetchedResultsController = nil;
+    [self setFetchedResultsControllerAndSortStyle];
+
     self.tableView.allowsSelectionDuringEditing = YES;
-    [self setUpSearchBar];
+    self.tableView.allowsMultipleSelectionDuringEditing = NO;
 }
 
 - (void)didReceiveMemoryWarning
@@ -182,10 +253,25 @@ static BOOL lastSortOrder;
     [imageCache clearMemory];
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 #pragma mark - Table View Data Source
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PlaylistItemCell" forIndexPath:indexPath];
+    static NSString *cellIdentifier = @"PlaylistItemCell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier
+                                                            forIndexPath:indexPath];
+    if (!cell)
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                      reuseIdentifier:cellIdentifier];
+    
+    MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
+                                                                               color:[[UIColor defaultAppColorScheme] lighterColor]];
+    cell.editingAccessoryView = coloredDisclosureIndicator;
+    cell.accessoryView = coloredDisclosureIndicator;
     
     // Configure the cell...
     Playlist *playlist;
@@ -206,8 +292,10 @@ static BOOL lastSortOrder;
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //could also selectively choose which rows may be deleted here.
-    return YES;
+    if(self.displaySearchResults)
+        return NO;
+    else
+        return YES;
 }
 
 //editing the tableView items
@@ -243,6 +331,9 @@ static BOOL lastSortOrder;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    //dont want playlists to be selectable when in edit mode.
+    if(self.editing)
+        return;
     Playlist *selectedPlaylist;
     if(self.displaySearchResults)
         selectedPlaylist = [self.searchFetchedResultsController objectAtIndexPath:indexPath];
@@ -250,7 +341,21 @@ static BOOL lastSortOrder;
         selectedPlaylist = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     //now segue to push view where user can view the tapped playlist
-   [self performSegueWithIdentifier:@"playlistItemSegue" sender:selectedPlaylist];
+    [self performSegueWithIdentifier:@"playlistItemSegue" sender:selectedPlaylist];
+}
+
+- (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (self.tableView.editing)
+    {
+        return UITableViewCellEditingStyleDelete;
+    }
+    return UITableViewCellEditingStyleNone;
+}
+
+- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section {
+    id <NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController.sections objectAtIndex:section];
+    return sectionInfo.numberOfObjects;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -262,7 +367,7 @@ static BOOL lastSortOrder;
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if([[segue identifier] isEqualToString: @"playlistItemSegue"]){
-        [[segue destinationViewController] setPlaylist:sender];
+        [[segue destinationViewController] setPlaylist:(Playlist *)sender];
     }
 }
 
@@ -292,7 +397,8 @@ static BOOL lastSortOrder;
             
             Playlist *myNewPlaylist = [Playlist createNewPlaylistWithName:playlistName inManagedContext:[CoreDataManager context]];
             PlaylistSongAdderTableViewController *vc = [[PlaylistSongAdderTableViewController alloc] initWithPlaylist:myNewPlaylist];
-            [self.navigationController pushViewController:vc animated:YES];
+            UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:vc];
+            [self presentViewController:navVC animated:YES completion:nil];
         }
         else  //canceled
             return;
@@ -341,11 +447,9 @@ static BOOL lastSortOrder;
 #pragma mark - Rotation methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
-        [self prefersStatusBarHidden];
-        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }
+    [self prefersStatusBarHidden];
+    [self setNeedsStatusBarAppearanceUpdate];
+    
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
@@ -353,40 +457,12 @@ static BOOL lastSortOrder;
 {
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
-        [self setTabBarVisible:NO animated:NO];
         return YES;
     }
     else{
-        [self setTabBarVisible:YES animated:NO];
-        //fixes a bug when using another viewController with all these "hiding" nav bar features...and returning to this viewController
-        self.tabBarController.tabBar.hidden = NO;
         return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
     }
 }
-
-- (void)setTabBarVisible:(BOOL)visible animated:(BOOL)animated
-{
-    // bail if the current state matches the desired state
-    if ([self tabBarIsVisible] == visible) return;
-    
-    // get a frame calculation ready
-    CGRect frame = self.tabBarController.tabBar.frame;
-    CGFloat height = frame.size.height;
-    CGFloat offsetY = (visible)? -height : height;
-    
-    // zero duration means no animation
-    CGFloat duration = (animated)? 0.3 : 0.0;
-    
-    [UIView animateWithDuration:duration animations:^{
-        self.tabBarController.tabBar.frame = CGRectOffset(frame, 0, offsetY);
-    }];
-}
-
-- (BOOL)tabBarIsVisible
-{
-    return self.tabBarController.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame);
-}
-
 
 #pragma mark - Counting Playlists in core data
 - (int)numberOfPlaylistsInCoreDataModel
@@ -406,7 +482,6 @@ static BOOL lastSortOrder;
     }
     return count;
 }
-
 
 #pragma mark - fetching and sorting
 - (void)setFetchedResultsControllerAndSortStyle

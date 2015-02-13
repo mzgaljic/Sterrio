@@ -11,6 +11,7 @@
 #import "SegmentedControlItem.h"
 #import "MyViewController.h"
 #import "AppEnvironmentConstants.h"
+#import "UIColor+LighterAndDarker.h"
 
 @interface MainScreenViewController : MyViewController <UIPageViewControllerDataSource,
                                                         UIPageViewControllerDelegate>

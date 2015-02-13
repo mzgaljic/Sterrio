@@ -13,21 +13,26 @@
 #import "SongTableViewFormatter.h"
 #import "UIColor+LighterAndDarker.h"
 #import "SDWebImageManager.h"
-#import "CoreDataTableViewController.h"
-
+#import "CoreDataCustomTableViewController.h"
 #import "PlaylistSongAdderTableViewController.h"
 #import "UINavigationController+CustomPushAnimation.h"
 #import "MusicPlaybackController.h"
+#import <FXImageView/UIImage+FX.h>
 
-@interface PlaylistItemTableViewController : CoreDataTableViewController <UITextFieldDelegate>
+@interface PlaylistItemTableViewController : CoreDataCustomTableViewController
+                                                            <UISearchBarDelegate,
+                                                            UITableViewDataSource,
+                                                            UITableViewDelegate,
+                                                            UITextFieldDelegate>
+{
+    StackController *stackController;
+}
 
 @property (nonatomic, strong) Playlist *playlist;
 @property (nonatomic, assign) int numSongsNotAddedYet;
 @property (nonatomic, strong) NSArray *originalLeftBarButtonItems;
 @property (nonatomic, strong) NSArray *originalRightBarButtonItems;
+@property (nonatomic, strong) UIBarButtonItem *addBarButton;
+@property (nonatomic, strong) UINavigationItem *navBar;
 
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *addBarButton;
-@property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
-
-- (IBAction)addButtonPressed:(id)sender;
 @end

@@ -15,4 +15,7 @@
 - (NSArray *)rightBarButtonItemsForNavigationBar;
 - (NSString *)titleOfNavigationBar;
 
+@optional
+- (void)navigationControllerNavBarForOptionalCustomization:(UINavigationBar *)navBar;
+
 @end

@@ -7,11 +7,14 @@
 //
 
 #import "PlaylistSongAdderTableViewController.h"
-#define Done_String @"Done"
+#define Done_String @"Add"
 #define AddLater_String @"Add later"
 #define Cancel_String @"Cancel"
 
 @interface PlaylistSongAdderTableViewController()
+@property (nonatomic, strong) MySearchBar *searchBar;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
 @end
 
 @implementation PlaylistSongAdderTableViewController
@@ -40,28 +43,110 @@ static const short NORMAL_PLAYLIST = -1;
     return self;
 }
 
-static BOOL lastSortOrder;
--(void)viewWillAppear:(BOOL)animated
+#pragma mark - UISearchBar
+- (void)setUpSearchBar
 {
-    [super viewWillAppear:animated];
-    
-    if(lastSortOrder != [AppEnvironmentConstants smartAlphabeticalSort])
-    {
-        [self setFetchedResultsControllerAndSortStyle];
-        lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
+    if([self numberOfSongsInCoreDataModel] > 0){
+        //BOOL needToAnimateUp = (self.searchBar == nil);
+        //create search bar, add to viewController
+        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Library"];
+        _searchBar.delegate = self;
+        self.tableView.tableHeaderView = _searchBar;
+        /*
+        if(needToAnimateUp){
+            //now hide it by default
+            __weak UISearchBar *weakSearchBar = self.searchBar;
+            __weak UITableView *weakTableView = self.tableView;
+            [UIView animateWithDuration:0.7f delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+                weakTableView.contentOffset = CGPointMake(0, weakSearchBar.frame.size.height);
+            } completion:nil];
+        }*/
     }
+    [self setSearchBar:self.searchBar];
+}
 
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
+{
+    self.searchFetchedResultsController = nil;
+    [self setFetchedResultsControllerAndSortStyle];
+}
+
+//user tapped search box
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+{
+    self.searchFetchedResultsController = nil;
+    self.fetchedResultsController = nil;
     
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight
-       || orientation == UIInterfaceOrientationPortraitUpsideDown)
+    //show the cancel button
+    [_searchBar setShowsCancelButton:YES animated:YES];
+}
+
+//user tapped "Search"
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    //search results already appear as the user types. Just hide the keyboard...
+    [_searchBar resignFirstResponder];
+}
+
+//User tapped "Cancel"
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    [self setFetchedResultsControllerAndSortStyle];
+    
+    //dismiss search bar and hide cancel button
+    [_searchBar setShowsCancelButton:NO animated:YES];
+    [_searchBar resignFirstResponder];
+}
+
+//User typing as we speak, fetch latest results to populate results as they type
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    if(searchText.length == 0)
     {
-        self.tabBarController.tabBar.hidden = YES;
+        self.displaySearchResults = NO;
+        self.searchFetchedResultsController = nil;
     }
     else
-        self.tabBarController.tabBar.hidden = NO;
-    
+    {
+        self.displaySearchResults = YES;
+        
+        self.searchFetchedResultsController = nil;
+        NSManagedObjectContext *context = [CoreDataManager context];
+        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
+        
+        if([AppEnvironmentConstants smartAlphabeticalSort])
+            
+            request.predicate = [NSPredicate predicateWithFormat:@"smartSortSongName CONTAINS[cd] %@", searchText];
+        else
+            request.predicate = [NSPredicate predicateWithFormat:@"songName CONTAINS[cd] %@", searchText];
+        
+        NSSortDescriptor *sortDescriptor;
+        if([AppEnvironmentConstants smartAlphabeticalSort])
+            sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
+                                                           ascending:YES
+                                                            selector:@selector(localizedStandardCompare:)];
+        else
+            sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
+                                                           ascending:YES
+                                                            selector:@selector(localizedStandardCompare:)];
+        request.sortDescriptors = @[sortDescriptor];
+        //searchResults
+        self.searchFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+    }
+}
+
+
+#pragma mark - View Controller life cycle
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
     _songsSelected = [NSMutableArray array];
+    [self setUpSearchBar];
+    
+    if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
+        _searchBar = nil;
+        self.tableView.tableHeaderView = nil;
+    }
     
     //init tableView model
     if([_receiverPlaylist.status shortValue] == IN_CREATION){  //creating new playlist
@@ -77,23 +162,38 @@ static BOOL lastSortOrder;
     
     //needed to make UITableViewCellAccessoryCheckmark the nav bar color!
     self.tableView.tintColor = [UIColor defaultAppColorScheme];
+    
+    
+    //need to somewhat compesate since the last row was cut off (because in storyboard
+    //it thinks the tableview should also span under the nav bar...which i dont want lol).
+    int navBarHeight = [AppEnvironmentConstants navBarHeight];
+    self.tableView.frame = CGRectMake(0,
+                                      0,
+                                      self.view.frame.size.width,
+                                      self.view.frame.size.height - navBarHeight);
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-     lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.view addSubview:self.tableView];
+    [self setTableForCoreDataView:self.tableView];
     
+    self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
+    
     stackController = [[StackController alloc] init];
     
     [self setProductionModeValue];
-    self.tableView.allowsMultipleSelection = YES;
+    self.tableView.allowsSelectionDuringEditing = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
 }
@@ -116,10 +216,12 @@ static BOOL lastSortOrder;
 static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"playlistSongItemPickerCell" forIndexPath:indexPath];
-    
-    if (cell == nil)
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"playlistSongItemPickerCell"];
+    static NSString *cellIdentifier = @"playlistSongItemPickerCell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier
+                                                            forIndexPath:indexPath];
+    if (!cell)
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                      reuseIdentifier:cellIdentifier];
     else
     {
         // If an existing cell is being reused, reset the image to the default until it is populated.
@@ -177,14 +279,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
     [stackController addBlock:^{
         UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
-                            [AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]]];
-        if(albumArt == nil){
-            if(song.album){
+                                                    [AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]]];
+        if(albumArt == nil) //see if this song has an album. If so, check if it has art.
+            if(song.album != nil)
                 albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
-                        [AlbumArtUtilities albumArtFileNameToNSURL:song.album.albumArtFileName]]];
-            }
-        }
-        albumArt = [AlbumArtUtilities imageWithImage:albumArt scaledToSize:CGSizeMake(cell.frame.size.height, cell.frame.size.height)];
+                                                   [AlbumArtUtilities albumArtFileNameToNSURL:song.album.albumArtFileName]]];
         // The block will be processed on a background Grand Central Dispatch queue.
         // Therefore, ensure that this code that updates the UI will run on the main queue.
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -192,7 +291,20 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             if ([indexPath isEqual:cellIndexPath]) {
                 // Only set cell image if the cell currently being displayed is the one that actually required this image.
                 // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
-                cell.imageView.image = albumArt;
+
+                __weak UIImage *cellImg = albumArt;
+                //calculate how much one length varies from the other.
+                int diff = abs(albumArt.size.width - albumArt.size.height);
+                if(diff > 10){
+                    //image is not a perfect (or close to perfect) square. Compensate for this...
+                    cellImg = [albumArt imageScaledToFitSize:cell.imageView.frame.size];
+                }
+                [UIView transitionWithView:cell.imageView
+                                  duration:MZCellImageViewFadeDuration
+                                   options:UIViewAnimationOptionTransitionCrossDissolve
+                                animations:^{
+                                    cell.imageView.image = cellImg;
+                                } completion:nil];
             }
         });
     }];
@@ -203,6 +315,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return NO;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [SongTableViewFormatter preferredSongCellHeight];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -238,11 +355,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return [SongTableViewFormatter preferredSongCellHeight];
+- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section {
+    id <NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController.sections objectAtIndex:section];
+    return sectionInfo.numberOfObjects;
 }
 
+
+#pragma mark - User button actions
 - (IBAction)rightBarButtonTapped:(id)sender
 {
     [self setReceiverPlaylistWithFetchUsingPlaylistID:_receiverPlaylist.playlist_id];
@@ -276,7 +395,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         _receiverPlaylist.status = [NSNumber numberWithShort:CREATED_BUT_EMPTY];
     }
     [[CoreDataManager sharedInstance] saveContext];  //save in core data
-    [self.navigationController popViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"song picker dismissed" object:replacementPlaylist];
 }
 
@@ -292,7 +411,46 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     //else we dont need to do anything
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"song picker dismissed" object:nil];
-    [self.navigationController popViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - Rotation status bar methods
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [self prefersStatusBarHidden];
+    [self setNeedsStatusBarAppearanceUpdate];
+    
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+        return YES;
+    }
+    else{
+        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
+    }
+}
+
+#pragma mark - Counting Songs in core data
+- (int)numberOfSongsInCoreDataModel
+{
+    //count how many instances there are of the Song entity in core data
+    NSManagedObjectContext *context = [CoreDataManager context];
+    int count = 0;
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:context];
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setEntity:entity];
+    [fetchRequest setIncludesPropertyValues:NO];
+    [fetchRequest setIncludesSubentities:NO];
+    NSError *error = nil;
+    NSUInteger tempCount = [context countForFetchRequest: fetchRequest error: &error];
+    if(error == nil){
+        count = (int)tempCount;
+    }
+    return count;
 }
 
 #pragma mark - fetching and sorting
@@ -337,55 +495,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             [self.navigationController popViewControllerAnimated:YES];
         }
     }
-}
-
-#pragma mark - Rotation status bar methods
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
-        [self prefersStatusBarHidden];
-        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }
-    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-}
-
-- (BOOL)prefersStatusBarHidden
-{
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
-        [self setTabBarVisible:NO animated:NO];
-        self.tabBarController.tabBar.hidden = YES;
-        return YES;
-    }
-    else{
-        [self setTabBarVisible:NO animated:NO];
-        self.tabBarController.tabBar.hidden = YES;
-        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
-    }
-}
-
-- (void)setTabBarVisible:(BOOL)visible animated:(BOOL)animated
-{
-    // bail if the current state matches the desired state
-    if ([self tabBarIsVisible] == visible) return;
-    
-    // get a frame calculation ready
-    CGRect frame = self.tabBarController.tabBar.frame;
-    CGFloat height = frame.size.height;
-    CGFloat offsetY = (visible)? -height : height;
-    
-    // zero duration means no animation
-    CGFloat duration = (animated)? 0.3 : 0.0;
-    
-    [UIView animateWithDuration:duration animations:^{
-        self.tabBarController.tabBar.frame = CGRectOffset(frame, 0, offsetY);
-    }];
-}
-
-- (BOOL)tabBarIsVisible
-{
-    return self.tabBarController.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame);
 }
 
 @end

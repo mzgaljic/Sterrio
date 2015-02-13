@@ -15,12 +15,16 @@
 #import "PlayListTableViewFormatter.h"
 #import "NSString+WhiteSpace_Utility.h"
 #import "SDWebImageManager.h"
-#import "CoreDataManager.h"
 #import "MusicPlaybackController.h"
-
 #import "PlaylistSongAdderTableViewController.h"
 #import "UINavigationController+CustomPushAnimation.h"
+#import "CoreDataCustomTableViewController.h"
+#import "NavBarViewControllerDelegate.h"
 
-@interface MasterPlaylistTableViewController : CoreDataTableViewController <UISearchBarDelegate, UITextFieldDelegate>
-
+@interface MasterPlaylistTableViewController :CoreDataCustomTableViewController
+                                                            <UISearchBarDelegate,
+                                                            UITableViewDataSource,
+                                                            UITableViewDelegate,
+                                                            NavBarViewControllerDelegate,
+                                                            UITextFieldDelegate>
 @end

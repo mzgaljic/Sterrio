@@ -18,9 +18,12 @@
 #import "SDWebImageManager.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "CoreDataManager.h"
-#import "CoreDataTableViewController.h"
+#import "CoreDataCustomTableViewController.h"
 
-@interface PlaylistSongAdderTableViewController : CoreDataTableViewController
+@interface PlaylistSongAdderTableViewController : CoreDataCustomTableViewController
+                                                                <UISearchBarDelegate,
+                                                                UITableViewDataSource,
+                                                                UITableViewDelegate>
 {
     StackController *stackController;
 }

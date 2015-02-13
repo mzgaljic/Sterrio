@@ -215,8 +215,6 @@ static BOOL haveCheckedCoreDataInit = NO;
     [super viewWillAppear:animated];
     [self setUpSearchBar];
     
-    //must be called in viewWillAppear?
-    
     if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
         self.tableView.tableHeaderView = nil;

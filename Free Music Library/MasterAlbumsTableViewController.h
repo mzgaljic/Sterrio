@@ -21,7 +21,7 @@
 #import <SDCAlertView.h>
 #import "NavBarViewControllerDelegate.h"
 #import <FXImageView/UIImage+FX.h>
-#import <MSCellAccessory/MSCellAccessory.h>
+#import <MSCellAccessory.h>
 
 @interface MasterAlbumsTableViewController : CoreDataCustomTableViewController
                                                                 <UISearchBarDelegate,

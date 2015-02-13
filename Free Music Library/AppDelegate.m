@@ -23,7 +23,8 @@ static BOOL PRODUCTION_MODE;
 static NSString * const storyboardFileName = @"Main";
 static NSString * const songsVcSbId = @"songs view controller storyboard ID";
 static NSString * const albumsVcSbId = @"albums view controller storyboard ID";
-
+static NSString * const artistsVcSbId = @"artists view controller storyboard ID";
+static NSString * const playlistsVcSbId = @"playlists view controller storyboard ID";
 
 - (void)setProductionModeValue
 {
@@ -43,20 +44,17 @@ static NSString * const albumsVcSbId = @"albums view controller storyboard ID";
     
     MasterSongsTableViewController *vc1 = [storyboard instantiateViewControllerWithIdentifier:songsVcSbId];
     MasterAlbumsTableViewController *vc2 = [storyboard instantiateViewControllerWithIdentifier:albumsVcSbId];
-
-    UIViewController *vc3 = [UIViewController new];
-    vc3.view.backgroundColor = [UIColor purpleColor];
-    UIViewController *vc4 = [UIViewController new];
-    vc4.view.backgroundColor = [UIColor greenColor];
+    MasterArtistsTableViewController *vc3 = [storyboard instantiateViewControllerWithIdentifier:artistsVcSbId];
+    MasterPlaylistTableViewController *vc4 = [storyboard instantiateViewControllerWithIdentifier:playlistsVcSbId];
     
     SegmentedControlItem *item1 = [[SegmentedControlItem alloc] initWithViewController:vc1
-                                                                              itemName:@"Songs"];
+                                                                              itemName:[vc1 titleOfNavigationBar]];
     SegmentedControlItem *item2 = [[SegmentedControlItem alloc] initWithViewController:vc2
-                                                                              itemName:@"Albums"];
+                                                                              itemName:[vc2 titleOfNavigationBar]];
     SegmentedControlItem *item3 = [[SegmentedControlItem alloc] initWithViewController:vc3
-                                                                              itemName:@"Artists"];
+                                                                              itemName:[vc3 titleOfNavigationBar]];
     SegmentedControlItem *item4 = [[SegmentedControlItem alloc] initWithViewController:vc4
-                                                                              itemName:@"Playlists"];
+                                                                              itemName:[vc4 titleOfNavigationBar]];
     NSArray *segmentedControls = @[item1, item2, item3, item4];
     mainVC = [[MainScreenViewController alloc] initWithSegmentedControlItems:segmentedControls];
     
@@ -77,7 +75,11 @@ static NSString * const albumsVcSbId = @"albums view controller storyboard ID";
     
     //set global default "AppColorScheme"
     self.window.tintColor = [UIColor whiteColor];
-    [UIColor defaultAppColorScheme:Rgb2UIColor(32, 69, 124)];
+    [UIColor defaultAppColorScheme:Rgb2UIColor(32, 69, 124)];  // original blue
+    //[UIColor defaultAppColorScheme:Rgb2UIColor(0, 199, 248)];   blue inspired by finder
+    //[UIColor defaultAppColorScheme:Rgb2UIColor(77, 167, 36)];   green color
+    //[UIColor defaultAppColorScheme:Rgb2UIColor(234, 68, 56)];  redish color
+    //[UIColor defaultAppColorScheme:Rgb2UIColor(32, 69, 124)];
     
     //set cancel button color of all uisearchbars
     [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
@@ -138,7 +140,7 @@ static NSString * const albumsVcSbId = @"albums view controller storyboard ID";
 {
     //animate player back from snapshot
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    float animationDuration = 1.0f;
+    float animationDuration = 0.65f;
     [UIView animateWithDuration:animationDuration animations:^{
         playerSnapshot.alpha = 0.0;
     }];

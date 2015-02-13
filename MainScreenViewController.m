@@ -43,13 +43,13 @@ const short segmentedControlHeight = 42;
         [self setupViewControllerIndexesAndTags];
         
         NSDictionary *options = [[NSMutableDictionary alloc] initWithCapacity:1];
-        CGFloat spacingVal = 4;
+        CGFloat spacingVal = 5;
         NSNumber *spacing = [NSNumber numberWithFloat:spacingVal];
         [options setValue:spacing forKey:UIPageViewControllerOptionInterPageSpacingKey];
         _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:transitionStyle
                                                               navigationOrientation:navigationOrientation
                                                                             options:options];
-        self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+        self.view.backgroundColor = [[UIColor groupTableViewBackgroundColor] darkerColor];
         self.edgesForExtendedLayout = UIRectEdgeNone;
     }
     return self;
@@ -203,6 +203,15 @@ const short segmentedControlHeight = 42;
 
 - (HMSegmentedControl *)createNewSegmentedControlWithFrame:(CGRect)frame
 {
+    //reduce height by 2 and make stickyheader background black to make it seem
+    //like a thin sleek line is dividing the segmented control and the pageViewController.
+    short heightOfSeperator = 1;
+    frame = CGRectMake(frame.origin.x,
+                       frame.origin.y,
+                       frame.size.width,
+                       frame.size.height - heightOfSeperator);
+    self.stickyHeaderView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    
     NSMutableArray *sectionTitles;
     sectionTitles = [[NSMutableArray alloc] initWithCapacity:self.allSegmentedControlItems.count];
     for(SegmentedControlItem *item in self.allSegmentedControlItems){

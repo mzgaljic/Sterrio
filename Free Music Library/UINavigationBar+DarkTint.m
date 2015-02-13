@@ -13,7 +13,6 @@
 @dynamic colorLayer;
 static CGFloat const kSpaceToCoverStatusBars = 20.0f;
 
-
 - (void)swizlayoutSubviews {
     [self swizlayoutSubviews];
     

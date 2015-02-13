@@ -12,10 +12,13 @@
 @property (nonatomic, assign) int lastTableViewModelCount;
 @property (nonatomic, strong) UITextField *txtField;
 @property (nonatomic, assign) BOOL currentlyEditingPlaylistName;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
 @end
 
 @implementation PlaylistItemTableViewController
 @synthesize playlist = _playlist, numSongsNotAddedYet = _numSongsNotAddedYet, txtField = _txtField;
+
 
 - (void) dealloc
 {
@@ -27,17 +30,25 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.tableView.backgroundColor = [UIColor whiteColor];
-    [self setFetchedResultsControllerAndSortStyle];
     [self setUpNavBarItems];
+    self.navBar = self.navigationItem;
     [[UITextField appearance] setTintColor:[[UIColor defaultAppColorScheme] lighterColor]];  //sets the cursor color of the playlist name textbox editor
+    
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.view addSubview:self.tableView];
+    [self setTableForCoreDataView:self.tableView];
+    
+    self.searchFetchedResultsController = nil;
+    [self setFetchedResultsControllerAndSortStyle];
+    
+    stackController = [[StackController alloc] init];
+    self.tableView.allowsSelectionDuringEditing = YES;
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    self.tabBarController.tabBar.hidden = YES;
 
     _numSongsNotAddedYet = (int)([self numberOfSongsInCoreDataModel] - _playlist.playlistSongs.count);
     _lastTableViewModelCount = (int)_playlist.playlistSongs.count;
@@ -48,6 +59,15 @@
     //set song/album details for currently selected song
     NSString *navBarTitle = _playlist.playlistName;
     self.navBar.title = navBarTitle;
+    
+    
+    //need to somewhat compesate since the last row was cut off (because in storyboard
+    //it thinks the tableview should also span under the nav bar...which i dont want lol).
+    int navBarHeight = [AppEnvironmentConstants navBarHeight];
+    self.tableView.frame = CGRectMake(0,
+                                      0,
+                                      self.view.frame.size.width,
+                                      self.view.frame.size.height - navBarHeight);
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -62,8 +82,10 @@
 {
     UIBarButtonItem *editButton = self.editButtonItem;
     editButton.action = @selector(editTapped:);
-    UIBarButtonItem *addButton = self.addBarButton;
-    
+    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                                                               target:self
+                                                                               action:@selector(addButtonPressed)];
+    self.addBarButton = addButton;
     NSArray *rightBarButtonItems = [NSArray arrayWithObjects:editButton, addButton, nil];
     self.navigationItem.rightBarButtonItems = rightBarButtonItems;  //place both buttons on the nav bar
 }
@@ -77,27 +99,86 @@
     [imageCache clearMemory];
 }
 
+- (void)currentSongHasChanged
+{
+#warning incomplete implementation.
+    //want the now playing song to always be a specific color
+    [self.tableView reloadData];
+}
+
 #pragma mark - Table View Data Source
+static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"playlistSongItemCell" forIndexPath:indexPath];
-    // Configure the cell...
-    Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    
-    if (cell == nil)
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"playlistSongItemCell"];
+    static NSString *cellIdentifier = @"playlistSongItemCell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier
+                                                            forIndexPath:indexPath];
+    if (!cell)
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                      reuseIdentifier:cellIdentifier];
     else
     {
-        UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:[AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]]];
-        albumArt = [AlbumArtUtilities imageWithImage:albumArt scaledToSize:CGSizeMake(cell.frame.size.height, cell.frame.size.height)];
-        cell.imageView.image = albumArt;
+        // If an existing cell is being reused, reset the image to the default until it is populated.
+        // Without this code, previous images are displayed against the new people during rapid scrolling.
+        cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
     }
+
+    // Configure the cell...
+    Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     //init cell fields
     cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
     if(! [SongTableViewFormatter songNameIsBold])
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
+    
+#warning incomplete check. Should check if the now playing song was INITIATED from a playlist to begin with so this is accurate.
+    if([[MusicPlaybackController nowPlayingSong].song_id isEqual:song.song_id])
+        cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+    else
+        cell.textLabel.textColor = [UIColor blackColor];
+    
+    // Store a reference to the current cell that will enable the image to be associated with the correct
+    // cell, when the image is subsequently loaded asynchronously.
+    objc_setAssociatedObject(cell,
+                             &songIndexPathAssociationKey,
+                             indexPath,
+                             OBJC_ASSOCIATION_RETAIN);
+    
+    // Queue a block that obtains/creates the image and then loads it into the cell.
+    // The code block will be run asynchronously in a last-in-first-out queue, so that when
+    // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
+    [stackController addBlock:^{
+        UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
+                                                    [AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]]];
+        if(albumArt == nil) //see if this song has an album. If so, check if it has art.
+            if(song.album != nil)
+                albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
+                                                   [AlbumArtUtilities albumArtFileNameToNSURL:song.album.albumArtFileName]]];
+        // The block will be processed on a background Grand Central Dispatch queue.
+        // Therefore, ensure that this code that updates the UI will run on the main queue.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSIndexPath *cellIndexPath = (NSIndexPath *)objc_getAssociatedObject(cell, &songIndexPathAssociationKey);
+            if ([indexPath isEqual:cellIndexPath]) {
+                // Only set cell image if the cell currently being displayed is the one that actually required this image.
+                // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
+                
+                __weak UIImage *cellImg = albumArt;
+                //calculate how much one length varies from the other.
+                int diff = abs(albumArt.size.width - albumArt.size.height);
+                if(diff > 10){
+                    //image is not a perfect (or close to perfect) square. Compensate for this...
+                    cellImg = [albumArt imageScaledToFitSize:cell.imageView.frame.size];
+                }
+                [UIView transitionWithView:cell.imageView
+                                  duration:MZCellImageViewFadeDuration
+                                   options:UIViewAnimationOptionTransitionCrossDissolve
+                                animations:^{
+                                    cell.imageView.image = cellImg;
+                                } completion:nil];
+            }
+        });
+    }];
     
     return cell;
 }
@@ -138,6 +219,11 @@
     }
 }
 
+- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section {
+    id <NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController.sections objectAtIndex:section];
+    return sectionInfo.numberOfObjects;
+}
+
 - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return YES;
@@ -162,7 +248,7 @@
 #pragma mark - Button actions
 - (void)editTapped:(id)sender
 {
-    if(self.editing)
+    if(self.tableView.editing)
     {
         [self.navBar setRightBarButtonItems:_originalRightBarButtonItems animated:YES];
         [self.navBar setLeftBarButtonItems:_originalLeftBarButtonItems animated:YES];
@@ -170,7 +256,8 @@
         _originalLeftBarButtonItems = nil;
         _originalRightBarButtonItems = nil;
         
-        [super setEditing:NO animated:YES];
+        [self.tableView setEditing:NO animated:YES];
+        [self setEditing:self.tableView.editing animated:YES];
         [self.navigationItem setHidesBackButton:NO animated:YES];
         _currentlyEditingPlaylistName = NO;
         
@@ -182,23 +269,26 @@
     }
     else
     {
-        [super setEditing:YES animated:YES];
         _currentlyEditingPlaylistName = YES;
         [UIView animateWithDuration:1 animations:^{
             //allows for renaming the playlist
             [self setUpUITextField];
+            [self.tableView setEditing:YES animated:YES];
+            [self setEditing:self.tableView.editing animated:YES];
+        } completion:^(BOOL finished) {
         }];
     }
     [self setNeedsStatusBarAppearanceUpdate];
 }
 
-- (IBAction)addButtonPressed:(id)sender
+- (void)addButtonPressed
 {
     //start listening for notifications (so we know when the modal song picker dissapears)
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(songPickerWasDismissed:) name:@"song picker dismissed" object:nil];
     
     PlaylistSongAdderTableViewController *vc = [[PlaylistSongAdderTableViewController alloc] initWithPlaylist:_playlist];
-    [self.navigationController pushViewController:vc animated:YES];
+    UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:vc];
+    [self presentViewController:navVC animated:YES completion:nil];
 }
 
 - (void)songPickerWasDismissed:(NSNotification *)someNSNotification
@@ -266,7 +356,6 @@
     _txtField.clearButtonMode = UITextFieldViewModeWhileEditing;
     
     _txtField.backgroundColor = [UIColor whiteColor];
-    //[[[[[_txtField.backgroundColor darkerColor] darkerColor]darkerColor] darkerColor] darkerColor];
     _txtField.textColor = [UIColor blackColor];
     [_txtField setDelegate:self];
     _txtField.textAlignment = NSTextAlignmentCenter;
@@ -275,7 +364,7 @@
     editButton.action = @selector(editTapped:);
     
     [self.navigationItem setHidesBackButton:YES animated:NO];
-    [self.navBar setRightBarButtonItems:@[editButton] animated:NO];
+    [self.navBar setRightBarButtonItems:@[editButton] animated:YES];
     [self.navBar setLeftBarButtonItems:nil animated:NO];
     self.navBar.titleView = _txtField;
 }
@@ -316,7 +405,8 @@
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [self prefersStatusBarHidden];
-    [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+    [self setNeedsStatusBarAppearanceUpdate];
+    
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
@@ -324,38 +414,11 @@
 {
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
-        [self setTabBarVisible:NO animated:NO];
-        self.tabBarController.tabBar.hidden = YES;
         return YES;
     }
     else{
-        [self setTabBarVisible:NO animated:NO];
-        self.tabBarController.tabBar.hidden = YES;
         return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
     }
-}
-
-- (void)setTabBarVisible:(BOOL)visible animated:(BOOL)animated
-{
-    // bail if the current state matches the desired state
-    if ([self tabBarIsVisible] == visible) return;
-    
-    // get a frame calculation ready
-    CGRect frame = self.tabBarController.tabBar.frame;
-    CGFloat height = frame.size.height;
-    CGFloat offsetY = (visible)? -height : height;
-    
-    // zero duration means no animation
-    CGFloat duration = (animated)? 0.3 : 0.0;
-    
-    [UIView animateWithDuration:duration animations:^{
-        self.tabBarController.tabBar.frame = CGRectOffset(frame, 0, offsetY);
-    }];
-}
-
-- (BOOL)tabBarIsVisible
-{
-    return self.tabBarController.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame);
 }
 
 #pragma mark - Counting Songs in core data
