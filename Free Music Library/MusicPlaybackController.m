@@ -58,7 +58,6 @@ static int numLongSongsSkipped = 0;
 + (void)returnToPreviousTrack
 {
     Song *previousSong = [[MusicPlaybackController playbackQueue] skipToPrevious];
-    [MusicPlaybackController updateLockScreenInfoAndArtForSong:previousSong];
     
     [player startPlaybackOfSong:previousSong goingForward:NO];
     //NOTE: YTVideoAvPlayer will automatically rewind further back in the queue if some songs cant be played

@@ -53,6 +53,28 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     return [AVPlayerLayer class];
 }
 
+static UIImageView *screenshotOfPlayer;
+- (void)removeLayerFromPlayer
+{    
+    AVPlayerLayer *playerLayer = (AVPlayerLayer *)[self layer];
+    [playerLayer setPlayer:nil];
+}
+
+- (UIImage *)screenshotOfPlayer
+{
+    return [self viewAsScreenshot];
+}
+
+- (void)reattachLayerToPlayer
+{
+    if(screenshotOfPlayer){
+        [screenshotOfPlayer removeFromSuperview];
+        screenshotOfPlayer = nil;
+    }
+    AVPlayerLayer *playerLayer = (AVPlayerLayer *)[self layer];
+    [playerLayer setPlayer:[MusicPlaybackController obtainRawAVPlayer]];
+}
+
 - (AVPlayer *)player {
     return [(AVPlayerLayer *)[self layer] player];
 }

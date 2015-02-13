@@ -580,7 +580,8 @@ static int hours;
 - (void)playbackHasStopped
 {
     [self toggleDisplayToPausedState];
-    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+    if(! sliderIsBeingTouched)
+        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
 }
 
 - (void)playbackHasResumed
@@ -997,7 +998,6 @@ static int hours;
     [MusicPlaybackController pausePlayback];
     self.playbackSlider.enabled = NO;
     [MusicPlaybackController returnToPreviousTrack];
-    [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
     [self backwardsButtonLetGo];
     [self showNextTrackButton];  //in case it wasnt on screen already
     
@@ -1046,7 +1046,6 @@ static int hours;
     [MusicPlaybackController pausePlayback];
     self.playbackSlider.enabled = NO;
     [MusicPlaybackController skipToNextTrack];
-    [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
     [self forwardsButtonLetGo];
     [self showPreviousTrackButton];
     
@@ -1231,7 +1230,6 @@ static int hours;
     if (kRateDidChangeKVO == context) {
         if(player.rate == 0 && !playbackExplicitlyPaused){
             if(! [MusicPlaybackController isInternetProblemSpinnerOnScreen]){
-                [self showSpinnerForBasicLoadingOnView:playerView];
                 [self toggleDisplayToPausedState];
             }
             if(!sliderIsBeingTouched && !waitingForNextOrPrevVideoToLoad){
@@ -1241,7 +1239,6 @@ static int hours;
         if(player.rate == 0)
             [self toggleDisplayToPausedState];
         if(player.rate == 1 && ![MusicPlaybackController isPlayerStalled]){
-            [self dismissAllSpinnersForView:playerView];
             [self toggleDisplayToPlayingState];
         }
         if([MusicPlaybackController isPlayerStalled])
@@ -1280,7 +1277,6 @@ static int hours;
             
             if(player.rate == 0 && !playbackExplicitlyPaused && !waitingForNextOrPrevVideoToLoad && !sliderIsBeingTouched && ![MusicPlaybackController isPlayerStalled]){
                 //continue where playback left off...
-                [self dismissAllSpinnersForView:playerView];
                 [MusicPlaybackController resumePlayback];
                 [self toggleDisplayToPlayingState];
             }
@@ -1346,42 +1342,6 @@ static int hours;
     return ([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == NotReachable) ? NO : YES;
 }
 
-//these methods are also in MyAVPlayer
-- (void)showSpinnerForBasicLoadingOnView:(UIView *)displaySpinnerOnMe
-{
-    /*
-    if(![MusicPlaybackController isSimpleSpinnerOnScreen]){
-        if([NSThread isMainThread]){
-            [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
-            [MRProgressOverlayView showOverlayAddedTo:displaySpinnerOnMe title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
-            [MusicPlaybackController simpleSpinnerOnScreen:YES];
-            
-        } else{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [MRProgressOverlayView dismissAllOverlaysForView:displaySpinnerOnMe animated:NO];
-                [MRProgressOverlayView showOverlayAddedTo:displaySpinnerOnMe title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
-                [MusicPlaybackController simpleSpinnerOnScreen:YES];
-            });
-        }
-    }
-     */
-}
-
-- (void)dismissAllSpinnersForView:(UIView *)dismissViewOnMe
-{
-    /*
-    if([NSThread isMainThread]){
-        [MRProgressOverlayView dismissAllOverlaysForView:dismissViewOnMe animated:YES];
-        [MusicPlaybackController noSpinnersOnScreen];
-    } else{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [MRProgressOverlayView dismissAllOverlaysForView:dismissViewOnMe animated:YES];
-            [MusicPlaybackController noSpinnersOnScreen];
-        });
-    }
-     */
-}
-
 #pragma mark - Responding to app state
 - (void)killTimeObserver
 {
@@ -1392,6 +1352,7 @@ static int hours;
 {
     if(timeObserver != nil)
         return;
+    
     __weak SongPlayerViewController *weakSelf = self;
     __weak AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     CMTime timeInterval = CMTimeMake(1, observationsPerSecond);
@@ -1406,9 +1367,9 @@ static int hours;
 {
     Song *nowPlayingSong = [MusicPlaybackController nowPlayingSong];
     if(nowPlayingSong){
-        NSString *youtubeLinkBeginning = @"www.youtube.com/watch?v=";
+        NSString *youtubeLinkBase = @"www.youtube.com/watch?v=";
         NSMutableString *shareString = [NSMutableString stringWithString:@"\n"];
-        [shareString appendString:youtubeLinkBeginning];
+        [shareString appendString:youtubeLinkBase];
         [shareString appendString:nowPlayingSong.youtube_id];
         
         NSArray *activityItems = [NSArray arrayWithObjects:shareString, nil];

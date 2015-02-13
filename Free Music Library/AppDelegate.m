@@ -13,6 +13,7 @@
 @interface AppDelegate ()
 {
     AVAudioSession *aSession;
+    UIView *playerSnapshot;  //used to make it appear as if the playerlayer is still attached to the player in backgrounded mode.
 }
 @end
 
@@ -30,6 +31,37 @@ static NSString * const songsVcSbId = @"songs view controller storyboard ID";
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)setupMainVC
+{
+    UINavigationController *navController;
+    MainScreenViewController *mainVC;
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
+    MasterSongsTableViewController *vc1 = [storyboard instantiateViewControllerWithIdentifier:songsVcSbId];
+    UIViewController *vc2 = [UIViewController new];
+    vc2.view.backgroundColor = [UIColor brownColor];
+    UIViewController *vc3 = [UIViewController new];
+    vc3.view.backgroundColor = [UIColor purpleColor];
+    UIViewController *vc4 = [UIViewController new];
+    vc4.view.backgroundColor = [UIColor greenColor];
+    
+    SegmentedControlItem *item1 = [[SegmentedControlItem alloc] initWithViewController:vc1
+                                                                              itemName:@"Songs"];
+    SegmentedControlItem *item2 = [[SegmentedControlItem alloc] initWithViewController:vc2
+                                                                              itemName:@"Albums"];
+    SegmentedControlItem *item3 = [[SegmentedControlItem alloc] initWithViewController:vc3
+                                                                              itemName:@"Artists"];
+    SegmentedControlItem *item4 = [[SegmentedControlItem alloc] initWithViewController:vc4
+                                                                              itemName:@"Playlists"];
+    NSArray *segmentedControls = @[item1, item2, item3, item4];
+    mainVC = [[MainScreenViewController alloc] initWithSegmentedControlItems:segmentedControls];
+    
+    navController = [[UINavigationController alloc] initWithRootViewController:mainVC];
+    [self.window setRootViewController:navController];
+    [self.window setBackgroundColor:[UIColor whiteColor]];
+    [self.window makeKeyAndVisible];
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -72,50 +104,25 @@ static NSString * const songsVcSbId = @"songs view controller storyboard ID";
     
     [self setupMainVC];
     
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    
     return YES;
 }
 
-- (void)setupMainVC
+- (void)applicationWillResignActive:(UIApplication *)application
 {
-    UINavigationController *navController;
-    MainScreenViewController *mainVC;
+    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
-    MasterSongsTableViewController *vc1 = [storyboard instantiateViewControllerWithIdentifier:songsVcSbId];
-    UIViewController *vc2 = [UIViewController new];
-    vc2.view.backgroundColor = [UIColor brownColor];
-    UIViewController *vc3 = [UIViewController new];
-    vc3.view.backgroundColor = [UIColor purpleColor];
-    UIViewController *vc4 = [UIViewController new];
-    vc4.view.backgroundColor = [UIColor greenColor];
-    
-    SegmentedControlItem *item1 = [[SegmentedControlItem alloc] initWithViewController:vc1
-                                                                              itemName:@"Songs"];
-    SegmentedControlItem *item2 = [[SegmentedControlItem alloc] initWithViewController:vc2
-                                                                              itemName:@"Albums"];
-    SegmentedControlItem *item3 = [[SegmentedControlItem alloc] initWithViewController:vc3
-                                                                              itemName:@"Artists"];
-    SegmentedControlItem *item4 = [[SegmentedControlItem alloc] initWithViewController:vc4
-                                                                              itemName:@"Playlists"];
-    NSArray *segmentedControls = @[item1, item2, item3, item4];
-    mainVC = [[MainScreenViewController alloc] initWithSegmentedControlItems:segmentedControls];
-    
-    navController = [[UINavigationController alloc] initWithRootViewController:mainVC];
-    [self.window setRootViewController:navController];
-    [self.window setBackgroundColor:[UIColor whiteColor]];
-    [self.window makeKeyAndVisible];
+    playerSnapshot = [playerView snapshotViewAfterScreenUpdates:NO];
+    playerSnapshot.frame = playerView.frame;
+    [self.window addSubview:playerSnapshot];
+    [playerView removeFromSuperview];
 }
-
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
+    [self removePlayerFromPlayerLayer];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZAppWasBackgrounded object:nil];
-    
-    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
-    if(player != nil){
-        if(player.rate == 1 && !resumePlaybackAfterInterruption)
-            [player performSelector:@selector(play) withObject:nil afterDelay:0.01];
-    }
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -127,6 +134,27 @@ static NSString * const songsVcSbId = @"songs view controller storyboard ID";
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
+    //animate player back from snapshot
+    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    float animationDuration = 1.0f;
+    [UIView animateWithDuration:animationDuration animations:^{
+        playerSnapshot.alpha = 0.0;
+    }];
+    playerView.alpha = 0;
+    [self reattachPlayerToPlayerLayer];
+    [self.window addSubview:playerView];
+    [UIView animateWithDuration:animationDuration
+                     animations:^{
+                         playerView.alpha = 1.0;
+                     }
+                     completion:^(BOOL finished){
+                         if(playerSnapshot){
+                             [playerSnapshot removeFromSuperview];
+                             playerSnapshot = nil;
+                         }
+                     }];
+
+    //non-snapshot code below...
     if([AppEnvironmentConstants isUserPreviewingAVideo]){
         if(resumePlaybackAfterInterruptionPreviewPlayer){
             [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay object:nil];
@@ -216,9 +244,9 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
     NSError *error;
     aSession = [AVAudioSession sharedInstance];
     [aSession setCategory:AVAudioSessionCategoryPlayback
-              withOptions:AVAudioSessionCategoryOptionAllowBluetooth
+              withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker
                     error:&error];
-    [aSession setMode:AVAudioSessionModeMoviePlayback error:&error];
+    [aSession setMode:AVAudioSessionModeDefault error:&error];
     [aSession setActive:YES error: &error];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -289,6 +317,19 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
             [player play];
         }
     }
+}
+
+#pragma -mark AVPlayer layer code
+- (void)removePlayerFromPlayerLayer
+{
+    PlayerView *view = [MusicPlaybackController obtainRawPlayerView];
+    [view removeLayerFromPlayer];
+}
+
+- (void)reattachPlayerToPlayerLayer
+{
+    PlayerView *view = [MusicPlaybackController obtainRawPlayerView];
+    [view reattachLayerToPlayer];
 }
 
 @end

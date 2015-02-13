@@ -21,6 +21,7 @@
 		871BA88F1A5A2F4100FB87A7 /* Artist.m in Sources */ = {isa = PBXBuildFile; fileRef = 871BA88E1A5A2F4100FB87A7 /* Artist.m */; };
 		871BA8921A5A2F4100FB87A7 /* Song.m in Sources */ = {isa = PBXBuildFile; fileRef = 871BA8911A5A2F4100FB87A7 /* Song.m */; };
 		871BA8951A5A2F4100FB87A7 /* Album.m in Sources */ = {isa = PBXBuildFile; fileRef = 871BA8941A5A2F4100FB87A7 /* Album.m */; };
+		871FA7711A8D8A9A0045196C /* UIView+ScreenshotView.m in Sources */ = {isa = PBXBuildFile; fileRef = 871FA7701A8D8A9A0045196C /* UIView+ScreenshotView.m */; };
 		8725B1B81A6C938700E58C3E /* UIWindow+VisibleVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 8725B1B71A6C938700E58C3E /* UIWindow+VisibleVC.m */; };
 		87270032199E815000D71204 /* NSString+Levenshtein_Distance.m in Sources */ = {isa = PBXBuildFile; fileRef = 87270031199E815000D71204 /* NSString+Levenshtein_Distance.m */; };
 		87270035199E820700D71204 /* LevenshteinDistanceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 87270034199E820700D71204 /* LevenshteinDistanceItem.m */; };
@@ -176,6 +177,8 @@
 		871BA8911A5A2F4100FB87A7 /* Song.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Song.m; sourceTree = "<group>"; };
 		871BA8931A5A2F4100FB87A7 /* Album.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Album.h; sourceTree = "<group>"; };
 		871BA8941A5A2F4100FB87A7 /* Album.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Album.m; sourceTree = "<group>"; };
+		871FA76F1A8D8A9A0045196C /* UIView+ScreenshotView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+ScreenshotView.h"; sourceTree = "<group>"; };
+		871FA7701A8D8A9A0045196C /* UIView+ScreenshotView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+ScreenshotView.m"; sourceTree = "<group>"; };
 		8725B1B61A6C938700E58C3E /* UIWindow+VisibleVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWindow+VisibleVC.h"; sourceTree = "<group>"; };
 		8725B1B71A6C938700E58C3E /* UIWindow+VisibleVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWindow+VisibleVC.m"; sourceTree = "<group>"; };
 		87268E60198B580200FE51D7 /* YouTubeVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YouTubeVideo.h; sourceTree = "<group>"; };
@@ -525,6 +528,8 @@
 				87D37437199AA99700D3B70B /* UIColor+ColorComparison.m */,
 				87334409198DC915002B9E18 /* UIImage+colorImages.h */,
 				8733440A198DC915002B9E18 /* UIImage+colorImages.m */,
+				871FA76F1A8D8A9A0045196C /* UIView+ScreenshotView.h */,
+				871FA7701A8D8A9A0045196C /* UIView+ScreenshotView.m */,
 				87FD38D51990A89200C8D5C3 /* UIImage+ColoringExistingImage.h */,
 				87FD38D61990A89200C8D5C3 /* UIImage+ColoringExistingImage.m */,
 				875B3824197AFF29008B4409 /* NSString+smartSort.h */,
@@ -1345,6 +1350,7 @@
 				875984A8195D775500015243 /* GenreItemTableViewController.m in Sources */,
 				87449AF419971A58009F01EA /* AppDelegateSetupHelper.m in Sources */,
 				872EA4E11A54CAF200F8EE9D /* UIDevice+DeviceName.m in Sources */,
+				871FA7711A8D8A9A0045196C /* UIView+ScreenshotView.m in Sources */,
 				87A0FD91197DD594008FBBF7 /* PreferredFontSizeUtility.m in Sources */,
 				87C0BD5819C564CA00EB7D91 /* AutoScrollLabel.m in Sources */,
 				87A453D7199C0891004D1319 /* EYLargePhotoManager.m in Sources */,

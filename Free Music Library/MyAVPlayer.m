@@ -266,7 +266,7 @@
         [self showSpinnerForInternetConnectionIssueOnView:[MusicPlaybackController obtainRawPlayerView]];
     }
     
-    if(! stallHasOccured){
+    if(self.rate == 1){
         if(![MusicPlaybackController isSimpleSpinnerOnScreen])
             [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
     }

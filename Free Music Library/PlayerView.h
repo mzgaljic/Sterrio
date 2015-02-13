@@ -10,9 +10,15 @@
 #import <AVFoundation/AVFoundation.h>
 #import "SongPlayerCoordinator.h"
 #import "UIWindow+VisibleVC.h"
+#import "UIView+ScreenshotView.h"
 
 @interface PlayerView : UIView
 
 - (void)setPlayer:(AVPlayer *)player;
+
+
+- (void)removeLayerFromPlayer;
+- (void)reattachLayerToPlayer;
+- (UIImage *)screenshotOfPlayer;
 
 @end
