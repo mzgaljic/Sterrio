@@ -23,6 +23,8 @@
 #import "MusicPlaybackController.h"
 
 #import "MainScreenViewController.h"
+#import "MasterSongsTableViewController.h"
+#import "MasterAlbumsTableViewController.h"
 
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, AVAudioSessionDelegate, AVAudioPlayerDelegate>

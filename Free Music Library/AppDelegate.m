@@ -20,7 +20,9 @@
 @implementation AppDelegate
 
 static BOOL PRODUCTION_MODE;
+static NSString * const storyboardFileName = @"Main";
 static NSString * const songsVcSbId = @"songs view controller storyboard ID";
+static NSString * const albumsVcSbId = @"albums view controller storyboard ID";
 
 
 - (void)setProductionModeValue
@@ -37,11 +39,11 @@ static NSString * const songsVcSbId = @"songs view controller storyboard ID";
 {
     UINavigationController *navController;
     MainScreenViewController *mainVC;
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:storyboardFileName bundle: nil];
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
     MasterSongsTableViewController *vc1 = [storyboard instantiateViewControllerWithIdentifier:songsVcSbId];
-    UIViewController *vc2 = [UIViewController new];
-    vc2.view.backgroundColor = [UIColor brownColor];
+    MasterAlbumsTableViewController *vc2 = [storyboard instantiateViewControllerWithIdentifier:albumsVcSbId];
+
     UIViewController *vc3 = [UIViewController new];
     vc3.view.backgroundColor = [UIColor purpleColor];
     UIViewController *vc4 = [UIViewController new];
@@ -248,7 +250,7 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
                     error:&error];
     [aSession setMode:AVAudioSessionModeDefault error:&error];
     
-    double sampleRate = 44100.0;
+    double sampleRate = 44100.0;  //44.1 Khz
     [aSession setPreferredSampleRate:sampleRate error:&error];
     
     [aSession setActive:YES error: &error];

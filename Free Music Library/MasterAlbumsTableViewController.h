@@ -16,11 +16,18 @@
 #import "AlbumTableViewFormatter.h"
 #import "UIImage+colorImages.h"
 #import "UIColor+LighterAndDarker.h"
-#import "CoreDataTableViewController.h"
+#import "CoreDataCustomTableViewController.h"
 #import "MusicPlaybackController.h"
 #import <SDCAlertView.h>
+#import "NavBarViewControllerDelegate.h"
+#import <FXImageView/UIImage+FX.h>
+#import <MSCellAccessory/MSCellAccessory.h>
 
-@interface MasterAlbumsTableViewController : CoreDataTableViewController <UISearchBarDelegate>
+@interface MasterAlbumsTableViewController : CoreDataCustomTableViewController
+                                                                <UISearchBarDelegate,
+                                                                UITableViewDataSource,
+                                                                UITableViewDelegate,
+                                                                NavBarViewControllerDelegate>
 {
     StackController *stackController;
 }

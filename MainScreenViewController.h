@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import <HMSegmentedControl/HMSegmentedControl.h>
-#import "MasterSongsTableViewController.h"
 #import "SegmentedControlItem.h"
+#import "MyViewController.h"
+#import "AppEnvironmentConstants.h"
 
 @interface MainScreenViewController : MyViewController <UIPageViewControllerDataSource,
                                                         UIPageViewControllerDelegate>

@@ -329,7 +329,6 @@ static BOOL haveCheckedCoreDataInit = NO;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-
 #pragma mark - Table View Data Source
 static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -410,21 +409,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     }];
     
     return cell;
-}
-
-+ (UIImage*)imageWithImage: (UIImage*) sourceImage scaledToWidth: (float) i_width
-{
-    float oldWidth = sourceImage.size.width;
-    float scaleFactor = i_width / oldWidth;
-    
-    float newHeight = sourceImage.size.height * scaleFactor;
-    float newWidth = oldWidth * scaleFactor;
-    
-    UIGraphicsBeginImageContext(CGSizeMake(newWidth, newHeight));
-    [sourceImage drawInRect:CGRectMake(0, 0, newWidth, newHeight)];
-    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return newImage;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -564,11 +548,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 #pragma mark - Rotation status bar methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
-        [self prefersStatusBarHidden];
-        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }
+    [self prefersStatusBarHidden];
+    [self setNeedsStatusBarAppearanceUpdate];
+
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 

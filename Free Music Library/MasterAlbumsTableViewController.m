@@ -12,6 +12,12 @@
 @property (nonatomic, assign) int indexOfEditingArtist;
 @property (nonatomic, assign) int selectedRowIndexValue;
 @property (nonatomic, strong) MySearchBar* searchBar;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+//used so i can retain control over the "greying out" effect from this VC.
+@property (nonatomic, strong) NSArray *rightBarButtonItems;
+@property (nonatomic, strong) NSArray *leftBarButtonItems;
+@property (nonatomic, strong) UIBarButtonItem *editButton;
 @end
 
 @implementation MasterAlbumsTableViewController
@@ -22,15 +28,9 @@ static BOOL PRODUCTION_MODE;
     PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
 }
 
-- (void)setUpNavBarItems
+#pragma mark - NavBarItem Delegate
+- (NSArray *)leftBarButtonItemsForNavigationBar
 {
-    //right side of nav bar
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self
-                                                                               action:@selector(addButtonPressed)];
-    NSArray *rightBarButtonItems = @[addButton];
-    self.navigationItem.rightBarButtonItems = rightBarButtonItems;
-    
-    //left side of nav bar
     UIBarButtonItem *editButton = self.editButtonItem;
     editButton.action = @selector(editTapped:);
     
@@ -39,31 +39,58 @@ static BOOL PRODUCTION_MODE;
                                                                 action:@selector(settingsButtonTapped)];
     UIBarButtonItem *posSpaceAdjust = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     [posSpaceAdjust setWidth:28];
-    
-    self.navigationItem.leftBarButtonItems = @[settings, posSpaceAdjust, editButton];
+    self.editButton = editButton;
+    self.leftBarButtonItems = @[settings, posSpaceAdjust, editButton];
+    return self.leftBarButtonItems;
 }
 
-- (void)nowPlayingTapped
+- (NSArray *)rightBarButtonItemsForNavigationBar
 {
-    
+    //right side of nav bar
+    NSInteger addItem = UIBarButtonSystemItemAdd;
+    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:addItem
+                                                                               target:self
+                                                                               action:@selector(addButtonPressed)];
+    self.rightBarButtonItems = @[addButton];
+    return self.rightBarButtonItems;
 }
 
+- (NSString *)titleOfNavigationBar
+{
+    return @"Songs";
+}
+
+#pragma mark - Miscellaneous
 - (void)editTapped:(id)sender
 {
     if(self.editing)
     {
         //leaving editing mode now
-        [super setEditing:NO animated:YES];
-        for(UIBarButtonItem *abutton in self.navigationItem.rightBarButtonItems){
-            [self makeBarButtonItemNormal:abutton];
+        [self setEditing:NO animated:YES];
+        [self.tableView setEditing:NO animated:YES];
+        
+        if(self.rightBarButtonItems.count > 0){
+            UIBarButtonItem *rightMostItem = self.rightBarButtonItems[self.rightBarButtonItems.count-1];
+            [self makeBarButtonItemNormal:rightMostItem];
+        }
+        if(self.leftBarButtonItems.count > 0){
+            UIBarButtonItem *leftMostItem = self.leftBarButtonItems[0];
+            [self makeBarButtonItemNormal:leftMostItem];
         }
     }
     else
     {
         //entering editing mode now
-        [super setEditing:YES animated:YES];
-        for(UIBarButtonItem *abutton in self.navigationItem.rightBarButtonItems){
-            [self makeBarButtonItemGrey: abutton];
+        [self setEditing:YES animated:YES];
+        [self.tableView setEditing:YES animated:YES];
+        
+        if(self.rightBarButtonItems.count > 0){
+            UIBarButtonItem *rightMostItem = self.rightBarButtonItems[self.rightBarButtonItems.count-1];
+            [self makeBarButtonItemGrey:rightMostItem];
+        }
+        if(self.leftBarButtonItems.count > 0){
+            UIBarButtonItem *leftMostItem = self.leftBarButtonItems[0];
+            [self makeBarButtonItemGrey:leftMostItem];
         }
     }
 }
@@ -82,20 +109,39 @@ static BOOL PRODUCTION_MODE;
     return barButton;
 }
 
+- (void)currentSongHasChanged
+{
+#warning needs implementation. should check which album the now playing song is in...if it has one.
+    //want the now playing album to always be a specific color
+    [self.tableView reloadData];
+}
+
 #pragma mark - UISearchBar
 - (void)setUpSearchBar
 {
-    if([self numberOfAlbumsInCoreDataModel] > 0 && _searchBar == nil){
+    //albums tab is never the first one on screen. no need to animate it
+    if([self numberOfAlbumsInCoreDataModel] > 0){
         //create search bar, add to viewController
-        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search Albums"];
+        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Library"];
         _searchBar.delegate = self;
         self.tableView.tableHeaderView = _searchBar;
+        self.tableView.contentOffset = CGPointMake(0, self.searchBar.frame.size.height);
     }
+    [self setSearchBar:self.searchBar];
+}
+
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
+{    
+    self.searchFetchedResultsController = nil;
+    [self setFetchedResultsControllerAndSortStyle];
 }
 
 //User tapped the search box
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
+    self.searchFetchedResultsController = nil;
+    self.fetchedResultsController = nil;
+    
     //show the cancel button
     [_searchBar setShowsCancelButton:YES animated:YES];
 }
@@ -110,6 +156,8 @@ static BOOL PRODUCTION_MODE;
 //User tapped "Cancel"
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
+    [self setFetchedResultsControllerAndSortStyle];
+
     //dismiss search bar and hide cancel button
     [_searchBar setShowsCancelButton:NO animated:YES];
     [_searchBar resignFirstResponder];
@@ -118,6 +166,7 @@ static BOOL PRODUCTION_MODE;
 //User typing as we speak, fetch latest results to populate results as they type
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
+#warning implementation incomplete
     if(searchText.length == 0)
     {
         self.displaySearchResults = NO;
@@ -141,57 +190,52 @@ static BOOL PRODUCTION_MODE;
 }
 
 #pragma mark - View Controller life cycle
-static BOOL lastSortOrder;
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self setUpSearchBar];
     
-    if(lastSortOrder != [AppEnvironmentConstants smartAlphabeticalSort])
-    {
-        [self setFetchedResultsControllerAndSortStyle];
-        lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
-    }
-    
-    
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft ||
-       orientation == UIInterfaceOrientationLandscapeRight||
-       orientation == UIInterfaceOrientationPortraitUpsideDown)
-    {
-        self.tabBarController.tabBar.hidden = YES;
-    }
-    else
-        self.tabBarController.tabBar.hidden = NO;
+    //must be called in viewWillAppear?
     
     if([self numberOfAlbumsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
         self.tableView.tableHeaderView = nil;
     }
+    [self setUpSearchBar];
+    
+    //need to somewhat compesate since the last row was cut off (because in storyboard
+    //it thinks the tableview should also span under the nav bar...which i dont want lol).
+    int navBarHeight = [AppEnvironmentConstants navBarHeight];
+    self.tableView.frame = CGRectMake(0,
+                                      0,
+                                      self.view.frame.size.width,
+                                      self.view.frame.size.height - navBarHeight);
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     
-    self.navigationController.navigationBar.topItem.title = @"Albums";
-    
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
-
-    [self.searchBar updateFontSizeIfNecessary];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    lastSortOrder = [AppEnvironmentConstants smartAlphabeticalSort];
+
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.view addSubview:self.tableView];
+    [self setTableForCoreDataView:self.tableView];
     
+    self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
-    stackController = [[StackController alloc] init];
     
+    stackController = [[StackController alloc] init];
     [self setProductionModeValue];
-    [self setUpNavBarItems];
     self.tableView.allowsSelectionDuringEditing = YES;
+    self.tableView.allowsMultipleSelectionDuringEditing = NO;
 }
 
 - (void)didReceiveMemoryWarning
@@ -212,16 +256,21 @@ static BOOL lastSortOrder;
 static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"AlbumItemCell" forIndexPath:indexPath];
-    
-    if (cell == nil)
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"AlbumItemCell"];
+    static NSString *cellIdentifier = @"AlbumItemCell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier
+                                                            forIndexPath:indexPath];
+    if (!cell)
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                      reuseIdentifier:cellIdentifier];
     else
     {
         // If an existing cell is being reused, reset the image to the default until it is populated.
         // Without this code, previous images are displayed against the new people during rapid scrolling.
         cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
     }
+    
+    cell.editingAccessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
+                                                             color:[[UIColor defaultAppColorScheme] lighterColor]];
     
     // Set up other aspects of the cell content.
     Album *album;
@@ -263,7 +312,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
     [stackController addBlock:^{
         UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:[AlbumArtUtilities albumArtFileNameToNSURL:album.albumArtFileName]]];
-        albumArt = [AlbumArtUtilities imageWithImage:albumArt scaledToSize:CGSizeMake(cell.frame.size.height, cell.frame.size.height)];
+        
         // The block will be processed on a background Grand Central Dispatch queue.
         // Therefore, ensure that this code that updates the UI will run on the main queue.
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -271,7 +320,20 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             if ([indexPath isEqual:cellIndexPath]) {
                 // Only set cell image if the cell currently being displayed is the one that actually required this image.
                 // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
-                cell.imageView.image = albumArt;
+
+                __weak UIImage *cellImg = albumArt;
+                //calculate how much one length varies from the other.
+                int diff = abs(albumArt.size.width - albumArt.size.height);
+                if(diff > 10){
+                    //image is not a perfect (or close to perfect) square. Compensate for this...
+                    cellImg = [albumArt imageScaledToFitSize:cell.imageView.frame.size];
+                }
+                [UIView transitionWithView:cell.imageView
+                                  duration:MZCellImageViewFadeDuration
+                                   options:UIViewAnimationOptionTransitionCrossDissolve
+                                animations:^{
+                                    cell.imageView.image = cellImg;
+                                } completion:nil];
             }
         });
     }];
@@ -320,7 +382,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -328,23 +390,36 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     return [AlbumTableViewFormatter preferredAlbumCellHeight];
 }
 
+- (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (self.tableView.editing)
+    {
+        return UITableViewCellEditingStyleDelete;
+    }
+    return UITableViewCellEditingStyleNone;
+}
+
+- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section {
+    id <NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController.sections objectAtIndex:section];
+    return sectionInfo.numberOfObjects;
+}
+
 #pragma mark - other stuff
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Unfinished"
-                                                      message:@"This action is coming soon."
-                                                     delegate:nil
-                                            cancelButtonTitle:@"OK"
-                                            otherButtonTitles: nil];
-    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    [alert show];
-    /*
     if([[segue identifier] isEqualToString: @"albumItemSegue"]){
-        [[segue destinationViewController] setAlbum:self.albums[self.selectedRowIndexValue]];
+        //[[segue destinationViewController] setAlbum:self.albums[self.selectedRowIndexValue]];
+        
+        SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Unfinished"
+                                                          message:@"This action is coming soon."
+                                                         delegate:nil
+                                                cancelButtonTitle:@"OK"
+                                                otherButtonTitles: nil];
+        alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        [alert show];
     }
-     */
 }
 
 - (NSAttributedString *)BoldAttributedStringWithString:(NSString *)aString withFontSize:(float)fontSize
@@ -410,51 +485,21 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 #pragma mark - Rotation status bar methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
-        [self prefersStatusBarHidden];
-        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }
+    [self prefersStatusBarHidden];
+    [self setNeedsStatusBarAppearanceUpdate];
+    
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
 - (BOOL)prefersStatusBarHidden
 {
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
-        [self setTabBarVisible:NO animated:NO];
         return YES;
     }
     else{
-        [self setTabBarVisible:YES animated:NO];
-        //fixes a bug when using another viewController with all these "hiding" nav bar features...and returning to this viewController
-        self.tabBarController.tabBar.hidden = NO;
         return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
     }
-}
-
-#pragma mark - Rotation tab bar methods
-- (void)setTabBarVisible:(BOOL)visible animated:(BOOL)animated
-{
-    // bail if the current state matches the desired state
-    if ([self tabBarIsVisible] == visible) return;
-    
-    // get a frame calculation ready
-    CGRect frame = self.tabBarController.tabBar.frame;
-    CGFloat height = frame.size.height;
-    CGFloat offsetY = (visible)? -height : height;
-    
-    // zero duration means no animation
-    CGFloat duration = (animated)? 0.3 : 0.0;
-    
-    [UIView animateWithDuration:duration animations:^{
-        self.tabBarController.tabBar.frame = CGRectOffset(frame, 0, offsetY);
-    }];
-}
-
-- (BOOL)tabBarIsVisible
-{
-    return self.tabBarController.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame);
 }
 
 #pragma mark - Counting Albums in core data
