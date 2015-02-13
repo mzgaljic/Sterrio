@@ -143,7 +143,14 @@ static UIImageView *screenshotOfPlayer;
     else
         [lastTouchesDirection addObject:[NSNumber numberWithInt:rightDirection]];
     
-    if (deltaY >= MZMinVideoPlayerSwipeLengthDown && deltaX <= MZMaxVideoPlayerSwipeVariance && deltaYY <= 0) {
+    //make it easier to swipe down if player is in fullscreen mode
+    int swipeDownLength = MZMinVideoPlayerSwipeLengthDown;
+    if([[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded] &&
+       ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeLeft ||
+        [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeRight))
+        swipeDownLength = MZMinVideoPlayerSwipeLengthDown/2;
+    
+    if (deltaY >= swipeDownLength && deltaX <= MZMaxVideoPlayerSwipeVariance && deltaYY <= 0) {
         //Vertical down swipe detected
         [self userSwipedDown];
         didFailToExpandWithSwipe = NO;

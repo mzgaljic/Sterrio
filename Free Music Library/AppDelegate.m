@@ -247,6 +247,10 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
               withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker
                     error:&error];
     [aSession setMode:AVAudioSessionModeDefault error:&error];
+    
+    double sampleRate = 44100.0;
+    [aSession setPreferredSampleRate:sampleRate error:&error];
+    
     [aSession setActive:YES error: &error];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
