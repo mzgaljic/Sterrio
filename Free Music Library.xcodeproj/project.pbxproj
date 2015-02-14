@@ -74,6 +74,8 @@
 		876EC5F01965C9F6006B3C29 /* AppEnvironmentConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 876EC5EF1965C9F6006B3C29 /* AppEnvironmentConstants.m */; };
 		876EDE6019648AA300795767 /* AlbumArtUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 876EDE5F19648AA300795767 /* AlbumArtUtilities.m */; };
 		8772517519888F1A00A2156B /* YouTubeVideoSearchService.m in Sources */ = {isa = PBXBuildFile; fileRef = 8772517419888F1A00A2156B /* YouTubeVideoSearchService.m */; };
+		8777AF2D1A8ECE000053BB21 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8777AF2B1A8ECE000053BB21 /* Crashlytics.framework */; };
+		8777AF2E1A8ECE000053BB21 /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8777AF2C1A8ECE000053BB21 /* Fabric.framework */; };
 		877C4BA3199FCCE000CE86BC /* Song+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 877C4BA2199FCCE000CE86BC /* Song+Utilities.m */; };
 		877C4BA7199FE4B800CE86BC /* Album+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 877C4BA6199FE4B800CE86BC /* Album+Utilities.m */; };
 		877C4BAA199FE4CF00CE86BC /* Artist+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 877C4BA9199FE4CF00CE86BC /* Artist+Utilities.m */; };
@@ -273,6 +275,8 @@
 		876EDE5F19648AA300795767 /* AlbumArtUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumArtUtilities.m; sourceTree = "<group>"; };
 		8772517319888F1A00A2156B /* YouTubeVideoSearchService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YouTubeVideoSearchService.h; sourceTree = "<group>"; };
 		8772517419888F1A00A2156B /* YouTubeVideoSearchService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YouTubeVideoSearchService.m; sourceTree = "<group>"; };
+		8777AF2B1A8ECE000053BB21 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
+		8777AF2C1A8ECE000053BB21 /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		877C4B84199FB2C200CE86BC /* Model 1.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 1.0.xcdatamodel"; sourceTree = "<group>"; };
 		877C4BA1199FCCE000CE86BC /* Song+Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Song+Utilities.h"; sourceTree = "<group>"; };
 		877C4BA2199FCCE000CE86BC /* Song+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Song+Utilities.m"; sourceTree = "<group>"; };
@@ -412,9 +416,11 @@
 				8768E53C19929343004708C4 /* AVFoundation.framework in Frameworks */,
 				8768E53A19928AD5004708C4 /* MediaPlayer.framework in Frameworks */,
 				8715AC4D19846AB900A51165 /* MessageUI.framework in Frameworks */,
+				8777AF2D1A8ECE000053BB21 /* Crashlytics.framework in Frameworks */,
 				87480DAD192C1FBD005CC0A4 /* UIKit.framework in Frameworks */,
 				87480DAB192C1FBD005CC0A4 /* CoreGraphics.framework in Frameworks */,
 				4E84E32E6B78490A99C7EFDB /* libPods.a in Frameworks */,
+				8777AF2E1A8ECE000053BB21 /* Fabric.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -627,6 +633,8 @@
 				87FE09F21933ED9B001A5FB7 /* Services */,
 				872EA4D31A54A96900F8EE9D /* Alerts */,
 				87362AFA194E3F27004DB544 /* GUI and GUI Controllers */,
+				8777AF2B1A8ECE000053BB21 /* Crashlytics.framework */,
+				8777AF2C1A8ECE000053BB21 /* Fabric.framework */,
 				87480DC3192C1FBD005CC0A4 /* Images.xcassets */,
 				87A453A0199C0825004D1319 /* Imported Libraries */,
 				87480DAF192C1FBD005CC0A4 /* Supporting Files */,
@@ -1133,6 +1141,7 @@
 				87480DA2192C1FBD005CC0A4 /* Frameworks */,
 				87480DA3192C1FBD005CC0A4 /* Resources */,
 				713349ACC06F4378939EC987 /* Copy Pods Resources */,
+				8777AF2A1A8ECD9A0053BB21 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1253,6 +1262,19 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		8777AF2A1A8ECD9A0053BB21 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "./Fabric.framework/run 01d8f8dfb7d0483852f6fcbdc8bc729a38ada084 ae6650c4bcdd02122f8db1b930f1d2deeb6cb87b5d42108ff63116f5bc5c6061";
 		};
 		905B5726544A486EAB3B56AA /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1500,7 +1522,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = "";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Free Music Library/Free Music Library-Prefix.pch";
 				INFOPLIST_FILE = "Free Music Library/Free Music Library-Info.plist";
@@ -1522,7 +1544,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = "";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Free Music Library/Free Music Library-Prefix.pch";
 				INFOPLIST_FILE = "Free Music Library/Free Music Library-Info.plist";

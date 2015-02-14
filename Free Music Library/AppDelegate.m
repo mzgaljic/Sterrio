@@ -8,6 +8,8 @@
 
 #import "AppDelegate.h"
 #import "PreloadedCoreDataModelUtility.h"
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 @interface AppDelegate ()
@@ -109,7 +111,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [self setupMainVC];
     
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-    
+    [Fabric with:@[CrashlyticsKit]];
     return YES;
 }
 
