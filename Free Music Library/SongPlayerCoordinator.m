@@ -155,14 +155,15 @@ static BOOL isVideoPlayerExpanded;
 - (void)shrunkenVideoPlayerNeedsToBeRotated
 {
     PlayerView *videoPlayer = [MusicPlaybackController obtainRawPlayerView];
-    
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
         //landscape rotation...
         currentPlayerFrame = [self smallPlayerFrameInLandscape];
-    else
+    }
+    else{
         //portrait rotation...
         currentPlayerFrame = [self smallPlayerFrameInPortrait];
+    }
     [videoPlayer setFrame:currentPlayerFrame];
 }
 

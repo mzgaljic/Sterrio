@@ -28,7 +28,6 @@
 @property (nonatomic, strong) NSMutableArray *searchSuggestions;
 @property (nonatomic, assign) BOOL displaySearchResults;
 @property (nonatomic, assign) BOOL searchInitiatedAlready;
-@property (nonatomic, assign) BOOL activityIndicatorOnScreen;
 @property (nonatomic, strong) NSString *lastSuccessfullSearchString;
 @property (nonatomic, strong) NSMutableArray *lastSuccessfullSuggestions;
 @property (nonatomic, assign) float heightOfScreenRotationIndependant;

@@ -15,6 +15,7 @@
     CGPoint gestureStartPoint;
     BOOL userDidSwipeUp;
     BOOL userDidSwipeDown;
+    BOOL userDidTap;
     UIInterfaceOrientation lastOrientation;
     int killSlideXBoundary;
     NSMutableArray *lastTouchesDirection;
@@ -117,6 +118,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 
 - (void)userTappedPlayer
 {
+    userDidTap = YES;
     [self segueToPlayerViewControllerIfAppropriate];
 }
 
@@ -132,6 +134,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 {
     userDidSwipeUp = NO;
     userDidSwipeDown = NO;
+    userDidTap = NO;
     
     UITouch *touch = [touches anyObject];
     gestureStartPoint = [touch locationInView:self];
@@ -145,7 +148,8 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 //used to get a "length" for each swipe gesture
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    if(userDidSwipeUp || userDidSwipeDown || [SongPlayerCoordinator isVideoPlayerExpanded])
+    if(userDidSwipeUp || userDidSwipeDown || userDidTap ||
+       [SongPlayerCoordinator isVideoPlayerExpanded])
         return;
     
     UITouch *touch = [touches anyObject];
@@ -171,12 +175,12 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     BOOL playerExpanded = [SongPlayerCoordinator isVideoPlayerExpanded];
-    if(userDidSwipeDown || userDidSwipeUp || playerExpanded){
+    if(userDidSwipeDown || userDidSwipeUp || userDidTap || playerExpanded){
         [lastTouchesDirection removeAllObjects];
         return;
     }
     
-    if(! playerExpanded && !userDidSwipeUp && !userDidSwipeDown){
+    if(! playerExpanded && !userDidSwipeUp && !userDidSwipeDown && !userDidTap){
         BOOL endMotionSwipeLeft = NO;
         int count = 0;
         for(int i = 0; i < lastTouchesDirection.count; i++){
@@ -211,17 +215,24 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     [lastTouchesDirection removeAllObjects];
     userDidSwipeUp = NO;
     userDidSwipeDown = NO;
+    userDidTap = NO;
 }
 
 //called during low memory events by system, etc
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    BOOL moveViewBack = YES;
+    if(userDidSwipeDown || userDidSwipeUp || userDidTap)
+        moveViewBack = NO;
+    
     userDidSwipeUp = NO;
     userDidSwipeDown = NO;
+    userDidTap = NO;
     
     //check if user tapped or swiped. if not, then just animate it back to its original
     //position...dont want to do something the user didnt want.
-    [self movePlayerBackToOriginalLocation];
+    if(moveViewBack)
+        [self movePlayerBackToOriginalLocation];
     [lastTouchesDirection removeAllObjects];
 }
 
@@ -277,10 +288,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
         return;   //don't touch the player when it is expanded
     else{
         UIInterfaceOrientation newOrientation = [UIApplication sharedApplication].statusBarOrientation;
-        if(newOrientation == lastOrientation)
-            return;
-        else
-            lastOrientation = newOrientation;
+        lastOrientation = newOrientation;
         [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerNeedsToBeRotated];
     }
 }
