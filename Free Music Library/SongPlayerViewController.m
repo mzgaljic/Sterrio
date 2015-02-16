@@ -765,15 +765,26 @@ static int hours;
 - (void)InitSongInfoLabelsOnScreenAnimated:(BOOL)animate onRotation:(BOOL)rotating
 {
     int iphone5Height = 568;
+    int phoneWidth = self.view.frame.size.width;
     int phoneHeight = self.view.frame.size.height;
-    if(self.view.frame.size.width > phoneHeight)
-        phoneHeight = self.view.frame.size.width;
+    if(self.view.frame.size.width > phoneHeight){
+        phoneHeight = phoneWidth;
+        phoneWidth = phoneHeight;
+    }
+    
     short songNameFontSize = 32;
     if(phoneHeight < iphone5Height)
         songNameFontSize = 20;
-    _songNameLabel.scrollDuration = 10.0f;
+    
+    //this const factor will provide a duration "feel" similar to the
+    //duration "8" on an iphone 6 width. This const factor will help us
+    //generate a duration value that gives the same feel on other devices
+    //with a different screen size.
+    float constantFactor = 1/119.0f;
+    int duration = constantFactor * phoneWidth;
+    _songNameLabel.scrollDuration = duration;
+    _artistAndAlbumLabel.scrollDuration = duration;
     _songNameLabel.fadeLength = 6.0f;
-    _artistAndAlbumLabel.scrollDuration = 8.0f;
     _artistAndAlbumLabel.fadeLength = 6.0f;
     UIFont *font = [UIFont fontWithName:@"HelveticaNeue-Light"
                                    size:songNameFontSize];

@@ -10,7 +10,6 @@
 
 @interface SongPlayerCoordinator ()
 {
-    BOOL videoPlayerIsExpanded;
     BOOL canIgnoreToolbar;  //navigation controller toolbar
     CGRect currentPlayerFrame;
     short SMALL_VIDEO_WIDTH;
@@ -20,6 +19,7 @@
 
 @implementation SongPlayerCoordinator
 @synthesize delegate = _delegate;
+static BOOL isVideoPlayerExpanded;
 
 #pragma mark - Class lifecycle stuff
 + (instancetype)sharedInstance
@@ -37,9 +37,9 @@
     if([super init]){
         UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
         if([MusicPlaybackController obtainRawPlayerView].frame.size.width == [appWindow bounds].size.width)
-            videoPlayerIsExpanded = YES;
+            isVideoPlayerExpanded = YES;
         else
-            videoPlayerIsExpanded = NO;
+            isVideoPlayerExpanded = NO;
         canIgnoreToolbar = YES;
         SMALL_VIDEO_FRAME_PADDING = 10;
         
@@ -63,19 +63,19 @@
     _delegate = theDelegate;
 }
 
-- (BOOL)isVideoPlayerExpanded
++ (BOOL)isVideoPlayerExpanded
 {
-    return videoPlayerIsExpanded;
+    return isVideoPlayerExpanded;
 }
 
 - (void)begingExpandingVideoPlayer
 {
     //toOrientation code from songPlayerViewController was removed here (code copied)
-    if(videoPlayerIsExpanded == YES)
+    if(isVideoPlayerExpanded == YES)
         return;
     
     //I want this to be set "too early", just playing it safe.
-    videoPlayerIsExpanded = YES;
+    isVideoPlayerExpanded = YES;
     
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
@@ -128,7 +128,7 @@
 
 - (void)beginShrinkingVideoPlayer
 {
-    if(videoPlayerIsExpanded == NO)
+    if(isVideoPlayerExpanded == NO)
         return;
     
     __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
@@ -148,7 +148,7 @@
                          weakPlayerView.frame = currentPlayerFrame;
                          [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
                      } completion:^(BOOL finished) {
-                         videoPlayerIsExpanded = NO;
+                         isVideoPlayerExpanded = NO;
                      }];
 }
 

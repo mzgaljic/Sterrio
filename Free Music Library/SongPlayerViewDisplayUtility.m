@@ -28,7 +28,7 @@ int nearestEvenInt(int to)
 
 + (void)segueToSongPlayerViewControllerFrom:(UIViewController *)sourceController
 {
-    BOOL expanded = [[SongPlayerCoordinator sharedInstance] isVideoPlayerExpanded];
+    BOOL expanded = [SongPlayerCoordinator isVideoPlayerExpanded];
     if(! expanded){
         //check orientation. Don't want to animate in landscape
         BOOL animate = NO;

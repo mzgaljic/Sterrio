@@ -19,7 +19,7 @@
 + (instancetype)sharedInstance;
 
 - (void)setDelegate:(id<VideoPlayerControlInterfaceDelegate>)theDelegate;
-- (BOOL)isVideoPlayerExpanded;
++ (BOOL)isVideoPlayerExpanded;
 - (void)beginShrinkingVideoPlayer;
 - (void)begingExpandingVideoPlayer;
 - (void)shrunkenVideoPlayerNeedsToBeRotated;
