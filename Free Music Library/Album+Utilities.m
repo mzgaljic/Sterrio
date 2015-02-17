@@ -9,6 +9,8 @@
 #import "Album+Utilities.h"
 
 @implementation Album (Utilities)
+static void *albumSongsChanged = &albumSongsChanged;
+
 
 + (Album *)createNewAlbumWithName:(NSString *)name usingSong:(Song *)newSong inManagedContext:(NSManagedObjectContext *)context
 {
@@ -94,12 +96,15 @@
 
 - (void)observeStuff
 {
-    [self addObserver:self forKeyPath:@"albumSongs" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:NULL];
+    [self addObserver:self
+           forKeyPath:@"albumSongs"
+              options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew)
+              context:albumSongsChanged];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:@"albumSongs"]){
+    if (context == albumSongsChanged){
         NSSet *albumSongs = [change objectForKey:NSKeyValueChangeNewKey];
         
         if(albumSongs.count == 0){
@@ -132,7 +137,8 @@
         {
             aSong.albumArtFileName = self.albumArtFileName;
         }
-    }
+    } else
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 - (void)deleteThisAlbumAfterDelayUsingAlbumId:(NSString *)albumID
@@ -159,12 +165,17 @@
 
 - (void)willTurnIntoFault
 {
+    //temporarily disable logging since this "crash" when removing observers does not impact the program at all.
+    Fabric *myFabric = [Fabric sharedSDK];
+    myFabric.debug = YES;
+    
     //bad practice but it works. A Sigbart occurs here when editing album info under a song edit (and cancelling the edit).
     @try{
-        [self removeObserver:self forKeyPath:@"albumSongs"];
+        [self removeObserver:self forKeyPath:@"albumSongs" context:albumSongsChanged];
     }@catch(id anException){
         //do nothing, obviously it wasn't attached because an exception was thrown
     }
+    myFabric.debug = NO;
 }
 
 @end

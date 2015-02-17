@@ -25,12 +25,14 @@
 short const textLabelsPaddingFromImgView = 10;
 short const editingModeChevronWidthCompensation = 55;
 
+static void *didEnterEditingMode = &didEnterEditingMode;
+
 - (void)awakeFromNib
 {
     [super awakeFromNib];
     layoutSubviewCount = 0;
     //add observer
-    [self addObserver:self forKeyPath:@"editing" options:NSKeyValueObservingOptionNew context:nil];
+    [self addObserver:self forKeyPath:@"editing" options:NSKeyValueObservingOptionNew context:didEnterEditingMode];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(settingsMayHaveChanged)
                                                  name:MZUserFinishedWithReviewingSettings
@@ -86,8 +88,10 @@ short const editingModeChevronWidthCompensation = 55;
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-    if([keyPath isEqualToString:@"editing"])
+    if(context == didEnterEditingMode)
         [self setLabelsFramesBasedOnEditingMode];
+    else
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 - (void)prepareForReuse
@@ -103,14 +107,20 @@ short const editingModeChevronWidthCompensation = 55;
 #pragma mark - utilities
 - (void)removeObservers
 {
+    //temporarily disable logging since this "crash" when removing observers does not impact the program at all.
+    Fabric *myFabric = [Fabric sharedSDK];
+    myFabric.debug = YES;
+    
     @try{
         while(true){
-            [self removeObserver:self forKeyPath:@"editing"];
+            [self removeObserver:self forKeyPath:@"editing" context:didEnterEditingMode];
         }
     }
     //do nothing, obviously it wasn't attached because an exception was thrown
     @catch(id anException){}
 
+    myFabric.debug = NO;
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

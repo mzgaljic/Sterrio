@@ -207,9 +207,7 @@ static void * kObservationContext = &kObservationContext;
         while(true)
             [self.superview removeObserver:self forKeyPath:@"backgroundColor" context:kObservationContext];
     }
-    @catch (NSException *exception) {
-        //dont do anything
-    }
+    @catch (NSException *exception) {}
 }
 
 @end

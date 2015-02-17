@@ -12,7 +12,6 @@
 #import "NSObject+ObjectUUID.h"
 #import "AlbumArtUtilities.h"
 #import "NSString+smartSort.h"
-
 @interface Album (Utilities)
 
 /**

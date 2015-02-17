@@ -9,7 +9,8 @@
 #import "Artist+Utilities.h"
 
 @implementation Artist (Utilities)
-
+static void *standAloneSongsDidChange = &standAloneSongsDidChange;
+static void *albumsDidChange = &albumsDidChange;
 
 #pragma mark - Code For Custom setters/KVO (just standaloneSongs)
 - (void)awakeFromInsert
@@ -24,19 +25,24 @@
 
 - (void)observeStuff
 {
-    [self addObserver:self forKeyPath:@"standAloneSongs" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:NULL];
-    [self addObserver:self forKeyPath:@"albums" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:NULL];
+    [self addObserver:self
+           forKeyPath:@"standAloneSongs"
+              options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew)
+              context:standAloneSongsDidChange];
+    [self addObserver:self
+           forKeyPath:@"albums"
+              options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew)
+              context:albumsDidChange];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if([keyPath isEqualToString:@"albums"]){
+    if(context == albumsDidChange){
         //is this artist garbage now?
         if(! [AppEnvironmentConstants isUserEditingSongOrAlbumOrArtist])
             [self deleteThisArtistIfNecessaryUsingArtistID:self.artist_id];
     }
-    
-    if ([keyPath isEqualToString:@"standAloneSongs"]){
+    else if (context == standAloneSongsDidChange){
         NSSet *standAloneSongs = [change objectForKey:NSKeyValueChangeNewKey];
         
         //is this artist garbage now?
@@ -84,7 +90,8 @@
             [[CoreDataManager context] deleteObject:deletedSong];
             [[CoreDataManager sharedInstance] saveContext];
         }
-    }
+    } else
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 - (void)deleteThisArtistIfNecessaryUsingArtistID:(NSString *)artistID
@@ -117,10 +124,9 @@
 
 - (void)willTurnIntoFault
 {
-    [self removeObserver:self forKeyPath:@"standAloneSongs"];
-    [self removeObserver:self forKeyPath:@"albums"];
+    [self removeObserver:self forKeyPath:@"standAloneSongs" context:standAloneSongsDidChange];
+    [self removeObserver:self forKeyPath:@"albums" context:albumsDidChange];
 }
-
 
 
 #pragma mark - implementation

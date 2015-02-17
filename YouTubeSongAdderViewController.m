@@ -141,6 +141,7 @@
                                              selector:@selector(lockscreenTogglePlayPause)
                                                  name:MZPreviewPlayerTogglePlayPause
                                                object:nil];
+    [self setViewFrameBasedOnOrientation:[UIApplication sharedApplication].statusBarOrientation];
 }
 
 static short numberTimesViewHasBeenShown = 0;
@@ -378,7 +379,8 @@ static short numberTimesViewHasBeenShown = 0;
         frameHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:frameWidth];
     }
     
-    UIView *placeHolderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
+    int offset = [AppEnvironmentConstants statusBarHeight]+[AppEnvironmentConstants navBarHeight];
+    UIView *placeHolderView = [[UIView alloc] initWithFrame:CGRectMake(0, offset, frameWidth, frameHeight)];
     [placeHolderView setBackgroundColor:[UIColor colorWithPatternImage:
                                          [UIImage imageWithColor:[UIColor clearColor] width:placeHolderView.frame.size.width height:placeHolderView.frame.size.height]]];
     
@@ -517,14 +519,24 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
         
         NSArray *activityItems = [NSArray arrayWithObjects:shareString, nil];
         
-        UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+        __block UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems
+                                                                                         applicationActivities:nil];
+        __weak UIActivityViewController *weakActivityVC = activityVC;
+        
         activityVC.excludedActivityTypes = @[UIActivityTypePrint,
                                              UIActivityTypeAssignToContact,
                                              UIActivityTypeSaveToCameraRoll,
                                              UIActivityTypeAirDrop];
         //set tint color specifically for this VC so that the cancel buttons are visible
         [activityVC.view setTintColor:[[UIColor defaultAppColorScheme] lighterColor]];
-        [self presentViewController:activityVC animated:YES completion:nil];
+        [self presentViewController:activityVC
+                           animated:YES
+                         completion:^{
+                             //fixes memory leak
+                             weakActivityVC.excludedActivityTypes = nil;
+                             activityVC = nil;
+                         }];
+        
     } else{
         // Handle error
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_TroubleSharingVideo];
@@ -537,6 +549,13 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
     [self setUpVideoView];
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    
+    [self setViewFrameBasedOnOrientation:toInterfaceOrientation];
+}
+
 - (BOOL)prefersStatusBarHidden
 {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -545,6 +564,24 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
     }
     else{
         return NO;
+    }
+}
+
+- (void)setViewFrameBasedOnOrientation:(UIInterfaceOrientation)orientation
+{
+    if(orientation == UIInterfaceOrientationLandscapeLeft ||
+       orientation == UIInterfaceOrientationLandscapeRight){
+#warning fix issue here.
+        [self.view setFrame:CGRectMake(0,
+                                       -100,
+                                       self.view.frame.size.width,
+                                       self.view.frame.size.height)];
+    } else{
+        int offset = [AppEnvironmentConstants navBarHeight];
+        self.view.frame = CGRectMake(0,
+                                     offset,
+                                     self.view.frame.size.width,
+                                     self.view.frame.size.height);
     }
 }
 

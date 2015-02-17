@@ -69,14 +69,13 @@ NSString * const BACKWARD_IMAGE_FILLED = @"Backward-Filled";
 NSString * const BACKWARD_IMAGE_UNFILLED = @"Backward-Line";
 
 //key value observing (AVPlayer)
-void *kCurrentItemDidChangeKVO  = &kCurrentItemDidChangeKVO;
-void *kRateDidChangeKVO         = &kRateDidChangeKVO;
-void *kStatusDidChangeKVO       = &kStatusDidChangeKVO;
-void *kDurationDidChangeKVO     = &kDurationDidChangeKVO;
-void *kTimeRangesKVO            = &kTimeRangesKVO;
-void *kBufferFullKVO            = &kBufferFullKVO;
-//void *kBufferEmptyKVO           = &kBufferEmptyKVO;  this is used in MyAVPlayer instead
-void *kDidFailKVO               = &kDidFailKVO;
+static void *kCurrentItemDidChangeKVO  = &kCurrentItemDidChangeKVO;
+static void *kRateDidChangeKVO         = &kRateDidChangeKVO;
+static void *kStatusDidChangeKVO       = &kStatusDidChangeKVO;
+static void *kDurationDidChangeKVO     = &kDurationDidChangeKVO;
+static void *kTimeRangesKVO            = &kTimeRangesKVO;
+
+static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 
 #pragma mark - VC Life Cycle
 - (void)viewDidLoad
@@ -223,14 +222,15 @@ static int numTimesVCLoaded = 0;
     _artistAndAlbumLabel.textColor = niceGrey;
     
     [self setNeedsStatusBarAppearanceUpdate];
+    
+    if(timeObserver == nil){
+        [self restoreTimeObserver];
+        firstTimeUpdatingSliderSinceShowingPlayer = YES;
+    }
 }
 
 - (void)dealloc
 {
-    //fixes a strange bug when a modal view is presented on top of this player
-    //(like the share sheet messages or mail VC's.
-    if(! self)
-        return;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([SongPlayerViewController class]));
 }
@@ -247,6 +247,8 @@ static int numTimesVCLoaded = 0;
     JAMAccurateSlider *superSlider = (JAMAccurateSlider *)self.playbackSlider;
     [superSlider preDealloc];
     self.playbackSlider = nil;
+    self.songNameLabel = nil;
+    self.artistAndAlbumLabel = nil;
     numTimesSetupKeyValueObservers = 0;
 }
 
@@ -1171,14 +1173,6 @@ static int hours;
              forKeyPath:@"currentItem.loadedTimeRanges"
                 options:NSKeyValueObservingOptionNew
                 context:kTimeRangesKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.playbackBufferFull"
-                options:NSKeyValueObservingOptionNew
-                context:kBufferFullKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.error"
-                options:NSKeyValueObservingOptionNew
-                context:kDidFailKVO];
     
     [self restoreTimeObserver];
     
@@ -1186,7 +1180,7 @@ static int hours;
     [_totalDurationLabel addObserver:self
                           forKeyPath:@"text"
                              options:NSKeyValueObservingOptionNew
-                             context:NULL];
+                             context:kTotalDurationLabelDidChange];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(killTimeObserver)
@@ -1200,27 +1194,28 @@ static int hours;
 
 - (void)removeObservers
 {
+    //temporarily disable logging since this "crash" when removing observers does not impact the program at all.
+    Fabric *myFabric = [Fabric sharedSDK];
+    myFabric.debug = YES;
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     
     @try{
-        [player removeObserver:self forKeyPath:@"rate"];
-        [player removeObserver:self forKeyPath:@"currentItem.status"];
-        [player removeObserver:self forKeyPath:@"currentItem.duration"];
-        [player removeObserver:self forKeyPath:@"currentItem.loadedTimeRanges"];
-        [player removeObserver:self forKeyPath:@"currentItem.playbackBufferFull"];
-        //[player removeObserver:self forKeyPath:@"currentItem.playbackBufferEmpty"];  not used
-        [player removeObserver:self forKeyPath:@"currentItem.error"];
+        [player removeObserver:self forKeyPath:@"rate" context:kRateDidChangeKVO];
+        [player removeObserver:self forKeyPath:@"currentItem.status" context:kStatusDidChangeKVO];
+        [player removeObserver:self forKeyPath:@"currentItem.duration" context:kDurationDidChangeKVO];
+        [player removeObserver:self forKeyPath:@"currentItem.loadedTimeRanges" context:kTimeRangesKVO];
     }
     //do nothing, obviously it wasn't attached because an exception was thrown
     @catch(id anException){}
     
     @try {
-        [_totalDurationLabel removeObserver:self forKeyPath:@"text"];
+        [_totalDurationLabel removeObserver:self forKeyPath:@"text" context:kTotalDurationLabelDidChange];
     }
     //do nothing
     @catch (id anException) {}
     
     [self killTimeObserver];
+    myFabric.debug = NO;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -1228,19 +1223,18 @@ static int hours;
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-    if(numTimesSetupKeyValueObservers != 1)
-        [self removeObservers];
+    //if(numTimesSetupKeyValueObservers != 1)
+      //  [self removeObservers];
     
     //check for duration label change
-    if ([keyPath isEqualToString:@"text"]) {
+    if (context == kTotalDurationLabelDidChange) {
         [self accomodateInterfaceBasedOnDurationLabelSize:(UILabel *)object];
     }
     
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     BOOL playbackExplicitlyPaused = [MusicPlaybackController playbackExplicitlyPaused];
     
-    if (kRateDidChangeKVO == context) {
+    if (context == kRateDidChangeKVO) {
         if(player.rate == 0 && !playbackExplicitlyPaused){
             if(! [MusicPlaybackController isInternetProblemSpinnerOnScreen]){
                 [self toggleDisplayToPausedState];
@@ -1387,18 +1381,34 @@ static int hours;
         
         NSArray *activityItems = [NSArray arrayWithObjects:shareString, nil];
         
-        UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+        __block UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems
+                                                                                         applicationActivities:nil];
+        __weak UIActivityViewController *weakActivityVC = activityVC;
+        __weak SongPlayerViewController *weakSelf = self;
+        
         activityVC.excludedActivityTypes = @[UIActivityTypePrint,
                                              UIActivityTypeAssignToContact,
                                              UIActivityTypeSaveToCameraRoll,
                                              UIActivityTypeAirDrop];
         //set tint color specifically for this VC so that the text and buttons are visible
         [activityVC.view setTintColor:[UIColor defaultAppColorScheme]];
-        //activityVC.barTintColor = [UIColor defaultAppColorScheme];
-        //activityVC.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor defaultAppColorScheme]};
         JAMAccurateSlider *superSlider = (JAMAccurateSlider *)self.playbackSlider;
         [superSlider preDealloc];
-        [self presentViewController:activityVC animated:YES completion:nil];
+        
+        [self removeObservers];
+        [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
+            //finish your code when the user finish or dismiss...
+            [weakSelf restoreTimeObserver];
+        }];
+        
+        
+        [self presentViewController:activityVC
+                           animated:YES
+                         completion:^{
+                             //fixes memory leak
+                             weakActivityVC.excludedActivityTypes = nil;
+                             activityVC = nil;
+                         }];
     } else{
         // Handle error
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_TroubleSharingLibrarySong];
