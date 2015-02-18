@@ -244,8 +244,6 @@ static int numTimesVCLoaded = 0;
     _totalDurationLabel = nil;
     _currentTimeLabel = nil;
     self.navBar = nil;
-    JAMAccurateSlider *superSlider = (JAMAccurateSlider *)self.playbackSlider;
-    [superSlider preDealloc];
     self.playbackSlider = nil;
     self.songNameLabel = nil;
     self.artistAndAlbumLabel = nil;
@@ -1392,8 +1390,6 @@ static int hours;
                                              UIActivityTypeAirDrop];
         //set tint color specifically for this VC so that the text and buttons are visible
         [activityVC.view setTintColor:[UIColor defaultAppColorScheme]];
-        JAMAccurateSlider *superSlider = (JAMAccurateSlider *)self.playbackSlider;
-        [superSlider preDealloc];
         
         [self removeObservers];
         [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {

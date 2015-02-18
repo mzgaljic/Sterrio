@@ -10,7 +10,7 @@
 
 @implementation MZConstants
 
-NSString * const MZWhatsNewUserMsg = @"⌾New Features:\n•New tab bar.\n•Video player can be turned off or \"killed\" by swiping it off the screen (left direction) when it is minimized. Inspired by the YouTube app.\n•Locking the iPhone without explicitly leaving my app beforehand will no longer cause the screen to remain awake forever.\n•Default album art (from video thumbnails) are now added to new songs automatically (unless changed).\n•Dozens of smaller visual and non-visual improvements.\n\n⌾Coming Soon:\n•App color theme changes.\n•Shuffle capabilities.\n•Automatic crash reports (w/ user permission).\n•Numerous other bug fixes (the correct song will be displayed as now playing with blue text, etc.)";
+NSString * const MZWhatsNewUserMsg = @"⌾New Features:\n•Vevo videos are now working again. This is a temporary fix.\n•Automatic crash reports (currently cannot be disabled. An option to disable is coming soon).•Swiping left on the minimized video player (to kill the player) is no longer glitchy. Swipe gestures have been improved on the video player as well.\n\n⌾Coming Soon:\n•App color theme changes.\n•Shuffle capabilities.\n•Numerous other bug fixes.";
 
 //used for sending playback signals to video preview player if it exists
 NSString * const MZPreviewPlayerTogglePlayPause = @"togglePlayPauseVideoPreviewPlayer";

@@ -191,7 +191,7 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
                 return;
             } else{
                 [MusicPlaybackController declareInternetProblemWhenLoadingSong:NO];
-                //video may no longer exist, or some other problem has occured
+                //video may no longer exist, or the internet connection is very weak
                 [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotLoadVideo];
                 [MusicPlaybackController skipToNextTrack];
                 return;
@@ -199,6 +199,11 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
         }
         
         AVURLAsset *asset = [AVURLAsset assetWithURL: currentItemLink];
+        if(! asset.playable){
+            //error initializing video with the url given. Notify user (and perhaps
+            //determine the cause...ie: vevo video, video no longer exists, etc)
+#warning implementation needed
+        }
         
         if(allowedToPlayVideo && video != nil){
             [weakCoordinator enablePlayerAgain];
@@ -229,7 +234,7 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
                                                  // Remove the boundary time observer
                                                  [weakSelf removeTimeObserver:obs];
                                              }];
-            [weakSelf play];
+            [self play];
             
         } else{
             if([MusicPlaybackController didPlaybackStopDueToInternetProblemLoadingSong])  //if so, don't do anything...
