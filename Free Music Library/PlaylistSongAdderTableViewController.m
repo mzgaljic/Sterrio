@@ -140,6 +140,7 @@ static const short NORMAL_PLAYLIST = -1;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     _songsSelected = [NSMutableArray array];
     [self setUpSearchBar];
     
@@ -163,14 +164,11 @@ static const short NORMAL_PLAYLIST = -1;
     //needed to make UITableViewCellAccessoryCheckmark the nav bar color!
     self.tableView.tintColor = [UIColor defaultAppColorScheme];
     
-    
-    //need to somewhat compesate since the last row was cut off (because in storyboard
-    //it thinks the tableview should also span under the nav bar...which i dont want lol).
-    int navBarHeight = [AppEnvironmentConstants navBarHeight];
+    //not compensating for nav bar here (like on main screen VC's) because this VC actually shows the nav bar
     self.tableView.frame = CGRectMake(0,
                                       0,
                                       self.view.frame.size.width,
-                                      self.view.frame.size.height - navBarHeight);
+                                      self.view.frame.size.height);
 }
 
 - (void)viewDidLoad

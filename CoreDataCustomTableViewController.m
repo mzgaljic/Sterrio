@@ -236,10 +236,6 @@
     [super viewWillAppear:animated];
     
     self.navigationController.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
-    
-    //force tableview to only show cells with content (hide the invisible stuff at the bottom of the table)
-    tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    
     //set nav bar title color and transparency
     self.navigationController.navigationBar.translucent = YES;
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -247,12 +243,11 @@
                         forKey:UITextAttributeTextColor]];
 #pragma clang diagnostic warning "-Wdeprecated-declarations"
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;  //makes status bar text light and readable
+    
+    //hides empty cells at the end
+    tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-}
 
 - (void)dealloc
 {

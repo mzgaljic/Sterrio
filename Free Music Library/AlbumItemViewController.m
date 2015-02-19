@@ -24,6 +24,7 @@ static BOOL PRODUCTION_MODE;
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    [super viewDidAppear:animated];
     self.navigationController.navigationBar.translucent = YES;
 }
 

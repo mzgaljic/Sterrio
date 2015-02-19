@@ -213,7 +213,6 @@ static BOOL PRODUCTION_MODE;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
 }
@@ -221,7 +220,6 @@ static BOOL PRODUCTION_MODE;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];

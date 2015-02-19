@@ -206,6 +206,7 @@
 #pragma mark - View Controller life cycle
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     [self setUpSearchBar];
     
     if([self numberOfPlaylistsInCoreDataModel] == 0){ //dont need search bar anymore
@@ -221,10 +222,12 @@
                                       0,
                                       self.view.frame.size.width,
                                       self.view.frame.size.height - navBarHeight);
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    [super viewDidAppear:animated];
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
 }

@@ -194,6 +194,7 @@ static BOOL PRODUCTION_MODE;
 #pragma mark - View Controller life cycle
 -(void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     [self setUpSearchBar];
     
     if([self numberOfArtistsInCoreDataModel] == 0){ //dont need search bar anymore
@@ -213,6 +214,7 @@ static BOOL PRODUCTION_MODE;
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    [super viewDidAppear:animated];
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
 }

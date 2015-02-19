@@ -250,7 +250,7 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
 
 - (void)checkInternetStatus
 {
-    if(!stallHasOccured){
+    if(! stallHasOccured){
         if([MusicPlaybackController isSimpleSpinnerOnScreen])
             [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
         return;

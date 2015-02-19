@@ -30,6 +30,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     [self setUpNavBarItems];
     self.navBar = self.navigationItem;
     [[UITextField appearance] setTintColor:[[UIColor defaultAppColorScheme] lighterColor]];  //sets the cursor color of the playlist name textbox editor
@@ -61,13 +62,11 @@
     self.navBar.title = navBarTitle;
     
     
-    //need to somewhat compesate since the last row was cut off (because in storyboard
-    //it thinks the tableview should also span under the nav bar...which i dont want lol).
-    int navBarHeight = [AppEnvironmentConstants navBarHeight];
+    //not compensating for nav bar here (like on main screen VC's) because this VC actually shows the nav barich i dont want lol).
     self.tableView.frame = CGRectMake(0,
                                       0,
                                       self.view.frame.size.width,
-                                      self.view.frame.size.height - navBarHeight);
+                                      self.view.frame.size.height);
 }
 
 - (void)viewDidAppear:(BOOL)animated
