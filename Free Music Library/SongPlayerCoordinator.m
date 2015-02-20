@@ -21,6 +21,7 @@
 @synthesize delegate = _delegate;
 static BOOL isVideoPlayerExpanded;
 static BOOL playerIsOnScreen;
+float const disabledPlayerAlpa = 0.25;
 
 #pragma mark - Class lifecycle stuff
 + (instancetype)sharedInstance
@@ -299,7 +300,7 @@ static BOOL playerIsOnScreen;
 {
     __weak PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     [UIView animateWithDuration:1.0 animations:^{
-        playerView.alpha = 0.25;
+        playerView.alpha = disabledPlayerAlpa;
         playerView.userInteractionEnabled = NO;
     }];
 }
@@ -316,6 +317,11 @@ static BOOL playerIsOnScreen;
 + (BOOL)isPlayerEnabled
 {
     return ([MusicPlaybackController obtainRawPlayerView].alpha == 1) ? YES : NO;
+}
+
++ (float)alphaValueForDisabledPlayer
+{
+    return disabledPlayerAlpa;
 }
 
 + (BOOL)isPlayerOnScreen

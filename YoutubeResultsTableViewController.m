@@ -132,7 +132,10 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
             [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     }
     
-    [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)    name:UIDeviceOrientationDidChangeNotification  object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(orientationChanged:)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object:nil];
     
     if(self.displaySearchResults)
         _navBar.title = @"Search Results";
@@ -142,7 +145,9 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    [[NSNotificationCenter defaultCenter]removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter]removeObserver:self
+                                                   name:UIDeviceOrientationDidChangeNotification
+                                                 object:nil];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -163,10 +168,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     _cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                   target:self
                                                                   action:@selector(cancelTapped)];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(interfaceOrientationDidChange)
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object:nil];
     [self setToolbarItems:@[_cancelButton]];
     [self setProductionModeValue];
     
@@ -195,26 +196,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
-}
-
-#pragma mark - rotation methods
-//i use these two methods to make sure the toolbar is always 'up to date' after rotation
-- (void)orientationChanged:(NSNotification *)notification
-{
-    [NSTimer scheduledTimerWithTimeInterval:0.1
-                                     target:self
-                                   selector:@selector(updateToolbarAFterRotation)
-                                   userInfo:nil
-                                    repeats:NO];
-}
-
-- (void)updateToolbarAFterRotation
-{
-    
-    if(_scrollToTopButtonVisible)
-        [self showScrollToTopButton:YES];
-    else
-        [self showScrollToTopButton:NO];
 }
 
 #pragma mark - YouTubeVideoSearchDelegate implementation
@@ -917,7 +898,7 @@ static NSDate *finish;
     return executionTime;
 }
 
-#pragma mark - Rotation status bar methods
+#pragma mark - Rotation methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
@@ -931,11 +912,27 @@ static NSDate *finish;
         [self.tableView reloadData];
 }
 
-- (void)interfaceOrientationDidChange
+#pragma mark - rotation methods
+//i use these two methods to make sure the toolbar is always 'up to date' after rotation
+- (void)orientationChanged:(NSNotification *)notification
 {
+    [NSTimer scheduledTimerWithTimeInterval:0.1
+                                     target:self
+                                   selector:@selector(updateToolbarAfterRotation)
+                                   userInfo:nil
+                                    repeats:NO];
     if(_waitingOnYoutubeResults){
         [self showLoadingIndicatorInCenterOfTable:YES];
     }
+}
+
+- (void)updateToolbarAfterRotation
+{
+    
+    if(_scrollToTopButtonVisible)
+        [self showScrollToTopButton:YES];
+    else
+        [self showScrollToTopButton:NO];
 }
 
 - (BOOL)prefersStatusBarHidden

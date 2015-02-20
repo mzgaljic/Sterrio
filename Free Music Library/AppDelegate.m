@@ -149,7 +149,10 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [self.window addSubview:playerView];
     [UIView animateWithDuration:animationDuration
                      animations:^{
-                         playerView.alpha = 1.0;
+                         if([SongPlayerCoordinator isPlayerEnabled])
+                             playerView.alpha = 1.0f;
+                         else
+                             playerView.alpha = [SongPlayerCoordinator alphaValueForDisabledPlayer];
                      }
                      completion:^(BOOL finished){
                          if(playerSnapshot){

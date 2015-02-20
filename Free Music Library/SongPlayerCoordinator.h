@@ -29,6 +29,7 @@
 - (void)temporarilyDisablePlayer;
 - (void)enablePlayerAgain;
 + (BOOL)isPlayerEnabled;
++ (float)alphaValueForDisabledPlayer;
 + (BOOL)isPlayerOnScreen;
 + (void)playerWasKilled:(BOOL)killed;
 
