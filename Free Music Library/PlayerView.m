@@ -126,6 +126,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 {
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+    [SongPlayerCoordinator playerWasKilled:YES];
 }
 
 #pragma mark - Orientation and view "touch" code

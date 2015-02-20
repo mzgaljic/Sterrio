@@ -24,13 +24,9 @@
         {
             //alert user to internet problem
             NSString *msg = @"Cannot connect to YouTube.";
-            [MyAlerts dismissCurrentViewController];
-            [[SongPlayerCoordinator sharedInstance] performSelector:@selector(beginShrinkingVideoPlayer)
-                                                         withObject:nil
-                                                         afterDelay:0.3];
             [MyAlerts displayBannerWithMsg:msg
                                      style:CSNotificationViewStyleError
-                                     delay:1
+                                     delay:0.8
                              shortDuration:YES];
             break;
         }
@@ -48,7 +44,8 @@
             NSString *msg = @"Total Song duration is not available.";
             [MyAlerts displayBannerWithMsg:msg
                                      style:CSNotificationViewStyleInfo
-                                     delay:0 shortDuration:YES];
+                                     delay:0
+                             shortDuration:YES];
             break;
         }
         case ALERT_TYPE_PotentialVideoDurationFetchFail:
@@ -123,7 +120,7 @@
         }
         case ALERT_TYPE_CannotOpenSelectedImageError:
         {
-            NSString *msg = @"The selected picture could not be opened. Please select a different picture.";
+            NSString *msg = @"The selected image could not be opened. Try a different image.";
             [MyAlerts displayBannerWithMsg:msg
                                      style:CSNotificationViewStyleError
                                      delay:1.0

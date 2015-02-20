@@ -191,7 +191,7 @@ static int numLongSongsSkipped = 0;
                genreCode:(int)code
          skipCurrentSong:(BOOL)skipNow;
 {
-    BOOL playerEnabled = [[SongPlayerCoordinator sharedInstance] isPlayerEnabled];
+    BOOL playerEnabled = [SongPlayerCoordinator isPlayerEnabled];
     
     //selected song is already playing...
     if([[MusicPlaybackController nowPlayingSong].song_id isEqual:song.song_id] && playerEnabled){

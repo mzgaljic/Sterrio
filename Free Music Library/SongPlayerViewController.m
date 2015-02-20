@@ -81,6 +81,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [SongPlayerCoordinator playerWasKilled:NO];
     
     //make sure ASValueTrackingSlider is still using the superclass JAMAccurateSlider
     if(! [ASValueTrackingSlider isSubclassOfClass:[JAMAccurateSlider class]]){

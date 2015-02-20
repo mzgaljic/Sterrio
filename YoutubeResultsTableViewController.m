@@ -22,6 +22,9 @@
 @interface YoutubeResultsTableViewController ()
 {
     UIActivityIndicatorView *loadingMoreResultsSpinner;
+    UIActivityIndicatorView *loadingResultsIndicator;
+    BOOL userScrolledPastBottomOfResults;
+    BOOL dragEnded;
 }
 @property (nonatomic, strong) MySearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray *searchResults;
@@ -31,9 +34,8 @@
 @property (nonatomic, strong) NSString *lastSuccessfullSearchString;
 @property (nonatomic, strong) NSMutableArray *lastSuccessfullSuggestions;
 @property (nonatomic, assign) float heightOfScreenRotationIndependant;
-//view isn't actually on top of tableView, but it looks like it. Call "turnTableViewIntoUIView" prior to setting this value!
+//view isn't actually on top of tableView, but it looks like it. It is really the tableview header
 @property (nonatomic, strong) UIView *viewOnTopOfTable;
-@property (nonatomic, strong) UIView *progressViewHere;
 
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
 @property (nonatomic, strong) UIBarButtonItem *cancelButton;
@@ -42,12 +44,13 @@
 @property (nonatomic, assign) BOOL networkErrorLoadingMoreResults;
 @property (nonatomic, assign) BOOL noMoreResultsToDisplay;
 @property (nonatomic, assign) BOOL waitingOnNextPageResults;
+@property (nonatomic, assign) BOOL waitingOnYoutubeResults;
 @end
 
 @implementation YoutubeResultsTableViewController
 static BOOL PRODUCTION_MODE;
 static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
-static NSString *Network_Error_Loading_More_Results_Msg = @"Network error, tap to try again";
+static NSString *Network_Error_Loading_More_Results_Msg = @"Network error";
 static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 //custom setters
@@ -160,6 +163,10 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     _cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                   target:self
                                                                   action:@selector(cancelTapped)];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(interfaceOrientationDidChange)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object:nil];
     [self setToolbarItems:@[_cancelButton]];
     [self setProductionModeValue];
     
@@ -214,8 +221,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 //searching for keyword on youtube finished and we have the results
 - (void)ytVideoSearchDidCompleteWithResults:(NSArray *)youTubeVideoObjects
 {
-    self.searchInitiatedAlready = YES;
-    
     // dismiss loading popup if enough time has passed
     NSTimeInterval executionTime = [self timeOnExecutionTimer];
     NSTimeInterval additionalDelay;
@@ -238,18 +243,18 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         [self launchAlertViewWithDialogTitle:@"No Search Results Found" andMessage:nil];
         [_searchBar setText:@""];
     }else
-        [self turnTableViewIntoUIView:NO];
+        [self showLoadingIndicatorInCenterOfTable:NO];
     [_searchBar setText:_lastSuccessfullSearchString];
-
+    
+    self.searchInitiatedAlready = YES;
+    self.waitingOnYoutubeResults = NO;
+    
     [self.tableView beginUpdates];
-    //first deleting the auto-suggest section, then adding the new results section
-    [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0]
-                  withRowAnimation:UITableViewRowAnimationNone];
-    [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0]
-                  withRowAnimation:UITableViewRowAnimationRight];
-    //also adding the "load more spinner cell" section
-    [self.tableView insertSections:[NSIndexSet indexSetWithIndex:1]
-                  withRowAnimation:UITableViewRowAnimationRight];
+    //I deleted section 0 when search was tapped
+    if([self.tableView numberOfSections] == 0){
+        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0]
+                      withRowAnimation:UITableViewRowAnimationRight];
+    }
     [self.tableView endUpdates];
 }
 
@@ -351,6 +356,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     [MRProgressOverlayView dismissOverlayForView:_viewOnTopOfTable animated:YES];
     [self launchAlertViewWithDialogTitle:@"Network Problem" andMessage:@"Cannot establish connection with YouTube."];
     self.searchInitiatedAlready = NO;
+    self.waitingOnYoutubeResults = NO;
 }
 
 - (void)networkErrorHasOccuredFetchingMorePages
@@ -364,6 +370,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     loadMoreCell.textLabel.textColor = [UIColor redColor];
     [loadingMoreResultsSpinner stopAnimating];
     _networkErrorLoadingMoreResults = YES;
+    [self.tableView reloadData];
 }
 
 #pragma mark - AlertView
@@ -383,8 +390,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 - (void)alertView:(SDCAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    if(buttonIndex == 0){  //hide loading popup behind the uialertView
-        [self turnTableViewIntoUIView:NO];
+    if(buttonIndex == 0){
+        [self showLoadingIndicatorInCenterOfTable:NO];
         self.displaySearchResults = NO;
     
         [self.tableView reloadData];
@@ -416,8 +423,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         [self.tableView beginUpdates];
         [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0]
                       withRowAnimation:UITableViewRowAnimationRight];
-        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:1]
-                      withRowAnimation:UITableViewRowAnimationRight];
         [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0]
                       withRowAnimation:UITableViewRowAnimationRight];
         [self.tableView endUpdates];
@@ -430,6 +435,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     self.displaySearchResults = YES;
+    self.waitingOnYoutubeResults = YES;
     self.tableView.scrollEnabled = YES;
     _lastSuccessfullSearchString = searchBar.text;
     //setting it both ways, do to nav bar title bug
@@ -437,9 +443,13 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     _navBar.title = @"Search Results";
     [_searchBar resignFirstResponder];
     
-    //show loading popup above tableview before content loads
-    [self turnTableViewIntoUIView:YES];
-    [MRProgressOverlayView showOverlayAddedTo:_progressViewHere animated:YES];
+    [self showLoadingIndicatorInCenterOfTable:YES];
+    
+    [self.tableView beginUpdates];
+    [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0]
+                  withRowAnimation:UITableViewRowAnimationNone];
+    [self.tableView endUpdates];
+    
     [self startTimingExecution];
     
     [[YouTubeVideoSearchService sharedInstance] searchYouTubeForVideosUsingString: searchBar.text];
@@ -481,7 +491,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
             [self.tableView beginUpdates];
             [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:YES];
             [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:YES];
-            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:YES];
             [self.tableView endUpdates];
             return;
         }
@@ -534,8 +543,8 @@ static BOOL userClearedTextField = NO;
 #pragma mark - TableView deleagte
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    if(self.displaySearchResults)
-        return 2;  //this one has a "load more" button
+    if(self.waitingOnYoutubeResults)
+        return 0;
     else
         return 1;
 }
@@ -546,7 +555,7 @@ static BOOL userClearedTextField = NO;
         //want to hide the header in landscape
         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
         if(orientation != UIInterfaceOrientationPortrait)
-            return 0;
+            return 0.0f;
         else
             return 38.0f;
     }
@@ -554,7 +563,7 @@ static BOOL userClearedTextField = NO;
         if(section == 0)  //dont want a gap betweent table and search bar
             return 1.0f;
         else
-            return 14.0f;  //"Load More" cell is in section 1
+            return 0.0f;
     }
 }
 
@@ -568,11 +577,68 @@ static BOOL userClearedTextField = NO;
     return @"";
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
-{
-    if(self.displaySearchResults){
-        if(section == 0){
-            return [NSString stringWithFormat:@"Displaying %i results", (int)_searchResults.count];
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    float defaultFooterHeight = 90.0f;
+    int numResultsInEachResultsPage = 15;
+    if(_displaySearchResults){
+        if(_networkErrorLoadingMoreResults || _noMoreResultsToDisplay || self.searchResults.count < numResultsInEachResultsPage){
+            UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, defaultFooterHeight)];
+            if(_networkErrorLoadingMoreResults){
+                label.text = Network_Error_Loading_More_Results_Msg;
+                label.textColor = [UIColor redColor];
+            }
+            else if(_noMoreResultsToDisplay || self.searchResults.count < numResultsInEachResultsPage){
+                label.text = No_More_Results_To_Display_Msg;
+                label.textColor = [UIColor blackColor];
+            }
+                
+            int minLabelFontSize = 3;
+            if([AppEnvironmentConstants preferredSizeSetting] >= minLabelFontSize)
+                label.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+            else
+                label.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:minLabelFontSize]];
+            CGSize maximumLabelSize = CGSizeMake(label.frame.size.width, CGFLOAT_MAX);
+            CGSize requiredSize = [label sizeThatFits:maximumLabelSize];
+            CGRect labelFrame = label.frame;
+            labelFrame.size.height = requiredSize.height;
+            label.frame = labelFrame;
+            UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, label.frame.size.width, label.frame.size.height)];
+            [label setTextAlignment:NSTextAlignmentCenter];
+            [view addSubview:label];
+            return view;
+        } else if(self.waitingOnNextPageResults){
+            [loadingMoreResultsSpinner removeFromSuperview];
+            loadingMoreResultsSpinner = nil;
+            loadingMoreResultsSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, defaultFooterHeight)];
+            [view addSubview:loadingMoreResultsSpinner];
+            int spinnerWidth = loadingMoreResultsSpinner.frame.size.width;
+            loadingMoreResultsSpinner.frame = CGRectMake(view.frame.size.width/2 - (spinnerWidth/2),
+                                                         0,
+                                                         spinnerWidth,
+                                                         spinnerWidth);
+            [loadingMoreResultsSpinner setColor:[UIColor defaultAppColorScheme]];
+            [loadingMoreResultsSpinner startAnimating];
+            return view;
+        } else{
+            //just show that more results are below is user scrolls
+            UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, defaultFooterHeight)];
+            label.text = @"···";
+            label.textColor = [UIColor defaultAppColorScheme];
+            int minLabelFontSize = 5;
+            if([AppEnvironmentConstants preferredSizeSetting] >= minLabelFontSize)
+                label.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+            else
+                label.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:minLabelFontSize]];
+            CGSize maximumLabelSize = CGSizeMake(label.frame.size.width, CGFLOAT_MAX);
+            CGSize requiredSize = [label sizeThatFits:maximumLabelSize];
+            CGRect labelFrame = label.frame;
+            labelFrame.size.height = requiredSize.height;
+            label.frame = labelFrame;
+            UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, label.frame.size.width, label.frame.size.height)];
+            [label setTextAlignment:NSTextAlignmentCenter];
+            [view addSubview:label];
+            return view;
         }
     }
     return nil;
@@ -583,8 +649,6 @@ static BOOL userClearedTextField = NO;
     if(self.displaySearchResults){
         if(section == 0)
             return _searchResults.count;  //number of videos in results
-        else if(section == 1)  //"Load more" cell
-            return 1;
         else
             return -1;
     }else{
@@ -601,12 +665,14 @@ static BOOL userClearedTextField = NO;
     
     if(self.displaySearchResults){  //video search results will populate the table
         if(indexPath.section == 0){
+            if(_searchResults.count-1 < indexPath.row){
+                NSLog(@"Woah!");
+            }
             ytVideo = [_searchResults objectAtIndex:indexPath.row];
             
             CustomYoutubeTableViewCell *customCell;
             customCell = [tableView dequeueReusableCellWithIdentifier:@"youtubeResultCell" forIndexPath:indexPath];
             customCell.videoTitle.text = ytVideo.videoName;
-            customCell.videoChannel.font = [UIFont systemFontOfSize:14];
             customCell.videoChannel.textColor = [UIColor grayColor];
             customCell.videoChannel.text = ytVideo.channelTitle;
             
@@ -622,7 +688,6 @@ static BOOL userClearedTextField = NO;
             [self downloadImageWithURL:[NSURL URLWithString:weakVideoURL] completionBlock:^(BOOL succeeded, UIImage *image)
             {
                 if (succeeded) {
-                    // change the image in the cell
                     customCell.videoThumbnail.image = nil;
                     [UIView transitionWithView:customCell.videoThumbnail
                                       duration:MZCellImageViewFadeDuration
@@ -636,30 +701,11 @@ static BOOL userClearedTextField = NO;
             customCell.accessoryType = UITableViewCellAccessoryNone;
             return customCell;
             
-        } else if(indexPath.section == 1){  //the "load more" button is in this section
-            if(indexPath.row == 0){
-                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"loadMoreButtonCell"];
-                cell.textLabel.font = [UIFont boldSystemFontOfSize:20];
-                cell.textLabel.textAlignment = NSTextAlignmentCenter;
-                if(_networkErrorLoadingMoreResults){
-                    cell.textLabel.text = Network_Error_Loading_More_Results_Msg;
-                    cell.textLabel.textColor = [UIColor redColor];
-                }
-                else if(_noMoreResultsToDisplay){
-                    cell.textLabel.text = No_More_Results_To_Display_Msg;
-                    cell.textLabel.textColor = [UIColor blackColor];
-                } else if(self.waitingOnNextPageResults){
-                    
-                    loadingMoreResultsSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                    UIView *contentView = cell.contentView;
-                    loadingMoreResultsSpinner.center = cell.center;
-                    
-                    [contentView addSubview:loadingMoreResultsSpinner];
-                    [loadingMoreResultsSpinner startAnimating];
-                }
-            }
         }
     }else{  //auto suggestions will populate the table
+        if(_searchSuggestions.count-1 < indexPath.row){
+            NSLog(@"Woah!");
+        }
         cell = [tableView dequeueReusableCellWithIdentifier:@"youtubeSuggsestCell" forIndexPath:indexPath];
         cell.textLabel.text = [_searchSuggestions objectAtIndex:indexPath.row];
         cell.imageView.image = nil;
@@ -670,17 +716,16 @@ static BOOL userClearedTextField = NO;
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //could also selectively choose which rows may be deleted here.
     return NO;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    float autoCompleteCellHeight = 45;
     if(! self.displaySearchResults)
-        return 45;
+        return autoCompleteCellHeight;
     else{
         if(indexPath.section == 0){
-            //show portrait player
             float widthOfScreenRoationIndependant;
             float heightOfScreenRotationIndependant;
             float  a = [[UIScreen mainScreen] bounds].size.height;
@@ -701,7 +746,7 @@ static BOOL userClearedTextField = NO;
             return height + 8;
         }
         else
-            return 70.0f;
+            return autoCompleteCellHeight;  //just returning something since i have to
     }
 }
 
@@ -724,6 +769,8 @@ static BOOL userClearedTextField = NO;
         NSString *chosenSuggestion = _searchSuggestions[index];
         
         if(chosenSuggestion.length != 0){
+            self.waitingOnYoutubeResults = YES;
+
             [_searchBar setText:chosenSuggestion];
             [self searchBarSearchButtonClicked:_searchBar];
         }
@@ -739,32 +786,38 @@ static BOOL userClearedTextField = NO;
                                if ( !error )
                                {
                                    UIImage *image = [[UIImage alloc] initWithData:data];
-                                   completionBlock(YES,image);
+                                   completionBlock(YES, image);
                                } else{
-                                   completionBlock(NO,nil);
+                                   completionBlock(NO, nil);
                                }
                            }];
 }
 
 
 #pragma mark - TableView custom view toggler/creator
-- (void)turnTableViewIntoUIView:(BOOL)yes
+- (void)showLoadingIndicatorInCenterOfTable:(BOOL)yes
 {
     if(yes){
         self.tableView.scrollEnabled = NO;
         [self.searchBar removeFromSuperview];
-        int navBarHeight = self.navigationController.navigationBar.frame.size.height;
-        short statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
-        int offset = navBarHeight + statusBarHeight;
-        _viewOnTopOfTable = [[UIView alloc] initWithFrame:self.tableView.frame];
-        _progressViewHere = [[UIView alloc] initWithFrame:
-                                    CGRectMake(0, -offset, _viewOnTopOfTable.frame.size.width, _viewOnTopOfTable.frame.size.height)];
-        [_viewOnTopOfTable addSubview:_progressViewHere];
+        _viewOnTopOfTable = [[UIView alloc] initWithFrame:self.view.frame];
+        CGRect screenFrame = [UIScreen mainScreen].bounds;
+        loadingResultsIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        int indicatorSize = loadingResultsIndicator.frame.size.width;
+        loadingResultsIndicator.frame = CGRectMake(screenFrame.size.width/2 - indicatorSize/2,
+                                                   screenFrame.size.height/2 - indicatorSize/2 - [AppEnvironmentConstants navBarHeight],
+                                                   indicatorSize,
+                                                   indicatorSize);
+        loadingResultsIndicator.color = [UIColor defaultAppColorScheme];
+        [loadingResultsIndicator startAnimating];
+        
+        [_viewOnTopOfTable addSubview:loadingResultsIndicator];
         self.tableView.tableHeaderView = _viewOnTopOfTable;
     } else{
         self.tableView.scrollEnabled = YES;
         [self.searchBar removeFromSuperview];
-        _progressViewHere = nil;
+        [loadingResultsIndicator stopAnimating];
+        loadingResultsIndicator = nil;
         _viewOnTopOfTable = nil;
         [self setUpSearchBar];
     }
@@ -783,22 +836,42 @@ static BOOL userClearedTextField = NO;
         else
             [self showScrollToTopButton:YES];
         
-        //now check if the user scrolled to the bottom to load more
         
+        //now check if the user scrolled to the bottom to load more
         CGFloat scrollViewHeight = scrollView.bounds.size.height;
         CGFloat scrollContentSizeHeight = scrollView.contentSize.height;
         CGFloat bottomInset = scrollView.contentInset.bottom;
         CGFloat scrollViewBottomOffset = scrollContentSizeHeight + bottomInset - scrollViewHeight;
         
         if (scrollView.contentOffset.y >= scrollViewBottomOffset && self.displaySearchResults){
+            if(!dragEnded)
+                userScrolledPastBottomOfResults = YES;
             if(self.waitingOnNextPageResults)
                 return;
-            self.waitingOnNextPageResults = YES;
-            //try to load more results
-            [[YouTubeVideoSearchService sharedInstance] fetchNextYouTubePageUsingLastQueryString];
-            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:1]] withRowAnimation:UITableViewRowAnimationNone];
         }
     }
+}
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    dragEnded = NO;
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    if(userScrolledPastBottomOfResults)
+        [self userDidScrollToBottomOfTable];
+    userScrolledPastBottomOfResults = NO;
+    dragEnded = YES;
+}
+
+- (void)userDidScrollToBottomOfTable
+{
+    //efficiently refresh footer view
+    [self.tableView reloadData];
+
+    self.waitingOnNextPageResults = YES;
+    //try to load more results
+    [[YouTubeVideoSearchService sharedInstance] fetchNextYouTubePageUsingLastQueryString];
 }
 
 #pragma mark - ToolBar methods
@@ -852,8 +925,17 @@ static NSDate *finish;
     [self prefersStatusBarHidden];
     [self setNeedsStatusBarAppearanceUpdate];
     
-    if(!_displaySearchResults)  //want to reload the section headers during orientation so it fits ("top hits")
+    _viewOnTopOfTable.frame = self.view.frame;
+    
+    if(! _displaySearchResults)  //want to reload the section headers during orientation so it fits ("top hits")
         [self.tableView reloadData];
+}
+
+- (void)interfaceOrientationDidChange
+{
+    if(_waitingOnYoutubeResults){
+        [self showLoadingIndicatorInCenterOfTable:YES];
+    }
 }
 
 - (BOOL)prefersStatusBarHidden

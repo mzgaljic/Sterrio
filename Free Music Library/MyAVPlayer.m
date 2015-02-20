@@ -205,7 +205,7 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
 #warning implementation needed
         }
         
-        if(allowedToPlayVideo && video != nil){
+        if(allowedToPlayVideo && video != nil && asset.playable){
             [weakCoordinator enablePlayerAgain];
             playerItem = [AVPlayerItem playerItemWithAsset: asset];
             allowSongDidFinishToExecute = YES;

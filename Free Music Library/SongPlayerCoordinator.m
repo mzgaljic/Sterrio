@@ -20,6 +20,7 @@
 @implementation SongPlayerCoordinator
 @synthesize delegate = _delegate;
 static BOOL isVideoPlayerExpanded;
+static BOOL playerIsOnScreen;
 
 #pragma mark - Class lifecycle stuff
 + (instancetype)sharedInstance
@@ -312,9 +313,19 @@ static BOOL isVideoPlayerExpanded;
     }];
 }
 
-- (BOOL)isPlayerEnabled
++ (BOOL)isPlayerEnabled
 {
     return ([MusicPlaybackController obtainRawPlayerView].alpha == 1) ? YES : NO;
+}
+
++ (BOOL)isPlayerOnScreen
+{
+    return playerIsOnScreen;
+}
+
++ (void)playerWasKilled:(BOOL)killed
+{
+    playerIsOnScreen = !killed;
 }
 
 - (CGRect)currentPlayerViewFrame
