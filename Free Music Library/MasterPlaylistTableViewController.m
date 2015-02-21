@@ -9,6 +9,9 @@
 #import "MasterPlaylistTableViewController.h"
 
 @interface MasterPlaylistTableViewController ()
+{
+    BOOL canIgnoreUpdatingViewController;
+}
 @property(nonatomic, strong) UIAlertView *createPlaylistAlert;
 @property (nonatomic, strong) MySearchBar* searchBar;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -55,7 +58,11 @@
     return @"Playlists";
 }
 
-#pragma mark - Miscellaneous
+- (void)viewControllerWillBeIteratedPastInSegmentControl
+{
+    canIgnoreUpdatingViewController = YES;
+}
+
 #pragma mark - Miscellaneous
 - (void)editTapped:(id)sender
 {
@@ -103,13 +110,6 @@
     barButton.style = UIBarButtonItemStylePlain;
     barButton.enabled = true;
     return barButton;
-}
-
-- (void)currentSongHasChanged
-{
-#warning needs implementation. should check which if the current song is in a playlist AND if it was actually played back from the playlist or not
-    //want the now playing album to always be a specific color
-    [self.tableView reloadData];
 }
 
 #pragma mark - UISearchBar
@@ -206,6 +206,9 @@
 #pragma mark - View Controller life cycle
 - (void)viewWillAppear:(BOOL)animated
 {
+    if(canIgnoreUpdatingViewController){
+        return;
+    }
     [super viewWillAppear:animated];
     self.playbackContext = SongPlaybackContextPlaylists;
     [self setUpSearchBar];
@@ -222,11 +225,15 @@
                                       0,
                                       self.view.frame.size.width,
                                       self.view.frame.size.height - navBarHeight);
-    
+    [self.tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    if(canIgnoreUpdatingViewController){
+        canIgnoreUpdatingViewController = NO;
+        return;
+    }
     [super viewDidAppear:animated];
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];

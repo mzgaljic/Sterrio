@@ -9,6 +9,9 @@
 #import "MasterArtistsTableViewController.h"
 
 @interface MasterArtistsTableViewController ()
+{
+    BOOL canIgnoreUpdatingViewController;
+}
 @property (nonatomic, assign) int indexOfEditingArtist;
 @property (nonatomic, assign) int selectedRowIndexValue;
 @property (nonatomic, strong) MySearchBar* searchBar;
@@ -60,6 +63,10 @@ static BOOL PRODUCTION_MODE;
     return @"Artists";
 }
 
+- (void)viewControllerWillBeIteratedPastInSegmentControl
+{
+    canIgnoreUpdatingViewController = YES;
+}
 
 #pragma mark - Miscellaneous
 - (void)editTapped:(id)sender
@@ -109,13 +116,6 @@ static BOOL PRODUCTION_MODE;
     barButton.style = UIBarButtonItemStylePlain;
     barButton.enabled = true;
     return barButton;
-}
-
-- (void)currentSongHasChanged
-{
-#warning needs implementation. should check which artist the now playing song is in...if it has one.
-    //want the now playing album to always be a specific color
-    [self.tableView reloadData];
 }
 
 #pragma mark - UISearchBar
@@ -194,6 +194,9 @@ static BOOL PRODUCTION_MODE;
 #pragma mark - View Controller life cycle
 -(void)viewWillAppear:(BOOL)animated
 {
+    if(canIgnoreUpdatingViewController){
+        return;
+    }
     [super viewWillAppear:animated];
     self.playbackContext = SongPlaybackContextArtists;
     [self setUpSearchBar];
@@ -210,10 +213,15 @@ static BOOL PRODUCTION_MODE;
                                       0,
                                       self.view.frame.size.width,
                                       self.view.frame.size.height - navBarHeight);
+    [self.tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    if(canIgnoreUpdatingViewController){
+        canIgnoreUpdatingViewController = NO;
+        return;
+    }
     [super viewDidAppear:animated];
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];

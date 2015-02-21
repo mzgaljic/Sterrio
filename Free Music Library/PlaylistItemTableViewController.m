@@ -68,6 +68,7 @@
                                       0,
                                       self.view.frame.size.width,
                                       self.view.frame.size.height);
+    [self.tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -96,13 +97,6 @@
     
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     [imageCache clearMemory];
-}
-
-- (void)currentSongHasChanged
-{
-#warning incomplete implementation.
-    //want the now playing song to always be a specific color
-    [self.tableView reloadData];
 }
 
 #pragma mark - Table View Data Source

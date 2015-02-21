@@ -159,7 +159,6 @@ static const short NORMAL_PLAYLIST = -1;
         self.rightBarButton.title = @"";
         //i disable songs in the existing playlist in cellForRowAtIndexpath
     }
-    [self.tableView reloadData];
     
     //needed to make UITableViewCellAccessoryCheckmark the nav bar color!
     self.tableView.tintColor = [UIColor defaultAppColorScheme];
@@ -169,6 +168,7 @@ static const short NORMAL_PLAYLIST = -1;
                                       0,
                                       self.view.frame.size.width,
                                       self.view.frame.size.height);
+    [self.tableView reloadData];
 }
 
 - (void)viewDidLoad

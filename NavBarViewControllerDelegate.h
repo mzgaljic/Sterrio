@@ -16,6 +16,15 @@
 - (NSString *)titleOfNavigationBar;
 
 @optional
+
+/**
+ When a VC will be iterated over but is NOT the final destination on the
+ UIPageViewController, this method will be called on the delegates as needed.
+ This helps those VC's avoid updating the GUI for no reason...if that specific
+ VC decides that it can display slightly outdated information on the interface.
+ */
+- (void)viewControllerWillBeIteratedPastInSegmentControl;
+
 - (void)navigationControllerNavBarForOptionalCustomization:(UINavigationBar *)navBar;
 
 @end

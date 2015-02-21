@@ -161,6 +161,13 @@ const short segmentedControlHeight = 42;
         else
             currentIndexVc = [self allViewControllers][--iteratorIndex];
         
+        if(iteratorIndex != index){
+            if([currentIndexVc conformsToProtocol:@protocol(NavBarViewControllerDelegate)]){
+                [currentIndexVc performSelector:@selector(viewControllerWillBeIteratedPastInSegmentControl)
+                                     withObject:nil];
+            }
+        }
+        
         [self.pageViewController setViewControllers:@[currentIndexVc]
                                           direction:animateDirection
                                            animated:YES

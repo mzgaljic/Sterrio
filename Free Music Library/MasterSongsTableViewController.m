@@ -9,6 +9,9 @@
 #import "MasterSongsTableViewController.h"
 
 @interface MasterSongsTableViewController ()
+{
+    BOOL canIgnoreUpdatingViewController;
+}
 @property (nonatomic, assign) int indexOfEditingSong;
 @property (nonatomic, assign) int selectedRowIndexValue;
 @property (nonatomic, strong) MySearchBar *searchBar;
@@ -54,6 +57,11 @@ static BOOL haveCheckedCoreDataInit = NO;
 - (NSString *)titleOfNavigationBar
 {
     return @"Songs";
+}
+
+- (void)viewControllerWillBeIteratedPastInSegmentControl
+{
+    canIgnoreUpdatingViewController = YES;
 }
 
 #pragma mark - Miscellaneous
@@ -108,12 +116,6 @@ static BOOL haveCheckedCoreDataInit = NO;
     barButton.style = UIBarButtonItemStylePlain;
     barButton.enabled = true;
     return barButton;
-}
-
-- (void)currentSongHasChanged
-{
-    //want the now playing song to always be a specific color
-    [self.tableView reloadData];
 }
 
 #pragma mark - UISearchBar
@@ -212,6 +214,9 @@ static BOOL haveCheckedCoreDataInit = NO;
 #pragma mark - View Controller life cycle
 - (void)viewWillAppear:(BOOL)animated
 {
+    if(canIgnoreUpdatingViewController){
+        return;
+    }
     [super viewWillAppear:animated];
     self.playbackContext = SongPlaybackContextSongs;
     [self setUpSearchBar];
@@ -228,10 +233,15 @@ static BOOL haveCheckedCoreDataInit = NO;
                                       0,
                                       self.view.frame.size.width,
                                       self.view.frame.size.height - navBarHeight);
+    [self.tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    if(canIgnoreUpdatingViewController){
+        canIgnoreUpdatingViewController = NO;
+        return;
+    }
     [super viewDidAppear:animated];
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
