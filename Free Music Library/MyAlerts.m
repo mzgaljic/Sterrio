@@ -19,6 +19,18 @@
 
 + (void)displayAlertWithAlertType:(ALERT_TYPE)type
 {
+    if([NSThread mainThread]){
+        [MyAlerts runDisplayAlertCodeWithAlertType:type];
+    } else{
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            //Run UI Updates
+            [MyAlerts runDisplayAlertCodeWithAlertType:type];
+        });
+    }
+}
+
++ (void)runDisplayAlertCodeWithAlertType:(ALERT_TYPE)type
+{
     switch (type) {
         case ALERT_TYPE_CannotConnectToYouTube:
         {
@@ -79,7 +91,7 @@
                                  shortDuration:NO];
                 [MusicPlaybackController resetNumberOfLongVideosSkippedOnCellularConnection];
             }
-                
+            
             break;
         }
         case ALERT_TYPE_LongPreviewVideoSkippedOnCellular:

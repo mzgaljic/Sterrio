@@ -26,6 +26,8 @@
     NSString *CURRENT_SONG_DONE_PLAYING;
     NSString * CURRENT_SONG_STOPPED_PLAYBACK;
     NSString * CURRENT_SONG_RESUMED_PLAYBACK;
+    
+    Reachability *reachability;
 }
 @end
 
@@ -126,54 +128,73 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
     secondsLoaded = 0;
     stallHasOccured = NO;
     [self showSpinnerForBasicLoadingOnView:[MusicPlaybackController obtainRawPlayerView]];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(void){
+        //Background Thread  (note: alert and spinner code IS thread safe)
+        
+        __weak NSNumber *weakDuration = aSong.duration;
+        
+        if(reachability == nil)
+            reachability = [Reachability reachabilityForInternetConnection];
+
+        BOOL usingWifi = NO;
+        BOOL allowedToPlayVideo = YES;  //not checking if we can physically play, but legally (Apple's 10 minute streaming rule)
+        
+        NetworkStatus status = [reachability currentReachabilityStatus];
+        if (status == ReachableViaWiFi)
+            usingWifi = YES;
+        
+        if(! usingWifi && status != NotReachable){
+            if([weakDuration integerValue] >= MZLongestCellularPlayableDuration)
+                //user cant watch video longer than 10 minutes without wifi
+                allowedToPlayVideo = NO;
+        } else if(! usingWifi && status == NotReachable){
+            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
+            [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
+            [MusicPlaybackController playbackExplicitlyPaused];
+            [MusicPlaybackController pausePlayback];
+        }
+        
+        if(! allowedToPlayVideo){
+            if(status != NotReachable){
+                [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
+                //triggers the next song to play (for whatever reason/error)
+                [self performSelectorOnMainThread:@selector(songDidFinishPlaying:)
+                                       withObject:nil
+                                    waitUntilDone:NO];
+                allowSongDidFinishToExecute = YES;
+            }
+            return;
+        }
+        
+        [self executeVideoSetupWithVideoID:aSong.youtube_id
+                                 usingWifi:usingWifi
+                        allowedToPlayVideo:allowedToPlayVideo];
+    });
+}
+
+- (void)executeVideoSetupWithVideoID:(NSString *)videoId
+                           usingWifi:(BOOL)usingWifi
+                  allowedToPlayVideo:(BOOL)allowedToPlayVideo
+{
+    __weak NSString *weakId = videoId;
     __weak MyAVPlayer *weakSelf = self;
     __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
-    __weak NSString *weakId = aSong.youtube_id;
-    __weak NSNumber *weakDuration = aSong.duration;
     __weak Song *weakNowPlaying = [MusicPlaybackController nowPlayingSong];
-    
-    Reachability *reachability = [Reachability reachabilityForInternetConnection];
-    BOOL usingWifi = NO;
-    BOOL allowedToPlayVideo = YES;  //not checking if we can physically play, but legally (Apple's 10 minute streaming rule)
-    
-    NetworkStatus status = [reachability currentReachabilityStatus];
-    if (status == ReachableViaWiFi)
-        usingWifi = YES;
-    
-    if(! usingWifi && status != NotReachable){
-        if([weakDuration integerValue] >= MZLongestCellularPlayableDuration)
-            //user cant watch video longer than 10 minutes without wifi
-            allowedToPlayVideo = NO;
-    } else if(! usingWifi && status == NotReachable){
-        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
-        [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
-        [MusicPlaybackController playbackExplicitlyPaused];
-        [MusicPlaybackController pausePlayback];
-    }
-    
-    if(! allowedToPlayVideo){
-        if(status != NotReachable){
-            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
-            //triggers the next song to play (for whatever reason/error)
-            [self performSelector:@selector(songDidFinishPlaying:) withObject:nil afterDelay:0.01];
-            allowSongDidFinishToExecute = YES;
-        }
-        return;
-    }
     __weak SongPlayerCoordinator *weakCoordinator = [SongPlayerCoordinator sharedInstance];
     
     [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
+        //NOTE: the MusicPlaybackController methods called from this completion block have
+        //been made thread safe.
         if (video)
         {
             //find video quality closest to setting preferences
-            NSDictionary *vidQualityDict = video.streamURLs;
             NSURL *url;
             if(usingWifi){
                 short maxDesiredQuality = [AppEnvironmentConstants preferredWifiStreamSetting];
-                url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
+                url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:video.streamURLs];
             }else{
                 short maxDesiredQuality = [AppEnvironmentConstants preferredCellularStreamSetting];
-                url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
+                url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:video.streamURLs];
             }
             currentItemLink = url;
         }
@@ -193,51 +214,59 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
                 return;
             }
         }
-        
-        AVURLAsset *asset = [AVURLAsset assetWithURL: currentItemLink];
-        if(! asset.playable){
-            //error initializing video with the url given. Notify user (and perhaps
-            //determine the cause...ie: vevo video, video no longer exists, etc)
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(void){
+            AVURLAsset *asset = [AVURLAsset assetWithURL: currentItemLink];
+            
+            if(! asset.playable){
+                //error initializing video with the url given. Notify user (and perhaps
+                //determine the cause...ie: vevo video, video no longer exists, etc)
 #warning implementation needed
-        }
-        
-        if(allowedToPlayVideo && video != nil && asset.playable){
-            [weakCoordinator enablePlayerAgain];
-            playerItem = [AVPlayerItem playerItemWithAsset: asset];
-            allowSongDidFinishToExecute = YES;
-            [weakSelf replaceCurrentItemWithPlayerItem:playerItem];
-            [weakSelf registerForObservers];
+            }
             
-            // Declare block scope variables to avoid retention cycles from references inside the block
-            __block id obs;
-            // Setup boundary time observer to trigger when audio really begins (specifically after 1/10 of a second of playback)
-            __weak MyAVPlayer *weakSelf = self;
-            __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
-            obs = [weakSelf addBoundaryTimeObserverForTimes:
-                   @[[NSValue valueWithCMTime:CMTimeMake(1, 10)]]
-                                                  queue:NULL
-                                             usingBlock:^{
-                                                 //playback was successful, reset the direction of the queue
-                                                 movingForward = YES;
-                                                 playbackStarted = YES;
-                                                 [weakSelf dismissAllSpinnersForView:weakPlayerView];
-                                                 // Raise a notificaiton when playback has started
-                                                 [[NSNotificationCenter defaultCenter]
-                                                  postNotificationName:@"PlaybackStartedNotification"
-                                                  object:nil];
-                                                 [MusicPlaybackController updateLockScreenInfoAndArtForSong:weakNowPlaying];
-                                                 
-                                                 // Remove the boundary time observer
-                                                 [weakSelf removeTimeObserver:obs];
-                                             }];
-            [self play];
-            
-        } else{
-            
-            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
-            [weakSelf dismissAllSpinnersForView:weakPlayerView];
-            [weakSelf songDidFinishPlaying:nil];  //triggers the next song to play (for whatever reason/error) in the correct direction
-        }
+            if(allowedToPlayVideo && video != nil && asset.playable){
+                dispatch_async(dispatch_get_main_queue(), ^(void){
+                    //Run UI Updates
+                    [weakCoordinator enablePlayerAgain];
+                    
+                    playerItem = [AVPlayerItem playerItemWithAsset:asset];
+                    allowSongDidFinishToExecute = YES;
+                    [weakSelf replaceCurrentItemWithPlayerItem:playerItem];
+                    [weakSelf registerForObservers];
+                    
+                    // Declare block scope variables to avoid retention cycles from references inside the block
+                    __block id obs;
+                    // Setup boundary time observer to trigger when audio really begins (specifically after 1/10 of a second of playback)
+                    __weak MyAVPlayer *weakSelf = self;
+                    __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
+                    obs = [weakSelf addBoundaryTimeObserverForTimes:
+                           @[[NSValue valueWithCMTime:CMTimeMake(1, 10)]]
+                                                              queue:NULL
+                                                         usingBlock:^{
+                                                             //playback was successful, reset the direction of the queue
+                                                             movingForward = YES;
+                                                             playbackStarted = YES;
+                                                             [weakSelf dismissAllSpinnersForView:weakPlayerView];
+                                                             // Raise a notificaiton when playback has started
+                                                             [[NSNotificationCenter defaultCenter]
+                                                              postNotificationName:@"PlaybackStartedNotification"
+                                                              object:nil];
+                                                             [MusicPlaybackController updateLockScreenInfoAndArtForSong:weakNowPlaying];
+                                                             
+                                                             // Remove the boundary time observer
+                                                             [weakSelf removeTimeObserver:obs];
+                                                         }];
+                    [self play];
+                });
+                
+            } else{
+                [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
+                [weakSelf dismissAllSpinnersForView:weakPlayerView];
+                dispatch_async(dispatch_get_main_queue(), ^(void){
+                    //Run UI Updates
+                    [weakSelf songDidFinishPlaying:nil];  //triggers the next song to play (for whatever reason/error) in the correct direction
+                });
+            }
+        });
     }];
 }
 
@@ -249,6 +278,13 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
             [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
         return;
     }
+    if(secondsSinceWeCheckedInternet < 3){
+        secondsSinceWeCheckedInternet++;
+        return;
+    }
+    else
+        secondsSinceWeCheckedInternet = 0;
+    
     if(stallHasOccured && [MusicPlaybackController playbackExplicitlyPaused])
         return;
     
@@ -256,13 +292,6 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
     if (state == UIApplicationStateBackground || state == UIApplicationStateInactive){
         return;
     }
-    
-    if(secondsSinceWeCheckedInternet < 3){
-        secondsSinceWeCheckedInternet++;
-        return;
-    }
-    else
-        secondsSinceWeCheckedInternet = 0;
     
     if([self isInternetReachable]){
         if(![MusicPlaybackController isSimpleSpinnerOnScreen]){

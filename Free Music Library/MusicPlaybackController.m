@@ -22,22 +22,48 @@ static int numLongSongsSkipped = 0;
 
 + (void)resumePlayback
 {
-    [player play];
+    if([NSThread mainThread]){
+        [player play];
+    } else{
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            //Run UI Updates
+            [player play];
+        });
+    }
 }
 
 /** Playback will be paused immediately */
 + (void)pausePlayback
 {
-    [player pause];
+    if([NSThread mainThread]){
+        [player pause];
+    } else{
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            //Run UI Updates
+            [player pause];
+        });
+    }
 }
 
 /** Stop playback of current song/track, and begin playback of the next track */
 + (void)skipToNextTrack
 {
-    Song *skippedSong = [MusicPlaybackController nowPlayingSong];
-    Song *nextSong = [[MusicPlaybackController playbackQueue] skipForward];
-    nowPlayingObject.nowPlaying = nextSong;
-    [player startPlaybackOfSong:nextSong goingForward:YES oldSong:skippedSong];
+    if([NSThread mainThread]){
+        Song *skippedSong = [MusicPlaybackController nowPlayingSong];
+        Song *nextSong = [[MusicPlaybackController playbackQueue] skipForward];
+        nowPlayingObject.nowPlaying = nextSong;
+        [player startPlaybackOfSong:nextSong goingForward:YES oldSong:skippedSong];
+    } else{
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            //Run UI Updates
+            
+            Song *skippedSong = [MusicPlaybackController nowPlayingSong];
+            Song *nextSong = [[MusicPlaybackController playbackQueue] skipForward];
+            nowPlayingObject.nowPlaying = nextSong;
+            [player startPlaybackOfSong:nextSong goingForward:YES oldSong:skippedSong];
+        });
+    }
+
     //NOTE: YTVideoAvPlayer will automatically skip more songs if they cant be played
 }
 
@@ -45,24 +71,51 @@ static int numLongSongsSkipped = 0;
  (playing or paused) remains unaffected. */
 + (void)seekToVideoSecond:(NSNumber *)numAsSecond
 {
-    Song *currentSong = [MusicPlaybackController nowPlayingSong];
-    if([currentSong.duration integerValue] < [numAsSecond integerValue])
-        //setting to second before end to be safe
-        numAsSecond = [NSNumber numberWithInteger:[currentSong.duration integerValue] -1];
-    
-    AVPlayer *player = [self obtainRawAVPlayer];
-    Float64 seconds = [numAsSecond floatValue];
-    CMTime targetTime = CMTimeMakeWithSeconds(seconds, NSEC_PER_SEC);
-    [player seekToTime:targetTime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    if([NSThread mainThread]){
+        Song *currentSong = [MusicPlaybackController nowPlayingSong];
+        if([currentSong.duration integerValue] < [numAsSecond integerValue])
+            //setting to second before end to be safe
+            numAsSecond = [NSNumber numberWithInteger:[currentSong.duration integerValue] -1];
+        
+        AVPlayer *player = [self obtainRawAVPlayer];
+        Float64 seconds = [numAsSecond floatValue];
+        CMTime targetTime = CMTimeMakeWithSeconds(seconds, NSEC_PER_SEC);
+        [player seekToTime:targetTime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    } else{
+        __block NSNumber* numAsSecondBlock = numAsSecond;
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            //Run UI Updates
+            Song *currentSong = [MusicPlaybackController nowPlayingSong];
+            if([currentSong.duration integerValue] < [numAsSecond integerValue])
+                //setting to second before end to be safe
+                numAsSecondBlock = [NSNumber numberWithInteger:[currentSong.duration integerValue] -1];
+            
+            AVPlayer *player = [self obtainRawAVPlayer];
+            Float64 seconds = [numAsSecondBlock floatValue];
+            CMTime targetTime = CMTimeMakeWithSeconds(seconds, NSEC_PER_SEC);
+            [player seekToTime:targetTime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+        });
+    }
 }
 
 /** Stop playback of current song/track, and begin playback of previous track */
 + (void)returnToPreviousTrack
 {
-    Song *skippedSong = [MusicPlaybackController nowPlayingSong];
-    Song *previousSong = [[MusicPlaybackController playbackQueue] skipToPrevious];
-    nowPlayingObject.nowPlaying = previousSong;
-    [player startPlaybackOfSong:previousSong goingForward:NO oldSong:skippedSong];
+    if([NSThread mainThread]){
+        Song *skippedSong = [MusicPlaybackController nowPlayingSong];
+        Song *previousSong = [[MusicPlaybackController playbackQueue] skipToPrevious];
+        nowPlayingObject.nowPlaying = previousSong;
+        [player startPlaybackOfSong:previousSong goingForward:NO oldSong:skippedSong];
+    } else{
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            //Run UI Updates
+            Song *skippedSong = [MusicPlaybackController nowPlayingSong];
+            Song *previousSong = [[MusicPlaybackController playbackQueue] skipToPrevious];
+            nowPlayingObject.nowPlaying = previousSong;
+            [player startPlaybackOfSong:previousSong goingForward:NO oldSong:skippedSong];
+        });
+    }
+
     //NOTE: YTVideoAvPlayer will automatically rewind further back in the queue if some songs cant be played
 }
 
@@ -193,7 +246,7 @@ static int numLongSongsSkipped = 0;
     BOOL playerEnabled = [SongPlayerCoordinator isPlayerEnabled];
     
     //selected song is already playing...
-    if([nowPlayingObject isEqual:[MusicPlaybackController nowPlayingSong]] && playerEnabled){
+    if([nowPlayingObject isEqual:song] && playerEnabled){
         //ignore new queue request, SongPlayerViewController will will be unaffected by this...
         return;
     }
@@ -237,7 +290,9 @@ static int numLongSongsSkipped = 0;
         case 240:
         {
             url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualitySmall240]];
-            if(url == nil)
+            if(url != nil)
+                return url;
+            else if(url == nil)
                 url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityMedium360]];
             else if(url == nil)
                 url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityHD720]];
@@ -246,7 +301,9 @@ static int numLongSongsSkipped = 0;
         case 360:
         {
             url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityMedium360]];
-            if(url == nil)
+            if(url != nil)
+                return url;
+            else if(url == nil)
                 url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualitySmall240]];
             else if(url == nil)
                 url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityHD720]];
@@ -255,7 +312,9 @@ static int numLongSongsSkipped = 0;
         case 720:
         {
             url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityHD720]];
-            if(url == nil)
+            if(url != nil)
+                return url;
+            else if(url == nil)
                 url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityMedium360]];
             else if(url == nil)
                 url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualitySmall240]];
