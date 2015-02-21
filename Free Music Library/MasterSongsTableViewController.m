@@ -233,7 +233,7 @@ static BOOL haveCheckedCoreDataInit = NO;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
+    self.contentType = MZContentSongs;
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
 }
@@ -245,6 +245,7 @@ static BOOL haveCheckedCoreDataInit = NO;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
     [self setTableForCoreDataView:self.tableView];
+    self.contentType = MZContentUnspecified;
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
@@ -359,7 +360,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    if([[MusicPlaybackController nowPlayingSong].song_id isEqual:song.song_id])
+    if([[MusicPlaybackController nowPlayingSongObject] isEqual:song])
         cell.textLabel.textColor = [UIColor defaultAppColorScheme];
     else
         cell.textLabel.textColor = [UIColor blackColor];

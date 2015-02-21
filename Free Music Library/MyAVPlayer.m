@@ -17,11 +17,11 @@
     int secondsSinceWeCheckedInternet;
     BOOL allowSongDidFinishToExecute;
     BOOL canPostLastSongNotification;
+    BOOL playbackStarted;
     
     BOOL stallHasOccured;
     NSUInteger secondsLoaded;
     
-    NSString *NEW_SONG_IN_AVPLAYER;
     NSString *AVPLAYER_DONE_PLAYING;  //queue has finished
     NSString *CURRENT_SONG_DONE_PLAYING;
     NSString * CURRENT_SONG_STOPPED_PLAYBACK;
@@ -36,7 +36,6 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
 - (id)init
 {
     if(self = [super init]){
-        NEW_SONG_IN_AVPLAYER = @"New song added to AVPlayer, lets hope the interface makes appropriate changes.";
         AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
         CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update gui please!";
         CURRENT_SONG_STOPPED_PLAYBACK = @"playback has stopped for some unknown reason (stall?)";
@@ -63,15 +62,16 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)forward
+- (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)forward oldSong:(Song *)oldSong
 {
     [MusicPlaybackController printQueueContents];
     
     if(aSong != nil){
         movingForward = forward;
-        [[NSNotificationCenter defaultCenter] postNotificationName:NEW_SONG_IN_AVPLAYER
-                                                            object:[MusicPlaybackController nowPlayingSong]];
+        playbackStarted = NO;
         [self playSong:aSong];
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
+                                                            object:oldSong];
     } else{
         if([MusicPlaybackController numMoreSongsInQueue] == 0)
             canPostLastSongNotification = YES;
@@ -136,7 +136,6 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
     BOOL usingWifi = NO;
     BOOL allowedToPlayVideo = YES;  //not checking if we can physically play, but legally (Apple's 10 minute streaming rule)
     
-    [MusicPlaybackController declareInternetProblemWhenLoadingSong:NO];
     NetworkStatus status = [reachability currentReachabilityStatus];
     if (status == ReachableViaWiFi)
         usingWifi = YES;
@@ -148,7 +147,6 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
     } else if(! usingWifi && status == NotReachable){
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
         [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
-        [MusicPlaybackController declareInternetProblemWhenLoadingSong:YES];
         [MusicPlaybackController playbackExplicitlyPaused];
         [MusicPlaybackController pausePlayback];
     }
@@ -185,12 +183,10 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
             allowSongDidFinishToExecute = YES;
             if (internetStatus == NotReachable){
                 [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
-                [MusicPlaybackController declareInternetProblemWhenLoadingSong:YES];
                 [MusicPlaybackController playbackExplicitlyPaused];
                 [MusicPlaybackController pausePlayback];
                 return;
             } else{
-                [MusicPlaybackController declareInternetProblemWhenLoadingSong:NO];
                 //video may no longer exist, or the internet connection is very weak
                 [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotLoadVideo];
                 [MusicPlaybackController skipToNextTrack];
@@ -223,7 +219,7 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
                                              usingBlock:^{
                                                  //playback was successful, reset the direction of the queue
                                                  movingForward = YES;
-                                                 
+                                                 playbackStarted = YES;
                                                  [weakSelf dismissAllSpinnersForView:weakPlayerView];
                                                  // Raise a notificaiton when playback has started
                                                  [[NSNotificationCenter defaultCenter]
@@ -237,8 +233,6 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
             [self play];
             
         } else{
-            if([MusicPlaybackController didPlaybackStopDueToInternetProblemLoadingSong])  //if so, don't do anything...
-                return;
             
             [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
             [weakSelf dismissAllSpinnersForView:weakPlayerView];
@@ -250,7 +244,7 @@ static void *mloadedTimeRanges = &mloadedTimeRanges;
 
 - (void)checkInternetStatus
 {
-    if(! stallHasOccured){
+    if(! stallHasOccured && playbackStarted){
         if([MusicPlaybackController isSimpleSpinnerOnScreen])
             [self dismissAllSpinnersForView:[MusicPlaybackController obtainRawPlayerView]];
         return;

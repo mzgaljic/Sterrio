@@ -39,6 +39,7 @@
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
     [self setTableForCoreDataView:self.tableView];
+    self.contentType = MZContentUnspecified;
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
@@ -72,7 +73,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
+    self.contentType = MZContentPlaylists;
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
 }
@@ -131,8 +132,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-#warning incomplete check. Should check if the now playing song was INITIATED from a playlist to begin with so this is accurate.
-    if([[MusicPlaybackController nowPlayingSong].song_id isEqual:song.song_id])
+    if([[MusicPlaybackController nowPlayingSongObject] isEqual:song])
         cell.textLabel.textColor = [UIColor defaultAppColorScheme];
     else
         cell.textLabel.textColor = [UIColor blackColor];

@@ -140,7 +140,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 {
     //animate player back from snapshot
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    float animationDuration = 0.75f;
+    float animationDuration = 0.68f;
     [UIView animateWithDuration:animationDuration animations:^{
         playerSnapshot.alpha = 0.0;
     }];
@@ -186,12 +186,8 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
             if([AppEnvironmentConstants isUserPreviewingAVideo])
                [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerTogglePlayPause object:nil];
             else if([player rate] == 0){
-                if([MusicPlaybackController didPlaybackStopDueToInternetProblemLoadingSong]){
-                    [player startPlaybackOfSong:[MusicPlaybackController nowPlayingSong] goingForward:YES];
-                } else{
-                    [MusicPlaybackController explicitlyPausePlayback:NO];
-                    [player play];
-                }
+                [MusicPlaybackController explicitlyPausePlayback:NO];
+                [player play];
             }else{
                 [MusicPlaybackController explicitlyPausePlayback:YES];
                 [player pause];
@@ -201,9 +197,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         case UIEventSubtypeRemoteControlPlay:
             if([AppEnvironmentConstants isUserPreviewingAVideo])
                 [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay object:nil];
-            else if([MusicPlaybackController didPlaybackStopDueToInternetProblemLoadingSong]){
-                [player startPlaybackOfSong:[MusicPlaybackController nowPlayingSong] goingForward:YES];
-            } else{
+            else{
                 [MusicPlaybackController explicitlyPausePlayback:NO];
                 [player play];
             }

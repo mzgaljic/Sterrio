@@ -11,6 +11,15 @@
 #import "CoreDataManager.h"
 #import "UIColor+LighterAndDarker.h"
 #import "MySearchBar.h"
+#import "MusicPlaybackController.h"
+
+typedef enum{
+    MZContentSongs,
+    MZContentAlbums,
+    MZContentArtists,
+    MZContentPlaylists,
+    MZContentUnspecified
+} MZConentIAmDisplaying;
 
 @interface CoreDataCustomTableViewController : UIViewController <NSFetchedResultsControllerDelegate,
                                                                 UITableViewDelegate>
@@ -18,7 +27,8 @@
 //The controller (this class fetches nothing if it is not set).
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSFetchedResultsController *searchFetchedResultsController;
-@property (nonatomic) BOOL displaySearchResults;
+@property (nonatomic, assign) BOOL displaySearchResults;
+@property (nonatomic, assign) MZConentIAmDisplaying contentType;
 
 // Causes the fetchedResultsController to refresh the data.
 // You almost certainly never need to call this.

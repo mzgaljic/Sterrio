@@ -53,7 +53,6 @@ static const short longDurationLabelOffset = 24;
 static int numTimesSetupKeyValueObservers = 0;
 const CGFloat observationsPerSecond = 15.0f;  //for timeObserver var
 
-NSString * const NEW_SONG_IN_AVPLAYER = @"New song added to AVPlayer, lets hope the interface makes appropriate changes.";
 NSString * const AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
 NSString * const CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update gui please!";
 NSString * const CURRENT_SONG_STOPPED_PLAYBACK = @"playback has stopped for some unknown reason (stall?)";
@@ -112,7 +111,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     //these two observers help us know when this VC must update its GUI due to a new song playing, etc.
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(updateScreenWithInfoForNewSong:)
-                                                 name:NEW_SONG_IN_AVPLAYER
+                                                 name:MZNewSongLoading
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(lastSongHasFinishedPlayback:)
@@ -160,7 +159,7 @@ static int numTimesVCLoaded = 0;
          [[SongPlayerCoordinator sharedInstance] begingExpandingVideoPlayer];  //sets up the player only once
         
         MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-        [player startPlaybackOfSong:nowPlaying goingForward:YES];
+        [player startPlaybackOfSong:nowPlaying goingForward:YES oldSong:nil];
         //avplayer will control itself for the most part now...
     }
     numTimesVCLoaded++;

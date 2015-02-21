@@ -18,6 +18,6 @@
 
 @interface MyAVPlayer : AVPlayer
 
-- (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)yes;
+- (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)yes oldSong:(Song *)oldSong;
 
 @end

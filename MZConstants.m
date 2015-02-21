@@ -18,6 +18,8 @@ NSString * const MZPreviewPlayerPlay = @"playVideoPreviewPlayer";
 NSString * const MZPreviewPlayerPause = @"pauseVideoPreviewPlayer";
 NSString * const MZAppWasBackgrounded = @"appEnteredBackgroundState";
 
+NSString * const MZNewSongLoading = @"AVPlayer will try to load a new song now";
+
 NSString * const MZKeyNumLikes = @"numLikes";
 NSString * const MZKeyNumDislikes = @"numDislikes";
 NSString * const MZKeyVideoDuration = @"videoDuration";

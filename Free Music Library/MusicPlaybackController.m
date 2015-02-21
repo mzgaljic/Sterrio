@@ -10,9 +10,9 @@
 static MyAVPlayer *player = nil;
 static PlayerView *playerView = nil;
 static PlaybackQueue *playbackQueue = nil;  //DO NOT access directly! getter below
+static NowPlaying *nowPlayingObject;
 static BOOL explicitlyPausePlayback = NO;
 static BOOL initialized = NO;
-static BOOL internetProblemLoadingSong = NO;
 static BOOL simpleSpinnerOnScreen = NO;
 static BOOL internetConnectionSpinnerOnScreen = NO;
 static BOOL isPlayerStalled = NO;
@@ -34,8 +34,10 @@ static int numLongSongsSkipped = 0;
 /** Stop playback of current song/track, and begin playback of the next track */
 + (void)skipToNextTrack
 {
+    Song *skippedSong = [MusicPlaybackController nowPlayingSong];
     Song *nextSong = [[MusicPlaybackController playbackQueue] skipForward];
-    [player startPlaybackOfSong:nextSong goingForward:YES];
+    nowPlayingObject.nowPlaying = nextSong;
+    [player startPlaybackOfSong:nextSong goingForward:YES oldSong:skippedSong];
     //NOTE: YTVideoAvPlayer will automatically skip more songs if they cant be played
 }
 
@@ -57,9 +59,10 @@ static int numLongSongsSkipped = 0;
 /** Stop playback of current song/track, and begin playback of previous track */
 + (void)returnToPreviousTrack
 {
+    Song *skippedSong = [MusicPlaybackController nowPlayingSong];
     Song *previousSong = [[MusicPlaybackController playbackQueue] skipToPrevious];
-    
-    [player startPlaybackOfSong:previousSong goingForward:NO];
+    nowPlayingObject.nowPlaying = previousSong;
+    [player startPlaybackOfSong:previousSong goingForward:NO oldSong:skippedSong];
     //NOTE: YTVideoAvPlayer will automatically rewind further back in the queue if some songs cant be played
 }
 
@@ -125,16 +128,6 @@ static int numLongSongsSkipped = 0;
     [MusicPlaybackController printQueueContents];
 }
 
-+ (void)declareInternetProblemWhenLoadingSong:(BOOL)declare
-{
-    internetProblemLoadingSong = declare;
-}
-
-+ (BOOL)didPlaybackStopDueToInternetProblemLoadingSong
-{
-    return internetProblemLoadingSong;
-}
-
 #pragma mark - Gathering playback info
 + (NSArray *)listOfUpcomingSongsInQueue
 {
@@ -184,6 +177,11 @@ static int numLongSongsSkipped = 0;
     return [[MusicPlaybackController playbackQueue] nowPlaying];
 }
 
++ (NowPlaying *)nowPlayingSongObject
+{
+    return nowPlayingObject;
+}
+
 + (void)newQueueWithSong:(Song *)song
                    album:(Album *)album
                   artist:(Artist *)artist
@@ -191,10 +189,11 @@ static int numLongSongsSkipped = 0;
                genreCode:(int)code
          skipCurrentSong:(BOOL)skipNow;
 {
+    Song *originalSong = [MusicPlaybackController nowPlayingSong];
     BOOL playerEnabled = [SongPlayerCoordinator isPlayerEnabled];
     
     //selected song is already playing...
-    if([[MusicPlaybackController nowPlayingSong].song_id isEqual:song.song_id] && playerEnabled){
+    if([nowPlayingObject isEqual:[MusicPlaybackController nowPlayingSong]] && playerEnabled){
         //ignore new queue request, SongPlayerViewController will will be unaffected by this...
         return;
     }
@@ -203,14 +202,18 @@ static int numLongSongsSkipped = 0;
         [[MusicPlaybackController playbackQueue] clearQueue];
         //current song should be skipped! ...stopping playback
         [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
-        //if the above line crashes, just pause the player instead.
     }
     NSArray *songsForQueue = [MusicPlaybackController songArrayGivenSong:song album:album artist:artist playlist:playlist genreCode:code];
     [[MusicPlaybackController playbackQueue] insertSongsAfterNowPlaying:songsForQueue];
     [playbackQueue setNowPlayingIndexWithSong:song];
     
+    NowPlaying *nowPlaying = [NowPlaying sharedInstance];
+    if(nowPlayingObject == nil)
+        nowPlayingObject = nowPlaying;
+    [nowPlaying setNewNowPlayingSong:song fromArtist:artist fromAlbum:album fromPlaylist:playlist];
+    
     //start playback with the song that was tapped
-    [player startPlaybackOfSong:song goingForward:YES];
+    [player startPlaybackOfSong:song goingForward:YES oldSong:originalSong];
 }
 
 #pragma mark - Playback status

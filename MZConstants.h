@@ -18,6 +18,8 @@ extern NSString * const MZPreviewPlayerPlay;
 extern NSString * const MZPreviewPlayerPause;
 extern NSString * const MZAppWasBackgrounded;
 
+extern NSString * const MZNewSongLoading;
+
 extern NSString * const MZKeyNumLikes;
 extern NSString * const MZKeyNumDislikes;
 extern NSString * const MZKeyVideoDuration;

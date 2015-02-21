@@ -16,6 +16,7 @@
 #import "PlaybackQueue.h"
 #import "MyAVPlayer.h"  //custom AVPlayer class
 #import "GenreConstants.h"
+#import "NowPlaying.h"
 @class PlayerView;  //import doesnt work here
 
 @interface MusicPlaybackController : NSObject
@@ -37,10 +38,6 @@
  in the application should call this method as a "heads up" to avoid potential problems. **/
 + (void)groupOfSongsAboutToBeDeleted:(NSArray *)songs;
 
-+ (void)declareInternetProblemWhenLoadingSong:(BOOL)declare;
-
-+ (BOOL)didPlaybackStopDueToInternetProblemLoadingSong;
-
 /** Stop playback of current song/track, and begin playback of the next track */
 + (void)skipToNextTrack;
 
@@ -55,6 +52,7 @@
 
 #pragma mark - Now Playing Song
 + (Song *)nowPlayingSong;
++ (NowPlaying *)nowPlayingSongObject;
 
 #pragma mark + Gathering playback info
 + (NSArray *)listOfUpcomingSongsInQueue;

@@ -141,7 +141,6 @@
                                              selector:@selector(lockscreenTogglePlayPause)
                                                  name:MZPreviewPlayerTogglePlayPause
                                                object:nil];
-    [self setViewFrameBasedOnOrientation:[UIApplication sharedApplication].statusBarOrientation];
 }
 
 static short numberTimesViewHasBeenShown = 0;
@@ -177,10 +176,8 @@ static short numberTimesViewHasBeenShown = 0;
         [self checkCurrentPlaybackState];
     }
     if(numberTimesViewHasBeenShown == 0){
-        //makes the tableview start AT the nav bar, not behind it.
-        UIEdgeInsets inset = UIEdgeInsetsMake([AppEnvironmentConstants statusBarHeight], 0, 0, 0);
-        self.tableView.contentInset = inset;
-        self.tableView.scrollIndicatorInsets = inset;
+        //makes the tableview start below the nav bar, not behind it.
+        [self setViewFrameBasedOnOrientation:[UIApplication sharedApplication].statusBarOrientation];
     }
     numberTimesViewHasBeenShown++;
     
@@ -330,7 +327,7 @@ static short numberTimesViewHasBeenShown = 0;
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeRight || orientation == UIInterfaceOrientationLandscapeLeft){
         frameWidth = heightOfScreenRotationIndependant;
-        frameHeight = widthOfScreenRoationIndependant * (1/2.0);
+        frameHeight = widthOfScreenRoationIndependant * (2/3.0);
     } else{
         frameWidth = widthOfScreenRoationIndependant;
         frameHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:frameWidth];
@@ -349,7 +346,7 @@ static short numberTimesViewHasBeenShown = 0;
     
     if(! playbackBegan)
         [MRProgressOverlayView showOverlayAddedTo:self.tableView.tableHeaderView
-                                            title:@""
+                                            title:@"Loading preview"
                                              mode:MRProgressOverlayViewModeIndeterminateSmall
                                          animated:YES];
 }
@@ -372,7 +369,7 @@ static short numberTimesViewHasBeenShown = 0;
 
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeRight || orientation == UIInterfaceOrientationLandscapeLeft){
-        frameWidth = heightOfScreenRotationIndependant * (3/4.0);
+        frameWidth = heightOfScreenRotationIndependant * (2/3.0);
         frameHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:frameWidth];
     } else{
         frameWidth = widthOfScreenRoationIndependant;
@@ -383,12 +380,12 @@ static short numberTimesViewHasBeenShown = 0;
     UIView *placeHolderView = [[UIView alloc] initWithFrame:CGRectMake(0, offset, frameWidth, frameHeight)];
     [placeHolderView setBackgroundColor:[UIColor colorWithPatternImage:
                                          [UIImage imageWithColor:[UIColor clearColor] width:placeHolderView.frame.size.width height:placeHolderView.frame.size.height]]];
+    self.tableView.tableHeaderView = placeHolderView;
     
-    [MRProgressOverlayView showOverlayAddedTo:placeHolderView
-                                        title:@""
+    [MRProgressOverlayView showOverlayAddedTo:self.tableView.tableHeaderView
+                                        title:@"Loading preview"
                                          mode:MRProgressOverlayViewModeIndeterminateSmall
                                      animated:YES];
-    self.tableView.tableHeaderView = placeHolderView;
 }
 
 #pragma mark - Responding to video player events
@@ -552,8 +549,6 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    
-    [self setViewFrameBasedOnOrientation:toInterfaceOrientation];
 }
 
 - (BOOL)prefersStatusBarHidden
@@ -569,19 +564,24 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
 
 - (void)setViewFrameBasedOnOrientation:(UIInterfaceOrientation)orientation
 {
+    //this method is called only once each time this view is instantiated. setting tableview
+    //inset based on the orientation this viewcontroller was "opened" in.
+    int navBarHeight = self.navigationController.navigationBar.frame.size.height;
+    int offset;
     if(orientation == UIInterfaceOrientationLandscapeLeft ||
        orientation == UIInterfaceOrientationLandscapeRight){
-#warning fix issue here.
-        [self.view setFrame:CGRectMake(0,
-                                       -100,
-                                       self.view.frame.size.width,
-                                       self.view.frame.size.height)];
+        offset = navBarHeight;
+        UIEdgeInsets inset = UIEdgeInsetsMake(offset, 0, 0, 0);
+        self.tableView.contentInset = inset;
+        self.tableView.scrollIndicatorInsets = inset;
+        
+        //for some reason in landscape the tableview is not scrolled to the top by default. doing this manually...
+        [self.tableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
     } else{
-        int offset = [AppEnvironmentConstants navBarHeight];
-        self.view.frame = CGRectMake(0,
-                                     offset,
-                                     self.view.frame.size.width,
-                                     self.view.frame.size.height);
+        offset = navBarHeight + [AppEnvironmentConstants statusBarHeight];
+        UIEdgeInsets inset = UIEdgeInsetsMake(offset, 0, 0, 0);
+        self.tableView.contentInset = inset;
+        self.tableView.scrollIndicatorInsets = inset;
     }
 }
 

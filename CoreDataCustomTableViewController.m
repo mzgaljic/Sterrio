@@ -261,11 +261,14 @@
                                              selector:@selector(settingsPossiblyChanged)
                                                  name:MZUserFinishedWithReviewingSettings
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(nowPlayingSongsHasChanged:)
+                                                 name:MZNewSongLoading
+                                               object:nil];
 }
 
 - (void)settingsPossiblyChanged
 {
-    //this isnt a constant because it is very rarely used.
     [tableView beginUpdates];
     [tableView deleteSections:[NSIndexSet indexSetWithIndex:0]
              withRowAnimation:UITableViewRowAnimationFade];
@@ -274,6 +277,80 @@
     [tableView endUpdates];
     [tableView layoutMargins];
     [searchBar updateFontSizeIfNecessary];
+}
+
+- (void)nowPlayingSongsHasChanged:(NSNotification *)notification
+{
+    if ([[notification name] isEqualToString:MZNewSongLoading]){
+        if([NSThread isMainThread]){
+            [self performSelectorOnMainThread:@selector(reflectNowPlayingChangesInTableview:)
+                                   withObject:notification
+                                waitUntilDone:YES];
+        } else{
+            [self performSelectorOnMainThread:@selector(reflectNowPlayingChangesInTableview:)
+                                   withObject:notification
+                                waitUntilDone:NO];
+        }
+    }
+}
+
+- (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification
+{
+    Song *songToReplace = (Song *)[notification object];
+    NowPlaying *nowPlaying = [MusicPlaybackController nowPlayingSongObject];
+    Song *newSong = nowPlaying.nowPlaying;
+    NSIndexPath *oldPath, *newPath;
+    
+    if(self.contentType == MZContentUnspecified)
+        return;
+    else if(self.contentType == MZContentSongs){
+        if(nowPlaying.originatingAlbum == nil &&
+           nowPlaying.originatingArtist == nil &&
+           nowPlaying.originatingPlaylist == nil){
+            //found song tab origin match
+            oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
+            newPath = [self.fetchedResultsController indexPathForObject:newSong];
+        }
+        else return;
+    } else if(self.contentType == MZContentAlbums){
+        if(nowPlaying.originatingAlbum != nil &&
+           nowPlaying.originatingArtist == nil &&
+           nowPlaying.originatingPlaylist == nil){
+            //found album tab origin match
+            oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
+            newPath = [self.fetchedResultsController indexPathForObject:newSong];
+        }
+        else return;
+    } else if(self.contentType == MZContentArtists){
+        if(nowPlaying.originatingAlbum == nil &&
+           nowPlaying.originatingArtist != nil &&
+           nowPlaying.originatingPlaylist == nil){
+            //found album tab origin match
+            oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
+            newPath = [self.fetchedResultsController indexPathForObject:newSong];
+        }
+        else return;
+    } else if(self.contentType == MZContentPlaylists){
+        if(nowPlaying.originatingAlbum == nil &&
+           nowPlaying.originatingArtist == nil &&
+           nowPlaying.originatingPlaylist != nil){
+            //found album tab origin match
+            oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
+            newPath = [self.fetchedResultsController indexPathForObject:newSong];
+        }
+        else return;
+    }
+    
+    if(oldPath || newPath){
+        [tableView beginUpdates];
+        if(oldPath)
+            [tableView reloadRowsAtIndexPaths:@[oldPath]
+                             withRowAnimation:UITableViewRowAnimationFade];
+        if(newPath)
+            [tableView reloadRowsAtIndexPaths:@[newPath]
+                             withRowAnimation:UITableViewRowAnimationFade];
+        [tableView endUpdates];
+    }
 }
 
 @end

@@ -21,7 +21,8 @@
 @synthesize delegate = _delegate;
 static BOOL isVideoPlayerExpanded;
 static BOOL playerIsOnScreen;
-float const disabledPlayerAlpa = 0.25;
+static BOOL isPlayerEnabled;
+float const disabledPlayerAlpa = 0.20;
 
 #pragma mark - Class lifecycle stuff
 + (instancetype)sharedInstance
@@ -37,6 +38,7 @@ float const disabledPlayerAlpa = 0.25;
 - (id)init
 {
     if([super init]){
+        isPlayerEnabled = YES;
         UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
         if([MusicPlaybackController obtainRawPlayerView].frame.size.width == [appWindow bounds].size.width)
             isVideoPlayerExpanded = YES;
@@ -298,6 +300,7 @@ float const disabledPlayerAlpa = 0.25;
 
 - (void)temporarilyDisablePlayer
 {
+    isPlayerEnabled = NO;
     __weak PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     [UIView animateWithDuration:1.0 animations:^{
         playerView.alpha = disabledPlayerAlpa;
@@ -307,6 +310,7 @@ float const disabledPlayerAlpa = 0.25;
 
 - (void)enablePlayerAgain
 {
+    isPlayerEnabled = YES;
     __weak PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     [UIView animateWithDuration:1.0 animations:^{
         playerView.alpha = 1.0;
@@ -316,7 +320,7 @@ float const disabledPlayerAlpa = 0.25;
 
 + (BOOL)isPlayerEnabled
 {
-    return ([MusicPlaybackController obtainRawPlayerView].alpha == 1) ? YES : NO;
+    return isPlayerEnabled;
 }
 
 + (float)alphaValueForDisabledPlayer

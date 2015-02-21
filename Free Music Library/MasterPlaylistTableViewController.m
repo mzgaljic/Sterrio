@@ -228,6 +228,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    self.contentType = MZContentPlaylists;
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
 }
@@ -239,6 +240,7 @@
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
     [self setTableForCoreDataView:self.tableView];
+    self.contentType = MZContentUnspecified;
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
