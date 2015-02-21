@@ -140,7 +140,7 @@ static const short NORMAL_PLAYLIST = -1;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+    self.playbackContext = SongPlaybackContextSongs;
     _songsSelected = [NSMutableArray array];
     [self setUpSearchBar];
     
@@ -178,7 +178,7 @@ static const short NORMAL_PLAYLIST = -1;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
     [self setTableForCoreDataView:self.tableView];
-    self.contentType = MZContentUnspecified;
+    self.playbackContext = SongPlaybackContextUnspecified;
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
@@ -192,7 +192,6 @@ static const short NORMAL_PLAYLIST = -1;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    self.contentType = MZContentSongs;
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
 }

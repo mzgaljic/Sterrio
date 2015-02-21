@@ -301,46 +301,42 @@
     Song *newSong = nowPlaying.nowPlaying;
     NSIndexPath *oldPath, *newPath;
     
-    if(self.contentType == MZContentUnspecified)
+    if(self.playbackContext == SongPlaybackContextUnspecified)
         return;
-    else if(self.contentType == MZContentSongs){
-        if(nowPlaying.originatingAlbum == nil &&
-           nowPlaying.originatingArtist == nil &&
-           nowPlaying.originatingPlaylist == nil){
-            //found song tab origin match
-            oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
-            newPath = [self.fetchedResultsController indexPathForObject:newSong];
-        }
-        else return;
-    } else if(self.contentType == MZContentAlbums){
-        if(nowPlaying.originatingAlbum != nil &&
-           nowPlaying.originatingArtist == nil &&
-           nowPlaying.originatingPlaylist == nil){
+    else if(self.playbackContext == SongPlaybackContextSongs
+            && nowPlaying.context == SongPlaybackContextSongs){
+        //found song tab origin match
+        oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
+        newPath = [self.fetchedResultsController indexPathForObject:newSong];
+        
+    }else if(self.playbackContext == SongPlaybackContextAlbums
+             && nowPlaying.context == SongPlaybackContextAlbums){
             //found album tab origin match
             oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
             newPath = [self.fetchedResultsController indexPathForObject:newSong];
-        }
-        else return;
-    } else if(self.contentType == MZContentArtists){
-        if(nowPlaying.originatingAlbum == nil &&
-           nowPlaying.originatingArtist != nil &&
-           nowPlaying.originatingPlaylist == nil){
-            //found album tab origin match
+        
+    } else if(self.playbackContext == SongPlaybackContextArtists
+              && nowPlaying.context == SongPlaybackContextArtists){
+            //found artist tab origin match
             oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
             newPath = [self.fetchedResultsController indexPathForObject:newSong];
-        }
-        else return;
-    } else if(self.contentType == MZContentPlaylists){
-        if(nowPlaying.originatingAlbum == nil &&
-           nowPlaying.originatingArtist == nil &&
-           nowPlaying.originatingPlaylist != nil){
-            //found album tab origin match
+        
+    } else if(self.playbackContext == SongPlaybackContextPlaylists
+              && nowPlaying.context == SongPlaybackContextPlaylists){
+            //found playlist tab origin match
             oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
             newPath = [self.fetchedResultsController indexPathForObject:newSong];
-        }
-        else return;
-    }
+        
+    } else return;  //this else should theoretically never happen.
     
+    if([oldPath isEqual:newPath]){  //user is playing the same song but from a new context
+        [tableView beginUpdates];
+        [tableView reloadRowsAtIndexPaths:@[newPath]
+                             withRowAnimation:UITableViewRowAnimationFade];
+        [tableView endUpdates];
+
+        return;
+    }
     if(oldPath || newPath){
         [tableView beginUpdates];
         if(oldPath)

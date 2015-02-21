@@ -207,8 +207,8 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    self.playbackContext = SongPlaybackContextPlaylists;
     [self setUpSearchBar];
-    
     if([self numberOfPlaylistsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
         self.tableView.tableHeaderView = nil;
@@ -228,7 +228,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    self.contentType = MZContentPlaylists;
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
 }
@@ -240,7 +239,7 @@
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
     [self setTableForCoreDataView:self.tableView];
-    self.contentType = MZContentUnspecified;
+    self.playbackContext = SongPlaybackContextUnspecified;
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];

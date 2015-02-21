@@ -24,8 +24,6 @@
 {
     if([super init]){
         self.nowPlaying = nil;
-        self.originatingArtist = nil;
-        self.originatingPlaylist = nil;
     }
     return self;
 }
@@ -34,39 +32,17 @@
 //the song was selected from an artist, album, or playlist, then the appropriate parameter
 //will be non-nil.
 - (void)setNewNowPlayingSong:(Song *)newSong
-                  fromArtist:(Artist *)artist
-                   fromAlbum:(Album *)album
-                fromPlaylist:(Playlist *)playlist
+                 WithContext:(SongPlaybackContext)context
 {
     self.nowPlaying = newSong;
-    self.originatingArtist = artist;
-    self.originatingAlbum = album;
-    self.originatingPlaylist = playlist;
+    self.context = context;
 }
 
-- (BOOL)isEqual:(Song *)aSong
+- (BOOL)isEqual:(Song *)aSong context:(SongPlaybackContext)context
 {
-    if([self.nowPlaying.song_id isEqualToString:aSong.song_id]){
-        //now check if the songs originate from the same source (album, playlist, etc)
-        if([self.originatingArtist.artist_id isEqualToString:aSong.artist.artist_id]){
-            return YES;
-        }
-        if([self.originatingAlbum.album_id isEqualToString:aSong.album.album_id]){
-            return YES;
-        }
-        
-        if(self.originatingPlaylist.playlist_id){
-            NSSet *playlists = [aSong playlistIAmIn];
-            NSArray *playlistArray = [playlists allObjects];
-            for(Playlist *somePlaylist in playlistArray) {
-                if([somePlaylist.playlist_id isEqualToString:self.originatingPlaylist.playlist_id])
-                    return YES;
-            }
-        }
-        //if none of the above conditions were met than it must have been from the songs tab.
-        return YES;
-    }
-    return NO;
+    BOOL sameSongIDs = [self.nowPlaying.song_id isEqualToString:aSong.song_id];
+    BOOL sameContexts = (self.context == context);
+    return sameSongIDs && sameContexts;
 }
 
 @end

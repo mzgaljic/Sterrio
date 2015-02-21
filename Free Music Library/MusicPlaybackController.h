@@ -63,10 +63,8 @@
 
 #pragma mark + Changing the Queue
 + (void)newQueueWithSong:(Song *)song
-                   album:(Album *)album
-                  artist:(Artist *)artist
-                playlist:(Playlist *)playlist
-               genreCode:(int)code
+             withContext:(SongPlaybackContext)context
+        optionalPlaylist:(Playlist *)playlist
          skipCurrentSong:(BOOL)skipNow;
 
 #pragma mark - Playback status

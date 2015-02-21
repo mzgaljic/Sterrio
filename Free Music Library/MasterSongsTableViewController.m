@@ -213,8 +213,8 @@ static BOOL haveCheckedCoreDataInit = NO;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    self.playbackContext = SongPlaybackContextSongs;
     [self setUpSearchBar];
-    
     if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
         self.tableView.tableHeaderView = nil;
@@ -233,7 +233,6 @@ static BOOL haveCheckedCoreDataInit = NO;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    self.contentType = MZContentSongs;
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
 }
@@ -245,7 +244,7 @@ static BOOL haveCheckedCoreDataInit = NO;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
     [self setTableForCoreDataView:self.tableView];
-    self.contentType = MZContentUnspecified;
+    self.playbackContext = SongPlaybackContextUnspecified;
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
@@ -360,7 +359,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    if([[MusicPlaybackController nowPlayingSongObject] isEqual:song])
+    if([[MusicPlaybackController nowPlayingSongObject] isEqual:song context:self.playbackContext])
         cell.textLabel.textColor = [UIColor defaultAppColorScheme];
     else
         cell.textLabel.textColor = [UIColor blackColor];
@@ -466,7 +465,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     if([self.editButton.title isEqualToString:@"Edit"]){  //tapping song plays the song
         short code = [GenreConstants noGenreSelectedGenreCode];
-        [MusicPlaybackController newQueueWithSong:selectedSong album:nil artist:nil playlist:nil genreCode:code skipCurrentSong:YES];
+        [MusicPlaybackController newQueueWithSong:selectedSong
+                                      withContext:SongPlaybackContextSongs
+                                 optionalPlaylist:nil
+                                  skipCurrentSong:YES];
         [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:self];
         
     } else if([self.editButton.title isEqualToString:@"Done"]){  //tapping song triggers edit segue

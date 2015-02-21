@@ -193,8 +193,8 @@ static BOOL PRODUCTION_MODE;
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    self.playbackContext = SongPlaybackContextAlbums;
     [self setUpSearchBar];
-    
     if([self numberOfAlbumsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
         self.tableView.tableHeaderView = nil;
@@ -213,7 +213,6 @@ static BOOL PRODUCTION_MODE;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    self.contentType = MZContentAlbums;
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
 }
@@ -225,7 +224,7 @@ static BOOL PRODUCTION_MODE;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
     [self setTableForCoreDataView:self.tableView];
-    self.contentType = MZContentUnspecified;
+    self.playbackContext = SongPlaybackContextUnspecified;
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];

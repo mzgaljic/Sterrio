@@ -39,7 +39,7 @@
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
     [self setTableForCoreDataView:self.tableView];
-    self.contentType = MZContentUnspecified;
+    self.playbackContext = SongPlaybackContextUnspecified;
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
@@ -51,7 +51,7 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
+    self.playbackContext = SongPlaybackContextPlaylists;
     _numSongsNotAddedYet = (int)([self numberOfSongsInCoreDataModel] - _playlist.playlistSongs.count);
     _lastTableViewModelCount = (int)_playlist.playlistSongs.count;
     
@@ -73,7 +73,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    self.contentType = MZContentPlaylists;
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
 }
@@ -132,7 +131,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    if([[MusicPlaybackController nowPlayingSongObject] isEqual:song])
+    if([[MusicPlaybackController nowPlayingSongObject] isEqual:song context:self.playbackContext])
         cell.textLabel.textColor = [UIColor defaultAppColorScheme];
     else
         cell.textLabel.textColor = [UIColor blackColor];
@@ -240,7 +239,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     Song *selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    [MusicPlaybackController newQueueWithSong:selectedSong album:nil artist:nil playlist:_playlist genreCode:0 skipCurrentSong:YES];
+    [MusicPlaybackController newQueueWithSong:selectedSong
+                                  withContext:SongPlaybackContextPlaylists
+                             optionalPlaylist:_playlist
+                              skipCurrentSong:YES];
     [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:self];
 }
 

@@ -12,22 +12,23 @@
 #import "Album.h"
 #import "Playlist.h"
 
+typedef enum{
+    SongPlaybackContextSongs,
+    SongPlaybackContextAlbums,
+    SongPlaybackContextArtists,
+    SongPlaybackContextPlaylists,
+    SongPlaybackContextUnspecified
+} SongPlaybackContext;
+
 @interface NowPlaying : NSObject
 
 @property (nonatomic, strong) Song *nowPlaying;
-@property (nonatomic, strong) Artist *originatingArtist;
-@property (nonatomic, strong) Album *originatingAlbum;
-@property (nonatomic, strong) Playlist *originatingPlaylist;
+@property (nonatomic, assign) SongPlaybackContext context;
 
 + (instancetype)sharedInstance;
-- (BOOL)isEqual:(Song *)aSong;
+- (BOOL)isEqual:(Song *)aSong context:(SongPlaybackContext)context;
 
-//if the song was selected in the song tab, then only the song parameter is set. If
-//the song was selected from an artist, album, or playlist, then the appropriate parameter
-//will be non-nil.
 - (void)setNewNowPlayingSong:(Song *)newSong
-                  fromArtist:(Artist *)artist
-                   fromAlbum:(Album *)album
-                fromPlaylist:(Playlist *)playlist;
+                 WithContext:(SongPlaybackContext)context;
 
 @end

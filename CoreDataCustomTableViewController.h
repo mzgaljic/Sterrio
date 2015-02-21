@@ -12,14 +12,7 @@
 #import "UIColor+LighterAndDarker.h"
 #import "MySearchBar.h"
 #import "MusicPlaybackController.h"
-
-typedef enum{
-    MZContentSongs,
-    MZContentAlbums,
-    MZContentArtists,
-    MZContentPlaylists,
-    MZContentUnspecified
-} MZConentIAmDisplaying;
+#import "NowPlaying.h"
 
 @interface CoreDataCustomTableViewController : UIViewController <NSFetchedResultsControllerDelegate,
                                                                 UITableViewDelegate>
@@ -28,7 +21,7 @@ typedef enum{
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSFetchedResultsController *searchFetchedResultsController;
 @property (nonatomic, assign) BOOL displaySearchResults;
-@property (nonatomic, assign) MZConentIAmDisplaying contentType;
+@property (nonatomic, assign) SongPlaybackContext playbackContext;
 
 // Causes the fetchedResultsController to refresh the data.
 // You almost certainly never need to call this.

@@ -236,17 +236,15 @@ static int numLongSongsSkipped = 0;
 }
 
 + (void)newQueueWithSong:(Song *)song
-                   album:(Album *)album
-                  artist:(Artist *)artist
-                playlist:(Playlist *)playlist
-               genreCode:(int)code
-         skipCurrentSong:(BOOL)skipNow;
+             withContext:(SongPlaybackContext)context
+        optionalPlaylist:(Playlist *)playlist
+         skipCurrentSong:(BOOL)skipNow
 {
     Song *originalSong = [MusicPlaybackController nowPlayingSong];
     BOOL playerEnabled = [SongPlayerCoordinator isPlayerEnabled];
     
     //selected song is already playing...
-    if([nowPlayingObject isEqual:song] && playerEnabled){
+    if([nowPlayingObject isEqual:song context:context] && playerEnabled){
         //ignore new queue request, SongPlayerViewController will will be unaffected by this...
         return;
     }
@@ -256,14 +254,16 @@ static int numLongSongsSkipped = 0;
         //current song should be skipped! ...stopping playback
         [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
     }
-    NSArray *songsForQueue = [MusicPlaybackController songArrayGivenSong:song album:album artist:artist playlist:playlist genreCode:code];
+    NSArray *songsForQueue = [MusicPlaybackController songArrayGivenSong:song
+                                                        optionalPlaylist:playlist
+                                                             withContext:context];
     [[MusicPlaybackController playbackQueue] insertSongsAfterNowPlaying:songsForQueue];
     [playbackQueue setNowPlayingIndexWithSong:song];
     
     NowPlaying *nowPlaying = [NowPlaying sharedInstance];
     if(nowPlayingObject == nil)
         nowPlayingObject = nowPlaying;
-    [nowPlaying setNewNowPlayingSong:song fromArtist:artist fromAlbum:album fromPlaylist:playlist];
+    [nowPlaying setNewNowPlayingSong:song WithContext:context];
     
     //start playback with the song that was tapped
     [player startPlaybackOfSong:song goingForward:YES oldSong:originalSong];
@@ -400,43 +400,34 @@ static int numLongSongsSkipped = 0;
 }
 
 #pragma mark - Heavy lifting of figuring out which songs go into a new queue
-+ (NSArray *)songArrayGivenSong:(Song *)song
-                          album:(Album *)album
-                         artist:(Artist *)artist
-                       playlist:(Playlist *)playlist
-                      genreCode:(int)code
++ (NSArray *)songArrayGivenSong:(Song *)song optionalPlaylist:(Playlist *)playlist withContext:(SongPlaybackContext)context
 {
     if(song == nil)
         return nil;
     NSArray *songArray = nil;
     
     #warning unfinished
-    //song tapped in song tab
-    if(!album && !artist && !playlist && code == [GenreConstants noGenreSelectedGenreCode]){
+    if(context == SongPlaybackContextSongs){
         songArray = [MusicPlaybackController arrayOfAllSongsInSongTab];
         /*
          code in this comment would be useful if i wanted to only add songs after the current one
         NSUInteger songIndex = [allSongs indexOfObject:song];
         songArray = [[MusicPlaybackController arrayOfAllSongsInSongTab] subarrayWithRange:NSMakeRange(songIndex, allSongs.count-songIndex)];
          */
-        
     }
     //a standalone song was tapped in the artist tab (song not part of an album but has an artist)
-    else if(artist && !album){
+    else if(context == SongPlaybackContextArtists){
         
     }
     //a song was tapped in an album (doesnt matter if its from the album tab or an album from an artist)
-    else if(album && !artist){
+    else if(context == SongPlaybackContextAlbums){
         //albumSongs is nsset, not nsorderedset
     }
     //a song was tapped in a playlist
-    else if(playlist){
+    else if(context == SongPlaybackContextPlaylists){
         songArray = [NSMutableArray arrayWithArray:[playlist.playlistSongs array]];
     }
-    //a song from the genre tab was tapped (in a genre category)
-    else if(code != [GenreConstants noGenreSelectedGenreCode]){
-        
-    }
+    
     return songArray;
 }
 
