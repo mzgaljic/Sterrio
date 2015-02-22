@@ -10,7 +10,8 @@
 
 @interface MZConstants : NSObject
 
-extern NSString * const MZWhatsNewUserMsg;
+//reachability
+extern NSString * const MZReachabilityStateChanged;
 
 //used for sending playback signals to video preview player if it exists
 extern NSString * const MZPreviewPlayerTogglePlayPause;
@@ -36,5 +37,8 @@ extern float const MZCellImageViewFadeDuration;
 extern int const MZMinVideoPlayerSwipeLengthDown;
 extern int const MZMinVideoPlayerSwipeLengthUp;
 extern int const MZMaxVideoPlayerSwipeVariance;
+
+
+extern NSString * const MZWhatsNewUserMsg;
 
 @end

@@ -45,3 +45,6 @@ pod 'HMSegmentedControl'
 
 #uiimage effect lib (I used it to apply AspectRatioFit style to images)
 pod 'FXImageView'
+
+#Much more robust Reachability library
+pod 'Reachability'

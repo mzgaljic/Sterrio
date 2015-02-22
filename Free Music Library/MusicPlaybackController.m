@@ -14,6 +14,7 @@ static NowPlaying *nowPlayingObject;
 static BOOL explicitlyPausePlayback = NO;
 static BOOL initialized = NO;
 static BOOL simpleSpinnerOnScreen = NO;
+static BOOL spinnerForWifiNeededOnScreen = NO;
 static BOOL internetConnectionSpinnerOnScreen = NO;
 static BOOL isPlayerStalled = NO;
 static int numLongSongsSkipped = 0;
@@ -242,7 +243,7 @@ static int numLongSongsSkipped = 0;
 {
     Song *originalSong = [MusicPlaybackController nowPlayingSong];
     BOOL playerEnabled = [SongPlayerCoordinator isPlayerEnabled];
-    
+#warning check player is paused due to connection issue with youtube. if so, try playing again (make new queue)
     //selected song is already playing...
     if([nowPlayingObject isEqual:song context:context] && playerEnabled){
         //ignore new queue request, SongPlayerViewController will will be unaffected by this...
@@ -458,29 +459,42 @@ static int numLongSongsSkipped = 0;
 + (void)simpleSpinnerOnScreen:(BOOL)onScreen
 {
     simpleSpinnerOnScreen = onScreen;
-    if(onScreen)
+    if(onScreen){
         internetConnectionSpinnerOnScreen = NO;
-    else
-        [MusicPlaybackController noSpinnersOnScreen];
+        spinnerForWifiNeededOnScreen = NO;
+    }
 }
 + (void)internetProblemSpinnerOnScreen:(BOOL)onScreen
 {
     internetConnectionSpinnerOnScreen = onScreen;
-    if(onScreen)
+    if(onScreen){
         simpleSpinnerOnScreen = NO;
-    else
-        [MusicPlaybackController noSpinnersOnScreen];
+        spinnerForWifiNeededOnScreen = NO;
+    }
+}
++ (void)spinnerForWifiNeededOnScreen:(BOOL)onScreen
+{
+    spinnerForWifiNeededOnScreen = onScreen;
+    if(onScreen){
+        simpleSpinnerOnScreen = NO;
+        internetConnectionSpinnerOnScreen = NO;
+    }
 }
 + (void)noSpinnersOnScreen
 {
     simpleSpinnerOnScreen = NO;
     internetConnectionSpinnerOnScreen = NO;
+    spinnerForWifiNeededOnScreen = NO;
 }
+
 + (BOOL)isSimpleSpinnerOnScreen
 {
     return simpleSpinnerOnScreen;
 }
-
++ (BOOL)isSpinnerForWifiNeededOnScreen
+{
+    return spinnerForWifiNeededOnScreen;
+}
 + (BOOL)isInternetProblemSpinnerOnScreen
 {
     return internetConnectionSpinnerOnScreen;

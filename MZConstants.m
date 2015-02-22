@@ -10,7 +10,8 @@
 
 @implementation MZConstants
 
-NSString * const MZWhatsNewUserMsg = @"⌾New Features:\n•Vevo videos are now working again. This is a temporary fix.\n•Automatic crash reports (currently cannot be disabled. An option to disable is coming soon).•Swiping left on the minimized video player (to kill the player) is no longer glitchy. Swipe gestures have been improved on the video player as well.\n\n⌾Coming Soon:\n•App color theme changes.\n•Shuffle capabilities.\n•Numerous other bug fixes.";
+//reachability
+NSString * const MZReachabilityStateChanged = @"Reachability state change";
 
 //used for sending playback signals to video preview player if it exists
 NSString * const MZPreviewPlayerTogglePlayPause = @"togglePlayPauseVideoPreviewPlayer";
@@ -38,5 +39,14 @@ float const MZCellImageViewFadeDuration = 0.49;
 int const MZMinVideoPlayerSwipeLengthDown = 60;
 int const MZMinVideoPlayerSwipeLengthUp = 60;
 int const MZMaxVideoPlayerSwipeVariance = 5;
+
+
+
+
+
+
+
+
+NSString * const MZWhatsNewUserMsg = @"⌾New Features:\n•Vevo videos are now working again. This is a temporary fix.\n•Automatic crash reports (currently cannot be disabled. An option to disable is coming soon).•Swiping left on the minimized video player (to kill the player) is no longer glitchy. Swipe gestures have been improved on the video player as well.\n\n⌾Coming Soon:\n•App color theme changes.\n•Shuffle capabilities.\n•Numerous other bug fixes.";
 
 @end

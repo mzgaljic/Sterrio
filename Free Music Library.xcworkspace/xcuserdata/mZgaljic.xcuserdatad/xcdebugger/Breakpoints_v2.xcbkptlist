@@ -35,5 +35,113 @@
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Free Music Library/FetchVideoInfoOperation.m"
+            timestampString = "446284063.85586"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "71"
+            endingLineNumber = "71"
+            landmarkName = "-start"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[FetchVideoInfoOperation start]"
+                  moduleName = "Free Music Library"
+                  urlString = "file:///Users/mzgaljic/Library/Mobile%20Documents/com~apple~CloudDocs/Developer/Xcode/Free%20Music%20Library/Free%20Music%20Library/FetchVideoInfoOperation.m"
+                  timestampString = "446284063.868262"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "72"
+                  endingLineNumber = "72"
+                  offsetFromSymbolStart = "1040">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__32-[FetchVideoInfoOperation start]_block_invoke"
+                  moduleName = "Free Music Library"
+                  urlString = "file:///Users/mzgaljic/Library/Mobile%20Documents/com~apple~CloudDocs/Developer/Xcode/Free%20Music%20Library/Free%20Music%20Library/FetchVideoInfoOperation.m"
+                  timestampString = "446284063.868718"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "72"
+                  endingLineNumber = "72"
+                  offsetFromSymbolStart = "72">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Free Music Library/FetchVideoInfoOperation.m"
+            timestampString = "446284065.078486"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "79"
+            endingLineNumber = "79"
+            landmarkName = "-start"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__32-[FetchVideoInfoOperation start]_block_invoke"
+                  moduleName = "Free Music Library"
+                  urlString = "file:///Users/mzgaljic/Library/Mobile%20Documents/com~apple~CloudDocs/Developer/Xcode/Free%20Music%20Library/Free%20Music%20Library/FetchVideoInfoOperation.m"
+                  timestampString = "446284065.089998"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "80"
+                  endingLineNumber = "80"
+                  offsetFromSymbolStart = "232">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__32-[FetchVideoInfoOperation start]_block_invoke_2"
+                  moduleName = "Free Music Library"
+                  urlString = "file:///Users/mzgaljic/Library/Mobile%20Documents/com~apple~CloudDocs/Developer/Xcode/Free%20Music%20Library/Free%20Music%20Library/FetchVideoInfoOperation.m"
+                  timestampString = "446284065.090246"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "81"
+                  endingLineNumber = "81"
+                  offsetFromSymbolStart = "20">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Free Music Library/FetchVideoInfoOperation.m"
+            timestampString = "446284068.372877"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "83"
+            endingLineNumber = "83"
+            landmarkName = "-start"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

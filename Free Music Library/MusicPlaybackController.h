@@ -84,7 +84,10 @@
 #pragma mark - loading spinner status
 + (void)simpleSpinnerOnScreen:(BOOL)onScreen;
 + (void)internetProblemSpinnerOnScreen:(BOOL)onScreen;
++ (void)spinnerForWifiNeededOnScreen:(BOOL)onScreen;
 + (void)noSpinnersOnScreen;
+
++ (BOOL)isSpinnerForWifiNeededOnScreen;
 + (BOOL)isSimpleSpinnerOnScreen;
 + (BOOL)isInternetProblemSpinnerOnScreen;
 + (BOOL)isSpinnerOnScreen;

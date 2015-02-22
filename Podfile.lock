@@ -37,6 +37,7 @@ PODS:
     - MRProgress/Helper
   - MSCellAccessory (1.1.2)
   - RBBAnimation (0.3.0)
+  - Reachability (3.2)
   - SDCAlertView (2.2):
     - RBBAnimation (~> 0.3)
     - SDCAutoLayout (~> 2.0)
@@ -58,6 +59,7 @@ DEPENDENCIES:
   - MarqueeLabel
   - MRProgress
   - MSCellAccessory (~> 1.1)
+  - Reachability
   - SDCAlertView
   - SDWebImage (~> 3.6)
   - TBXML
@@ -75,6 +77,7 @@ SPEC CHECKSUMS:
   MRProgress: cd12726e001ea25dec133322d34cc4754cbc58f8
   MSCellAccessory: 5f5b839e14bbd5de6c3dacb4b0d3ae5a63741778
   RBBAnimation: 243d73be1a526f1b51d266b182e4aa0cfe9cbf64
+  Reachability: 1ef8adf5c4e3d362f96515d4278f68dad3c26930
   SDCAlertView: 8a06ba35a11aeb07915ce186f29b3d42b4a10176
   SDCAutoLayout: 4a963629725ed2b7d665e789ca4d6cfcd7446822
   SDWebImage: 116e88633b5b416ea0ca4b334a4ac59cf72dd38d

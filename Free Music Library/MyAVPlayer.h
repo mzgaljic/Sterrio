@@ -14,10 +14,21 @@
 #import "Song+Utilities.h"
 #import "PreferredFontSizeUtility.h"
 #import "MusicPlaybackController.h"  //for using queue, etc
+#import "FetchVideoInfoOperation.h"
+#import "DetermineVideoPlayableOperation.h"
 
 
 @interface MyAVPlayer : AVPlayer
 
 - (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)yes oldSong:(Song *)oldSong;
+
+- (void)begingLoadingPlayerWithPlayerItem:(AVPlayerItem *)item;
+
+- (void)showSpinnerForInternetConnectionIssue;
+- (void)showSpinnerForBasicLoading;
+- (void)showSpinnerForWifiNeeded;
+- (void)dismissAllSpinners;
+
+- (void)songNeedsToBeSkippedDueToIssue;
 
 @end
