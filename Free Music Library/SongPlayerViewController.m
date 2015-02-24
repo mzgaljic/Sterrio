@@ -621,12 +621,13 @@ static BOOL playerIsInDisabledState = NO;
         if(disabled){
             playerIsInDisabledState = YES;
             if([MusicPlaybackController obtainRawAVPlayer].rate > 0)
-                wasInPlayStateBeforeGUIDisabled = NO;
-            else
                 wasInPlayStateBeforeGUIDisabled = YES;
+            else
+                wasInPlayStateBeforeGUIDisabled = NO;
             
             [MusicPlaybackController explicitlyPausePlayback:YES];
-            [self toggleDisplayToPausedState];
+            [self performSelectorOnMainThread:@selector(toggleDisplayToPausedState) withObject:nil waitUntilDone:YES];
+            //[self toggleDisplayToPausedState];
             [MusicPlaybackController pausePlayback];
             [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
             playButton.enabled = NO;
@@ -635,7 +636,8 @@ static BOOL playerIsInDisabledState = NO;
             playerIsInDisabledState = NO;
             if(wasInPlayStateBeforeGUIDisabled){
                 [MusicPlaybackController explicitlyPausePlayback:NO];
-                [self toggleDisplayToPlayingState];
+                [self performSelectorOnMainThread:@selector(toggleDisplayToPlayingState) withObject:nil waitUntilDone:YES];
+                //[self toggleDisplayToPlayingState];
                 [MusicPlaybackController resumePlayback];
                 
             }
