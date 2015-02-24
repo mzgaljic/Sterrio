@@ -106,7 +106,10 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)cancelTapped
 {
     [self myPreDealloc];
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES completion:^{
+        if([MusicPlaybackController nowPlayingSong])
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+    }];
 }
 
 - (void)scrollToTopTapped
@@ -128,8 +131,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         //restore scroll to top button if it was there before segue
         if(_scrollToTopButtonVisible)
             [self showScrollToTopButton:YES];
-        if([MusicPlaybackController nowPlayingSong])
-            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -443,7 +444,10 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 {
     if(! self.searchInitiatedAlready){
         [self myPreDealloc];
-        [self dismissViewControllerAnimated:YES completion:nil];
+        [self dismissViewControllerAnimated:YES completion:^{
+            if([MusicPlaybackController nowPlayingSong])
+                [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+         }];
     }else{
         //setting it both ways, due to nav bar title bug
         self.navigationController.navigationBar.topItem.title = @"Search Results";

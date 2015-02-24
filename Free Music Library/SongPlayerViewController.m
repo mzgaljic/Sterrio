@@ -440,8 +440,6 @@ static int numTimesVCLoaded = 0;
     }
     playAfterMovingSlider = YES;  //reset value
     [sliderHint hideAnimated];
-    //need to update lock screen again to keep elapsed time correct
-    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     [self performSelector:@selector(hideSliderHintView) withObject:nil afterDelay:0.5];
 }
 - (IBAction)playbackSliderEditingHasEndedB:(id)sender  //touch up outside
@@ -524,11 +522,15 @@ static int hours;
 
 - (void)accomodateInterfaceBasedOnDurationLabelSize:(UILabel *)changedLabel
 {
-    //duration state not set yet, and we are displaying minutes.
-    if(stateOfDurationLabels == DurationLabelStateNotSet && [changedLabel.text length] <= 5){
+    BOOL stateNotSetAndLabelIsDisplayingMinutes = (stateOfDurationLabels == DurationLabelStateNotSet && [changedLabel.text length] <= 5);
+    BOOL stateNotSetAndLabelIsDisplayingHours = (stateOfDurationLabels == DurationLabelStateNotSet && [changedLabel.text length] > 5);
+    
+    if(stateNotSetAndLabelIsDisplayingMinutes){
         stateOfDurationLabels = DurationLabelStateMinutes;
         return;
-        //dont need to check for the oppsosite condition here because it works already for hours.
+    } else if(stateNotSetAndLabelIsDisplayingHours){
+        stateOfDurationLabels = DurationLabelStateHours;
+        return;
     }
 
     UILabel *label = changedLabel;
@@ -591,15 +593,12 @@ static int hours;
 - (void)playbackHasStopped
 {
     [self toggleDisplayToPausedState];
-    if(! sliderIsBeingTouched)
-        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
 }
 
 - (void)playbackHasResumed
 {
     [self toggleDisplayToPlayingState];
     playButton.enabled = YES;  //in case it isnt
-    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
 }
 
 - (void)currentSongInQueueHasEndedPlayback
@@ -626,22 +625,24 @@ static BOOL playerIsInDisabledState = NO;
                 wasInPlayStateBeforeGUIDisabled = NO;
             
             [MusicPlaybackController explicitlyPausePlayback:YES];
-            [self performSelectorOnMainThread:@selector(toggleDisplayToPausedState) withObject:nil waitUntilDone:YES];
+            [self performSelectorOnMainThread:@selector(toggleDisplayToPausedState)
+                                   withObject:nil
+                                waitUntilDone:YES];
             //[self toggleDisplayToPausedState];
             [MusicPlaybackController pausePlayback];
-            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
             playButton.enabled = NO;
             self.playbackSlider.enabled = NO;
         } else{
             playerIsInDisabledState = NO;
             if(wasInPlayStateBeforeGUIDisabled){
                 [MusicPlaybackController explicitlyPausePlayback:NO];
-                [self performSelectorOnMainThread:@selector(toggleDisplayToPlayingState) withObject:nil waitUntilDone:YES];
+                [self performSelectorOnMainThread:@selector(toggleDisplayToPlayingState)
+                                       withObject:nil
+                                    waitUntilDone:YES];
                 //[self toggleDisplayToPlayingState];
                 [MusicPlaybackController resumePlayback];
                 
             }
-            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
             playButton.enabled = YES;
             self.playbackSlider.enabled = YES;
         }

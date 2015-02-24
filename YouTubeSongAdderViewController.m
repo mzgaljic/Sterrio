@@ -630,7 +630,10 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
 - (void)destructThisVCDelayed
 {
     [self preDealloc];
-    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    [self.navigationController dismissViewControllerAnimated:YES completion:^{
+        if([MusicPlaybackController nowPlayingSong])
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+    }];
 }
 
 @end

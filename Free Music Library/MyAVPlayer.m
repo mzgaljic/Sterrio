@@ -34,6 +34,8 @@
 @implementation MyAVPlayer
 static void *mPlaybackBufferEmpty = &mPlaybackBufferEmpty;
 static void *mloadedTimeRanges = &mloadedTimeRanges;
+static void *mRateDidChange = &mRateDidChange;
+
 static NSOperationQueue *operationQueue;
 
 - (id)init
@@ -136,6 +138,11 @@ static NSOperationQueue *operationQueue;
 
 - (void)beginLoadingVideoWithSong:(Song *)aSong
 {
+    //prevents any funny behavior with existing video until the new one loads.
+    [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+    
+    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+    
     secondsLoaded = 0;
     stallHasOccured = NO;
     [operationQueue cancelAllOperations];
@@ -314,6 +321,10 @@ static NSOperationQueue *operationQueue;
            forKeyPath:@"currentItem.loadedTimeRanges"
               options:NSKeyValueObservingOptionNew
               context:mloadedTimeRanges];
+    [self addObserver:self
+           forKeyPath:@"rate"
+              options:NSKeyValueObservingOptionNew
+              context:mRateDidChange];
 }
 
 /*Not actually needed now since this class is in existance the entire time, it is never deallocated.
@@ -403,6 +414,8 @@ static NSOperationQueue *operationQueue;
                 secondsLoaded = newSecondsBuff;
             }
         }
+    } else if(context == mRateDidChange){
+        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     } else
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }

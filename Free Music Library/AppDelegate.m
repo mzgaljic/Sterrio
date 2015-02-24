@@ -140,7 +140,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 {
     //animate player back from snapshot
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    float animationDuration = 0.68f;
+    float animationDuration = 0.70f;
     [UIView animateWithDuration:animationDuration animations:^{
         playerSnapshot.alpha = 0.0;
     }];
