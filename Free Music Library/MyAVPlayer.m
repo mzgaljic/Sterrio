@@ -14,7 +14,6 @@
     AVPlayerItem *playerItem;
     NSURL *currentItemLink;
     BOOL movingForward;  //identifies which direction the user just went (back/forward) in queue
-    int secondsSinceWeCheckedInternet;
     BOOL allowSongDidFinishToExecute;
     BOOL canPostLastSongNotification;
     BOOL playbackStarted;
@@ -24,8 +23,9 @@
     
     NSString *AVPLAYER_DONE_PLAYING;  //queue has finished
     NSString *CURRENT_SONG_DONE_PLAYING;
-    NSString * CURRENT_SONG_STOPPED_PLAYBACK;
-    NSString * CURRENT_SONG_RESUMED_PLAYBACK;
+    NSString *CURRENT_SONG_STOPPED_PLAYBACK;
+    NSString *CURRENT_SONG_RESUMED_PLAYBACK;
+    NSString *PlaybackHasBegun;
     
     ReachabilitySingleton *reachability;
 }
@@ -46,14 +46,15 @@ static NSOperationQueue *operationQueue;
         CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update gui please!";
         CURRENT_SONG_STOPPED_PLAYBACK = @"playback has stopped for some unknown reason (stall?)";
         CURRENT_SONG_RESUMED_PLAYBACK = @"playback has resumed from a stall probably";
+        PlaybackHasBegun = @"PlaybackStartedNotification";
         movingForward = YES;
         stallHasOccured = NO;
         secondsLoaded = 0;
         currentItemLink = nil;
         playerItem = self.currentItem;
-        secondsSinceWeCheckedInternet = 0;
         
         [self begingListeningForNotifications];
+        [self registerForObservers];
     }
     return self;
 }
@@ -66,7 +67,6 @@ static NSOperationQueue *operationQueue;
 - (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)forward oldSong:(Song *)oldSong
 {
     [MusicPlaybackController printQueueContents];
-    
     if(aSong != nil){
         movingForward = forward;
         playbackStarted = NO;
@@ -167,7 +167,6 @@ static NSOperationQueue *operationQueue;
     }
 }
 
-
 - (void)connectionStateChanged
 {
     Song *nowPlaying = [MusicPlaybackController nowPlayingSong];
@@ -175,10 +174,18 @@ static NSOperationQueue *operationQueue;
     {
         if([reachability isConnectedToWifi])
         {
+            if([nowPlaying.duration integerValue] >= MZLongestCellularPlayableDuration){
+                //enable GUI again, they are back on wifi, playback can resume
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:MZInterfaceNeedsToBlockCurrentSongPlayback object:[NSNumber numberWithBool:NO]];
+            }
+            
             if(stallHasOccured)
             {
                 [self showSpinnerForBasicLoading];
+                return;
             }
+
             //otherwise no problems could possibly occur at this point...
             [self dismissAllSpinners];
             return;
@@ -186,13 +193,15 @@ static NSOperationQueue *operationQueue;
         else
         {
             if([nowPlaying.duration integerValue] >= MZLongestCellularPlayableDuration){
-                //disable GUI, alert user
+                //disable GUI, alert user that he/she needs to be on wifi
                 [self showSpinnerForWifiNeeded];
-#warning need to execute code to lock user from moving around in video or pressing play.
+                [[NSNotificationCenter defaultCenter] postNotificationName:MZInterfaceNeedsToBlockCurrentSongPlayback object:[NSNumber numberWithBool:YES]];
+                return;
             }
             if(stallHasOccured)
             {
                 [self showSpinnerForBasicLoading];
+                return;
             }
             //otherwise no problems could possibly occur at this point...
             [self dismissAllSpinners];
@@ -202,6 +211,7 @@ static NSOperationQueue *operationQueue;
     else
     {
         [self showSpinnerForInternetConnectionIssue];
+        return;
     }
 }
 
@@ -211,7 +221,7 @@ static NSOperationQueue *operationQueue;
     if(![MusicPlaybackController isInternetProblemSpinnerOnScreen]){
         if([NSThread isMainThread]){
             PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-            [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:NO];
+            [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:YES];
             [MRProgressOverlayView showOverlayAddedTo:playerView
                                                 title:@"Connection lost"
                                                  mode:MRProgressOverlayViewModeIndeterminateSmall
@@ -220,7 +230,7 @@ static NSOperationQueue *operationQueue;
         } else{
             dispatch_async(dispatch_get_main_queue(), ^{
                 PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-                [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:NO];
+                [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:YES];
                 [MRProgressOverlayView showOverlayAddedTo:playerView
                                                     title:@"Connection lost"
                                                      mode:MRProgressOverlayViewModeIndeterminateSmall
@@ -236,14 +246,14 @@ static NSOperationQueue *operationQueue;
     if(![MusicPlaybackController isSimpleSpinnerOnScreen]){
         if([NSThread isMainThread]){
             PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-            [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:NO];
+            [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:YES];
             [MRProgressOverlayView showOverlayAddedTo:playerView title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
             [MusicPlaybackController simpleSpinnerOnScreen:YES];
 
         } else{
             dispatch_async(dispatch_get_main_queue(), ^{
                 PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-                [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:NO];
+                [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:YES];
                 [MRProgressOverlayView showOverlayAddedTo:playerView title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
                 [MusicPlaybackController simpleSpinnerOnScreen:YES];
             });
@@ -256,14 +266,14 @@ static NSOperationQueue *operationQueue;
     if(![MusicPlaybackController isSpinnerForWifiNeededOnScreen]){
         if([NSThread isMainThread]){
             PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-            [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:NO];
+            [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:YES];
             [MRProgressOverlayView showOverlayAddedTo:playerView title:@"Song requires WiFi" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
             [MusicPlaybackController spinnerForWifiNeededOnScreen:YES];
             
         } else{
             dispatch_async(dispatch_get_main_queue(), ^{
                 PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-                [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:NO];
+                [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:YES];
                 [MRProgressOverlayView showOverlayAddedTo:playerView title:@"Song requires WiFi" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
                 [MusicPlaybackController spinnerForWifiNeededOnScreen:YES];
             });
@@ -271,6 +281,13 @@ static NSOperationQueue *operationQueue;
     }
 }
 
+- (void)dismissAllSpinnersIfPossible
+{
+    [self connectionStateChanged];
+}
+
+//should NEVER be called directly, except by the connectionStateChanged method
+//or after song is done playing.
 - (void)dismissAllSpinners
 {
     if([NSThread isMainThread]){
@@ -312,7 +329,6 @@ static NSOperationQueue *operationQueue;
 }
 */
 
-//CURRENT_SONG_STOPPED_PLAYBACK
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
                         change:(NSDictionary *)change
@@ -369,11 +385,20 @@ static NSOperationQueue *operationQueue;
                     NSLog(@"left stall");
                     stallHasOccured = NO;
                     [MusicPlaybackController setPlayerInStall:NO];
-                    [self dismissAllSpinners];
+                    [self dismissAllSpinnersIfPossible];
                     if(! [MusicPlaybackController playbackExplicitlyPaused])
                         [MusicPlaybackController resumePlayback];
                     [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_RESUMED_PLAYBACK
                                                                         object:nil];
+                }
+                //check if playback began
+                if(newSecondsBuff > secondsLoaded && self.rate == 1 && !playbackStarted){
+                    playbackStarted = YES;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:PlaybackHasBegun
+                                                                        object:nil];
+                    //places approprate spinners on player if needed...or dismisses spinner.
+                    [self connectionStateChanged];
+                    NSLog(@"playback started");
                 }
                 secondsLoaded = newSecondsBuff;
             }

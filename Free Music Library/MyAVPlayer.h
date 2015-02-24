@@ -27,6 +27,10 @@
 - (void)showSpinnerForInternetConnectionIssue;
 - (void)showSpinnerForBasicLoading;
 - (void)showSpinnerForWifiNeeded;
+- (void)dismissAllSpinnersIfPossible;
+
+//should NEVER be called directly, except by the connectionStateChanged method
+//or after song is done playing, or if a song is being skipped.
 - (void)dismissAllSpinners;
 
 - (void)songNeedsToBeSkippedDueToIssue;

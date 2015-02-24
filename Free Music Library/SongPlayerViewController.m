@@ -108,7 +108,6 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     waitingForNextOrPrevVideoToLoad = YES;
     [self initAndRegisterAllButtons];
     
-    //these two observers help us know when this VC must update its GUI due to a new song playing, etc.
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(updateScreenWithInfoForNewSong:)
                                                  name:MZNewSongLoading
@@ -132,6 +131,10 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(playbackHasResumed)
                                                  name:CURRENT_SONG_RESUMED_PLAYBACK
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(currentSongPlaybackMustBeDisabled:)
+                                                 name:MZInterfaceNeedsToBlockCurrentSongPlayback
                                                object:nil];
     self.playbackSlider.dataSource = self;
     [[SongPlayerCoordinator sharedInstance] setDelegate:self];
@@ -227,6 +230,12 @@ static int numTimesVCLoaded = 0;
         [self restoreTimeObserver];
         firstTimeUpdatingSliderSinceShowingPlayer = YES;
     }
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self checkIfInterfaceShouldBeDisabled];
 }
 
 - (void)dealloc
@@ -600,6 +609,101 @@ static int hours;
     //another method will reenable it when necessary
     if(moreSongsInQueue)
         self.playbackSlider.enabled = NO;
+}
+
+static BOOL wasInPlayStateBeforeGUIDisabled = NO;
+static BOOL playerIsInDisabledState = NO;
+- (void)currentSongPlaybackMustBeDisabled:(NSNotification *)notif
+{
+    if([notif.name isEqualToString:MZInterfaceNeedsToBlockCurrentSongPlayback]){
+        NSNumber *val = (NSNumber *)notif.object;
+        BOOL disabled = [val boolValue];
+        if(disabled){
+            playerIsInDisabledState = YES;
+            if([MusicPlaybackController obtainRawAVPlayer].rate > 0)
+                wasInPlayStateBeforeGUIDisabled = NO;
+            else
+                wasInPlayStateBeforeGUIDisabled = YES;
+            
+            [MusicPlaybackController explicitlyPausePlayback:YES];
+            [self toggleDisplayToPausedState];
+            [MusicPlaybackController pausePlayback];
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+            playButton.enabled = NO;
+            self.playbackSlider.enabled = NO;
+        } else{
+            playerIsInDisabledState = NO;
+            if(wasInPlayStateBeforeGUIDisabled){
+                [MusicPlaybackController explicitlyPausePlayback:NO];
+                [self toggleDisplayToPlayingState];
+                [MusicPlaybackController resumePlayback];
+                
+            }
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+            playButton.enabled = YES;
+            self.playbackSlider.enabled = YES;
+        }
+    }
+}
+
+- (void)checkIfInterfaceShouldBeDisabled
+{
+    if(playerIsInDisabledState){
+        NSNotification *fakeNotification = [NSNotification notificationWithName:MZInterfaceNeedsToBlockCurrentSongPlayback object:[NSNumber numberWithBool:YES]];
+        [self currentSongPlaybackMustBeDisabled:fakeNotification];
+    }
+}
+
+//same thing as method beneath this one, except the playback state is not touched
+- (void)playbackOfVideoHasBegunRespectPlayPauseState
+{
+    self.playbackSlider.enabled = YES;
+    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
+    
+    //want to make the gui respect the current playback state here
+    if(player.rate == 1){
+        UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
+        UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];
+        [playButton setImage:pauseFilled forState:UIControlStateNormal];
+    } else{
+        UIImage *tempImage = [UIImage imageNamed:PLAY_IMAGE_FILLED];
+        UIImage *playFilled = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];
+        [playButton setImage:playFilled forState:UIControlStateNormal];
+    }
+    
+    [self displayTotalSliderAndLabelDuration];
+    
+    NSUInteger test = CMTimeGetSeconds(player.currentItem.currentTime);
+    if(player.currentItem)
+        [_playbackSlider setValue:test animated:NO];
+    else
+        [_playbackSlider setValue:0];
+    waitingForNextOrPrevVideoToLoad = NO;
+    
+    if(! [MusicPlaybackController isSongFirstInQueue:[MusicPlaybackController nowPlayingSong]])
+        [self showPreviousTrackButton];
+}
+
+//this is the one called from the notification when the player starts, hence it forces the "play" state.
+- (void)playbackOfVideoHasBegun
+{
+    self.playbackSlider.enabled = YES;
+    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
+    if(player.currentItem)
+        [_playbackSlider setValue:CMTimeGetSeconds(player.currentItem.currentTime) animated:NO];
+    else
+        [_playbackSlider setValue:0];
+    waitingForNextOrPrevVideoToLoad = NO;
+    UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
+    UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];
+    
+    [playButton setImage:pauseFilled forState:UIControlStateNormal];
+    [MusicPlaybackController explicitlyPausePlayback:NO];
+    [MusicPlaybackController resumePlayback];
+    
+    [self displayTotalSliderAndLabelDuration];
+    if(! [MusicPlaybackController isSongFirstInQueue:[MusicPlaybackController nowPlayingSong]])
+        [self showPreviousTrackButton];
 }
 
 #pragma mark - Initializing & Registering Buttons
@@ -1220,10 +1324,7 @@ static int hours;
                       ofObject:(id)object
                         change:(NSDictionary *)change
                        context:(void *)context
-{
-    //if(numTimesSetupKeyValueObservers != 1)
-      //  [self removeObservers];
-    
+{    
     //check for duration label change
     if (context == kTotalDurationLabelDidChange) {
         [self accomodateInterfaceBasedOnDurationLabelSize:(UILabel *)object];
@@ -1287,58 +1388,6 @@ static int hours;
             }
         }
     }
-}
-
-//same thing as method beneath this one, except the playback state is not touched
-- (void)playbackOfVideoHasBegunRespectPlayPauseState
-{
-    self.playbackSlider.enabled = YES;
-    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
-    
-    //want to make the gui respect the current playback state here
-    if(player.rate == 1){
-        UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
-        UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];
-        [playButton setImage:pauseFilled forState:UIControlStateNormal];
-    } else{
-        UIImage *tempImage = [UIImage imageNamed:PLAY_IMAGE_FILLED];
-        UIImage *playFilled = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];
-        [playButton setImage:playFilled forState:UIControlStateNormal];
-    }
-    
-    [self displayTotalSliderAndLabelDuration];
-    
-    NSUInteger test = CMTimeGetSeconds(player.currentItem.currentTime);
-    if(player.currentItem)
-        [_playbackSlider setValue:test animated:NO];
-    else
-        [_playbackSlider setValue:0];
-    waitingForNextOrPrevVideoToLoad = NO;
-    
-    if(! [MusicPlaybackController isSongFirstInQueue:[MusicPlaybackController nowPlayingSong]])
-        [self showPreviousTrackButton];
-}
-
-//this is the one called from the notification when the player starts, hence it forces the "play" state.
-- (void)playbackOfVideoHasBegun
-{
-    self.playbackSlider.enabled = YES;
-    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
-    if(player.currentItem)
-        [_playbackSlider setValue:CMTimeGetSeconds(player.currentItem.currentTime) animated:NO];
-    else
-        [_playbackSlider setValue:0];
-    waitingForNextOrPrevVideoToLoad = NO;
-    UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
-    UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];
-    
-    [playButton setImage:pauseFilled forState:UIControlStateNormal];
-    [MusicPlaybackController explicitlyPausePlayback:NO];
-    [MusicPlaybackController resumePlayback];
-    
-    [self displayTotalSliderAndLabelDuration];
-    if(! [MusicPlaybackController isSongFirstInQueue:[MusicPlaybackController nowPlayingSong]])
-        [self showPreviousTrackButton];
 }
 
 #pragma mark - Loading Spinner & Internet convenience methods

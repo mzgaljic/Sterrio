@@ -12,6 +12,7 @@
 
 //reachability
 extern NSString * const MZReachabilityStateChanged;
+extern NSString * const MZInterfaceNeedsToBlockCurrentSongPlayback;
 
 //used for sending playback signals to video preview player if it exists
 extern NSString * const MZPreviewPlayerTogglePlayPause;
@@ -33,10 +34,6 @@ extern short const MZSecondsInAMinute;
 extern short const MZLongestCellularPlayableDuration;
 
 extern float const MZCellImageViewFadeDuration;
-
-extern int const MZMinVideoPlayerSwipeLengthDown;
-extern int const MZMinVideoPlayerSwipeLengthUp;
-extern int const MZMaxVideoPlayerSwipeVariance;
 
 
 extern NSString * const MZWhatsNewUserMsg;

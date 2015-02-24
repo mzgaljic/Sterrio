@@ -12,6 +12,7 @@
 
 //reachability
 NSString * const MZReachabilityStateChanged = @"Reachability state change";
+NSString * const MZInterfaceNeedsToBlockCurrentSongPlayback = @"pass bool as NSNumber for state.";
 
 //used for sending playback signals to video preview player if it exists
 NSString * const MZPreviewPlayerTogglePlayPause = @"togglePlayPauseVideoPreviewPlayer";
@@ -33,14 +34,7 @@ short const MZMinutesInAnHour = 60;
 short const MZSecondsInAMinute = 60;
 short const MZLongestCellularPlayableDuration = 600;
 
-float const MZCellImageViewFadeDuration = 0.49;
-
-//used to figuring out what a "valid" swipe up and down is on the player
-int const MZMinVideoPlayerSwipeLengthDown = 60;
-int const MZMinVideoPlayerSwipeLengthUp = 60;
-int const MZMaxVideoPlayerSwipeVariance = 5;
-
-
+float const MZCellImageViewFadeDuration = 0.49f;
 
 
 

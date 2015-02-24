@@ -72,12 +72,12 @@
     [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
         //NOTE: the MusicPlaybackController methods called from this completion block have
         //been made thread safe.
-        if ([weakSelf isCancelled]){
-            [weakSelf finish];
-            return;
-        }
-        
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+            if ([weakSelf isCancelled]){
+                [weakSelf finish];
+                return;
+            }
+            
             if ([weakSelf isCancelled]){
                 [weakSelf finishBecauseOfCancel];
                 return;
@@ -148,6 +148,7 @@
                 /*
                  [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
                  //[weakSelf dismissAllSpinnersForView:weakPlayerView];
+                 
                  dispatch_async(dispatch_get_main_queue(), ^(void){
                  //Run UI Updates
                  [weakSelf songDidFinishPlaying:nil];  //triggers the next song to play (for whatever reason/error) in the correct direction
