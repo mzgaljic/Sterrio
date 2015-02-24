@@ -29,6 +29,7 @@
 @end
 
 @implementation YouTubeVideoSearchService
+const int time_out_interval_seconds = 8;
 
 + (instancetype)sharedInstance
 {
@@ -83,7 +84,11 @@
         originalQueryUrl = queryUrl;
         __weak YouTubeVideoSearchService *weakSelf = self;
         
-        NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]];
+        NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]
+                                                    cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                timeoutInterval:time_out_interval_seconds];
+        
+        //this queue object should not be reused. fix all this messy code in an update
         NSOperationQueue *queue = [[NSOperationQueue alloc] init];
         
         [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
@@ -113,7 +118,9 @@
         NSString *videoInfoUrl = [NSString stringWithString:tempUrl];
         __weak YouTubeVideoSearchService *weakSelf = self;
         
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:videoInfoUrl]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:videoInfoUrl]
+                                                    cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                timeoutInterval:time_out_interval_seconds];
         NSOperationQueue *queue = [[NSOperationQueue alloc] init];
         
         [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^
@@ -149,8 +156,9 @@
         NSString *queryUrl = [NSString stringWithString:tempUrl];
         __weak YouTubeVideoSearchService *weakSelf = self;
         
-        
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]
+                                                 cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                             timeoutInterval:time_out_interval_seconds];
         NSOperationQueue *queue = [[NSOperationQueue alloc] init];
         
         [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^
@@ -181,7 +189,9 @@
         NSString *fullUrl = [NSString stringWithString:tempUrl];
         __weak YouTubeVideoSearchService *weakSelf = self;
         
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:fullUrl]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:fullUrl]
+                                                 cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                             timeoutInterval:time_out_interval_seconds];
         NSOperationQueue *queue = [[NSOperationQueue alloc] init];
         
         [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^
