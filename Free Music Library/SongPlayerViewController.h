@@ -30,6 +30,7 @@
 #import <MarqueeLabel.h>
 #import <JAMAccurateSlider.h>
 #import <GCDiscreetNotificationView.h>
+#import "ReachabilitySingleton.h"
 
 
 @class MusicPlaybackController;

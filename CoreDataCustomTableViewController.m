@@ -350,7 +350,7 @@ typedef enum{
             newPath = [self.fetchedResultsController indexPathForObject:newSong];
         
     } else return;  //this else should theoretically never happen.
-    
+        
     if([oldPath isEqual:newPath]){  //user is playing the same song but from a new context
         [tableView beginUpdates];
         [tableView reloadRowsAtIndexPaths:@[newPath]

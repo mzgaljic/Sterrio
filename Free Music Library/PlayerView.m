@@ -126,12 +126,14 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 {
     Song *songWeAreKilling = [MusicPlaybackController nowPlayingSong];
     [[NowPlaying sharedInstance] setNewNowPlayingSong:nil
-                                          WithContext:SongPlaybackContextUnspecified];
+                                          WithContext:SongPlaybackContextSongs];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
                                                         object:songWeAreKilling];
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
     [SongPlayerCoordinator playerWasKilled:YES];
+    [[NowPlaying sharedInstance] setNewNowPlayingSong:nil
+                                          WithContext:SongPlaybackContextUnspecified];
 }
 
 #pragma mark - Orientation and view "touch" code
@@ -279,7 +281,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
                          //move frame back to bottom right so it looks the same
                          //the next time the player is opened
                          weakSelf.alpha = 0;
-                         weakSelf.frame = CGRectMake(screenWidth - width,
+                         weakSelf.frame = CGRectMake(screenWidth + width/2,
                                                      weakSelf.frame.origin.y + (weakSelf.frame.size.height * 2) ,
                                                      weakSelf.frame.size.width,
                                                      weakSelf.frame.size.height);

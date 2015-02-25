@@ -1043,7 +1043,7 @@ static BOOL playerIsInDisabledState = NO;
     int sliderHeight = labelHeight;
     [_playbackSlider removeFromSuperview];
     [_playbackSlider setFrame:CGRectMake(xValue, yValue +2, sliderWidth, sliderHeight)];
-    _playbackSlider.transform = CGAffineTransformMakeScale(0.88, 0.88);  //make knob smaller
+    _playbackSlider.transform = CGAffineTransformMakeScale(0.82, 0.82);  //make knob smaller
     [self.view addSubview:_playbackSlider];
     
     //slider settings
@@ -1095,7 +1095,7 @@ static BOOL playerIsInDisabledState = NO;
     NSInteger durationInSeconds = [[MusicPlaybackController nowPlayingSong].duration integerValue];
     if(durationInSeconds <= 0.0f || isnan(durationInSeconds)){
         // Handle error
-        if(![self isInternetReachable])
+        if(![[ReachabilitySingleton sharedInstance] isConnectedToInternet])
             [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
         else
             [MyAlerts displayAlertWithAlertType:ALERT_TYPE_FatalSongDurationError];
@@ -1403,12 +1403,6 @@ static BOOL playerIsInDisabledState = NO;
             }
         }
     }
-}
-
-#pragma mark - Loading Spinner & Internet convenience methods
-- (BOOL)isInternetReachable
-{
-    return ([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == NotReachable) ? NO : YES;
 }
 
 #pragma mark - Responding to app state
