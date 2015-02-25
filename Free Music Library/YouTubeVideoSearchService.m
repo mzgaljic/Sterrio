@@ -348,7 +348,7 @@ const int time_out_interval_seconds = 8;
 
 
 /*
- possibly useful at some point:
+ possibly useful at some point to test if videos exist anymore:
  https://www.googleapis.com/youtube/v3/videos?id=mVp0brA3Hpk&part=contentDetails&key=AIzaSyAhZM3ZPcVq4q7ZdO7Pm44_7Q6U2udxzYo
  */
 

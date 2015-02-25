@@ -8,10 +8,18 @@
 
 #import "CoreDataCustomTableViewController.h"
 
+typedef enum{
+    ContentInsetStateDefault,
+    ContentInsetStateCompensatingForPlayer
+} ContentInsetState;
+
+
 @interface CoreDataCustomTableViewController ()
 {
     UITableView *tableView;  //this is the subviews tableview (gets set on the fly)
     MySearchBar *searchBar;  //also set on the fly
+    int offsetHeightWhenPlayerVisible;
+    ContentInsetState insetState;
 }
 
 @property (nonatomic) BOOL beganUpdates;
@@ -248,11 +256,12 @@
     tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
-
-- (void)dealloc
+- (void)viewDidAppear:(BOOL)animated
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [super viewDidAppear:animated];
+    [self compensateTableViewInsetForPlayer];
 }
+
 
 - (void)viewDidLoad
 {
@@ -265,6 +274,18 @@
                                              selector:@selector(nowPlayingSongsHasChanged:)
                                                  name:MZNewSongLoading
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(playerOnScreenStateChanged)
+                                                 name:MZPlayerToggledOnScreenStatus
+                                               object:nil];
+    int smallPlayerHeight = [SongPlayerCoordinator  heightOfMinimizedPlayer];
+    int padding = 20;
+    offsetHeightWhenPlayerVisible = smallPlayerHeight + padding;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)settingsPossiblyChanged
@@ -347,6 +368,38 @@
                              withRowAnimation:UITableViewRowAnimationFade];
         [tableView endUpdates];
     }
+}
+
+- (void)compensateTableViewInsetForPlayer
+{
+    UIEdgeInsets insetIncreaseContent = UIEdgeInsetsMake(0.0,
+                                                         0.0,
+                                                         offsetHeightWhenPlayerVisible,
+                                                         0.0);
+    UIEdgeInsets defaultInsets = UIEdgeInsetsMake(0, 0, 0, 0);
+    [UIView animateWithDuration:0.8 animations:^{
+        if([SongPlayerCoordinator isPlayerOnScreen])
+        {
+            if(insetState == ContentInsetStateDefault){
+                tableView.contentInset = insetIncreaseContent;
+                insetState = ContentInsetStateCompensatingForPlayer;
+            }
+        }
+        else
+        {
+            if(insetState == ContentInsetStateDefault)
+                tableView.contentInset = defaultInsets;
+            else if(insetState == ContentInsetStateCompensatingForPlayer){
+                tableView.contentInset = defaultInsets;
+                insetState = ContentInsetStateDefault;
+            }
+        }
+    }];
+}
+
+- (void)playerOnScreenStateChanged
+{
+    [self compensateTableViewInsetForPlayer];
 }
 
 @end

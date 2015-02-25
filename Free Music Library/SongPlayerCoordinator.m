@@ -10,19 +10,20 @@
 
 @interface SongPlayerCoordinator ()
 {
-    BOOL canIgnoreToolbar;  //navigation controller toolbar
     CGRect currentPlayerFrame;
     short SMALL_VIDEO_WIDTH;
-    short SMALL_VIDEO_FRAME_PADDING;
 }
 @end
 
 @implementation SongPlayerCoordinator
 @synthesize delegate = _delegate;
 static BOOL isVideoPlayerExpanded;
-static BOOL playerIsOnScreen;
+static BOOL playerIsOnScreen = NO;
 static BOOL isPlayerEnabled;
+static BOOL canIgnoreToolbar = YES;
 float const disabledPlayerAlpa = 0.20;
+float const amountToShrinkSmallPlayerWhenRespectingToolbar = 70;
+float const SMALL_VIDEO_FRAME_PADDING = 5;
 
 #pragma mark - Class lifecycle stuff
 + (instancetype)sharedInstance
@@ -44,13 +45,8 @@ float const disabledPlayerAlpa = 0.20;
             isVideoPlayerExpanded = YES;
         else
             isVideoPlayerExpanded = NO;
-        canIgnoreToolbar = YES;
-        SMALL_VIDEO_FRAME_PADDING = 10;
         
-        //make small video width smaller than usual on older (small) devices
-        SMALL_VIDEO_WIDTH = [UIScreen mainScreen].bounds.size.width/2.0 - SMALL_VIDEO_FRAME_PADDING;
-        if(SMALL_VIDEO_WIDTH > 200)
-            SMALL_VIDEO_WIDTH = 200;
+        [self setSmallVideoWidth];
     }
     return self;
 }
@@ -158,17 +154,21 @@ float const disabledPlayerAlpa = 0.20;
 
 - (void)shrunkenVideoPlayerNeedsToBeRotated
 {
-    PlayerView *videoPlayer = [MusicPlaybackController obtainRawPlayerView];
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
-        //landscape rotation...
-        currentPlayerFrame = [self smallPlayerFrameInLandscape];
+    if(! UIDeviceOrientationIsValidInterfaceOrientation([UIDevice currentDevice].orientation))
+        return;
+    if([SongPlayerCoordinator isPlayerOnScreen]){
+        PlayerView *videoPlayer = [MusicPlaybackController obtainRawPlayerView];
+        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+            //landscape rotation...
+            currentPlayerFrame = [self smallPlayerFrameInLandscape];
+        }
+        else{
+            //portrait rotation...
+            currentPlayerFrame = [self smallPlayerFrameInPortrait];
+        }
+        [videoPlayer setFrame:currentPlayerFrame];
     }
-    else{
-        //portrait rotation...
-        currentPlayerFrame = [self smallPlayerFrameInPortrait];
-    }
-    [videoPlayer setFrame:currentPlayerFrame];
 }
 
 - (void)shrunkenVideoPlayerShouldRespectToolbar
@@ -238,7 +238,7 @@ float const disabledPlayerAlpa = 0.20;
         x = window.frame.size.width - width - SMALL_VIDEO_FRAME_PADDING;
         y = window.frame.size.height - height - SMALL_VIDEO_FRAME_PADDING;
     } else{
-        width = SMALL_VIDEO_WIDTH - 70;
+        width = SMALL_VIDEO_WIDTH - amountToShrinkSmallPlayerWhenRespectingToolbar;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
         x = window.frame.size.width - width - SMALL_VIDEO_FRAME_PADDING;
         y = window.frame.size.height - toolbarHeight - height - SMALL_VIDEO_FRAME_PADDING;
@@ -260,7 +260,7 @@ float const disabledPlayerAlpa = 0.20;
         x = window.frame.size.width - width - SMALL_VIDEO_FRAME_PADDING;
         y = window.frame.size.height - height - SMALL_VIDEO_FRAME_PADDING;
     } else{
-        width = SMALL_VIDEO_WIDTH - 70;
+        width = SMALL_VIDEO_WIDTH - amountToShrinkSmallPlayerWhenRespectingToolbar;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
         x = window.frame.size.width - width - SMALL_VIDEO_FRAME_PADDING;
         y = window.frame.size.height - toolbarHeight - height - SMALL_VIDEO_FRAME_PADDING;
@@ -335,7 +335,7 @@ float const disabledPlayerAlpa = 0.20;
 
 + (void)playerWasKilled:(BOOL)killed
 {
-    playerIsOnScreen = !killed;
+    [[SongPlayerCoordinator sharedInstance] privateIsPlayerOnScreenSetter:!killed];
 }
 
 - (CGRect)currentPlayerViewFrame
@@ -346,6 +346,42 @@ float const disabledPlayerAlpa = 0.20;
 - (void)recordCurrentPlayerViewFrame:(CGRect)newFrame
 {
     currentPlayerFrame = newFrame;
+}
+
++ (int)heightOfMinimizedPlayer
+{
+    int width, height;
+    int smallVideoWidth = [SongPlayerCoordinator calculateSmallVideoWidth];
+    if(canIgnoreToolbar){
+        width = smallVideoWidth;
+        height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
+    } else{
+        width = smallVideoWidth - amountToShrinkSmallPlayerWhenRespectingToolbar;
+        height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
+    }
+    return height;
+}
+
+//private method
++ (int)calculateSmallVideoWidth
+{
+    //make small video width smaller than usual on older (small) devices
+    int width = [UIScreen mainScreen].bounds.size.width/2.0 - SMALL_VIDEO_FRAME_PADDING;
+    if(width > 200)
+        width = 200;
+    return width;
+}
+
+- (void)setSmallVideoWidth
+{
+    SMALL_VIDEO_WIDTH = [SongPlayerCoordinator calculateSmallVideoWidth];
+}
+
+- (void)privateIsPlayerOnScreenSetter:(BOOL)onScreen
+{
+    playerIsOnScreen = onScreen;
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZPlayerToggledOnScreenStatus
+                                                        object:nil];
 }
 
 @end

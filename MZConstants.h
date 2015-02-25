@@ -20,6 +20,8 @@ extern NSString * const MZPreviewPlayerPlay;
 extern NSString * const MZPreviewPlayerPause;
 extern NSString * const MZAppWasBackgrounded;
 
+extern NSString * const MZPlayerToggledOnScreenStatus;
+
 extern NSString * const MZNewSongLoading;
 
 extern NSString * const MZKeyNumLikes;

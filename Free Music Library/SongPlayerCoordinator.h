@@ -43,4 +43,7 @@
 - (CGRect)smallPlayerFrameInLandscape;
 - (CGRect)smallPlayerFrameInPortrait;
 
+//for figuring out how much to compensate the tableviews
++ (int)heightOfMinimizedPlayer;
+
 @end

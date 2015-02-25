@@ -20,6 +20,8 @@ NSString * const MZPreviewPlayerPlay = @"playVideoPreviewPlayer";
 NSString * const MZPreviewPlayerPause = @"pauseVideoPreviewPlayer";
 NSString * const MZAppWasBackgrounded = @"appEnteredBackgroundState";
 
+NSString * const MZPlayerToggledOnScreenStatus = @"the status has been toggled";
+
 NSString * const MZNewSongLoading = @"AVPlayer will try to load a new song now";
 
 NSString * const MZKeyNumLikes = @"numLikes";

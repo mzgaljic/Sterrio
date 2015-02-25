@@ -72,7 +72,6 @@ static NSOperationQueue *operationQueue;
     if(aSong != nil){
         movingForward = forward;
         playbackStarted = NO;
-        //[self playSong:aSong];
         [self beginLoadingVideoWithSong:aSong];
         [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
                                                             object:oldSong];
