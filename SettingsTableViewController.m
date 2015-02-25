@@ -68,15 +68,6 @@ static const int CELL_STREAM_PICKER_TAG = 107;
     [self.tableView reloadData];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-    
-    SDImageCache *imageCache = [SDImageCache sharedImageCache];
-    [imageCache clearMemory];
-}
-
 - (NSString *)convertFontSizeToString
 {
     short x = [AppEnvironmentConstants preferredSizeSetting];

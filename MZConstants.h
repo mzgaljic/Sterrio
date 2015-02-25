@@ -36,7 +36,7 @@ extern short const MZSecondsInAMinute;
 extern short const MZLongestCellularPlayableDuration;
 
 extern float const MZCellImageViewFadeDuration;
-
+extern float const MZSmallPlayerVideoFramePadding;
 
 extern NSString * const MZWhatsNewUserMsg;
 

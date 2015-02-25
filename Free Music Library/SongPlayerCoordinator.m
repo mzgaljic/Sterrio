@@ -23,7 +23,6 @@ static BOOL isPlayerEnabled;
 static BOOL canIgnoreToolbar = YES;
 float const disabledPlayerAlpa = 0.20;
 float const amountToShrinkSmallPlayerWhenRespectingToolbar = 70;
-float const SMALL_VIDEO_FRAME_PADDING = 5;
 
 #pragma mark - Class lifecycle stuff
 + (instancetype)sharedInstance
@@ -235,13 +234,13 @@ float const SMALL_VIDEO_FRAME_PADDING = 5;
     if(canIgnoreToolbar){
         width = SMALL_VIDEO_WIDTH;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
-        x = window.frame.size.width - width - SMALL_VIDEO_FRAME_PADDING;
-        y = window.frame.size.height - height - SMALL_VIDEO_FRAME_PADDING;
+        x = window.frame.size.width - width - MZSmallPlayerVideoFramePadding;
+        y = window.frame.size.height - height - MZSmallPlayerVideoFramePadding;
     } else{
         width = SMALL_VIDEO_WIDTH - amountToShrinkSmallPlayerWhenRespectingToolbar;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
-        x = window.frame.size.width - width - SMALL_VIDEO_FRAME_PADDING;
-        y = window.frame.size.height - toolbarHeight - height - SMALL_VIDEO_FRAME_PADDING;
+        x = window.frame.size.width - width - MZSmallPlayerVideoFramePadding;
+        y = window.frame.size.height - toolbarHeight - height - MZSmallPlayerVideoFramePadding;
     }
 
     return CGRectMake(x, y, width, height);
@@ -257,13 +256,13 @@ float const SMALL_VIDEO_FRAME_PADDING = 5;
     if(canIgnoreToolbar){
         width = SMALL_VIDEO_WIDTH;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
-        x = window.frame.size.width - width - SMALL_VIDEO_FRAME_PADDING;
-        y = window.frame.size.height - height - SMALL_VIDEO_FRAME_PADDING;
+        x = window.frame.size.width - width - MZSmallPlayerVideoFramePadding;
+        y = window.frame.size.height - height - MZSmallPlayerVideoFramePadding;
     } else{
         width = SMALL_VIDEO_WIDTH - amountToShrinkSmallPlayerWhenRespectingToolbar;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
-        x = window.frame.size.width - width - SMALL_VIDEO_FRAME_PADDING;
-        y = window.frame.size.height - toolbarHeight - height - SMALL_VIDEO_FRAME_PADDING;
+        x = window.frame.size.width - width - MZSmallPlayerVideoFramePadding;
+        y = window.frame.size.height - toolbarHeight - height - MZSmallPlayerVideoFramePadding;
     }
     
     return CGRectMake(x, y, width, height);
@@ -366,7 +365,7 @@ float const SMALL_VIDEO_FRAME_PADDING = 5;
 + (int)calculateSmallVideoWidth
 {
     //make small video width smaller than usual on older (small) devices
-    int width = [UIScreen mainScreen].bounds.size.width/2.0 - SMALL_VIDEO_FRAME_PADDING;
+    int width = [UIScreen mainScreen].bounds.size.width/2.0 - MZSmallPlayerVideoFramePadding;
     if(width > 200)
         width = 200;
     return width;

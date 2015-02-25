@@ -212,7 +212,7 @@ const short segmentedControlHeight = 42;
 {
     //reduce height by 2 and make stickyheader background black to make it seem
     //like a thin sleek line is dividing the segmented control and the pageViewController.
-    short heightOfSeperator = 1;
+    short heightOfSeperator = 2;
     frame = CGRectMake(frame.origin.x,
                        frame.origin.y,
                        frame.size.width,

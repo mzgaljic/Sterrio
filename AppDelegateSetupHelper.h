@@ -13,6 +13,7 @@
 #import "Playlist.h"
 #import "Artist.h"
 #import "UIDevice+DeviceName.h"
+#import "SDWebImageManager.h"
 
 static const short APP_LAUNCHED_ALREADY = 1;
 static const short APP_LAUNCHED_FIRST_TIME = 0;
@@ -23,6 +24,7 @@ static const short APP_LAUNCHED_FIRST_TIME = 0;
 + (void)logGlobalAppTintColor;
 
 + (void)reduceEncryptionStrengthOnRelevantDirs;
++ (void)setupDiskAndMemoryWebCache;
 + (BOOL)appLaunchedFirstTime;
 
 @end

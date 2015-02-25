@@ -34,6 +34,7 @@ typedef enum{
     UIColor *colorOfPlaybackButtons;
     
     BOOL firstTimeUpdatingSliderSinceShowingPlayer;
+    BOOL deferTimeLabelAdjustmentUntilPortrait;
     
     //for key value observing
     id timeObserver;
@@ -257,6 +258,7 @@ static int numTimesVCLoaded = 0;
     self.songNameLabel = nil;
     self.artistAndAlbumLabel = nil;
     numTimesSetupKeyValueObservers = 0;
+    accomodateInterfaceLabelsCounter = 0;
 }
 
 #pragma mark - Check and update GUI based on device orientation (or responding to events)
@@ -344,6 +346,10 @@ static int numTimesVCLoaded = 0;
     if(playerButtonsSetUp == NO){
         [self positionMusicButtonsOnScreenAndSetThemUp];
         [self positionPlaybackSliderOnScreen];
+    }
+    if(deferTimeLabelAdjustmentUntilPortrait){
+        deferTimeLabelAdjustmentUntilPortrait = NO;
+        [self accomodateInterfaceBasedOnDurationLabelSize:self.totalDurationLabel];
     }
     if(fromInterfaceOrientation != UIInterfaceOrientationPortrait)
         [self setupSliderHintView];
@@ -520,19 +526,25 @@ static int hours;
     return secondsToStringReturn;
 }
 
+static int accomodateInterfaceLabelsCounter = 0;
 - (void)accomodateInterfaceBasedOnDurationLabelSize:(UILabel *)changedLabel
 {
-    BOOL stateNotSetAndLabelIsDisplayingMinutes = (stateOfDurationLabels == DurationLabelStateNotSet && [changedLabel.text length] <= 5);
-    BOOL stateNotSetAndLabelIsDisplayingHours = (stateOfDurationLabels == DurationLabelStateNotSet && [changedLabel.text length] > 5);
-    
-    if(stateNotSetAndLabelIsDisplayingMinutes){
+    if(lastKnownOrientation ==  UIInterfaceOrientationLandscapeLeft ||
+       lastKnownOrientation == UIInterfaceOrientationLandscapeRight){
+        //here i am using this to find out if this is the first time the view has appeared
+        if(accomodateInterfaceLabelsCounter == 0){
+            deferTimeLabelAdjustmentUntilPortrait = YES;
+            accomodateInterfaceLabelsCounter++;
+            return;
+        }
+    }
+    //duration state not set yet, and we are displaying minutes.
+    if(stateOfDurationLabels == DurationLabelStateNotSet && [changedLabel.text length] <= 5){
         stateOfDurationLabels = DurationLabelStateMinutes;
         return;
-    } else if(stateNotSetAndLabelIsDisplayingHours){
-        stateOfDurationLabels = DurationLabelStateHours;
-        return;
+        //dont need to check for the oppsosite condition here because it works already for hours.
     }
-
+    
     UILabel *label = changedLabel;
     short offset = longDurationLabelOffset;
     CGRect originalCurrTimeLabelFrame = _currentTimeLabel.frame;
@@ -587,7 +599,7 @@ static int hours;
         _currentTimeLabel.frame = newCurrTimeLabelFrame;
         _totalDurationLabel.frame = newTotalTimeLabelFrame;
         _playbackSlider.frame = newSliderFrame;
-    } completion:^(BOOL finished) {}];
+    } completion:nil];
 }
 
 - (void)playbackHasStopped

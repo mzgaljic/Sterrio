@@ -37,6 +37,7 @@ short const MZSecondsInAMinute = 60;
 short const MZLongestCellularPlayableDuration = 600;
 
 float const MZCellImageViewFadeDuration = 0.49f;
+float const MZSmallPlayerVideoFramePadding = 6.0f;
 
 
 

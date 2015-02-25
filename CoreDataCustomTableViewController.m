@@ -279,8 +279,9 @@ typedef enum{
                                                  name:MZPlayerToggledOnScreenStatus
                                                object:nil];
     int smallPlayerHeight = [SongPlayerCoordinator  heightOfMinimizedPlayer];
-    int padding = 20;
-    offsetHeightWhenPlayerVisible = smallPlayerHeight + padding;
+    
+    //multiplied by 2 since we want the padding amount to be applied under AND above the player height.
+    offsetHeightWhenPlayerVisible = smallPlayerHeight + (MZSmallPlayerVideoFramePadding * 2);
 }
 
 - (void)dealloc
@@ -372,11 +373,12 @@ typedef enum{
 
 - (void)compensateTableViewInsetForPlayer
 {
-    UIEdgeInsets insetIncreaseContent = UIEdgeInsetsMake(0.0,
-                                                         0.0,
+    UIEdgeInsets currentInsets = tableView.contentInset;
+    UIEdgeInsets insetIncreaseContent = UIEdgeInsetsMake(currentInsets.top,
+                                                         0,
                                                          offsetHeightWhenPlayerVisible,
-                                                         0.0);
-    UIEdgeInsets defaultInsets = UIEdgeInsetsMake(0, 0, 0, 0);
+                                                         0);
+    UIEdgeInsets defaultInsets = UIEdgeInsetsMake(currentInsets.top, 0, 0, 0);
     [UIView animateWithDuration:0.8 animations:^{
         if([SongPlayerCoordinator isPlayerOnScreen])
         {

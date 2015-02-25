@@ -138,13 +138,6 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     canShowAddtoLibButton = YES;
 }
 
-- (void)didReceiveMemoryWarning
-{
-    // Dispose of any resources that can be recreated.
-    SDImageCache *imageCache = [SDImageCache sharedImageCache];
-    [imageCache clearMemory];
-}
-
 
 #pragma mark - Tableview delegate implementations
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView

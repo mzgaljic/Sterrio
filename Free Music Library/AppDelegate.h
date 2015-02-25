@@ -17,7 +17,6 @@
 #import "Playlist.h"
 #import "GenreConstants.h"
 #import "AlbumArtUtilities.h"
-#import "SDWebImageManager.h"
 #import "AppEnvironmentConstants.h"
 #import "UIColor+LighterAndDarker.h"
 #import "MusicPlaybackController.h"

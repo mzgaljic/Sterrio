@@ -69,8 +69,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [self setProductionModeValue];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
-    // Override point for customization after application launch.
-    [[SDImageCache sharedImageCache] setMaxCacheSize:1000000];  //1 mb cache size
+    [AppDelegateSetupHelper setupDiskAndMemoryWebCache];
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     
     //set global default "AppColorScheme"
@@ -134,6 +133,12 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     //display how many songs were skipped while user was in background (long videos skipped)
     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
     [MusicPlaybackController resetNumberOfLongVideosSkippedOnCellularConnection];
+}
+
+- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
+{
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    [[SDImageCache sharedImageCache] clearMemory];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application

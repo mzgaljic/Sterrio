@@ -75,6 +75,40 @@ static BOOL PRODUCTION_MODE;
     [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
 }
 
++ (void)setupDiskAndMemoryWebCache
+{
+    [[SDImageCache sharedImageCache] setMaxCacheSize:4000000];  //4 mb cache size
+    int cacheSizeMemory = 4 * 1024 * 1024;  //4MB
+    int cacheSizeDisk = 15 * 1024 * 1024;  //15MB
+    NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:cacheSizeMemory
+                                                            diskCapacity:cacheSizeDisk
+                                                                diskPath:[AppDelegateSetupHelper obtainNSURLCachePath]];
+    [NSURLCache setSharedURLCache:sharedCache];
+}
+
++ (NSString *)obtainNSURLCachePath
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                         NSUserDomainMask,
+                                                         YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
+    NSString *dirPath = [documentsDirectory stringByAppendingPathComponent:@"NSURL Cache"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    if (![fileManager fileExistsAtPath:dirPath]){
+        NSArray *keys = [NSArray arrayWithObjects:NSFileProtectionKey, nil];
+        NSArray *objects = [NSArray arrayWithObjects: NSFileProtectionCompleteUntilFirstUserAuthentication, nil];
+        NSDictionary *permission = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
+        
+        //Create folder with weaker encryption
+        [fileManager createDirectoryAtPath:dirPath
+               withIntermediateDirectories:YES
+                                attributes:permission
+                                     error:nil];
+    }
+    return dirPath;
+}
+
 static short appLaunchedFirstTimeDefensiveCount = 0;
 + (BOOL)appLaunchedFirstTime
 {
