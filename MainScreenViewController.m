@@ -210,7 +210,7 @@ const short segmentedControlHeight = 42;
 
 - (HMSegmentedControl *)createNewSegmentedControlWithFrame:(CGRect)frame
 {
-    //reduce height by 2 and make stickyheader background black to make it seem
+    //reduce height and make stickyheader background grey to make it seem
     //like a thin sleek line is dividing the segmented control and the pageViewController.
     short heightOfSeperator = 2;
     frame = CGRectMake(frame.origin.x,

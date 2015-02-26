@@ -22,7 +22,6 @@ typedef NS_ENUM(NSUInteger, Connection_State){
 @interface ReachabilitySingleton ()
 {
     Reachability *reachability;
-    Reachability *wifiReachability;
 }
 @property(nonatomic, strong) NSNotificationCenter *notifCenter;
 @property(nonatomic, assign) Connection_Type connectionType;
@@ -49,15 +48,10 @@ NSString * const host_Name = @"www.youtube.com";
         //3G,EDGE,CDMA does count as "reachable". Reachable as long as we are connected somehow.
         reachability.reachableOnWWAN = YES;
         
-        wifiReachability = [Reachability reachabilityForInternetConnection];
-        //3G,EDGE,CDMA does NOT count as "reachable". Only reachable on wifi.
-        wifiReachability.reachableOnWWAN = NO;
-        
         self.notifCenter = [NSNotificationCenter defaultCenter];
         [self setupBlocks];
         [self initEnumStates];
         [reachability startNotifier];
-        [wifiReachability startNotifier];
     }
     return self;
 }
@@ -87,6 +81,10 @@ NSString * const host_Name = @"www.youtube.com";
     {
         //conected to internet
         weakself.connectionState = Connection_State_Connected;
+        if([reach isReachableViaWiFi])
+            weakself.connectionType = Connection_Type_Wifi;
+        else
+            weakself.connectionType = Connection_Type_Cellular;
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [weakself.notifCenter postNotificationName:MZReachabilityStateChanged
@@ -97,31 +95,12 @@ NSString * const host_Name = @"www.youtube.com";
     {
         //not connected to internet
         weakself.connectionState = Connection_State_Disconnected;
-        [weakself.notifCenter postNotificationName:MZReachabilityStateChanged
-                                            object:nil];
-    };
-    //------------------------------------------------------
-    wifiReachability.reachableBlock = ^(Reachability*reach)
-    {
-        //conected to wifi
-        weakself.connectionType = Connection_Type_Wifi;
-        weakself.connectionState = Connection_State_Connected;
+        weakself.connectionType = Connection_Type_None;
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [weakself.notifCenter postNotificationName:MZReachabilityStateChanged
                                                 object:nil];
         });
-    };
-    wifiReachability.unreachableBlock = ^(Reachability*reach)
-    {
-        //not connected to wifi
-        if(weakself.connectionState == Connection_State_Connected)
-            weakself.connectionType = Connection_Type_Cellular;
-        else
-            weakself.connectionType = Connection_Type_None;
-        
-        [weakself.notifCenter postNotificationName:MZReachabilityStateChanged
-                                            object:nil];
     };
 }
 

@@ -19,6 +19,7 @@
 @synthesize delegate = _delegate;
 static BOOL isVideoPlayerExpanded;
 static BOOL playerIsOnScreen = NO;
+static BOOL playerIsInDisabledState = NO;
 static BOOL isPlayerEnabled;
 static BOOL canIgnoreToolbar = YES;
 float const disabledPlayerAlpa = 0.20;
@@ -345,6 +346,32 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 70;
 - (void)recordCurrentPlayerViewFrame:(CGRect)newFrame
 {
     currentPlayerFrame = newFrame;
+}
+
+static BOOL wasInPlayStateBeforeGUIDisabled = NO;
++ (void)placePlayerInDisabledState:(BOOL)disabled
+{
+    playerIsInDisabledState = disabled;
+    if(disabled){
+        if([MusicPlaybackController obtainRawAVPlayer].rate > 0){
+            wasInPlayStateBeforeGUIDisabled = YES;
+            ;
+        }
+        else
+            wasInPlayStateBeforeGUIDisabled = NO;
+    } else{
+        wasInPlayStateBeforeGUIDisabled = NO;
+    }
+}
+
++ (BOOL)isPlayerInDisabledState
+{
+    return playerIsInDisabledState;
+}
+
++ (BOOL)wasPlayerInPlayStateBeforeGUIDisabled
+{
+    return wasInPlayStateBeforeGUIDisabled;
 }
 
 + (int)heightOfMinimizedPlayer

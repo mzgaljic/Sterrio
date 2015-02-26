@@ -134,7 +134,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
                                                  name:CURRENT_SONG_RESUMED_PLAYBACK
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(currentSongPlaybackMustBeDisabled:)
+                                             selector:@selector(playerMustDisplayDisabledState:)
                                                  name:MZInterfaceNeedsToBlockCurrentSongPlayback
                                                object:nil];
     self.playbackSlider.dataSource = self;
@@ -620,52 +620,51 @@ static int accomodateInterfaceLabelsCounter = 0;
     //another method will reenable it when necessary
     if(moreSongsInQueue)
         self.playbackSlider.enabled = NO;
+    else
+        self.playbackSlider.enabled = YES;  //this is the last song anyway, slider can remain active.
 }
 
-static BOOL wasInPlayStateBeforeGUIDisabled = NO;
-static BOOL playerIsInDisabledState = NO;
-- (void)currentSongPlaybackMustBeDisabled:(NSNotification *)notif
+
+- (void)playerMustDisplayDisabledState:(NSNotification *)notif
 {
+    //the actual play and pause logic is done in a similar  method in the AVPlayer itself.
+    //this is just forcing the GUI to represent the current state accurately.
     if([notif.name isEqualToString:MZInterfaceNeedsToBlockCurrentSongPlayback]){
         NSNumber *val = (NSNumber *)notif.object;
         BOOL disabled = [val boolValue];
         if(disabled){
-            playerIsInDisabledState = YES;
-            if([MusicPlaybackController obtainRawAVPlayer].rate > 0)
-                wasInPlayStateBeforeGUIDisabled = YES;
-            else
-                wasInPlayStateBeforeGUIDisabled = NO;
-            
-            [MusicPlaybackController explicitlyPausePlayback:YES];
-            [self performSelectorOnMainThread:@selector(toggleDisplayToPausedState)
-                                   withObject:nil
-                                waitUntilDone:YES];
-            //[self toggleDisplayToPausedState];
-            [MusicPlaybackController pausePlayback];
-            playButton.enabled = NO;
-            self.playbackSlider.enabled = NO;
+            [self disablingGuiDelayed];
         } else{
-            playerIsInDisabledState = NO;
-            if(wasInPlayStateBeforeGUIDisabled){
-                [MusicPlaybackController explicitlyPausePlayback:NO];
-                [self performSelectorOnMainThread:@selector(toggleDisplayToPlayingState)
-                                       withObject:nil
-                                    waitUntilDone:YES];
-                //[self toggleDisplayToPlayingState];
-                [MusicPlaybackController resumePlayback];
-                
-            }
-            playButton.enabled = YES;
-            self.playbackSlider.enabled = YES;
+            [self reenablingGuiDelayed];
         }
     }
 }
 
+- (void)disablingGuiDelayed
+{
+    [self toggleDisplayToPausedState];
+    [playButton setEnabled:NO];
+    [self.playbackSlider setEnabled:NO];
+}
+
+- (void)reenablingGuiDelayed
+{
+    if([SongPlayerCoordinator wasPlayerInPlayStateBeforeGUIDisabled]){
+        [self toggleDisplayToPlayingState];
+    }
+    [playButton setEnabled:YES];
+    if(! waitingForNextOrPrevVideoToLoad)
+        [self.playbackSlider setEnabled:YES];
+}
+
 - (void)checkIfInterfaceShouldBeDisabled
 {
-    if(playerIsInDisabledState){
-        NSNotification *fakeNotification = [NSNotification notificationWithName:MZInterfaceNeedsToBlockCurrentSongPlayback object:[NSNumber numberWithBool:YES]];
-        [self currentSongPlaybackMustBeDisabled:fakeNotification];
+    if([SongPlayerCoordinator isPlayerInDisabledState]){
+        NSNotification *notif;
+        notif = [[NSNotification alloc] initWithName:MZInterfaceNeedsToBlockCurrentSongPlayback
+                                              object:[NSNumber numberWithBool:YES]
+                                            userInfo:nil];
+        [self playerMustDisplayDisabledState:notif];
     }
 }
 

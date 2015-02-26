@@ -65,6 +65,42 @@ static NSOperationQueue *operationQueue;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)begingListeningForNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(songDidFinishPlaying:)
+                                                 name:AVPlayerItemDidPlayToEndTimeNotification
+                                               object:playerItem];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(connectionStateChanged)
+                                                 name:MZReachabilityStateChanged
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(currentSongPlaybackMustBeDisabled:)
+                                                 name:MZInterfaceNeedsToBlockCurrentSongPlayback
+                                               object:nil];
+}
+
+- (void)currentSongPlaybackMustBeDisabled:(NSNotification *)notif
+{
+    if([notif.name isEqualToString:MZInterfaceNeedsToBlockCurrentSongPlayback]){
+        NSNumber *val = (NSNumber *)notif.object;
+        BOOL disabled = [val boolValue];
+        if(disabled){
+            [SongPlayerCoordinator placePlayerInDisabledState:YES];
+            [MusicPlaybackController explicitlyPausePlayback:YES];
+            [MusicPlaybackController pausePlayback];
+        } else{
+            if([SongPlayerCoordinator wasPlayerInPlayStateBeforeGUIDisabled]){
+                [MusicPlaybackController explicitlyPausePlayback:NO];
+                [MusicPlaybackController resumePlayback];
+            }
+            [SongPlayerCoordinator placePlayerInDisabledState:NO];
+        }
+    }
+}
+
+#pragma mark - Working with the queue to perform player actions (play, skip, etc)
 - (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)forward oldSong:(Song *)oldSong
 {
     [MusicPlaybackController printQueueContents];
@@ -84,22 +120,15 @@ static NSOperationQueue *operationQueue;
     }
 }
 
-- (void)begingListeningForNotifications
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(songDidFinishPlaying:)
-                                                 name:AVPlayerItemDidPlayToEndTimeNotification
-                                               object:playerItem];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(connectionStateChanged)
-                                                 name:MZReachabilityStateChanged
-                                               object:nil];
-}
-
 //public wrapper for songDidFinishPlaying:
 - (void)songNeedsToBeSkippedDueToIssue
 {
     [self songDidFinishPlaying:nil];
+    [self allowSongDidFinishNotificationToProceed];
+}
+
+- (void)allowSongDidFinishNotificationToProceed
+{
     allowSongDidFinishToExecute = YES;
 }
 
@@ -134,12 +163,11 @@ static NSOperationQueue *operationQueue;
     }
 }
 
+#pragma mark - initiating playback
 - (void)beginLoadingVideoWithSong:(Song *)aSong
 {
     //prevents any funny behavior with existing video until the new one loads.
     [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
-    
-    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     
     secondsLoaded = 0;
     stallHasOccured = NO;
@@ -154,14 +182,26 @@ static NSOperationQueue *operationQueue;
     [fetchVideoInfoOperation addDependency:determineVideoPlayableOperation];
     [operationQueue addOperation:determineVideoPlayableOperation];
     [operationQueue addOperation:fetchVideoInfoOperation];
+    
+    //if player was disabled, see if we can re-enable it
+    if([SongPlayerCoordinator isPlayerInDisabledState]){
+        if([aSong.duration integerValue] <= MZLongestCellularPlayableDuration){
+            //enable GUI again, this song is short enough to play on cellular
+            [MusicPlaybackController explicitlyPausePlayback:NO];
+            [SongPlayerCoordinator placePlayerInDisabledState:NO];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:MZInterfaceNeedsToBlockCurrentSongPlayback object:[NSNumber numberWithBool:NO]];
+        }
+    }
 }
 
-- (void)begingLoadingPlayerWithPlayerItem:(AVPlayerItem *)item
+- (void)beginPlaybackWithPlayerItem:(AVPlayerItem *)item
 {
     NSLog(@"Setting player item.");
     if([NSThread mainThread]){
         [self replaceCurrentItemWithPlayerItem:item];
         [self play];
+        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     } else{
         __weak MyAVPlayer *weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^(void){
@@ -172,6 +212,7 @@ static NSOperationQueue *operationQueue;
     }
 }
 
+#pragma mark - responding to current connection state
 - (void)connectionStateChanged
 {
     Song *nowPlaying = [MusicPlaybackController nowPlayingSong];

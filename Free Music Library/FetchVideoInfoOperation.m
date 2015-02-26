@@ -126,6 +126,8 @@
             }
             
             if(allowedToPlayVideo && video != nil && asset.playable){
+                MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+                [player allowSongDidFinishNotificationToProceed];
                 if ([weakSelf isCancelled]){
                     [weakSelf finishBecauseOfCancel];
                     return;
@@ -133,10 +135,9 @@
                 [weakCoordinator enablePlayerAgain];
                 AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:asset];
                 //allowSongDidFinishToExecute = YES;
-                MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     // update the UI here
-                    [player begingLoadingPlayerWithPlayerItem:playerItem];
+                    [player beginPlaybackWithPlayerItem:playerItem];
                 }];
                 
                 [weakSelf finish];  //cleans up this operation and marks it as finished.

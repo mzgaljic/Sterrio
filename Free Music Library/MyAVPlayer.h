@@ -22,7 +22,7 @@
 
 - (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)yes oldSong:(Song *)oldSong;
 
-- (void)begingLoadingPlayerWithPlayerItem:(AVPlayerItem *)item;
+- (void)beginPlaybackWithPlayerItem:(AVPlayerItem *)item;
 
 - (void)showSpinnerForInternetConnectionIssue;
 - (void)showSpinnerForBasicLoading;
@@ -34,5 +34,6 @@
 - (void)dismissAllSpinners;
 
 - (void)songNeedsToBeSkippedDueToIssue;
+- (void)allowSongDidFinishNotificationToProceed;
 
 @end

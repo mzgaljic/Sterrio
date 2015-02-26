@@ -38,6 +38,11 @@
   frame was changed via code other than the methods in the SongPlayerCoordinator class. */
 - (void)recordCurrentPlayerViewFrame:(CGRect)newFrame;
 
+//for disabling playback in response to particular events (losing wifi connection, etc)
++ (void)placePlayerInDisabledState:(BOOL)disabled;
++ (BOOL)isPlayerInDisabledState;
++ (BOOL)wasPlayerInPlayStateBeforeGUIDisabled;
+
 
 //This is mainly exposed for the PlayerView class
 - (CGRect)smallPlayerFrameInLandscape;

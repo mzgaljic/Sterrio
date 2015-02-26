@@ -134,6 +134,9 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     [SongPlayerCoordinator playerWasKilled:YES];
     [[NowPlaying sharedInstance] setNewNowPlayingSong:nil
                                           WithContext:SongPlaybackContextUnspecified];
+    //reset player state to defaults
+    [MusicPlaybackController explicitlyPausePlayback:NO];
+    [SongPlayerCoordinator placePlayerInDisabledState:NO];
 }
 
 #pragma mark - Orientation and view "touch" code

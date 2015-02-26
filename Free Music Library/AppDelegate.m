@@ -68,6 +68,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 {
     [self setProductionModeValue];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    [ReachabilitySingleton sharedInstance];  //init reachability class
     
     [AppDelegateSetupHelper setupDiskAndMemoryWebCache];
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
