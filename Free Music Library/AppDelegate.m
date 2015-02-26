@@ -158,7 +158,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         playerView.alpha = 1;
     [self reattachPlayerToPlayerLayer];
     [self.window addSubview:playerView];
-    //ALLOW USER INTERACTION!!!
     [UIView animateWithDuration:animationDuration
                           delay:0
                         options:UIViewAnimationOptionAllowUserInteraction
@@ -379,7 +378,7 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
         //Start the long-running task and return immediately.
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             pthread_setname_np("Bckgrnd long vid state checker");
-            int sleepInterval = 1;
+            int sleepInterval = 3;
             Song *nowPlaying;
             while (true){
                 sleep(sleepInterval);
@@ -407,8 +406,8 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
                         }
                     }
                 }
-            }
-        });
+            }  //end while
+        });  //end async dispatch
     }
 }
 

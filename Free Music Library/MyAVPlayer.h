@@ -20,6 +20,7 @@
 
 
 @interface MyAVPlayer : AVPlayer
+@property (nonatomic, strong) NSNumber *elapsedTimeBeforeDisabling;
 
 - (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)yes oldSong:(Song *)oldSong;
 

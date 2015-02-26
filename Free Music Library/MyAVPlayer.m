@@ -175,7 +175,6 @@ static void *mRateDidChange = &mRateDidChange;
     if([NSThread mainThread]){
         [self replaceCurrentItemWithPlayerItem:item];
         [self play];
-        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     } else{
         __weak MyAVPlayer *weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^(void){
@@ -240,17 +239,16 @@ static AVPlayerItem *disabledPlayerItem;
 static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
 - (void)currentSongPlaybackMustBeDisabled:(NSNotification *)notif
 {
-    //NOTE: timing of the updateLockScreen methods absolutely matter here! Timing of everything matters
-    //actually
+    //NOTE: When player is resumed or paused, the rate key observer will fire calls to
+    //update the lock screen with the needed info.
     if([notif.name isEqualToString:MZInterfaceNeedsToBlockCurrentSongPlayback]){
         NSNumber *val = (NSNumber *)notif.object;
         BOOL disabled = [val boolValue];
         if(disabled){
             [SongPlayerCoordinator placePlayerInDisabledState:YES];
             [MusicPlaybackController explicitlyPausePlayback:YES];
+            self.elapsedTimeBeforeDisabling = [NSNumber numberWithInteger:CMTimeGetSeconds(self.currentItem.currentTime)];
             [MusicPlaybackController pausePlayback];
-            //will show msg to user in control center that wifi is needed
-            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
             
             //make copy of AVPlayerItem which will retain buffered data
             disabledPlayerItem = [self.currentItem copy];
@@ -270,7 +268,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                 [MusicPlaybackController resumePlayback];
             }
             [SongPlayerCoordinator placePlayerInDisabledState:NO];
-            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+            disabledPlayerItem = nil;
         }
     }
 }

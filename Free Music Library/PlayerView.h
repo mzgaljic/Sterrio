@@ -11,6 +11,7 @@
 #import "SongPlayerCoordinator.h"
 #import "UIWindow+VisibleVC.h"
 #import "UIView+ScreenshotView.h"
+#import "OperationQueuesSingeton.h"
 
 @interface PlayerView : UIView
 

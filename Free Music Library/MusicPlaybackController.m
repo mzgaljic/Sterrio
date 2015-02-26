@@ -386,15 +386,13 @@ static int numLongSongsSkipped = 0;
 }
 
 #pragma mark - Lock Screen Song Info & Art
-static NSNumber *timeBeforeShowingDisabledState;
-static BOOL playerWasDisabledInLastState = NO;
 + (void)updateLockScreenInfoAndArtForSong:(Song *)song
 {
     Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
     if (playingInfoCenter){
         Song *nowPlayingSong = [MusicPlaybackController nowPlayingSong];
         NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
-        AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
+        MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
         
         UIImage *albumArtImage = [AlbumArtUtilities albumArtFileNameToUiImage:nowPlayingSong.albumArtFileName];
         if(albumArtImage == nil){
@@ -417,12 +415,21 @@ static BOOL playerWasDisabledInLastState = NO;
         if(nowPlayingSong.album.albumName != nil)
             [songInfo setObject:nowPlayingSong.album.albumName forKey:MPMediaItemPropertyAlbumTitle];
         
+        //giving hints to user if song stopped due to wifi being lost
+        if(player.rate == 0 && ![MusicPlaybackController isPlayerStalled]){
+            [songInfo setObject:[songInfo objectForKey:MPMediaItemPropertyTitle]
+                         forKey:MPMediaItemPropertyAlbumTitle];
+            NSString *msg = @"WiFi required for playback...";
+            [songInfo setObject:msg forKey:MPMediaItemPropertyTitle];
+        }
+        
         NSInteger duration = [nowPlayingSong.duration integerValue];
         [songInfo setObject:[NSNumber numberWithInteger:duration]
                      forKey:MPMediaItemPropertyPlaybackDuration];
         NSNumber *currentTime;
-        if(playerWasDisabledInLastState && ![SongPlayerCoordinator isPlayerInDisabledState])
-            currentTime = timeBeforeShowingDisabledState;
+        if(player.rate == 1 && ![MusicPlaybackController isPlayerStalled]
+           && [SongPlayerCoordinator isPlayerInDisabledState])
+            currentTime = player.elapsedTimeBeforeDisabling;
          else
             currentTime =[NSNumber numberWithInteger:CMTimeGetSeconds(player.currentItem.currentTime)];
         
@@ -430,17 +437,6 @@ static BOOL playerWasDisabledInLastState = NO;
                      forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
         [songInfo setObject:[NSNumber numberWithFloat:player.rate]
                      forKey:MPNowPlayingInfoPropertyPlaybackRate];
-        
-        //giving hints to user if song stopped due to wifi being lost
-        if([SongPlayerCoordinator isPlayerInDisabledState]){
-            [songInfo setObject:[songInfo objectForKey:MPMediaItemPropertyTitle]
-                         forKey:MPMediaItemPropertyAlbumTitle];
-            NSString *msg = @"WiFi required for playback...";
-            [songInfo setObject:msg forKey:MPMediaItemPropertyTitle];
-            timeBeforeShowingDisabledState = [NSNumber numberWithInteger:CMTimeGetSeconds(player.currentItem.currentTime)];
-            playerWasDisabledInLastState = YES;
-        } else
-            playerWasDisabledInLastState = NO;
         
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
     }
