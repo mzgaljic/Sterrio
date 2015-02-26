@@ -359,7 +359,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         //remove songs from queue if they are in it
         for(Song *aSong in album.albumSongs)
         {
-            [MusicPlaybackController songAboutToBeDeleted:aSong];
+            [MusicPlaybackController songAboutToBeDeleted:aSong
+                                          deletionContext:SongPlaybackContextAlbums];
             [aSong removeAlbumArt];
         }
         

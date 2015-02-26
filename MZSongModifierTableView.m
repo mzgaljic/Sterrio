@@ -409,8 +409,6 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     if(indexPath.section == 1){
         if(indexPath.row == 0){
             if(! _creatingANewSong){
-                //check if song is in queue, we are about to delete it
-                [MusicPlaybackController songAboutToBeDeleted:_songIAmEditing];
                 [_songIAmEditing removeAlbumArt];
                 
                 [[CoreDataManager context] deleteObject:_songIAmEditing];
@@ -879,7 +877,8 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     [AlbumArtUtilities deleteAlbumArtFileWithName:@"temp art-editing mode-Mark Zgaljic.jpg"];
     
     if(self.creatingANewSong){
-        [MusicPlaybackController songAboutToBeDeleted:_songIAmEditing];
+        //dont need to warn that im about to delete the song, its impossible for the user to be
+        //listening to this song if he never finished creating it.
         [[CoreDataManager context] deleteObject:_songIAmEditing];
     }
     

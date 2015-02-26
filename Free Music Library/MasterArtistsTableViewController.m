@@ -297,13 +297,15 @@ static BOOL PRODUCTION_MODE;
         //remove songs from queue
         for(Song *aSong in artist.standAloneSongs)
         {
-            [MusicPlaybackController songAboutToBeDeleted:aSong];
+            [MusicPlaybackController songAboutToBeDeleted:aSong
+                                          deletionContext:SongPlaybackContextArtists];
             [aSong removeAlbumArt];
         }
         for(Album *anAlbum in artist.albums)
         {
             for(Song *aSong in anAlbum.albumSongs)
-                [MusicPlaybackController songAboutToBeDeleted:aSong];
+                [MusicPlaybackController songAboutToBeDeleted:aSong
+                                              deletionContext:SongPlaybackContextArtists];
             
             [anAlbum removeAlbumArt];
         }

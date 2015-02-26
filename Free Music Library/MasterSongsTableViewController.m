@@ -439,7 +439,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
         //obtain object for the deleted song
         Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
-        [MusicPlaybackController songAboutToBeDeleted:song];
+        [MusicPlaybackController songAboutToBeDeleted:song deletionContext:SongPlaybackContextSongs];
         [song removeAlbumArt];
         
         NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:[CoreDataManager context]];

@@ -307,7 +307,8 @@
         Playlist *playlist = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
         //check if any of the songs in this playlist are currently playing, if so, set the avplayer to nil (and pause it) so it doesn't crash!
-        [MusicPlaybackController groupOfSongsAboutToBeDeleted:[playlist.playlistSongs array]];
+        [MusicPlaybackController groupOfSongsAboutToBeDeleted:[playlist.playlistSongs array]
+                                              deletionContext:SongPlaybackContextPlaylists];
         
         //delete the playlist and save changes
         NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Playlist" inManagedObjectContext:[CoreDataManager context]];

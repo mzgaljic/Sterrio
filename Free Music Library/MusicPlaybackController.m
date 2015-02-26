@@ -120,15 +120,17 @@ static int numLongSongsSkipped = 0;
     //NOTE: YTVideoAvPlayer will automatically rewind further back in the queue if some songs cant be played
 }
 
-+ (void)songAboutToBeDeleted:(Song *)song;
++ (void)songAboutToBeDeleted:(Song *)song deletionContext:(SongPlaybackContext)context
 {
     if([[MusicPlaybackController playbackQueue] isSongInQueue:song]){
         if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more items to play
-            if([[MusicPlaybackController nowPlayingSong].song_id isEqual:song.song_id])
+            if([[MusicPlaybackController nowPlayingSongObject].nowPlaying.song_id isEqual:song.song_id]
+               && [MusicPlaybackController nowPlayingSongObject].context == context)
                 [self skipToNextTrack];
         }
         else{
-            if([self isSongLastInQueue:song] && [[self nowPlayingSong].song_id isEqual: song.song_id]){
+            if([self isSongLastInQueue:song] && [[self nowPlayingSong].song_id isEqual: song.song_id]
+               && [MusicPlaybackController nowPlayingSongObject].context == context){
                 [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
                 [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
                 if([MusicPlaybackController sizeOfEntireQueue] > 0)
@@ -142,15 +144,20 @@ static int numLongSongsSkipped = 0;
     }
 }
 
-+ (void)groupOfSongsAboutToBeDeleted:(NSArray *)songs
++ (void)groupOfSongsAboutToBeDeleted:(NSArray *)songs deletionContext:(SongPlaybackContext)context
 {
     BOOL willNeedToAdvanceInQueue = NO;
     BOOL shouldMoveBackwardAndPause = NO;
     for(Song *aSong in songs){
-        if([[MusicPlaybackController playbackQueue] isSongInQueue:aSong]){
+        BOOL songIsInCurrentQueue = [[MusicPlaybackController playbackQueue] isSongInQueue:aSong];
+        //song cant really be in the current queue if the contexts arent the same
+        if([MusicPlaybackController nowPlayingSongObject].context != context)
+            songIsInCurrentQueue = NO;
+        if(songIsInCurrentQueue){
             
             if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more items to play
-                if([[MusicPlaybackController nowPlayingSong].song_id isEqual:aSong.song_id]){
+                if([[MusicPlaybackController nowPlayingSong].song_id isEqual:aSong.song_id]
+                   && [MusicPlaybackController nowPlayingSongObject].context == context){
                     willNeedToAdvanceInQueue = YES;
                     [MusicPlaybackController pausePlayback];
                     [MusicPlaybackController explicitlyPausePlayback:YES];
