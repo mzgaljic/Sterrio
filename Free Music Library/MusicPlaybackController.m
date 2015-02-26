@@ -122,7 +122,9 @@ static int numLongSongsSkipped = 0;
 
 + (void)songAboutToBeDeleted:(Song *)song deletionContext:(SongPlaybackContext)context
 {
-    if([[MusicPlaybackController playbackQueue] isSongInQueue:song]){
+    if([[MusicPlaybackController playbackQueue] isSongInQueue:song]
+       && [MusicPlaybackController nowPlayingSongObject].context == context){
+        //song is ACTUALLY in the queue
         if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more items to play
             if([[MusicPlaybackController nowPlayingSongObject].nowPlaying.song_id isEqual:song.song_id]
                && [MusicPlaybackController nowPlayingSongObject].context == context)
@@ -141,6 +143,23 @@ static int numLongSongsSkipped = 0;
         [[MusicPlaybackController playbackQueue] removeSongFromQueue:song];
         
         [MusicPlaybackController printQueueContents];
+    } else if([[MusicPlaybackController playbackQueue] isSongInQueue:song]){
+        //song isnt actually in the same queue (ie: different contexts)...
+        if([[self nowPlayingSong].song_id isEqual: song.song_id]){
+            //however it is the same actual song object playing.
+            //should kill player if the current playing context is a playlist.
+            if([MusicPlaybackController nowPlayingSongObject].context == SongPlaybackContextPlaylists){
+                if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more items to play
+                    [self skipToNextTrack];
+                }
+                else if([self isSongLastInQueue:song]){
+                    [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+                    [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
+                    if([MusicPlaybackController sizeOfEntireQueue] > 0)
+                        [[MusicPlaybackController playbackQueue] skipToPrevious];
+                }
+            }
+        }
     }
 }
 
