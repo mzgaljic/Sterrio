@@ -10,8 +10,6 @@
 
 @interface MyAVPlayer ()
 {
-    AVPlayerItem *playerItem;
-    NSURL *currentItemLink;
     BOOL movingForward;  //identifies which direction the user just went (back/forward) in queue
     BOOL allowSongDidFinishToExecute;
     BOOL canPostLastSongNotification;
@@ -47,8 +45,6 @@ static void *mRateDidChange = &mRateDidChange;
         movingForward = YES;
         stallHasOccured = NO;
         secondsLoaded = 0;
-        currentItemLink = nil;
-        playerItem = self.currentItem;
         
         [self begingListeningForNotifications];
         [self registerForObservers];
@@ -66,7 +62,7 @@ static void *mRateDidChange = &mRateDidChange;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(songDidFinishPlaying:)
                                                  name:AVPlayerItemDidPlayToEndTimeNotification
-                                               object:playerItem];
+                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(connectionStateChanged)
                                                  name:MZReachabilityStateChanged
@@ -75,25 +71,6 @@ static void *mRateDidChange = &mRateDidChange;
                                              selector:@selector(currentSongPlaybackMustBeDisabled:)
                                                  name:MZInterfaceNeedsToBlockCurrentSongPlayback
                                                object:nil];
-}
-
-- (void)currentSongPlaybackMustBeDisabled:(NSNotification *)notif
-{
-    if([notif.name isEqualToString:MZInterfaceNeedsToBlockCurrentSongPlayback]){
-        NSNumber *val = (NSNumber *)notif.object;
-        BOOL disabled = [val boolValue];
-        if(disabled){
-            [SongPlayerCoordinator placePlayerInDisabledState:YES];
-            [MusicPlaybackController explicitlyPausePlayback:YES];
-            [MusicPlaybackController pausePlayback];
-        } else{
-            if([SongPlayerCoordinator wasPlayerInPlayStateBeforeGUIDisabled]){
-                [MusicPlaybackController explicitlyPausePlayback:NO];
-                [MusicPlaybackController resumePlayback];
-            }
-            [SongPlayerCoordinator placePlayerInDisabledState:NO];
-        }
-    }
 }
 
 #pragma mark - Working with the queue to perform player actions (play, skip, etc)
@@ -162,7 +139,6 @@ static void *mRateDidChange = &mRateDidChange;
 #pragma mark - initiating playback
 - (void)beginLoadingVideoWithSong:(Song *)aSong
 {
-    [self cancelPendingPrerolls];
     //prevents any funny behavior with existing video until the new one loads.
     [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
     
@@ -204,7 +180,7 @@ static void *mRateDidChange = &mRateDidChange;
         __weak MyAVPlayer *weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^(void){
             //Run UI Updates
-            [weakSelf replaceCurrentItemWithPlayerItem:playerItem];
+            [weakSelf replaceCurrentItemWithPlayerItem:item];
             [weakSelf play];
         });
     }
@@ -255,6 +231,37 @@ static void *mRateDidChange = &mRateDidChange;
     {
         [self showSpinnerForInternetConnectionIssue];
         return;
+    }
+}
+
+static CMTime timeAtDisable;
+static AVPlayerItem *disabledPlayerItem;
+- (void)currentSongPlaybackMustBeDisabled:(NSNotification *)notif
+{
+    if([notif.name isEqualToString:MZInterfaceNeedsToBlockCurrentSongPlayback]){
+        NSNumber *val = (NSNumber *)notif.object;
+        BOOL disabled = [val boolValue];
+        if(disabled){
+            [SongPlayerCoordinator placePlayerInDisabledState:YES];
+            [MusicPlaybackController explicitlyPausePlayback:YES];
+            [MusicPlaybackController pausePlayback];
+            
+            //make copy of AVPlayerItem which will retain buffered data
+            disabledPlayerItem = [self.currentItem copy];
+            timeAtDisable = self.currentItem.currentTime;
+            //force playback to stop (only way that seems to work)
+            [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+            
+        } else{
+            if([SongPlayerCoordinator wasPlayerInPlayStateBeforeGUIDisabled]){
+                [MusicPlaybackController explicitlyPausePlayback:NO];
+                //re-insert the disabled player item, with the loaded buffers intact.
+                [self replaceCurrentItemWithPlayerItem:disabledPlayerItem];
+                [self seekToTime:timeAtDisable toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+                [MusicPlaybackController resumePlayback];
+            }
+            [SongPlayerCoordinator placePlayerInDisabledState:NO];
+        }
     }
 }
 
@@ -382,7 +389,7 @@ static void *mRateDidChange = &mRateDidChange;
                        context:(void *)context
 {
     if(context == mloadedTimeRanges || context == mPlaybackBufferEmpty){
-        NSArray * timeRanges = self.currentItem.loadedTimeRanges;
+        NSArray *timeRanges = self.currentItem.loadedTimeRanges;
         if (timeRanges && [timeRanges count]){
             CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
             NSUInteger newSecondsBuff = CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration));
