@@ -426,6 +426,12 @@ static int numLongSongsSkipped = 0;
                          forKey:MPMediaItemPropertyAlbumTitle];
             NSString *msg = @"WiFi required for playback...";
             [songInfo setObject:msg forKey:MPMediaItemPropertyTitle];
+        } else if([[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue].operationCount > 0
+                  && !player.playbackStarted){
+            //mention that new song is buffering to user
+            NSString *titleAndMsg =[NSString stringWithFormat:@"Loading: %@", nowPlayingSong.songName];
+            [songInfo setObject:titleAndMsg
+                         forKey:MPMediaItemPropertyTitle];
         }
         
         NSInteger duration = [nowPlayingSong.duration integerValue];

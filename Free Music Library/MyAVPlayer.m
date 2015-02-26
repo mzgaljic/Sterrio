@@ -13,7 +13,6 @@
     BOOL movingForward;  //identifies which direction the user just went (back/forward) in queue
     BOOL allowSongDidFinishToExecute;
     BOOL canPostLastSongNotification;
-    BOOL playbackStarted;
     
     BOOL stallHasOccured;
     NSUInteger secondsLoaded;
@@ -32,6 +31,9 @@
 static void *mPlaybackBufferEmpty = &mPlaybackBufferEmpty;
 static void *mloadedTimeRanges = &mloadedTimeRanges;
 static void *mRateDidChange = &mRateDidChange;
+static void *mCurrentItem = &mCurrentItem;
+
+static void *mPlaybackStarted = &mPlaybackStarted;
 
 - (id)init
 {
@@ -79,7 +81,7 @@ static void *mRateDidChange = &mRateDidChange;
     [MusicPlaybackController printQueueContents];
     if(aSong != nil){
         movingForward = forward;
-        playbackStarted = NO;
+        self.playbackStarted = NO;
         [self beginLoadingVideoWithSong:aSong];
         [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
                                                             object:oldSong];
@@ -141,6 +143,8 @@ static void *mRateDidChange = &mRateDidChange;
 {
     //prevents any funny behavior with existing video until the new one loads.
     [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+    [MusicPlaybackController explicitlyPausePlayback:NO];
+    [SongPlayerCoordinator placePlayerInDisabledState:NO];
     
     secondsLoaded = 0;
     stallHasOccured = NO;
@@ -173,12 +177,20 @@ static void *mRateDidChange = &mRateDidChange;
 {
     NSLog(@"Setting player item.");
     if([NSThread mainThread]){
+        //prevents any funny behavior with existing video until the new one loads.
+        [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+        NSOperationQueue *operationQueue = [[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue];
+        [operationQueue cancelAllOperations];
         [self replaceCurrentItemWithPlayerItem:item];
         [self play];
     } else{
         __weak MyAVPlayer *weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^(void){
+            //prevents any funny behavior with existing video until the new one loads.
+            [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
             //Run UI Updates
+            NSOperationQueue *operationQueue = [[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue];
+            [operationQueue cancelAllOperations];
             [weakSelf replaceCurrentItemWithPlayerItem:item];
             [weakSelf play];
         });
@@ -381,6 +393,14 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
            forKeyPath:@"rate"
               options:NSKeyValueObservingOptionNew
               context:mRateDidChange];
+    [self addObserver:self
+           forKeyPath:@"currentItem"
+              options:NSKeyValueObservingOptionNew
+              context:mCurrentItem];
+    [self addObserver:self
+           forKeyPath:@"playbackStarted"
+              options:NSKeyValueObservingOptionNew
+              context:mPlaybackStarted];
 }
 
 /*Not actually needed now since this class is in existance the entire time, it is never deallocated.
@@ -457,8 +477,8 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                                                                         object:nil];
                 }
                 //check if playback began
-                if(newSecondsBuff > secondsLoaded && self.rate == 1 && !playbackStarted){
-                    playbackStarted = YES;
+                if(newSecondsBuff > secondsLoaded && self.rate == 1 && !self.playbackStarted){
+                    self.playbackStarted = YES;
                     [[NSNotificationCenter defaultCenter] postNotificationName:PlaybackHasBegun
                                                                         object:nil];
                     //places approprate spinners on player if needed...or dismisses spinner.
@@ -484,6 +504,18 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                 [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_RESUMED_PLAYBACK
                                                                     object:nil];
             }
+        }
+    }else if(context == mCurrentItem){
+        if(self.currentItem == nil){
+            if([[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue].operationCount > 0){
+               //we are loading a new song, user might want to see this info on lock screen.
+                [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+            }
+        }
+    } else if(mPlaybackStarted){
+        if(self.playbackStarted){
+            //we are loading a new song, user might want to see this info on lock screen.
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
         }
     }else
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
