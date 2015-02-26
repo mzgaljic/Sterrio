@@ -35,14 +35,10 @@ static void *mPlaybackBufferEmpty = &mPlaybackBufferEmpty;
 static void *mloadedTimeRanges = &mloadedTimeRanges;
 static void *mRateDidChange = &mRateDidChange;
 
-static NSOperationQueue *operationQueue;
-
 - (id)init
 {
     if(self = [super init]){
-        operationQueue = [[NSOperationQueue alloc] init];
         reachability = [ReachabilitySingleton sharedInstance];
-        
         AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
         CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update gui please!";
         CURRENT_SONG_STOPPED_PLAYBACK = @"playback has stopped for some unknown reason (stall?)";
@@ -166,11 +162,13 @@ static NSOperationQueue *operationQueue;
 #pragma mark - initiating playback
 - (void)beginLoadingVideoWithSong:(Song *)aSong
 {
+    [self cancelPendingPrerolls];
     //prevents any funny behavior with existing video until the new one loads.
     [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
     
     secondsLoaded = 0;
     stallHasOccured = NO;
+    NSOperationQueue *operationQueue = [[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue];
     [operationQueue cancelAllOperations];
     [self showSpinnerForBasicLoading];
     
@@ -222,7 +220,6 @@ static NSOperationQueue *operationQueue;
         {
             if([nowPlaying.duration integerValue] >= MZLongestCellularPlayableDuration){
                 //enable GUI again, they are back on wifi, playback can resume
-                
                 [[NSNotificationCenter defaultCenter] postNotificationName:MZInterfaceNeedsToBlockCurrentSongPlayback object:[NSNumber numberWithBool:NO]];
             }
             

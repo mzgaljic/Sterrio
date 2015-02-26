@@ -16,6 +16,7 @@
 #import "MusicPlaybackController.h"  //for using queue, etc
 #import "FetchVideoInfoOperation.h"
 #import "DetermineVideoPlayableOperation.h"
+#import "OperationQueuesSingeton.h"
 
 
 @interface MyAVPlayer : AVPlayer

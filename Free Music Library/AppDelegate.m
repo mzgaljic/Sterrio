@@ -14,6 +14,7 @@
 {
     AVAudioSession *aSession;
     UIView *playerSnapshot;  //used to make it appear as if the playerlayer is still attached to the player in backgrounded mode.
+    UIBackgroundTaskIdentifier task;
 }
 @end
 
@@ -127,6 +128,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 {
     [self removePlayerFromPlayerLayer];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZAppWasBackgrounded object:nil];
+    [self startupBackgroundTask];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -177,7 +179,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     if(player != nil){
         if(resumePlaybackAfterInterruption){
-            [player performSelector:@selector(play) withObject:nil afterDelay:0.03];
+            [player play];
             resumePlaybackAfterInterruption = NO;
         }
     }
@@ -330,7 +332,7 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
     }
 }
 
-#pragma -mark AVPlayer layer code
+#pragma mark - AVPlayer layer code
 - (void)removePlayerFromPlayerLayer
 {
     PlayerView *view = [MusicPlaybackController obtainRawPlayerView];
@@ -341,6 +343,64 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
 {
     PlayerView *view = [MusicPlaybackController obtainRawPlayerView];
     [view reattachLayerToPlayer];
+}
+
+- (void)startupBackgroundTask
+{
+    //check if we should continue to allow the app to monitor network changes for a limited time
+    NSOperationQueue *loadingSongsQueue;
+    loadingSongsQueue = [[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue];
+    if([SongPlayerCoordinator isPlayerOnScreen] || loadingSongsQueue.operationCount > 0){
+        UIApplication *app = [UIApplication sharedApplication];
+        __weak UIApplication *weakApp = app;
+        __weak AppDelegate *weakSelf = self;
+        task = [app beginBackgroundTaskWithExpirationHandler:^{
+            
+            [weakApp endBackgroundTask:task];
+            task = UIBackgroundTaskInvalid;
+            
+            if([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground){
+                if(! [[AVAudioSession sharedInstance] isOtherAudioPlaying]){
+                    //start a new task if it makes sense to do so.
+                    [weakSelf startupBackgroundTask];
+                }
+            }
+        }];
+        
+        //Start the long-running task and return immediately.
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            pthread_setname_np("Bckgrnd long vid state checker");
+            int sleepInterval = 1;
+            Song *nowPlaying;
+            while (true){
+                sleep(sleepInterval);
+                if([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground){
+                    //user not in background anymore, this task is pointless.
+                    [app endBackgroundTask:task];
+                    task = UIBackgroundTaskInvalid;
+                    break;
+                }
+                if([[AVAudioSession sharedInstance] isOtherAudioPlaying]){
+                    //user will not want our app to continue playback if he/she already went to
+                    //a different app to play other music. just kill the task and break.
+                    [app endBackgroundTask:task];
+                    task = UIBackgroundTaskInvalid;
+                    break;
+                }
+                nowPlaying = [MusicPlaybackController nowPlayingSong];
+                if([nowPlaying.duration integerValue] >= MZLongestCellularPlayableDuration){
+                    if([SongPlayerCoordinator isPlayerInDisabledState]){
+                        if([[ReachabilitySingleton sharedInstance] isConnectedToWifi]){
+                            //connection to wifi restored, notify that playback can continue
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [[NSNotificationCenter defaultCenter] postNotificationName:MZInterfaceNeedsToBlockCurrentSongPlayback object:[NSNumber numberWithBool:NO]];
+                            });
+                        }
+                    }
+                }
+            }
+        });
+    }
 }
 
 @end

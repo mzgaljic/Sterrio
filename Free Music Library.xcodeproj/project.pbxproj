@@ -46,6 +46,7 @@
 		873E14621A49ED0A008A385D /* SongPlayerViewDisplayUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 873E14611A49ED0A008A385D /* SongPlayerViewDisplayUtility.m */; };
 		873EEA871A4BBA210092A6DF /* YouTubeVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EEA861A4BBA210092A6DF /* YouTubeVideo.m */; };
 		8740723F19798129004C5C57 /* SongTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8740723E19798129004C5C57 /* SongTableViewFormatter.m */; };
+		87440EE81A9EC07300C4DDB8 /* OperationQueuesSingeton.m in Sources */ = {isa = PBXBuildFile; fileRef = 87440EE71A9EC07300C4DDB8 /* OperationQueuesSingeton.m */; };
 		87449AF419971A58009F01EA /* AppDelegateSetupHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 87449AF319971A58009F01EA /* AppDelegateSetupHelper.m */; };
 		87480DAB192C1FBD005CC0A4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DAA192C1FBD005CC0A4 /* CoreGraphics.framework */; };
 		87480DAD192C1FBD005CC0A4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DAC192C1FBD005CC0A4 /* UIKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -229,6 +230,8 @@
 		873EEA861A4BBA210092A6DF /* YouTubeVideo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YouTubeVideo.m; sourceTree = "<group>"; };
 		8740723D19798129004C5C57 /* SongTableViewFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SongTableViewFormatter.h; sourceTree = "<group>"; };
 		8740723E19798129004C5C57 /* SongTableViewFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SongTableViewFormatter.m; sourceTree = "<group>"; };
+		87440EE61A9EC07300C4DDB8 /* OperationQueuesSingeton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OperationQueuesSingeton.h; sourceTree = "<group>"; };
+		87440EE71A9EC07300C4DDB8 /* OperationQueuesSingeton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OperationQueuesSingeton.m; sourceTree = "<group>"; };
 		87449AF219971A58009F01EA /* AppDelegateSetupHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegateSetupHelper.h; sourceTree = "<group>"; };
 		87449AF319971A58009F01EA /* AppDelegateSetupHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegateSetupHelper.m; sourceTree = "<group>"; };
 		87480DA5192C1FBD005CC0A4 /* Free Music Library.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Free Music Library.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1077,6 +1080,8 @@
 			children = (
 				87FA13741A998AFA00A1902F /* ReachabilitySingleton.h */,
 				87FA13751A998AFA00A1902F /* ReachabilitySingleton.m */,
+				87440EE61A9EC07300C4DDB8 /* OperationQueuesSingeton.h */,
+				87440EE71A9EC07300C4DDB8 /* OperationQueuesSingeton.m */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -1392,6 +1397,7 @@
 				87D47DA519345D8E0057D49B /* ArtistItemAlbumViewController.m in Sources */,
 				87480DB5192C1FBD005CC0A4 /* main.m in Sources */,
 				87A0FDD2197DFA2C008FBBF7 /* ArtistTableViewFormatter.m in Sources */,
+				87440EE81A9EC07300C4DDB8 /* OperationQueuesSingeton.m in Sources */,
 				870D49E71A6324F2004496A9 /* MZConstants.m in Sources */,
 				871BA88C1A5A2F4000FB87A7 /* Playlist.m in Sources */,
 				87A9AF53199DA36F005B9A5B /* GenreSearchService.m in Sources */,

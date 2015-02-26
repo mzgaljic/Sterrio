@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
+#import "pthread.h"
 
 #import "AppDelegateSetupHelper.h"
 #import "Song.h"
@@ -20,6 +21,7 @@
 #import "AppEnvironmentConstants.h"
 #import "UIColor+LighterAndDarker.h"
 #import "MusicPlaybackController.h"
+#import "OperationQueuesSingeton.h"
 
 #import "MainScreenViewController.h"
 #import "MasterSongsTableViewController.h"
