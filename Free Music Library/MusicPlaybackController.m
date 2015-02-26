@@ -153,6 +153,8 @@ static int numLongSongsSkipped = 0;
                     [self skipToNextTrack];
                 }
                 else if([self isSongLastInQueue:song]){
+                    [MusicPlaybackController pausePlayback];
+                    [MusicPlaybackController explicitlyPausePlayback:YES];
                     [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
                     [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
                     if([MusicPlaybackController sizeOfEntireQueue] > 0)
@@ -167,6 +169,8 @@ static int numLongSongsSkipped = 0;
 {
     BOOL willNeedToAdvanceInQueue = NO;
     BOOL shouldMoveBackwardAndPause = NO;
+    //this becomes true ONLY if the current song shares the same context
+    BOOL removedSongsFromQueue = NO;
     for(Song *aSong in songs){
         BOOL songIsInCurrentQueue = [[MusicPlaybackController playbackQueue] isSongInQueue:aSong];
         //song cant really be in the current queue if the contexts arent the same
@@ -178,8 +182,7 @@ static int numLongSongsSkipped = 0;
                 if([[MusicPlaybackController nowPlayingSong].song_id isEqual:aSong.song_id]
                    && [MusicPlaybackController nowPlayingSongObject].context == context){
                     willNeedToAdvanceInQueue = YES;
-                    [MusicPlaybackController pausePlayback];
-                    [MusicPlaybackController explicitlyPausePlayback:YES];
+                    [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
                 }
             }
             else{
@@ -187,10 +190,12 @@ static int numLongSongsSkipped = 0;
                 if(willNeedToAdvanceInQueue == NO)
                     shouldMoveBackwardAndPause = YES;
             }
+            [[MusicPlaybackController playbackQueue] removeSongFromQueue:aSong];
+            removedSongsFromQueue = YES;
         }
-        [[MusicPlaybackController playbackQueue] removeSongFromQueue:aSong];
     }
-    //need to advance in queue AND it is save to do so
+    
+    //need to advance in queue AND it is safe to do so
     if(willNeedToAdvanceInQueue && [MusicPlaybackController sizeOfEntireQueue] > 0)
         [self skipToNextTrack];
     else if(shouldMoveBackwardAndPause){
@@ -198,7 +203,7 @@ static int numLongSongsSkipped = 0;
         [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
         if([MusicPlaybackController sizeOfEntireQueue] > 0)
             [[MusicPlaybackController playbackQueue] skipToPrevious];
-    } else{
+    } else if(removedSongsFromQueue){
         [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
         [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
         if([MusicPlaybackController sizeOfEntireQueue] > 0)
@@ -416,7 +421,7 @@ static int numLongSongsSkipped = 0;
             [songInfo setObject:nowPlayingSong.album.albumName forKey:MPMediaItemPropertyAlbumTitle];
         
         //giving hints to user if song stopped due to wifi being lost
-        if(player.rate == 0 && ![MusicPlaybackController isPlayerStalled]){
+        if(player.rate == 0 && [SongPlayerCoordinator isPlayerInDisabledState]){
             [songInfo setObject:[songInfo objectForKey:MPMediaItemPropertyTitle]
                          forKey:MPMediaItemPropertyAlbumTitle];
             NSString *msg = @"WiFi required for playback...";
@@ -427,8 +432,7 @@ static int numLongSongsSkipped = 0;
         [songInfo setObject:[NSNumber numberWithInteger:duration]
                      forKey:MPMediaItemPropertyPlaybackDuration];
         NSNumber *currentTime;
-        if(player.rate == 1 && ![MusicPlaybackController isPlayerStalled]
-           && [SongPlayerCoordinator isPlayerInDisabledState])
+        if(player.rate == 1 && [SongPlayerCoordinator isPlayerInDisabledState])
             currentTime = player.elapsedTimeBeforeDisabling;
          else
             currentTime =[NSNumber numberWithInteger:CMTimeGetSeconds(player.currentItem.currentTime)];
