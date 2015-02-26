@@ -129,7 +129,8 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
                                           WithContext:SongPlaybackContextSongs];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
                                                         object:songWeAreKilling];
-    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
+    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    [player dismissAllSpinners];
     [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
     [SongPlayerCoordinator playerWasKilled:YES];
     [[NowPlaying sharedInstance] setNewNowPlayingSong:nil

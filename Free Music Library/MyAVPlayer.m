@@ -98,8 +98,8 @@ static void *mPlaybackStarted = &mPlaybackStarted;
 //public wrapper for songDidFinishPlaying:
 - (void)songNeedsToBeSkippedDueToIssue
 {
-    [self songDidFinishPlaying:nil];
     [self allowSongDidFinishNotificationToProceed];
+    [self songDidFinishPlaying:nil];
 }
 
 - (void)allowSongDidFinishNotificationToProceed
@@ -154,7 +154,7 @@ static void *mPlaybackStarted = &mPlaybackStarted;
     
     NSOperation *determineVideoPlayableOperation, *fetchVideoInfoOperation;
     
-    determineVideoPlayableOperation = [[DetermineVideoPlayableOperation alloc] init];
+    determineVideoPlayableOperation = [[DetermineVideoPlayableOperation alloc] initWithSong:aSong];
     fetchVideoInfoOperation = [[FetchVideoInfoOperation alloc] initWithSong:aSong];
     
     [fetchVideoInfoOperation addDependency:determineVideoPlayableOperation];

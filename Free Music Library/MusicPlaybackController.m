@@ -133,10 +133,12 @@ static int numLongSongsSkipped = 0;
         else{
             if([self isSongLastInQueue:song] && [[self nowPlayingSong].song_id isEqual: song.song_id]
                && [MusicPlaybackController nowPlayingSongObject].context == context){
-                [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
-                [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
                 if([MusicPlaybackController sizeOfEntireQueue] > 0)
                     [[MusicPlaybackController playbackQueue] skipToPrevious];
+                else{
+                    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+                    [playerView userKilledPlayer];
+                }
             }
         }
         
@@ -153,12 +155,12 @@ static int numLongSongsSkipped = 0;
                     [self skipToNextTrack];
                 }
                 else if([self isSongLastInQueue:song]){
-                    [MusicPlaybackController pausePlayback];
-                    [MusicPlaybackController explicitlyPausePlayback:YES];
-                    [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
-                    [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
                     if([MusicPlaybackController sizeOfEntireQueue] > 0)
                         [[MusicPlaybackController playbackQueue] skipToPrevious];
+                    else{
+                        PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+                        [playerView userKilledPlayer];
+                    }
                 }
             }
         }
@@ -182,7 +184,6 @@ static int numLongSongsSkipped = 0;
                 if([[MusicPlaybackController nowPlayingSong].song_id isEqual:aSong.song_id]
                    && [MusicPlaybackController nowPlayingSongObject].context == context){
                     willNeedToAdvanceInQueue = YES;
-                    [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
                 }
             }
             else{
@@ -199,15 +200,19 @@ static int numLongSongsSkipped = 0;
     if(willNeedToAdvanceInQueue && [MusicPlaybackController sizeOfEntireQueue] > 0)
         [self skipToNextTrack];
     else if(shouldMoveBackwardAndPause){
-        [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
-        [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
         if([MusicPlaybackController sizeOfEntireQueue] > 0)
             [[MusicPlaybackController playbackQueue] skipToPrevious];
+        else{
+            PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+            [playerView userKilledPlayer];
+        }
     } else if(removedSongsFromQueue){
-        [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
-        [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
         if([MusicPlaybackController sizeOfEntireQueue] > 0)
             [[MusicPlaybackController playbackQueue] skipToPrevious];
+        else{
+            PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+            [playerView userKilledPlayer];
+        }
     }
     
     [MusicPlaybackController printQueueContents];
@@ -394,6 +399,9 @@ static int numLongSongsSkipped = 0;
 + (void)updateLockScreenInfoAndArtForSong:(Song *)song
 {
     NSLog(@"updating lock screen");
+    if(song == nil){
+        NSLog(@"poop happened");
+    }
     Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
     if (playingInfoCenter){
         Song *nowPlayingSong = [MusicPlaybackController nowPlayingSong];

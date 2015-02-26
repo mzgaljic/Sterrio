@@ -22,4 +22,6 @@
 - (void)reattachLayerToPlayer;
 - (UIImage *)screenshotOfPlayer;
 
+- (void)userKilledPlayer;
+
 @end

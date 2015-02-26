@@ -11,6 +11,7 @@
 @interface DetermineVideoPlayableOperation ()
 {
     Song *aSong;
+    BOOL allowedToPlayVideo;
 }
 @end
 @implementation DetermineVideoPlayableOperation
@@ -27,21 +28,27 @@
 {
     //do synchronous work
     NSNumber *duration = aSong.duration;
-    BOOL allowedToPlayVideo = YES;
+    allowedToPlayVideo = YES;
     ReachabilitySingleton *reachability = [ReachabilitySingleton sharedInstance];
     if([duration integerValue] >= MZLongestCellularPlayableDuration){
         //videos of this length may only be played on wifi. Are we on wifi?
         if(! [reachability isConnectedToWifi])
             allowedToPlayVideo = NO;
     }
+    if ([self isCancelled]){
+        return;
+    }
 
-    //connection problems should take presedence first
+    //connection problems should take presedence first over the allowedToPlay code further down...
     if([reachability isConnectionCompletelyGone]){
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
         MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+        PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
         [player dismissAllSpinners];
-        [MusicPlaybackController playbackExplicitlyPaused];
-        [MusicPlaybackController pausePlayback];
+        [playerView userKilledPlayer];
+        return;
+    }
+    if ([self isCancelled]){
         return;
     }
     
@@ -57,6 +64,11 @@
     }
     
     NSLog(@"YAY! can play video!");
+}
+
+- (BOOL)allowedToPlayVideo
+{
+    return allowedToPlayVideo;
 }
 
 @end

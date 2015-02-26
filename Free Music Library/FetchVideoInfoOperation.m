@@ -12,9 +12,9 @@
 {
     BOOL _isExecuting;
     BOOL _isFinished;
+    BOOL allowedToPlayVideo;
     Song *aSong;
     NSURL *currentItemLink;
-    void *operationQueueKey;
 }
 @end
 @implementation FetchVideoInfoOperation
@@ -43,6 +43,17 @@
             return;
 
         }
+        if([self.dependencies[i] isMemberOfClass:[DetermineVideoPlayableOperation class]]){
+            DetermineVideoPlayableOperation *completedOperation;
+            completedOperation = (DetermineVideoPlayableOperation *)self.dependencies[i];
+            if([completedOperation respondsToSelector:@selector(allowedToPlayVideo)]){
+                allowedToPlayVideo = [completedOperation performSelector:@selector(allowedToPlayVideo)
+                                                              withObject:nil];
+            }
+            else{
+                NSLog(@"WARNING: allowedToPlayVideo var is not being passed between NSOperations anymore.");
+            }
+        }
     }
     if (![NSThread isMainThread])
     {
@@ -56,13 +67,10 @@
     [self didChangeValueForKey:@"isExecuting"];
     
     __weak NSString *weakId = aSong.youtube_id;
-    __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
     __weak SongPlayerCoordinator *weakCoordinator = [SongPlayerCoordinator sharedInstance];
     __weak FetchVideoInfoOperation *weakSelf = self;
     
-#warning actually check if we are on wifi.
-    BOOL usingWifi = YES;
-    BOOL allowedToPlayVideo = YES;
+    BOOL usingWifi = [[ReachabilitySingleton sharedInstance] isConnectedToWifi];
     
     if ([self isCancelled]){
         [self finishBecauseOfCancel];
