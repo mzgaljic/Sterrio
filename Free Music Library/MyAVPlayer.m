@@ -30,7 +30,6 @@
 @implementation MyAVPlayer
 static void *mPlaybackBufferEmpty = &mPlaybackBufferEmpty;
 static void *mloadedTimeRanges = &mloadedTimeRanges;
-static void *mRateDidChange = &mRateDidChange;
 static void *mCurrentItem = &mCurrentItem;
 
 static void *mPlaybackStarted = &mPlaybackStarted;
@@ -85,6 +84,7 @@ static void *mPlaybackStarted = &mPlaybackStarted;
         [self beginLoadingVideoWithSong:aSong];
         [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
                                                             object:oldSong];
+        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     } else{
         if([MusicPlaybackController numMoreSongsInQueue] == 0)
             canPostLastSongNotification = YES;
@@ -390,10 +390,6 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
               options:NSKeyValueObservingOptionNew
               context:mloadedTimeRanges];
     [self addObserver:self
-           forKeyPath:@"rate"
-              options:NSKeyValueObservingOptionNew
-              context:mRateDidChange];
-    [self addObserver:self
            forKeyPath:@"currentItem"
               options:NSKeyValueObservingOptionNew
               context:mCurrentItem];
@@ -429,7 +425,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
             NSUInteger totalSeconds = [[MusicPlaybackController nowPlayingSong].duration integerValue];
             if(context == mPlaybackBufferEmpty){
                 BOOL explicitlyPaused = [MusicPlaybackController playbackExplicitlyPaused];
-                if(newSecondsBuff == secondsLoaded && secondsLoaded != totalSeconds && !explicitlyPaused){
+                if(newSecondsBuff == secondsLoaded && secondsLoaded != totalSeconds && !explicitlyPaused && !stallHasOccured){
                     NSLog(@"In stall");
                     stallHasOccured = YES;
                     [MusicPlaybackController setPlayerInStall:YES];
@@ -439,6 +435,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                                                                         object:nil];
                     //let this method figure out which spinner to show
                     [self connectionStateChanged];
+                    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
                 }
                 
             } else if(context == mloadedTimeRanges){
@@ -455,7 +452,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                         inALoadedRange = YES;
                 }
                 
-                if(! inALoadedRange){
+                if(! inALoadedRange && !stallHasOccured){
                     NSLog(@"In stall");
                     stallHasOccured = YES;
                     [MusicPlaybackController setPlayerInStall:YES];
@@ -465,16 +462,17 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                                                                         object:nil];
                     //let this method figure out which spinner to show
                     [self connectionStateChanged];
+                    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
                     
-                } else if(newSecondsBuff > secondsLoaded && stallHasOccured){
+                } else if(newSecondsBuff > secondsLoaded && stallHasOccured && [[ReachabilitySingleton sharedInstance] isConnectedToInternet]){
                     NSLog(@"left stall");
                     stallHasOccured = NO;
                     [MusicPlaybackController setPlayerInStall:NO];
                     [self dismissAllSpinnersIfPossible];
                     if(! [MusicPlaybackController playbackExplicitlyPaused])
                         [MusicPlaybackController resumePlayback];
-                    [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_RESUMED_PLAYBACK
-                                                                        object:nil];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_RESUMED_PLAYBACK object:nil];
+                    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
                 }
                 //check if playback began
                 if(newSecondsBuff > secondsLoaded && self.rate == 1 && !self.playbackStarted){
@@ -484,25 +482,9 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                     //places approprate spinners on player if needed...or dismisses spinner.
                     [self connectionStateChanged];
                     NSLog(@"playback started");
+                    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
                 }
                 secondsLoaded = newSecondsBuff;
-            }
-        }
-    } else if(context == mRateDidChange){
-        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
-        
-        if(stallHasOccured){
-            //check if the player scrubbed back out of the stall, if so update the state of the var.
-            NSUInteger currentTime = CMTimeGetSeconds(self.currentItem.currentTime);
-            if(currentTime < secondsLoaded){
-                stallHasOccured = NO;
-                [MusicPlaybackController setPlayerInStall:NO];
-                NSLog(@"left stall");
-                [self dismissAllSpinnersIfPossible];
-                if(! [MusicPlaybackController playbackExplicitlyPaused])
-                    [MusicPlaybackController resumePlayback];
-                [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_RESUMED_PLAYBACK
-                                                                    object:nil];
             }
         }
     }else if(context == mCurrentItem){

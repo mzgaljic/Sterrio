@@ -393,6 +393,7 @@ static int numLongSongsSkipped = 0;
 #pragma mark - Lock Screen Song Info & Art
 + (void)updateLockScreenInfoAndArtForSong:(Song *)song
 {
+    NSLog(@"updating lock screen");
     Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
     if (playingInfoCenter){
         Song *nowPlayingSong = [MusicPlaybackController nowPlayingSong];
@@ -432,6 +433,11 @@ static int numLongSongsSkipped = 0;
             NSString *titleAndMsg =[NSString stringWithFormat:@"Loading: %@", nowPlayingSong.songName];
             [songInfo setObject:titleAndMsg
                          forKey:MPMediaItemPropertyTitle];
+        } else if([MusicPlaybackController isPlayerStalled]){
+            //mention that new song is buffering to user
+            NSString *titleAndMsg =[NSString stringWithFormat:@"Buffering: %@", nowPlayingSong.songName];
+            [songInfo setObject:titleAndMsg
+                         forKey:MPMediaItemPropertyTitle];
         }
         
         NSInteger duration = [nowPlayingSong.duration integerValue];
@@ -451,6 +457,7 @@ static int numLongSongsSkipped = 0;
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
     }
 }
+
 
 #pragma mark - Heavy lifting of figuring out which songs go into a new queue
 + (NSArray *)songArrayGivenSong:(Song *)song optionalPlaylist:(Playlist *)playlist withContext:(SongPlaybackContext)context
@@ -553,7 +560,20 @@ static int numLongSongsSkipped = 0;
 }
 + (BOOL)isSpinnerOnScreen
 {
-    return (internetConnectionSpinnerOnScreen || simpleSpinnerOnScreen) ? YES : NO;
+    return (internetConnectionSpinnerOnScreen
+            || simpleSpinnerOnScreen
+            || spinnerForWifiNeededOnScreen) ? YES : NO;
+}
+
++ (NSString *)messageForCurrentSpinner
+{
+    if(internetConnectionSpinnerOnScreen)
+        return @"Connection lost";
+    if(simpleSpinnerOnScreen)
+        return @"";
+    if(spinnerForWifiNeededOnScreen)
+        return @"Song requires WiFi";
+    return @"";
 }
 
 #pragma mark - Dealing with problems

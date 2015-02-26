@@ -91,6 +91,7 @@
 + (BOOL)isSimpleSpinnerOnScreen;
 + (BOOL)isInternetProblemSpinnerOnScreen;
 + (BOOL)isSpinnerOnScreen;
++ (NSString *)messageForCurrentSpinner;
 
 #pragma mark - Dealing with problems
 + (void)longVideoSkippedOnCellularConnection;
