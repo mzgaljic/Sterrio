@@ -633,21 +633,24 @@ static int accomodateInterfaceLabelsCounter = 0;
         NSNumber *val = (NSNumber *)notif.object;
         BOOL disabled = [val boolValue];
         if(disabled){
-            [self disablingGuiDelayed];
+            [self disableGUI];
         } else{
-            [self reenablingGuiDelayed];
+            [self reenablingGUI];
+            //there was a bug where the total duration label would not get set in a specific case.
+            [self displayTotalSliderAndLabelDuration];
+            [_playbackSlider setEnabled:YES];
         }
     }
 }
 
-- (void)disablingGuiDelayed
+- (void)disableGUI
 {
     [self toggleDisplayToPausedState];
     [playButton setEnabled:NO];
     [self.playbackSlider setEnabled:NO];
 }
 
-- (void)reenablingGuiDelayed
+- (void)reenablingGUI
 {
     if([SongPlayerCoordinator wasPlayerInPlayStateBeforeGUIDisabled]){
         [self toggleDisplayToPlayingState];
@@ -704,7 +707,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     self.playbackSlider.enabled = YES;
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     if(player.currentItem)
-        [_playbackSlider setValue:CMTimeGetSeconds(player.currentItem.currentTime) animated:NO];
+        [_playbackSlider setValue:CMTimeGetSeconds(player.currentItem.currentTime) animated:YES];
     else
         [_playbackSlider setValue:0];
     waitingForNextOrPrevVideoToLoad = NO;

@@ -152,17 +152,22 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [UIView animateWithDuration:animationDuration animations:^{
         playerSnapshot.alpha = 0.0;
     }];
-    playerView.alpha = 0;
+    if([MusicPlaybackController obtainRawAVPlayer].rate == 1)
+        playerView.alpha = 0;
+    else
+        playerView.alpha = 1;
     [self reattachPlayerToPlayerLayer];
     [self.window addSubview:playerView];
+    //ALLOW USER INTERACTION!!!
     [UIView animateWithDuration:animationDuration
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction
                      animations:^{
                          if([SongPlayerCoordinator isPlayerEnabled])
                              playerView.alpha = 1.0f;
                          else
                              playerView.alpha = [SongPlayerCoordinator alphaValueForDisabledPlayer];
-                     }
-                     completion:^(BOOL finished){
+                     } completion:^(BOOL finished) {
                          if(playerSnapshot){
                              [playerSnapshot removeFromSuperview];
                              playerSnapshot = nil;
@@ -193,9 +198,11 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         case UIEventSubtypeRemoteControlTogglePlayPause:
             if([AppEnvironmentConstants isUserPreviewingAVideo])
                [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerTogglePlayPause object:nil];
-            else if([player rate] == 0){
+            else if([player rate] == 0 && ![SongPlayerCoordinator isPlayerInDisabledState]){
                 [MusicPlaybackController explicitlyPausePlayback:NO];
                 [player play];
+            } else if([player rate] == 0 && [SongPlayerCoordinator isPlayerInDisabledState]){
+                break;
             }else{
                 [MusicPlaybackController explicitlyPausePlayback:YES];
                 [player pause];
@@ -206,8 +213,10 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
             if([AppEnvironmentConstants isUserPreviewingAVideo])
                 [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay object:nil];
             else{
-                [MusicPlaybackController explicitlyPausePlayback:NO];
-                [player play];
+                if([player rate] == 0 && ![SongPlayerCoordinator isPlayerInDisabledState]){
+                    [MusicPlaybackController explicitlyPausePlayback:NO];
+                    [player play];
+                }
             }
             break;
         case UIEventSubtypeRemoteControlPause:

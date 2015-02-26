@@ -53,7 +53,7 @@
         }
         case ALERT_TYPE_FatalSongDurationError:
         {
-            NSString *msg = @"Total Song duration is not available.";
+            NSString *msg = @"Song duration not available.";
             [MyAlerts displayBannerWithMsg:msg
                                      style:CSNotificationViewStyleInfo
                                      delay:0

@@ -194,7 +194,8 @@ static void *mRateDidChange = &mRateDidChange;
     {
         if([reachability isConnectedToWifi])
         {
-            if([nowPlaying.duration integerValue] >= MZLongestCellularPlayableDuration){
+            if([nowPlaying.duration integerValue] >= MZLongestCellularPlayableDuration &&
+               [SongPlayerCoordinator isPlayerInDisabledState]){
                 //enable GUI again, they are back on wifi, playback can resume
                 [[NSNotificationCenter defaultCenter] postNotificationName:MZInterfaceNeedsToBlockCurrentSongPlayback object:[NSNumber numberWithBool:NO]];
             }
@@ -236,8 +237,11 @@ static void *mRateDidChange = &mRateDidChange;
 
 static CMTime timeAtDisable;
 static AVPlayerItem *disabledPlayerItem;
+static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
 - (void)currentSongPlaybackMustBeDisabled:(NSNotification *)notif
 {
+    //NOTE: timing of the updateLockScreen methods absolutely matter here! Timing of everything matters
+    //actually
     if([notif.name isEqualToString:MZInterfaceNeedsToBlockCurrentSongPlayback]){
         NSNumber *val = (NSNumber *)notif.object;
         BOOL disabled = [val boolValue];
@@ -245,22 +249,28 @@ static AVPlayerItem *disabledPlayerItem;
             [SongPlayerCoordinator placePlayerInDisabledState:YES];
             [MusicPlaybackController explicitlyPausePlayback:YES];
             [MusicPlaybackController pausePlayback];
+            //will show msg to user in control center that wifi is needed
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
             
             //make copy of AVPlayerItem which will retain buffered data
             disabledPlayerItem = [self.currentItem copy];
             timeAtDisable = self.currentItem.currentTime;
+            valOfAllowSongDidFinishToExecuteBeforeDisabling = allowSongDidFinishToExecute;
+            allowSongDidFinishToExecute = NO;
             //force playback to stop (only way that seems to work)
             [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
             
         } else{
+            //re-insert the disabled player item, with the loaded buffers intact.
+            [self replaceCurrentItemWithPlayerItem:disabledPlayerItem];
+            [self seekToTime:timeAtDisable toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+            allowSongDidFinishToExecute = valOfAllowSongDidFinishToExecuteBeforeDisabling;
             if([SongPlayerCoordinator wasPlayerInPlayStateBeforeGUIDisabled]){
                 [MusicPlaybackController explicitlyPausePlayback:NO];
-                //re-insert the disabled player item, with the loaded buffers intact.
-                [self replaceCurrentItemWithPlayerItem:disabledPlayerItem];
-                [self seekToTime:timeAtDisable toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
                 [MusicPlaybackController resumePlayback];
             }
             [SongPlayerCoordinator placePlayerInDisabledState:NO];
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
         }
     }
 }
