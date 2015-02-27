@@ -12,6 +12,7 @@
 {
     BOOL _isExecuting;
     BOOL _isFinished;
+    BOOL _isCancelled;
     BOOL allowedToPlayVideo;
     Song *aSong;
     NSURL *currentItemLink;
@@ -24,6 +25,7 @@
     if([super init]){
         _isExecuting = NO;
         _isFinished = NO;
+        _isCancelled = NO;
         aSong = theSong;
     }
     return self;
@@ -66,6 +68,16 @@
     _isExecuting = YES;
     [self didChangeValueForKey:@"isExecuting"];
     
+    if([[ReachabilitySingleton sharedInstance] isConnectionCompletelyGone]){
+        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
+        [MusicPlaybackController playbackExplicitlyPaused];
+        [MusicPlaybackController pausePlayback];
+        MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+        [player dismissAllSpinners];
+        [self finishBecauseOfCancel];
+        return;
+    }
+    
     __weak NSString *weakId = aSong.youtube_id;
     __weak SongPlayerCoordinator *weakCoordinator = [SongPlayerCoordinator sharedInstance];
     __weak FetchVideoInfoOperation *weakSelf = self;
@@ -78,19 +90,24 @@
     }
     
     [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
+        if([[ReachabilitySingleton sharedInstance] isConnectionCompletelyGone]){
+            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
+            [MusicPlaybackController playbackExplicitlyPaused];
+            [MusicPlaybackController pausePlayback];
+            MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+            [player dismissAllSpinners];
+            [weakSelf finishBecauseOfCancel];
+            return;
+        }
+        
         //NOTE: the MusicPlaybackController methods called from this completion block have
         //been made thread safe.
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
             if ([weakSelf isCancelled]){
-                [weakSelf finish];
-                return;
-            }
-            
-            if ([weakSelf isCancelled]){
                 [weakSelf finishBecauseOfCancel];
                 return;
             }
-            if (video)
+            else if(video)
             {
                 //find video quality closest to setting preferences
                 NSURL *url;
@@ -103,33 +120,45 @@
                 }
                 currentItemLink = url;
             }
-            /*
-             else
-             {
-             NetworkStatus internetStatus = [reachability currentReachabilityStatus];
-             allowSongDidFinishToExecute = YES;
-             if (internetStatus == NotReachable){
-             [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
-             [MusicPlaybackController playbackExplicitlyPaused];
-             [MusicPlaybackController pausePlayback];
-             return;
-             } else{
-             //video may no longer exist, or the internet connection is very weak
-             [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotLoadVideo];
-             [MusicPlaybackController skipToNextTrack];
-             return;
-             }
-             }
-             */
+            else{
+                if([[ReachabilitySingleton sharedInstance] isConnectionCompletelyGone]){
+                    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
+                    [MusicPlaybackController playbackExplicitlyPaused];
+                    [MusicPlaybackController pausePlayback];
+                    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+                    [player dismissAllSpinners];
+                    [weakSelf finishBecauseOfCancel];
+                    return;
+                } else{
+                    //video may no longer exist, or the internet connection is very weak
+                    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotLoadVideo];
+                    [MusicPlaybackController skipToNextTrack];
+                    [weakSelf finishBecauseOfCancel];
+                    return;
+                }
+            }
             if ([weakSelf isCancelled]){
                 [weakSelf finishBecauseOfCancel];
                 return;
             }
+            
+            //before creating asset, make sure the internet is still active
+            if([[ReachabilitySingleton sharedInstance] isConnectionCompletelyGone]){
+                [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
+                [MusicPlaybackController playbackExplicitlyPaused];
+                [MusicPlaybackController pausePlayback];
+                MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+                [player dismissAllSpinners];
+                [weakSelf finishBecauseOfCancel];
+                return;
+            }
+            
             AVURLAsset *asset = [AVURLAsset assetWithURL: currentItemLink];
             
             if(! asset.playable){
                 //error initializing video with the url given. Notify user (and perhaps
                 //determine the cause...ie: vevo video, video no longer exists, etc)
+                //note this is NOT an internet problem (99% sure).
 #warning implementation needed
             }
             
@@ -154,15 +183,26 @@
                     [weakSelf finishBecauseOfCancel];
                     return;
                 }
-                /*
-                 [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
-                 //[weakSelf dismissAllSpinnersForView:weakPlayerView];
-                 
-                 dispatch_async(dispatch_get_main_queue(), ^(void){
-                 //Run UI Updates
-                 [weakSelf songDidFinishPlaying:nil];  //triggers the next song to play (for whatever reason/error) in the correct direction
-                 });
-                 */
+                //something went wrong, one of the conditions failed. maybe it is the internet.
+                //before creating asset, make sure the internet is still active
+                if([[ReachabilitySingleton sharedInstance] isConnectionCompletelyGone]){
+                    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
+                    [MusicPlaybackController playbackExplicitlyPaused];
+                    [MusicPlaybackController pausePlayback];
+                    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+                    [player dismissAllSpinners];
+                    [weakSelf finishBecauseOfCancel];
+                    return;
+                } else{
+                    //tells user "dont know why song could not load..."
+                    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotLoadVideo];
+                    [MusicPlaybackController playbackExplicitlyPaused];
+                    [MusicPlaybackController pausePlayback];
+                    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+                    [player dismissAllSpinners];
+                    [weakSelf finishBecauseOfCancel];
+                    return;
+                }
             }
         });
     }];
@@ -187,10 +227,13 @@
     currentItemLink = nil;
     [self willChangeValueForKey:@"isExecuting"];
     [self willChangeValueForKey:@"isFinished"];
+    [self willChangeValueForKey:@"isCancelled"];
     _isExecuting = NO;
     _isFinished = YES;
+    _isCancelled = YES;
     [self didChangeValueForKey:@"isExecuting"];
     [self didChangeValueForKey:@"isFinished"];
+    [self didChangeValueForKey:@"isCancelled"];
 }
 
 @end

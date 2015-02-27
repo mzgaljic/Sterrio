@@ -39,7 +39,7 @@
             [MyAlerts displayBannerWithMsg:msg
                                      style:CSNotificationViewStyleError
                                      delay:0.8
-                             shortDuration:YES];
+                             shortDuration:NO];
             break;
         }
         case ALERT_TYPE_CannotLoadVideo:
@@ -48,7 +48,7 @@
             [MyAlerts displayBannerWithMsg:msg
                                      style:CSNotificationViewStyleError
                                      delay:0
-                             shortDuration:YES];
+                             shortDuration:NO];
             break;
         }
         case ALERT_TYPE_FatalSongDurationError:
