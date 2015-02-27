@@ -153,7 +153,8 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if(section == 0)  //rows for editing
-        return 5;
+        //return 5;  removed genre row
+        return 4;
     if(section == 1){  //row to delete this song
         if(_creatingANewSong && _songIAmEditing.songName.length > 0)
             return 1;
@@ -211,7 +212,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                 cell.accessoryView = nil;
             cell.detailTextLabel.text = @"";
             
-        } else if(indexPath.row == 4){  //Genre
+        } else if(indexPath.row == 4){/*  //Genre
             cell.textLabel.text = @"Genre";
             if([_songIAmEditing.genreCode intValue] != [GenreConstants noGenreSelectedGenreCode]){
                 NSString *genreString = [GenreConstants genreCodeToString:[_songIAmEditing.genreCode intValue]];
@@ -219,7 +220,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
             }else{
                 cell.detailTextLabel.text = nil;
                 cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[UIColor defaultAppColorScheme] lighterColor]];
-            }
+            }*/
         } else
             return nil;
     }
@@ -379,6 +380,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                 break;
             }
             case 4://Genres
+                /*
                 if([_songIAmEditing.genreCode intValue] == [GenreConstants noGenreSelectedGenreCode]){  //adding genre
                     GenrePickerTableViewController *vc;
                     int genreCode = [_songIAmEditing.genreCode intValue];
@@ -401,7 +403,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                     [popup showInView:[self.VC view]];
                 }
                 
-                _lastTappedRow = 4;
+                _lastTappedRow = 4;*/
                 break;
         }
     }
