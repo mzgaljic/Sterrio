@@ -283,9 +283,11 @@ static int numLongSongsSkipped = 0;
     Song *originalSong = [MusicPlaybackController nowPlayingSong];
     BOOL playerEnabled = [SongPlayerCoordinator isPlayerEnabled];
     BOOL playerOnScreen = [SongPlayerCoordinator isPlayerOnScreen];
-#warning check player is paused due to connection issue with youtube. if so, try playing again (make new queue)
+    
     //selected song is already playing...
-    if([nowPlayingObject isEqual:song context:context] && playerEnabled && playerOnScreen){
+    if([nowPlayingObject isEqual:song context:context optionalPlaylist:playlist]
+       && playerEnabled
+       && playerOnScreen){
         //ignore new queue request, SongPlayerViewController will will be unaffected by this...
         return;
     }
@@ -304,7 +306,7 @@ static int numLongSongsSkipped = 0;
     NowPlaying *nowPlaying = [NowPlaying sharedInstance];
     if(nowPlayingObject == nil)
         nowPlayingObject = nowPlaying;
-    [nowPlaying setNewNowPlayingSong:song WithContext:context];
+    [nowPlaying setNewNowPlayingSong:song WithContext:context optionalPlaylist:playlist];
     
     //start playback with the song that was tapped
     [player startPlaybackOfSong:song goingForward:YES oldSong:originalSong];

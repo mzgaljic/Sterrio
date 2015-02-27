@@ -17,18 +17,25 @@ typedef enum{
     SongPlaybackContextAlbums,
     SongPlaybackContextArtists,
     SongPlaybackContextPlaylists,
-    SongPlaybackContextUnspecified
+    SongPlaybackContextUnspecified,
+    
+    SongPlaybackContextCount  //used for iterating through all possible enum vals if needed (rare).
 } SongPlaybackContext;
 
 @interface NowPlaying : NSObject
 
 @property (nonatomic, strong) Song *nowPlaying;
+@property (nonatomic, strong) Playlist *nowPlayingPlaylist;
 @property (nonatomic, assign) SongPlaybackContext context;
 
 + (instancetype)sharedInstance;
-- (BOOL)isEqual:(Song *)aSong context:(SongPlaybackContext)context;
+
+- (BOOL)isEqual:(Song *)aSong
+        context:(SongPlaybackContext)context
+optionalPlaylist:(Playlist *)playlist;
 
 - (void)setNewNowPlayingSong:(Song *)newSong
-                 WithContext:(SongPlaybackContext)context;
+                 WithContext:(SongPlaybackContext)context
+            optionalPlaylist:(Playlist *)playlist;
 
 @end

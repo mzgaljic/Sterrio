@@ -164,7 +164,7 @@
             
             if(allowedToPlayVideo && video != nil && asset.playable){
                 MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-                [player allowSongDidFinishNotificationToProceed];
+                [player allowSongDidFinishNotificationToProceed:YES];
                 if ([weakSelf isCancelled]){
                     [weakSelf finishBecauseOfCancel];
                     return;

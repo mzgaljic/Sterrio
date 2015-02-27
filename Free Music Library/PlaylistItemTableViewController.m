@@ -116,7 +116,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    if([[MusicPlaybackController nowPlayingSongObject] isEqual:song context:self.playbackContext])
+    BOOL songIsNowPlaying = [[MusicPlaybackController nowPlayingSongObject] isEqual:song
+                                                                            context:self.playbackContext
+                                                                   optionalPlaylist:self.playlist];
+    if(songIsNowPlaying)
         cell.textLabel.textColor = [UIColor defaultAppColorScheme];
     else
         cell.textLabel.textColor = [UIColor blackColor];
@@ -434,7 +437,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
     request.predicate = [NSPredicate predicateWithFormat:@"ANY playlistIAmIn.playlist_id == %@", _playlist.playlist_id];
     
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistIAmIn"
+    //picked genreCode because its a useless value...need that so the results of the
+    //nsorderedset dont get re-ordered
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"genreCode"
                                                                      ascending:YES];
     
     request.sortDescriptors = @[sortDescriptor];

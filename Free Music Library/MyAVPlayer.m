@@ -99,22 +99,27 @@ static void *mPlaybackStarted = &mPlaybackStarted;
 - (void)songNeedsToBeSkippedDueToIssue
 {
     if([NSThread mainThread]){
-        [self allowSongDidFinishNotificationToProceed];
+        [self allowSongDidFinishNotificationToProceed:YES];
         [self songDidFinishPlaying:nil];
         [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     } else{
         __weak MyAVPlayer *weakself = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            [weakself allowSongDidFinishNotificationToProceed];
+            [weakself allowSongDidFinishNotificationToProceed:YES];
             [weakself songDidFinishPlaying:nil];
             [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
         });
     }
 }
 
-- (void)allowSongDidFinishNotificationToProceed
+- (void)allowSongDidFinishNotificationToProceed:(BOOL)proceed
 {
-    allowSongDidFinishToExecute = YES;
+    allowSongDidFinishToExecute = proceed;
+}
+
+- (BOOL)allowSongDidFinishValue
+{
+    return allowSongDidFinishToExecute;
 }
 
 //Will be called when MyAVPlayer finishes playing an item

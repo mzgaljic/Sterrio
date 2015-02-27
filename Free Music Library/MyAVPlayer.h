@@ -38,6 +38,7 @@
 - (void)dismissAllSpinners;
 
 - (void)songNeedsToBeSkippedDueToIssue;
-- (void)allowSongDidFinishNotificationToProceed;
+- (BOOL)allowSongDidFinishValue;
+- (void)allowSongDidFinishNotificationToProceed:(BOOL)proceed;
 
 @end

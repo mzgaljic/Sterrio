@@ -130,8 +130,11 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     }
     userDidSwipePlayerOffScreenManually = NO;
     Song *songWeAreKilling = [MusicPlaybackController nowPlayingSong];
+    //done because the method reacting to the MZNewSongLoading notification needs to know
+    //what the context was.hence keeping the context the same temporaril...
+
     [[NowPlaying sharedInstance] setNewNowPlayingSong:nil
-                                          WithContext:SongPlaybackContextSongs];
+                                          WithContext:[NowPlaying sharedInstance].context optionalPlaylist:[NowPlaying sharedInstance].nowPlayingPlaylist];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
                                                         object:songWeAreKilling];
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
@@ -139,7 +142,8 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
     [SongPlayerCoordinator playerWasKilled:YES];
     [[NowPlaying sharedInstance] setNewNowPlayingSong:nil
-                                          WithContext:SongPlaybackContextUnspecified];
+                                          WithContext:SongPlaybackContextUnspecified
+                                     optionalPlaylist:nil];
     //reset player state to defaults
     [MusicPlaybackController explicitlyPausePlayback:NO];
     [SongPlayerCoordinator placePlayerInDisabledState:NO];

@@ -24,6 +24,8 @@
 {
     if([super init]){
         self.nowPlaying = nil;
+        self.nowPlayingPlaylist = nil;
+        self.context = SongPlaybackContextUnspecified;
     }
     return self;
 }
@@ -33,16 +35,26 @@
 //will be non-nil.
 - (void)setNewNowPlayingSong:(Song *)newSong
                  WithContext:(SongPlaybackContext)context
+            optionalPlaylist:(Playlist *)playlist
 {
     self.nowPlaying = newSong;
     self.context = context;
+    self.nowPlayingPlaylist = playlist;
 }
 
-- (BOOL)isEqual:(Song *)aSong context:(SongPlaybackContext)context
+- (BOOL)isEqual:(Song *)aSong
+        context:(SongPlaybackContext)context
+optionalPlaylist:(Playlist *)playlist
 {
     BOOL sameSongIDs = [self.nowPlaying.song_id isEqualToString:aSong.song_id];
     BOOL sameContexts = (self.context == context);
-    return sameSongIDs && sameContexts;
+    
+    if(playlist == nil)
+        return sameSongIDs && sameContexts;
+    else{
+        BOOL samePlaylists = [self.nowPlayingPlaylist.playlist_id isEqualToString:playlist.playlist_id];
+        return sameSongIDs && sameContexts && samePlaylists;
+    }
 }
 
 @end

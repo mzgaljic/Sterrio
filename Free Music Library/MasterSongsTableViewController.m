@@ -361,7 +361,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    if([[MusicPlaybackController nowPlayingSongObject] isEqual:song context:self.playbackContext])
+    BOOL isNowPlaying = [[NowPlaying sharedInstance] isEqual:song
+                                                     context:self.playbackContext
+                                            optionalPlaylist:nil];
+    if(isNowPlaying)
         cell.textLabel.textColor = [UIColor defaultAppColorScheme];
     else
         cell.textLabel.textColor = [UIColor blackColor];

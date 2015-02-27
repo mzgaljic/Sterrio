@@ -437,10 +437,55 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveHasFailed];
                 }
                 if(saved)
+                {
                     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveSuccess];
+                    if([SongPlayerCoordinator isPlayerOnScreen])
+                    {
+                        //may need to update current playback queue
+                        SongPlaybackContext aContext;
+                        for(int i = 0; i < SongPlaybackContextCount; i++)
+                        {
+                            aContext = i;
+                            if([NowPlaying sharedInstance].context == aContext)
+                            {
+                                //song may not be in the EXACT queue, but it would be very smart to
+                                //re-make the queue just to be sure...
+                                CMTime timeAtDisable;
+                                AVPlayerItem *disabledPlayerItem;
+                                MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+                                BOOL allowSongDidFinishToRunOriginalVal = [player allowSongDidFinishValue];
+                                //make copy of AVPlayerItem which will retain buffered data
+                                disabledPlayerItem = [player.currentItem copy];
+                                timeAtDisable = player.currentItem.currentTime;
+                                [player allowSongDidFinishNotificationToProceed:NO];
+                                [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+                                
+                                //now build the new queue
+                                Song *nowPlaying = [NowPlaying sharedInstance].nowPlaying;
+                                Playlist *playlist = [NowPlaying sharedInstance].nowPlayingPlaylist;
+                                [MusicPlaybackController newQueueWithSong:nowPlaying
+                                                              withContext:aContext
+                                                         optionalPlaylist:playlist
+                                                          skipCurrentSong:YES];
+                                //cancel any network operations this caused
+                                [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
+                                //now restore player item to exact time without affecting queue state
+                                [player replaceCurrentItemWithPlayerItem:disabledPlayerItem];
+                                [player seekToTime:timeAtDisable
+                                   toleranceBefore:kCMTimeZero
+                                    toleranceAfter:kCMTimeZero];
+                                [player dismissAllSpinners];
+                                [player allowSongDidFinishNotificationToProceed:allowSongDidFinishToRunOriginalVal];
+                                break;
+                            }
+                        }
+                    }
+                }
+                
                 [self.theDelegate performCleanupBeforeSongIsSaved:_songIAmEditing];
-            }
-        } else
+            }  //end 'creatingNewSong'
+        }  //end indexPath.row == 0
+        else
             return;
     }
 }
