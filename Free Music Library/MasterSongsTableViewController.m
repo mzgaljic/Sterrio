@@ -122,20 +122,12 @@ static BOOL haveCheckedCoreDataInit = NO;
 - (void)setUpSearchBar
 {
     if([self numberOfSongsInCoreDataModel] > 0){
-        BOOL needToAnimateUp = (self.searchBar == nil);
         //create search bar, add to viewController
         _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Library"];
         _searchBar.delegate = self;
         self.tableView.tableHeaderView = _searchBar;
-        
-        if(needToAnimateUp){
-            //now hide it by default
-            __weak UISearchBar *weakSearchBar = self.searchBar;
-            __weak UITableView *weakTableView = self.tableView;
-            [UIView animateWithDuration:0.5f delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-                weakTableView.contentOffset = CGPointMake(0, weakSearchBar.frame.size.height);
-            } completion:nil];
-        }
+        //now hide it by default
+        self.tableView.contentOffset = CGPointMake(0, _searchBar.frame.size.height);
     }
     [self setSearchBar:self.searchBar];
 }
@@ -516,32 +508,14 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)editingModeCompleted:(NSNotification *)notification
 {
     if([notification.name isEqualToString:@"SongEditDone"]){
-        //leave editing mode
-        [self.tableView reloadData];
-    }
-}
-
-- (void)songWasSavedDuringEditing:(NSNotification *)notification
-{
-    if([notification.name isEqualToString:@"SongSavedDuringEdit"]){
-        [self commitNewSongChanges:(Song *)notification.object];
-    }
-}
-
-- (void)commitNewSongChanges:(Song *)changedSong
-{
-    if(changedSong){
-        [[CoreDataManager sharedInstance] saveContext];
-//may want to register for the notification: DataManagerDidSaveFailedNotification  (crash during core data undo operation)
-        
         self.indexOfEditingSong = -1;
         if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
             _searchBar = nil;
             self.tableView.tableHeaderView = nil;
         }
-        [self setFetchedResultsControllerAndSortStyle];  //in case song name changed, etc...
     }
 }
+
 
 #pragma mark - Adding music to library
 //called when + sign is tapped - selector defined in setUpNavBarItems method!

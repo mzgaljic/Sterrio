@@ -136,6 +136,10 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
 - (void)canShowAddToLibraryButton
 {
     canShowAddtoLibButton = YES;
+    if([self numberOfSections] == 2){
+        [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:1]]
+                    withRowAnimation:UITableViewRowAnimationMiddle];
+    }
 }
 
 
@@ -279,8 +283,12 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
 {
     if(section == 0)
         return 10;
-    else
-        return 0;
+    else{
+        if([SongPlayerCoordinator isPlayerOnScreen]){
+            return [SongPlayerCoordinator heightOfMinimizedPlayer] - 10;  //header is always too big lol
+        } else
+            return 10;
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -418,10 +426,9 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                 [self.VC dismissViewControllerAnimated:YES completion:nil];
             } else{
                 
-                //save song into library
-                [self.theDelegate performCleanupBeforeSongIsSaved:_songIAmEditing];
                 [_songIAmEditing setAlbumArt:self.currentAlbumArt];
                 
+                //save song into library
                 BOOL saved = YES;
                 NSError *error;
                 if ([[CoreDataManager context] save:&error] == NO) {
@@ -431,6 +438,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                 }
                 if(saved)
                     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveSuccess];
+                [self.theDelegate performCleanupBeforeSongIsSaved:_songIAmEditing];
             }
         } else
             return;
@@ -924,10 +932,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
         [AlbumArtUtilities deleteAlbumArtFileWithName:@"temp art-editing mode-Mark Zgaljic.jpg"];
     }
     
-    NSError *error = nil;
-    [[CoreDataManager context] save:&error];  //saves the context to disk
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"SongSavedDuringEdit" object:_songIAmEditing];
+    [[CoreDataManager sharedInstance] saveContext]; //saves the context to disk
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
     
     [self.VC dismissViewControllerAnimated:YES completion:nil];

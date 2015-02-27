@@ -110,7 +110,8 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [self setupMainVC];
     
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-    [Fabric with:@[CrashlyticsKit]];
+    if(! [[[UIDevice currentDevice] name] isEqualToString:@"Mark Zgaljic's iPhone"])
+        [Fabric with:@[CrashlyticsKit]];
     return YES;
 }
 

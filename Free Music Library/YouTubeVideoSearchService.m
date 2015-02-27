@@ -29,7 +29,7 @@
 @end
 
 @implementation YouTubeVideoSearchService
-const int time_out_interval_seconds = 8;
+const int time_out_interval_seconds = 10;
 
 + (instancetype)sharedInstance
 {

@@ -291,14 +291,7 @@ typedef enum{
 
 - (void)settingsPossiblyChanged
 {
-    [tableView beginUpdates];
-    [tableView deleteSections:[NSIndexSet indexSetWithIndex:0]
-             withRowAnimation:UITableViewRowAnimationFade];
-    [tableView insertSections:[NSIndexSet indexSetWithIndex:0]
-             withRowAnimation:UITableViewRowAnimationFade];
-    [tableView endUpdates];
-    [tableView layoutMargins];
-    [searchBar updateFontSizeIfNecessary];
+    //tableview alrady re-draws itself after settings change. only put other optional code here...
 }
 
 - (void)nowPlayingSongsHasChanged:(NSNotification *)notification
