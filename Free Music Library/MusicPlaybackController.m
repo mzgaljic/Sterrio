@@ -398,9 +398,10 @@ static int numLongSongsSkipped = 0;
 #pragma mark - Lock Screen Song Info & Art
 + (void)updateLockScreenInfoAndArtForSong:(Song *)song
 {
-    NSLog(@"updating lock screen");
     if(song == nil){
-        NSLog(@"poop happened");
+        //this happens when a new queue has to be built and the MyAVPlayer class detects a change in
+        // players currentItem...
+        return;
     }
     Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
     if (playingInfoCenter){
@@ -436,7 +437,7 @@ static int numLongSongsSkipped = 0;
             NSString *msg = @"WiFi required for playback...";
             [songInfo setObject:msg forKey:MPMediaItemPropertyTitle];
         } else if([[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue].operationCount > 0
-                  && !player.playbackStarted){
+                  && !player.playbackStarted && ![MusicPlaybackController playbackExplicitlyPaused]){
             //mention that new song is buffering to user
             NSString *titleAndMsg =[NSString stringWithFormat:@"Loading: %@", nowPlayingSong.songName];
             [songInfo setObject:titleAndMsg

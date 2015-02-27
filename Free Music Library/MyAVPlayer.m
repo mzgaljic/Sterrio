@@ -98,8 +98,18 @@ static void *mPlaybackStarted = &mPlaybackStarted;
 //public wrapper for songDidFinishPlaying:
 - (void)songNeedsToBeSkippedDueToIssue
 {
-    [self allowSongDidFinishNotificationToProceed];
-    [self songDidFinishPlaying:nil];
+    if([NSThread mainThread]){
+        [self allowSongDidFinishNotificationToProceed];
+        [self songDidFinishPlaying:nil];
+        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+    } else{
+        __weak MyAVPlayer *weakself = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakself allowSongDidFinishNotificationToProceed];
+            [weakself songDidFinishPlaying:nil];
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+        });
+    }
 }
 
 - (void)allowSongDidFinishNotificationToProceed

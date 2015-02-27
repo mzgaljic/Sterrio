@@ -19,6 +19,7 @@
     UIInterfaceOrientation lastOrientation;
     int killSlideXBoundary;
     NSMutableArray *lastTouchesDirection;
+    BOOL userDidSwipePlayerOffScreenManually;
 }
 @end
 @implementation PlayerView
@@ -124,6 +125,10 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 
 - (void)userKilledPlayer
 {
+    if(! userDidSwipePlayerOffScreenManually){
+        [self movePlayerOffScreenAndKillPlayback];
+    }
+    userDidSwipePlayerOffScreenManually = NO;
     Song *songWeAreKilling = [MusicPlaybackController nowPlayingSong];
     [[NowPlaying sharedInstance] setNewNowPlayingSong:nil
                                           WithContext:SongPlaybackContextSongs];
@@ -218,6 +223,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
         //user has moved player past "kill" boundary
         if((self.frame.origin.x <= killSlideXBoundary && endMotionSwipeLeft) ||
            (endMotionSwipeLeft && self.frame.origin.x <= motionBoundaryKill)){
+            userDidSwipePlayerOffScreenManually = YES;
             //user wants to kill player
             [self movePlayerOffScreenAndKillPlayback];
         }else{
@@ -281,8 +287,8 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
                                                      weakSelf.frame.size.height);
                      }
                      completion:^(BOOL finished) {
-                         [weakSelf userKilledPlayer];
-                         
+                         if(userDidSwipePlayerOffScreenManually)
+                             [weakSelf userKilledPlayer];
                          //move frame back to bottom right so it looks the same
                          //the next time the player is opened
                          weakSelf.alpha = 0;
