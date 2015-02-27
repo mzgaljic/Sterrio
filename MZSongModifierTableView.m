@@ -472,8 +472,13 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     [self endUpdates];
     [self reloadData];
     
-    [self scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
-                atScrollPosition:UITableViewScrollPositionTop animated:NO];
+    __weak MZSongModifierTableView *weakself = self;
+    // Delay execution of my block for 10 seconds.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        if(weakself)
+            [weakself scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+                    atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    });
 }
 
 - (BOOL)isRowPresentInTableView:(int)row withSection:(int)section

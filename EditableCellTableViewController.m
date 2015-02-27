@@ -122,14 +122,14 @@
 {
     if(fullScreen)
         return YES;
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
         [self setLandscapeTableViewContentValues];
         return YES;
     }
     else{
         [self setPortraitTableViewContentValues];
-        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
+        return NO;
     }
 }
 

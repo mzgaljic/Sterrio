@@ -160,9 +160,15 @@ static short numberTimesViewHasBeenShown = 0;
     self.navigationController.toolbarHidden = YES;
     
     //set nav bar title
-    UINavigationController *navCon  = (UINavigationController*) [self.navigationController.viewControllers objectAtIndex:1];
-    navCon.navigationItem.title = ytVideo.videoName;
-
+    if(numberTimesViewHasBeenShown == 0){
+        self.navigationItem.title = ytVideo.videoName;
+    } else{
+        CATransition *fade = [CATransition animation];
+        fade.type = kCATransitionFade;
+        fade.duration = 1.0;
+        [self.navigationController.navigationBar.layer addAnimation: fade forKey: @"fadeText"];
+        self.navigationItem.title = ytVideo.videoName;
+    }
     
     if(numberTimesViewHasBeenShown == 0)
         [self setPlaceHolderImageForVideoPlayer];  //would do this in viewDidLoad but self.view.frame has incorrect values until viewWillAppear
