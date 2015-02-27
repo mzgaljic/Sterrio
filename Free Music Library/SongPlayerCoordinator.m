@@ -176,6 +176,10 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 70;
     canIgnoreToolbar = NO;
     //need to re-animate playerView into a new position
     
+    //first check if it was killed...its an edge case
+    if(![SongPlayerCoordinator isPlayerOnScreen])
+        return;
+    
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
     __weak SongPlayerCoordinator *weakSelf = self;
@@ -203,6 +207,9 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 70;
     canIgnoreToolbar = YES;
     //need to re-animate playerView into new position
     
+    //first check if it was killed...its an edge case
+    if(![SongPlayerCoordinator isPlayerOnScreen])
+        return;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
     __weak SongPlayerCoordinator *weakSelf = self;
