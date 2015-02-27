@@ -37,7 +37,6 @@
             completion();
         });
     }];
-    
 }
 
 + (void)showInViewController:(UIViewController*)viewController

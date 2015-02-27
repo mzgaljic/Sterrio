@@ -133,7 +133,10 @@ static int numLongSongsSkipped = 0;
         else{
             if([self isSongLastInQueue:song] && [[self nowPlayingSong].song_id isEqual: song.song_id]
                && [MusicPlaybackController nowPlayingSongObject].context == context){
-                if([MusicPlaybackController sizeOfEntireQueue] > 0)
+                
+                //current item about to be deleted counts as the "1".
+                //Checking if this is NOT the only song in the queue...if some are behind it.
+                if([MusicPlaybackController sizeOfEntireQueue] > 1)
                     [[MusicPlaybackController playbackQueue] skipToPrevious];
                 else{
                     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
