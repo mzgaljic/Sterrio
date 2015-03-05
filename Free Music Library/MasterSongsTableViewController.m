@@ -267,10 +267,6 @@ static BOOL haveCheckedCoreDataInit = NO;
                                              selector:@selector(editingModeCompleted:)
                                                  name:@"SongEditDone"
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(songWasSavedDuringEditing:)
-                                                 name:@"SongSavedDuringEdit"
-                                               object:nil];
     stackController = [[StackController alloc] init];
     
     [self setProductionModeValue];

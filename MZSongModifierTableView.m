@@ -431,6 +431,8 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                 //save song into library
                 BOOL saved = YES;
                 NSError *error;
+                [self.theDelegate performCleanupBeforeSongIsSaved:_songIAmEditing];
+                
                 if ([[CoreDataManager context] save:&error] == NO) {
                     //save failed
                     saved = NO;
@@ -481,8 +483,6 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                         }
                     }
                 }
-                
-                [self.theDelegate performCleanupBeforeSongIsSaved:_songIAmEditing];
             }  //end 'creatingNewSong'
         }  //end indexPath.row == 0
         else
