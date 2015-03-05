@@ -118,11 +118,41 @@
                         <outlet property="sliderHintView" destination="58F-t2-9cv" id="cuo-Kx-wyc"/>
                         <outlet property="songNameLabel" destination="jS1-ux-L8o" id="hhk-2G-xqf"/>
                         <outlet property="totalDurationLabel" destination="L3D-0t-UZe" id="DYu-N8-KJC"/>
+                        <segue destination="gF5-J1-Spj" kind="modal" identifier="showQueueSEgue" modalTransitionStyle="coverVertical" id="cOC-iS-R6I"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="shW-Aa-q3b" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3163" y="-431"/>
+        </scene>
+        <!--Queue View Controller-->
+        <scene sceneID="rrb-Ap-Q9s">
+            <objects>
+                <viewController id="gF5-J1-Spj" customClass="QueueViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="wp3-gI-kCj">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Ad1-fx-eWz">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SongItemCell" id="1Vi-vv-PIZ">
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1Vi-vv-PIZ" id="XG6-KP-aKF">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cC6-4D-gUx" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3575" y="-431"/>
         </scene>
         <!--Genres-->
         <scene sceneID="Vww-o9-vR9">

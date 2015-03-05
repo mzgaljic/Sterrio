@@ -222,9 +222,12 @@ static int numLongSongsSkipped = 0;
 }
 
 #pragma mark - Gathering playback info
-+ (NSArray *)listOfUpcomingSongsInQueue
++ (NSArray *)listOfUpcomingSongsInQueueIncludeNowPlaying:(BOOL)include
 {
-    return [[MusicPlaybackController playbackQueue] listOfUpcomingSongsNowPlayingExclusive];
+    if(include)
+        return [[MusicPlaybackController playbackQueue] listOfUpcomingSongsNowPlayingInclusive];
+    else
+        return [[MusicPlaybackController playbackQueue] listOfUpcomingSongsNowPlayingExclusive];
 }
 
 + (NSUInteger)numMoreSongsInQueue

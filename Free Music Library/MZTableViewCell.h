@@ -12,4 +12,7 @@
 
 @interface MZTableViewCell : UITableViewCell
 
+- (instancetype)initWithStyle:(UITableViewCellStyle)style
+              reuseIdentifier:(NSString *)reuseIdentifier;
+
 @end

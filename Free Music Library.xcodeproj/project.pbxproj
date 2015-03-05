@@ -123,6 +123,7 @@
 		87D16D621931B7EE00DB6A34 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 87D16D611931B7EE00DB6A34 /* Podfile */; };
 		87D37438199AA99700D3B70B /* UIColor+ColorComparison.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D37437199AA99700D3B70B /* UIColor+ColorComparison.m */; };
 		87D3743B199B13B300D3B70B /* UIButton+ExpandedHitArea.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D3743A199B13B300D3B70B /* UIButton+ExpandedHitArea.m */; };
+		87D3CD201AA823EF00B7D5B6 /* QueueViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D3CD1F1AA823EF00B7D5B6 /* QueueViewController.m */; };
 		87D47D8C19340F8B0057D49B /* AlbumItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47D8919340F8B0057D49B /* AlbumItemViewController.m */; };
 		87D47D8D19340F8B0057D49B /* MasterAlbumsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47D8B19340F8B0057D49B /* MasterAlbumsTableViewController.m */; };
 		87D47D93193428350057D49B /* MasterPlaylistTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D47D8F193428350057D49B /* MasterPlaylistTableViewController.m */; };
@@ -373,6 +374,8 @@
 		87D37437199AA99700D3B70B /* UIColor+ColorComparison.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+ColorComparison.m"; sourceTree = "<group>"; };
 		87D37439199B13B300D3B70B /* UIButton+ExpandedHitArea.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+ExpandedHitArea.h"; sourceTree = "<group>"; };
 		87D3743A199B13B300D3B70B /* UIButton+ExpandedHitArea.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+ExpandedHitArea.m"; sourceTree = "<group>"; };
+		87D3CD1E1AA823EF00B7D5B6 /* QueueViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QueueViewController.h; sourceTree = "<group>"; };
+		87D3CD1F1AA823EF00B7D5B6 /* QueueViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QueueViewController.m; sourceTree = "<group>"; };
 		87D47D8819340F8B0057D49B /* AlbumItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumItemViewController.h; sourceTree = "<group>"; };
 		87D47D8919340F8B0057D49B /* AlbumItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumItemViewController.m; sourceTree = "<group>"; };
 		87D47D8A19340F8B0057D49B /* MasterAlbumsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterAlbumsTableViewController.h; sourceTree = "<group>"; };
@@ -625,6 +628,15 @@
 			name = "GUI (VC) consistent style helpers";
 			sourceTree = "<group>";
 		};
+		8744E9DB1AA7F07500CC6140 /* Viewing the playback queue */ = {
+			isa = PBXGroup;
+			children = (
+				87D3CD1E1AA823EF00B7D5B6 /* QueueViewController.h */,
+				87D3CD1F1AA823EF00B7D5B6 /* QueueViewController.m */,
+			);
+			name = "Viewing the playback queue";
+			sourceTree = "<group>";
+		};
 		87480D9C192C1FBD005CC0A4 = {
 			isa = PBXGroup;
 			children = (
@@ -853,6 +865,7 @@
 				879AB34019F225F300FD6582 /* SongPlayerViewController.m */,
 				87CB302B1A4A05F1004E5158 /* SongPlayerNavController.h */,
 				87CB302E1A4A070C004E5158 /* SongPlayerNavController.m */,
+				8744E9DB1AA7F07500CC6140 /* Viewing the playback queue */,
 				87BC1B871A071979000D9B0C /* PlayerView.h */,
 				87BC1B881A071979000D9B0C /* PlayerView.m */,
 				87A41FE919F0D9C800C037D9 /* MyAVPlayer.h */,
@@ -1373,6 +1386,7 @@
 				879AB34119F225F300FD6582 /* SongPlayerViewController.m in Sources */,
 				87D47D8C19340F8B0057D49B /* AlbumItemViewController.m in Sources */,
 				87A0FD8A197DCEDF008FBBF7 /* AlbumTableViewFormatter.m in Sources */,
+				87D3CD201AA823EF00B7D5B6 /* QueueViewController.m in Sources */,
 				87FCD02C19A5BC0B00C600D3 /* CustomYoutubeTableViewCell.m in Sources */,
 				872EA4E41A54F1EA00F8EE9D /* MyTableViewController.m in Sources */,
 				87362AFD194E68A5004DB544 /* Deque.m in Sources */,

@@ -55,7 +55,7 @@
 + (NowPlaying *)nowPlayingSongObject;
 
 #pragma mark + Gathering playback info
-+ (NSArray *)listOfUpcomingSongsInQueue;
++ (NSArray *)listOfUpcomingSongsInQueueIncludeNowPlaying:(BOOL)include;
 + (NSUInteger)numMoreSongsInQueue;
 + (BOOL)isSongLastInQueue:(Song *)song;
 + (BOOL)isSongFirstInQueue:(Song *)song;

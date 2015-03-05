@@ -118,11 +118,12 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    
-    playerSnapshot = [playerView snapshotViewAfterScreenUpdates:NO];
-    playerSnapshot.frame = playerView.frame;
-    [self.window addSubview:playerSnapshot];
-    [playerView removeFromSuperview];
+    if(! [SongPlayerCoordinator screenShottingVideoPlayerNotAllowed]){
+        playerSnapshot = [playerView snapshotViewAfterScreenUpdates:NO];
+        playerSnapshot.frame = playerView.frame;
+        [self.window addSubview:playerSnapshot];
+    }
+    playerView.alpha = 0;
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -137,6 +138,8 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     //display how many songs were skipped while user was in background (long videos skipped)
     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
     [MusicPlaybackController resetNumberOfLongVideosSkippedOnCellularConnection];
+    
+    [self reattachPlayerToPlayerLayer];
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
@@ -149,22 +152,14 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 {
     //animate player back from snapshot
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    float animationDuration = 0.70f;
-    [UIView animateWithDuration:animationDuration animations:^{
-        playerSnapshot.alpha = 0.0;
-    }];
-    if([MusicPlaybackController obtainRawAVPlayer].rate == 1)
-        playerView.alpha = 0;
-    else
-        playerView.alpha = 1;
-    [self reattachPlayerToPlayerLayer];
-    [self.window addSubview:playerView];
+    float animationDuration = 0.74f;
     [UIView animateWithDuration:animationDuration
                           delay:0
                         options:UIViewAnimationOptionAllowUserInteraction
                      animations:^{
+                         playerSnapshot.alpha = 0.0;
                          if([SongPlayerCoordinator isPlayerEnabled])
-                             playerView.alpha = 1.0f;
+                             playerView.alpha = 1;
                          else
                              playerView.alpha = [SongPlayerCoordinator alphaValueForDisabledPlayer];
                      } completion:^(BOOL finished) {

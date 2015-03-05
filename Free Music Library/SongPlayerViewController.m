@@ -168,9 +168,14 @@ static int numTimesVCLoaded = 0;
     }
     numTimesVCLoaded++;
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
-                                                                                           target:self
-                                                                                           action:@selector(shareButtonTapped)];
+    UIBarButtonItem *share = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                                           target:self
+                                                                           action:@selector(shareButtonTapped)];
+    UIBarButtonItem *queue = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
+                                                                           target:self
+                                                                           action:@selector(viewPlaybackQueue)];
+    NSArray *rightBarBtns = @[share, queue];
+    self.navigationItem.rightBarButtonItems = rightBarBtns;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"UIButtonBarArrowDown"]
                                                                              style:UIBarButtonItemStylePlain
                                                                             target:self
@@ -237,6 +242,13 @@ static int numTimesVCLoaded = 0;
 {
     [super viewDidAppear:animated];
     [self checkIfInterfaceShouldBeDisabled];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [self removeObservers];
+    numTimesSetupKeyValueObservers--;
 }
 
 - (void)dealloc
@@ -1469,6 +1481,19 @@ static int accomodateInterfaceLabelsCounter = 0;
         // Handle error
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_TroubleSharingLibrarySong];
     }
+}
+
+- (void)viewPlaybackQueue
+{
+    QueueViewController *vc = [[QueueViewController alloc] init];
+    AFBlurSegue *segue = [[AFBlurSegue alloc] initWithIdentifier:@"showQueueSEgue"
+                                                          source:self
+                                                     destination:vc];
+    segue.animate = YES;
+    segue.blurRadius = 100;
+    segue.saturationDeltaFactor = .9;
+    segue.tintColor = [UIColor blackColor];
+    [segue perform];
 }
 
 @end

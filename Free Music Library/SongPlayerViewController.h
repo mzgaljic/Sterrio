@@ -32,6 +32,9 @@
 #import <GCDiscreetNotificationView.h>
 #import "ReachabilitySingleton.h"
 
+#import "QueueViewController.h"
+#import <AFBlurSegue.h>
+
 
 @class MusicPlaybackController;
 

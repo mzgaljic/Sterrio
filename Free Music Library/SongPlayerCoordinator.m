@@ -20,6 +20,7 @@
 static BOOL isVideoPlayerExpanded;
 static BOOL playerIsOnScreen = NO;
 static BOOL playerIsInDisabledState = NO;
+static BOOL screenShottingVideoPlayerNotAllowed = NO;
 static BOOL isPlayerEnabled;
 static BOOL canIgnoreToolbar = YES;
 float const disabledPlayerAlpa = 0.20;
@@ -379,6 +380,17 @@ static BOOL wasInPlayStateBeforeGUIDisabled = NO;
 + (BOOL)wasPlayerInPlayStateBeforeGUIDisabled
 {
     return wasInPlayStateBeforeGUIDisabled;
+}
+
+//for moments where you do NOT want a screenshot to be taken when leaving the view
++ (BOOL)screenShottingVideoPlayerNotAllowed
+{
+    return screenShottingVideoPlayerNotAllowed;
+}
+
++ (void)setScreenShottingVideoPlayerAllowed:(BOOL)allowed
+{
+    screenShottingVideoPlayerNotAllowed = !allowed;
 }
 
 + (int)heightOfMinimizedPlayer

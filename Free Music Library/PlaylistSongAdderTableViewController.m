@@ -176,7 +176,6 @@ static const short NORMAL_PLAYLIST = -1;
     [super viewDidLoad];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    [self.view addSubview:self.tableView];
     [self setTableForCoreDataView:self.tableView];
     self.playbackContext = SongPlaybackContextUnspecified;
     
@@ -199,6 +198,7 @@ static const short NORMAL_PLAYLIST = -1;
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    NSLog(@"Dealloc'ed in %@", NSStringFromClass([self class]));
 }
 
 #pragma mark - Table View Data Source

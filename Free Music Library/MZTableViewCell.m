@@ -27,6 +27,13 @@ short const editingModeChevronWidthCompensation = 55;
 
 static void *didEnterEditingMode = &didEnterEditingMode;
 
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
+    if([super initWithStyle:style reuseIdentifier:reuseIdentifier]){
+    }
+    return self;
+}
+
 - (void)awakeFromNib
 {
     [super awakeFromNib];

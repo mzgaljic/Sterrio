@@ -244,7 +244,6 @@ static BOOL haveCheckedCoreDataInit = NO;
     [super viewDidLoad];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    [self.view addSubview:self.tableView];
     [self setTableForCoreDataView:self.tableView];
     self.playbackContext = SongPlaybackContextUnspecified;
     

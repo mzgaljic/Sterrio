@@ -193,12 +193,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         self.tableView.scrollEnabled = NO;
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 #pragma mark - YouTubeVideoSearchDelegate implementation
 //searching for keyword on youtube finished and we have the results
 - (void)ytVideoSearchDidCompleteWithResults:(NSArray *)youTubeVideoObjects
