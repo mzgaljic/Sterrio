@@ -15,7 +15,6 @@
     [super viewWillAppear:animated];
     
     self.navigationController.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
-    self.navigationController.toolbar.barTintColor = [UIColor defaultAppColorScheme];
     
     //force tableview to only show cells with content (hide the invisible stuff at the bottom of the table)
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];

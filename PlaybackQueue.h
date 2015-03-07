@@ -12,12 +12,7 @@
 
 @interface PlaybackQueue : NSObject
 
-//This enum is how the queue can keep track where its songs came from
-typedef enum {
-    PlaylistContext,
-    SongTabContext
-} CONTEXT;
-
+/*
 - (void)clearQueue;
 - (NSUInteger)numMoreSongsInQueue;
 
@@ -38,13 +33,14 @@ typedef enum {
 
 - (NSUInteger)sizeOfEntireQueue;
 - (BOOL)isSongInQueue:(Song *)song;
-
+*/
 /* Inserts songs after the currently playing song. If 
    the queue is empty, all songs are added to the queue. */
+
+/*
 - (void)insertSongsAfterNowPlaying:(NSArray *)songs;
 - (void)removeSongFromQueue:(Song *)song;
 
-#pragma mark - Dealing with Queue context
-@property (nonatomic, assign) CONTEXT context;
+*/
 
 @end

@@ -13,10 +13,12 @@
 #import <MediaPlayer/MediaPlayer.h>  //needed for placing info/media on lock screen
 #import "Song.h"
 #import "Playlist.h"
-#import "PlaybackQueue.h"
+//#import "PlaybackQueue.h"
+#import "MZPlaybackQueue.h"
 #import "MyAVPlayer.h"  //custom AVPlayer class
 #import "GenreConstants.h"
-#import "NowPlaying.h"
+#import "NowPlayingSong.h"
+#import "PlaybackContext.h"
 @class PlayerView;  //import doesnt work here
 
 @interface MusicPlaybackController : NSObject
@@ -31,12 +33,12 @@
 /** Stops playback if the song (x) to be deleted is the now playing song. If x is in the playback queue,
  it is removed. All deletions (of songs, artists, etc) taking place ANYWHERE in the application should
  call this method as a "heads up" to avoid potential problems. */
-+ (void)songAboutToBeDeleted:(Song *)song deletionContext:(SongPlaybackContext)context;
++ (void)songAboutToBeDeleted:(Song *)song deletionContext:(PlaybackContext *)context;
 
 /** Stops playback if any of the songs in the group (x) to be deleted is the now playing song. Any songs
  from group x within the queue are removed. All deletions (of songs, artists, etc) taking place ANYWHERE 
  in the application should call this method as a "heads up" to avoid potential problems. **/
-+ (void)groupOfSongsAboutToBeDeleted:(NSArray *)songs deletionContext:(SongPlaybackContext)context;
++ (void)groupOfSongsAboutToBeDeleted:(NSArray *)songs deletionContext:(PlaybackContext *)context;
 
 /** Stop playback of current song/track, and begin playback of the next track */
 + (void)skipToNextTrack;
@@ -52,7 +54,7 @@
 
 #pragma mark - Now Playing Song
 + (Song *)nowPlayingSong;
-+ (NowPlaying *)nowPlayingSongObject;
++ (NowPlayingSong *)nowPlayingSongObject;
 
 #pragma mark + Gathering playback info
 + (NSArray *)listOfUpcomingSongsInQueueIncludeNowPlaying:(BOOL)include;
@@ -63,9 +65,9 @@
 
 #pragma mark + Changing the Queue
 + (void)newQueueWithSong:(Song *)song
-             withContext:(SongPlaybackContext)context
-        optionalPlaylist:(Playlist *)playlist
+             withContext:(PlaybackContext *)context
          skipCurrentSong:(BOOL)skipNow;
++ (void)playSongNextWithoutDamagingQueue:(Song *)song;
 
 #pragma mark - Playback status
 + (BOOL)playbackExplicitlyPaused;

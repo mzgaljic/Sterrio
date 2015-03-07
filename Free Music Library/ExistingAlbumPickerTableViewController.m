@@ -16,7 +16,6 @@
 
 @implementation ExistingAlbumPickerTableViewController
 @synthesize albums;
-static BOOL PRODUCTION_MODE;
 /*
 //using custom init here
 - (id)initWithCurrentAlbum:(Album *)anAlbum

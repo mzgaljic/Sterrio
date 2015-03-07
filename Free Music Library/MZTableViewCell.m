@@ -78,6 +78,7 @@ static void *didEnterEditingMode = &didEnterEditingMode;
         self.imageView.frame = imgViewFrameBeforeEditingMode;
     
     [self setLabelsFramesBasedOnEditingMode];
+    [self fixiOS7PlusSeperatorBug];
     
     layoutSubviewCount++;
 }
@@ -182,6 +183,15 @@ static void *didEnterEditingMode = &didEnterEditingMode;
                       yOrigin,
                       width,
                       self.detailTextLabel.frame.size.height);
+}
+
+- (void)fixiOS7PlusSeperatorBug
+{
+    for (UIView *subview in self.contentView.superview.subviews) {
+        if ([NSStringFromClass(subview.class) hasSuffix:@"SeparatorView"]) {
+            subview.hidden = NO;
+        }
+    }
 }
 
 @end

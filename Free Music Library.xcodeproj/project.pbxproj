@@ -20,7 +20,7 @@
 		871BA88F1A5A2F4100FB87A7 /* Artist.m in Sources */ = {isa = PBXBuildFile; fileRef = 871BA88E1A5A2F4100FB87A7 /* Artist.m */; };
 		871BA8921A5A2F4100FB87A7 /* Song.m in Sources */ = {isa = PBXBuildFile; fileRef = 871BA8911A5A2F4100FB87A7 /* Song.m */; };
 		871BA8951A5A2F4100FB87A7 /* Album.m in Sources */ = {isa = PBXBuildFile; fileRef = 871BA8941A5A2F4100FB87A7 /* Album.m */; };
-		871C2BF01A97CAA0007A1DE5 /* NowPlaying.m in Sources */ = {isa = PBXBuildFile; fileRef = 871C2BEF1A97CAA0007A1DE5 /* NowPlaying.m */; };
+		871C2BF01A97CAA0007A1DE5 /* NowPlayingSong.m in Sources */ = {isa = PBXBuildFile; fileRef = 871C2BEF1A97CAA0007A1DE5 /* NowPlayingSong.m */; };
 		871FA7711A8D8A9A0045196C /* UIView+ScreenshotView.m in Sources */ = {isa = PBXBuildFile; fileRef = 871FA7701A8D8A9A0045196C /* UIView+ScreenshotView.m */; };
 		8725B1B81A6C938700E58C3E /* UIWindow+VisibleVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 8725B1B71A6C938700E58C3E /* UIWindow+VisibleVC.m */; };
 		87270032199E815000D71204 /* NSString+Levenshtein_Distance.m in Sources */ = {isa = PBXBuildFile; fileRef = 87270031199E815000D71204 /* NSString+Levenshtein_Distance.m */; };
@@ -114,6 +114,8 @@
 		87A9AF53199DA36F005B9A5B /* GenreSearchService.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9AF52199DA36F005B9A5B /* GenreSearchService.m */; };
 		87AE39751A4A8E6400C278BA /* PreloadedCoreDataModelUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AE39741A4A8E6400C278BA /* PreloadedCoreDataModelUtility.m */; };
 		87B2B5C21A7B3936009E910C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DA8192C1FBD005CC0A4 /* Foundation.framework */; };
+		87BA3A5D1AA9467300A3ACA3 /* PlaybackContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 87BA3A5C1AA9467300A3ACA3 /* PlaybackContext.m */; };
+		87BA3A601AA9652200A3ACA3 /* MZPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87BA3A5F1AA9652200A3ACA3 /* MZPlaybackQueue.m */; };
 		87BBBE061A58A78A00248E2F /* MySearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 87BBBE051A58A78A00248E2F /* MySearchBar.m */; };
 		87BC1B891A071979000D9B0C /* PlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87BC1B881A071979000D9B0C /* PlayerView.m */; };
 		87BD42A319CD1A4C005ED8CD /* Free Music Library.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 87BD42A219CD1A4C005ED8CD /* Free Music Library.entitlements */; };
@@ -181,8 +183,8 @@
 		871BA8911A5A2F4100FB87A7 /* Song.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Song.m; sourceTree = "<group>"; };
 		871BA8931A5A2F4100FB87A7 /* Album.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Album.h; sourceTree = "<group>"; };
 		871BA8941A5A2F4100FB87A7 /* Album.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Album.m; sourceTree = "<group>"; };
-		871C2BEE1A97CAA0007A1DE5 /* NowPlaying.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NowPlaying.h; sourceTree = "<group>"; };
-		871C2BEF1A97CAA0007A1DE5 /* NowPlaying.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NowPlaying.m; sourceTree = "<group>"; };
+		871C2BEE1A97CAA0007A1DE5 /* NowPlayingSong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NowPlayingSong.h; sourceTree = "<group>"; };
+		871C2BEF1A97CAA0007A1DE5 /* NowPlayingSong.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NowPlayingSong.m; sourceTree = "<group>"; };
 		871FA76F1A8D8A9A0045196C /* UIView+ScreenshotView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+ScreenshotView.h"; sourceTree = "<group>"; };
 		871FA7701A8D8A9A0045196C /* UIView+ScreenshotView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+ScreenshotView.m"; sourceTree = "<group>"; };
 		8725B1B61A6C938700E58C3E /* UIWindow+VisibleVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWindow+VisibleVC.h"; sourceTree = "<group>"; };
@@ -357,6 +359,10 @@
 		87AE39731A4A8E6400C278BA /* PreloadedCoreDataModelUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreloadedCoreDataModelUtility.h; sourceTree = "<group>"; };
 		87AE39741A4A8E6400C278BA /* PreloadedCoreDataModelUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreloadedCoreDataModelUtility.m; sourceTree = "<group>"; };
 		87AF35CE1989679C005882B6 /* YouTubeVideoQueryDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YouTubeVideoQueryDelegate.h; sourceTree = "<group>"; };
+		87BA3A5B1AA9467300A3ACA3 /* PlaybackContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaybackContext.h; sourceTree = "<group>"; };
+		87BA3A5C1AA9467300A3ACA3 /* PlaybackContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaybackContext.m; sourceTree = "<group>"; };
+		87BA3A5E1AA9652200A3ACA3 /* MZPlaybackQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPlaybackQueue.h; sourceTree = "<group>"; };
+		87BA3A5F1AA9652200A3ACA3 /* MZPlaybackQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPlaybackQueue.m; sourceTree = "<group>"; };
 		87BBBE041A58A78A00248E2F /* MySearchBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MySearchBar.h; sourceTree = "<group>"; };
 		87BBBE051A58A78A00248E2F /* MySearchBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MySearchBar.m; sourceTree = "<group>"; };
 		87BC1B871A071979000D9B0C /* PlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerView.h; sourceTree = "<group>"; };
@@ -588,7 +594,9 @@
 				87362AFC194E68A5004DB544 /* Deque.m */,
 				87394BE11965FFE100E750B1 /* Queue.h */,
 				87394BE21965FFE100E750B1 /* Queue.m */,
-				879AB33A19F1D2BE00FD6582 /* Custom Data Structures */,
+				87BA3A5E1AA9652200A3ACA3 /* MZPlaybackQueue.h */,
+				87BA3A5F1AA9652200A3ACA3 /* MZPlaybackQueue.m */,
+				879AB33A19F1D2BE00FD6582 /* old queue class (unused now) */,
 			);
 			name = "Data Structures";
 			sourceTree = "<group>";
@@ -849,13 +857,13 @@
 			name = "Playlist Formatter";
 			sourceTree = "<group>";
 		};
-		879AB33A19F1D2BE00FD6582 /* Custom Data Structures */ = {
+		879AB33A19F1D2BE00FD6582 /* old queue class (unused now) */ = {
 			isa = PBXGroup;
 			children = (
 				879AB33B19F1D2E100FD6582 /* PlaybackQueue.h */,
 				879AB33C19F1D2E100FD6582 /* PlaybackQueue.m */,
 			);
-			name = "Custom Data Structures";
+			name = "old queue class (unused now)";
 			sourceTree = "<group>";
 		};
 		879AB33E19F2188B00FD6582 /* The Player */ = {
@@ -1150,8 +1158,10 @@
 				873EEA861A4BBA210092A6DF /* YouTubeVideo.m */,
 				8763351C1A845A0B00A229C4 /* SegmentedControlItem.h */,
 				8763351D1A845A0B00A229C4 /* SegmentedControlItem.m */,
-				871C2BEE1A97CAA0007A1DE5 /* NowPlaying.h */,
-				871C2BEF1A97CAA0007A1DE5 /* NowPlaying.m */,
+				871C2BEE1A97CAA0007A1DE5 /* NowPlayingSong.h */,
+				871C2BEF1A97CAA0007A1DE5 /* NowPlayingSong.m */,
+				87BA3A5B1AA9467300A3ACA3 /* PlaybackContext.h */,
+				87BA3A5C1AA9467300A3ACA3 /* PlaybackContext.m */,
 			);
 			name = Models;
 			path = "Free Music Library";
@@ -1334,7 +1344,7 @@
 				87124BA419A3CBB8003D29CD /* AlbumModelHandler.m in Sources */,
 				87E5FF3F1A6F42AD00A09652 /* MZSongModifierTableView.m in Sources */,
 				8763351B1A84052600A229C4 /* MainScreenViewController.m in Sources */,
-				871C2BF01A97CAA0007A1DE5 /* NowPlaying.m in Sources */,
+				871C2BF01A97CAA0007A1DE5 /* NowPlayingSong.m in Sources */,
 				87A453D8199C0891004D1319 /* UIImage+EYFixOrientation.m in Sources */,
 				87270032199E815000D71204 /* NSString+Levenshtein_Distance.m in Sources */,
 				87A453CD199C0891004D1319 /* ELCImagePickerController.m in Sources */,
@@ -1368,6 +1378,7 @@
 				876335241A847B9D00A229C4 /* CoreDataCustomTableViewController.m in Sources */,
 				87334418198E0332002B9E18 /* UIColor+SystemTintColor.m in Sources */,
 				877C4BAD199FE4E700CE86BC /* Playlist+Utilities.m in Sources */,
+				87BA3A601AA9652200A3ACA3 /* MZPlaybackQueue.m in Sources */,
 				87E1C5A0193A5E8B009AE399 /* GenreConstants.m in Sources */,
 				87270035199E820700D71204 /* LevenshteinDistanceItem.m in Sources */,
 				871A0B031980835D00BACD31 /* UIColor+LighterAndDarker.m in Sources */,
@@ -1422,6 +1433,7 @@
 				87FA136F1A99559100A1902F /* FetchVideoInfoOperation.m in Sources */,
 				879AB33D19F1D2E100FD6582 /* PlaybackQueue.m in Sources */,
 				87D37438199AA99700D3B70B /* UIColor+ColorComparison.m in Sources */,
+				87BA3A5D1AA9467300A3ACA3 /* PlaybackContext.m in Sources */,
 				87A453CC199C0891004D1319 /* ELCConsole.m in Sources */,
 				87A453D4199C0891004D1319 /* ELCImagePickerDemoAppDelegate.m in Sources */,
 				87A453DF199C7096004D1319 /* ExistingAlbumPickerTableViewController.m in Sources */,

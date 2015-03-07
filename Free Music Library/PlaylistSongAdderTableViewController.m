@@ -140,7 +140,6 @@ static const short NORMAL_PLAYLIST = -1;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.playbackContext = SongPlaybackContextSongs;
     _songsSelected = [NSMutableArray array];
     [self setUpSearchBar];
     
@@ -177,7 +176,6 @@ static const short NORMAL_PLAYLIST = -1;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self setTableForCoreDataView:self.tableView];
-    self.playbackContext = SongPlaybackContextUnspecified;
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
@@ -461,6 +459,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                                         selector:@selector(localizedStandardCompare:)];
     
     request.sortDescriptors = @[sortDescriptor];
+    if(self.playbackContext == nil){
+        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]];
+    }
     //fetchedResultsController is from custom super class
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
                                                                         managedObjectContext:context

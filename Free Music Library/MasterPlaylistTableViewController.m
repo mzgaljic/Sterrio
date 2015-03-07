@@ -210,7 +210,6 @@
         return;
     }
     [super viewWillAppear:animated];
-    self.playbackContext = SongPlaybackContextPlaylists;
     [self setUpSearchBar];
     if([self numberOfPlaylistsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
@@ -245,7 +244,6 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self setTableForCoreDataView:self.tableView];
-    self.playbackContext = SongPlaybackContextUnspecified;
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
@@ -305,8 +303,9 @@
         Playlist *playlist = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
         //check if any of the songs in this playlist are currently playing, if so, set the avplayer to nil (and pause it) so it doesn't crash!
-        [MusicPlaybackController groupOfSongsAboutToBeDeleted:[playlist.playlistSongs array]
-                                              deletionContext:SongPlaybackContextPlaylists];
+#warning fix!
+        //[MusicPlaybackController groupOfSongsAboutToBeDeleted:[playlist.playlistSongs array]
+    //                                          deletionContext:SongPlaybackContextPlaylists];
         
         //delete the playlist and save changes
         NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Playlist" inManagedObjectContext:[CoreDataManager context]];
@@ -497,6 +496,9 @@
                                                                       selector:@selector(localizedStandardCompare:)];
     
     request.sortDescriptors = @[sortDescriptor];
+    if(self.playbackContext == nil){
+        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]];
+    }
     //fetchedResultsController is from custom super class
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
                                                                         managedObjectContext:context

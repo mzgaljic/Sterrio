@@ -50,6 +50,28 @@ static NSInteger const SONG7_DURATION = 137;
 
 + (void)createCoreDataSampleMusicData
 {
+   
+    int songCreationCount = 5000;
+    Song *someSong;
+    //UIImage *art = [UIImage imageNamed:@"testAlbumArt"];
+    int stopToPrint = 0;
+    for(int i = 0; i < songCreationCount; i++){
+        someSong = [PreloadedCoreDataModelUtility createSongWithName:SONG2_NAME
+                                                        byArtistName:ARTIST2_NAME
+                                                    partOfAlbumNamed:ALBUM2_NAME
+                                                           youtubeID:SONG2_YTID
+                                                       videoDuration:SONG2_DURATION];
+        [someSong setAlbumArt:[UIImage imageNamed:@"testAlbumArt.jpg"]];
+        
+        if(i == stopToPrint && i != songCreationCount){
+            NSLog(@"songsCreated: %i", i);
+            stopToPrint += 500;
+            [[CoreDataManager sharedInstance] saveContext];
+        }
+    }
+    [[CoreDataManager sharedInstance] saveContext];
+  
+    /*
     [PreloadedCoreDataModelUtility createSongWithName:SONG1_NAME
                                          byArtistName:ARTIST1_NAME
                                      partOfAlbumNamed:ALBUM1_NAME
@@ -88,9 +110,11 @@ static NSInteger const SONG7_DURATION = 137;
                                      partOfAlbumNamed:nil
                                             youtubeID:SONG7_YTID
                                         videoDuration:SONG7_DURATION];
+     [[CoreDataManager sharedInstance] saveContext];
+     */
 }
 
-+ (void)createSongWithName:(NSString *)songName
++ (Song *)createSongWithName:(NSString *)songName
               byArtistName:(NSString *)artistName
           partOfAlbumNamed:(NSString *)albumName
                  youtubeID:(NSString *)ytID videoDuration:(NSUInteger)durationInSecs
@@ -103,7 +127,7 @@ static NSInteger const SONG7_DURATION = 137;
                            inManagedContext:[CoreDataManager context]
                                withDuration:durationInSecs];
     myNewSong.youtube_id = ytID;
-    [[CoreDataManager sharedInstance] saveContext];
+    return myNewSong;
 }
 
 @end

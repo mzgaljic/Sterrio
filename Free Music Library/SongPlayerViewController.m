@@ -458,7 +458,7 @@ static int numTimesVCLoaded = 0;
     }
     playAfterMovingSlider = YES;  //reset value
     [sliderHint hideAnimated];
-    [self performSelector:@selector(hideSliderHintView) withObject:nil afterDelay:0.5];
+    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlaying];
 }
 - (IBAction)playbackSliderEditingHasEndedB:(id)sender  //touch up outside
 {
@@ -469,14 +469,6 @@ static int numTimesVCLoaded = 0;
 {
     CMTime newTime = CMTimeMakeWithSeconds(_playbackSlider.value, 1);
     [[MusicPlaybackController obtainRawAVPlayer] seekToTime:newTime];
-}
-
-- (void)hideSliderHintView
-{
-    if(sliderHint.isShowing)
-        return;
-    else
-        _sliderHintView.hidden = YES;
 }
 
 - (NSString *)slider:(ASValueTrackingSlider *)slider stringForValue:(float)value

@@ -197,7 +197,6 @@ static BOOL PRODUCTION_MODE;
         return;
     }
     [super viewWillAppear:animated];
-    self.playbackContext = SongPlaybackContextAlbums;
     [self setUpSearchBar];
     if([self numberOfAlbumsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
@@ -232,7 +231,6 @@ static BOOL PRODUCTION_MODE;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self setTableForCoreDataView:self.tableView];
-    self.playbackContext = SongPlaybackContextUnspecified;
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
@@ -358,8 +356,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         //remove songs from queue if they are in it
         for(Song *aSong in album.albumSongs)
         {
-            [MusicPlaybackController songAboutToBeDeleted:aSong
-                                          deletionContext:SongPlaybackContextAlbums];
+            #warning fix!
+            //[MusicPlaybackController songAboutToBeDeleted:aSong
+              //                            deletionContext:SongPlaybackContextAlbums];
             [aSong removeAlbumArt];
         }
         
@@ -539,6 +538,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                                         selector:@selector(localizedStandardCompare:)];
     
     request.sortDescriptors = @[sortDescriptor];
+    if(self.playbackContext == nil){
+        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]];
+    }
     //fetchedResultsController is from custom super class
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
                                                                         managedObjectContext:context

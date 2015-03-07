@@ -159,7 +159,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 70;
         return;
     if([SongPlayerCoordinator isPlayerOnScreen]){
         PlayerView *videoPlayer = [MusicPlaybackController obtainRawPlayerView];
-        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        UIInterfaceOrientation orientation = (UIInterfaceOrientation)[UIDevice currentDevice].orientation;
         if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
             //landscape rotation...
             currentPlayerFrame = [self smallPlayerFrameInLandscape];

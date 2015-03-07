@@ -210,7 +210,6 @@ static BOOL haveCheckedCoreDataInit = NO;
         return;
     }
     [super viewWillAppear:animated];
-    self.playbackContext = SongPlaybackContextSongs;
     [self setUpSearchBar];
     if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
@@ -245,7 +244,6 @@ static BOOL haveCheckedCoreDataInit = NO;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self setTableForCoreDataView:self.tableView];
-    self.playbackContext = SongPlaybackContextUnspecified;
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
@@ -356,9 +354,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    BOOL isNowPlaying = [[NowPlaying sharedInstance] isEqual:song
-                                                     context:self.playbackContext
-                                            optionalPlaylist:nil];
+    BOOL isNowPlaying = [[NowPlayingSong sharedInstance] isEqualToSong:song compareWithContext:self.playbackContext];
     if(isNowPlaying)
         cell.textLabel.textColor = [UIColor defaultAppColorScheme];
     else
@@ -429,7 +425,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
         //obtain object for the deleted song
         Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
-        [MusicPlaybackController songAboutToBeDeleted:song deletionContext:SongPlaybackContextSongs];
+        #warning fix!
+       // [MusicPlaybackController songAboutToBeDeleted:song deletionContext:SongPlaybackContextSongs];
         [song removeAlbumArt];
         
         NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:[CoreDataManager context]];
@@ -464,11 +461,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     if([self.editButton.title isEqualToString:@"Edit"]){  //tapping song plays the song
-        short code = [GenreConstants noGenreSelectedGenreCode];
-        [MusicPlaybackController newQueueWithSong:selectedSong
-                                      withContext:SongPlaybackContextSongs
-                                 optionalPlaylist:nil
-                                  skipCurrentSong:YES];
+        [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext skipCurrentSong:YES];
         [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:self];
         
     } else if([self.editButton.title isEqualToString:@"Done"]){  //tapping song triggers edit segue
@@ -587,6 +580,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                                         selector:@selector(localizedStandardCompare:)];
     
     request.sortDescriptors = @[sortDescriptor];
+    if(self.playbackContext == nil){
+        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]];
+    }
     //fetchedResultsController is from custom super class
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
                                                                         managedObjectContext:context

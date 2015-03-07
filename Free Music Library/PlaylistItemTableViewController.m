@@ -38,7 +38,6 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self setTableForCoreDataView:self.tableView];
-    self.playbackContext = SongPlaybackContextUnspecified;
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
@@ -50,7 +49,6 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.playbackContext = SongPlaybackContextPlaylists;
     _numSongsNotAddedYet = (int)([self numberOfSongsInCoreDataModel] - _playlist.playlistSongs.count);
     _lastTableViewModelCount = (int)_playlist.playlistSongs.count;
     
@@ -115,9 +113,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    BOOL songIsNowPlaying = [[MusicPlaybackController nowPlayingSongObject] isEqual:song
-                                                                            context:self.playbackContext
-                                                                   optionalPlaylist:self.playlist];
+    BOOL songIsNowPlaying = [[NowPlayingSong sharedInstance] isEqualToSong:song compareWithContext:self.playbackContext];
     if(songIsNowPlaying)
         cell.textLabel.textColor = [UIColor defaultAppColorScheme];
     else
@@ -186,7 +182,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
-        [MusicPlaybackController songAboutToBeDeleted:[_playlist.playlistSongs objectAtIndex:indexPath.row] deletionContext:SongPlaybackContextPlaylists];
+        #warning fix!
+        //[MusicPlaybackController songAboutToBeDeleted:[_playlist.playlistSongs objectAtIndex:indexPath.row] deletionContext:SongPlaybackContextPlaylists];
         
         //remove song from playlist only (not song from library in general)
         NSMutableOrderedSet *set = [NSMutableOrderedSet orderedSetWithOrderedSet:_playlist.playlistSongs];
@@ -226,10 +223,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     Song *selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    [MusicPlaybackController newQueueWithSong:selectedSong
-                                  withContext:SongPlaybackContextPlaylists
-                             optionalPlaylist:_playlist
-                              skipCurrentSong:YES];
+    [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext skipCurrentSong:YES];
     [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:self];
 }
 
@@ -438,10 +432,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     //picked genreCode because its a useless value...need that so the results of the
     //nsorderedset dont get re-ordered
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"genreCode"
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistIAmIn"
                                                                      ascending:YES];
     
     request.sortDescriptors = @[sortDescriptor];
+    if(self.playbackContext == nil){
+        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]];
+    }
     //fetchedResultsController is from custom super class
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
                                                                         managedObjectContext:[CoreDataManager context]

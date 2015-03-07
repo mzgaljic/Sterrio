@@ -254,6 +254,9 @@ typedef enum{
     
     //hides empty cells at the end
     tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    //all tableviews subclassing this class are on a white background so this looks nice.
+    //(playback queue tableview is inheriting from something else, dont worry about that).
+    tableView.indicatorStyle = UIScrollViewIndicatorStyleBlack;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -312,46 +315,19 @@ typedef enum{
 - (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification
 {
     Song *songToReplace = (Song *)[notification object];
-    NowPlaying *nowPlaying = [MusicPlaybackController nowPlayingSongObject];
+    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
     Song *newSong = nowPlaying.nowPlaying;
     NSIndexPath *oldPath, *newPath;
-    
-    if(self.playbackContext == SongPlaybackContextUnspecified)
+    if(self.playbackContext == nil)
         return;
-    else if(self.playbackContext == SongPlaybackContextSongs
-            && nowPlaying.context == SongPlaybackContextSongs){
+    else if([self.playbackContext isEqualToContext:nowPlaying.context]){
         //found song tab origin match
         oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
         newPath = [self.fetchedResultsController indexPathForObject:newSong];
         
-    }else if(self.playbackContext == SongPlaybackContextAlbums
-             && nowPlaying.context == SongPlaybackContextAlbums){
-            //found album tab origin match
-            oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
-            newPath = [self.fetchedResultsController indexPathForObject:newSong];
-        
-    } else if(self.playbackContext == SongPlaybackContextArtists
-              && nowPlaying.context == SongPlaybackContextArtists){
-            //found artist tab origin match
-            oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
-            newPath = [self.fetchedResultsController indexPathForObject:newSong];
-        
-    } else if(self.playbackContext == SongPlaybackContextPlaylists
-              && nowPlaying.context == SongPlaybackContextPlaylists){
-            //found playlist tab origin match
-            oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
-            newPath = [self.fetchedResultsController indexPathForObject:newSong];
-        
-    } else return;  //this else should theoretically never happen.
-        
-    if([oldPath isEqual:newPath]){  //user is playing the same song but from a new context
-        [tableView beginUpdates];
-        [tableView reloadRowsAtIndexPaths:@[newPath]
-                             withRowAnimation:UITableViewRowAnimationFade];
-        [tableView endUpdates];
-
+    } else  //current song is in a different context, don't need to update on the fly.
         return;
-    }
+    
     if(oldPath || newPath){
         [tableView beginUpdates];
         if(oldPath)

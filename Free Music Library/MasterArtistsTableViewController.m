@@ -198,7 +198,6 @@ static BOOL PRODUCTION_MODE;
         return;
     }
     [super viewWillAppear:animated];
-    self.playbackContext = SongPlaybackContextArtists;
     [self setUpSearchBar];
     if([self numberOfArtistsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
@@ -233,7 +232,6 @@ static BOOL PRODUCTION_MODE;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self setTableForCoreDataView:self.tableView];
-    self.playbackContext = SongPlaybackContextUnspecified;
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
@@ -296,15 +294,17 @@ static BOOL PRODUCTION_MODE;
         //remove songs from queue
         for(Song *aSong in artist.standAloneSongs)
         {
-            [MusicPlaybackController songAboutToBeDeleted:aSong
-                                          deletionContext:SongPlaybackContextArtists];
+            #warning fix!
+            //[MusicPlaybackController songAboutToBeDeleted:aSong
+              //                            deletionContext:SongPlaybackContextArtists];
             [aSong removeAlbumArt];
         }
         for(Album *anAlbum in artist.albums)
         {
             for(Song *aSong in anAlbum.albumSongs)
-                [MusicPlaybackController songAboutToBeDeleted:aSong
-                                              deletionContext:SongPlaybackContextArtists];
+                #warning fix!
+                //[MusicPlaybackController songAboutToBeDeleted:aSong
+                  //                            deletionContext:SongPlaybackContextArtists];
             
             [anAlbum removeAlbumArt];
         }
@@ -502,6 +502,9 @@ static BOOL PRODUCTION_MODE;
                                                         selector:@selector(localizedStandardCompare:)];
     
     request.sortDescriptors = @[sortDescriptor];
+    if(self.playbackContext == nil){
+        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]];
+    }
     //fetchedResultsController is from custom super class
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
                                                                         managedObjectContext:context

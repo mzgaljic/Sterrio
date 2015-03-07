@@ -23,6 +23,7 @@
 #import "MasterSongEditorViewController.h"
 #import "NavBarViewControllerDelegate.h"
 #import <FXImageView/UIImage+FX.h>
+#import "PlaybackContext.h"
 
 @class StackController;
 @interface MasterSongsTableViewController : CoreDataCustomTableViewController

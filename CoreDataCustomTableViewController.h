@@ -12,7 +12,7 @@
 #import "UIColor+LighterAndDarker.h"
 #import "MySearchBar.h"
 #import "MusicPlaybackController.h"
-#import "NowPlaying.h"
+#import "NowPlayingSong.h"
 
 @interface CoreDataCustomTableViewController : UIViewController <NSFetchedResultsControllerDelegate,
                                                                 UITableViewDelegate>
@@ -21,7 +21,7 @@
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSFetchedResultsController *searchFetchedResultsController;
 @property (nonatomic, assign) BOOL displaySearchResults;
-@property (nonatomic, assign) SongPlaybackContext playbackContext;
+@property (nonatomic, strong) PlaybackContext *playbackContext;
 
 // Causes the fetchedResultsController to refresh the data.
 // You almost certainly never need to call this.

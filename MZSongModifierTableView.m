@@ -70,6 +70,10 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
 
 }
 
+- (void)didReceiveMemoryWarning
+{
+}
+
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"existing album chosen" object:nil];
@@ -441,6 +445,8 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                 if(saved)
                 {
                     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveSuccess];
+#warning updating queue code commented out!
+                    /*
                     if([SongPlayerCoordinator isPlayerOnScreen])
                     {
                         //may need to update current playback queue
@@ -482,6 +488,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                             }
                         }
                     }
+                     */
                 }
             }  //end 'creatingNewSong'
         }  //end indexPath.row == 0
