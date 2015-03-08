@@ -21,7 +21,7 @@
 #import "UIColor+ColorComparison.h"
 #import "MusicPlaybackController.h"
 #import "MasterSongEditorViewController.h"
-#import "NavBarViewControllerDelegate.h"
+#import "MainScreenViewControllerDelegate.h"
 #import <FXImageView/UIImage+FX.h>
 #import "PlaybackContext.h"
 
@@ -30,7 +30,7 @@
                                                             <UISearchBarDelegate,
                                                             UITableViewDataSource,
                                                             UITableViewDelegate,
-                                                            NavBarViewControllerDelegate>
+                                                            MainScreenViewControllerDelegate>
 {
     StackController *stackController;
 }

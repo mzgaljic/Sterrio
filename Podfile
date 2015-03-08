@@ -40,9 +40,6 @@ pod 'GCDiscreetNotificationView'
 #scrolling nav bar - breaks uitableviewcontrollers, need to use regular tableview.
 #pod 'TLYShyNavBar'
 
-#scrolling segmented control (like a tab bar almost). Spotify inspired.
-pod 'HMSegmentedControl'
-
 #uiimage effect lib (I used it to apply AspectRatioFit style to images)
 pod 'FXImageView'
 

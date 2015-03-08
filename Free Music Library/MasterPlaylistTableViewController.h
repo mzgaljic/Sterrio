@@ -19,12 +19,12 @@
 #import "PlaylistSongAdderTableViewController.h"
 #import "UINavigationController+CustomPushAnimation.h"
 #import "CoreDataCustomTableViewController.h"
-#import "NavBarViewControllerDelegate.h"
+#import "MainScreenViewControllerDelegate.h"
 
 @interface MasterPlaylistTableViewController :CoreDataCustomTableViewController
                                                             <UISearchBarDelegate,
                                                             UITableViewDataSource,
                                                             UITableViewDelegate,
-                                                            NavBarViewControllerDelegate,
+                                                            MainScreenViewControllerDelegate,
                                                             UITextFieldDelegate>
 @end

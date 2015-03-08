@@ -7,26 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <HMSegmentedControl/HMSegmentedControl.h>
-#import "SegmentedControlItem.h"
 #import "MyViewController.h"
 #import "AppEnvironmentConstants.h"
 #import "UIColor+LighterAndDarker.h"
+#import "UIButton+ExpandedHitArea.h"
+#import "UIImage+colorImages.h"
+#import "MainScreenViewControllerDelegate.h"
 
-@interface MainScreenViewController : MyViewController <UIPageViewControllerDataSource,
-                                                        UIPageViewControllerDelegate>
+@interface MainScreenViewController : UIViewController <UITabBarDelegate>
 
-/**
- Initializer which will create a custom SegmentedControl and PageViewController. This is
- possible thanks to the properties in each SegmentedControlItem object (within
- segmentedControlItems array). Each segment corresponds to one UIViewController; the 
- appropriate UIViewController is determined at run time using the UIViewController property
- available in SegmentedControlItem. If the UIViewController object provided declares a
- UITableView property (or an explicit UIScrollView property) in its header, then it can take
- advantage of TLYShyBar library capabilities and hide the navigation bar on scroll.
- 
- @param segmentedControlItems - Array of SegmentedControl objects, in the desired order.
- */
-- (instancetype)initWithSegmentedControlItems:(NSArray *)segmentedControlItems;
+- (instancetype)initWithNavControllers:(NSArray *)navControllers
+          correspondingViewControllers:(NSArray *)viewControllers
+                      tabBarImageNames:(NSArray*)names;
 
 @end

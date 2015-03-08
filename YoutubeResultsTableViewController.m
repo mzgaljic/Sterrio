@@ -149,6 +149,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     [[NSNotificationCenter defaultCenter]removeObserver:self
                                                    name:UIDeviceOrientationDidChangeNotification
                                                  object:nil];
+    //makes sure that if the VC is being popped, the keyboard doesnt dismiss with a huge delay.
+    [self.view endEditing:YES];
 }
 
 - (void)viewDidDisappear:(BOOL)animated

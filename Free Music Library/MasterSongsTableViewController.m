@@ -9,9 +9,6 @@
 #import "MasterSongsTableViewController.h"
 
 @interface MasterSongsTableViewController ()
-{
-    BOOL canIgnoreUpdatingViewController;
-}
 @property (nonatomic, assign) int indexOfEditingSong;
 @property (nonatomic, assign) int selectedRowIndexValue;
 @property (nonatomic, strong) MySearchBar *searchBar;
@@ -30,38 +27,20 @@ static BOOL haveCheckedCoreDataInit = NO;
 #pragma mark - NavBarItem Delegate
 - (NSArray *)leftBarButtonItemsForNavigationBar
 {
-    UIBarButtonItem *editButton = self.editButtonItem;
-    editButton.action = @selector(editTapped:);
-    
     UIImage *image = [UIImage imageNamed:@"Settings-Line"];
     UIBarButtonItem *settings = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self
                                                                 action:@selector(settingsButtonTapped)];
-    UIBarButtonItem *posSpaceAdjust = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    [posSpaceAdjust setWidth:28];
-    self.editButton = editButton;
-    self.leftBarButtonItems = @[settings, posSpaceAdjust, editButton];
+    self.leftBarButtonItems = @[settings];
     return self.leftBarButtonItems;
 }
 
 - (NSArray *)rightBarButtonItemsForNavigationBar
 {
-    //right side of nav bar
-    NSInteger addItem = UIBarButtonSystemItemAdd;
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:addItem
-                                                                               target:self
-                                                                               action:@selector(addButtonPressed)];
-    self.rightBarButtonItems = @[addButton];
+    UIBarButtonItem *editButton = self.editButtonItem;
+    editButton.action = @selector(editTapped:);
+    self.editButton = editButton;
+    self.rightBarButtonItems = @[self.editButton];
     return self.rightBarButtonItems;
-}
-
-- (NSString *)titleOfNavigationBar
-{
-    return @"Songs";
-}
-
-- (void)viewControllerWillBeIteratedPastInSegmentControl
-{
-    canIgnoreUpdatingViewController = YES;
 }
 
 #pragma mark - Miscellaneous
@@ -78,10 +57,6 @@ static BOOL haveCheckedCoreDataInit = NO;
         [self setEditing:NO animated:YES];
         [self.tableView setEditing:NO animated:YES];
         
-        if(self.rightBarButtonItems.count > 0){
-            UIBarButtonItem *rightMostItem = self.rightBarButtonItems[self.rightBarButtonItems.count-1];
-            [self makeBarButtonItemNormal:rightMostItem];
-        }
         if(self.leftBarButtonItems.count > 0){
             UIBarButtonItem *leftMostItem = self.leftBarButtonItems[0];
             [self makeBarButtonItemNormal:leftMostItem];
@@ -93,10 +68,6 @@ static BOOL haveCheckedCoreDataInit = NO;
         [self setEditing:YES animated:YES];
         [self.tableView setEditing:YES animated:YES];
 
-        if(self.rightBarButtonItems.count > 0){
-            UIBarButtonItem *rightMostItem = self.rightBarButtonItems[self.rightBarButtonItems.count-1];
-            [self makeBarButtonItemGrey:rightMostItem];
-        }
         if(self.leftBarButtonItems.count > 0){
             UIBarButtonItem *leftMostItem = self.leftBarButtonItems[0];
             [self makeBarButtonItemGrey:leftMostItem];
@@ -206,9 +177,6 @@ static BOOL haveCheckedCoreDataInit = NO;
 #pragma mark - View Controller life cycle
 - (void)viewWillAppear:(BOOL)animated
 {
-    if(canIgnoreUpdatingViewController){
-        return;
-    }
     [super viewWillAppear:animated];
     [self setUpSearchBar];
     if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
@@ -229,10 +197,6 @@ static BOOL haveCheckedCoreDataInit = NO;
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    if(canIgnoreUpdatingViewController){
-        canIgnoreUpdatingViewController = NO;
-        return;
-    }
     [super viewDidAppear:animated];
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
@@ -243,6 +207,8 @@ static BOOL haveCheckedCoreDataInit = NO;
     [super viewDidLoad];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
+    self.navigationItem.rightBarButtonItems = [self rightBarButtonItemsForNavigationBar];
+    self.navigationItem.leftBarButtonItems = [self leftBarButtonItemsForNavigationBar];
     [self setTableForCoreDataView:self.tableView];
     
     self.searchFetchedResultsController = nil;
@@ -509,8 +475,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 
 #pragma mark - Adding music to library
-//called when + sign is tapped - selector defined in setUpNavBarItems method!
-- (void)addButtonPressed
+- (void)tabBarAddButtonPressed
 {
     [self performSegueWithIdentifier:@"addMusicToLibSegue" sender:nil];
 }

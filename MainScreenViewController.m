@@ -8,49 +8,34 @@
 
 #import "MainScreenViewController.h"
 
-//page view controller constants
-const short transitionStyle = UIPageViewControllerTransitionStyleScroll;
-const short navigationOrientation = UIPageViewControllerNavigationOrientationHorizontal;
-const short segmentedControlHeight = 42;
-
+NSString * const CENTER_BTN_IMG_NAME = @"add_song_plus";
+short const dummyTabIndex = 2;
 
 @interface MainScreenViewController()
-
-@property (nonatomic, strong) UIPageViewController *pageViewController;
-
-//controls which view controller is displayed at any given moment.
-@property (nonatomic, strong) HMSegmentedControl *segmentedVcControl;
-
-//Used in this case to contain an instance of HMSegmentedControl.
-@property (nonatomic, strong) UIView *stickyHeaderView;
-
-//Array of SegmentedControl items to switch between (contains VC pointers)
-@property (nonatomic, strong) NSArray *allSegmentedControlItems;
-
-//Currently selected view controller
-@property(nonatomic, assign) NSUInteger currentVCIndex;
-
+@property (nonatomic, strong) UIView *tabBarView;  //contains the tab bar and center button - the whole visual thing.
+@property (nonatomic, strong) UITabBar *tabBar;  //this tab bar is containing within a tab bar view
+@property (nonatomic, strong) UIButton *centerButton;
+@property (nonatomic, strong) UIImage *centerButtonImg;
+@property (nonatomic, strong) NSArray *navControllers;
+@property (nonatomic, strong) NSArray *viewControllers;
+@property (nonatomic, strong) NSArray *tabBarUnselectedImageNames;
+@property (nonatomic, strong) NSArray *tabBarItems;
+@property (nonatomic, strong) UINavigationController *currentNavController;
 @end
 
 
 @implementation MainScreenViewController
 
 #pragma mark - ViewController Lifecycle
-- (instancetype)initWithSegmentedControlItems:(NSArray *)segmentedControlItems
+- (instancetype)initWithNavControllers:(NSArray *)navControllers
+          correspondingViewControllers:(NSArray *)viewControllers
+                    tabBarImageNames:(NSArray*)names
 {
     if([super init]){
-        _allSegmentedControlItems = segmentedControlItems;
-        [self setupViewControllerIndexesAndTags];
-        
-        NSDictionary *options = [[NSMutableDictionary alloc] initWithCapacity:1];
-        CGFloat spacingVal = 5;
-        NSNumber *spacing = [NSNumber numberWithFloat:spacingVal];
-        [options setValue:spacing forKey:UIPageViewControllerOptionInterPageSpacingKey];
-        _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:transitionStyle
-                                                              navigationOrientation:navigationOrientation
-                                                                            options:options];
-        self.view.backgroundColor = [[UIColor groupTableViewBackgroundColor] darkerColor];
-        self.edgesForExtendedLayout = UIRectEdgeNone;
+        self.navControllers = navControllers;
+        self.viewControllers = viewControllers;
+        self.tabBarUnselectedImageNames = names;
+        [[UITabBar appearance] setTintColor:[UIColor defaultAppColorScheme]];
     }
     return self;
 }
@@ -58,16 +43,12 @@ const short segmentedControlHeight = 42;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    self.currentVCIndex = 0;
-    self.pageViewController.dataSource = self;
-    self.pageViewController.delegate = self;
-    
-    //can only add 1 VC on initialization!
-    [self.pageViewController setViewControllers:@[[self allViewControllers][self.currentVCIndex]]
-                                      direction:UIPageViewControllerNavigationDirectionForward
-                                       animated:NO
-                                     completion:nil];
+    self.currentNavController = self.navControllers[0];
+    self.view.backgroundColor = [UIColor clearColor];
+}
+
+- (UIStatusBarStyle) preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -79,227 +60,204 @@ const short segmentedControlHeight = 42;
     [AppEnvironmentConstants setNavBarHeight:navBarHeight];
     [AppEnvironmentConstants setStatusBarHeight:statusBarHeight];
     
-    //containing the UIPageViewController within a container
-    short weirdOffsetAtBottom = 2;
-    CGRect pageVcFrame = CGRectMake(0,
-                                    segmentedControlHeight,
-                                    self.view.frame.size.width,
-                                    self.view.frame.size.height + weirdOffsetAtBottom);
-    [self addChildViewController:self.pageViewController];
-    self.pageViewController.view.frame = pageVcFrame;
-    [self.view addSubview:self.pageViewController.view];
-    [self.pageViewController didMoveToParentViewController:self];
+    [self replaceNavControllerOnScreenWithNavController:self.navControllers[0]];
     
     [self hideNavBarOnScrollIfPossible];
-    [self setupNavBarForCurrentVc];
-    [self setupSegmentedControl];
-}
-
-#pragma mark - Page Controller Data Source
-- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController
-      viewControllerBeforeViewController:(UIViewController *)viewController
-{
-    NSInteger prevIndex = 0;
-    for(int i = 0; i < self.allViewControllers.count; i++){
-        if(self.allViewControllers[i] == viewController){
-            prevIndex = i -1;
-            break;
-        }
-    }
-    if(prevIndex <= self.allViewControllers.count -1 && prevIndex >= 0)
-        return self.allViewControllers[prevIndex];
-    else
-        return nil;
-}
-
-- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController
-       viewControllerAfterViewController:(UIViewController *)viewController
-{
-    NSInteger nextIndex = 0;
-    for(int i = 0; i < self.allViewControllers.count; i++){
-        if(self.allViewControllers[i] == viewController){
-            nextIndex = i +1;
-            break;
-        }
-    }
-    if(nextIndex <= self.allViewControllers.count -1 && nextIndex >= 0)
-        return self.allViewControllers[nextIndex];
-    else
-        return nil;
-}
-
-#pragma mark - Page Controller Delegate
-- (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed
-{
-    if(! completed)
-        return;
-    UIViewController *currentController;
-    currentController = [self.pageViewController.viewControllers objectAtIndex:0];
-    self.currentVCIndex = currentController.view.tag;
-    [self.segmentedVcControl setSelectedSegmentIndex:self.currentVCIndex animated:YES];
-    [self setupNavBarForCurrentVc];
-}
-
-#pragma mark - Page Controller added functions
-- (void)animatePageViewControllerScrollToIndex:(NSUInteger)index
-{
-    if(self.currentVCIndex == index)
-        return;
+    [self setupTabBarAndTabBarView];
+    if(self.tabBarItems == nil)
+        [self createTabBarItems];
     
-    int numVcsToPageThrough = abs((int)self.currentVCIndex - (int)index);
-    NSInteger animateDirection;
-    int forward = UIPageViewControllerNavigationDirectionForward;
-    int backward = UIPageViewControllerNavigationDirectionReverse;
-    BOOL animateForwards;
-    animateDirection = (animateForwards = self.currentVCIndex < index) ? forward : backward;
-
-    int iteratorIndex = (int)self.currentVCIndex;
-    UIViewController *currentIndexVc;
-    while(numVcsToPageThrough){
-        if(animateForwards)
-            currentIndexVc = [self allViewControllers][++iteratorIndex];
-        else
-            currentIndexVc = [self allViewControllers][--iteratorIndex];
-        
-        if(iteratorIndex != index){
-            if([currentIndexVc conformsToProtocol:@protocol(NavBarViewControllerDelegate)]){
-                [currentIndexVc performSelector:@selector(viewControllerWillBeIteratedPastInSegmentControl)
-                                     withObject:nil];
-            }
-        }
-        
-        [self.pageViewController setViewControllers:@[currentIndexVc]
-                                          direction:animateDirection
-                                           animated:YES
-                                         completion:nil];
-        numVcsToPageThrough--;
-    }
-    
-    self.currentVCIndex = index;
-    [self setupNavBarForCurrentVc];
+    [self setTabBarItemsAnimatedWithADelay];
 }
 
-#pragma mark - Segmented Control targets
-- (void)indexDidChangeForCustomSegmentedControl:(UISegmentedControl *)sender
+#pragma mark - Tab bar delegates
+- (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item
 {
-    [self animatePageViewControllerScrollToIndex:[sender selectedSegmentIndex]];
-}
-
-#pragma mark - Convenience Utility methods
-- (void)setupViewControllerIndexesAndTags
-{
-    SegmentedControlItem *item;
-    UIViewController *someVc;
-    for(int i = 0; i < self.allSegmentedControlItems.count; i++){
-        item = self.allSegmentedControlItems[i];
-        item.indexAndTag = i;
-        someVc = (UIViewController *)item.viewController;
-        someVc.view.tag = i;
-    }
-}
-
-- (NSArray *)allViewControllers
-{
-    NSMutableArray *allViewControllers;
-    allViewControllers = [[NSMutableArray alloc] initWithCapacity:self.allSegmentedControlItems.count];
-    for(SegmentedControlItem *item in self.allSegmentedControlItems){
-        [allViewControllers addObject:item.viewController];
-    }
-    return allViewControllers;
-}
-
-- (HMSegmentedControl *)createNewSegmentedControlWithFrame:(CGRect)frame
-{
-    //reduce height and make stickyheader background grey to make it seem
-    //like a thin sleek line is dividing the segmented control and the pageViewController.
-    short heightOfSeperator = 2;
-    frame = CGRectMake(frame.origin.x,
-                       frame.origin.y,
-                       frame.size.width,
-                       frame.size.height - heightOfSeperator);
-    self.stickyHeaderView.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    
-    NSMutableArray *sectionTitles;
-    sectionTitles = [[NSMutableArray alloc] initWithCapacity:self.allSegmentedControlItems.count];
-    for(SegmentedControlItem *item in self.allSegmentedControlItems){
-        [sectionTitles addObject:item.itemName];
-    }
-    
-    if(self.segmentedVcControl != nil){
-        [self.segmentedVcControl removeFromSuperview];
-        self.segmentedVcControl = [[HMSegmentedControl alloc] initWithSectionTitles:sectionTitles];
-        self.segmentedVcControl.type = HMSegmentedControlTypeText;
-        self.segmentedVcControl.frame = frame;
-        self.segmentedVcControl.selectionStyle = HMSegmentedControlSelectionStyleFullWidthStripe;
-        short indicatorBelow = HMSegmentedControlSelectionIndicatorLocationDown;
-        //self.segmentedVcControl.selectionIndicatorColor
-        self.segmentedVcControl.selectionIndicatorLocation = indicatorBelow;
-        [self.segmentedVcControl addTarget:self
-                                    action:@selector(indexDidChangeForCustomSegmentedControl:)
-                          forControlEvents:UIControlEventValueChanged];
-        self.stickyHeaderView.frame = frame;
-        [self.stickyHeaderView addSubview:self.segmentedVcControl];
-
-    } else{
-        self.segmentedVcControl = [[HMSegmentedControl alloc] initWithSectionTitles:sectionTitles];
-        self.segmentedVcControl.type = HMSegmentedControlTypeText;
-        self.segmentedVcControl.frame = frame;
-        self.segmentedVcControl.selectionStyle = HMSegmentedControlSelectionStyleFullWidthStripe;
-        short indicatorBelow = HMSegmentedControlSelectionIndicatorLocationDown;
-        //self.segmentedVcControl.selectionIndicatorColor
-        self.segmentedVcControl.selectionIndicatorLocation = indicatorBelow;
-        [self.segmentedVcControl addTarget:self
-                                    action:@selector(indexDidChangeForCustomSegmentedControl:)
-                          forControlEvents:UIControlEventValueChanged];
-        self.stickyHeaderView = [[UIView alloc] initWithFrame:frame];
-        [self.view addSubview:self.stickyHeaderView];
-        [self.stickyHeaderView addSubview:self.segmentedVcControl];
-    }
-    [self.segmentedVcControl setSelectedSegmentIndex:self.currentVCIndex animated:NO];
-    return self.segmentedVcControl;
+    int tabIndex = (int)[[tabBar items] indexOfObject:item];
+    int visualTabIndex = tabIndex;
+    if(tabIndex > dummyTabIndex)
+        visualTabIndex--;
+    NSLog(@"Visual index tapped:%i Actual tab index tapped: %i", visualTabIndex, tabIndex);
+    [self replaceNavControllerOnScreenWithNavController:self.navControllers[visualTabIndex]];
 }
 
 #pragma mark - GUI helpers
-- (void)setupNavBarForCurrentVc
+- (void)replaceNavControllerOnScreenWithNavController:(UINavigationController *)newNavController
 {
-    //MainScreenNavBarDelegate
-    id<NavBarViewControllerDelegate> currentVC = [self allViewControllers][self.currentVCIndex];
-    
-    if([currentVC conformsToProtocol:@protocol(NavBarViewControllerDelegate)]){
-        NSArray *leftBarButtonItems = [currentVC leftBarButtonItemsForNavigationBar];
-        NSArray *rightBarButtonItems = [currentVC rightBarButtonItemsForNavigationBar];
-        NSString *navBarTitle = [currentVC titleOfNavigationBar];
-        
-        [self.navigationItem setLeftBarButtonItems:leftBarButtonItems animated:YES];
-        self.navigationItem.leftItemsSupplementBackButton = YES;
-        [self.navigationItem setRightBarButtonItems:rightBarButtonItems animated:YES];
-        self.navigationItem.title = navBarTitle;
-    } else{
-        [self.navigationItem setLeftBarButtonItems:nil animated:YES];
-        self.navigationItem.leftItemsSupplementBackButton = YES;
-        [self.navigationItem setRightBarButtonItems:nil animated:YES];
-        self.navigationItem.title = nil;
+    //containing the nav controller within a container
+    CGRect desiredVcFrame = CGRectMake(0,
+                                       0,
+                                       self.view.frame.size.width,
+                                       self.view.frame.size.height - MZTabBarHeight);
+    self.currentNavController = newNavController;
+    [self addChildViewController:self.currentNavController];
+    self.currentNavController.view.frame = desiredVcFrame;
+    [self.view addSubview:self.currentNavController.view];
+    [self.currentNavController didMoveToParentViewController:self];
+}
+
+//general setup when not rotating the screen
+- (void)setupTabBarAndTabBarView
+{
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    [self setupTabBarAndTabBarViewUsingOrientation:orientation];
+}
+
+//helper for setupTabBarAndTabBarView, and used for screen rotation
+- (void)setupTabBarAndTabBarViewUsingOrientation:(UIInterfaceOrientation)orientation
+{
+    if(self.tabBarView == nil){
+        self.tabBarView = [[UIView alloc] init];
+        self.tabBar = [[UITabBar alloc] init];
+        self.tabBar.delegate = self;
+        self.centerButtonImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+                                                              :[UIImage imageNamed:CENTER_BTN_IMG_NAME]];
+        self.centerButton = [[UIButton alloc] init];
+        [self.centerButton setImage:self.centerButtonImg forState:UIControlStateNormal];
+        [self.centerButton setHitTestEdgeInsets:UIEdgeInsetsMake(-10, -10, -10, -10)];
+        [self.centerButton addTarget:self action:@selector(addMusicToLibButtonTapped) forControlEvents:UIControlEventTouchUpInside];
     }
+    
+    if(orientation == UIInterfaceOrientationLandscapeLeft
+       || orientation == UIInterfaceOrientationLandscapeRight){
+        self.tabBarView.frame = [self landscapeTabBarViewFrame];
+    } else{
+        self.tabBarView.frame = [self portraitTabBarViewFrame];
+    }
+    self.tabBar.frame = CGRectMake(0, 0, self.tabBarView.frame.size.width, self.tabBarView.frame.size.height);
+    self.centerButton.frame = [self centerBtnFrameGivenTabBarViewFrame:self.tabBarView.frame
+                                                          centerBtnImg:self.centerButtonImg];
+    [self.tabBarView addSubview:self.tabBar];
+    [self.tabBarView addSubview:self.centerButton];
+    [self.tabBarView setMultipleTouchEnabled:NO];
+    [self.view addSubview:self.tabBarView];
 }
 
-- (void)setupSegmentedControl
+- (void)setTabBarItemsAnimatedWithADelay
 {
-    [self createNewSegmentedControlWithFrame:CGRectMake(0,
-                                                        0,
-                                                        self.view.frame.size.width,
-                                                        segmentedControlHeight)];
+    __weak UITabBarItem *selectedItem = [self.tabBar selectedItem];
+    if(selectedItem == nil)  //setting default
+        selectedItem = self.tabBarItems[0];
+    
+    [self.tabBar setItems:nil animated:NO];
+    double delayInSeconds = 0.3;
+    __weak MainScreenViewController *weakself = self;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [weakself.tabBar setItems:weakself.tabBarItems animated:YES];
+        [weakself.tabBar setSelectedItem:selectedItem];
+    });
 }
 
+- (void)createTabBarItems
+{
+    NSMutableArray *tabBarItems = [NSMutableArray array];
+    UITabBarItem *someItem;
+    UIImage *unselectedImg;
+    NSString *unselectedImgFileName;
+    UINavigationController *aNavController;
+    //the index in the loop when we need to create the dummy tab bar item
+    //(dummy tab bar item will be exactly under our custom uibutton in the
+    //superview...the tabBarView)
+    short fakeTabIndex = dummyTabIndex;
+    for(int i = 0; i < self.navControllers.count; i++){
+        if(fakeTabIndex == i){
+            [tabBarItems addObject:[[UITabBarItem alloc] initWithTitle:@"" image:nil selectedImage:nil]];
+        }
+        aNavController = self.navControllers[i];
+        unselectedImgFileName = self.tabBarUnselectedImageNames[i];
+        if(unselectedImgFileName.length > 0)  //not needed but faster since program doesnt need to check assets.
+            unselectedImg = [UIImage imageNamed:unselectedImgFileName];
+        someItem = [[UITabBarItem alloc] initWithTitle:aNavController.title image:unselectedImg selectedImage:nil];
+        [tabBarItems addObject:someItem];
+        unselectedImgFileName = nil;
+        unselectedImg = nil;
+        someItem = nil;
+    }
+    self.tabBarItems = tabBarItems;
+}
+
+- (CGRect)portraitTabBarViewFrame
+{
+    float portraitWidth;
+    float portraitHeight;
+    float  a = self.view.frame.size.height;
+    float b = self.view.frame.size.width;
+    if(a < b){
+        portraitHeight = b;
+        portraitWidth = a;
+    }else{
+        portraitWidth = b;
+        portraitHeight = a;
+    }
+    int yVal = portraitHeight - MZTabBarHeight;
+    return CGRectMake(0, yVal, portraitWidth, MZTabBarHeight);
+}
+
+- (CGRect)landscapeTabBarViewFrame
+{
+    float landscapeWidth;
+    float landscapeHeight;
+    float  a = [[UIScreen mainScreen] bounds].size.height;
+    float b = [[UIScreen mainScreen] bounds].size.width;
+    if(a < b){
+        landscapeWidth = b;
+        landscapeHeight = a;
+    }else{
+        landscapeHeight = b;
+        landscapeWidth = a;
+    }
+    int yVal = landscapeHeight - MZTabBarHeight;
+    return CGRectMake(0, yVal, landscapeWidth, MZTabBarHeight);
+}
+
+- (CGRect)centerBtnFrameGivenTabBarViewFrame:(CGRect)tabBarViewFrame centerBtnImg:(UIImage *)img
+{
+    short centerBtnDiameter = img.size.height;  //same diameter in either dimension
+    return CGRectMake((tabBarViewFrame.size.width/2) - (centerBtnDiameter/2),
+                      ((tabBarViewFrame.size.height)/2) - (centerBtnDiameter/2),
+                      centerBtnDiameter,
+                      centerBtnDiameter);
+}
+
+#pragma nav bar helper
 - (void)hideNavBarOnScrollIfPossible
 {
-    /*
     NSOperatingSystemVersion ios8_0_1 = (NSOperatingSystemVersion){8, 0, 0};
     if ([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:ios8_0_1]) {
         // iOS 8 and above
-        self.pageViewController.navigationController.hidesBarsOnSwipe = YES;
-        self.pageViewController.navigationController.hidesBarsOnTap = NO;
+        self.currentNavController.hidesBarsOnSwipe = YES;
+        self.currentNavController.hidesBarsOnTap = NO;
     }
-    */
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    BOOL hidden = self.currentNavController.navigationBarHidden;
+    //nav bar coming back on screen, no issue
+    if(!hidden){
+        forcingStatusBarToHide = NO;
+        return hidden;
+    }
+    else{
+        if(forcingStatusBarToHide){
+            forcingStatusBarToHide = NO;
+            return YES;
+        }
+        
+        //nav bar hiding, want to avoid jerking all content up!
+        [self performSelector:@selector(makeStatusBarDissapear) withObject:nil afterDelay:0.0001];
+        return NO;
+    }
+}
+
+static BOOL forcingStatusBarToHide = NO;
+- (void)makeStatusBarDissapear
+{
+    forcingStatusBarToHide = YES;
+    [UIView animateWithDuration:0.2 animations:^{
+        [self setNeedsStatusBarAppearanceUpdate];
+    }];
 }
 
 #pragma mark - VC Rotation
@@ -307,36 +265,21 @@ const short segmentedControlHeight = 42;
                                 duration:(NSTimeInterval)duration
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    
-    float widthOfScreenRoationIndependant;
-    float heightOfScreenRotationIndependant;
-    float  a = [[UIScreen mainScreen] bounds].size.height;
-    float b = [[UIScreen mainScreen] bounds].size.width;
-    if(a < b)
-    {
-        heightOfScreenRotationIndependant = b;
-        widthOfScreenRoationIndependant = a;
+    [self setupTabBarAndTabBarViewUsingOrientation:toInterfaceOrientation];
+}
+
+#pragma mark - adding music to library
+- (void)addMusicToLibButtonTapped
+{
+    UIViewController *currentVc;
+    for(UIViewController *aViewController in self.viewControllers){
+        if(aViewController.navigationController == self.currentNavController){
+            currentVc = aViewController;
+            break;
+        }
     }
-    else
-    {
-        widthOfScreenRoationIndependant = b;
-        heightOfScreenRotationIndependant = a;
-    }
-    
-    if(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight ||
-       toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft){
-        //landscape
-        [self createNewSegmentedControlWithFrame:CGRectMake(0,
-                                                            0,
-                                                            heightOfScreenRotationIndependant,
-                                                            segmentedControlHeight)];
-    } else{
-        //portrait
-        [self createNewSegmentedControlWithFrame:CGRectMake(0,
-                                                            0,
-                                                            widthOfScreenRoationIndependant,
-                                                            segmentedControlHeight)];
-    }
+    if([currentVc conformsToProtocol:@protocol(MainScreenViewControllerDelegate)])
+        [currentVc performSelector:@selector(tabBarAddButtonPressed) withObject:nil];
 }
 
 @end

@@ -36,12 +36,6 @@
 #define COCOAPODS_VERSION_MINOR_GCDiscreetNotificationView 0
 #define COCOAPODS_VERSION_PATCH_GCDiscreetNotificationView 2
 
-// HMSegmentedControl
-#define COCOAPODS_POD_AVAILABLE_HMSegmentedControl
-#define COCOAPODS_VERSION_MAJOR_HMSegmentedControl 1
-#define COCOAPODS_VERSION_MINOR_HMSegmentedControl 4
-#define COCOAPODS_VERSION_PATCH_HMSegmentedControl 0
-
 // JAMAccurateSlider
 #define COCOAPODS_POD_AVAILABLE_JAMAccurateSlider
 #define COCOAPODS_VERSION_MAJOR_JAMAccurateSlider 1
@@ -135,7 +129,7 @@
 // SDCAlertView
 #define COCOAPODS_POD_AVAILABLE_SDCAlertView
 #define COCOAPODS_VERSION_MAJOR_SDCAlertView 2
-#define COCOAPODS_VERSION_MINOR_SDCAlertView 2
+#define COCOAPODS_VERSION_MINOR_SDCAlertView 3
 #define COCOAPODS_VERSION_PATCH_SDCAlertView 0
 
 // SDCAutoLayout

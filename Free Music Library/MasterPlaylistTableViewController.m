@@ -9,9 +9,6 @@
 #import "MasterPlaylistTableViewController.h"
 
 @interface MasterPlaylistTableViewController ()
-{
-    BOOL canIgnoreUpdatingViewController;
-}
 @property(nonatomic, strong) UIAlertView *createPlaylistAlert;
 @property (nonatomic, strong) MySearchBar* searchBar;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -28,39 +25,20 @@
 #pragma mark - NavBarItem Delegate
 - (NSArray *)leftBarButtonItemsForNavigationBar
 {
-    UIBarButtonItem *editButton = self.editButtonItem;
-    editButton.action = @selector(editTapped:);
-    
     UIImage *image = [UIImage imageNamed:@"Settings-Line"];
     UIBarButtonItem *settings = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self
                                                                 action:@selector(settingsButtonTapped)];
-    UIBarButtonItem *posSpaceAdjust = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    [posSpaceAdjust setWidth:28];
-    self.editButton = editButton;
-    
-    self.leftBarButtonItems = @[settings, posSpaceAdjust, editButton];
+    self.leftBarButtonItems = @[settings];
     return self.leftBarButtonItems;
 }
 
 - (NSArray *)rightBarButtonItemsForNavigationBar
 {
-    //right side of nav bar
-    NSInteger addItem = UIBarButtonSystemItemAdd;
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:addItem
-                                                                               target:self
-                                                                               action:@selector(addButtonPressed)];
-    self.rightBarButtonItems = @[addButton];
+    UIBarButtonItem *editButton = self.editButtonItem;
+    editButton.action = @selector(editTapped:);
+    self.editButton = editButton;
+    self.rightBarButtonItems = @[editButton];
     return self.rightBarButtonItems;
-}
-
-- (NSString *)titleOfNavigationBar
-{
-    return @"Playlists";
-}
-
-- (void)viewControllerWillBeIteratedPastInSegmentControl
-{
-    canIgnoreUpdatingViewController = YES;
 }
 
 #pragma mark - Miscellaneous
@@ -72,10 +50,6 @@
         [self setEditing:NO animated:YES];
         [self.tableView setEditing:NO animated:YES];
         
-        if(self.rightBarButtonItems.count > 0){
-            UIBarButtonItem *rightMostItem = self.rightBarButtonItems[self.rightBarButtonItems.count-1];
-            [self makeBarButtonItemNormal:rightMostItem];
-        }
         if(self.leftBarButtonItems.count > 0){
             UIBarButtonItem *leftMostItem = self.leftBarButtonItems[0];
             [self makeBarButtonItemNormal:leftMostItem];
@@ -87,10 +61,6 @@
         [self setEditing:YES animated:YES];
         [self.tableView setEditing:YES animated:YES];
         
-        if(self.rightBarButtonItems.count > 0){
-            UIBarButtonItem *rightMostItem = self.rightBarButtonItems[self.rightBarButtonItems.count-1];
-            [self makeBarButtonItemGrey:rightMostItem];
-        }
         if(self.leftBarButtonItems.count > 0){
             UIBarButtonItem *leftMostItem = self.leftBarButtonItems[0];
             [self makeBarButtonItemGrey:leftMostItem];
@@ -206,9 +176,6 @@
 #pragma mark - View Controller life cycle
 - (void)viewWillAppear:(BOOL)animated
 {
-    if(canIgnoreUpdatingViewController){
-        return;
-    }
     [super viewWillAppear:animated];
     [self setUpSearchBar];
     if([self numberOfPlaylistsInCoreDataModel] == 0){ //dont need search bar anymore
@@ -229,10 +196,6 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    if(canIgnoreUpdatingViewController){
-        canIgnoreUpdatingViewController = NO;
-        return;
-    }
     [super viewDidAppear:animated];
     //need to check because when user presses back button, tab bar isnt always hidden
     [self prefersStatusBarHidden];
@@ -243,6 +206,8 @@
     [super viewDidLoad];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
+    self.navigationItem.rightBarButtonItems = [self rightBarButtonItemsForNavigationBar];
+    self.navigationItem.leftBarButtonItems = [self leftBarButtonItemsForNavigationBar];
     [self setTableForCoreDataView:self.tableView];
     
     self.searchFetchedResultsController = nil;
@@ -371,7 +336,7 @@
     }
 }
 
-- (void)addButtonPressed
+- (void)displayCreatePlaylistAlert
 {
     _createPlaylistAlert = [[UIAlertView alloc] init];
     _createPlaylistAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
@@ -383,6 +348,11 @@
     [_createPlaylistAlert textFieldAtIndex:0].delegate = self;  //delegate for the textField
     [_createPlaylistAlert textFieldAtIndex:0].returnKeyType = UIReturnKeyDone;
     [_createPlaylistAlert show];
+}
+
+- (void)tabBarAddButtonPressed
+{
+    [self displayCreatePlaylistAlert];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex

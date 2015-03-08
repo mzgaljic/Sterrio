@@ -9,9 +9,6 @@
 #import <Foundation/Foundation.h>
 
 @interface YouTubeVideo : NSObject
-{
-    
-}
 @property (nonatomic, strong) NSString *videoName;
 @property (nonatomic, strong) NSString *videoId;
 @property (nonatomic, strong) NSString *videoThumbnailUrl;  //this is really "medium" quality in YT apis
@@ -19,5 +16,4 @@
 @property (nonatomic, strong) NSString *channelTitle;
 ///Video duration in seconds.
 @property (nonatomic, assign) NSUInteger duration;
-
 @end

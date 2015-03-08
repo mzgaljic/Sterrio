@@ -17,13 +17,13 @@
 #import "UIColor+LighterAndDarker.h"
 #import <SDCAlertView.h>
 #import "CoreDataCustomTableViewController.h"
-#import "NavBarViewControllerDelegate.h"
+#import "MainScreenViewControllerDelegate.h"
 #import <MSCellAccessory.h>
 
 @interface MasterArtistsTableViewController : CoreDataCustomTableViewController
                                                             <UISearchBarDelegate,
                                                             UITableViewDataSource,
                                                             UITableViewDelegate,
-                                                            NavBarViewControllerDelegate>
+                                                            MainScreenViewControllerDelegate>
 
 @end

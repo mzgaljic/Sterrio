@@ -244,7 +244,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 70;
         width = SMALL_VIDEO_WIDTH;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
         x = window.frame.size.width - width - MZSmallPlayerVideoFramePadding;
-        y = window.frame.size.height - height - MZSmallPlayerVideoFramePadding;
+        y = window.frame.size.height - height - MZSmallPlayerVideoFramePadding - MZTabBarHeight;
     } else{
         width = SMALL_VIDEO_WIDTH - amountToShrinkSmallPlayerWhenRespectingToolbar;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
@@ -266,7 +266,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 70;
         width = SMALL_VIDEO_WIDTH;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
         x = window.frame.size.width - width - MZSmallPlayerVideoFramePadding;
-        y = window.frame.size.height - height - MZSmallPlayerVideoFramePadding;
+        y = window.frame.size.height - height - MZSmallPlayerVideoFramePadding - MZTabBarHeight;
     } else{
         width = SMALL_VIDEO_WIDTH - amountToShrinkSmallPlayerWhenRespectingToolbar;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];

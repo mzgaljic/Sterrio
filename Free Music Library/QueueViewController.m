@@ -23,7 +23,7 @@
 short const NOW_PLAYING_SECTION_NUM = 0;
 short const PLAYING_NEXT_SECTION_NUM = 1;
 short const TABLE_SECTION_FOOTER_HEIGHT = 25;
-short const FETCH_REQUEST_BATCH_SIZE = 40;
+short FETCH_REQUEST_BATCH_SIZE;
 
 #pragma mark - View Controller life cycle
 - (void)viewDidLoad
@@ -32,6 +32,7 @@ short const FETCH_REQUEST_BATCH_SIZE = 40;
     [SongPlayerCoordinator setScreenShottingVideoPlayerAllowed:NO];
     stackController = [[StackController alloc] init];
     localAppTintColor = [[[[UIColor defaultAppColorScheme] lighterColor] lighterColor] lighterColor];
+    [self setBatchSize];
     [self preFetchAllSongsWithBatch];
 }
 
@@ -64,6 +65,15 @@ short const FETCH_REQUEST_BATCH_SIZE = 40;
 }
 
 #pragma mark - fetching songs
+- (void)setBatchSize
+{
+    if([AppEnvironmentConstants preferredSizeSetting] < 3)
+        FETCH_REQUEST_BATCH_SIZE = 70;
+    else if([AppEnvironmentConstants preferredSizeSetting] >=3){
+        FETCH_REQUEST_BATCH_SIZE = 45;
+    }
+}
+
 - (void)preFetchAllSongsWithBatch
 {
     playingNextSongs = [[MZPlaybackQueue sharedInstance] playNextSongs];

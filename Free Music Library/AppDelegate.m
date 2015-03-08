@@ -37,34 +37,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)setupMainVC
-{
-    UINavigationController *navController;
-    MainScreenViewController *mainVC;
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:storyboardFileName bundle: nil];
-    
-    MasterSongsTableViewController *vc1 = [storyboard instantiateViewControllerWithIdentifier:songsVcSbId];
-    MasterAlbumsTableViewController *vc2 = [storyboard instantiateViewControllerWithIdentifier:albumsVcSbId];
-    MasterArtistsTableViewController *vc3 = [storyboard instantiateViewControllerWithIdentifier:artistsVcSbId];
-    MasterPlaylistTableViewController *vc4 = [storyboard instantiateViewControllerWithIdentifier:playlistsVcSbId];
-    
-    SegmentedControlItem *item1 = [[SegmentedControlItem alloc] initWithViewController:vc1
-                                                                              itemName:[vc1 titleOfNavigationBar]];
-    SegmentedControlItem *item2 = [[SegmentedControlItem alloc] initWithViewController:vc2
-                                                                              itemName:[vc2 titleOfNavigationBar]];
-    SegmentedControlItem *item3 = [[SegmentedControlItem alloc] initWithViewController:vc3
-                                                                              itemName:[vc3 titleOfNavigationBar]];
-    SegmentedControlItem *item4 = [[SegmentedControlItem alloc] initWithViewController:vc4
-                                                                              itemName:[vc4 titleOfNavigationBar]];
-    NSArray *segmentedControls = @[item1, item2, item3, item4];
-    mainVC = [[MainScreenViewController alloc] initWithSegmentedControlItems:segmentedControls];
-    
-    navController = [[UINavigationController alloc] initWithRootViewController:mainVC];
-    [self.window setRootViewController:navController];
-    [self.window setBackgroundColor:[UIColor whiteColor]];
-    [self.window makeKeyAndVisible];
-}
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     [self setProductionModeValue];
@@ -84,8 +56,8 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     
     //set cancel button color of all uisearchbars
     [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
-                            setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                [[UIColor defaultAppColorScheme] lighterColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             [[UIColor defaultAppColorScheme] lighterColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
     //set nav bar title color of all navbars
     NSDictionary *navbarTitleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                                [UIColor defaultWindowTintColor],NSForegroundColorAttributeName,nil];
@@ -113,6 +85,34 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     if(! [[[UIDevice currentDevice] name] isEqualToString:@"Mark Zgaljic's iPhone"])
         [Fabric with:@[CrashlyticsKit]];
     return YES;
+}
+
+- (void)setupMainVC
+{
+    MainScreenViewController *mainVC;
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:storyboardFileName bundle: nil];
+    
+    MasterSongsTableViewController *vc1 = [storyboard instantiateViewControllerWithIdentifier:songsVcSbId];
+    MasterAlbumsTableViewController *vc2 = [storyboard instantiateViewControllerWithIdentifier:albumsVcSbId];
+    MasterArtistsTableViewController *vc3 = [storyboard instantiateViewControllerWithIdentifier:artistsVcSbId];
+    MasterPlaylistTableViewController *vc4 = [storyboard instantiateViewControllerWithIdentifier:playlistsVcSbId];
+    
+    vc1.tabBarItem = [[UITabBarItem alloc]initWithTabBarSystemItem:UITabBarSystemItemRecents tag:0];
+    UINavigationController *navController1 = [[UINavigationController alloc]initWithRootViewController:vc1];
+    vc2.tabBarItem = [[UITabBarItem alloc]initWithTabBarSystemItem:UITabBarSystemItemRecents tag:1];
+    UINavigationController *navController2 = [[UINavigationController alloc]initWithRootViewController:vc2];
+    vc3.tabBarItem = [[UITabBarItem alloc]initWithTabBarSystemItem:UITabBarSystemItemRecents tag:2];
+    UINavigationController *navController3 = [[UINavigationController alloc]initWithRootViewController:vc3];
+    vc4.tabBarItem = [[UITabBarItem alloc]initWithTabBarSystemItem:UITabBarSystemItemRecents tag:3];
+    UINavigationController *navController4 = [[UINavigationController alloc]initWithRootViewController:vc4];
+    
+    mainVC = [[MainScreenViewController alloc] initWithNavControllers:@[navController1, navController2, navController3, navController4]
+                                         correspondingViewControllers:@[vc1, vc2, vc3, vc4]
+                                                   tabBarImageNames:@[@"", @"albums", @"", @""]];
+    
+    [self.window setRootViewController:mainVC];
+    self.window.backgroundColor = [UIColor whiteColor];
+    [self.window makeKeyAndVisible];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

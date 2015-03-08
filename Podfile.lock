@@ -4,7 +4,6 @@ PODS:
   - CSNotificationView (0.5.3)
   - FXImageView (1.3.5)
   - GCDiscreetNotificationView (1.0.2)
-  - HMSegmentedControl (1.4.0)
   - JAMAccurateSlider (1.1.1)
   - MarqueeLabel (2.2.1)
   - MRProgress (0.8.1):
@@ -38,7 +37,7 @@ PODS:
   - MSCellAccessory (1.1.2)
   - RBBAnimation (0.3.0)
   - Reachability (3.2)
-  - SDCAlertView (2.2):
+  - SDCAlertView (2.3):
     - RBBAnimation (~> 0.3)
     - SDCAutoLayout (~> 2.0)
   - SDCAutoLayout (2.0.2)
@@ -54,7 +53,6 @@ DEPENDENCIES:
   - CSNotificationView (~> 0.5)
   - FXImageView
   - GCDiscreetNotificationView
-  - HMSegmentedControl
   - JAMAccurateSlider
   - MarqueeLabel
   - MRProgress
@@ -71,14 +69,13 @@ SPEC CHECKSUMS:
   CSNotificationView: e4d26da44dfb569ab284949c822a8239f23cc13d
   FXImageView: be49853e2f7ac281ad9312ead922edafa19cdd5c
   GCDiscreetNotificationView: e74f7fe64167edab50b00641e054929315d59af5
-  HMSegmentedControl: c0517a8d4b80c978b8386f863f1c44729cfd7d6f
   JAMAccurateSlider: 94d022ac1e505c81ac00ab5ca07bd8de6aa3dd11
   MarqueeLabel: bc105ed113f79e51fb68d1fa3983238c0dcda47f
   MRProgress: cd12726e001ea25dec133322d34cc4754cbc58f8
   MSCellAccessory: 5f5b839e14bbd5de6c3dacb4b0d3ae5a63741778
   RBBAnimation: 243d73be1a526f1b51d266b182e4aa0cfe9cbf64
   Reachability: 1ef8adf5c4e3d362f96515d4278f68dad3c26930
-  SDCAlertView: 8a06ba35a11aeb07915ce186f29b3d42b4a10176
+  SDCAlertView: 87219789a6159e7005711754722a3c9b34f445d7
   SDCAutoLayout: 4a963629725ed2b7d665e789ca4d6cfcd7446822
   SDWebImage: 116e88633b5b416ea0ca4b334a4ac59cf72dd38d
   TBXML: a279440030ba55c40e1455cafba3b0a44e1963d4

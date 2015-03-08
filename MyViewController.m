@@ -24,9 +24,4 @@
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;  //makes status bar text light and readable
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-}
-
 @end

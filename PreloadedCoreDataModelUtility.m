@@ -50,7 +50,7 @@ static NSInteger const SONG7_DURATION = 137;
 
 + (void)createCoreDataSampleMusicData
 {
-   
+   /*
     int songCreationCount = 5000;
     Song *someSong;
     //UIImage *art = [UIImage imageNamed:@"testAlbumArt"];
@@ -70,8 +70,8 @@ static NSInteger const SONG7_DURATION = 137;
         }
     }
     [[CoreDataManager sharedInstance] saveContext];
-  
-    /*
+  */
+    
     [PreloadedCoreDataModelUtility createSongWithName:SONG1_NAME
                                          byArtistName:ARTIST1_NAME
                                      partOfAlbumNamed:ALBUM1_NAME
@@ -111,7 +111,6 @@ static NSInteger const SONG7_DURATION = 137;
                                             youtubeID:SONG7_YTID
                                         videoDuration:SONG7_DURATION];
      [[CoreDataManager sharedInstance] saveContext];
-     */
 }
 
 + (Song *)createSongWithName:(NSString *)songName

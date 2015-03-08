@@ -19,7 +19,7 @@
 #import "CoreDataCustomTableViewController.h"
 #import "MusicPlaybackController.h"
 #import <SDCAlertView.h>
-#import "NavBarViewControllerDelegate.h"
+#import "MainScreenViewControllerDelegate.h"
 #import <FXImageView/UIImage+FX.h>
 #import <MSCellAccessory.h>
 
@@ -27,7 +27,7 @@
                                                                 <UISearchBarDelegate,
                                                                 UITableViewDataSource,
                                                                 UITableViewDelegate,
-                                                                NavBarViewControllerDelegate>
+                                                                MainScreenViewControllerDelegate>
 {
     StackController *stackController;
 }
