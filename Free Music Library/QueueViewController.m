@@ -24,7 +24,7 @@ short const NOW_PLAYING_SECTION_NUM = 0;
 short const PLAYING_NEXT_SECTION_NUM = 1;
 short const TABLE_SECTION_FOOTER_HEIGHT = 25;
 short FETCH_REQUEST_BATCH_SIZE;
-
+/*
 #pragma mark - View Controller life cycle
 - (void)viewDidLoad
 {
@@ -269,7 +269,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         return playingNextSongs.count;
     else{
         if(fetchRequests.count > 0){
-            if((playingNextSongs.count == 0 && section == PLAYING_NEXT_SECTION_NUM + 1)
+            if((playingNextSongs.count > 0 && section == PLAYING_NEXT_SECTION_NUM + 1)
                || (playingNextSongs.count == 0 && section == PLAYING_NEXT_SECTION_NUM)){ //first subqueue
                 NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
                 if([nowPlayingObj isEqualToSong:nowPlayingObj.nowPlaying compareWithContext:nil]){
@@ -353,6 +353,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 #pragma mark - Tableview datasource helper
 - (Song *)songForIndexPath:(NSIndexPath *)indexPath
 {
+    
     int row = (int)indexPath.row;
     int section = (int)indexPath.section;
     Song *desiredSong;
@@ -364,7 +365,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         //get song from subqueue!
         
         //need to take special care with the very first subqueue
-        if((playingNextSongs.count == 0 && section == PLAYING_NEXT_SECTION_NUM + 1)
+        if((playingNextSongs.count > 0 && section == PLAYING_NEXT_SECTION_NUM + 1)
            || (playingNextSongs.count == 0 && section == PLAYING_NEXT_SECTION_NUM))
         {
             NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
@@ -375,7 +376,12 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                 NSArray *songs = fetchRequestResults[0];
                 if(songs.count > 0)
                 {
-                    NSUInteger nowPlayingIndex = [songs indexOfObject:[nowPlayingObj nowPlaying]];
+                    NSUInteger nowPlayingIndex;
+                    if([NowPlayingSong sharedInstance].isFromPlayNextSongs)
+                        nowPlayingIndex = [songs indexOfObject:[[MZPlaybackQueue sharedInstance] nextSongScheduledForPlaybackInCurrentSubQueue]];
+                    else
+                        nowPlayingIndex = [songs indexOfObject:[nowPlayingObj nowPlaying]];
+                    
                     if(nowPlayingIndex != NSNotFound && songs.count > nowPlayingIndex+1)
                     {
                         //more songs to be played from this source (after the now playing song)
@@ -402,7 +408,17 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         else
             songsArrayIndexForSection = (int)section - PLAYING_NEXT_SECTION_NUM;
         NSArray *songs = fetchRequestResults[songsArrayIndexForSection];
-        desiredSong = (Song *)[songs objectAtIndex:row];
+        if(songsArrayIndexForSection == 0){
+            //if we got to this point, the now playing song is in the "playing next" area.
+            //that means we shold just get the index of the object as usual, but with an offset
+            //offset will be the index of the next song to be played from the first subqueue.
+            Song *nextSong = [[MZPlaybackQueue sharedInstance] nextSongScheduledForPlaybackInCurrentSubQueue];
+            NSUInteger indexOfNextSongInFirstSubQueue = [songs indexOfObject:nextSong];
+            if(row + indexOfNextSongInFirstSubQueue < songs.count)
+                desiredSong = (Song *)[songs objectAtIndex:row + indexOfNextSongInFirstSubQueue];
+        }
+        else
+            desiredSong = (Song *)[songs objectAtIndex:row];
     }
     return desiredSong;
 }
@@ -461,5 +477,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         [SongPlayerCoordinator setScreenShottingVideoPlayerAllowed:YES];
     }];
 }
+ */
 
 @end

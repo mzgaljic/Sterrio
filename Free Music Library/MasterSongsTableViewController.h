@@ -13,7 +13,6 @@
 #import "CoreDataCustomTableViewController.h"
 #import "AppEnvironmentConstants.h"
 #import "AlbumArtUtilities.h"
-#import "Song.h"
 #import "Song+Utilities.h"
 #import "SongTableViewFormatter.h"
 #import "PreferredFontSizeUtility.h"
@@ -30,7 +29,8 @@
                                                             <UISearchBarDelegate,
                                                             UITableViewDataSource,
                                                             UITableViewDelegate,
-                                                            MainScreenViewControllerDelegate>
+                                                            MainScreenViewControllerDelegate,
+                                                            MGSwipeTableCellDelegate>
 {
     StackController *stackController;
 }

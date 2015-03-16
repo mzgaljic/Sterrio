@@ -9,8 +9,9 @@
 //This is a regular UITableViewCell with an override method
 //to force the imageview to be all the way to the left side.
 #import <UIKit/UIKit.h>
+#import "MGSwipeTableCell.h"
 
-@interface MZTableViewCell : UITableViewCell
+@interface MZTableViewCell : MGSwipeTableCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString *)reuseIdentifier;

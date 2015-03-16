@@ -8,17 +8,23 @@
 
 #import "MainScreenViewController.h"
 
-NSString * const CENTER_BTN_IMG_NAME = @"add_song_plus";
+NSString * const CENTER_BTN_IMG_NAME = @"plus_sign";
 short const dummyTabIndex = 2;
 
 @interface MainScreenViewController()
+{
+    //used to avoid a blank screen on initial launch when calling
+    //'replaceNavControllerOnScreenWithNavController'
+    NSUInteger numTimesViewHasAppeared;
+}
 @property (nonatomic, strong) UIView *tabBarView;  //contains the tab bar and center button - the whole visual thing.
 @property (nonatomic, strong) UITabBar *tabBar;  //this tab bar is containing within a tab bar view
-@property (nonatomic, strong) UIButton *centerButton;
+@property (nonatomic, strong) BAPulseButton *centerButton;
 @property (nonatomic, strong) UIImage *centerButtonImg;
 @property (nonatomic, strong) NSArray *navControllers;
 @property (nonatomic, strong) NSArray *viewControllers;
 @property (nonatomic, strong) NSArray *tabBarUnselectedImageNames;
+@property (nonatomic, strong) NSArray *tabBarSelectedImageNames;
 @property (nonatomic, strong) NSArray *tabBarItems;
 @property (nonatomic, strong) UINavigationController *currentNavController;
 @end
@@ -29,13 +35,16 @@ short const dummyTabIndex = 2;
 #pragma mark - ViewController Lifecycle
 - (instancetype)initWithNavControllers:(NSArray *)navControllers
           correspondingViewControllers:(NSArray *)viewControllers
-                    tabBarImageNames:(NSArray*)names
+            tabBarUnselectedImageNames:(NSArray*)unSelectNames
+              tabBarselectedImageNames:(NSArray*)selectNames
 {
     if([super init]){
         self.navControllers = navControllers;
         self.viewControllers = viewControllers;
-        self.tabBarUnselectedImageNames = names;
-        [[UITabBar appearance] setTintColor:[UIColor defaultAppColorScheme]];
+        self.tabBarUnselectedImageNames = unSelectNames;
+        self.tabBarSelectedImageNames = selectNames;
+        [[UITabBar appearance] setTintColor:[[UIColor darkGrayColor] darkerColor]];
+        numTimesViewHasAppeared = 0;
     }
     return self;
 }
@@ -54,20 +63,22 @@ short const dummyTabIndex = 2;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    if(numTimesViewHasAppeared != 0)
+        [self replaceNavControllerOnScreenWithNavController:self.currentNavController];
+    else{
+        //initial launch...replaceNavController method optimizes and checks if the viewcontrollers
+        //match. need to avoid the optimization the first time...will set the current nav controller too.
+        self.currentNavController = nil;
+        [self replaceNavControllerOnScreenWithNavController:self.navControllers[0]];
+    }
+    numTimesViewHasAppeared++;
     
-    int navBarHeight = self.navigationController.navigationBar.frame.size.height;
-    int statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
-    [AppEnvironmentConstants setNavBarHeight:navBarHeight];
-    [AppEnvironmentConstants setStatusBarHeight:statusBarHeight];
-    
-    [self replaceNavControllerOnScreenWithNavController:self.navControllers[0]];
-    
-    [self hideNavBarOnScrollIfPossible];
     [self setupTabBarAndTabBarView];
     if(self.tabBarItems == nil)
         [self createTabBarItems];
     
     [self setTabBarItemsAnimatedWithADelay];
+    self.edgesForExtendedLayout = UIRectEdgeNone;
 }
 
 #pragma mark - Tab bar delegates
@@ -84,16 +95,46 @@ short const dummyTabIndex = 2;
 #pragma mark - GUI helpers
 - (void)replaceNavControllerOnScreenWithNavController:(UINavigationController *)newNavController
 {
+    if(self.currentNavController == newNavController)
+        return;
+    BOOL oldNavBarHidden = self.currentNavController.navigationBarHidden;
+    //VC lifecycle methods not being called, i fix that here...
+    NSUInteger index = [self.navControllers indexOfObjectIdenticalTo:self.currentNavController];
+    UIViewController *oldVc;
+    if(index != NSNotFound)
+        oldVc = self.viewControllers[index];
+    [oldVc viewWillDisappear:YES];
+    
+    
     //containing the nav controller within a container
     CGRect desiredVcFrame = CGRectMake(0,
                                        0,
                                        self.view.frame.size.width,
                                        self.view.frame.size.height - MZTabBarHeight);
+    [self addChildViewController:newNavController];
+    newNavController.view.frame = desiredVcFrame;
+    
+    [oldVc viewDidDisappear:YES];
+    
+    index = [self.navControllers indexOfObjectIdenticalTo:newNavController];
+    UIViewController *newVc = self.viewControllers[index];
+    [newVc viewWillAppear:YES];
+    [newNavController setNavigationBarHidden:oldNavBarHidden animated:NO];
+    
+    [self.view addSubview:newNavController.view];
+    [newNavController didMoveToParentViewController:self];
+    [newVc viewDidAppear:YES];
+    [newVc setNeedsStatusBarAppearanceUpdate];
+    
     self.currentNavController = newNavController;
-    [self addChildViewController:self.currentNavController];
-    self.currentNavController.view.frame = desiredVcFrame;
-    [self.view addSubview:self.currentNavController.view];
-    [self.currentNavController didMoveToParentViewController:self];
+    
+    //init these constants only once.
+    if(! newNavController.navigationBarHidden && [AppEnvironmentConstants navBarHeight] == 0){
+        int navBarHeight = newNavController.navigationBar.frame.size.height;
+        int statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+        [AppEnvironmentConstants setNavBarHeight:navBarHeight];
+        [AppEnvironmentConstants setStatusBarHeight:statusBarHeight];
+    }
 }
 
 //general setup when not rotating the screen
@@ -112,10 +153,10 @@ short const dummyTabIndex = 2;
         self.tabBar.delegate = self;
         self.centerButtonImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
                                                               :[UIImage imageNamed:CENTER_BTN_IMG_NAME]];
-        self.centerButton = [[UIButton alloc] init];
+        self.centerButton = [[BAPulseButton alloc] init];
         [self.centerButton setImage:self.centerButtonImg forState:UIControlStateNormal];
         [self.centerButton setHitTestEdgeInsets:UIEdgeInsetsMake(-10, -10, -10, -10)];
-        [self.centerButton addTarget:self action:@selector(addMusicToLibButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+        [self.centerButton addTarget:self action:@selector(centerButtonTapped) forControlEvents:UIControlEventTouchUpInside];
     }
     
     if(orientation == UIInterfaceOrientationLandscapeLeft
@@ -140,7 +181,7 @@ short const dummyTabIndex = 2;
         selectedItem = self.tabBarItems[0];
     
     [self.tabBar setItems:nil animated:NO];
-    double delayInSeconds = 0.3;
+    double delayInSeconds = 0.37;
     __weak MainScreenViewController *weakself = self;
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
@@ -154,7 +195,9 @@ short const dummyTabIndex = 2;
     NSMutableArray *tabBarItems = [NSMutableArray array];
     UITabBarItem *someItem;
     UIImage *unselectedImg;
+    UIImage *selectedImg;
     NSString *unselectedImgFileName;
+    NSString *selectedImgFileName;
     UINavigationController *aNavController;
     //the index in the loop when we need to create the dummy tab bar item
     //(dummy tab bar item will be exactly under our custom uibutton in the
@@ -166,9 +209,12 @@ short const dummyTabIndex = 2;
         }
         aNavController = self.navControllers[i];
         unselectedImgFileName = self.tabBarUnselectedImageNames[i];
+        selectedImgFileName = self.tabBarSelectedImageNames[i];
         if(unselectedImgFileName.length > 0)  //not needed but faster since program doesnt need to check assets.
             unselectedImg = [UIImage imageNamed:unselectedImgFileName];
-        someItem = [[UITabBarItem alloc] initWithTitle:aNavController.title image:unselectedImg selectedImage:nil];
+        if(selectedImgFileName.length > 0)
+            selectedImg = [UIImage imageNamed:selectedImgFileName];
+        someItem = [[UITabBarItem alloc] initWithTitle:aNavController.title image:unselectedImg selectedImage:selectedImg];
         [tabBarItems addObject:someItem];
         unselectedImgFileName = nil;
         unselectedImg = nil;
@@ -221,43 +267,37 @@ short const dummyTabIndex = 2;
 }
 
 #pragma nav bar helper
-- (void)hideNavBarOnScrollIfPossible
+
+/*
+static BOOL navBarWasHidden = NO;
+- (void)navBarStateIsChanging
 {
-    NSOperatingSystemVersion ios8_0_1 = (NSOperatingSystemVersion){8, 0, 0};
-    if ([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:ios8_0_1]) {
-        // iOS 8 and above
-        self.currentNavController.hidesBarsOnSwipe = YES;
-        self.currentNavController.hidesBarsOnTap = NO;
+    BOOL isNavBarHidden = self.currentNavController.navigationBar.frame.origin.y < 0;
+    BOOL navBarStateHasChanged = (isNavBarHidden != navBarWasHidden);
+    if(navBarStateHasChanged){
+        navBarWasHidden = self.currentNavController.navigationBarHidden;
+        [UIView animateWithDuration:0.2 animations:^{
+            [self.currentNavController setNeedsStatusBarAppearanceUpdate];
+            [self setNeedsStatusBarAppearanceUpdate];
+        }];
     }
 }
+ */
 
 - (BOOL)prefersStatusBarHidden
 {
-    BOOL hidden = self.currentNavController.navigationBarHidden;
-    //nav bar coming back on screen, no issue
-    if(!hidden){
-        forcingStatusBarToHide = NO;
-        return hidden;
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication]statusBarOrientation];
+    if(orientation == UIInterfaceOrientationLandscapeLeft
+       || orientation == UIInterfaceOrientationLandscapeRight){
+        return YES;
     }
     else{
-        if(forcingStatusBarToHide){
-            forcingStatusBarToHide = NO;
+        BOOL isNavBarHidden = self.currentNavController.navigationBar.frame.origin.y < 0;
+        if(isNavBarHidden)
             return YES;
-        }
-        
-        //nav bar hiding, want to avoid jerking all content up!
-        [self performSelector:@selector(makeStatusBarDissapear) withObject:nil afterDelay:0.0001];
-        return NO;
+        else
+            return NO;
     }
-}
-
-static BOOL forcingStatusBarToHide = NO;
-- (void)makeStatusBarDissapear
-{
-    forcingStatusBarToHide = YES;
-    [UIView animateWithDuration:0.2 animations:^{
-        [self setNeedsStatusBarAppearanceUpdate];
-    }];
 }
 
 #pragma mark - VC Rotation
@@ -269,8 +309,11 @@ static BOOL forcingStatusBarToHide = NO;
 }
 
 #pragma mark - adding music to library
-- (void)addMusicToLibButtonTapped
+- (void)centerButtonTapped
 {
+    [self.centerButton changePulseOutlineColor:[UIColor redColor]];
+    [self.centerButton buttonPressAnimation];
+    
     UIViewController *currentVc;
     for(UIViewController *aViewController in self.viewControllers){
         if(aViewController.navigationController == self.currentNavController){
@@ -279,7 +322,14 @@ static BOOL forcingStatusBarToHide = NO;
         }
     }
     if([currentVc conformsToProtocol:@protocol(MainScreenViewControllerDelegate)])
-        [currentVc performSelector:@selector(tabBarAddButtonPressed) withObject:nil];
+        [self performSelector:@selector(performCenterBtnTappedActionUsingVC:)
+                   withObject:currentVc
+                   afterDelay:0.2];
+}
+
+- (void)performCenterBtnTappedActionUsingVC:(UIViewController *)aVc
+{
+    [aVc performSelector:@selector(tabBarAddButtonPressed) withObject:nil];
 }
 
 @end

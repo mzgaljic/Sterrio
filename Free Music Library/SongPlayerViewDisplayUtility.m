@@ -30,6 +30,7 @@ int nearestEvenInt(int to)
 {
     BOOL expanded = [SongPlayerCoordinator isVideoPlayerExpanded];
     if(! expanded){
+        sourceController.modalPresentationCapturesStatusBarAppearance = YES;
         //check orientation. Don't want to animate in landscape
         BOOL animate = NO;
         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
@@ -42,12 +43,14 @@ int nearestEvenInt(int to)
         segue.animate = animate;
         if(! animate)
             vc.view.hidden = YES;
+        
+        [[SongPlayerCoordinator sharedInstance] begingExpandingVideoPlayer];
+        
         [sourceController prepareForSegue:segue sender:nil];
         
         vc.view.layer.speed = 0.85;  //slows down the modal transition
         [segue perform];
         
-        [[SongPlayerCoordinator sharedInstance] begingExpandingVideoPlayer];
 
         if(!animate){
             __weak UIViewController *weakVC = vc;

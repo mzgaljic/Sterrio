@@ -12,7 +12,6 @@ static PlayerView *playerView = nil;
 static MZPlaybackQueue *playbackQueue = nil;
 static NowPlayingSong *nowPlayingObject;
 static BOOL explicitlyPausePlayback = NO;
-static BOOL initialized = NO;
 static BOOL simpleSpinnerOnScreen = NO;
 static BOOL spinnerForWifiNeededOnScreen = NO;
 static BOOL internetConnectionSpinnerOnScreen = NO;
@@ -99,17 +98,28 @@ static int numLongSongsSkipped = 0;
 
 /** Stop playback of current song/track, and begin playback of previous track */
 + (void)returnToPreviousTrack
-{
+{//seekToTime
     if([NSThread mainThread]){
-        Song *skippedSong = [MusicPlaybackController nowPlayingSong];
-        Song *previousSong = [playbackQueue skipToPrevious];
-        [player startPlaybackOfSong:previousSong goingForward:NO oldSong:skippedSong];
-    } else{
-        dispatch_async(dispatch_get_main_queue(), ^(void){
-            //Run UI Updates
+        float seconds = CMTimeGetSeconds(player.currentItem.currentTime);
+        if(seconds < MZSkipToSongBeginningIfBackBtnTappedBoundary){
             Song *skippedSong = [MusicPlaybackController nowPlayingSong];
             Song *previousSong = [playbackQueue skipToPrevious];
             [player startPlaybackOfSong:previousSong goingForward:NO oldSong:skippedSong];
+        } else{
+            [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
+        }
+        
+    } else{
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            //Run UI Updates
+            float seconds = CMTimeGetSeconds(player.currentItem.currentTime);
+            if(seconds < MZSkipToSongBeginningIfBackBtnTappedBoundary){
+                Song *skippedSong = [MusicPlaybackController nowPlayingSong];
+                Song *previousSong = [playbackQueue skipToPrevious];
+                [player startPlaybackOfSong:previousSong goingForward:NO oldSong:skippedSong];
+            } else{
+                [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
+            }
         });
     }
 
@@ -118,165 +128,65 @@ static int numLongSongsSkipped = 0;
 
 + (void)songAboutToBeDeleted:(Song *)song deletionContext:(PlaybackContext *)aContext;
 {
-    /*
-    if([[MusicPlaybackController playbackQueue] isSongInQueue:song]
-       && [[MusicPlaybackController nowPlayingSongObject].context isEqualToContext:aContext]){
-        //song is ACTUALLY in the queue
-        if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more items to play
-            if([[MusicPlaybackController nowPlayingSongObject].nowPlaying.song_id isEqual:song.song_id]
-               && [MusicPlaybackController nowPlayingSongObject].context == context)
-                [self skipToNextTrack];
-        }
-        else{
-            if([self isSongLastInQueue:song] && [[self nowPlayingSong].song_id isEqual: song.song_id]
-               && [MusicPlaybackController nowPlayingSongObject].context == context){
-                
-                //current item about to be deleted counts as the "1".
-                //Checking if this is NOT the only song in the queue...if some are behind it.
-                if([MusicPlaybackController sizeOfEntireQueue] > 1)
-                    [[MusicPlaybackController playbackQueue] skipToPrevious];
-                else{
-                    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-                    [playerView userKilledPlayer];
-                }
-            }
-        }
-        
-        [[MusicPlaybackController playbackQueue] removeSongFromQueue:song];
-        
-        [MusicPlaybackController printQueueContents];
-    } else if([[MusicPlaybackController playbackQueue] isSongInQueue:song]){
-        //song isnt actually in the same queue (ie: different contexts)...
-        if([[self nowPlayingSong].song_id isEqual: song.song_id]){
-            //however it is the same actual song object playing.
-            //should kill player if the current playing context is a playlist.
-            if([MusicPlaybackController nowPlayingSongObject].context == SongPlaybackContextPlaylists){
-                if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more items to play
-                    [self skipToNextTrack];
-                }
-                else if([self isSongLastInQueue:song]){
-                    if([MusicPlaybackController sizeOfEntireQueue] > 0)
-                        [[MusicPlaybackController playbackQueue] skipToPrevious];
-                    else{
-                        PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-                        [playerView userKilledPlayer];
-                    }
-                }
-            }
-        }
-    }
-     */
+    if([nowPlayingObject isEqualToSong:song compareWithContext:aContext])
+        [MusicPlaybackController skipToNextTrack];
 }
 
 + (void)groupOfSongsAboutToBeDeleted:(NSArray *)songs deletionContext:(PlaybackContext *)context;
 {
-    /*
-    BOOL willNeedToAdvanceInQueue = NO;
-    BOOL shouldMoveBackwardAndPause = NO;
-    //this becomes true ONLY if the current song shares the same context
-    BOOL removedSongsFromQueue = NO;
-    for(Song *aSong in songs){
-        BOOL songIsInCurrentQueue = [[MusicPlaybackController playbackQueue] isSongInQueue:aSong];
-        //song cant really be in the current queue if the contexts arent the same
-        if([MusicPlaybackController nowPlayingSongObject].context != context)
-            songIsInCurrentQueue = NO;
-        if(songIsInCurrentQueue){
-            
-            if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more items to play
-                if([[MusicPlaybackController nowPlayingSong].song_id isEqual:aSong.song_id]
-                   && [MusicPlaybackController nowPlayingSongObject].context == context){
-                    willNeedToAdvanceInQueue = YES;
-                }
-            }
-            else{
-                //both cant be true! lol
-                if(willNeedToAdvanceInQueue == NO)
-                    shouldMoveBackwardAndPause = YES;
-            }
-            [[MusicPlaybackController playbackQueue] removeSongFromQueue:aSong];
-            removedSongsFromQueue = YES;
+    
+    for(Song *someSong in songs){
+        if([nowPlayingObject isEqualToSong:someSong compareWithContext:context]){
+            [MusicPlaybackController skipToNextTrack];
+            return;
         }
     }
-    
-    //need to advance in queue AND it is safe to do so
-    if(willNeedToAdvanceInQueue && [MusicPlaybackController sizeOfEntireQueue] > 0)
-        [self skipToNextTrack];
-    else if(shouldMoveBackwardAndPause){
-        if([MusicPlaybackController sizeOfEntireQueue] > 0)
-            [[MusicPlaybackController playbackQueue] skipToPrevious];
-        else{
-            PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-            [playerView userKilledPlayer];
-        }
-    } else if(removedSongsFromQueue){
-        if([MusicPlaybackController sizeOfEntireQueue] > 0)
-            [[MusicPlaybackController playbackQueue] skipToPrevious];
-        else{
-            PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-            [playerView userKilledPlayer];
-        }
-    }
-    
-    [MusicPlaybackController printQueueContents];
-     */
 }
 
 #pragma mark - Gathering playback info
-+ (NSArray *)listOfUpcomingSongsInQueueIncludeNowPlaying:(BOOL)include
-{
-    /*
-    if(include)
-        return [[MusicPlaybackController playbackQueue] listOfUpcomingSongsNowPlayingInclusive];
-    else
-        return [[MusicPlaybackController playbackQueue] listOfUpcomingSongsNowPlayingExclusive];
-     */
-    return nil;
-}
-
 + (NSUInteger)numMoreSongsInQueue
 {
-    return [playbackQueue numMoreSongsInQueue];
+    NSUInteger upNextSongCount = [[MZPlaybackQueue sharedInstance] numMoreSongsInUpNext];
+    NSUInteger mainQueueSongCount = [[MZPlaybackQueue sharedInstance] numMoreSongsInMainQueue];
+    return upNextSongCount + mainQueueSongCount;
 }
 
+//does NOT perform a context comparison.
 + (BOOL)isSongLastInQueue:(Song *)song
 {
-    /*
-    NSArray *array = [[MusicPlaybackController playbackQueue] listOfUpcomingSongsNowPlayingInclusive];
-    Song *comparisonSong = array[array.count-1];
-    return ([comparisonSong.song_id isEqual:song.song_id]) ? YES : NO;
-     */
+    NSUInteger upNextSongCount = [[MZPlaybackQueue sharedInstance] numMoreSongsInUpNext];
+    NSUInteger mainQueueSongCount = [[MZPlaybackQueue sharedInstance] numMoreSongsInMainQueue];
+    if(upNextSongCount == 0 && mainQueueSongCount == 0){
+        if([[nowPlayingObject nowPlaying].song_id isEqualToString:song.song_id])
+            return YES;
+    }
     return NO;
 }
 
+//only need to worry about main queue...can never go backwards in upnext songs anyway.
 + (BOOL)isSongFirstInQueue:(Song *)song
 {
-    /*
-    NSArray *array = [[MusicPlaybackController playbackQueue] listOfPlayedSongsNowPlayingInclusive];
-    Song *comparisonSong = array[0];
-    return ([comparisonSong.song_id isEqual:song.song_id]) ? YES : NO;
-     */
+    if([playbackQueue numSongsInEntireMainQueue] == [playbackQueue numMoreSongsInMainQueue]+1){
+        if([[nowPlayingObject nowPlaying].song_id isEqualToString:song.song_id])
+            return YES;
+    }
     return NO;
 }
 
-//private method
-/*
-+ (NSUInteger)sizeOfEntireQueue
-{
-    return [[MusicPlaybackController playbackQueue] sizeOfEntireQueue];
-}
-
-//private method
-+ (NSUInteger)indexOfNowPlaying
-{
-    return [[MusicPlaybackController playbackQueue] nowPlayingIndex];
-}
- */
 
 + (NSString *)prettyPrintNavBarTitle
 {
     //return [NSString stringWithFormat:@"%d of %d", (int)[MusicPlaybackController indexOfNowPlaying]+1,
-    //                                               (int)[MusicPlaybackController sizeOfEntireQueue]];
-    return [NSString stringWithFormat:@"-- of %lu", (unsigned long)[playbackQueue numMoreSongsInQueue]];
+     //                                              (int)[MusicPlaybackController sizeOfEntireQueue]];
+    if([nowPlayingObject isFromPlayNextSongs]){
+        NSUInteger numMoreSongs = [playbackQueue numMoreSongsInUpNext];
+        if(numMoreSongs == 1)
+            return [NSString stringWithFormat:@"%lu Song Queued", (unsigned long)numMoreSongs];
+        else
+            return [NSString stringWithFormat:@"%lu Songs Queued", (unsigned long)numMoreSongs];
+    }
+    else
+        return [NSString stringWithFormat:@"-- of %lu", (unsigned long)[playbackQueue numSongsInEntireMainQueue]];
 }
 
 #pragma mark - Now Playing Song
@@ -309,26 +219,18 @@ static int numLongSongsSkipped = 0;
     //queue will update the now playing song
     if(playbackQueue == nil)
         playbackQueue = [MZPlaybackQueue sharedInstance];
-    [playbackQueue setNowPlayingSong:song inContext:aContext];
+    [playbackQueue setMainQueueWithNewNowPlayingSong:song inContext:aContext];
     
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
     if(nowPlayingObject == nil)
         nowPlayingObject = nowPlaying;
     
     if(skipNow){
-        //consider checking if the "playing next" song is actually the current song...and removing it from the queue if so.
         //current song should be skipped! ...stopping playback
         [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
     }
     //start playback with the song that was chosen
     [player startPlaybackOfSong:song goingForward:YES oldSong:originalSong];
-}
-
-+ (void)playSongNextWithoutDamagingQueue:(Song *)song
-{
-    if(playbackQueue == nil)
-        playbackQueue = [MZPlaybackQueue sharedInstance];
-    [playbackQueue addSongToPlayingNext:song];
 }
 
 #pragma mark - Playback status

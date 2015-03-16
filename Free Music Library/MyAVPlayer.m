@@ -86,6 +86,12 @@ static void *mPlaybackStarted = &mPlaybackStarted;
                                                             object:oldSong];
         [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     } else{
+        //playback stopping...
+        
+        MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+        [player dismissAllSpinners];
+        [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+        
         if([MusicPlaybackController numMoreSongsInQueue] == 0)
             canPostLastSongNotification = YES;
         else

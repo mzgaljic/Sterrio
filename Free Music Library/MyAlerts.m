@@ -157,6 +157,15 @@
                              shortDuration:NO];
             break;
         }
+        case ALERT_TYPE_SongQueued:
+        {
+            NSString *msg = @"Queued";
+            [MyAlerts displayBannerWithMsg:msg
+                                     style:CSNotificationViewStyleSuccess
+                                     delay:0
+                             shortDuration:YES];
+            break;
+        }
         default:
             break;
     }

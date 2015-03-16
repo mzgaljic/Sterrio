@@ -89,7 +89,7 @@
     pulseAnimation.duration=.4;
     pulseAnimation.repeatCount=1;
     pulseAnimation.fromValue=@1.0;
-    pulseAnimation.toValue=@1.3;
+    pulseAnimation.toValue=@1.8;
     [pulseOutline addAnimation:pulseAnimation forKey:@"animateOpacity"];
     
     

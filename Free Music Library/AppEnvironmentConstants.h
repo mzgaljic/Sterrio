@@ -72,4 +72,8 @@ typedef enum {
 + (int)statusBarHeight;
 + (void)setStatusBarHeight:(int)height;
 
++ (UIColor *)expandingCellGestureInitialColor;
++ (UIColor *)expandingCellGestureQueueItemColor;
++ (UIColor *)expandingCellGestureDeleteItemColor;
+
 @end

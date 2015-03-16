@@ -23,7 +23,8 @@
                                                             <UISearchBarDelegate,
                                                             UITableViewDataSource,
                                                             UITableViewDelegate,
-                                                            UITextFieldDelegate>
+                                                            UITextFieldDelegate,
+                                                            MGSwipeTableCellDelegate>
 {
     StackController *stackController;
 }

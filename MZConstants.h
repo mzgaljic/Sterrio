@@ -28,6 +28,7 @@ extern NSString * const MZKeyNumLikes;
 extern NSString * const MZKeyNumDislikes;
 extern NSString * const MZKeyVideoDuration;
 extern NSString * const MZEmailBugReport;
+extern NSString * const MZAddSongToUpNextString;
 extern NSString * const MZUserCanTransitionToMainInterface;
 extern NSString * const MZUserFinishedWithReviewingSettings;
 
@@ -38,6 +39,7 @@ extern short const MZLongestCellularPlayableDuration;
 extern float const MZCellImageViewFadeDuration;
 extern float const MZSmallPlayerVideoFramePadding;
 extern short const MZTabBarHeight;
+extern short const MZSkipToSongBeginningIfBackBtnTappedBoundary;
 
 extern NSString * const MZWhatsNewUserMsg;
 

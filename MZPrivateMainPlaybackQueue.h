@@ -7,7 +7,27 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Song.h"
+#import "PlaybackContext.h"
+#import "NowPlayingSong.h"
+#import "CoreDataManager.h"
+#import "PreliminaryNowPlaying.h"
+@import CoreData;
 
 @interface MZPrivateMainPlaybackQueue : NSObject
+
+- (NSUInteger)numSongsInEntireMainQueue;
+- (NSUInteger)numMoreSongsInMainQueue;
+
+//should be used when a user moves into a different context and wants to destroy their
+//current queue. This does not clear the "up next" section.
+- (void)setMainQueueWithNewNowPlayingSong:(Song *)aSong inContext:(PlaybackContext *)aContext;
+
+//for getting an array of all up next songs, without putting all songs into memory.
+- (NSArray *)tableViewOptimizedArrayOfMainQueueSongsComingUp;
+- (void)clearMainQueue;
+- (PreliminaryNowPlaying *)skipToPrevious;
+- (PreliminaryNowPlaying *)skipForward;
+
 
 @end

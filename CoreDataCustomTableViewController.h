@@ -13,6 +13,9 @@
 #import "MySearchBar.h"
 #import "MusicPlaybackController.h"
 #import "NowPlayingSong.h"
+#import "MGSwipeTableCell.h"
+#import "MGSwipeButton.h"
+#import "MZTableViewCell.h"
 
 @interface CoreDataCustomTableViewController : UIViewController <NSFetchedResultsControllerDelegate,
                                                                 UITableViewDelegate>
@@ -22,6 +25,7 @@
 @property (strong, nonatomic) NSFetchedResultsController *searchFetchedResultsController;
 @property (nonatomic, assign) BOOL displaySearchResults;
 @property (nonatomic, strong) PlaybackContext *playbackContext;
+@property (nonatomic, strong) NSString *cellReuseId;
 
 // Causes the fetchedResultsController to refresh the data.
 // You almost certainly never need to call this.
@@ -34,6 +38,9 @@
 
 //crucial for this to work (Marks add-on)
 - (void)setTableForCoreDataView:(UITableView *)tableView;
+
+//nice additions that allow code re-use for tableviews displaying songs
 - (void)setSearchBar:(MySearchBar *)searchBar;
+- (UIColor *)colorForNowPlayingItem;
 
 @end

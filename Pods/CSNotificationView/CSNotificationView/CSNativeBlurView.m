@@ -22,7 +22,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-    self = [super initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleLight]];
+    self = [super initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight]];
     if (self) {
         self.tintColorView = [[UIView alloc] initWithFrame:self.bounds];
         self.tintColorView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;

@@ -38,6 +38,7 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self setTableForCoreDataView:self.tableView];
+    self.cellReuseId = @"playlistSongItemCell";
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
@@ -58,13 +59,6 @@
     //set song/album details for currently selected song
     NSString *navBarTitle = _playlist.playlistName;
     self.navBar.title = navBarTitle;
-    
-    
-    //not compensating for nav bar here (like on main screen VC's) because this VC actually shows the nav barich i dont want lol).
-    self.tableView.frame = CGRectMake(0,
-                                      0,
-                                      self.view.frame.size.width,
-                                      self.view.frame.size.height);
     [self.tableView reloadData];
 }
 
@@ -91,23 +85,22 @@
 static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *cellIdentifier = @"playlistSongItemCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier
-                                                            forIndexPath:indexPath];
+    Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    
+    MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
+                                                             forIndexPath:indexPath];
+    
     if (!cell)
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                      reuseIdentifier:cellIdentifier];
+        cell = [[MZTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                      reuseIdentifier:self.cellReuseId];
     else
     {
-        // If an existing cell is being reused, reset the image to the default until it is populated.
-        // Without this code, previous images are displayed against the new people during rapid scrolling.
+        // If an existing cell is being reused, reset the image to the default until it is
+        // populated. Without this code, previous images are displayed against the new people
+        // during rapid scrolling.
         cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
     }
 
-    // Configure the cell...
-    Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    
-    //init cell fields
     cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
     if(! [SongTableViewFormatter songNameIsBold])
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
@@ -115,7 +108,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     BOOL songIsNowPlaying = [[NowPlayingSong sharedInstance] isEqualToSong:song compareWithContext:self.playbackContext];
     if(songIsNowPlaying)
-        cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+        cell.textLabel.textColor = [super colorForNowPlayingItem];
     else
         cell.textLabel.textColor = [UIColor blackColor];
     
@@ -160,7 +153,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             }
         });
     }];
-    
+    cell.delegate = self;
     return cell;
 }
 
@@ -223,8 +216,55 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     Song *selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext skipCurrentSong:YES];
     [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:self];
+    [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext skipCurrentSong:YES];
+}
+
+#pragma mark - MGSwipeTableCell delegates
+- (BOOL)swipeTableCell:(MGSwipeTableCell*)cell canSwipe:(MGSwipeDirection)direction
+{
+    return [self tableView:self.tableView
+     canEditRowAtIndexPath:[self.tableView indexPathForCell:cell]];
+}
+
+- (NSArray*)swipeTableCell:(MGSwipeTableCell*)cell
+  swipeButtonsForDirection:(MGSwipeDirection)direction
+             swipeSettings:(MGSwipeSettings*)swipeSettings
+         expansionSettings:(MGSwipeExpansionSettings*)expansionSettings
+{
+    swipeSettings.transition = MGSwipeTransitionBorder;
+    expansionSettings.buttonIndex = 0;
+    
+    if(direction == MGSwipeDirectionLeftToRight){
+        //queue
+        Song *song = [self.fetchedResultsController
+                        objectAtIndexPath:[self.tableView indexPathForCell:cell]];
+        
+        expansionSettings.fillOnTrigger = NO;
+        expansionSettings.threshold = 1;
+        expansionSettings.expansionLayout = MGSwipeExpansionLayoutCenter;
+        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureQueueItemColor];
+        swipeSettings.transition = MGSwipeTransitionClipCenter;
+        swipeSettings.threshold = 9999;
+        
+        __weak PlaylistItemTableViewController *weakself = self;
+        __weak Song *weakSong = song;
+        __weak MGSwipeTableCell *weakCell = cell;
+        return @[[MGSwipeButton buttonWithTitle:@"Queue"
+                                backgroundColor:[AppEnvironmentConstants expandingCellGestureInitialColor]
+                                        padding:40
+                                       callback:^BOOL(MGSwipeTableCell *sender) {
+                                           [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
+                                           NSLog(@"Queing up: %@", weakSong.songName);
+                                           PlaybackContext *context = [weakself contextForPlaylistSong:weakSong];
+                                           [[MZPlaybackQueue sharedInstance] addSongsToPlayingNextWithContexts:@[context]];
+                                           [weakCell refreshContentView];
+                                           return YES;
+                                       }]];
+    } else if(direction == MGSwipeDirectionRightToLeft){
+        
+    }
+    return nil;
 }
 
 #pragma mark - Button actions
@@ -232,6 +272,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     if(self.tableView.editing)
     {
+        self.navigationController.hidesBarsOnSwipe = YES;
         [self.navBar setRightBarButtonItems:_originalRightBarButtonItems animated:YES];
         [self.navBar setLeftBarButtonItems:_originalLeftBarButtonItems animated:YES];
         
@@ -251,6 +292,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     }
     else
     {
+        self.navigationController.hidesBarsOnSwipe = NO;
         _currentlyEditingPlaylistName = YES;
         [UIView animateWithDuration:1 animations:^{
             //allows for renaming the playlist
@@ -399,7 +441,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         return YES;
     }
     else{
-        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
+        return NO;
     }
 }
 
@@ -422,6 +464,20 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     return count;
 }
 
+#pragma mark - Helper
+- (PlaybackContext *)contextForPlaylistSong:(Song *)aSong
+{
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
+    NSPredicate *playlistSongsPredicate = [NSPredicate predicateWithFormat:@"ANY playlistIAmIn.playlist_id == %@ ", _playlist.playlist_id];
+    NSPredicate *desiredSongInPlaylist = [NSPredicate predicateWithFormat:@"ANY song_id == %@", aSong.song_id];
+    request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[playlistSongsPredicate, desiredSongInPlaylist]];\
+    //descriptor doesnt really matter here
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistIAmIn"
+                                                                     ascending:YES];
+    request.sortDescriptors = @[sortDescriptor];
+    return [[PlaybackContext alloc] initWithFetchRequest:[request copy] prettyQueueName:@""];
+}
+
 #pragma mark - fetching and sorting
 - (void)setFetchedResultsControllerAndSortStyle
 {
@@ -437,7 +493,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     request.sortDescriptors = @[sortDescriptor];
     if(self.playbackContext == nil){
-        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]];
+        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy] prettyQueueName:@""];
     }
     //fetchedResultsController is from custom super class
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request

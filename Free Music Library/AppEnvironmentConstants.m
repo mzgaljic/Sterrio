@@ -7,6 +7,9 @@
 //
 
 #import "AppEnvironmentConstants.h"
+#import "UIColor+LighterAndDarker.h"
+
+#define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 @implementation AppEnvironmentConstants
 
@@ -198,6 +201,24 @@ static short statusBarHeight;
 + (void)setStatusBarHeight:(int)height
 {
     statusBarHeight = height;
+}
+
+
+
+//color stuff
++ (UIColor *)expandingCellGestureInitialColor
+{
+    return Rgb2UIColor(60, 60, 61);
+}
+
++ (UIColor *)expandingCellGestureQueueItemColor
+{
+    return [Rgb2UIColor(111, 174, 14) lighterColor];
+}
+
++ (UIColor *)expandingCellGestureDeleteItemColor
+{
+    return Rgb2UIColor(255, 39, 39);
 }
 
 @end

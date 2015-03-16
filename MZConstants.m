@@ -29,6 +29,7 @@ NSString * const MZKeyNumDislikes = @"numDislikes";
 NSString * const MZKeyVideoDuration = @"videoDuration";
 #warning Replace with an official email before making app production ready
 NSString * const MZEmailBugReport = @"marksBetaMusicApp@gmail.com";
+NSString * const MZAddSongToUpNextString = @"Play Next";
 NSString * const MZUserCanTransitionToMainInterface = @"user can transition to main interface";
 NSString * const MZUserFinishedWithReviewingSettings = @"User finished looking at Settings VC";
 
@@ -39,6 +40,7 @@ short const MZLongestCellularPlayableDuration = 600;
 float const MZCellImageViewFadeDuration = 0.49f;
 float const MZSmallPlayerVideoFramePadding = 6.0f;
 short const MZTabBarHeight = 50;
+short const MZSkipToSongBeginningIfBackBtnTappedBoundary = 3;
 
 
 

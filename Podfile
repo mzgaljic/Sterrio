@@ -28,7 +28,7 @@ pod 'TBXML'
 #scrolling label (Marquee)
 pod 'MarqueeLabel'
 
-#blur modal segue (not used much DO NOT delete)
+#blur modal segue
 pod 'AFBlurSegue'
 
 #drop in uislider replacement allowing fine grain selection
@@ -37,11 +37,12 @@ pod 'JAMAccurateSlider'
 #discrete message at top of screen for user (used for slider touch)
 pod 'GCDiscreetNotificationView'
 
-#scrolling nav bar - breaks uitableviewcontrollers, need to use regular tableview.
-#pod 'TLYShyNavBar'
-
 #uiimage effect lib (I used it to apply AspectRatioFit style to images)
 pod 'FXImageView'
 
 #Much more robust Reachability library
 pod 'Reachability'
+
+#more more robust than the new ios8 apis. Adds more btns on swipe.
+#pod 'MGSwipeTableCell'  --using dev branch for now...
+

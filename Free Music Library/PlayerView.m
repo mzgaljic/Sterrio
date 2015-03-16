@@ -145,6 +145,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     [MusicPlaybackController explicitlyPausePlayback:NO];
     [SongPlayerCoordinator placePlayerInDisabledState:NO];
     [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
+    [[MZPlaybackQueue sharedInstance] clearEntireQueue];
 }
 
 #pragma mark - Orientation and view "touch" code

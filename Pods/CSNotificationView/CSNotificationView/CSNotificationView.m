@@ -551,7 +551,8 @@
 
 + (UIColor*)blurTintColorForStyle:(CSNotificationViewStyle)style
 {
-    UIColor* blurTintColor;
+    UIColor* blurTintColor = [UIColor clearColor];
+    /*
     switch (style) {
         case CSNotificationViewStyleSuccess:
             //greenish color
@@ -576,6 +577,7 @@
         default:
             break;
     }
+     */
     return blurTintColor;
 }
 

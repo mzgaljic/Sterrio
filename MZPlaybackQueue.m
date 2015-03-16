@@ -10,10 +10,8 @@
 
 @interface MZPlaybackQueue ()
 {
-    Song *nextSong;
-    Song *nextSongScheduledForPlaybackInFirstSubQueue;
-    NSMutableArray *playNextSongs;  //contains the actual song objects
-    NSMutableArray *subQueueFetchRequests;  //we use the saved nsfetchrequest to obtain the songs in that list.
+    MZPrivateMainPlaybackQueue *mainQueue;
+    MZPrivateUpNextPlaybackQueue *upNextQueue;
 }
 @end
 @implementation MZPlaybackQueue
@@ -31,221 +29,74 @@
 - (instancetype)init
 {
     if([super init]){
-        playNextSongs = [NSMutableArray array];
-        subQueueFetchRequests = [NSMutableArray array];
+        upNextQueue = [[MZPrivateUpNextPlaybackQueue alloc] init];
+        mainQueue = [[MZPrivateMainPlaybackQueue alloc] init];
     }
     return self;
 }
 
 #pragma mark - Get info about queue
-- (NowPlayingSong *)nowPlaying
+- (NSUInteger)numSongsInEntireMainQueue
 {
-    return [NowPlayingSong sharedInstance];
+    return [mainQueue numSongsInEntireMainQueue];
 }
 
-- (Song *)nextSong
+- (NSUInteger)numMoreSongsInMainQueue
 {
-    return nextSong;
+    return [mainQueue numMoreSongsInMainQueue];
 }
 
-- (NSUInteger)numMoreSongsInQueue
+- (NSUInteger)numMoreSongsInUpNext
 {
-#warning this is broken! it should return number of songs LEFT in the queue, not the total queue song count!!!
-    //count up # songs in playNextSongs array (exclude nowplaying item if the current song is in this array)
-    //+ count up # songs to go in each subqeueue...tally it all up and return the integer.
-    
-    int playNextSongCount = (int)playNextSongs.count;
-    NSUInteger numMoreSongsInQueue = playNextSongCount;
-    
-    NSFetchRequest *aRequest;
-    NSUInteger count;
-    for(int i = 0; i < subQueueFetchRequests.count; i++){
-        aRequest = subQueueFetchRequests[i];
-        count = [[CoreDataManager context] countForFetchRequest:aRequest error:nil];
-        if(count != NSNotFound)
-            numMoreSongsInQueue += count;
-    }
-    return numMoreSongsInQueue;
-}
-
-- (Song *)nextSongScheduledForPlaybackInFirstSubQueue
-{
-    return nextSongScheduledForPlaybackInFirstSubQueue;
-}
-
-- (NSArray *)playNextSongs
-{
-    return playNextSongs;
-}
-
-- (NSArray *)arrayOfFetchRequestsMappingToSubsetQueues
-{
-    NSMutableArray *requestedArray = [NSMutableArray array];
-    NSFetchRequest *aRequest;
-    for(int i = 0; i < subQueueFetchRequests.count; i++){
-        aRequest = subQueueFetchRequests[i];
-        [requestedArray addObject:[aRequest copy]];
-    }
-    return requestedArray;
+    return [upNextQueue numMoreUpNextSongsCount];
 }
 
 
 #pragma mark - Performing operations on queue
 - (void)clearEntireQueue
 {
-    [playNextSongs removeAllObjects];
-    [subQueueFetchRequests removeAllObjects];
+    [upNextQueue clearUpNext];
+    [mainQueue clearMainQueue];
+}
+- (void)clearUpNext
+{
+    [upNextQueue clearUpNext];
 }
 
-- (void)clearPlayingNext
+//should be used when a user moves into a different context and wants to destroy their
+//current queue. This does not clear the "up next" section.
+- (void)setMainQueueWithNewNowPlayingSong:(Song *)aSong inContext:(PlaybackContext *)aContext
 {
-    [playNextSongs removeAllObjects];
-}
-
-- (void)clearSubQueueAtIndex:(NSUInteger)index
-{
-    [subQueueFetchRequests removeObjectAtIndex:index];
-}
-
-- (void)setNowPlayingSong:(Song *)aSong inContext:(PlaybackContext *)aContext
-{
-    [subQueueFetchRequests removeAllObjects];
-    [subQueueFetchRequests addObject:aContext.request];
-    [[NowPlayingSong sharedInstance] setNewNowPlayingSong:aSong context:aContext];
-    NSFetchRequest *request = aContext.request;
-    NSArray *array = [[CoreDataManager context] executeFetchRequest:request error:nil];
-    if(array.count > 0){
-        NSUInteger nowPlayingIndex = [array indexOfObject:aSong];
-        
-        if(nowPlayingIndex != NSNotFound && array.count > nowPlayingIndex+1){
-            //more songs to be played from this source (after the now playing song)
-            Song *nextSongInSource = [array objectAtIndex:nowPlayingIndex+1];
-            nextSongScheduledForPlaybackInFirstSubQueue = nextSongInSource;
-            nextSong = (playNextSongs.count > 0) ? playNextSongs[0] : nextSongScheduledForPlaybackInFirstSubQueue;
-        }
-        else
-        {
-            //jump to next subqueue
-        }
+    [mainQueue setMainQueueWithNewNowPlayingSong:aSong inContext:aContext];
+    if([NowPlayingSong sharedInstance].nowPlaying.song_id == nil){
+        //no songs currently playing, set defaults...
+        [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:NO];
+        [[NowPlayingSong sharedInstance] setNewNowPlayingSong:aSong context:aContext];
     }
-    array = nil;
 }
 
-- (void)addSongToPlayingNext:(Song *)aSong
+- (void)addSongsToPlayingNextWithContexts:(NSArray *)contexts
 {
-    [playNextSongs insertObject:aSong atIndex:0];
-    nextSong = aSong;
+    [upNextQueue addSongsToUpNextWithContexts:contexts];
 }
 
 - (Song *)skipToPrevious
 {
-#warning incomplete
-    return nil;
+    return [mainQueue skipToPrevious].aNewSong;
 }
-
 - (Song *)skipForward
 {
-    Song *newNowPlaying;
+    PreliminaryNowPlaying *newNowPlaying = [upNextQueue obtainAndRemoveNextSong];
+    BOOL upNextQueueNotEmptyYet = (newNowPlaying.aNewSong != nil);
+    if(upNextQueueNotEmptyYet){
+        [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:YES];
+    } else{
+        newNowPlaying = [mainQueue skipForward];
+        [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:NO];
+    }
     
-    if(playNextSongs.count > 0)
-    {
-        //see if the current song is from here
-        Song *firstSongInPlayNext = playNextSongs[0];
-        if([firstSongInPlayNext.song_id isEqualToString:[NowPlayingSong sharedInstance].nowPlaying.song_id]
-           && [NowPlayingSong sharedInstance].context == nil)
-        {
-            [playNextSongs removeObjectAtIndex:0];
-        }
-        //play next song from "play next", if there are still any left
-        if(playNextSongs.count > 0)
-        {
-            firstSongInPlayNext = playNextSongs[0];
-            [[NowPlayingSong sharedInstance] setNewNowPlayingSong:firstSongInPlayNext context:nil];
-            newNowPlaying = firstSongInPlayNext;
-            if(playNextSongs.count > 1)
-                nextSong = playNextSongs[1];
-            else
-            {
-                if(subQueueFetchRequests.count > 0){
-                    nextSong = nextSongScheduledForPlaybackInFirstSubQueue;
-                }
-            }
-        }
-        else
-        {
-            newNowPlaying = nextSongScheduledForPlaybackInFirstSubQueue;
-            if(subQueueFetchRequests.count > 0)
-            {
-                NSFetchRequest *request = subQueueFetchRequests [0];
-                PlaybackContext *context = [[PlaybackContext alloc] initWithFetchRequest:request];
-                [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newNowPlaying context:context];
-                
-                NSArray *array = [[CoreDataManager context] executeFetchRequest:request error:nil];
-                if(array.count > 0)
-                {
-                    NSUInteger indexOfNextSongInFirstSubQueue = [array indexOfObject:nextSongScheduledForPlaybackInFirstSubQueue];
-                    if(indexOfNextSongInFirstSubQueue != NSNotFound && array.count > indexOfNextSongInFirstSubQueue+1)
-                    {
-                        nextSongScheduledForPlaybackInFirstSubQueue = [array objectAtIndex:indexOfNextSongInFirstSubQueue+1];
-                        nextSong = nextSongScheduledForPlaybackInFirstSubQueue;
-                    }
-                    else
-                    {
-                        //jump to next subqueue.
-                    }
-                }
-                array = nil;
-            }
-            else
-            {
-                nextSong = nil;
-                nextSongScheduledForPlaybackInFirstSubQueue = nil;
-                [[NowPlayingSong sharedInstance] setNewNowPlayingSong:nil context:nil];
-            }
-        }
-    }
-    else
-    {
-        newNowPlaying = nextSongScheduledForPlaybackInFirstSubQueue;
-        if(subQueueFetchRequests.count > 0)
-        {
-            NSFetchRequest *request = subQueueFetchRequests [0];
-            NSArray *array = [[CoreDataManager context] executeFetchRequest:request error:nil];
-            
-            PlaybackContext *context = [[PlaybackContext alloc] initWithFetchRequest:request];
-            [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newNowPlaying context:context];
-            
-            if(array.count > 0)
-            {
-                NSUInteger indexOfNextSongInFirstSubQueue = [array indexOfObject:nextSongScheduledForPlaybackInFirstSubQueue];
-                if(indexOfNextSongInFirstSubQueue != NSNotFound && array.count > indexOfNextSongInFirstSubQueue+1)
-                {
-                    nextSongScheduledForPlaybackInFirstSubQueue = [array objectAtIndex:indexOfNextSongInFirstSubQueue+1];
-                    nextSong = nextSongScheduledForPlaybackInFirstSubQueue;
-                }
-                else
-                {
-                    //jump to next subqueue.
-                    //set nextSong, etc...
-                }
-            }
-            else
-            {
-                //since there is only 1 subqueue for now...
-                nextSongScheduledForPlaybackInFirstSubQueue = nil;
-                nextSong = nil;
-                [[NowPlayingSong sharedInstance] setNewNowPlayingSong:nil context:nil];
-            }
-            array = nil;
-        }
-        else
-        {
-            nextSong = nil;
-            nextSongScheduledForPlaybackInFirstSubQueue = nil;
-            [[NowPlayingSong sharedInstance] setNewNowPlayingSong:nil context:nil];
-        }
-    }
-    return newNowPlaying;
+    [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newNowPlaying.aNewSong context:newNowPlaying.aNewContext];
+    return newNowPlaying.aNewSong;
 }
 
 @end

@@ -13,6 +13,7 @@ typedef enum{
     ContentInsetStateCompensatingForPlayer
 } ContentInsetState;
 
+static void *navBarHiddenChange = &navBarHiddenChange;
 
 @interface CoreDataCustomTableViewController ()
 {
@@ -257,14 +258,25 @@ typedef enum{
     //all tableviews subclassing this class are on a white background so this looks nice.
     //(playback queue tableview is inheriting from something else, dont worry about that).
     tableView.indicatorStyle = UIScrollViewIndicatorStyleBlack;
+    
+    //going to fade in tableview
+    tableView.alpha = 0.8;
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    //fading in tableview
+    [UIView animateWithDuration:0.20 animations:^{
+        tableView.alpha = 1;
+    }];
     [self compensateTableViewInsetForPlayer];
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+}
 
 - (void)viewDidLoad
 {
@@ -285,6 +297,7 @@ typedef enum{
     
     //multiplied by 2 since we want the padding amount to be applied under AND above the player height.
     offsetHeightWhenPlayerVisible = smallPlayerHeight + (MZSmallPlayerVideoFramePadding * 2);
+    self.edgesForExtendedLayout = UIRectEdgeNone;
 }
 
 - (void)dealloc
@@ -294,7 +307,9 @@ typedef enum{
 
 - (void)settingsPossiblyChanged
 {
-    //tableview alrady re-draws itself after settings change. only put other optional code here...
+    //tableview alrady re-draws itself after settings change, but reloading
+    //the entire table fixes weird issues with the cells.
+    [tableView reloadData];
 }
 
 - (void)nowPlayingSongsHasChanged:(NSNotification *)notification
@@ -333,11 +348,16 @@ typedef enum{
         if(oldPath)
             [tableView reloadRowsAtIndexPaths:@[oldPath]
                              withRowAnimation:UITableViewRowAnimationFade];
-        if(newPath)
+        if(newPath != nil && newPath != oldPath)
             [tableView reloadRowsAtIndexPaths:@[newPath]
                              withRowAnimation:UITableViewRowAnimationFade];
         [tableView endUpdates];
     }
+}
+
+- (UIColor *)colorForNowPlayingItem
+{
+    return [[UIColor defaultAppColorScheme] lighterColor];
 }
 
 - (void)compensateTableViewInsetForPlayer

@@ -799,7 +799,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="ArtistItemCell" textLabel="Fja-le-qBx" detailTextLabel="ar5-oX-1Wl" style="IBUITableViewCellStyleSubtitle" id="zk3-bF-Woa">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="ArtistItemCell" textLabel="Fja-le-qBx" detailTextLabel="ar5-oX-1Wl" style="IBUITableViewCellStyleSubtitle" id="zk3-bF-Woa" customClass="MGSwipeTableCell">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="zk3-bF-Woa" id="Hus-9z-9u4">
                                             <autoresizingMask key="autoresizingMask"/>
@@ -851,7 +851,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="PlaylistItemCell" textLabel="EDu-Dv-AOz" style="IBUITableViewCellStyleDefault" id="TIf-tt-VZc">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="PlaylistItemCell" textLabel="EDu-Dv-AOz" style="IBUITableViewCellStyleDefault" id="TIf-tt-VZc" customClass="MGSwipeTableCell">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="TIf-tt-VZc" id="qV6-B8-wMm">
                                             <autoresizingMask key="autoresizingMask"/>
@@ -1020,8 +1020,8 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="mNA-W8-wpb"/>
-        <segue reference="N5b-x6-rhd"/>
+        <segue reference="bsh-e9-eUx"/>
+        <segue reference="Il9-kd-bt3"/>
         <segue reference="Gex-TI-pO5"/>
     </inferredMetricsTieBreakers>
 </document>

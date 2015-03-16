@@ -9,8 +9,6 @@
 #import "CustomYoutubeTableViewCell.h"
 
 @interface CustomYoutubeTableViewCell ()
-{
-}
 @end
 
 @implementation CustomYoutubeTableViewCell

@@ -98,9 +98,8 @@ static BOOL PRODUCTION_MODE;
         _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Library"];
         _searchBar.delegate = self;
         self.tableView.tableHeaderView = _searchBar;
-        self.tableView.contentOffset = CGPointMake(0, self.searchBar.frame.size.height);
     }
-    [self setSearchBar:self.searchBar];
+    [super setSearchBar:self.searchBar];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
@@ -166,28 +165,12 @@ static BOOL PRODUCTION_MODE;
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self setUpSearchBar];
     if([self numberOfArtistsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
         self.tableView.tableHeaderView = nil;
     }
     [self setUpSearchBar];
-    
-    //need to somewhat compesate since the last row was cut off (because in storyboard
-    //it thinks the tableview should also span under the nav bar...which i dont want lol).
-    int navBarHeight = [AppEnvironmentConstants navBarHeight];
-    self.tableView.frame = CGRectMake(0,
-                                      0,
-                                      self.view.frame.size.width,
-                                      self.view.frame.size.height - navBarHeight);
     [self.tableView reloadData];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    //need to check because when user presses back button, tab bar isnt always hidden
-    [self prefersStatusBarHidden];
 }
 
 - (void)viewDidLoad
@@ -198,6 +181,7 @@ static BOOL PRODUCTION_MODE;
     self.navigationItem.rightBarButtonItems = [self rightBarButtonItemsForNavigationBar];
     self.navigationItem.leftBarButtonItems = [self leftBarButtonItemsForNavigationBar];
     [self setTableForCoreDataView:self.tableView];
+    self.cellReuseId = @"ArtistItemCell";
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
@@ -215,32 +199,25 @@ static BOOL PRODUCTION_MODE;
 #pragma mark - Table View Data Source
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *cellIdentifier = @"ArtistItemCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier
-                                                            forIndexPath:indexPath];
-    if (!cell)
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                      reuseIdentifier:cellIdentifier];
-    
-    MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
-                                                                               color:[[UIColor defaultAppColorScheme] lighterColor]];
-    cell.editingAccessoryView = coloredDisclosureIndicator;
-    cell.accessoryView = coloredDisclosureIndicator;
-    
-    // Configure the cell...
     Artist *artist;
-    //get artist object at this index
     if(self.displaySearchResults)
         artist = [self.searchFetchedResultsController objectAtIndexPath:indexPath];
     else
         artist = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    
+    MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
+                                                             forIndexPath:indexPath];
 
-    // init cell fields
+    MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
+                                                                               color:[[UIColor defaultAppColorScheme] lighterColor]];
+    cell.editingAccessoryView = coloredDisclosureIndicator;
+    cell.accessoryView = coloredDisclosureIndicator;
+#warning NOT setting artist textlabel color based on whether or not a song from this artist is playing (in same context)!
     cell.textLabel.attributedText = [ArtistTableViewFormatter formatArtistLabelUsingArtist:artist];
     if(! [ArtistTableViewFormatter artistNameIsBold])
         cell.textLabel.font = [UIFont systemFontOfSize:[ArtistTableViewFormatter nonBoldArtistLabelFontSize]];
     [ArtistTableViewFormatter formatArtistDetailLabelUsingArtist:artist andCell:&cell];
-    
+    cell.delegate = self;
     return cell;
 }
 
@@ -318,6 +295,54 @@ static BOOL PRODUCTION_MODE;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return [ArtistTableViewFormatter preferredArtistCellHeight];
+}
+
+#pragma mark - MGSwipeTableCell delegates
+- (BOOL)swipeTableCell:(MGSwipeTableCell*)cell canSwipe:(MGSwipeDirection)direction
+{
+    return [self tableView:self.tableView
+     canEditRowAtIndexPath:[self.tableView indexPathForCell:cell]];
+}
+
+- (NSArray*)swipeTableCell:(MGSwipeTableCell*)cell
+  swipeButtonsForDirection:(MGSwipeDirection)direction
+             swipeSettings:(MGSwipeSettings*)swipeSettings
+         expansionSettings:(MGSwipeExpansionSettings*)expansionSettings
+{
+    swipeSettings.transition = MGSwipeTransitionBorder;
+    expansionSettings.buttonIndex = 0;
+    
+    if(direction == MGSwipeDirectionLeftToRight){
+        //queue
+        Artist *artist = [self.fetchedResultsController
+                        objectAtIndexPath:[self.tableView indexPathForCell:cell]];
+        
+        expansionSettings.fillOnTrigger = NO;
+        expansionSettings.threshold = 1;
+        expansionSettings.expansionLayout = MGSwipeExpansionLayoutCenter;
+        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureQueueItemColor];
+        swipeSettings.transition = MGSwipeTransitionClipCenter;
+        swipeSettings.threshold = 9999;
+        
+        __weak MasterArtistsTableViewController *weakself = self;
+        __weak Artist *weakArtist = artist;
+        __weak MGSwipeTableCell *weakCell = cell;
+        return @[[MGSwipeButton buttonWithTitle:@"Queue"
+                                backgroundColor:[AppEnvironmentConstants expandingCellGestureInitialColor]
+                                        padding:40
+                                       callback:^BOOL(MGSwipeTableCell *sender) {
+                                           [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
+                                           NSLog(@"Queing up: %@", weakArtist.artistName);
+                                           
+                                           PlaybackContext *context = [weakself contextForSpecificArtist:weakArtist];
+                                           [[MZPlaybackQueue sharedInstance] addSongsToPlayingNextWithContexts:@[context]];
+                                           [weakCell refreshContentView];
+                                           return YES;
+                                       }]];
+    } else if(direction == MGSwipeDirectionRightToLeft){
+        
+    }
+    return nil;
 }
 
 #pragma mark - other stuff
@@ -418,15 +443,22 @@ static BOOL PRODUCTION_MODE;
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
-- (BOOL)prefersStatusBarHidden
+#pragma mark - Helper
+- (PlaybackContext *)contextForSpecificArtist:(Artist *)anArtist
 {
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
-        return YES;
-    }
-    else{
-        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
-    }
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
+    request.predicate = [NSPredicate predicateWithFormat:@"ANY artist.artist_id == %@", anArtist.artist_id];
+    NSSortDescriptor *sortDescriptor;
+    if([AppEnvironmentConstants smartAlphabeticalSort])
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
+                                                       ascending:YES
+                                                        selector:@selector(localizedStandardCompare:)];
+    else
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
+                                                       ascending:YES
+                                                        selector:@selector(localizedStandardCompare:)];
+    request.sortDescriptors = @[sortDescriptor];
+    return [[PlaybackContext alloc] initWithFetchRequest:[request copy] prettyQueueName:@""];
 }
 
 #pragma mark - Counting Artists in core data
@@ -468,7 +500,7 @@ static BOOL PRODUCTION_MODE;
     
     request.sortDescriptors = @[sortDescriptor];
     if(self.playbackContext == nil){
-        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]];
+        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy] prettyQueueName:@""];
     }
     //fetchedResultsController is from custom super class
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request

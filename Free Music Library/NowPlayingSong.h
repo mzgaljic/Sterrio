@@ -17,6 +17,7 @@
 
 @property (nonatomic, strong) Song *nowPlaying;
 @property (nonatomic, strong) PlaybackContext *context;
+@property (nonatomic, assign, readonly) BOOL isFromPlayNextSongs;
 
 + (instancetype)sharedInstance;
 
@@ -24,5 +25,7 @@
 
 - (void)setNewNowPlayingSong:(Song *)newSong
                      context:(PlaybackContext *)context;
+
+- (void)setPlayingBackFromPlayNextSongs:(BOOL)isTrue;
 
 @end

@@ -91,9 +91,8 @@
         _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Library"];
         _searchBar.delegate = self;
         self.tableView.tableHeaderView = _searchBar;
-        self.tableView.contentOffset = CGPointMake(0, self.searchBar.frame.size.height);
     }
-    [self setSearchBar:self.searchBar];
+    [super setSearchBar:self.searchBar];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
@@ -177,28 +176,12 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self setUpSearchBar];
     if([self numberOfPlaylistsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
         self.tableView.tableHeaderView = nil;
     }
     [self setUpSearchBar];
-    
-    //need to somewhat compesate since the last row was cut off (because in storyboard
-    //it thinks the tableview should also span under the nav bar...which i dont want lol).
-    int navBarHeight = [AppEnvironmentConstants navBarHeight];
-    self.tableView.frame = CGRectMake(0,
-                                      0,
-                                      self.view.frame.size.width,
-                                      self.view.frame.size.height - navBarHeight);
     [self.tableView reloadData];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    //need to check because when user presses back button, tab bar isnt always hidden
-    [self prefersStatusBarHidden];
 }
 
 - (void)viewDidLoad
@@ -209,6 +192,7 @@
     self.navigationItem.rightBarButtonItems = [self rightBarButtonItemsForNavigationBar];
     self.navigationItem.leftBarButtonItems = [self leftBarButtonItemsForNavigationBar];
     [self setTableForCoreDataView:self.tableView];
+    self.cellReuseId = @"PlaylistItemCell";
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
@@ -225,31 +209,33 @@
 #pragma mark - Table View Data Source
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *cellIdentifier = @"PlaylistItemCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier
-                                                            forIndexPath:indexPath];
-    if (!cell)
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                      reuseIdentifier:cellIdentifier];
-    
-    MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
-                                                                               color:[[UIColor defaultAppColorScheme] lighterColor]];
-    cell.accessoryView = coloredDisclosureIndicator;
-    
-    // Configure the cell...
     Playlist *playlist;
     if(self.displaySearchResults)
         playlist = [self.searchFetchedResultsController objectAtIndexPath:indexPath];
     else
         playlist = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
-    //init cell fields
+    MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
+                                                             forIndexPath:indexPath];
+    MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
+                                                                               color:[[UIColor defaultAppColorScheme] lighterColor]];
+    cell.accessoryView = coloredDisclosureIndicator;
     cell.textLabel.attributedText = [PlaylistTableViewFormatter formatPlaylistLabelUsingPlaylist:playlist];
+    PlaybackContext *playlistsContext = [self contextForPlaylist:playlist];
+    NowPlayingSong *nowPlayingSongObj = [NowPlayingSong sharedInstance];
+    BOOL currentSongFromPlaylist = ([playlist.playlistSongs containsObject:nowPlayingSongObj.nowPlaying] &&
+                                    [nowPlayingSongObj.context isEqualToContext:playlistsContext]);
+    if(currentSongFromPlaylist)
+        cell.textLabel.textColor = [super colorForNowPlayingItem];
+    else
+        cell.textLabel.textColor = [UIColor blackColor];
+    
     cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[UIColor defaultAppColorScheme] lighterColor]];
     if(! [PlaylistTableViewFormatter playlistNameIsBold])
         cell.textLabel.font = [UIFont systemFontOfSize:[PlaylistTableViewFormatter nonBoldPlaylistLabelFontSize]];
     //playlist doesnt have detail label  :)
     
+    cell.delegate = self;
     return cell;
 }
 
@@ -326,6 +312,53 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return [PlaylistTableViewFormatter preferredPlaylistCellHeight];
+}
+
+#pragma mark - MGSwipeTableCell delegates
+- (BOOL)swipeTableCell:(MGSwipeTableCell*)cell canSwipe:(MGSwipeDirection)direction
+{
+    return [self tableView:self.tableView
+     canEditRowAtIndexPath:[self.tableView indexPathForCell:cell]];
+}
+
+- (NSArray*)swipeTableCell:(MGSwipeTableCell*)cell
+  swipeButtonsForDirection:(MGSwipeDirection)direction
+             swipeSettings:(MGSwipeSettings*)swipeSettings
+         expansionSettings:(MGSwipeExpansionSettings*)expansionSettings
+{
+    swipeSettings.transition = MGSwipeTransitionBorder;
+    expansionSettings.buttonIndex = 0;
+    
+    if(direction == MGSwipeDirectionLeftToRight){
+        //queue
+        Playlist *playlist = [self.fetchedResultsController
+                        objectAtIndexPath:[self.tableView indexPathForCell:cell]];
+        
+        expansionSettings.fillOnTrigger = NO;
+        expansionSettings.threshold = 1;
+        expansionSettings.expansionLayout = MGSwipeExpansionLayoutCenter;
+        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureQueueItemColor];
+        swipeSettings.transition = MGSwipeTransitionClipCenter;
+        swipeSettings.threshold = 9999;
+        
+        __weak MasterPlaylistTableViewController *weakself = self;
+        __weak Playlist *weakPlaylist = playlist;
+        __weak MGSwipeTableCell *weakCell = cell;
+        return @[[MGSwipeButton buttonWithTitle:@"Queue"
+                                backgroundColor:[AppEnvironmentConstants expandingCellGestureInitialColor]
+                                        padding:40
+                                       callback:^BOOL(MGSwipeTableCell *sender) {
+                                           [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
+                                           NSLog(@"Queing up: %@", weakPlaylist.playlistName);
+                                           PlaybackContext *context = [weakself contextForPlaylist:weakPlaylist];
+                                           [[MZPlaybackQueue sharedInstance] addSongsToPlayingNextWithContexts:@[context]];
+                                           [weakCell refreshContentView];
+                                           return YES;
+                                       }]];
+    } else if(direction == MGSwipeDirectionRightToLeft){
+        
+    }
+    return nil;
 }
 
 #pragma mark - segue
@@ -417,21 +450,24 @@
 #pragma mark - Rotation methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    [self prefersStatusBarHidden];
     [self setNeedsStatusBarAppearanceUpdate];
     
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
-- (BOOL)prefersStatusBarHidden
+#pragma mark - Helpers
+- (PlaybackContext *)contextForPlaylist:(Playlist *)aPlaylist
 {
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
-        return YES;
-    }
-    else{
-        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
-    }
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
+    request.predicate = [NSPredicate predicateWithFormat:@"ANY playlistIAmIn.playlist_id == %@", aPlaylist.playlist_id];
+    
+    //picked genreCode because its a useless value...need that so the results of the
+    //nsorderedset dont get re-ordered
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistIAmIn"
+                                                                     ascending:YES];
+    request.sortDescriptors = @[sortDescriptor];
+    NSString *playlistQueueDescription = [NSString stringWithFormat:@"\"%@\" Playlist", aPlaylist.playlistName];
+    return [[PlaybackContext alloc] initWithFetchRequest:[request copy] prettyQueueName:playlistQueueDescription];
 }
 
 #pragma mark - Counting Playlists in core data
@@ -467,7 +503,7 @@
     
     request.sortDescriptors = @[sortDescriptor];
     if(self.playbackContext == nil){
-        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]];
+        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy] prettyQueueName:@""];
     }
     //fetchedResultsController is from custom super class
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request

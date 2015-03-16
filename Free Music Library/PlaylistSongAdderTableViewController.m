@@ -161,12 +161,6 @@ static const short NORMAL_PLAYLIST = -1;
     
     //needed to make UITableViewCellAccessoryCheckmark the nav bar color!
     self.tableView.tintColor = [UIColor defaultAppColorScheme];
-    
-    //not compensating for nav bar here (like on main screen VC's) because this VC actually shows the nav bar
-    self.tableView.frame = CGRectMake(0,
-                                      0,
-                                      self.view.frame.size.width,
-                                      self.view.frame.size.height);
     [self.tableView reloadData];
 }
 
@@ -176,6 +170,7 @@ static const short NORMAL_PLAYLIST = -1;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self setTableForCoreDataView:self.tableView];
+    self.cellReuseId = @"playlistSongItemPickerCell";
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
@@ -203,16 +198,17 @@ static const short NORMAL_PLAYLIST = -1;
 static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *cellIdentifier = @"playlistSongItemPickerCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier
-                                                            forIndexPath:indexPath];
+    MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
+                                                             forIndexPath:indexPath];
+
     if (!cell)
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                      reuseIdentifier:cellIdentifier];
+        cell = [[MZTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                      reuseIdentifier:self.cellReuseId];
     else
     {
-        // If an existing cell is being reused, reset the image to the default until it is populated.
-        // Without this code, previous images are displayed against the new people during rapid scrolling.
+        // If an existing cell is being reused, reset the image to the default until it is
+        // populated. Without this code, previous images are displayed against the new people
+        // during rapid scrolling.
         cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
     }
 
@@ -459,9 +455,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                                         selector:@selector(localizedStandardCompare:)];
     
     request.sortDescriptors = @[sortDescriptor];
-    if(self.playbackContext == nil){
-        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]];
-    }
+    //no playback context set here since its impossible to select songs for playback in this VC.
     //fetchedResultsController is from custom super class
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
                                                                         managedObjectContext:context

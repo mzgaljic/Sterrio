@@ -438,7 +438,7 @@ static short numberTimesViewHasBeenShown = 0;
     if(videoPlayerViewController.playbackState == MPMoviePlaybackStateSeekingForward ||
        videoPlayerViewController.playbackState == MPMoviePlaybackStateSeekingBackward)
         currentlySeeking = YES;
-    else
+    else if(lockScreenImg != nil)
         [self setUpLockScreenInfoAndArt];
 }
 

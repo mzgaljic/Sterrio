@@ -10,10 +10,12 @@
 
 @implementation PlaybackContext
 
-- (instancetype)initWithFetchRequest:(NSFetchRequest *)aRequest
+- (instancetype)initWithFetchRequest:(NSFetchRequest *)aRequest prettyQueueName:(NSString *)name
 {
     if([super init]){
         _request = aRequest;
+        _queueName = name;
+        NSAssert(name != nil, @"Error: a playback context was created without a valid name");
     }
     return self;
 }

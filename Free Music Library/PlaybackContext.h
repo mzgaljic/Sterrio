@@ -7,12 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Song.h"
 @import CoreData;
 
 @interface PlaybackContext : NSObject
 @property (nonatomic, strong) NSFetchRequest *request;
+@property (nonatomic, strong) NSString *queueName;
 
-- (instancetype)initWithFetchRequest:(NSFetchRequest *)aRequest;
+- (instancetype)initWithFetchRequest:(NSFetchRequest *)aRequest prettyQueueName:(NSString *)name;
+
 - (BOOL)isEqualToContext:(PlaybackContext *)someContext;
 
 @end

@@ -13,11 +13,13 @@
 #import "UIButton+ExpandedHitArea.h"
 #import "UIImage+colorImages.h"
 #import "MainScreenViewControllerDelegate.h"
+#import "BAPulseButton.h"  //category on uibutton that adds a pulse effect. imported lib...
 
 @interface MainScreenViewController : UIViewController <UITabBarDelegate>
 
 - (instancetype)initWithNavControllers:(NSArray *)navControllers
           correspondingViewControllers:(NSArray *)viewControllers
-                      tabBarImageNames:(NSArray*)names;
+            tabBarUnselectedImageNames:(NSArray*)unSelectNames
+              tabBarselectedImageNames:(NSArray*)selectNames;
 
 @end

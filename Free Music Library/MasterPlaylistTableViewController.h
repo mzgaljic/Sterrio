@@ -26,5 +26,6 @@
                                                             UITableViewDataSource,
                                                             UITableViewDelegate,
                                                             MainScreenViewControllerDelegate,
-                                                            UITextFieldDelegate>
+                                                            UITextFieldDelegate,
+                                                            MGSwipeTableCellDelegate>
 @end

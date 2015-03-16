@@ -97,10 +97,8 @@ static BOOL haveCheckedCoreDataInit = NO;
         _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Library"];
         _searchBar.delegate = self;
         self.tableView.tableHeaderView = _searchBar;
-        //now hide it by default
-        self.tableView.contentOffset = CGPointMake(0, _searchBar.frame.size.height);
     }
-    [self setSearchBar:self.searchBar];
+    [super setSearchBar:self.searchBar];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
@@ -178,28 +176,17 @@ static BOOL haveCheckedCoreDataInit = NO;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self setUpSearchBar];
     if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
         _searchBar = nil;
         self.tableView.tableHeaderView = nil;
     }
     [self setUpSearchBar];
-    
-    //need to somewhat compesate since the last row was cut off (because in storyboard
-    //it thinks the tableview should also span under the nav bar...which i dont want lol).
-    int navBarHeight = [AppEnvironmentConstants navBarHeight];
-    self.tableView.frame = CGRectMake(0,
-                                      0,
-                                      self.view.frame.size.width,
-                                      self.view.frame.size.height - navBarHeight);
     [self.tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    //need to check because when user presses back button, tab bar isnt always hidden
-    [self prefersStatusBarHidden];
 }
 
 - (void)viewDidLoad
@@ -210,6 +197,7 @@ static BOOL haveCheckedCoreDataInit = NO;
     self.navigationItem.rightBarButtonItems = [self rightBarButtonItemsForNavigationBar];
     self.navigationItem.leftBarButtonItems = [self leftBarButtonItemsForNavigationBar];
     [self setTableForCoreDataView:self.tableView];
+    self.cellReuseId = @"SongItemCell";
     
     self.searchFetchedResultsController = nil;
     [self setFetchedResultsControllerAndSortStyle];
@@ -292,29 +280,28 @@ static BOOL haveCheckedCoreDataInit = NO;
 static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *cellIdentifier = @"SongItemCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier
-                                                            forIndexPath:indexPath];
-    if (!cell)
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                      reuseIdentifier:cellIdentifier];
-    else
-    {
-        // If an existing cell is being reused, reset the image to the default until it is populated.
-        // Without this code, previous images are displayed against the new people during rapid scrolling.
-        cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
-    }
-    
-    cell.editingAccessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
-                                                             color:[[UIColor defaultAppColorScheme] lighterColor]];
-    // Set up other aspects of the cell content.
     Song *song;
     if(self.displaySearchResults)
         song = [self.searchFetchedResultsController objectAtIndexPath:indexPath];
     else
         song = [self.fetchedResultsController objectAtIndexPath:indexPath];
-
-    //init cell fields
+    
+    MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
+                                                             forIndexPath:indexPath];
+    if (!cell)
+        cell = [[MZTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                      reuseIdentifier:self.cellReuseId];
+    else
+    {
+        // If an existing cell is being reused, reset the image to the default until it is
+        // populated. Without this code, previous images are displayed against the new people
+        // during rapid scrolling.
+        cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
+    }
+    
+    // Set up other aspects of the cell content.
+    cell.editingAccessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
+                                                             color:[[UIColor defaultAppColorScheme] lighterColor]];
     cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
     if(! [SongTableViewFormatter songNameIsBold])
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
@@ -322,7 +309,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     BOOL isNowPlaying = [[NowPlayingSong sharedInstance] isEqualToSong:song compareWithContext:self.playbackContext];
     if(isNowPlaying)
-        cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+        cell.textLabel.textColor = [super colorForNowPlayingItem];
     else
         cell.textLabel.textColor = [UIColor blackColor];
     
@@ -367,7 +354,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             }
         });
     }];
-    
+    cell.delegate = self;
     return cell;
 }
 
@@ -427,8 +414,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     if([self.editButton.title isEqualToString:@"Edit"]){  //tapping song plays the song
-        [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext skipCurrentSong:YES];
         [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:self];
+        [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext skipCurrentSong:YES];
         
     } else if([self.editButton.title isEqualToString:@"Done"]){  //tapping song triggers edit segue
         //now segue to modal view where user can edit the tapped song
@@ -449,6 +436,55 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     id <NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController.sections objectAtIndex:section];
     return sectionInfo.numberOfObjects;
 }
+
+#pragma mark - MGSwipeTableCell delegates
+- (BOOL)swipeTableCell:(MGSwipeTableCell*)cell canSwipe:(MGSwipeDirection)direction
+{
+    return [self tableView:self.tableView
+     canEditRowAtIndexPath:[self.tableView indexPathForCell:cell]];
+}
+
+- (NSArray*)swipeTableCell:(MGSwipeTableCell*)cell
+  swipeButtonsForDirection:(MGSwipeDirection)direction
+             swipeSettings:(MGSwipeSettings*)swipeSettings
+         expansionSettings:(MGSwipeExpansionSettings*)expansionSettings
+{
+    swipeSettings.transition = MGSwipeTransitionBorder;
+    expansionSettings.buttonIndex = 0;
+    
+    if(direction == MGSwipeDirectionLeftToRight){
+        //queue
+        Song *song = [self.fetchedResultsController objectAtIndexPath:
+                    [self.tableView indexPathForCell:cell]];
+        
+        expansionSettings.fillOnTrigger = NO;
+        expansionSettings.threshold = 1;
+        expansionSettings.expansionLayout = MGSwipeExpansionLayoutCenter;
+        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureQueueItemColor];
+        swipeSettings.transition = MGSwipeTransitionClipCenter;
+        swipeSettings.threshold = 9999;
+        
+        __weak MasterSongsTableViewController *weakself = self;
+        __weak Song *weakSong = song;
+        __weak MGSwipeTableCell *weakCell = cell;
+        return @[[MGSwipeButton buttonWithTitle:@"Queue"
+                                backgroundColor:[AppEnvironmentConstants expandingCellGestureInitialColor]
+                                        padding:40
+                                       callback:^BOOL(MGSwipeTableCell *sender) {
+                                           [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
+                                           
+                                           NSLog(@"Queing up: %@", weakSong.songName);
+                                           PlaybackContext *context = [weakself contextForSpecificSong:weakSong];
+                                           [[MZPlaybackQueue sharedInstance] addSongsToPlayingNextWithContexts:@[context]];
+                                           [weakCell refreshContentView];
+                                           return YES;
+                                       }]];
+    } else if(direction == MGSwipeDirectionRightToLeft){
+        
+    }
+    return nil;
+}
+
 
 #pragma mark - segue
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -489,21 +525,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 #pragma mark - Rotation status bar methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    [self prefersStatusBarHidden];
     [self setNeedsStatusBarAppearanceUpdate];
 
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-}
-
-- (BOOL)prefersStatusBarHidden
-{
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
-        return YES;
-    }
-    else{
-        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
-    }
 }
 
 #pragma mark - Counting Songs in core data
@@ -523,6 +547,19 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         count = (int)tempCount;
     }
     return count;
+}
+
+#pragma mark - Helper
+- (PlaybackContext *)contextForSpecificSong:(Song *)aSong
+{
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
+    request.predicate = [NSPredicate predicateWithFormat:@"ANY song_id == %@", aSong.song_id];
+    //descriptor doesnt really matter here
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
+                                                                     ascending:YES];
+    
+    request.sortDescriptors = @[sortDescriptor];
+    return [[PlaybackContext alloc] initWithFetchRequest:[request copy] prettyQueueName:@""];
 }
 
 #pragma mark - fetching and sorting
@@ -546,7 +583,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     request.sortDescriptors = @[sortDescriptor];
     if(self.playbackContext == nil){
-        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]];
+        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]
+                                                             prettyQueueName:@"All Songs"];
     }
     //fetchedResultsController is from custom super class
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request

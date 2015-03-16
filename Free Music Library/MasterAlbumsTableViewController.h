@@ -27,7 +27,8 @@
                                                                 <UISearchBarDelegate,
                                                                 UITableViewDataSource,
                                                                 UITableViewDelegate,
-                                                                MainScreenViewControllerDelegate>
+                                                                MainScreenViewControllerDelegate,
+                                                                MGSwipeTableCellDelegate>
 {
     StackController *stackController;
 }

@@ -57,9 +57,11 @@
 + (NowPlayingSong *)nowPlayingSongObject;
 
 #pragma mark + Gathering playback info
-+ (NSArray *)listOfUpcomingSongsInQueueIncludeNowPlaying:(BOOL)include;
 + (NSUInteger)numMoreSongsInQueue;
+
+//does NOT perform a context comparison.
 + (BOOL)isSongLastInQueue:(Song *)song;
+//does NOT perform a context comparison.
 + (BOOL)isSongFirstInQueue:(Song *)song;
 + (NSString *)prettyPrintNavBarTitle;
 
@@ -67,7 +69,6 @@
 + (void)newQueueWithSong:(Song *)song
              withContext:(PlaybackContext *)context
          skipCurrentSong:(BOOL)skipNow;
-+ (void)playSongNextWithoutDamagingQueue:(Song *)song;
 
 #pragma mark - Playback status
 + (BOOL)playbackExplicitlyPaused;

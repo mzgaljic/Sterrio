@@ -24,6 +24,7 @@
                                                             <UISearchBarDelegate,
                                                             UITableViewDataSource,
                                                             UITableViewDelegate,
-                                                            MainScreenViewControllerDelegate>
+                                                            MainScreenViewControllerDelegate,
+                                                            MGSwipeTableCellDelegate>
 
 @end

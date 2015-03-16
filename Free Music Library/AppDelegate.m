@@ -49,10 +49,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     //set global default "AppColorScheme"
     self.window.tintColor = [UIColor whiteColor];
     [UIColor defaultAppColorScheme:Rgb2UIColor(32, 69, 124)];  // original blue
-    //[UIColor defaultAppColorScheme:Rgb2UIColor(0, 199, 248)];   blue inspired by finder
-    //[UIColor defaultAppColorScheme:Rgb2UIColor(77, 167, 36)];   green color
-    //[UIColor defaultAppColorScheme:Rgb2UIColor(234, 68, 56)];  redish color
-    //[UIColor defaultAppColorScheme:Rgb2UIColor(32, 69, 124)];
     
     //set cancel button color of all uisearchbars
     [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
@@ -82,8 +78,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [self setupMainVC];
     
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-    if(! [[[UIDevice currentDevice] name] isEqualToString:@"Mark Zgaljic's iPhone"])
-        [Fabric with:@[CrashlyticsKit]];
     return YES;
 }
 
@@ -108,7 +102,8 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     
     mainVC = [[MainScreenViewController alloc] initWithNavControllers:@[navController1, navController2, navController3, navController4]
                                          correspondingViewControllers:@[vc1, vc2, vc3, vc4]
-                                                   tabBarImageNames:@[@"", @"albums", @"", @""]];
+                                                   tabBarUnselectedImageNames:@[@"song_note", @"albums", @"", @""]
+                                             tabBarselectedImageNames:@[@"", @"", @"", @""]];
     
     [self.window setRootViewController:mainVC];
     self.window.backgroundColor = [UIColor whiteColor];

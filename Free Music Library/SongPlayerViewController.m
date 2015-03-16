@@ -345,6 +345,7 @@ static int numTimesVCLoaded = 0;
 {
     if(lastKnownOrientation == UIInterfaceOrientationLandscapeLeft || lastKnownOrientation == UIInterfaceOrientationLandscapeRight){
         [self.navigationController setNavigationBarHidden:YES];
+        [[UIApplication sharedApplication] setStatusBarHidden:YES];
         return YES;
     }
     else{
@@ -415,8 +416,7 @@ static int numTimesVCLoaded = 0;
     }
     
     lastKnownOrientation = toInterfaceOrientation;
-    [self prefersStatusBarHidden];
-    [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+    [self setNeedsStatusBarAppearanceUpdate];
     [self performSelector:@selector(initLabelsOnScreenDelayed)
                withObject:nil
                afterDelay:0.05f];
@@ -467,7 +467,7 @@ static int numTimesVCLoaded = 0;
 
 - (IBAction)playbackSliderValueHasChanged:(id)sender
 {
-    CMTime newTime = CMTimeMakeWithSeconds(_playbackSlider.value, 1);
+    CMTime newTime = CMTimeMakeWithSeconds(_playbackSlider.value, NSEC_PER_SEC);
     [[MusicPlaybackController obtainRawAVPlayer] seekToTime:newTime];
 }
 
@@ -1115,6 +1115,12 @@ static int accomodateInterfaceLabelsCounter = 0;
         _playbackSlider.maximumValue = durationInSeconds;
         
         NSString *newText = [self convertSecondsToPrintableNSStringWithSliderValue:durationInSeconds];
+        if(stateOfDurationLabels == DurationLabelStateNotSet){
+            //figure it out lol
+            _totalDurationLabel.text = newText;
+#warning may be able to remove weird counter code in this accomodateinterface method. check.
+            [self accomodateInterfaceBasedOnDurationLabelSize:_totalDurationLabel];
+        }
         
         //only want to animate the change if we are also not animating the label width
         if(stateOfDurationLabels == DurationLabelStateMinutes){
@@ -1132,16 +1138,22 @@ static int accomodateInterfaceLabelsCounter = 0;
 //BACK BUTTON
 - (void)backwardsButtonTappedOnce
 {
-    waitingForNextOrPrevVideoToLoad = YES;
-    [MusicPlaybackController pausePlayback];
-    self.playbackSlider.enabled = NO;
     [MusicPlaybackController returnToPreviousTrack];
     [self backwardsButtonLetGo];
-    [self showNextTrackButton];  //in case it wasnt on screen already
     
-    //check if this next song is the first one in the queue
-    if([MusicPlaybackController isSongFirstInQueue:[MusicPlaybackController nowPlayingSong]])
-        [self hidePreviousTrackButton];
+    float seconds = CMTimeGetSeconds([MusicPlaybackController obtainRawAVPlayer].currentItem.currentTime);
+    if(seconds < MZSkipToSongBeginningIfBackBtnTappedBoundary){
+        //previous song will actually be loaded
+        waitingForNextOrPrevVideoToLoad = YES;
+        [MusicPlaybackController pausePlayback];
+        self.playbackSlider.enabled = NO;
+        [self showNextTrackButton];  //in case it wasnt on screen already
+        
+        //check if this next song is the first one in the queue
+        if([MusicPlaybackController isSongFirstInQueue:[MusicPlaybackController nowPlayingSong]])
+            [self hidePreviousTrackButton];
+    }
+    //else the song will simply start from the beginning...
 }
 
 - (void)backwardsButtonBeingHeld{ [self addShadowToButton:backwardButton]; }

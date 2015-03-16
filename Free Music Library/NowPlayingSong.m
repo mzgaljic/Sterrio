@@ -33,7 +33,8 @@
    compareWithContext:(PlaybackContext *)aContext
 {
     BOOL sameSongIDs = [self.nowPlaying.song_id isEqualToString:aSong.song_id];
-    BOOL sameContexts = ([self.context isEqualToContext:aContext]);
+    BOOL sameContexts = ([self.context isEqualToContext:aContext]
+                         || (self.context == nil && aContext == nil));
     return (sameSongIDs && sameContexts);
 }
 
@@ -42,6 +43,11 @@
 {
     self.nowPlaying = newSong;
     self.context = aContext;
+}
+
+- (void)setPlayingBackFromPlayNextSongs:(BOOL)isTrue
+{
+    _isFromPlayNextSongs = isTrue;
 }
 
 @end
