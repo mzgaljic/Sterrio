@@ -180,10 +180,11 @@ static int numLongSongsSkipped = 0;
      //                                              (int)[MusicPlaybackController sizeOfEntireQueue]];
     if([nowPlayingObject isFromPlayNextSongs]){
         NSUInteger numMoreSongs = [playbackQueue numMoreSongsInUpNext];
-        if(numMoreSongs == 1)
-            return [NSString stringWithFormat:@"%lu Song Queued", (unsigned long)numMoreSongs];
+        NSUInteger numSongsQueued = numMoreSongs + 1;
+        if(numSongsQueued == 1)
+            return [NSString stringWithFormat:@"%lu Song Queued", (unsigned long)numSongsQueued];
         else
-            return [NSString stringWithFormat:@"%lu Songs Queued", (unsigned long)numMoreSongs];
+            return [NSString stringWithFormat:@"%lu Songs Queued", (unsigned long)numSongsQueued];
     }
     else
         return [NSString stringWithFormat:@"-- of %lu", (unsigned long)[playbackQueue numSongsInEntireMainQueue]];
@@ -231,6 +232,20 @@ static int numLongSongsSkipped = 0;
     }
     //start playback with the song that was chosen
     [player startPlaybackOfSong:song goingForward:YES oldSong:originalSong];
+}
+
++ (void)queueUpNextSongsWithContexts:(NSArray *)contexts
+{
+    if(contexts.count > 0){
+        NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
+        if(nowPlayingObject == nil)
+            nowPlayingObject = nowPlaying;
+        
+        if(playbackQueue == nil)
+            playbackQueue = [MZPlaybackQueue sharedInstance];
+        //playbackQueue will start playback if no songs were playing prior to the songs being queued.
+        [playbackQueue addSongsToPlayingNextWithContexts:contexts];
+    }
 }
 
 #pragma mark - Playback status

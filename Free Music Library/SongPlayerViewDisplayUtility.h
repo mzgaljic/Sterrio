@@ -15,7 +15,9 @@ extern int nearestEvenInt(int to);
 
 ///6:9 Aspect ratio helper
 + (float)videoHeightInSixteenByNineAspectRatioGivenWidth:(float)width;
+
 + (void)segueToSongPlayerViewControllerFrom:(UIViewController *)sourceController;
++ (void)animatePlayerIntoMinimzedModeInPrepForPlayback;
 
 @end
 

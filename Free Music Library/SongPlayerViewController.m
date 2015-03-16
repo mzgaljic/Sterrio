@@ -153,20 +153,12 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     numTimesSetupKeyValueObservers++;
 }
 
-static int numTimesVCLoaded = 0;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
     Song *nowPlaying = [MusicPlaybackController nowPlayingSong];
-    if(numTimesVCLoaded == 0){
-         [[SongPlayerCoordinator sharedInstance] begingExpandingVideoPlayer];  //sets up the player only once
-        
-        MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-        [player startPlaybackOfSong:nowPlaying goingForward:YES oldSong:nil];
-        //avplayer will control itself for the most part now...
-    }
-    numTimesVCLoaded++;
+    [[SongPlayerCoordinator sharedInstance] begingExpandingVideoPlayer];
     
     UIBarButtonItem *share = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                                                                            target:self
@@ -775,7 +767,7 @@ static int accomodateInterfaceLabelsCounter = 0;
             aButton.alpha = 0.0;  //make button transparent
             [UIView animateWithDuration:0.7  //now animate a "fade in"
                                   delay:0.2
-                                options:UIViewAnimationOptionAllowUserInteraction
+                                options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
                              animations:^{ aButton.alpha = 1.0; }
                              completion:nil];
         }
@@ -784,7 +776,7 @@ static int accomodateInterfaceLabelsCounter = 0;
         _totalDurationLabel.alpha = 0.0;
         [UIView animateWithDuration:0.7  //now animate a "fade in"
                               delay:0.2
-                            options:UIViewAnimationOptionAllowUserInteraction
+                            options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
                          animations:^
                         {
                             _currentTimeLabel.alpha = 1.0;
@@ -868,7 +860,7 @@ static int accomodateInterfaceLabelsCounter = 0;
         aButton.alpha = 0.0;  //make button transparent
         [UIView animateWithDuration:0.70  //now animate a "fade in"
                               delay:0.1
-                            options:UIViewAnimationOptionAllowUserInteraction
+                            options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
                          animations:^{ aButton.alpha = 1.0; }
                          completion:nil];
     }
@@ -876,7 +868,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     _totalDurationLabel.alpha = 0.0;
     [UIView animateWithDuration:0.7  //now animate a "fade in"
                           delay:0.2
-                        options:UIViewAnimationOptionAllowUserInteraction
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
                      animations:^
      {
          _currentTimeLabel.alpha = 1.0;
@@ -949,7 +941,7 @@ static int accomodateInterfaceLabelsCounter = 0;
             _artistAndAlbumLabel.alpha = 0;
             [UIView animateWithDuration:0.8
                                   delay:0.2
-                                options:UIViewAnimationOptionAllowUserInteraction
+                                options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
                              animations:^{
                                  _songNameLabel.alpha = 1;
                                  _artistAndAlbumLabel.alpha = 1;
@@ -959,7 +951,7 @@ static int accomodateInterfaceLabelsCounter = 0;
             __weak SongPlayerViewController *weakSelf = self;
             [UIView animateWithDuration:0.8
                                   delay:0.2
-                                options:UIViewAnimationOptionAllowUserInteraction
+                                options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
                              animations:^{
                                  [weakSelf performSongArtistAlbumLabelFrameChanges];
                              } completion:^(BOOL finished) {}];
@@ -1088,7 +1080,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     _playbackSlider.alpha = 0.0;
     [UIView animateWithDuration:0.7  //now animate a "fade in"
                           delay:0.2
-                        options:UIViewAnimationOptionAllowUserInteraction
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
                      animations:^
      {
          _playbackSlider.alpha = 1.0;

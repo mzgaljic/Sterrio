@@ -112,6 +112,33 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
     return newNowPlaying;
 }
 
+- (PreliminaryNowPlaying *)peekAtNextSong
+{
+    PlaybackContext *aContext;
+    NSFetchRequest *aRequest;
+    Song *desiredSong;
+    PlaybackContext *desiredSongsContext;
+    //iterate until we find a next song
+    for(int i = 0; i < playbackContexts.count; i++)
+    {
+        aContext = playbackContexts[i];
+        aRequest = aContext.request;
+        [aRequest setFetchBatchSize:INTERNAL_FETCH_BATCH_SIZE];
+        
+        NSUInteger songIndex = 0;
+        NSArray *array = [[CoreDataManager context] executeFetchRequest:aRequest error:nil];
+        
+        NSNumber *indexNumObj = [fetchRequestIndexes objectAtIndex:i];
+        songIndex = [indexNumObj integerValue];
+        desiredSong = [self songInArray:array atIndex:songIndex];
+        desiredSongsContext = aContext;
+    }
+    PreliminaryNowPlaying *newNowPlaying = [[PreliminaryNowPlaying alloc] init];
+    newNowPlaying.aNewSong = desiredSong;
+    newNowPlaying.aNewContext = desiredSongsContext;
+    return newNowPlaying;
+}
+
 - (void)clearUpNext
 {
     [playbackContexts removeAllObjects];

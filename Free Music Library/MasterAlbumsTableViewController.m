@@ -308,9 +308,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         //remove songs from queue if they are in it
         for(Song *aSong in album.albumSongs)
         {
-            #warning fix!
-            //[MusicPlaybackController songAboutToBeDeleted:aSong
-              //                            deletionContext:SongPlaybackContextAlbums];
+            [MusicPlaybackController songAboutToBeDeleted:aSong
+                                          deletionContext:self.playbackContext];
             [aSong removeAlbumArt];
         }
         
@@ -392,7 +391,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                            NSLog(@"Queing up: %@", weakAlbum.albumName);
                                            
                                            PlaybackContext *context = [weakself contextForSpecificAlbum:weakAlbum];
-                                           [[MZPlaybackQueue sharedInstance] addSongsToPlayingNextWithContexts:@[context]];
+                                           [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];
                                            return YES;
                                        }]];

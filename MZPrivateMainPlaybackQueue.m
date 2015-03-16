@@ -127,6 +127,8 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
 {
     NSMutableArray *compiledSongs = [NSMutableArray array];
     NSFetchRequest *request = playbackContext.request;
+    if(request == nil)
+        return compiledSongs;
     [request setFetchBatchSize:batchSize];
     NSArray *array = [[CoreDataManager context] executeFetchRequest:request error:nil];
     NSUInteger nowPlayingIndex = [array indexOfObject:[NowPlayingSong sharedInstance].nowPlaying];

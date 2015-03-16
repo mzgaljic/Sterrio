@@ -20,6 +20,7 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     UITableView *tableView;  //this is the subviews tableview (gets set on the fly)
     MySearchBar *searchBar;  //also set on the fly
     int offsetHeightWhenPlayerVisible;
+    int lastKnownTableViewVerticalContentOffset;
     ContentInsetState insetState;
 }
 
@@ -261,6 +262,8 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     
     //going to fade in tableview
     tableView.alpha = 0.8;
+    [self hideSearchBarByDefaultIfApplicable];
+    tableView.contentOffset = CGPointMake(tableView.contentOffset.x, lastKnownTableViewVerticalContentOffset);
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -275,6 +278,7 @@ static void *navBarHiddenChange = &navBarHiddenChange;
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    lastKnownTableViewVerticalContentOffset = tableView.contentOffset.y;
     [super viewWillDisappear:animated];
 }
 
@@ -298,6 +302,7 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     //multiplied by 2 since we want the padding amount to be applied under AND above the player height.
     offsetHeightWhenPlayerVisible = smallPlayerHeight + (MZSmallPlayerVideoFramePadding * 2);
     self.edgesForExtendedLayout = UIRectEdgeNone;
+    lastKnownTableViewVerticalContentOffset = 0;
 }
 
 - (void)dealloc
@@ -310,6 +315,16 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     //tableview alrady re-draws itself after settings change, but reloading
     //the entire table fixes weird issues with the cells.
     [tableView reloadData];
+}
+
+- (void)hideSearchBarByDefaultIfApplicable
+{
+    if(searchBar){
+        tableView.contentOffset = CGPointMake(tableView.contentOffset.x,
+                                              searchBar.frame.size.height);
+        if(lastKnownTableViewVerticalContentOffset < searchBar.frame.size.height)
+            lastKnownTableViewVerticalContentOffset = searchBar.frame.size.height;
+    }
 }
 
 - (void)nowPlayingSongsHasChanged:(NSNotification *)notification

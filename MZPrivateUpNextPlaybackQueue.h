@@ -28,6 +28,7 @@
 
 //skipping forward
 - (PreliminaryNowPlaying *)obtainAndRemoveNextSong;
+- (PreliminaryNowPlaying *)peekAtNextSong;
 
 - (void)clearUpNext;
 

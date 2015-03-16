@@ -22,6 +22,7 @@
 + (BOOL)isVideoPlayerExpanded;
 - (void)beginShrinkingVideoPlayer;
 - (void)begingExpandingVideoPlayer;
+- (void)beginAnimatingPlayerIntoMinimzedStateIfNotExpanded;
 - (void)shrunkenVideoPlayerNeedsToBeRotated;
 - (void)shrunkenVideoPlayerShouldRespectToolbar;
 - (void)shrunkenVideoPlayerCanIgnoreToolbar;
@@ -30,7 +31,7 @@
 - (void)enablePlayerAgain;
 + (BOOL)isPlayerEnabled;
 + (float)alphaValueForDisabledPlayer;
-+ (BOOL)isPlayerOnScreen;
++ (BOOL)isPlayerOnScreen;  //takes into account player being killed, etc.
 + (void)playerWasKilled:(BOOL)killed;
 
 - (CGRect)currentPlayerViewFrame;

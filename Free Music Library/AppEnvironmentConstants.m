@@ -208,7 +208,7 @@ static short statusBarHeight;
 //color stuff
 + (UIColor *)expandingCellGestureInitialColor
 {
-    return Rgb2UIColor(60, 60, 61);
+    return [UIColor lightGrayColor];
 }
 
 + (UIColor *)expandingCellGestureQueueItemColor

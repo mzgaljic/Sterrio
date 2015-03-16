@@ -69,6 +69,7 @@
 + (void)newQueueWithSong:(Song *)song
              withContext:(PlaybackContext *)context
          skipCurrentSong:(BOOL)skipNow;
++ (void)queueUpNextSongsWithContexts:(NSArray *)contexts;
 
 #pragma mark - Playback status
 + (BOOL)playbackExplicitlyPaused;

@@ -77,7 +77,52 @@
 
 - (void)addSongsToPlayingNextWithContexts:(NSArray *)contexts
 {
-    [upNextQueue addSongsToUpNextWithContexts:contexts];
+    if(! [SongPlayerCoordinator isPlayerOnScreen]){
+        //no songs currently playing, set defaults...
+        [upNextQueue addSongsToUpNextWithContexts:contexts];
+        PreliminaryNowPlaying *newSong = [upNextQueue peekAtNextSong];
+        
+        [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:YES];
+        [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newSong.aNewSong
+                                                      context:newSong.aNewContext];
+        //start playback in minimzed state
+        [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
+        MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+        [player startPlaybackOfSong:newSong.aNewSong
+                       goingForward:YES
+                            oldSong:nil];
+        return;
+    } else{
+        //songs were already played, player on screen. is playback of queue finished?
+        if([mainQueue numMoreSongsInMainQueue] == 0
+           && [upNextQueue numMoreUpNextSongsCount] == 0){
+            //no more songs in queue! is the current song completely finished playing?
+            //if so, we can start playback of the new up next songs right now!
+            
+            MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+            Song *nowPlayingSong = [NowPlayingSong sharedInstance].nowPlaying;
+            float elapsedSeconds = CMTimeGetSeconds(player.currentItem.currentTime);
+            
+            //comparing if song is either done or VERY VERY VERY close to the end.
+            if(elapsedSeconds == [nowPlayingSong.duration integerValue]
+               || elapsedSeconds +1 == [nowPlayingSong.duration integerValue]){
+                //we can start playing the new queue
+                [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
+                [upNextQueue addSongsToUpNextWithContexts:contexts];
+                PreliminaryNowPlaying *newSong = [upNextQueue peekAtNextSong];
+                [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:YES];
+                [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newSong.aNewSong
+                                                              context:newSong.aNewContext];
+                [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+                [player startPlaybackOfSong:newSong.aNewSong
+                               goingForward:YES
+                                    oldSong:nowPlayingSong];
+                return;
+            }
+        }
+        //dont mess with the current song...queue not finished. Just insert new songs.
+        [upNextQueue addSongsToUpNextWithContexts:contexts];
+    }
 }
 
 - (Song *)skipToPrevious

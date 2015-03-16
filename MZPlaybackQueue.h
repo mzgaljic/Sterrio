@@ -14,6 +14,7 @@
 #import "MZPrivateMainPlaybackQueue.h"
 #import "MZPrivateUpNextPlaybackQueue.h"
 #import "PreliminaryNowPlaying.h"
+#import "SongPlayerCoordinator.h"
 @import CoreData;
 
 @interface MZPlaybackQueue : NSObject
@@ -33,6 +34,7 @@
 //current queue. This does not clear the "up next" section.
 - (void)setMainQueueWithNewNowPlayingSong:(Song *)aSong inContext:(PlaybackContext *)aContext;
 
+//Will initiate playback if no songs were played yet. or if the other queues are finished.
 - (void)addSongsToPlayingNextWithContexts:(NSArray *)contexts;
 
 - (Song *)skipToPrevious;

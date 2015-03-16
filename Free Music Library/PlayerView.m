@@ -131,7 +131,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     userDidSwipePlayerOffScreenManually = NO;
     Song *songWeAreKilling = [MusicPlaybackController nowPlayingSong];
     //done because the method reacting to the MZNewSongLoading notification needs to know
-    //what the context was.hence keeping the context the same temporarily...
+    //what the context was. hence keeping the context the same temporarily...
     [[NowPlayingSong sharedInstance] setNewNowPlayingSong:nil context:[NowPlayingSong sharedInstance].context];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
                                                         object:songWeAreKilling];

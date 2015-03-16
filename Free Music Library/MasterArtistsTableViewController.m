@@ -237,17 +237,15 @@ static BOOL PRODUCTION_MODE;
         //remove songs from queue
         for(Song *aSong in artist.standAloneSongs)
         {
-            #warning fix!
-            //[MusicPlaybackController songAboutToBeDeleted:aSong
-              //                            deletionContext:SongPlaybackContextArtists];
+            [MusicPlaybackController songAboutToBeDeleted:aSong
+                                          deletionContext:self.playbackContext];
             [aSong removeAlbumArt];
         }
         for(Album *anAlbum in artist.albums)
         {
             for(Song *aSong in anAlbum.albumSongs)
-                #warning fix!
-                //[MusicPlaybackController songAboutToBeDeleted:aSong
-                  //                            deletionContext:SongPlaybackContextArtists];
+                [MusicPlaybackController songAboutToBeDeleted:aSong
+                                              deletionContext:self.playbackContext];
             
             [anAlbum removeAlbumArt];
         }
@@ -335,7 +333,7 @@ static BOOL PRODUCTION_MODE;
                                            NSLog(@"Queing up: %@", weakArtist.artistName);
                                            
                                            PlaybackContext *context = [weakself contextForSpecificArtist:weakArtist];
-                                           [[MZPlaybackQueue sharedInstance] addSongsToPlayingNextWithContexts:@[context]];
+                                           [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];
                                            return YES;
                                        }]];

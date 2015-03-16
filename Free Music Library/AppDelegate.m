@@ -150,7 +150,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     float animationDuration = 0.74f;
     [UIView animateWithDuration:animationDuration
                           delay:0
-                        options:UIViewAnimationOptionAllowUserInteraction
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
                      animations:^{
                          playerSnapshot.alpha = 0.0;
                          if([SongPlayerCoordinator isPlayerEnabled])

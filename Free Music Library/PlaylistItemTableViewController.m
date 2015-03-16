@@ -175,8 +175,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
-        #warning fix!
-        //[MusicPlaybackController songAboutToBeDeleted:[_playlist.playlistSongs objectAtIndex:indexPath.row] deletionContext:SongPlaybackContextPlaylists];
+        [MusicPlaybackController songAboutToBeDeleted:[_playlist.playlistSongs objectAtIndex:indexPath.row] deletionContext:self.playbackContext];
         
         //remove song from playlist only (not song from library in general)
         NSMutableOrderedSet *set = [NSMutableOrderedSet orderedSetWithOrderedSet:_playlist.playlistSongs];
@@ -257,7 +256,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
                                            NSLog(@"Queing up: %@", weakSong.songName);
                                            PlaybackContext *context = [weakself contextForPlaylistSong:weakSong];
-                                           [[MZPlaybackQueue sharedInstance] addSongsToPlayingNextWithContexts:@[context]];
+                                           [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];
                                            return YES;
                                        }]];

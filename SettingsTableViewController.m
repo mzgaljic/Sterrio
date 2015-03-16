@@ -494,7 +494,7 @@ NSArray *CellStreamOptions;
 
 
 #pragma mark - Toggle switch ibActions
-static tempIcloudSwitchCount = 0;
+static int tempIcloudSwitchCount = 0;
 - (IBAction)icloudSyncSwitchToggled:(id)sender
 {
     //update settings

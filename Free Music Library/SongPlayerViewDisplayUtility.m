@@ -30,7 +30,6 @@ int nearestEvenInt(int to)
 {
     BOOL expanded = [SongPlayerCoordinator isVideoPlayerExpanded];
     if(! expanded){
-        sourceController.modalPresentationCapturesStatusBarAppearance = YES;
         //check orientation. Don't want to animate in landscape
         BOOL animate = NO;
         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
@@ -59,6 +58,14 @@ int nearestEvenInt(int to)
             });
         }
     }
+}
+
++ (void)animatePlayerIntoMinimzedModeInPrepForPlayback
+{
+    BOOL expanded = [SongPlayerCoordinator isVideoPlayerExpanded];
+    if(expanded)
+        return;  //no work to be done, player already very much visible lol.
+    [[SongPlayerCoordinator sharedInstance] beginAnimatingPlayerIntoMinimzedStateIfNotExpanded];
 }
 
 + (void)makeAlphaOne:(UIViewController *)vc

@@ -378,8 +378,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
         //obtain object for the deleted song
         Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
-        #warning fix!
-       // [MusicPlaybackController songAboutToBeDeleted:song deletionContext:SongPlaybackContextSongs];
+        [MusicPlaybackController songAboutToBeDeleted:song deletionContext:self.playbackContext];
         [song removeAlbumArt];
         
         NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:[CoreDataManager context]];
@@ -462,20 +461,20 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         expansionSettings.expansionLayout = MGSwipeExpansionLayoutCenter;
         expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureQueueItemColor];
         swipeSettings.transition = MGSwipeTransitionClipCenter;
-        swipeSettings.threshold = 9999;
+        swipeSettings.threshold = 99999;
         
         __weak MasterSongsTableViewController *weakself = self;
         __weak Song *weakSong = song;
         __weak MGSwipeTableCell *weakCell = cell;
         return @[[MGSwipeButton buttonWithTitle:@"Queue"
                                 backgroundColor:[AppEnvironmentConstants expandingCellGestureInitialColor]
-                                        padding:40
+                                        padding:35
                                        callback:^BOOL(MGSwipeTableCell *sender) {
                                            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
                                            
                                            NSLog(@"Queing up: %@", weakSong.songName);
                                            PlaybackContext *context = [weakself contextForSpecificSong:weakSong];
-                                           [[MZPlaybackQueue sharedInstance] addSongsToPlayingNextWithContexts:@[context]];
+                                           [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];
                                            return YES;
                                        }]];

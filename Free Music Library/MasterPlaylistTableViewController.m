@@ -253,10 +253,8 @@
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
         Playlist *playlist = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
-        //check if any of the songs in this playlist are currently playing, if so, set the avplayer to nil (and pause it) so it doesn't crash!
-#warning fix!
-        //[MusicPlaybackController groupOfSongsAboutToBeDeleted:[playlist.playlistSongs array]
-    //                                          deletionContext:SongPlaybackContextPlaylists];
+        [MusicPlaybackController groupOfSongsAboutToBeDeleted:[playlist.playlistSongs array]
+                                              deletionContext:self.playbackContext];
         
         //delete the playlist and save changes
         NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Playlist" inManagedObjectContext:[CoreDataManager context]];
@@ -351,7 +349,7 @@
                                            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
                                            NSLog(@"Queing up: %@", weakPlaylist.playlistName);
                                            PlaybackContext *context = [weakself contextForPlaylist:weakPlaylist];
-                                           [[MZPlaybackQueue sharedInstance] addSongsToPlayingNextWithContexts:@[context]];
+                                           [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];
                                            return YES;
                                        }]];

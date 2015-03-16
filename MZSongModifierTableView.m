@@ -445,7 +445,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                 if(saved)
                 {
                     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveSuccess];
-#warning updating queue code commented out!
+#warning updating queue code commented out! Prob not needed at all.
                     /*
                     if([SongPlayerCoordinator isPlayerOnScreen])
                     {

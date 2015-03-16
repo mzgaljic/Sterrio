@@ -153,6 +153,53 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 70;
                      }];
 }
 
+- (void)beginAnimatingPlayerIntoMinimzedStateIfNotExpanded
+{
+    if(isVideoPlayerExpanded == YES)
+        return;
+    [SongPlayerCoordinator playerWasKilled:NO];
+    [SongPlayerCoordinator placePlayerInDisabledState:NO];
+    isVideoPlayerExpanded = NO;
+    
+    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
+    playerView.alpha = 0;
+    
+    if(playerView != nil)
+        [playerView removeFromSuperview];
+    
+    if(playerView == nil){
+        //player not even on screen yet
+        playerView = [[PlayerView alloc] init];
+        player = [[MyAVPlayer alloc] init];
+        [playerView setPlayer:player];  //attaches AVPlayer to AVPlayerLayer
+        playerView.alpha = 0;
+        [MusicPlaybackController setRawAVPlayer:player];
+        [MusicPlaybackController setRawPlayerView:playerView];
+        [playerView setBackgroundColor:[UIColor blackColor]];
+    }
+    
+    BOOL needLandscapeFrame = YES;
+    if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
+        needLandscapeFrame = NO;
+    
+    if(needLandscapeFrame)
+        currentPlayerFrame = [self smallPlayerFrameInLandscape];
+    else
+        currentPlayerFrame = [self smallPlayerFrameInPortrait];
+    playerView.frame = currentPlayerFrame;
+    [appWindow addSubview:playerView];
+    
+    __weak PlayerView *weakPlayerView = playerView;
+    [UIView animateWithDuration:1
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         weakPlayerView.alpha = 1;
+                     } completion:nil];
+}
+
 - (void)shrunkenVideoPlayerNeedsToBeRotated
 {
     if(! UIDeviceOrientationIsValidInterfaceOrientation([UIDevice currentDevice].orientation))
