@@ -313,6 +313,7 @@ static BOOL PRODUCTION_MODE;
 {
     swipeSettings.transition = MGSwipeTransitionBorder;
     expansionSettings.buttonIndex = 0;
+    UIColor *initialExpansionColor = [AppEnvironmentConstants expandingCellGestureInitialColor];
     
     if(direction == MGSwipeDirectionLeftToRight){
         //queue
@@ -330,7 +331,7 @@ static BOOL PRODUCTION_MODE;
         __weak Artist *weakArtist = artist;
         __weak MGSwipeTableCell *weakCell = cell;
         return @[[MGSwipeButton buttonWithTitle:@"Queue"
-                                backgroundColor:[AppEnvironmentConstants expandingCellGestureInitialColor]
+                                backgroundColor:initialExpansionColor
                                         padding:40
                                        callback:^BOOL(MGSwipeTableCell *sender) {
                                            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
@@ -342,7 +343,28 @@ static BOOL PRODUCTION_MODE;
                                            return YES;
                                        }]];
     } else if(direction == MGSwipeDirectionRightToLeft){
+        expansionSettings.fillOnTrigger = YES;
+        expansionSettings.threshold = 1.1;
+        expansionSettings.expansionLayout = MGSwipeExpansionLayoutCenter;
+        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
+        swipeSettings.transition = MGSwipeTransitionClipCenter;
+        swipeSettings.threshold = 50;
         
+        __weak MasterArtistsTableViewController *weakSelf = self;
+        MGSwipeButton *delete = [MGSwipeButton buttonWithTitle:@"Delete"
+                                               backgroundColor:initialExpansionColor
+                                                       padding:50
+                                                      callback:^BOOL(MGSwipeTableCell *sender)
+                                 {
+                                     
+                                     NSIndexPath *indexPath;
+                                     indexPath= [weakSelf.tableView indexPathForCell:sender];
+                                     [weakSelf tableView:weakSelf.tableView
+                                      commitEditingStyle:UITableViewCellEditingStyleDelete
+                                       forRowAtIndexPath:indexPath];
+                                     return NO; //don't autohide to improve delete animation
+                                 }];
+        return @[delete];
     }
     return nil;
 }
