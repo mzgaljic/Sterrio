@@ -185,11 +185,12 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
      //                                              (int)[MusicPlaybackController sizeOfEntireQueue]];
     if([nowPlayingObject isFromPlayNextSongs]){
         NSUInteger numMoreSongs = [playbackQueue numMoreSongsInUpNext];
-        NSUInteger numSongsQueued = numMoreSongs + 1;
-        if(numSongsQueued == 1)
-            return [NSString stringWithFormat:@"%lu Song Queued", (unsigned long)numSongsQueued];
+        if(numMoreSongs == 0)
+            return @"";
+        else if(numMoreSongs == 1)
+            return @"1 Song Queued";
         else
-            return [NSString stringWithFormat:@"%lu Songs Queued", (unsigned long)numSongsQueued];
+            return [NSString stringWithFormat:@"%lu Songs Queued", (unsigned long)numMoreSongs];
     }
     else
         return [NSString stringWithFormat:@"-- of %lu", (unsigned long)[playbackQueue numSongsInEntireMainQueue]];
@@ -517,6 +518,10 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 + (void)setPlayerInStall:(BOOL)stalled
 {
     isPlayerStalled = stalled;
+    if([SongPlayerCoordinator isVideoPlayerExpanded]){
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged
+                                                            object:nil];
+    }
 }
 
 @end

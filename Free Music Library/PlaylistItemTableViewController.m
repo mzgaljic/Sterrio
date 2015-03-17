@@ -30,7 +30,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    //this works better than a unique random id since this class can be dealloced and re-alloced
+    //later. Id must stay the same across all allocations.  :)
+    self.playbackContextUniqueId = NSStringFromClass([self class]);
     [self setUpNavBarItems];
     self.navBar = self.navigationItem;
     [[UITextField appearance] setTintColor:[[UIColor defaultAppColorScheme] lighterColor]];  //sets the cursor color of the playlist name textbox editor
@@ -271,7 +273,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     if(self.tableView.editing)
     {
-        self.navigationController.hidesBarsOnSwipe = YES;
         [self.navBar setRightBarButtonItems:_originalRightBarButtonItems animated:YES];
         [self.navBar setLeftBarButtonItems:_originalLeftBarButtonItems animated:YES];
         
@@ -287,11 +288,18 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             self.navBar.titleView = nil;
             self.navBar.title = _playlist.playlistName;
         }];
-
+        
+        //needed to avoid weird things happening after editing and re-ordering cell.
+        float delaySeconds = 0.3;
+        __block PlaylistItemTableViewController *blockSelf = self;
+        dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, delaySeconds * NSEC_PER_SEC);
+        dispatch_after(delayTime, dispatch_get_main_queue(), ^(void){
+            [blockSelf setFetchedResultsControllerAndSortStyle];
+            [blockSelf.tableView reloadData];
+        });
     }
     else
     {
-        self.navigationController.hidesBarsOnSwipe = NO;
         _currentlyEditingPlaylistName = YES;
         [UIView animateWithDuration:1 animations:^{
             //allows for renaming the playlist
@@ -474,7 +482,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistIAmIn"
                                                                      ascending:YES];
     request.sortDescriptors = @[sortDescriptor];
-    return [[PlaybackContext alloc] initWithFetchRequest:[request copy] prettyQueueName:@""];
+    return [[PlaybackContext alloc] initWithFetchRequest:[request copy]
+                                         prettyQueueName:@""
+                                               contextId:self.playbackContextUniqueId];
 }
 
 #pragma mark - fetching and sorting
@@ -492,7 +502,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     request.sortDescriptors = @[sortDescriptor];
     if(self.playbackContext == nil){
-        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy] prettyQueueName:@""];
+        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]
+                                                             prettyQueueName:@""
+                                                                   contextId:self.playbackContextUniqueId];
     }
     //fetchedResultsController is from custom super class
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request

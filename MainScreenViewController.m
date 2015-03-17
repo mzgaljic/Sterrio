@@ -38,7 +38,7 @@ short const dummyTabIndex = 2;
             tabBarUnselectedImageNames:(NSArray*)unSelectNames
               tabBarselectedImageNames:(NSArray*)selectNames
 {
-    if([super init]){
+    if(self = [super init]){
         self.navControllers = navControllers;
         self.viewControllers = viewControllers;
         self.tabBarUnselectedImageNames = unSelectNames;

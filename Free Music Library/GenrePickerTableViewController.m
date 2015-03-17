@@ -91,6 +91,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:animated];
     [GenreSearchService removeDelegate];
 }
 

@@ -10,19 +10,23 @@
 
 @implementation PlaybackContext
 
-- (instancetype)initWithFetchRequest:(NSFetchRequest *)aRequest prettyQueueName:(NSString *)name
+- (instancetype)initWithFetchRequest:(NSFetchRequest *)aRequest
+                     prettyQueueName:(NSString *)name
+                           contextId:(NSString *)anIdentifier
 {
-    if([super init]){
+    if(self = [super init]){
         _request = aRequest;
         _queueName = name;
-        NSAssert(name != nil, @"Error: a playback context was created without a valid name");
+        _contextId = anIdentifier;
+        NSAssert(anIdentifier != nil, @"Error: a playback context was created w/out an id.");
     }
     return self;
 }
 
 - (BOOL)isEqualToContext:(PlaybackContext *)someContext
 {
-    return [_request isEqual:someContext.request];
+    return [_contextId isEqualToString:someContext.contextId];
 }
+
 
 @end

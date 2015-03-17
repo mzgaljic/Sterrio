@@ -133,7 +133,6 @@ static short appLaunchedFirstTimeDefensiveCount = 0;
     NSString *lastBuild = [[NSUserDefaults standardUserDefaults] stringForKey:LAST_INSTALLED_BUILD];
     NSString *currentBuild = [UIDevice appBuildString];
     if(lastBuild == nil){
-        lastBuild = currentBuild;
         [[NSUserDefaults standardUserDefaults] setObject:currentBuild
                                                   forKey:LAST_INSTALLED_BUILD];
     } else if(! [lastBuild isEqualToString:currentBuild] &&

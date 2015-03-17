@@ -16,6 +16,7 @@
 #import "MGSwipeTableCell.h"
 #import "MGSwipeButton.h"
 #import "MZTableViewCell.h"
+#import "NSObject+ObjectUUID.h"
 
 @interface CoreDataCustomTableViewController : UIViewController <NSFetchedResultsControllerDelegate,
                                                                 UITableViewDelegate>
@@ -26,6 +27,7 @@
 @property (nonatomic, assign) BOOL displaySearchResults;
 @property (nonatomic, strong) PlaybackContext *playbackContext;
 @property (nonatomic, strong) NSString *cellReuseId;
+@property (nonatomic, strong) NSString *playbackContextUniqueId;
 
 // Causes the fetchedResultsController to refresh the data.
 // You almost certainly never need to call this.

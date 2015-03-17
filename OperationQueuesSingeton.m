@@ -27,7 +27,7 @@
 
 - (id)init
 {
-    if([super init]){
+    if(self = [super init]){
         loadingSongsOpQueue = [[NSOperationQueue alloc] init];
     }
     return self;

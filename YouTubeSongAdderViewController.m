@@ -39,7 +39,7 @@
 #pragma mark - Custom Initializer
 - (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject thumbnail:(UIImage *)img
 {
-    if ([super init]) {
+    if (self = [super init]) {
         if(youtubeVideoObject == nil)
             return nil;
         
@@ -217,6 +217,7 @@ static short numberTimesViewHasBeenShown = 0;
 - (void)didReceiveMemoryWarning
 {
     [self.tableView didReceiveMemoryWarning];
+    [super didReceiveMemoryWarning];
 }
 
 - (void)checkCurrentPlaybackState

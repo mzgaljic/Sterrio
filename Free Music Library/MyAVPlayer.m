@@ -31,6 +31,7 @@
 static void *mPlaybackBufferEmpty = &mPlaybackBufferEmpty;
 static void *mloadedTimeRanges = &mloadedTimeRanges;
 static void *mCurrentItem = &mCurrentItem;
+static void *mPlaybackRate = &mPlaybackRate;
 
 static void *mPlaybackStarted = &mPlaybackStarted;
 
@@ -79,12 +80,12 @@ static void *mPlaybackStarted = &mPlaybackStarted;
 #pragma mark - Working with the queue to perform player actions (play, skip, etc)
 - (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)forward oldSong:(Song *)oldSong
 {
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
+                                                        object:oldSong];
     if(aSong != nil){
         movingForward = forward;
         _playbackStarted = NO;
         [self beginLoadingVideoWithSong:aSong];
-        [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
-                                                            object:oldSong];
         [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     } else{
         //playback stopping...
@@ -307,6 +308,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
             }
             [SongPlayerCoordinator placePlayerInDisabledState:NO];
             disabledPlayerItem = nil;
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlaying];
         }
     }
 }
@@ -422,6 +424,10 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
            forKeyPath:@"playbackStarted"
               options:NSKeyValueObservingOptionNew
               context:mPlaybackStarted];
+    [self addObserver:self
+           forKeyPath:@"rate"
+              options:NSKeyValueObservingOptionNew
+              context:mPlaybackRate];
 }
 
 - (void)deregisterForObservers
@@ -441,6 +447,9 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
         [self removeObserver:self
                   forKeyPath:@"playbackStarted"
                      context:mPlaybackStarted];
+        [self removeObserver:self
+                  forKeyPath:@"rate"
+                     context:mPlaybackRate];
     }
     //do nothing, obviously it wasn't attached because an exception was thrown
     @catch(id anException){}
@@ -482,7 +491,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                 for(int i = 0; i < timeRanges.count; i++){
                     aTimeRange = [timeRanges[i] CMTimeRangeValue];
                     lowBound = CMTimeGetSeconds(timerange.start);
-                    upperBound = CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration));
+                    upperBound = CMTimeGetSeconds(CMTimeAdd(timerange.start, aTimeRange.duration));
                     if(currentTime >= lowBound && currentTime < upperBound)
                         inALoadedRange = YES;
                 }
@@ -529,12 +538,17 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                 [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
             }
         }
-    } else if(mPlaybackStarted){
+    } else if(context == mPlaybackStarted){
         if(self.playbackStarted){
             //we are loading a new song, user might want to see this info on lock screen.
             [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
         }
-    }else
+    }else if(context == mPlaybackRate){
+        if([SongPlayerCoordinator isVideoPlayerExpanded]){
+            [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged
+                                                                object:nil];
+        }
+    } else
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 

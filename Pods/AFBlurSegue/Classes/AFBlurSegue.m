@@ -31,7 +31,7 @@
     
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
         
-        UIImage *background = [UIImage new];
+        UIImage *background;
         
         if ([sourceController isKindOfClass:[UITableViewController class]]) {
             

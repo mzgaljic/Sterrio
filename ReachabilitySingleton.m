@@ -43,7 +43,7 @@ NSString * const host_Name = @"www.youtube.com";
 
 - (id)init
 {
-    if([super init]){
+    if(self = [super init]){
         reachability = [Reachability reachabilityForInternetConnection];
         //3G,EDGE,CDMA does count as "reachable". Reachable as long as we are connected somehow.
         reachability.reachableOnWWAN = YES;

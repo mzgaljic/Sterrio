@@ -176,6 +176,10 @@ static BOOL PRODUCTION_MODE;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    //this works better than a unique random id since this class can be dealloced and re-alloced
+    //later. Id must stay the same across all allocations.  :)
+    self.playbackContextUniqueId = NSStringFromClass([self class]);
+    
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.navigationItem.rightBarButtonItems = [self rightBarButtonItemsForNavigationBar];
@@ -456,7 +460,9 @@ static BOOL PRODUCTION_MODE;
                                                        ascending:YES
                                                         selector:@selector(localizedStandardCompare:)];
     request.sortDescriptors = @[sortDescriptor];
-    return [[PlaybackContext alloc] initWithFetchRequest:[request copy] prettyQueueName:@""];
+    return [[PlaybackContext alloc] initWithFetchRequest:[request copy]
+                                         prettyQueueName:@""
+                                               contextId:self.playbackContextUniqueId];
 }
 
 #pragma mark - Counting Artists in core data
@@ -498,7 +504,9 @@ static BOOL PRODUCTION_MODE;
     
     request.sortDescriptors = @[sortDescriptor];
     if(self.playbackContext == nil){
-        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy] prettyQueueName:@""];
+        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]
+                                                             prettyQueueName:@""
+                                                                   contextId:self.playbackContextUniqueId];
     }
     //fetchedResultsController is from custom super class
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request

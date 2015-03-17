@@ -22,6 +22,7 @@
     //fixes issue where playerview is sometimes "behind" a presented modal view (usually multiple modals)
     [[MusicPlaybackController obtainRawPlayerView] removeFromSuperview];
     [[[[UIApplication sharedApplication] delegate] window] addSubview:[MusicPlaybackController obtainRawPlayerView]];
+    [super viewWillAppear:animated];
 }
 
 - (BOOL)prefersStatusBarHidden

@@ -145,7 +145,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    [super viewDidDisappear:animated];
+    [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter]removeObserver:self
                                                    name:UIDeviceOrientationDidChangeNotification
                                                  object:nil];
@@ -153,10 +153,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     [self.view endEditing:YES];
 }
 
-- (void)viewDidDisappear:(BOOL)animated
-{
-    [super viewDidDisappear:animated];
-}
 
 - (void)viewDidLoad
 {
@@ -708,19 +704,12 @@ static BOOL userClearedTextField = NO;
     else{
         if(indexPath.section == 0){
             float widthOfScreenRoationIndependant;
-            float heightOfScreenRotationIndependant;
             float  a = [[UIScreen mainScreen] bounds].size.height;
             float b = [[UIScreen mainScreen] bounds].size.width;
             if(a < b)
-            {
-                heightOfScreenRotationIndependant = b;
                 widthOfScreenRoationIndependant = a;
-            }
             else
-            {
                 widthOfScreenRoationIndependant = b;
-                heightOfScreenRotationIndependant = a;
-            }
             
             int oneThirdDisplayWidth = widthOfScreenRoationIndependant * 0.45;
             int height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:oneThirdDisplayWidth];

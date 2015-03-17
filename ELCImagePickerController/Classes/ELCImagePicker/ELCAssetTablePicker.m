@@ -49,6 +49,7 @@
     }
 
 	[self performSelectorInBackground:@selector(preparePhotos) withObject:nil];
+    [super viewDidLoad];
 }
 
 - (void)viewWillAppear:(BOOL)animated

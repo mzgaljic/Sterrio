@@ -22,7 +22,7 @@
 
 - (id)initWithSong:(Song *)theSong;
 {
-    if([super init]){
+    if(self = [super init]){
         _isExecuting = NO;
         _isFinished = NO;
         _isCancelled = NO;

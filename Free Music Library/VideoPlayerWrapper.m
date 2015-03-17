@@ -15,7 +15,8 @@
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     [playerView removeLayerFromPlayer];
-    [player removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
+    if([MusicPlaybackController avplayerTimeObserver] != nil)
+        [player removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
     [MusicPlaybackController setRawAVPlayer:nil];
     player = nil;
     MyAVPlayer *newPlayer = [[MyAVPlayer  alloc] init];
@@ -23,6 +24,7 @@
     [MusicPlaybackController setAVPlayerTimeObserver:nil];
     [playerView reattachLayerToPlayer];
     [newPlayer startPlaybackOfSong:aSong goingForward:YES oldSong:oldSong];
+    [VideoPlayerWrapper setupAvPlayerViewAgain];
 }
 
 + (void)beginPlaybackWithPlayerItem:(AVPlayerItem *)item
@@ -30,7 +32,8 @@
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     [playerView removeLayerFromPlayer];
-    [player removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
+    if([MusicPlaybackController avplayerTimeObserver] != nil)
+        [player removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
     [MusicPlaybackController setRawAVPlayer:nil];
     player = nil;
     MyAVPlayer *newPlayer = [[MyAVPlayer  alloc] init];
@@ -38,6 +41,16 @@
     [MusicPlaybackController setAVPlayerTimeObserver:nil];
     [playerView reattachLayerToPlayer];
     [newPlayer beginPlaybackWithPlayerItem:item];
+    [VideoPlayerWrapper setupAvPlayerViewAgain];
+}
+
++ (void)setupAvPlayerViewAgain
+{
+    UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
+    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    [playerView removeFromSuperview];
+    [appWindow addSubview:playerView];
+    [playerView setNeedsDisplay];
 }
 
 @end

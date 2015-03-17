@@ -28,7 +28,7 @@
 
 - (instancetype)init
 {
-    if([super init]){
+    if(self = [super init]){
         upNextQueue = [[MZPrivateUpNextPlaybackQueue alloc] init];
         mainQueue = [[MZPrivateMainPlaybackQueue alloc] init];
     }
@@ -70,11 +70,8 @@
 - (void)setMainQueueWithNewNowPlayingSong:(Song *)aSong inContext:(PlaybackContext *)aContext
 {
     [mainQueue setMainQueueWithNewNowPlayingSong:aSong inContext:aContext];
-    if([NowPlayingSong sharedInstance].nowPlaying.song_id == nil){
-        //no songs currently playing, set defaults...
-        [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:NO];
-        [[NowPlayingSong sharedInstance] setNewNowPlayingSong:aSong context:aContext];
-    }
+    [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:NO];
+    [[NowPlayingSong sharedInstance] setNewNowPlayingSong:aSong context:aContext];
     [self printQueueContents];
 }
 
@@ -104,7 +101,7 @@
             
             MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
             Song *nowPlayingSong = [NowPlayingSong sharedInstance].nowPlaying;
-            float elapsedSeconds = CMTimeGetSeconds(player.currentItem.currentTime);
+            NSUInteger elapsedSeconds = ceil(CMTimeGetSeconds(player.currentItem.currentTime));
             
             //comparing if song is either done or VERY VERY VERY close to the end.
             if(elapsedSeconds == [nowPlayingSong.duration integerValue]
@@ -156,6 +153,7 @@
 //crashes when queuing up an entire playlist for some reason, dont use it that way!
 - (void)printQueueContents
 {
+    /*
     NSArray *upNextSongs = [upNextQueue tableViewOptimizedArrayOfUpNextSongs];
     NSArray *mainQueueSongs = [mainQueue tableViewOptimizedArrayOfMainQueueSongsComingUp];
     
@@ -185,6 +183,7 @@
     }
     [output appendString:@"\n\n"];
     printf("%s", [output UTF8String]); //print entire queue contents
+     */
 }
 
 @end

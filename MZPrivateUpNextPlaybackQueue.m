@@ -23,12 +23,12 @@
 @end
 @implementation MZPrivateUpNextPlaybackQueue
 
-short const INTERNAL_FETCH_BATCH_SIZE = 3;
+short const INTERNAL_FETCH_BATCH_SIZE = 1;
 short const EXTERNAL_FETCH_BATCH_SIZE = 50;
 
 - (instancetype)init
 {
-    if([super init]){
+    if(self = [super init]){
         playbackContexts = [NSMutableArray arrayWithCapacity:1];
         fetchRequestIndexes = [NSMutableArray arrayWithCapacity:1];
     }
@@ -104,8 +104,10 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
     
     //delete the contexts no longer needed
     for(int i = 0; i < numContextsToDelete; i++){
-        [playbackContexts removeObjectAtIndex:i];
-        [fetchRequestIndexes removeObjectAtIndex:i];
+        if(playbackContexts.count-1 >= i){
+            [playbackContexts removeObjectAtIndex:i];
+            [fetchRequestIndexes removeObjectAtIndex:i];
+        }
     }
     PreliminaryNowPlaying *newNowPlaying = [[PreliminaryNowPlaying alloc] init];
     newNowPlaying.aNewSong = desiredSong;

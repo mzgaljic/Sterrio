@@ -22,7 +22,7 @@
 
 - (id)init
 {
-    if([super init]){
+    if(self = [super init]){
         self.nowPlaying = nil;
         self.context = nil;
     }

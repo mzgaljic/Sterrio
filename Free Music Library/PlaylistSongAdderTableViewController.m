@@ -367,11 +367,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         NSMutableArray *finalArray = [NSMutableArray array];
         [finalArray addObjectsFromArray:oldSongsArray];
         [finalArray addObjectsFromArray:newSongsArray];
-
+        NSString *originalPlaylistId = _receiverPlaylist.playlist_id;
         replacementPlaylist = [Playlist createNewPlaylistWithName:_receiverPlaylist.playlistName
                                                                  usingSongs:finalArray inManagedContext:[CoreDataManager context]];
         replacementPlaylist.status = [NSNumber numberWithShort:NORMAL_PLAYLIST];
         [[CoreDataManager context] deleteObject:_receiverPlaylist];
+        [[CoreDataManager sharedInstance] saveContext];
+        replacementPlaylist.playlist_id = originalPlaylistId;
 
     } else if([title isEqualToString:AddLater_String]){
         //leave playlist empty and "pop" this modal view off the screen

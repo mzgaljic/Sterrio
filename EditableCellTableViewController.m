@@ -43,6 +43,7 @@
         [self setLandscapeTableViewContentValues];
     else
         [self setPortraitTableViewContentValues];
+    [super viewDidLoad];
 }
 
 #pragma mark - Table view data source

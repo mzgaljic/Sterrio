@@ -314,7 +314,7 @@ static void *navBarHiddenChange = &navBarHiddenChange;
 {
     //tableview alrady re-draws itself after settings change, but reloading
     //the entire table fixes weird issues with the cells.
-    [tableView reloadData];
+    //tableView reloadData];
 }
 
 - (void)hideSearchBarByDefaultIfApplicable
@@ -344,19 +344,20 @@ static void *navBarHiddenChange = &navBarHiddenChange;
 
 - (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification
 {
+    if(!self.isViewLoaded && !self.view.window){
+        //view controller is not on screen, dont need to update cells on the fly...
+        return;
+    }
     Song *songToReplace = (Song *)[notification object];
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
     Song *newSong = nowPlaying.nowPlaying;
     NSIndexPath *oldPath, *newPath;
     if(self.playbackContext == nil)
         return;
-    else if([self.playbackContext isEqualToContext:nowPlaying.context]){
-        //found song tab origin match
-        oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
-        newPath = [self.fetchedResultsController indexPathForObject:newSong];
-        
-    } else  //current song is in a different context, don't need to update on the fly.
-        return;
+    
+    //tries to obtain the path to the changed songs if possible.
+    oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
+    newPath = [self.fetchedResultsController indexPathForObject:newSong];
     
     if(oldPath || newPath){
         [tableView beginUpdates];

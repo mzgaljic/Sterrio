@@ -92,6 +92,7 @@ static int timesVCHasAppeared = 0;
 - (void)didReceiveMemoryWarning
 {
     [self.tableView didReceiveMemoryWarning];
+    [super didReceiveMemoryWarning];
 }
 
 #pragma mark - Nav bar code

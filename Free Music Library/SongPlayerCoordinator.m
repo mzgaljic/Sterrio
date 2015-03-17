@@ -39,7 +39,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 70;
 
 - (id)init
 {
-    if([super init]){
+    if(self = [super init]){
         isPlayerEnabled = YES;
         UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
         if([MusicPlaybackController obtainRawPlayerView].frame.size.width == [appWindow bounds].size.width)
@@ -79,13 +79,12 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 70;
     isVideoPlayerExpanded = YES;
     
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
     
     if(playerView == nil){
         //player not even on screen yet
         playerView = [[PlayerView alloc] init];
-        player = [[MyAVPlayer alloc] init];
+        MyAVPlayer *player = [[MyAVPlayer alloc] init];
         [playerView setPlayer:player];  //attaches AVPlayer to AVPlayerLayer
         [MusicPlaybackController setRawAVPlayer:player];
         [MusicPlaybackController setRawPlayerView:playerView];
@@ -162,7 +161,6 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 70;
     isVideoPlayerExpanded = NO;
     
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
     playerView.alpha = 0;
     
@@ -172,7 +170,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 70;
     if(playerView == nil){
         //player not even on screen yet
         playerView = [[PlayerView alloc] init];
-        player = [[MyAVPlayer alloc] init];
+        MyAVPlayer *player = [[MyAVPlayer alloc] init];
         [playerView setPlayer:player];  //attaches AVPlayer to AVPlayerLayer
         playerView.alpha = 0;
         [MusicPlaybackController setRawAVPlayer:player];

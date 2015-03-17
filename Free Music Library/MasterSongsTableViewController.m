@@ -192,6 +192,9 @@ static BOOL haveCheckedCoreDataInit = NO;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    //this works better than a unique random id since this class can be dealloced and re-alloced
+    //later. Id must stay the same across all allocations.  :)
+    self.playbackContextUniqueId = NSStringFromClass([self class]);
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.navigationItem.rightBarButtonItems = [self rightBarButtonItemsForNavigationBar];
@@ -558,7 +561,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                                                      ascending:YES];
     
     request.sortDescriptors = @[sortDescriptor];
-    return [[PlaybackContext alloc] initWithFetchRequest:[request copy] prettyQueueName:@""];
+    return [[PlaybackContext alloc] initWithFetchRequest:[request copy]
+                                         prettyQueueName:@""
+                                               contextId:self.playbackContextUniqueId];
 }
 
 #pragma mark - fetching and sorting
@@ -583,7 +588,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     request.sortDescriptors = @[sortDescriptor];
     if(self.playbackContext == nil){
         self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]
-                                                             prettyQueueName:@"All Songs"];
+                                                             prettyQueueName:@"All Songs"
+                                                                   contextId:self.playbackContextUniqueId];
     }
     //fetchedResultsController is from custom super class
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request

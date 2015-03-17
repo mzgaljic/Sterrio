@@ -18,7 +18,7 @@
 
 - (id)initWithSong:(Song *)theSong
 {
-    if([super init]){
+    if(self = [super init]){
         aSong = theSong;
     }
     return self;

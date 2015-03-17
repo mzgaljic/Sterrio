@@ -17,7 +17,7 @@
 
 - (id)initWithFrame:(CGRect)frame
 {
-    if([super initWithFrame:frame]){
+    if(self = [super initWithFrame:frame]){
         textAndCursorColor = [[UIColor defaultAppColorScheme] lighterColor];
         self.placeholder = @"Search";
         self.keyboardType = UIKeyboardTypeASCIICapable;
@@ -30,7 +30,7 @@
 
 - (id)initWithFrame:(CGRect)frame placeholderText:(NSString *)text
 {
-    if([super initWithFrame:frame]){
+    if(self = [super initWithFrame:frame]){
         textAndCursorColor = [[UIColor defaultAppColorScheme] lighterColor];
         self.placeholder = text;
         self.keyboardType = UIKeyboardTypeASCIICapable;

@@ -147,6 +147,10 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
                                              selector:@selector(restoreTimeObserver)
                                                  name:UIApplicationDidBecomeActiveNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(playerControlsShouldBeUpdated)
+                                                 name:MZAVPlayerStallStateChanged
+                                               object:nil];
     self.playbackSlider.dataSource = self;
     [[SongPlayerCoordinator sharedInstance] setDelegate:self];
     
@@ -262,6 +266,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 - (void)preDealloc
 {
     [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
+    [MusicPlaybackController setAVPlayerTimeObserver:nil];
     [self removeObservers];
     sliderHint = nil;
     self.playbackSlider.dataSource = nil;
@@ -1292,26 +1297,6 @@ static int accomodateInterfaceLabelsCounter = 0;
 #pragma mark - Key value observing stuff
 - (void)setupKeyvalueObservers
 {
-    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-    //not all observers are actually used, but keep in case I have a need down the road.
-    /*
-    [player addObserver:self
-             forKeyPath:@"rate"
-                options:NSKeyValueObservingOptionNew
-                context:kRateDidChangeKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.status"
-                options:NSKeyValueObservingOptionNew
-                context:kStatusDidChangeKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.duration"
-                options:NSKeyValueObservingOptionNew
-                context:kDurationDidChangeKVO];
-    [player addObserver:self
-             forKeyPath:@"currentItem.loadedTimeRanges"
-                options:NSKeyValueObservingOptionNew
-                context:kTimeRangesKVO];
-    */
     [self restoreTimeObserver];
     
     //label observers...
@@ -1326,16 +1311,6 @@ static int accomodateInterfaceLabelsCounter = 0;
     //temporarily disable logging since this "crash" when removing observers does not impact the program at all.
     Fabric *myFabric = [Fabric sharedSDK];
     myFabric.debug = YES;
-    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-    
-    @try{
-        [player removeObserver:self forKeyPath:@"rate" context:kRateDidChangeKVO];
-        [player removeObserver:self forKeyPath:@"currentItem.status" context:kStatusDidChangeKVO];
-        [player removeObserver:self forKeyPath:@"currentItem.duration" context:kDurationDidChangeKVO];
-        [player removeObserver:self forKeyPath:@"currentItem.loadedTimeRanges" context:kTimeRangesKVO];
-    }
-    //do nothing, obviously it wasn't attached because an exception was thrown
-    @catch(id anException){}
     
     @try {
         [_totalDurationLabel removeObserver:self forKeyPath:@"text" context:kTotalDurationLabelDidChange];
@@ -1356,65 +1331,19 @@ static int accomodateInterfaceLabelsCounter = 0;
     //check for duration label change
     if (context == kTotalDurationLabelDidChange) {
         [self accomodateInterfaceBasedOnDurationLabelSize:(UILabel *)object];
-    }
-    
-    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-    BOOL playbackExplicitlyPaused = [MusicPlaybackController playbackExplicitlyPaused];
-    
-    if (context == kRateDidChangeKVO) {
-        if(player.rate == 0 && !playbackExplicitlyPaused){
-            if(! [MusicPlaybackController isInternetProblemSpinnerOnScreen]){
-                [self toggleDisplayToPausedState];
-            }
-            if(!sliderIsBeingTouched && !waitingForNextOrPrevVideoToLoad){
-                [player play];
-            }
-        }
-        if(player.rate == 0)
-            [self toggleDisplayToPausedState];
-        if(player.rate == 1 && ![MusicPlaybackController isPlayerStalled]){
+    } else
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+}
+
+- (void)playerControlsShouldBeUpdated  //MZAVPlayerStallStateChanged
+{
+    if([MusicPlaybackController isPlayerStalled]){
+        [self toggleDisplayToPausedState];
+    } else{
+        if([MusicPlaybackController obtainRawAVPlayer].rate == 1)
             [self toggleDisplayToPlayingState];
-        }
-        if([MusicPlaybackController isPlayerStalled])
-            [self toggleDisplayToPausedState];;
-    } else if (kStatusDidChangeKVO == context) {
-        //player "status" has changed. Not particulary useful information.
-        if (player.status == AVPlayerStatusReadyToPlay) {
-            //line above is new?
-            /*
-            NSArray * timeRanges = player.currentItem.loadedTimeRanges;
-            if (timeRanges && [timeRanges count]){
-                CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
-                int secondsBuffed = (int)CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration));
-                if(secondsBuffed > 0){
-                    //NSLog(@"Min buffer reached to continue playback.");
-                }
-            }
-             */
-        }
-        
-    } else if (kTimeRangesKVO == context) {
-        NSArray *timeRanges = (NSArray *)[change objectForKey:NSKeyValueChangeNewKey];
-        if (timeRanges && [timeRanges count]) {
-            /*
-             code unneeded for now...
-             
-            CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
-            
-            int secondsLoaded = (int)CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration));
-            if(secondsLoaded == mostRecentLoadedDuration)
-                return;
-            else
-                mostRecentLoadedDuration = secondsLoaded;
-            NSLog(@"New loaded range: %i -> %i", (int)CMTimeGetSeconds(timerange.start), secondsLoaded);
-            */
-            
-            if(player.rate == 0 && !playbackExplicitlyPaused && !waitingForNextOrPrevVideoToLoad && !sliderIsBeingTouched && ![MusicPlaybackController isPlayerStalled]){
-                //continue where playback left off...
-                [MusicPlaybackController resumePlayback];
-                [self toggleDisplayToPlayingState];
-            }
-        }
+        else
+            [self toggleDisplayToPausedState];
     }
 }
 
@@ -1436,12 +1365,15 @@ static int accomodateInterfaceLabelsCounter = 0;
         //code will be called each 1/10th second...
         [weakSelf updatePlaybackTimeSlider];
         
+        id observer = [MusicPlaybackController avplayerTimeObserver];
         UIApplicationState state = [[UIApplication sharedApplication] applicationState];
-        if (state == UIApplicationStateBackground
+        if (observer != nil &&
+            (state == UIApplicationStateBackground
             || state == UIApplicationStateInactive
-            || ![SongPlayerCoordinator isVideoPlayerExpanded])
+            || ![SongPlayerCoordinator isVideoPlayerExpanded]))
         {
             [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
+            [MusicPlaybackController setAVPlayerTimeObserver:nil];
         }
     }]];
 }

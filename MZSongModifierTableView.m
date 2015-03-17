@@ -189,7 +189,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
             if(_songIAmEditing.songName){
                 NSString *detailLabelValue = nil;
                 detailLabelValue = _songIAmEditing.songName;
-                cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:_songIAmEditing.songName];
+                cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:detailLabelValue];
             }
             else{
                 cell.detailTextLabel.text = nil;
@@ -967,6 +967,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     CGRect placeholderImgRect = CGRectMake(0, 0, currImg.size.width, currImg.size.height);
     CGImageRef imageRef = CGImageCreateWithImageInRect(currImg.CGImage, placeholderImgRect);
     UIImage *tempPlaceHolder = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease(imageRef);
     
     //delete current album art on disk in case there was one set. Skipping this would cause
     //the new art to not be saved (setAlbumArt method tries to optimize the saving...)

@@ -18,7 +18,7 @@
 @end
 @implementation MZPrivateMainPlaybackQueue
 
-short const INTERNAL_FETCH_BATCH_SIZE = 3;
+short const INTERNAL_FETCH_BATCH_SIZE = 1;
 short const EXTERNAL_FETCH_BATCH_SIZE = 50;
 
 - (instancetype)init
@@ -48,6 +48,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
 
 - (void)setMainQueueWithNewNowPlayingSong:(Song *)aSong inContext:(PlaybackContext *)aContext
 {
+    playbackContext = nil;
     playbackContext = aContext;
     atEndOfQueue = NO;
     NSArray *songs = [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
@@ -65,7 +66,6 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
             return;
         }
     }
-    aContext = nil;
     mostRecentSong = nil;
     fetchRequestIndex = 0;
 }
@@ -136,10 +136,10 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
     NSFetchRequest *request = playbackContext.request;
     if(request == nil)
         return compiledSongs;
-    [request setFetchBatchSize:batchSize];
+    [request setFetchBatchSize:INTERNAL_FETCH_BATCH_SIZE];
     NSArray *array = [[CoreDataManager context] executeFetchRequest:request error:nil];
     NSUInteger nowPlayingIndex = [array indexOfObject:[NowPlayingSong sharedInstance].nowPlaying];
-    NSArray *desiredSubArray = array;
+    NSArray *desiredSubArray;
     if(nowPlayingIndex != NSNotFound && unplayed){
         NSRange range;
         if(inclusive)
@@ -156,6 +156,8 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
     }
     if(atEndOfQueue)
         desiredSubArray = [NSArray array];
+    else if(desiredSubArray == nil && !unplayed)
+        desiredSubArray = array;
     [compiledSongs addObjectsFromArray:desiredSubArray];
     return compiledSongs;
 }
