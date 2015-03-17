@@ -55,7 +55,9 @@ static void *mPlaybackStarted = &mPlaybackStarted;
 
 - (void)dealloc
 {
+    [self deregisterForObservers];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    NSLog(@"Dealloc'ed in %@", NSStringFromClass([self class]));
 }
 
 - (void)begingListeningForNotifications
@@ -77,10 +79,9 @@ static void *mPlaybackStarted = &mPlaybackStarted;
 #pragma mark - Working with the queue to perform player actions (play, skip, etc)
 - (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)forward oldSong:(Song *)oldSong
 {
-    [MusicPlaybackController printQueueContents];
     if(aSong != nil){
         movingForward = forward;
-        self.playbackStarted = NO;
+        _playbackStarted = NO;
         [self beginLoadingVideoWithSong:aSong];
         [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
                                                             object:oldSong];
@@ -201,9 +202,11 @@ static void *mPlaybackStarted = &mPlaybackStarted;
         //prevents any funny behavior with existing video until the new one loads.
         [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
         NSOperationQueue *operationQueue = [[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue];
-        [operationQueue cancelAllOperations];
         [self replaceCurrentItemWithPlayerItem:item];
         [self play];
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZNewTimeObserverCanBeAdded
+                                                            object:nil];
+        [operationQueue cancelAllOperations];
     } else{
         __weak MyAVPlayer *weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^(void){
@@ -211,9 +214,11 @@ static void *mPlaybackStarted = &mPlaybackStarted;
             [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
             //Run UI Updates
             NSOperationQueue *operationQueue = [[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue];
-            [operationQueue cancelAllOperations];
             [weakSelf replaceCurrentItemWithPlayerItem:item];
             [weakSelf play];
+            [[NSNotificationCenter defaultCenter] postNotificationName:MZNewTimeObserverCanBeAdded
+                                                                object:nil];
+            [operationQueue cancelAllOperations];
         });
     }
 }
@@ -280,7 +285,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
         if(disabled){
             [SongPlayerCoordinator placePlayerInDisabledState:YES];
             [MusicPlaybackController explicitlyPausePlayback:YES];
-            self.elapsedTimeBeforeDisabling = [NSNumber numberWithInteger:CMTimeGetSeconds(self.currentItem.currentTime)];
+            _elapsedTimeBeforeDisabling = [NSNumber numberWithInteger:CMTimeGetSeconds(self.currentItem.currentTime)];
             [MusicPlaybackController pausePlayback];
             
             //make copy of AVPlayerItem which will retain buffered data
@@ -322,7 +327,6 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                                                  mode:MRProgressOverlayViewModeIndeterminateSmall
                                              animated:YES];
             [MusicPlaybackController internetProblemSpinnerOnScreen:YES];
-            //[MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
         } else{
             dispatch_async(dispatch_get_main_queue(), ^{
                 PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
@@ -420,18 +424,28 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
               context:mPlaybackStarted];
 }
 
-/*Not actually needed now since this class is in existance the entire time, it is never deallocated.
 - (void)deregisterForObservers
 {
- //set crashlytics debug mode on
+    Fabric *myFabric = [Fabric sharedSDK];
+    myFabric.debug = YES;
     @try{
-        [self removeObserver:self forKeyPath:@"currentItem.playbackBufferEmpty"];
+        [self removeObserver:self
+                  forKeyPath:@"currentItem.playbackBufferEmpty"
+                     context:mPlaybackBufferEmpty];
+        [self removeObserver:self
+                  forKeyPath:@"currentItem.loadedTimeRanges"
+                     context:mloadedTimeRanges];
+        [self removeObserver:self
+                  forKeyPath:@"currentItem"
+                     context:mCurrentItem];
+        [self removeObserver:self
+                  forKeyPath:@"playbackStarted"
+                     context:mPlaybackStarted];
     }
     //do nothing, obviously it wasn't attached because an exception was thrown
     @catch(id anException){}
- //set debug mode off
+    myFabric.debug = NO;
 }
-*/
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
@@ -497,7 +511,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                 }
                 //check if playback began
                 if(newSecondsBuff > secondsLoaded && self.rate == 1 && !self.playbackStarted){
-                    self.playbackStarted = YES;
+                    _playbackStarted = YES;
                     [[NSNotificationCenter defaultCenter] postNotificationName:PlaybackHasBegun
                                                                         object:nil];
                     //places approprate spinners on player if needed...or dismisses spinner.

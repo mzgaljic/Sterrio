@@ -19,6 +19,7 @@
 #import "GenreConstants.h"
 #import "NowPlayingSong.h"
 #import "PlaybackContext.h"
+#import "VideoPlayerWrapper.h"
 @class PlayerView;  //import doesnt work here
 
 @interface MusicPlaybackController : NSObject
@@ -67,8 +68,7 @@
 
 #pragma mark + Changing the Queue
 + (void)newQueueWithSong:(Song *)song
-             withContext:(PlaybackContext *)context
-         skipCurrentSong:(BOOL)skipNow;
+             withContext:(PlaybackContext *)context;
 + (void)queueUpNextSongsWithContexts:(NSArray *)contexts;
 
 #pragma mark - Playback status
@@ -78,6 +78,8 @@
 #pragma mark - getters/setters for avplayer and the playerview
 + (void)setRawAVPlayer:(AVPlayer *)myAvPlayer;
 + (AVPlayer *)obtainRawAVPlayer;
++ (void)setAVPlayerTimeObserver:(id)observer;
++ (id)avplayerTimeObserver;
 
 + (void)setRawPlayerView:(PlayerView *)myPlayerView;
 + (PlayerView *)obtainRawPlayerView;
@@ -104,8 +106,5 @@
 
 + (BOOL)isPlayerStalled;
 + (void)setPlayerInStall:(BOOL)stalled;
-
-#pragma mark - DEBUG
-+ (void)printQueueContents;
 
 @end

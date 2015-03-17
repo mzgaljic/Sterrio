@@ -414,7 +414,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     if([self.editButton.title isEqualToString:@"Edit"]){  //tapping song plays the song
         [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:self];
-        [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext skipCurrentSong:YES];
+        [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext];
         
     } else if([self.editButton.title isEqualToString:@"Done"]){  //tapping song triggers edit segue
         //now segue to modal view where user can edit the tapped song

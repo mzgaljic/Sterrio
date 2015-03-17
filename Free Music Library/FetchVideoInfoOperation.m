@@ -174,7 +174,7 @@
                 //allowSongDidFinishToExecute = YES;
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     // update the UI here
-                    [player beginPlaybackWithPlayerItem:playerItem];
+                    [VideoPlayerWrapper beginPlaybackWithPlayerItem:playerItem];
                 }];
                 
                 [weakSelf finish];  //cleans up this operation and marks it as finished.

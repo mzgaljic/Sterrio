@@ -57,10 +57,12 @@
 {
     [upNextQueue clearUpNext];
     [mainQueue clearMainQueue];
+    [self printQueueContents];
 }
 - (void)clearUpNext
 {
     [upNextQueue clearUpNext];
+    [self printQueueContents];
 }
 
 //should be used when a user moves into a different context and wants to destroy their
@@ -73,6 +75,7 @@
         [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:NO];
         [[NowPlayingSong sharedInstance] setNewNowPlayingSong:aSong context:aContext];
     }
+    [self printQueueContents];
 }
 
 - (void)addSongsToPlayingNextWithContexts:(NSArray *)contexts
@@ -80,17 +83,17 @@
     if(! [SongPlayerCoordinator isPlayerOnScreen]){
         //no songs currently playing, set defaults...
         [upNextQueue addSongsToUpNextWithContexts:contexts];
-        PreliminaryNowPlaying *newSong = [upNextQueue peekAtNextSong];
+        PreliminaryNowPlaying *newSong = [upNextQueue obtainAndRemoveNextSong];
         
         [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:YES];
         [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newSong.aNewSong
                                                       context:newSong.aNewContext];
         //start playback in minimzed state
         [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
-        MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-        [player startPlaybackOfSong:newSong.aNewSong
-                       goingForward:YES
-                            oldSong:nil];
+        [VideoPlayerWrapper startPlaybackOfSong:newSong.aNewSong
+                                   goingForward:YES
+                                        oldSong:nil];
+        [self printQueueContents];
         return;
     } else{
         //songs were already played, player on screen. is playback of queue finished?
@@ -109,25 +112,28 @@
                 //we can start playing the new queue
                 [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
                 [upNextQueue addSongsToUpNextWithContexts:contexts];
-                PreliminaryNowPlaying *newSong = [upNextQueue peekAtNextSong];
+                PreliminaryNowPlaying *newSong = [upNextQueue obtainAndRemoveNextSong];
                 [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:YES];
                 [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newSong.aNewSong
                                                               context:newSong.aNewContext];
-                [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
-                [player startPlaybackOfSong:newSong.aNewSong
-                               goingForward:YES
-                                    oldSong:nowPlayingSong];
+                [VideoPlayerWrapper startPlaybackOfSong:newSong.aNewSong
+                                           goingForward:YES
+                                                oldSong:nowPlayingSong];
+                [self printQueueContents];
                 return;
             }
         }
         //dont mess with the current song...queue not finished. Just insert new songs.
         [upNextQueue addSongsToUpNextWithContexts:contexts];
+        [self printQueueContents];
     }
 }
 
 - (Song *)skipToPrevious
 {
-    return [mainQueue skipToPrevious].aNewSong;
+    Song *desiredSong = [mainQueue skipToPrevious].aNewSong;
+    [self printQueueContents];
+    return desiredSong;
 }
 - (Song *)skipForward
 {
@@ -140,8 +146,45 @@
         [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:NO];
     }
     
-    [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newNowPlaying.aNewSong context:newNowPlaying.aNewContext];
+    [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newNowPlaying.aNewSong
+                                                  context:newNowPlaying.aNewContext];
+    [self printQueueContents];
     return newNowPlaying.aNewSong;
+}
+
+#pragma mark - DEBUG
+//crashes when queuing up an entire playlist for some reason, dont use it that way!
+- (void)printQueueContents
+{
+    NSArray *upNextSongs = [upNextQueue tableViewOptimizedArrayOfUpNextSongs];
+    NSArray *mainQueueSongs = [mainQueue tableViewOptimizedArrayOfMainQueueSongsComingUp];
+    
+    NSMutableString *output = [NSMutableString stringWithString:@"\n\nNow Playing: ["];
+    [output appendFormat:@"%@", [[NowPlayingSong sharedInstance] nowPlaying].songName];
+    [output appendString:@"]\n"];
+    
+    [output appendString:@"---Queued songs coming up---\n"];
+    //concatenate all Queued upNextSongs
+    Song *aSong = nil;
+    for(int i = 0; i < upNextSongs.count; i++){
+        aSong = upNextSongs[i];
+        if(i == 0)
+            [output appendFormat:@"%@", aSong.songName];
+        else
+            [output appendFormat:@",%@", aSong.songName];
+    }
+    
+    [output appendString:@"\n---Main queue songs coming up---\n"];
+    //concatenate all main queue songs coming up (not yet played)
+    for(int i = 0; i < mainQueueSongs.count; i++){
+        aSong = mainQueueSongs[i];
+        if(i == 0)
+            [output appendFormat:@"%@", aSong.songName];
+        else
+            [output appendFormat:@", %@", aSong.songName];
+    }
+    [output appendString:@"\n\n"];
+    printf("%s", [output UTF8String]); //print entire queue contents
 }
 
 @end

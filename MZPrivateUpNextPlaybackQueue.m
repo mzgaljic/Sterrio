@@ -87,7 +87,8 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
         desiredSong = [self songInArray:array atIndex:songIndex];
         desiredSongsContext = aContext;
         
-        if(desiredSong == nil)
+        //this context is empty, or we have just pulled the very last song from this context.
+        if(desiredSong == nil || songIndex == array.count-1)
         {
             numContextsToDelete++;
         }

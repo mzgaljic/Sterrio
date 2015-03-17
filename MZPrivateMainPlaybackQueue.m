@@ -13,6 +13,7 @@
     PlaybackContext *playbackContext;
     NSUInteger fetchRequestIndex;  //keeping track where we left off within a fetchrequest
     Song *mostRecentSong;
+    BOOL atEndOfQueue;
 }
 @end
 @implementation MZPrivateMainPlaybackQueue
@@ -25,6 +26,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
     if([super init]){
         playbackContext = nil;
         fetchRequestIndex = 0;
+        atEndOfQueue = NO;
     }
     return self;
 }
@@ -47,6 +49,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
 - (void)setMainQueueWithNewNowPlayingSong:(Song *)aSong inContext:(PlaybackContext *)aContext
 {
     playbackContext = aContext;
+    atEndOfQueue = NO;
     NSArray *songs = [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
                                                           nowPlayingInclusive:YES
                                                            onlyUnplayedTracks:NO];
@@ -55,6 +58,10 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
         if(index != NSNotFound){
             mostRecentSong = songs[index];
             fetchRequestIndex = index;
+            if(songs.count > 1)
+                atEndOfQueue = NO;
+            else
+                atEndOfQueue = YES;
             return;
         }
     }
@@ -75,10 +82,12 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
     playbackContext = nil;
     mostRecentSong = nil;
     fetchRequestIndex = 0;
+    atEndOfQueue = NO;
 }
 
 - (PreliminaryNowPlaying *)skipToPrevious
 {
+    //set atEndOfQueue to NO if an actual song is returned.
 #warning broken for now.
     return nil;
 }
@@ -93,14 +102,12 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
                                                                onlyUnplayedTracks:NO];
         if(songs.count > 0){
             NSUInteger index = [songs indexOfObject:mostRecentSong];
-            if(index == NSNotFound)
-                index = ++fetchRequestIndex;
-            else if(index != fetchRequestIndex)
+            if(index != fetchRequestIndex)
                 fetchRequestIndex = index;
-            else
-                index = ++fetchRequestIndex;
+            index = ++fetchRequestIndex;
             
             if(fetchRequestIndex > songs.count-1){
+                atEndOfQueue = YES;
                 //no more songs, reached the last one
                 return nil;
             } else{
@@ -136,17 +143,19 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
     if(nowPlayingIndex != NSNotFound && unplayed){
         NSRange range;
         if(inclusive)
-            range = NSMakeRange(nowPlayingIndex, (array.count-1) - nowPlayingIndex);
+            range = NSMakeRange(nowPlayingIndex, array.count-1);
         else{
             if(nowPlayingIndex < array.count-1)
                 //at least 1 more song in array
-                range = NSMakeRange(nowPlayingIndex, (array.count-1) - nowPlayingIndex);
+                range = NSMakeRange(nowPlayingIndex+1, array.count-1);
             else
                 //last song reached, no songs to show...return empty array instead of allowing index out of bounds.
                 return [NSArray array];
         }
-        desiredSubArray = [array subarrayWithRange:NSMakeRange(nowPlayingIndex, (array.count-1) - nowPlayingIndex)];
+        desiredSubArray = [array subarrayWithRange:NSMakeRange(nowPlayingIndex+1, (array.count-1) - nowPlayingIndex)];
     }
+    if(atEndOfQueue)
+        desiredSubArray = [NSArray array];
     [compiledSongs addObjectsFromArray:desiredSubArray];
     return compiledSongs;
 }

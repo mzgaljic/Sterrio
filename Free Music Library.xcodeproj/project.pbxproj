@@ -87,6 +87,7 @@
 		8780134F199C854E004727A0 /* ExistingArtistPickerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8780134E199C854E004727A0 /* ExistingArtistPickerTableViewController.m */; };
 		8787AE5E1AB4EEFD00492BFA /* PreliminaryNowPlaying.m in Sources */ = {isa = PBXBuildFile; fileRef = 8787AE5D1AB4EEFD00492BFA /* PreliminaryNowPlaying.m */; };
 		878ACD64192D48EF005938F5 /* MasterSongsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878ACD63192D48EF005938F5 /* MasterSongsTableViewController.m */; };
+		879094111AB78E5E006FDA68 /* VideoPlayerWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 879094101AB78E5E006FDA68 /* VideoPlayerWrapper.m */; };
 		879112FF197EF90E00DFC2DB /* PlaylistTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 879112FE197EF90E00DFC2DB /* PlaylistTableViewFormatter.m */; };
 		879AB33D19F1D2E100FD6582 /* PlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 879AB33C19F1D2E100FD6582 /* PlaybackQueue.m */; };
 		879AB34119F225F300FD6582 /* SongPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 879AB34019F225F300FD6582 /* SongPlayerViewController.m */; };
@@ -311,6 +312,8 @@
 		8787AE5D1AB4EEFD00492BFA /* PreliminaryNowPlaying.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreliminaryNowPlaying.m; sourceTree = "<group>"; };
 		878ACD62192D48EF005938F5 /* MasterSongsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterSongsTableViewController.h; sourceTree = "<group>"; };
 		878ACD63192D48EF005938F5 /* MasterSongsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterSongsTableViewController.m; sourceTree = "<group>"; };
+		8790940F1AB78E5E006FDA68 /* VideoPlayerWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoPlayerWrapper.h; sourceTree = "<group>"; };
+		879094101AB78E5E006FDA68 /* VideoPlayerWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoPlayerWrapper.m; sourceTree = "<group>"; };
 		879112FD197EF90E00DFC2DB /* PlaylistTableViewFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistTableViewFormatter.h; sourceTree = "<group>"; };
 		879112FE197EF90E00DFC2DB /* PlaylistTableViewFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistTableViewFormatter.m; sourceTree = "<group>"; };
 		879AB33B19F1D2E100FD6582 /* PlaybackQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaybackQueue.h; sourceTree = "<group>"; };
@@ -925,6 +928,8 @@
 				8744E9DB1AA7F07500CC6140 /* Viewing the playback queue */,
 				87BC1B871A071979000D9B0C /* PlayerView.h */,
 				87BC1B881A071979000D9B0C /* PlayerView.m */,
+				8790940F1AB78E5E006FDA68 /* VideoPlayerWrapper.h */,
+				879094101AB78E5E006FDA68 /* VideoPlayerWrapper.m */,
 				87A41FE919F0D9C800C037D9 /* MyAVPlayer.h */,
 				87A41FEA19F0D9C800C037D9 /* MyAVPlayer.m */,
 				87FA13771A99BAF200A1902F /* Video Loading NSOperations */,
@@ -1429,6 +1434,7 @@
 				87ECF5191A57B50800D58EDF /* UINavigationBar+DarkTint.m in Sources */,
 				87A453D5199C0891004D1319 /* ELCImagePickerDemoViewController.m in Sources */,
 				874C535C19831825000382FA /* NSString+WhiteSpace_Utility.m in Sources */,
+				879094111AB78E5E006FDA68 /* VideoPlayerWrapper.m in Sources */,
 				873E14621A49ED0A008A385D /* SongPlayerViewDisplayUtility.m in Sources */,
 				8740723F19798129004C5C57 /* SongTableViewFormatter.m in Sources */,
 				87E980BF1A759DD900B428F0 /* MasterSongEditorViewController.m in Sources */,

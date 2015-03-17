@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "Song.h"
 #import "PlayerView.h"
+#import "VideoPlayerWrapper.h"
 
 @interface FetchVideoInfoOperation : NSOperation
 

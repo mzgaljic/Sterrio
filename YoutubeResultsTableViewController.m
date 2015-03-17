@@ -62,7 +62,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 #pragma mark - Miscellaneous
 - (void)dealloc
 {
-    NSLog(@"Dealloc'ed in %@", NSStringFromClass([YoutubeResultsTableViewController class]));
+    NSLog(@"Dealloc'ed in %@", NSStringFromClass([self class]));
 }
 
 - (void)myPreDealloc

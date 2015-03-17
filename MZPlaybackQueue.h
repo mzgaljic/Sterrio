@@ -15,6 +15,7 @@
 #import "MZPrivateUpNextPlaybackQueue.h"
 #import "PreliminaryNowPlaying.h"
 #import "SongPlayerCoordinator.h"
+#import "VideoPlayerWrapper.h"
 @import CoreData;
 
 @interface MZPlaybackQueue : NSObject
@@ -39,5 +40,8 @@
 
 - (Song *)skipToPrevious;
 - (Song *)skipForward;
+
+#pragma mark - DEBUG
+- (void)printQueueContents;
 
 @end

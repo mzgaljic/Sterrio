@@ -35,9 +35,7 @@ typedef enum{
     
     BOOL firstTimeUpdatingSliderSinceShowingPlayer;
     BOOL deferTimeLabelAdjustmentUntilPortrait;
-    
-    //for key value observing
-    id timeObserver;
+
     int totalVideoDuration;
     //int mostRecentLoadedDuration;  unneeded for now. Used in observeValueForKeyPath
 }
@@ -137,6 +135,18 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
                                              selector:@selector(playerMustDisplayDisabledState:)
                                                  name:MZInterfaceNeedsToBlockCurrentSongPlayback
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(restoreTimeObserver)
+                                                 name:MZNewTimeObserverCanBeAdded
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(killTimeObserver)
+                                                 name:MZAppWasBackgrounded
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(restoreTimeObserver)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
     self.playbackSlider.dataSource = self;
     [[SongPlayerCoordinator sharedInstance] setDelegate:self];
     
@@ -224,7 +234,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     
     [self setNeedsStatusBarAppearanceUpdate];
     
-    if(timeObserver == nil){
+    if([MusicPlaybackController avplayerTimeObserver] == nil){
         [self restoreTimeObserver];
         firstTimeUpdatingSliderSinceShowingPlayer = YES;
     }
@@ -251,7 +261,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 
 - (void)preDealloc
 {
-    [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:timeObserver];
+    [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
     [self removeObservers];
     sliderHint = nil;
     self.playbackSlider.dataSource = nil;
@@ -1284,6 +1294,7 @@ static int accomodateInterfaceLabelsCounter = 0;
 {
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     //not all observers are actually used, but keep in case I have a need down the road.
+    /*
     [player addObserver:self
              forKeyPath:@"rate"
                 options:NSKeyValueObservingOptionNew
@@ -1300,7 +1311,7 @@ static int accomodateInterfaceLabelsCounter = 0;
              forKeyPath:@"currentItem.loadedTimeRanges"
                 options:NSKeyValueObservingOptionNew
                 context:kTimeRangesKVO];
-    
+    */
     [self restoreTimeObserver];
     
     //label observers...
@@ -1308,15 +1319,6 @@ static int accomodateInterfaceLabelsCounter = 0;
                           forKeyPath:@"text"
                              options:NSKeyValueObservingOptionNew
                              context:kTotalDurationLabelDidChange];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(killTimeObserver)
-                                                 name:MZAppWasBackgrounded
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(restoreTimeObserver)
-                                                 name:UIApplicationWillEnterForegroundNotification
-                                               object:nil];
 }
 
 - (void)removeObservers
@@ -1342,6 +1344,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     @catch (id anException) {}
     
     [self killTimeObserver];
+    [MusicPlaybackController setAVPlayerTimeObserver:nil];
     myFabric.debug = NO;
 }
 
@@ -1418,21 +1421,29 @@ static int accomodateInterfaceLabelsCounter = 0;
 #pragma mark - Responding to app state
 - (void)killTimeObserver
 {
-    timeObserver = nil;
+    [MusicPlaybackController setAVPlayerTimeObserver:nil];
 }
 
 - (void)restoreTimeObserver
 {
-    if(timeObserver != nil)
+    if([MusicPlaybackController avplayerTimeObserver] != nil)
         return;
     
     __weak SongPlayerViewController *weakSelf = self;
     __weak AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     CMTime timeInterval = CMTimeMake(1, observationsPerSecond);
-    timeObserver = [player addPeriodicTimeObserverForInterval:timeInterval queue:nil usingBlock:^(CMTime time) {
+    [MusicPlaybackController setAVPlayerTimeObserver: [player addPeriodicTimeObserverForInterval:timeInterval queue:nil usingBlock:^(CMTime time){
         //code will be called each 1/10th second...
         [weakSelf updatePlaybackTimeSlider];
-    }];
+        
+        UIApplicationState state = [[UIApplication sharedApplication] applicationState];
+        if (state == UIApplicationStateBackground
+            || state == UIApplicationStateInactive
+            || ![SongPlayerCoordinator isVideoPlayerExpanded])
+        {
+            [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
+        }
+    }]];
 }
 
 #pragma mark - Share Button Tapped

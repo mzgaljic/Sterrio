@@ -19,10 +19,12 @@ extern NSString * const MZPreviewPlayerTogglePlayPause;
 extern NSString * const MZPreviewPlayerPlay;
 extern NSString * const MZPreviewPlayerPause;
 extern NSString * const MZAppWasBackgrounded;
+extern NSString * const MZNewTimeObserverCanBeAdded;
 
 extern NSString * const MZPlayerToggledOnScreenStatus;
 
 extern NSString * const MZNewSongLoading;
+extern NSString * const MZAVPlayerStallStateChanged;
 
 extern NSString * const MZKeyNumLikes;
 extern NSString * const MZKeyNumDislikes;

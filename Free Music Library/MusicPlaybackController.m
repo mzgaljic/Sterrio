@@ -17,6 +17,7 @@ static BOOL spinnerForWifiNeededOnScreen = NO;
 static BOOL internetConnectionSpinnerOnScreen = NO;
 static BOOL isPlayerStalled = NO;
 static int numLongSongsSkipped = 0;
+static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 
 @implementation MusicPlaybackController
 
@@ -51,14 +52,14 @@ static int numLongSongsSkipped = 0;
     if([NSThread mainThread]){
         Song *skippedSong = [MusicPlaybackController nowPlayingSong];
         Song *nextSong = [playbackQueue skipForward];
-        [player startPlaybackOfSong:nextSong goingForward:YES oldSong:skippedSong];
+        [VideoPlayerWrapper startPlaybackOfSong:nextSong goingForward:YES oldSong:skippedSong];
     } else{
         dispatch_async(dispatch_get_main_queue(), ^(void){
             //Run UI Updates
             
             Song *skippedSong = [MusicPlaybackController nowPlayingSong];
             Song *nextSong = [playbackQueue skipForward];
-            [player startPlaybackOfSong:nextSong goingForward:YES oldSong:skippedSong];
+            [VideoPlayerWrapper startPlaybackOfSong:nextSong goingForward:YES oldSong:skippedSong];
         });
     }
 
@@ -98,13 +99,15 @@ static int numLongSongsSkipped = 0;
 
 /** Stop playback of current song/track, and begin playback of previous track */
 + (void)returnToPreviousTrack
-{//seekToTime
+{
     if([NSThread mainThread]){
         float seconds = CMTimeGetSeconds(player.currentItem.currentTime);
         if(seconds < MZSkipToSongBeginningIfBackBtnTappedBoundary){
             Song *skippedSong = [MusicPlaybackController nowPlayingSong];
             Song *previousSong = [playbackQueue skipToPrevious];
-            [player startPlaybackOfSong:previousSong goingForward:NO oldSong:skippedSong];
+            [VideoPlayerWrapper startPlaybackOfSong:previousSong
+                                       goingForward:NO
+                                            oldSong:skippedSong];
         } else{
             [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
         }
@@ -116,7 +119,9 @@ static int numLongSongsSkipped = 0;
             if(seconds < MZSkipToSongBeginningIfBackBtnTappedBoundary){
                 Song *skippedSong = [MusicPlaybackController nowPlayingSong];
                 Song *previousSong = [playbackQueue skipToPrevious];
-                [player startPlaybackOfSong:previousSong goingForward:NO oldSong:skippedSong];
+                [VideoPlayerWrapper startPlaybackOfSong:previousSong
+                                           goingForward:NO
+                                                oldSong:skippedSong];
             } else{
                 [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
             }
@@ -202,8 +207,7 @@ static int numLongSongsSkipped = 0;
 }
 
 + (void)newQueueWithSong:(Song *)song
-             withContext:(PlaybackContext *)aContext
-         skipCurrentSong:(BOOL)skipNow;
+             withContext:(PlaybackContext *)aContext;
 {
     Song *originalSong = [MusicPlaybackController nowPlayingSong];
     BOOL playerEnabled = [SongPlayerCoordinator isPlayerEnabled];
@@ -226,12 +230,8 @@ static int numLongSongsSkipped = 0;
     if(nowPlayingObject == nil)
         nowPlayingObject = nowPlaying;
     
-    if(skipNow){
-        //current song should be skipped! ...stopping playback
-        [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
-    }
     //start playback with the song that was chosen
-    [player startPlaybackOfSong:song goingForward:YES oldSong:originalSong];
+    [VideoPlayerWrapper startPlaybackOfSong:song goingForward:YES oldSong:originalSong];
 }
 
 + (void)queueUpNextSongsWithContexts:(NSArray *)contexts
@@ -314,6 +314,15 @@ static int numLongSongsSkipped = 0;
 + (AVPlayer *)obtainRawAVPlayer
 {
     return player;
+}
+
++ (void)setAVPlayerTimeObserver:(id)observer
+{
+    timeObserver = observer;
+}
++ (id)avplayerTimeObserver
+{
+    return timeObserver;
 }
 
 #pragma mark - getters/setters for avplayer and the playerview
@@ -508,29 +517,6 @@ static int numLongSongsSkipped = 0;
 + (void)setPlayerInStall:(BOOL)stalled
 {
     isPlayerStalled = stalled;
-}
-
-#pragma mark - DEBUG
-+ (void)printQueueContents
-{
-    /*
-    NSArray *array = [[MusicPlaybackController playbackQueue] listOfEntireQueueAsArray];
-    NSMutableString *output = [NSMutableString stringWithString:@"["];
-    Song *aSong = nil;
-    for(int i = 0; i < array.count; i++){
-        aSong = array[i];
-        if(i == 0)
-            [output appendFormat:@"%@", aSong.songName];
-        else
-            [output appendFormat:@",%@", aSong.songName];
-    }
-    int indexOfNowPlaying = (int)[[MusicPlaybackController playbackQueue] nowPlayingIndex];
-    if(indexOfNowPlaying < 0)
-        [output appendString:@"]----No song playing\n\n"];
-    else
-        [output appendFormat:@"]----Now Playing[%i]\n\n", indexOfNowPlaying];
-    NSLog(@"%@", output);
-     */
 }
 
 @end

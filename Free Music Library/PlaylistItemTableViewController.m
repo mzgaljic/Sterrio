@@ -216,7 +216,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     Song *selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
     [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:self];
-    [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext skipCurrentSong:YES];
+    [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext];
 }
 
 #pragma mark - MGSwipeTableCell delegates
