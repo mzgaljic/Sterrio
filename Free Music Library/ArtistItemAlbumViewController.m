@@ -15,7 +15,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    //self.emptyTableUserMessage = @"No Albums";
     NSString *navBarTitle;
     if(self.artist)
         navBarTitle = self.artist.artistName;

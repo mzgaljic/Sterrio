@@ -33,6 +33,7 @@
     //this works better than a unique random id since this class can be dealloced and re-alloced
     //later. Id must stay the same across all allocations.  :)
     self.playbackContextUniqueId = NSStringFromClass([self class]);
+    self.emptyTableUserMessage = @"Playlist Empty";
     [self setUpNavBarItems];
     self.navBar = self.navigationItem;
     [[UITextField appearance] setTintColor:[[UIColor defaultAppColorScheme] lighterColor]];  //sets the cursor color of the playlist name textbox editor

@@ -167,6 +167,7 @@ static const short NORMAL_PLAYLIST = -1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.emptyTableUserMessage = @"No Songs in Library";
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self setTableForCoreDataView:self.tableView];

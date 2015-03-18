@@ -128,13 +128,35 @@ static void *navBarHiddenChange = &navBarHiddenChange;
 }
 
 #pragma mark - UITableViewDataSource
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)aTableView
 {
+    NSUInteger sectionCount;
+    NSNumber *objsInSectionNum;
+    //used to avoid faulting objects when asking fetchResultsController how many objects exist
+    NSString *objsInSectionPathNum = @"@sum.numberOfObjects";
     if(_displaySearchResults){
-        return [[self.searchFetchedResultsController sections] count];
+        sectionCount =  [[self.searchFetchedResultsController sections] count];
+        objsInSectionNum = [self.searchFetchedResultsController.sections
+                            valueForKeyPath:objsInSectionPathNum];
+        
+        //display no search results message
+        if([objsInSectionNum integerValue] == 0){
+            NSString *text = @"No Search Results";
+            tableView.backgroundView = [self friendlyTableEmptyUserMessageWithText:text];
+        } else
+            [self removeEmptyTableUserMessage];
     } else{
-        return [[self.fetchedResultsController sections] count];
+        sectionCount =  [[self.fetchedResultsController sections] count];
+        objsInSectionNum = [self.fetchedResultsController.sections valueForKeyPath:objsInSectionPathNum];
+        
+        //display empty tableview message
+        if([objsInSectionNum integerValue] == 0){
+            NSString *text = self.emptyTableUserMessage;
+            tableView.backgroundView = [self friendlyTableEmptyUserMessageWithText:text];
+        } else
+            [self removeEmptyTableUserMessage];
     }
+    return sectionCount;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -171,6 +193,32 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     } else{
         return [self.fetchedResultsController sectionIndexTitles];
     }
+}
+
+#pragma  mark - TableView Empty Tableview helper
+- (UIView *)friendlyTableEmptyUserMessageWithText:(NSString *)text
+{
+    tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0,
+                                                               0,
+                                                               self.view.bounds.size.width,
+                                                               self.view.bounds.size.height)];
+    if(text == nil)
+        text = @"";
+    label.text = text;
+    label.textColor = [UIColor darkGrayColor];
+    //multi lines strings ARE possible, this is just a weird api detail
+    label.numberOfLines = 0;
+    label.textAlignment = NSTextAlignmentCenter;
+    label.font = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    [label sizeToFit];
+    return label;
+}
+
+- (void)removeEmptyTableUserMessage
+{
+    tableView.backgroundView = nil;
+    tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
 }
 
 #pragma mark - NSFetchedResultsControllerDelegate

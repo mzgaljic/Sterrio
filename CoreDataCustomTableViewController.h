@@ -26,6 +26,7 @@
 @property (strong, nonatomic) NSFetchedResultsController *searchFetchedResultsController;
 @property (nonatomic, assign) BOOL displaySearchResults;
 @property (nonatomic, strong) PlaybackContext *playbackContext;
+@property (nonatomic, strong) NSString *emptyTableUserMessage;
 @property (nonatomic, strong) NSString *cellReuseId;
 @property (nonatomic, strong) NSString *playbackContextUniqueId;
 

@@ -18,7 +18,7 @@ static BOOL PRODUCTION_MODE;
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
+    //self.emptyTableUserMessage = @"No Albums";
     [self setUpAlbumView];
 }
 

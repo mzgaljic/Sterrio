@@ -190,7 +190,7 @@
     //this works better than a unique random id since this class can be dealloced and re-alloced
     //later. Id must stay the same across all allocations.  :)
     self.playbackContextUniqueId = NSStringFromClass([self class]);
-    
+    self.emptyTableUserMessage = @"No Playlists";
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.navigationItem.rightBarButtonItems = [self rightBarButtonItemsForNavigationBar];
