@@ -1141,8 +1141,8 @@ static int accomodateInterfaceLabelsCounter = 0;
     
     float seconds = CMTimeGetSeconds([MusicPlaybackController obtainRawAVPlayer].currentItem.currentTime);
     if((seconds <= MZSkipToSongBeginningIfBackBtnTappedBoundary
-       && [[NowPlayingSong sharedInstance] nowPlaying] != nil)
-       || seconds != NAN){
+        && [[NowPlayingSong sharedInstance] nowPlaying] != nil)
+       || (isnan(seconds) && [[NowPlayingSong sharedInstance] nowPlaying] == nil)){
         //previous song will actually be loaded
         waitingForNextOrPrevVideoToLoad = YES;
         self.playbackSlider.enabled = NO;

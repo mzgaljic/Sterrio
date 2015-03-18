@@ -88,11 +88,8 @@ static void *mPlaybackStarted = &mPlaybackStarted;
         [self beginLoadingVideoWithSong:aSong];
         [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     } else{
-        //playback stopping...
-        
-        MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-        [player dismissAllSpinners];
-        [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+        //playback wont ever start...
+        [self dismissAllSpinners];
         
         if([MusicPlaybackController numMoreSongsInQueue] == 0)
             canPostLastSongNotification = YES;
@@ -165,7 +162,6 @@ static void *mPlaybackStarted = &mPlaybackStarted;
 - (void)beginLoadingVideoWithSong:(Song *)aSong
 {
     //prevents any funny behavior with existing video until the new one loads.
-    [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
     [MusicPlaybackController explicitlyPausePlayback:NO];
     [SongPlayerCoordinator placePlayerInDisabledState:NO];
     
@@ -200,8 +196,6 @@ static void *mPlaybackStarted = &mPlaybackStarted;
 {
     NSLog(@"Setting player item.");
     if([NSThread mainThread]){
-        //prevents any funny behavior with existing video until the new one loads.
-        [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
         NSOperationQueue *operationQueue = [[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue];
         [self replaceCurrentItemWithPlayerItem:item];
         [self play];
@@ -211,8 +205,6 @@ static void *mPlaybackStarted = &mPlaybackStarted;
     } else{
         __weak MyAVPlayer *weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^(void){
-            //prevents any funny behavior with existing video until the new one loads.
-            [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
             //Run UI Updates
             NSOperationQueue *operationQueue = [[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue];
             [weakSelf replaceCurrentItemWithPlayerItem:item];

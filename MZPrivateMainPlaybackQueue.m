@@ -108,7 +108,17 @@
                 //value is 0 before decrementing
                 if(songs.count == 1)
                     atEndOfQueue = YES;
-                userWentBeyondStartOfQueue = YES;
+                if(userWentBeyondEndOfQueue){
+                    //dont actually decrement the index, just return the last song since the
+                    //user previously skipped "past" the last index in the array.
+                    userWentBeyondEndOfQueue = NO;
+                    mostRecentSong = [songs objectAtIndex:index];
+                    PreliminaryNowPlaying *newNowPlaying = [[PreliminaryNowPlaying alloc] init];
+                    newNowPlaying.aNewSong = mostRecentSong;
+                    newNowPlaying.aNewContext = playbackContext;
+                    return newNowPlaying;
+                }else
+                    userWentBeyondStartOfQueue = YES;
                 return nil;  //no songs before index 0.
             }
             if(userWentBeyondEndOfQueue){
