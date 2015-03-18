@@ -56,6 +56,28 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
     return [upNextQueue numMoreUpNextSongsCount];
 }
 
+#pragma mark - Info for displaying Queue contexts visually
+- (NSArray *)tableViewOptimizedArrayOfUpNextSongs
+{
+    return [upNextQueue tableViewOptimizedArrayOfUpNextSongs];
+}
+- (NSArray *)tableViewOptimizedArrayOfUpNextSongContexts
+{
+    return [upNextQueue tableViewOptimizedArrayOfUpNextSongContexts];
+}
+- (NSArray *)tableViewOptimizedArrayOfMainQueueSongsComingUp
+{
+    return [mainQueue tableViewOptimizedArrayOfMainQueueSongsComingUp];
+}
+- (PlaybackContext *)mainQueuePlaybackContext
+{
+    return [mainQueue mainQueuePlaybackContext];
+}
+- (NSUInteger)indexOfFirstItemToDisplayFromMainQueueSongsArray
+{
+
+}
+
 
 #pragma mark - Performing operations on queue
 - (void)clearEntireQueue

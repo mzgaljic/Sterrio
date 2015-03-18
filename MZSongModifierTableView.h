@@ -21,7 +21,6 @@
 
 #import "ExistingAlbumPickerTableViewController.h"
 #import "ExistingArtistPickerTableViewController.h"
-#import "GenrePickerTableViewController.h"
 #import "MyTableViewController.h"
 #import "MZSongModifierDelegate.h"
 

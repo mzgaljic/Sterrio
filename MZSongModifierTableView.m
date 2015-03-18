@@ -288,7 +288,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     if(section == 0)
         return 10;
     else{
-        if([SongPlayerCoordinator isPlayerOnScreen]){
+        if([SongPlayerCoordinator isPlayerOnScreen] && _creatingANewSong){
             return [SongPlayerCoordinator heightOfMinimizedPlayer] - 10;  //header is always too big lol
         } else
             return 10;
@@ -445,50 +445,6 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                 if(saved)
                 {
                     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveSuccess];
-#warning updating queue code commented out! Prob not needed at all.
-                    /*
-                    if([SongPlayerCoordinator isPlayerOnScreen])
-                    {
-                        //may need to update current playback queue
-                        SongPlaybackContext aContext;
-                        for(int i = 0; i < SongPlaybackContextCount; i++)
-                        {
-                            aContext = i;
-                            if([NowPlaying sharedInstance].context == aContext)
-                            {
-                                //song may not be in the EXACT queue, but it would be very smart to
-                                //re-make the queue just to be sure...
-                                CMTime timeAtDisable;
-                                AVPlayerItem *disabledPlayerItem;
-                                MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-                                BOOL allowSongDidFinishToRunOriginalVal = [player allowSongDidFinishValue];
-                                //make copy of AVPlayerItem which will retain buffered data
-                                disabledPlayerItem = [player.currentItem copy];
-                                timeAtDisable = player.currentItem.currentTime;
-                                [player allowSongDidFinishNotificationToProceed:NO];
-                                [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
-                                
-                                //now build the new queue
-                                Song *nowPlaying = [NowPlaying sharedInstance].nowPlaying;
-                                Playlist *playlist = [NowPlaying sharedInstance].nowPlayingPlaylist;
-                                [MusicPlaybackController newQueueWithSong:nowPlaying
-                                                              withContext:aContext
-                                                         optionalPlaylist:playlist
-                                                          skipCurrentSong:YES];
-                                //cancel any network operations this caused
-                                [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
-                                //now restore player item to exact time without affecting queue state
-                                [player replaceCurrentItemWithPlayerItem:disabledPlayerItem];
-                                [player seekToTime:timeAtDisable
-                                   toleranceBefore:kCMTimeZero
-                                    toleranceAfter:kCMTimeZero];
-                                [player dismissAllSpinners];
-                                [player allowSongDidFinishNotificationToProceed:allowSongDidFinishToRunOriginalVal];
-                                break;
-                            }
-                        }
-                    }
-                     */
                 }
             }  //end 'creatingNewSong'
         }  //end indexPath.row == 0
@@ -826,34 +782,6 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
             case 2: //search for art
                 if(_currentAlbumArt)
                     [self jumpToSafariToFindAlbumArt];
-                break;
-            default:
-                break;
-        }
-    } else if(popup.tag == 4){  //genre already present, providing option to remove genre or choose a different one
-        switch (buttonIndex)
-        {
-            case 0:  //remove genre
-                _songIAmEditing.genreCode = [NSNumber numberWithInt:[GenreConstants noGenreSelectedGenreCode]];
-                [self reloadData];
-                break;
-            case 1:  //find a different genre
-            {
-                GenrePickerTableViewController *vc;
-                int genreCode = [_songIAmEditing.genreCode intValue];
-                NSString *post = @"new genre has been chosen";
-                BOOL fullscreen;
-                if(_creatingANewSong)
-                    fullscreen = NO;
-                else
-                    fullscreen = NO;
-                vc = [[GenrePickerTableViewController alloc] initWithGenreCode: genreCode
-                                                        notificationNameToPost:post
-                                                                    fullScreen:fullscreen];
-                [self.VC.navigationController pushViewController:vc animated:YES];
-                break;
-            }
-            case 2:  //cancel
                 break;
             default:
                 break;

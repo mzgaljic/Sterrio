@@ -34,9 +34,12 @@
 
 - (NSUInteger)numSongsInEntireMainQueue
 {
-    return [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
-                                                nowPlayingInclusive:YES
-                                                 onlyUnplayedTracks:NO].count;
+    //no fault at all here  :)
+    if(playbackContext.request != nil){
+        return [[CoreDataManager context] countForFetchRequest:playbackContext.request error:nil];
+    } else{
+        return 0;
+    }
 }
 
 - (NSUInteger)numMoreSongsInMainQueue
@@ -79,6 +82,16 @@
     return [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:EXTERNAL_FETCH_BATCH_SIZE
                                                 nowPlayingInclusive:YES
                                                  onlyUnplayedTracks:YES];
+}
+
+- (PlaybackContext *)mainQueuePlaybackContext
+{
+    return playbackContext;
+}
+
+- (NSUInteger)indexOfFirstItemToDisplayFromArray
+{
+    return fetchRequestIndex;
 }
 
 - (void)clearMainQueue

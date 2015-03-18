@@ -68,13 +68,16 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
  (playing or paused) remains unaffected. */
 + (void)seekToVideoSecond:(NSNumber *)numAsSecond
 {
+    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    if(player.secondsLoaded == 0)
+        return;
+    
     if([NSThread mainThread]){
         Song *currentSong = [MusicPlaybackController nowPlayingSong];
         if([currentSong.duration integerValue] < [numAsSecond integerValue])
             //setting to second before end to be safe
             numAsSecond = [NSNumber numberWithInteger:[currentSong.duration integerValue] -1];
         
-        AVPlayer *player = [self obtainRawAVPlayer];
         Float64 seconds = [numAsSecond floatValue];
         CMTime targetTime = CMTimeMakeWithSeconds(seconds, NSEC_PER_SEC);
         [player seekToTime:targetTime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];

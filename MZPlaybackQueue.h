@@ -32,6 +32,15 @@ extern short const EXTERNAL_FETCH_BATCH_SIZE;
 - (NSUInteger)numMoreSongsInMainQueue;
 - (NSUInteger)numMoreSongsInUpNext;
 
+#pragma mark - Info for displaying Queue contexts visually
+//up next queue
+- (NSArray *)tableViewOptimizedArrayOfUpNextSongs;
+- (NSArray *)tableViewOptimizedArrayOfUpNextSongContexts;
+//main queue
+- (NSArray *)tableViewOptimizedArrayOfMainQueueSongsComingUp;
+- (PlaybackContext *)mainQueuePlaybackContext;
+- (NSUInteger)indexOfFirstItemToDisplayFromMainQueueSongsArray;
+
 #pragma mark - Performing operations on queue
 - (void)clearEntireQueue;
 - (void)clearUpNext;

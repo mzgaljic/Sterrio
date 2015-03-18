@@ -26,6 +26,7 @@
 - (NSUInteger)numMoreUpNextSongsCount;
 //for getting an array of all up next songs, without putting all songs into memory.
 - (NSArray *)tableViewOptimizedArrayOfUpNextSongs;
+- (NSArray *)tableViewOptimizedArrayOfUpNextSongContexts;
 
 //skipping forward
 - (PreliminaryNowPlaying *)obtainAndRemoveNextSong;

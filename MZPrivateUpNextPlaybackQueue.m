@@ -62,6 +62,11 @@
     return [self minimallyFaultedArrayOfUpNextSongsWithBatchSize:EXTERNAL_FETCH_BATCH_SIZE];
 }
 
+- (NSArray *)tableViewOptimizedArrayOfUpNextSongContexts
+{
+    return playbackContexts;
+}
+
 - (PreliminaryNowPlaying *)obtainAndRemoveNextSong
 {
     PlaybackContext *aContext;

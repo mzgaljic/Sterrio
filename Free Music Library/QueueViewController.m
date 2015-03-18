@@ -11,29 +11,44 @@
 @interface QueueViewController ()
 {
     UINavigationBar *navBar;
-    NSArray *fetchRequests;  //used to fetch songs, each fetchRequest corresponds to one sub-queue.
-    NSArray *fetchRequestResults;
-    NSArray *playingNextSongs;
     UIColor *localAppTintColor;  //specific for this VC (its been made brighter)
+    short UP_NEXT_SECTION_NUM;
+    short MAIN_QUEUE_SECTION_NUM;
+    MZPlaybackQueue *queue;
+    BOOL needToUpdateDataModels;
+    
+    //data models
+    NSArray *mainQueueSongsComingUp;
+    PlaybackContext *mainQueueContext;
+    
+    NSArray *upNextPlaybackContexts;
+    NSArray *upNextSongs;
 }
 @property (nonatomic, strong) UITableView *tableView;
 @end
 
-@implementation QueueViewController
-short const NOW_PLAYING_SECTION_NUM = 0;
-short const PLAYING_NEXT_SECTION_NUM = 1;
+@implementation QueueViewController : UIViewController
 short const TABLE_SECTION_FOOTER_HEIGHT = 25;
-short FETCH_REQUEST_BATCH_SIZE;
-/*
+short const SECTION_EMPTY = -1;
+
 #pragma mark - View Controller life cycle
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    needToUpdateDataModels = NO;
     [SongPlayerCoordinator setScreenShottingVideoPlayerAllowed:NO];
     stackController = [[StackController alloc] init];
     localAppTintColor = [[[[UIColor defaultAppColorScheme] lighterColor] lighterColor] lighterColor];
-    [self setBatchSize];
-    [self preFetchAllSongsWithBatch];
+    
+    queue = [MZPlaybackQueue sharedInstance];
+    mainQueueSongsComingUp = [queue tableViewOptimizedArrayOfMainQueueSongsComingUp];
+    mainQueueContext = [queue mainQueuePlaybackContext];
+    upNextSongs = [queue tableViewOptimizedArrayOfUpNextSongs];
+    upNextPlaybackContexts = [queue tableViewOptimizedArrayOfUpNextSongContexts];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(newSongsIsLoading)
+                                                 name:MZNewSongLoading
+                                               object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -60,32 +75,14 @@ short FETCH_REQUEST_BATCH_SIZE;
 
 - (void)dealloc
 {
+    self.tableView.delegate = nil;
+    self.tableView = nil;
+    mainQueueContext = nil;
+    mainQueueSongsComingUp = nil;
+    upNextPlaybackContexts = nil;
+    upNextSongs = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([self class]));
-}
-
-#pragma mark - fetching songs
-- (void)setBatchSize
-{
-    if([AppEnvironmentConstants preferredSizeSetting] < 3)
-        FETCH_REQUEST_BATCH_SIZE = 70;
-    else if([AppEnvironmentConstants preferredSizeSetting] >=3){
-        FETCH_REQUEST_BATCH_SIZE = 45;
-    }
-}
-
-- (void)preFetchAllSongsWithBatch
-{
-    playingNextSongs = [[MZPlaybackQueue sharedInstance] playNextSongs];
-    fetchRequests = [[MZPlaybackQueue sharedInstance] arrayOfFetchRequestsMappingToSubsetQueues];
-    NSArray *songsFromRequest;
-    NSMutableArray *tempArray = [NSMutableArray array];
-    for(NSFetchRequest *someRequest in fetchRequests){
-        [someRequest setFetchBatchSize:FETCH_REQUEST_BATCH_SIZE];
-        songsFromRequest = [[CoreDataManager context] executeFetchRequest:someRequest error:nil];
-        [tempArray addObject:songsFromRequest];
-    }
-    fetchRequestResults = [NSArray arrayWithArray:tempArray];
 }
 
 #pragma mark - Custom Nav Bar
@@ -140,6 +137,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
     // Set up other aspects of the cell content.
     Song *song = [self songForIndexPath:indexPath];
+    PlaybackContext *songContext = [self contextForIndexPath:indexPath];
     
     //init cell fields
     cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
@@ -147,7 +145,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    if(indexPath.row == 0 && indexPath.section == NOW_PLAYING_SECTION_NUM){
+    if([[NowPlayingSong sharedInstance] isEqualToSong:song compareWithContext:songContext]){
         cell.textLabel.textColor = localAppTintColor;
     }
     else{
@@ -201,26 +199,21 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    NSString *headerTitle;
-    if(section == NOW_PLAYING_SECTION_NUM)
-        headerTitle = @" Now Playing";
-    else if(section == PLAYING_NEXT_SECTION_NUM && playingNextSongs.count > 0)
-        headerTitle = @" Up Next";
-    else{
-        int subQueueNumber = ((int)section - PLAYING_NEXT_SECTION_NUM) +1;
-        headerTitle = [NSString stringWithFormat:@" Queue number: %i", subQueueNumber];
-    }
-    return headerTitle;
+    [self updateSectionNumsBasedOnQueueData];
+    if(section == UP_NEXT_SECTION_NUM){
+        return @"Queued Songs";
+    } else if(section == MAIN_QUEUE_SECTION_NUM){
+        return mainQueueContext.queueName;
+    } else
+        return @"";
 }
 
 //setting section header background and text color
-- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view
+       forSection:(NSInteger)section
 {
     UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
-    if(section == NOW_PLAYING_SECTION_NUM)
-        [header.textLabel setTextColor:localAppTintColor];
-    else
-        [header.textLabel setTextColor:[UIColor whiteColor]];
+    [header.textLabel setTextColor:[UIColor whiteColor]];
     header.textLabel.backgroundColor = [UIColor clearColor];
     int headerFontSize;
     if([AppEnvironmentConstants preferredSizeSetting] < 5)
@@ -242,7 +235,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 }
 
 //setting footer header background (using footer view to pad between sections in this case)
-- (void)tableView:(UITableView *)tableView willDisplayFooterView:(UIView *)view forSection:(NSInteger)section
+- (void)tableView:(UITableView *)tableView willDisplayFooterView:(UIView *)view
+       forSection:(NSInteger)section
 {
     view.tintColor = [UIColor clearColor];
 }
@@ -254,78 +248,24 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    short staticSectionsCount = 2;
-    if(playingNextSongs.count == 0)
-        staticSectionsCount = 1;
-    int numSubQueues = (int)fetchRequests.count;
-    return staticSectionsCount + numSubQueues;
+    [self updateSectionNumsBasedOnQueueData];
+    short sectionCount = 0;
+    if(UP_NEXT_SECTION_NUM != SECTION_EMPTY)
+        sectionCount++;
+    if(MAIN_QUEUE_SECTION_NUM != SECTION_EMPTY)
+        sectionCount++;
+    return sectionCount;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if(section == NOW_PLAYING_SECTION_NUM)
-        return 1;
-    else if(section == PLAYING_NEXT_SECTION_NUM && playingNextSongs.count > 0)
-        return playingNextSongs.count;
-    else{
-        if(fetchRequests.count > 0){
-            if((playingNextSongs.count > 0 && section == PLAYING_NEXT_SECTION_NUM + 1)
-               || (playingNextSongs.count == 0 && section == PLAYING_NEXT_SECTION_NUM)){ //first subqueue
-                NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-                if([nowPlayingObj isEqualToSong:nowPlayingObj.nowPlaying compareWithContext:nil]){
-                    //now playing song is NOT in the first sub-queue, its in "playing next" section.
-                    //we can return the entire count of the fetch results.
-                    
-                    NSArray *songs = fetchRequestResults[0];
-
-                    NSUInteger count = songs.count;
-                    if(count == NSNotFound)
-                        return 0; //some error occured
-                    else
-                        return count;
-                } else{
-                    //must figure out exactly how many more songs left to play in the first sub-queue.
-                    NSArray *songs = fetchRequestResults[0];
-
-                    if(songs.count > 0){
-                        NSUInteger nowPlayingIndex = [songs indexOfObject:[nowPlayingObj nowPlaying]];
-                        if(nowPlayingIndex != NSNotFound && songs.count > nowPlayingIndex+1){
-                            //more songs to be played from this source (after the now playing song)
-                            int lastIndex = (int)songs.count - 1;
-                            int numMoreSongsInFirstSubQueue = lastIndex - (int)nowPlayingIndex;
-                            return numMoreSongsInFirstSubQueue;
-                        } else
-                            return 0;
-                    } else{
-                        return 0;  //weird case...
-                    }
-                }
-                
-            } else{
-                //now playing song cant be in a subqueue except the first one, so
-                //our job is easy here- simply return the size of the entire fetch.
-                int sectionNumOfLastSubQueue = (int)fetchRequests.count + 1;
-                if(section <= sectionNumOfLastSubQueue){
-                    int songsArrayIndexForSection;
-                    if(playingNextSongs.count > 0)
-                        songsArrayIndexForSection = (int)section - PLAYING_NEXT_SECTION_NUM + 1;
-                    else
-                        songsArrayIndexForSection = (int)section - PLAYING_NEXT_SECTION_NUM;
-                    NSArray *songs = fetchRequestResults[songsArrayIndexForSection];
-
-                    NSUInteger count = songs.count;
-                    if(count == NSNotFound)
-                        return 0; //some error occured
-                    else
-                        return count;
-                }
-                else
-                    return 0;  //section does not exist (not this many sub-queues)
-            }
-        }
-        else
-            return 0;
-    }
+    [self updateSectionNumsBasedOnQueueData];
+    if(section == UP_NEXT_SECTION_NUM){
+        return upNextSongs.count;
+    } else if(section == MAIN_QUEUE_SECTION_NUM){
+        return mainQueueSongsComingUp.count;
+    } else
+        return 0;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -341,11 +281,22 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    //Song *selectedSong = [queueSongs objectAtIndex:indexPath.row];
-    //NSLog(@"Tapped song in queue: %@", selectedSong.songName);
+    Song *tappedSong = [self songForIndexPath:indexPath];
+    PlaybackContext *tappedSongsContext = [self contextForIndexPath:indexPath];
+    if([[NowPlayingSong sharedInstance] isEqualToSong:tappedSong
+                                   compareWithContext:tappedSongsContext]){
+        [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
+        [MusicPlaybackController resumePlayback];
+    } else{
+#warning need to load the picked song here.
+        //[MusicPlaybackController newQueueWithSong:<#(Song *)#> withContext:<#(PlaybackContext *)#>]
+        //model needs updating! (will do lazy loading)
+        needToUpdateDataModels = YES;
+    }
 }
 
-- (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView
+           editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return UITableViewCellEditingStyleNone;
 }
@@ -353,74 +304,51 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 #pragma mark - Tableview datasource helper
 - (Song *)songForIndexPath:(NSIndexPath *)indexPath
 {
-    
-    int row = (int)indexPath.row;
-    int section = (int)indexPath.section;
-    Song *desiredSong;
-    if(indexPath.section == NOW_PLAYING_SECTION_NUM && row == 0)
-        desiredSong =  [[NowPlayingSong sharedInstance] nowPlaying];
-    else if(indexPath.section == PLAYING_NEXT_SECTION_NUM && playingNextSongs.count > 0)
-        desiredSong = playingNextSongs[row];
-    else{
-        //get song from subqueue!
-        
-        //need to take special care with the very first subqueue
-        if((playingNextSongs.count > 0 && section == PLAYING_NEXT_SECTION_NUM + 1)
-           || (playingNextSongs.count == 0 && section == PLAYING_NEXT_SECTION_NUM))
-        {
-            NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-            
-            if(! [nowPlayingObj isEqualToSong:nowPlayingObj.nowPlaying compareWithContext:nil])
-            {
-                //must figure out exactly how many more songs left to play in the first sub-queue.
-                NSArray *songs = fetchRequestResults[0];
-                if(songs.count > 0)
-                {
-                    NSUInteger nowPlayingIndex;
-                    if([NowPlayingSong sharedInstance].isFromPlayNextSongs)
-                        nowPlayingIndex = [songs indexOfObject:[[MZPlaybackQueue sharedInstance] nextSongScheduledForPlaybackInCurrentSubQueue]];
-                    else
-                        nowPlayingIndex = [songs indexOfObject:[nowPlayingObj nowPlaying]];
-                    
-                    if(nowPlayingIndex != NSNotFound && songs.count > nowPlayingIndex+1)
-                    {
-                        //more songs to be played from this source (after the now playing song)
-                        int lastIndex = (int)songs.count - 1;
-                        int indexOfSongToReturn = (int)nowPlayingIndex + row + 1;  //plus 1 is to not include the now playing
-                        if(indexOfSongToReturn <=  lastIndex)
-                            return songs[indexOfSongToReturn];
-                        else
-                            return nil;
-                    } else
-                        return nil;
-                }
-                else
-                    return nil;
-            }
-            //otherwise the now playing song is NOT in the first sub-queue, its in "playing next" section.
-            //we can just handle it as a normal subqueue further down...
-        }
-        
-        //for all other subqueues...
-        int songsArrayIndexForSection;
-        if(playingNextSongs.count > 0)
-            songsArrayIndexForSection = (int)section - PLAYING_NEXT_SECTION_NUM + 1;
+    [self updateSectionNumsBasedOnQueueData];
+    if(indexPath.section == MAIN_QUEUE_SECTION_NUM){
+        return (Song *)mainQueueSongsComingUp[indexPath.row];
+    } else if(indexPath.section == UP_NEXT_SECTION_NUM){
+        return (Song *)upNextSongs[indexPath.row];
+    } else
+        return nil;
+}
+
+- (PlaybackContext *)contextForIndexPath:(NSIndexPath *)indexPath
+{
+    [self updateSectionNumsBasedOnQueueData];
+    if(indexPath.section == MAIN_QUEUE_SECTION_NUM){
+        return mainQueueContext;
+    } else if(indexPath.section == UP_NEXT_SECTION_NUM){
+        NSUInteger row = indexPath.row;
+        return upNextPlaybackContexts[row];
+    } else
+        return nil;
+}
+
+- (void)updateSectionNumsBasedOnQueueData
+{
+    if(! needToUpdateDataModels)
+        return;
+    needToUpdateDataModels = NO;
+    upNextSongs = [queue tableViewOptimizedArrayOfUpNextSongs];
+    mainQueueSongsComingUp = [queue tableViewOptimizedArrayOfMainQueueSongsComingUp];
+    if(upNextSongs.count > 0)
+        UP_NEXT_SECTION_NUM = 0;
+    else
+        UP_NEXT_SECTION_NUM = SECTION_EMPTY;
+    if(mainQueueSongsComingUp.count > 0){
+        if(UP_NEXT_SECTION_NUM != SECTION_EMPTY)
+            MAIN_QUEUE_SECTION_NUM = 1;
         else
-            songsArrayIndexForSection = (int)section - PLAYING_NEXT_SECTION_NUM;
-        NSArray *songs = fetchRequestResults[songsArrayIndexForSection];
-        if(songsArrayIndexForSection == 0){
-            //if we got to this point, the now playing song is in the "playing next" area.
-            //that means we shold just get the index of the object as usual, but with an offset
-            //offset will be the index of the next song to be played from the first subqueue.
-            Song *nextSong = [[MZPlaybackQueue sharedInstance] nextSongScheduledForPlaybackInCurrentSubQueue];
-            NSUInteger indexOfNextSongInFirstSubQueue = [songs indexOfObject:nextSong];
-            if(row + indexOfNextSongInFirstSubQueue < songs.count)
-                desiredSong = (Song *)[songs objectAtIndex:row + indexOfNextSongInFirstSubQueue];
-        }
-        else
-            desiredSong = (Song *)[songs objectAtIndex:row];
-    }
-    return desiredSong;
+            MAIN_QUEUE_SECTION_NUM = 0;
+    } else
+        MAIN_QUEUE_SECTION_NUM = SECTION_EMPTY;
+}
+
+- (void)newSongsIsLoading
+{
+#warning need to delete a row somewhere to get rid of the finished song from the list.
+    needToUpdateDataModels = YES;
 }
 
 #pragma mark - Rotation status bar methods
@@ -477,6 +405,5 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         [SongPlayerCoordinator setScreenShottingVideoPlayerAllowed:YES];
     }];
 }
- */
 
 @end
