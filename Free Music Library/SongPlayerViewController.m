@@ -171,21 +171,23 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 {
     [super viewWillAppear:animated];
     
-    Song *nowPlaying = [MusicPlaybackController nowPlayingSong];
     [[SongPlayerCoordinator sharedInstance] begingExpandingVideoPlayer];
     
     UIBarButtonItem *share = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                                                                            target:self
                                                                            action:@selector(shareButtonTapped)];
-    UIBarButtonItem *queue = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
-                                                                           target:self
-                                                                           action:@selector(viewPlaybackQueue)];
+    UIBarButtonItem *queue = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"queue"]
+                                                              style:UIBarButtonItemStylePlain
+                                                             target:self
+                                                             action:@selector(viewPlaybackQueue)];
     NSArray *rightBarBtns = @[share, queue];
     self.navigationItem.rightBarButtonItems = rightBarBtns;
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"UIButtonBarArrowDown"]
-                                                                             style:UIBarButtonItemStylePlain
-                                                                            target:self
-                                                                            action:@selector(dismissVideoPlayerControllerButtonTapped)];
+    UIImage *downBtnImg = [UIImage imageNamed:@"UIButtonBarArrowDown"];
+    UIBarButtonItem *downBtn = [[UIBarButtonItem alloc] initWithImage:downBtnImg
+                                                                style:UIBarButtonItemStylePlain
+                                                               target:self
+                                                               action:@selector(dismissVCButtonTapped)];
+    self.navigationItem.leftBarButtonItem = downBtn;
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     BOOL positionedSliderAlready = NO;
@@ -1237,7 +1239,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     aButton.layer.shadowOffset = CGSizeZero;
 }
 
-- (void)dismissVideoPlayerControllerButtonTapped
+- (void)dismissVCButtonTapped
 {
     [[SongPlayerCoordinator sharedInstance] beginShrinkingVideoPlayer];
     [self preDealloc];

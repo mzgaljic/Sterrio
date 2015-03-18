@@ -16,6 +16,11 @@
 @end
 @implementation MZPlaybackQueue
 
+//used by private playback queue classes.
+short const INTERNAL_FETCH_BATCH_SIZE = 1;
+short const EXTERNAL_FETCH_BATCH_SIZE = 50;
+
+
 + (instancetype)sharedInstance
 {
     static dispatch_once_t pred;

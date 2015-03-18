@@ -20,9 +20,6 @@
 @end
 @implementation MZPrivateMainPlaybackQueue
 
-short const INTERNAL_FETCH_BATCH_SIZE = 1;
-short const EXTERNAL_FETCH_BATCH_SIZE = 50;
-
 - (instancetype)init
 {
     if([super init]){

@@ -48,7 +48,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     
     //set global default "AppColorScheme"
     self.window.tintColor = [UIColor whiteColor];
-    [UIColor defaultAppColorScheme:Rgb2UIColor(32, 69, 124)];  // original blue
+    [UIColor defaultAppColorScheme:Rgb2UIColor(236, 98, 43)];
     
     //set cancel button color of all uisearchbars
     [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
@@ -100,10 +100,13 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     vc4.tabBarItem = [[UITabBarItem alloc]initWithTabBarSystemItem:UITabBarSystemItemRecents tag:3];
     UINavigationController *navController4 = [[UINavigationController alloc]initWithRootViewController:vc4];
     
-    mainVC = [[MainScreenViewController alloc] initWithNavControllers:@[navController1, navController2, navController3, navController4]
+    NSArray *navControllers = @[navController1, navController2, navController3, navController4];
+    NSArray *selectedImgNames = @[@"song_note_select", @"albums", @"", @"playlist_select"];
+    NSArray *unselectedImgNames = @[@"song_note_unselect", @"albums", @"", @"playlist_unselect"];
+    mainVC = [[MainScreenViewController alloc] initWithNavControllers:navControllers
                                          correspondingViewControllers:@[vc1, vc2, vc3, vc4]
-                                                   tabBarUnselectedImageNames:@[@"song_note", @"albums", @"", @""]
-                                             tabBarselectedImageNames:@[@"", @"", @"", @""]];
+                                           tabBarUnselectedImageNames:unselectedImgNames
+                                             tabBarselectedImageNames:selectedImgNames];
     
     [self.window setRootViewController:mainVC];
     self.window.backgroundColor = [UIColor whiteColor];

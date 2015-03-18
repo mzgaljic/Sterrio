@@ -20,6 +20,11 @@
 
 @interface MZPlaybackQueue : NSObject
 
+//used by private playback queue classes.
+extern short const INTERNAL_FETCH_BATCH_SIZE;
+extern short const EXTERNAL_FETCH_BATCH_SIZE;
+
+
 + (instancetype)sharedInstance;
 
 #pragma mark - Get info about queue

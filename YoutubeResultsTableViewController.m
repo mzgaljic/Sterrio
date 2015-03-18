@@ -167,6 +167,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     _cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                   target:self
                                                                   action:@selector(cancelTapped)];
+    _cancelButton.tintColor = [UIColor defaultAppColorScheme];
     [self setToolbarItems:@[_cancelButton]];
     [self setProductionModeValue];
     
@@ -801,10 +802,14 @@ static BOOL userClearedTextField = NO;
         CGPoint offset = [scrollView contentOffset];
         
         // Are we less than 2 screen-size worths from the top of the contentView? (measured in pixels)...that was a mouthful lol
-        if (offset.y <= (_heightOfScreenRotationIndependant * 2))
-            [self showScrollToTopButton:NO];
-        else
-            [self showScrollToTopButton:YES];
+        if (offset.y <= (_heightOfScreenRotationIndependant * 2)){
+            if(_scrollToTopButtonVisible)
+                [self showScrollToTopButton:NO];
+        }
+        else{
+            if(!_scrollToTopButtonVisible)
+                [self showScrollToTopButton:YES];
+        }
         
         
         //now check if the user scrolled to the bottom to load more
@@ -849,18 +854,21 @@ static BOOL userClearedTextField = NO;
 {
     NSArray *toolbarItems;
     if(yes){
-        UIBarButtonItem *scrollToTopButton = [[UIBarButtonItem alloc] initWithTitle:@"Scroll to Top"
+#warning change code ehre
+        _scrollToTopButton = [[UIBarButtonItem alloc] initWithTitle:@"Scroll to Top"
                                                                               style:UIBarButtonItemStylePlain
                                                                              target:self
                                                                              action:@selector(scrollToTopTapped)];
+        _scrollToTopButton.tintColor = [UIColor defaultAppColorScheme];
         //provides spacing so each button is on its respective side of the toolbar.
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         
-        toolbarItems = [NSArray arrayWithObjects:_cancelButton,flexibleSpace, scrollToTopButton, nil];
+        toolbarItems = [NSArray arrayWithObjects:_cancelButton,flexibleSpace, _scrollToTopButton, nil];
         _scrollToTopButtonVisible = YES;
         [self.navigationController.toolbar setItems:toolbarItems animated:YES];
     }
     else{  //hiding scroll to top button
+        _scrollToTopButton = nil;
         toolbarItems = [NSArray arrayWithObjects:_cancelButton, nil];
         _scrollToTopButtonVisible = NO;
         [self.navigationController.toolbar setItems:toolbarItems animated:YES];

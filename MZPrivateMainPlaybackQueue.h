@@ -12,6 +12,7 @@
 #import "NowPlayingSong.h"
 #import "CoreDataManager.h"
 #import "PreliminaryNowPlaying.h"
+#import "MZPlaybackQueue.h"  //for imported constants
 @import CoreData;
 
 @interface MZPrivateMainPlaybackQueue : NSObject

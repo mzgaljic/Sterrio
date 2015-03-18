@@ -43,7 +43,7 @@ short const dummyTabIndex = 2;
         self.viewControllers = viewControllers;
         self.tabBarUnselectedImageNames = unSelectNames;
         self.tabBarSelectedImageNames = selectNames;
-        [[UITabBar appearance] setTintColor:[[UIColor darkGrayColor] darkerColor]];
+        [[UITabBar appearance] setTintColor:[UIColor defaultAppColorScheme]];
         numTimesViewHasAppeared = 0;
     }
     return self;
@@ -77,7 +77,7 @@ short const dummyTabIndex = 2;
     if(self.tabBarItems == nil)
         [self createTabBarItems];
     
-    [self setTabBarItemsAnimatedWithADelay];
+    [self setTabBarItems];
     self.edgesForExtendedLayout = UIRectEdgeNone;
 }
 
@@ -174,20 +174,13 @@ short const dummyTabIndex = 2;
     [self.view addSubview:self.tabBarView];
 }
 
-- (void)setTabBarItemsAnimatedWithADelay
+- (void)setTabBarItems
 {
-    __weak UITabBarItem *selectedItem = [self.tabBar selectedItem];
+    UITabBarItem *selectedItem = [self.tabBar selectedItem];
     if(selectedItem == nil)  //setting default
         selectedItem = self.tabBarItems[0];
-    
-    [self.tabBar setItems:nil animated:NO];
-    double delayInSeconds = 0.37;
-    __weak MainScreenViewController *weakself = self;
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-        [weakself.tabBar setItems:weakself.tabBarItems animated:YES];
-        [weakself.tabBar setSelectedItem:selectedItem];
-    });
+    [self.tabBar setItems:self.tabBarItems animated:NO];
+    [self.tabBar setSelectedItem:selectedItem];
 }
 
 - (void)createTabBarItems

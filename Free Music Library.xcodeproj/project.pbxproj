@@ -94,7 +94,6 @@
 		87A0FD8A197DCEDF008FBBF7 /* AlbumTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FD89197DCEDF008FBBF7 /* AlbumTableViewFormatter.m */; };
 		87A0FD91197DD594008FBBF7 /* PreferredFontSizeUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FD90197DD594008FBBF7 /* PreferredFontSizeUtility.m */; };
 		87A0FDD2197DFA2C008FBBF7 /* ArtistTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FDD1197DFA2C008FBBF7 /* ArtistTableViewFormatter.m */; };
-		87A3903D1A8BDD8A00E56A1E /* UIToolbar+DarkTint.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A3903C1A8BDD8A00E56A1E /* UIToolbar+DarkTint.m */; };
 		87A41FEB19F0D9C800C037D9 /* MyAVPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A41FEA19F0D9C800C037D9 /* MyAVPlayer.m */; };
 		87A453C8199C0891004D1319 /* ELCAlbumPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A453A5199C0891004D1319 /* ELCAlbumPickerController.m */; };
 		87A453C9199C0891004D1319 /* ELCAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A453A7199C0891004D1319 /* ELCAsset.m */; };
@@ -144,7 +143,6 @@
 		87E980BF1A759DD900B428F0 /* MasterSongEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E980BE1A759DD900B428F0 /* MasterSongEditorViewController.m */; };
 		87ECAFC41AAE8D1900C527B9 /* MZPrivateUpNextPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87ECAFC31AAE8D1900C527B9 /* MZPrivateUpNextPlaybackQueue.m */; };
 		87ECAFC81AAEB21F00C527B9 /* MZPrivateMainPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87ECAFC71AAEB21F00C527B9 /* MZPrivateMainPlaybackQueue.m */; };
-		87ECF5191A57B50800D58EDF /* UINavigationBar+DarkTint.m in Sources */ = {isa = PBXBuildFile; fileRef = 87ECF5181A57B50800D58EDF /* UINavigationBar+DarkTint.m */; };
 		87FA136F1A99559100A1902F /* FetchVideoInfoOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FA136E1A99559100A1902F /* FetchVideoInfoOperation.m */; };
 		87FA13721A99601400A1902F /* DetermineVideoPlayableOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FA13711A99601400A1902F /* DetermineVideoPlayableOperation.m */; };
 		87FA13761A998AFA00A1902F /* ReachabilitySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FA13751A998AFA00A1902F /* ReachabilitySingleton.m */; };
@@ -326,8 +324,6 @@
 		87A0FD90197DD594008FBBF7 /* PreferredFontSizeUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferredFontSizeUtility.m; sourceTree = "<group>"; };
 		87A0FDD0197DFA2C008FBBF7 /* ArtistTableViewFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArtistTableViewFormatter.h; sourceTree = "<group>"; };
 		87A0FDD1197DFA2C008FBBF7 /* ArtistTableViewFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArtistTableViewFormatter.m; sourceTree = "<group>"; };
-		87A3903B1A8BDD8A00E56A1E /* UIToolbar+DarkTint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIToolbar+DarkTint.h"; sourceTree = "<group>"; };
-		87A3903C1A8BDD8A00E56A1E /* UIToolbar+DarkTint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIToolbar+DarkTint.m"; sourceTree = "<group>"; };
 		87A41FE919F0D9C800C037D9 /* MyAVPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyAVPlayer.h; sourceTree = "<group>"; };
 		87A41FEA19F0D9C800C037D9 /* MyAVPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyAVPlayer.m; sourceTree = "<group>"; };
 		87A453A4199C0891004D1319 /* ELCAlbumPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAlbumPickerController.h; sourceTree = "<group>"; };
@@ -425,8 +421,6 @@
 		87ECAFC31AAE8D1900C527B9 /* MZPrivateUpNextPlaybackQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPrivateUpNextPlaybackQueue.m; sourceTree = "<group>"; };
 		87ECAFC61AAEB21F00C527B9 /* MZPrivateMainPlaybackQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPrivateMainPlaybackQueue.h; sourceTree = "<group>"; };
 		87ECAFC71AAEB21F00C527B9 /* MZPrivateMainPlaybackQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPrivateMainPlaybackQueue.m; sourceTree = "<group>"; };
-		87ECF5171A57B50800D58EDF /* UINavigationBar+DarkTint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationBar+DarkTint.h"; sourceTree = "<group>"; };
-		87ECF5181A57B50800D58EDF /* UINavigationBar+DarkTint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationBar+DarkTint.m"; sourceTree = "<group>"; };
 		87FA136D1A99559100A1902F /* FetchVideoInfoOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FetchVideoInfoOperation.h; sourceTree = "<group>"; };
 		87FA136E1A99559100A1902F /* FetchVideoInfoOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FetchVideoInfoOperation.m; sourceTree = "<group>"; };
 		87FA13701A99601400A1902F /* DetermineVideoPlayableOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetermineVideoPlayableOperation.h; sourceTree = "<group>"; };
@@ -592,10 +586,6 @@
 				87270031199E815000D71204 /* NSString+Levenshtein_Distance.m */,
 				87DB103019C53CC000B190E5 /* UINavigationController+CustomPushAnimation.h */,
 				87DB103119C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m */,
-				87ECF5171A57B50800D58EDF /* UINavigationBar+DarkTint.h */,
-				87ECF5181A57B50800D58EDF /* UINavigationBar+DarkTint.m */,
-				87A3903B1A8BDD8A00E56A1E /* UIToolbar+DarkTint.h */,
-				87A3903C1A8BDD8A00E56A1E /* UIToolbar+DarkTint.m */,
 				872EA4DA1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.h */,
 				872EA4DB1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.m */,
 				8725B1B61A6C938700E58C3E /* UIWindow+VisibleVC.h */,
@@ -1431,7 +1421,6 @@
 				87AE39751A4A8E6400C278BA /* PreloadedCoreDataModelUtility.m in Sources */,
 				87BC1B891A071979000D9B0C /* PlayerView.m in Sources */,
 				872EA4DC1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.m in Sources */,
-				87ECF5191A57B50800D58EDF /* UINavigationBar+DarkTint.m in Sources */,
 				87A453D5199C0891004D1319 /* ELCImagePickerDemoViewController.m in Sources */,
 				874C535C19831825000382FA /* NSString+WhiteSpace_Utility.m in Sources */,
 				879094111AB78E5E006FDA68 /* VideoPlayerWrapper.m in Sources */,
@@ -1513,7 +1502,6 @@
 				87A453D6199C0891004D1319 /* EYLargePhoto.m in Sources */,
 				87D47D8D19340F8B0057D49B /* MasterAlbumsTableViewController.m in Sources */,
 				87394BE31965FFE100E750B1 /* Queue.m in Sources */,
-				87A3903D1A8BDD8A00E56A1E /* UIToolbar+DarkTint.m in Sources */,
 				872F78771A47B17900288FDD /* SongPlayerCoordinator.m in Sources */,
 				878ACD64192D48EF005938F5 /* MasterSongsTableViewController.m in Sources */,
 				872EA4E71A54F1FC00F8EE9D /* MyViewController.m in Sources */,

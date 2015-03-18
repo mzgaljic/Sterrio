@@ -153,7 +153,6 @@ static const int CELL_STREAM_PICKER_TAG = 107;
                 cell.textLabel.text = @"Sync Settings Via iCloud";
                 //setup toggle switch
                 _syncSettingViaIcloudSwitch = [[UISwitch alloc] init];
-                _syncSettingViaIcloudSwitch.onTintColor = [UIColor defaultAppColorScheme];
                 [_syncSettingViaIcloudSwitch setOn:[AppEnvironmentConstants icloudSettingsSync] animated:NO];
                 cell.accessoryView = [[UIView alloc] initWithFrame:_syncSettingViaIcloudSwitch.frame];
                 [cell.accessoryView addSubview:_syncSettingViaIcloudSwitch];
@@ -199,7 +198,6 @@ static const int CELL_STREAM_PICKER_TAG = 107;
                 //setup toggle switch
                 _boldSongSwitch = [[UISwitch alloc] init];
                 [_boldSongSwitch setOn:[AppEnvironmentConstants boldNames] animated:NO];
-                _boldSongSwitch.onTintColor = [UIColor defaultAppColorScheme];
                 cell.accessoryView = [[UIView alloc] initWithFrame:_boldSongSwitch.frame];
                 [cell.accessoryView addSubview:_boldSongSwitch];
                 
@@ -218,7 +216,6 @@ static const int CELL_STREAM_PICKER_TAG = 107;
                 cell.textLabel.text = @"Smart Alphabetical Sort";
                 //setup toggle switch
                 _smartSortSwitch = [[UISwitch alloc] init];
-                _smartSortSwitch.onTintColor = [UIColor defaultAppColorScheme];
                 [_smartSortSwitch setOn:[AppEnvironmentConstants smartAlphabeticalSort] animated:NO];
                 cell.accessoryView = [[UIView alloc] initWithFrame:_smartSortSwitch.frame];
                 [cell.accessoryView addSubview:_smartSortSwitch];
