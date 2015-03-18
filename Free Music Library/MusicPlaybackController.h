@@ -51,6 +51,8 @@
 /** Stop playback of current song/track, and begin playback of previous track */
 + (void)returnToPreviousTrack;
 
++ (BOOL)shouldSeekToStartOnBackPress;
+
 + (NSURL *)closestUrlQualityMatchForSetting:(short)aQualitySetting usingStreamsDictionary:(NSDictionary *)aDictionary;
 
 #pragma mark - Now Playing Song

@@ -462,6 +462,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     playAfterMovingSlider = YES;  //reset value
     [sliderHint hideAnimated];
     [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlaying];
+    [self playerControlsShouldBeUpdated];
 }
 - (IBAction)playbackSliderEditingHasEndedB:(id)sender  //touch up outside
 {
@@ -1138,12 +1139,8 @@ static int accomodateInterfaceLabelsCounter = 0;
 {
     [MusicPlaybackController returnToPreviousTrack];
     [self backwardsButtonLetGo];
-    
-    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-    float seconds = CMTimeGetSeconds(player.currentItem.currentTime);
-    if(player.secondsLoaded == 0 || (seconds <= MZSkipToSongBeginningIfBackBtnTappedBoundary
-                                     && [[NowPlayingSong sharedInstance] nowPlaying] != nil)
-       || (isnan(seconds) && [[NowPlayingSong sharedInstance] nowPlaying] == nil)){
+
+    if(! [MusicPlaybackController shouldSeekToStartOnBackPress]){
         //previous song will actually be loaded
         waitingForNextOrPrevVideoToLoad = YES;
         self.playbackSlider.enabled = NO;

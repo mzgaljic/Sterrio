@@ -62,8 +62,6 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
             [VideoPlayerWrapper startPlaybackOfSong:nextSong goingForward:YES oldSong:skippedSong];
         });
     }
-
-    //NOTE: YTVideoAvPlayer will automatically skip more songs if they cant be played
 }
 
 /* Used to jump ahead or back in a video to an exact point. The player playback state
@@ -101,10 +99,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 + (void)returnToPreviousTrack
 {
     if([NSThread mainThread]){
-        float seconds = CMTimeGetSeconds(player.currentItem.currentTime);
-        if(player.secondsLoaded == 0 || (seconds <= MZSkipToSongBeginningIfBackBtnTappedBoundary
-            && [[NowPlayingSong sharedInstance] nowPlaying] != nil)
-           || (isnan(seconds) && [[NowPlayingSong sharedInstance] nowPlaying] == nil)){
+        if(! [MusicPlaybackController shouldSeekToStartOnBackPress]){
             Song *skippedSong = [MusicPlaybackController nowPlayingSong];
             Song *previousSong = [playbackQueue skipToPrevious];
             [VideoPlayerWrapper startPlaybackOfSong:previousSong
@@ -112,15 +107,15 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
                                             oldSong:skippedSong];
         } else{
             [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
+            [MusicPlaybackController resumePlayback];
+            [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged
+                                                                object:nil];
         }
         
     } else{
         dispatch_async(dispatch_get_main_queue(), ^(void){
             //Run UI Updates
-            float seconds = CMTimeGetSeconds(player.currentItem.currentTime);
-            if(player.secondsLoaded == 0 || (seconds <= MZSkipToSongBeginningIfBackBtnTappedBoundary
-                                             && [[NowPlayingSong sharedInstance] nowPlaying] != nil)
-               || (isnan(seconds) && [[NowPlayingSong sharedInstance] nowPlaying] == nil)){
+            if(! [MusicPlaybackController shouldSeekToStartOnBackPress]){
                 Song *skippedSong = [MusicPlaybackController nowPlayingSong];
                 Song *previousSong = [playbackQueue skipToPrevious];
                 [VideoPlayerWrapper startPlaybackOfSong:previousSong
@@ -128,11 +123,28 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
                                                 oldSong:skippedSong];
             } else{
                 [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
+                [MusicPlaybackController resumePlayback];
+                [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged
+                                                                    object:nil];
             }
         });
     }
+}
 
-    //NOTE: YTVideoAvPlayer will automatically rewind further back in the queue if some songs cant be played
++ (BOOL)shouldSeekToStartOnBackPress
+{
+    short boundary = MZSkipToSongBeginningIfBackBtnTappedBoundary;
+    if(player.secondsLoaded == 0
+       || ([self playerElapsedTime] <= boundary && [[NowPlayingSong sharedInstance] nowPlaying] != nil)
+       || (isnan([self playerElapsedTime]) && [[NowPlayingSong sharedInstance] nowPlaying] == nil)){
+        return NO;
+    } else
+        return YES;
+}
+
++ (NSUInteger)playerElapsedTime
+{
+    return CMTimeGetSeconds(player.currentItem.currentTime);
 }
 
 + (void)songAboutToBeDeleted:(Song *)song deletionContext:(PlaybackContext *)aContext;
