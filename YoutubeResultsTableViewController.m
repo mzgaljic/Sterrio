@@ -167,7 +167,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     _cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                   target:self
                                                                   action:@selector(cancelTapped)];
-    _cancelButton.tintColor = [UIColor defaultAppColorScheme];
     [self setToolbarItems:@[_cancelButton]];
     [self setProductionModeValue];
     
@@ -855,12 +854,10 @@ static BOOL userClearedTextField = NO;
 {
     NSArray *toolbarItems;
     if(yes){
-#warning change code ehre
         _scrollToTopButton = [[UIBarButtonItem alloc] initWithTitle:@"Scroll to Top"
                                                                               style:UIBarButtonItemStylePlain
                                                                              target:self
                                                                              action:@selector(scrollToTopTapped)];
-        _scrollToTopButton.tintColor = [UIColor defaultAppColorScheme];
         //provides spacing so each button is on its respective side of the toolbar.
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         

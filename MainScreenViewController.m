@@ -322,7 +322,16 @@ static BOOL navBarWasHidden = NO;
 
 - (void)performCenterBtnTappedActionUsingVC:(UIViewController *)aVc
 {
-    [aVc performSelector:@selector(tabBarAddButtonPressed) withObject:nil];
+    UIViewController *topVc = aVc.navigationController.visibleViewController;
+    if(topVc == aVc){
+        if([aVc respondsToSelector:@selector(tabBarAddButtonPressed)]){
+            [aVc performSelector:@selector(tabBarAddButtonPressed)];
+        }
+    } else{
+        if([topVc respondsToSelector:@selector(tabBarAddButtonPressed)]){
+            [topVc performSelector:@selector(tabBarAddButtonPressed)];
+        }
+    }
 }
 
 @end

@@ -54,6 +54,12 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                              [[UIColor defaultAppColorScheme] lighterColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
+    //set toolbar button colors
+    //set cancel button color of all uisearchbars
+    [[UIBarButtonItem appearanceWhenContainedIn:[UIToolbar class], nil]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             [[UIColor defaultAppColorScheme] lighterColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
+    
     //set nav bar title color of all navbars
     NSDictionary *navbarTitleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                                [UIColor defaultWindowTintColor],NSForegroundColorAttributeName,nil];

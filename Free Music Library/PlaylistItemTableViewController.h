@@ -30,10 +30,8 @@
 }
 
 @property (nonatomic, strong) Playlist *playlist;
-@property (nonatomic, assign) int numSongsNotAddedYet;
 @property (nonatomic, strong) NSArray *originalLeftBarButtonItems;
 @property (nonatomic, strong) NSArray *originalRightBarButtonItems;
-@property (nonatomic, strong) UIBarButtonItem *addBarButton;
 @property (nonatomic, strong) UINavigationItem *navBar;
 
 @end

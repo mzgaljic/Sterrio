@@ -17,7 +17,7 @@
 @end
 
 @implementation PlaylistItemTableViewController
-@synthesize playlist = _playlist, numSongsNotAddedYet = _numSongsNotAddedYet, txtField = _txtField;
+@synthesize playlist = _playlist, txtField = _txtField;
 
 
 - (void) dealloc
@@ -52,11 +52,7 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    _numSongsNotAddedYet = (int)([self numberOfSongsInCoreDataModel] - _playlist.playlistSongs.count);
     _lastTableViewModelCount = (int)_playlist.playlistSongs.count;
-    
-    if(_numSongsNotAddedYet == 0)
-        _addBarButton.enabled = NO;
     
     //set song/album details for currently selected song
     NSString *navBarTitle = _playlist.playlistName;
@@ -75,11 +71,7 @@
 {
     UIBarButtonItem *editButton = self.editButtonItem;
     editButton.action = @selector(editTapped:);
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                                                               target:self
-                                                                               action:@selector(addButtonPressed)];
-    self.addBarButton = addButton;
-    NSArray *rightBarButtonItems = [NSArray arrayWithObjects:editButton, addButton, nil];
+    NSArray *rightBarButtonItems = @[editButton];
     self.navigationItem.rightBarButtonItems = rightBarButtonItems;  //place both buttons on the nav bar
 }
 
@@ -184,14 +176,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         [set removeObjectAtIndex:indexPath.row];
         _playlist.playlistSongs = set;
         [[CoreDataManager sharedInstance] saveContext];
-        
-        //keep track of how many songs i can still add in this playlist (so we know when to grey out plus button)
-        _numSongsNotAddedYet++;
-        _lastTableViewModelCount--;
-        if(_numSongsNotAddedYet == 0)
-            _addBarButton.enabled = NO;
-        else
-            _addBarButton.enabled = YES;
     }
 }
 
@@ -336,6 +320,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (void)addButtonPressed
 {
+
+}
+
+- (void)tabBarAddButtonPressed
+{
     //start listening for notifications (so we know when the modal song picker dissapears)
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(songPickerWasDismissed:) name:@"song picker dismissed" object:nil];
     
@@ -352,17 +341,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             _playlist = (Playlist *) someNSNotification.object;
             [self setFetchedResultsControllerAndSortStyle];
         }
-
-        if(_lastTableViewModelCount < _playlist.playlistSongs.count){  //songs added
-            int x = (int)(_playlist.playlistSongs.count - _lastTableViewModelCount);
-            _numSongsNotAddedYet = _numSongsNotAddedYet - x;
-            _lastTableViewModelCount = _lastTableViewModelCount + x;
-        }//else nothing changed (remember, we can't remove songs using the song picker)
-        
-        if(_numSongsNotAddedYet == 0)
-            _addBarButton.enabled = NO;
-        else
-            _addBarButton.enabled = YES;
     }
 }
 
