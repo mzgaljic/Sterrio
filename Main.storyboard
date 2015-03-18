@@ -971,7 +971,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" title="Choose Songs" id="TYv-5p-OrV">
-                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="Gtv-en-Uc5">
+                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="Gtv-en-Uc5">
                             <connections>
                                 <action selector="leftBarButtonTapped:" destination="qGO-I0-bVj" id="W2U-pd-Pfm"/>
                             </connections>

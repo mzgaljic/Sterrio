@@ -27,5 +27,6 @@
                                                             UITableViewDelegate,
                                                             MainScreenViewControllerDelegate,
                                                             UITextFieldDelegate,
-                                                            MGSwipeTableCellDelegate>
+                                                            MGSwipeTableCellDelegate,
+                                                            SDCAlertViewDelegate>
 @end

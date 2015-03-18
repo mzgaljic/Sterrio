@@ -30,7 +30,6 @@ static uint64_t lastTimeUsed;
                 return nil;
         }
     }
-    //shashank  (516)445-1101
     mostRecentTitle = title;
     mostRecentMsg = msg;
     lastTimeUsed = mach_absolute_time();

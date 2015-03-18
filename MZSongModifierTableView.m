@@ -806,7 +806,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
             default:
                 break;
         }
-    } else if(popup.tag == 3){  //album art (if this song isn't part of an album, otherwise a UIAlertView is displayed)
+    } else if(popup.tag == 3){  //album art (if this song isn't part of an album, otherwise an alert is displayed)
         switch (buttonIndex)
         {
             case 0:
@@ -872,6 +872,8 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
     alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
     alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    alert.normalButtonFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
+    alert.buttonTextColor = [UIColor defaultAppColorScheme];
     [alert show];
 }
 
@@ -1004,6 +1006,8 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
     alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
     alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    alert.normalButtonFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
+    alert.buttonTextColor = [UIColor defaultAppColorScheme];
     [alert show];
 }
 

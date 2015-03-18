@@ -9,7 +9,7 @@
 #import "MasterPlaylistTableViewController.h"
 
 @interface MasterPlaylistTableViewController ()
-@property(nonatomic, strong) UIAlertView *createPlaylistAlert;
+@property(nonatomic, strong) SDCAlertView *createPlaylistAlert;
 @property (nonatomic, strong) MySearchBar* searchBar;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
@@ -395,15 +395,21 @@
 
 - (void)displayCreatePlaylistAlert
 {
-    _createPlaylistAlert = [[UIAlertView alloc] init];
-    _createPlaylistAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
+    _createPlaylistAlert = [[SDCAlertView alloc] init];
+    _createPlaylistAlert.alertViewStyle = SDCAlertViewStylePlainTextInput;
     _createPlaylistAlert.title = @"New Playlist";
-    [_createPlaylistAlert textFieldAtIndex:0].placeholder = @"Name your new playlist";
+    [_createPlaylistAlert textFieldAtIndex:0].placeholder = @"Name me";
+    UIFont *normalFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    _createPlaylistAlert.textFieldFont = normalFont;
+    _createPlaylistAlert.normalButtonFont = normalFont;
+    _createPlaylistAlert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    _createPlaylistAlert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
     _createPlaylistAlert.delegate = self;  //delgate of entire alertView
     [_createPlaylistAlert addButtonWithTitle:@"Cancel"];
     [_createPlaylistAlert addButtonWithTitle:@"Create"];
     [_createPlaylistAlert textFieldAtIndex:0].delegate = self;  //delegate for the textField
     [_createPlaylistAlert textFieldAtIndex:0].returnKeyType = UIReturnKeyDone;
+    _createPlaylistAlert.buttonTextColor = [UIColor defaultAppColorScheme];
     [_createPlaylistAlert show];
 }
 
@@ -412,7 +418,7 @@
     [self displayCreatePlaylistAlert];
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+- (void)alertView:(SDCAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if(alertView == _createPlaylistAlert){
         if(buttonIndex == 1){

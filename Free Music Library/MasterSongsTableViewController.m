@@ -250,14 +250,17 @@ static BOOL haveCheckedCoreDataInit = NO;
         alert.titleLabelFont = [UIFont boldSystemFontOfSize:20];
         alert.messageLabelFont = [UIFont systemFontOfSize:20];
         alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:20];
+        alert.buttonTextColor = [UIColor defaultAppColorScheme];
         
         alert2.titleLabelFont = [UIFont boldSystemFontOfSize:20];
         alert2.messageLabelFont = [UIFont systemFontOfSize:20];
         alert2.suggestedButtonFont = [UIFont boldSystemFontOfSize:20];
+        alert2.buttonTextColor = [UIColor defaultAppColorScheme];
         
         alert3.titleLabelFont = [UIFont boldSystemFontOfSize:20];
         alert3.messageLabelFont = [UIFont systemFontOfSize:20];
         alert3.suggestedButtonFont = [UIFont boldSystemFontOfSize:20];
+        alert3.buttonTextColor = [UIColor defaultAppColorScheme];
         [alert3 show];
         [alert2 show];
         [alert show];
@@ -270,6 +273,7 @@ static BOOL haveCheckedCoreDataInit = NO;
         alert.titleLabelFont = [UIFont boldSystemFontOfSize:20];
         alert.messageLabelFont = [UIFont systemFontOfSize:20];
         alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:20];
+        alert.buttonTextColor = [UIColor defaultAppColorScheme];
         [alert show];
     }
 }

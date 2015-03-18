@@ -284,6 +284,7 @@ static const int CELL_STREAM_PICKER_TAG = 107;
                                        otherButtonTitles:@"Done", nil];
         [_alertView.contentView addSubview:[self createPickerView]];
         _alertView.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        _alertView.buttonTextColor = [UIColor defaultAppColorScheme];
         _alertView.suggestedButtonFont = [UIFont boldSystemFontOfSize:16];
     } else{
         
@@ -298,6 +299,7 @@ static const int CELL_STREAM_PICKER_TAG = 107;
         [_alertView.contentView addSubview:[self createPickerView]];
         _alertView.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
         _alertView.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        _alertView.buttonTextColor = [UIColor defaultAppColorScheme];
     }
     [_alertView show];
 }
@@ -508,6 +510,7 @@ static int tempIcloudSwitchCount = 0;
         alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
         alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
         alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        alert.buttonTextColor = [UIColor defaultAppColorScheme];
         [alert show];
     }
     tempIcloudSwitchCount++;
@@ -678,6 +681,7 @@ static int tempIcloudSwitchCount = 0;
     _alertView.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
     _alertView.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
     _alertView.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    _alertView.buttonTextColor = [UIColor defaultAppColorScheme];
     
     //dismissed both modal view controllers (photo picker and mail)
     [self dismissViewControllerAnimated:YES completion:^void ()
