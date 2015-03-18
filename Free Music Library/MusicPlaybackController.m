@@ -102,7 +102,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 {
     if([NSThread mainThread]){
         float seconds = CMTimeGetSeconds(player.currentItem.currentTime);
-        if((seconds <= MZSkipToSongBeginningIfBackBtnTappedBoundary
+        if(player.secondsLoaded == 0 || (seconds <= MZSkipToSongBeginningIfBackBtnTappedBoundary
             && [[NowPlayingSong sharedInstance] nowPlaying] != nil)
            || (isnan(seconds) && [[NowPlayingSong sharedInstance] nowPlaying] == nil)){
             Song *skippedSong = [MusicPlaybackController nowPlayingSong];
@@ -118,8 +118,8 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
         dispatch_async(dispatch_get_main_queue(), ^(void){
             //Run UI Updates
             float seconds = CMTimeGetSeconds(player.currentItem.currentTime);
-            if((seconds <= MZSkipToSongBeginningIfBackBtnTappedBoundary
-                && [[NowPlayingSong sharedInstance] nowPlaying] != nil)
+            if(player.secondsLoaded == 0 || (seconds <= MZSkipToSongBeginningIfBackBtnTappedBoundary
+                                             && [[NowPlayingSong sharedInstance] nowPlaying] != nil)
                || (isnan(seconds) && [[NowPlayingSong sharedInstance] nowPlaying] == nil)){
                 Song *skippedSong = [MusicPlaybackController nowPlayingSong];
                 Song *previousSong = [playbackQueue skipToPrevious];

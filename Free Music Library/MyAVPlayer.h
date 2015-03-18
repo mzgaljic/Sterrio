@@ -23,6 +23,8 @@
 //exposed for the MusicPlayerController class to view these (when updating lock screen, etc)
 @property (nonatomic, strong, readonly) NSNumber *elapsedTimeBeforeDisabling;
 @property (nonatomic, assign, readonly) BOOL playbackStarted;
+@property (nonatomic, assign, readonly) BOOL allowSongDidFinishToExecute;
+@property (nonatomic, assign, readonly) NSUInteger secondsLoaded;
 
 - (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)yes oldSong:(Song *)oldSong;
 - (void)beginPlaybackWithPlayerItem:(AVPlayerItem *)item;

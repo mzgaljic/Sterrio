@@ -12,16 +12,23 @@
 
 + (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)yes oldSong:(Song *)oldSong
 {
+    BOOL allowSongDidFinishToExecute;
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    allowSongDidFinishToExecute = player.allowSongDidFinishToExecute;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     [playerView removeLayerFromPlayer];
+    
     if([MusicPlaybackController avplayerTimeObserver] != nil)
         [player removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
+    
     [MusicPlaybackController setRawAVPlayer:nil];
     player = nil;
+    
     MyAVPlayer *newPlayer = [[MyAVPlayer  alloc] init];
+    [newPlayer allowSongDidFinishNotificationToProceed:allowSongDidFinishToExecute];
     [MusicPlaybackController setRawAVPlayer:newPlayer];
     [MusicPlaybackController setAVPlayerTimeObserver:nil];
+    
     [playerView reattachLayerToPlayer];
     [newPlayer startPlaybackOfSong:aSong goingForward:YES oldSong:oldSong];
     [VideoPlayerWrapper setupAvPlayerViewAgain];
@@ -29,16 +36,23 @@
 
 + (void)beginPlaybackWithPlayerItem:(AVPlayerItem *)item
 {
+    BOOL allowSongDidFinishToExecute;
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    allowSongDidFinishToExecute = player.allowSongDidFinishToExecute;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     [playerView removeLayerFromPlayer];
+    
     if([MusicPlaybackController avplayerTimeObserver] != nil)
         [player removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
+    
     [MusicPlaybackController setRawAVPlayer:nil];
     player = nil;
+    
     MyAVPlayer *newPlayer = [[MyAVPlayer  alloc] init];
+    [newPlayer allowSongDidFinishNotificationToProceed:allowSongDidFinishToExecute];
     [MusicPlaybackController setRawAVPlayer:newPlayer];
     [MusicPlaybackController setAVPlayerTimeObserver:nil];
+    
     [playerView reattachLayerToPlayer];
     [newPlayer beginPlaybackWithPlayerItem:item];
     [VideoPlayerWrapper setupAvPlayerViewAgain];

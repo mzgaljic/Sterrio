@@ -1139,9 +1139,10 @@ static int accomodateInterfaceLabelsCounter = 0;
     [MusicPlaybackController returnToPreviousTrack];
     [self backwardsButtonLetGo];
     
-    float seconds = CMTimeGetSeconds([MusicPlaybackController obtainRawAVPlayer].currentItem.currentTime);
-    if((seconds <= MZSkipToSongBeginningIfBackBtnTappedBoundary
-        && [[NowPlayingSong sharedInstance] nowPlaying] != nil)
+    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    float seconds = CMTimeGetSeconds(player.currentItem.currentTime);
+    if(player.secondsLoaded == 0 || (seconds <= MZSkipToSongBeginningIfBackBtnTappedBoundary
+                                     && [[NowPlayingSong sharedInstance] nowPlaying] != nil)
        || (isnan(seconds) && [[NowPlayingSong sharedInstance] nowPlaying] == nil)){
         //previous song will actually be loaded
         waitingForNextOrPrevVideoToLoad = YES;

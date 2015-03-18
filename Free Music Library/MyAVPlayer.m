@@ -11,11 +11,9 @@
 @interface MyAVPlayer ()
 {
     BOOL movingForward;  //identifies which direction the user just went (back/forward) in queue
-    BOOL allowSongDidFinishToExecute;
     BOOL canPostLastSongNotification;
     
     BOOL stallHasOccured;
-    NSUInteger secondsLoaded;
     
     NSString *AVPLAYER_DONE_PLAYING;  //queue has finished
     NSString *CURRENT_SONG_DONE_PLAYING;
@@ -46,7 +44,7 @@ static void *mPlaybackStarted = &mPlaybackStarted;
         PlaybackHasBegun = @"PlaybackStartedNotification";
         movingForward = YES;
         stallHasOccured = NO;
-        secondsLoaded = 0;
+        _secondsLoaded = 0;
         
         [self begingListeningForNotifications];
         [self registerForObservers];
@@ -119,12 +117,12 @@ static void *mPlaybackStarted = &mPlaybackStarted;
 
 - (void)allowSongDidFinishNotificationToProceed:(BOOL)proceed
 {
-    allowSongDidFinishToExecute = proceed;
+    _allowSongDidFinishToExecute = proceed;
 }
 
 - (BOOL)allowSongDidFinishValue
 {
-    return allowSongDidFinishToExecute;
+    return _allowSongDidFinishToExecute;
 }
 
 //Will be called when MyAVPlayer finishes playing an item
@@ -136,9 +134,9 @@ static void *mPlaybackStarted = &mPlaybackStarted;
     [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_DONE_PLAYING object:nil];
     [self dismissAllSpinners];
     
-    if(! allowSongDidFinishToExecute)
+    if(! _allowSongDidFinishToExecute)
         return;
-    allowSongDidFinishToExecute = NO;
+    _allowSongDidFinishToExecute = NO;
     
     if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more songs in queue
         if(movingForward)
@@ -165,7 +163,7 @@ static void *mPlaybackStarted = &mPlaybackStarted;
     [MusicPlaybackController explicitlyPausePlayback:NO];
     [SongPlayerCoordinator placePlayerInDisabledState:NO];
     
-    secondsLoaded = 0;
+    _secondsLoaded = 0;
     stallHasOccured = NO;
     NSOperationQueue *operationQueue = [[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue];
     [operationQueue cancelAllOperations];
@@ -284,8 +282,8 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
             //make copy of AVPlayerItem which will retain buffered data
             disabledPlayerItem = [self.currentItem copy];
             timeAtDisable = self.currentItem.currentTime;
-            valOfAllowSongDidFinishToExecuteBeforeDisabling = allowSongDidFinishToExecute;
-            allowSongDidFinishToExecute = NO;
+            valOfAllowSongDidFinishToExecuteBeforeDisabling = _allowSongDidFinishToExecute;
+            _allowSongDidFinishToExecute = NO;
             //force playback to stop (only way that seems to work)
             [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
             
@@ -293,7 +291,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
             //re-insert the disabled player item, with the loaded buffers intact.
             [self replaceCurrentItemWithPlayerItem:disabledPlayerItem];
             [self seekToTime:timeAtDisable toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
-            allowSongDidFinishToExecute = valOfAllowSongDidFinishToExecuteBeforeDisabling;
+            _allowSongDidFinishToExecute = valOfAllowSongDidFinishToExecuteBeforeDisabling;
             if([SongPlayerCoordinator wasPlayerInPlayStateBeforeGUIDisabled]){
                 [MusicPlaybackController explicitlyPausePlayback:NO];
                 [MusicPlaybackController resumePlayback];
@@ -461,7 +459,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
             NSUInteger totalSeconds = [[MusicPlaybackController nowPlayingSong].duration integerValue];
             if(context == mPlaybackBufferEmpty){
                 BOOL explicitlyPaused = [MusicPlaybackController playbackExplicitlyPaused];
-                if(newSecondsBuff == secondsLoaded && secondsLoaded != totalSeconds && !explicitlyPaused && !stallHasOccured){
+                if(newSecondsBuff == _secondsLoaded && _secondsLoaded != totalSeconds && !explicitlyPaused && !stallHasOccured){
                     NSLog(@"In stall");
                     stallHasOccured = YES;
                     [MusicPlaybackController setPlayerInStall:YES];
@@ -500,7 +498,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                     [self connectionStateChanged];
                     [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
                     
-                } else if(newSecondsBuff > secondsLoaded && stallHasOccured && [[ReachabilitySingleton sharedInstance] isConnectedToInternet]){
+                } else if(newSecondsBuff > _secondsLoaded && stallHasOccured && [[ReachabilitySingleton sharedInstance] isConnectedToInternet]){
                     NSLog(@"left stall");
                     stallHasOccured = NO;
                     [MusicPlaybackController setPlayerInStall:NO];
@@ -511,7 +509,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                     [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
                 }
                 //check if playback began
-                if(newSecondsBuff > secondsLoaded && self.rate == 1 && !self.playbackStarted){
+                if(newSecondsBuff > _secondsLoaded && self.rate == 1 && !self.playbackStarted){
                     _playbackStarted = YES;
                     [[NSNotificationCenter defaultCenter] postNotificationName:PlaybackHasBegun
                                                                         object:nil];
@@ -520,7 +518,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                     NSLog(@"playback started");
                     [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
                 }
-                secondsLoaded = newSecondsBuff;
+                _secondsLoaded = newSecondsBuff;
             }
         }
     }else if(context == mCurrentItem){
