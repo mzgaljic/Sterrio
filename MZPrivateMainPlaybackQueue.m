@@ -14,6 +14,8 @@
     NSUInteger fetchRequestIndex;  //keeping track where we left off within a fetchrequest
     Song *mostRecentSong;
     BOOL atEndOfQueue;
+    BOOL userWentBeyondStartOfQueue;
+    BOOL userWentBeyondEndOfQueue;
 }
 @end
 @implementation MZPrivateMainPlaybackQueue
@@ -27,6 +29,8 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
         playbackContext = nil;
         fetchRequestIndex = 0;
         atEndOfQueue = NO;
+        userWentBeyondStartOfQueue = NO;
+        userWentBeyondEndOfQueue = NO;
     }
     return self;
 }
@@ -51,6 +55,9 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
     playbackContext = nil;
     playbackContext = aContext;
     atEndOfQueue = NO;
+    userWentBeyondStartOfQueue = NO;
+    userWentBeyondEndOfQueue = NO;
+    
     NSArray *songs = [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
                                                           nowPlayingInclusive:YES
                                                            onlyUnplayedTracks:NO];
@@ -83,13 +90,61 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
     mostRecentSong = nil;
     fetchRequestIndex = 0;
     atEndOfQueue = NO;
+    userWentBeyondStartOfQueue = NO;
+    userWentBeyondEndOfQueue = NO;
 }
 
 - (PreliminaryNowPlaying *)skipToPrevious
 {
-    //set atEndOfQueue to NO if an actual song is returned.
-#warning broken for now.
-    return nil;
+    if(playbackContext == nil)
+        return nil;
+    else{
+        NSArray *songs = [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
+                                                              nowPlayingInclusive:YES
+                                                               onlyUnplayedTracks:NO];
+        if(songs.count > 0){
+            NSUInteger index = [songs indexOfObject:mostRecentSong];
+            if(index != fetchRequestIndex)
+                fetchRequestIndex = index;
+            
+            if(fetchRequestIndex == 0){
+                //value is 0 before decrementing
+                if(songs.count == 1)
+                    atEndOfQueue = YES;
+                userWentBeyondStartOfQueue = YES;
+                return nil;  //no songs before index 0.
+            }
+            if(userWentBeyondEndOfQueue){
+                //dont actually decrement the index, just return the last song since the
+                //user previously skipped "past" the last index in the array.
+                userWentBeyondEndOfQueue = NO;
+                mostRecentSong = [songs objectAtIndex:index];
+                PreliminaryNowPlaying *newNowPlaying = [[PreliminaryNowPlaying alloc] init];
+                newNowPlaying.aNewSong = mostRecentSong;
+                newNowPlaying.aNewContext = playbackContext;
+                return newNowPlaying;
+            }
+            
+            
+            //fetchRequestIndex is unsigned, will only be decremented here if the previous value
+            //was greater than 0 (avoiding accidentally setting it to a negative value).
+            index = --fetchRequestIndex;
+            
+            if(fetchRequestIndex == songs.count-1 || fetchRequestIndex > songs.count-1){
+                atEndOfQueue = YES;
+            } else
+                atEndOfQueue = NO;
+            
+            //simply grabbing the next song
+            mostRecentSong = [songs objectAtIndex:index];
+            PreliminaryNowPlaying *newNowPlaying = [[PreliminaryNowPlaying alloc] init];
+            newNowPlaying.aNewSong = mostRecentSong;
+            newNowPlaying.aNewContext = playbackContext;
+            return newNowPlaying;
+        } else{
+            return nil;
+        }
+    }
 }
 
 - (PreliminaryNowPlaying *)skipForward
@@ -104,6 +159,23 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
             NSUInteger index = [songs indexOfObject:mostRecentSong];
             if(index != fetchRequestIndex)
                 fetchRequestIndex = index;
+            if(userWentBeyondStartOfQueue){
+                //user is just going to play song at index 0 now, since they previously went
+                //"behind" the bounds of index 0.
+                userWentBeyondStartOfQueue = NO;
+                mostRecentSong = [songs objectAtIndex:index];
+                PreliminaryNowPlaying *newNowPlaying = [[PreliminaryNowPlaying alloc] init];
+                newNowPlaying.aNewSong = mostRecentSong;
+                newNowPlaying.aNewContext = playbackContext;
+                return newNowPlaying;
+            } else if(userWentBeyondEndOfQueue)
+                return nil;
+            else if(fetchRequestIndex == songs.count-1){
+                //dont let user beyond end of array.
+                userWentBeyondEndOfQueue = YES;
+                return nil;
+            }
+            
             index = ++fetchRequestIndex;
             
             if(fetchRequestIndex > songs.count-1){
@@ -154,8 +226,8 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
         }
         desiredSubArray = [array subarrayWithRange:NSMakeRange(nowPlayingIndex+1, (array.count-1) - nowPlayingIndex)];
     }
-    if(atEndOfQueue)
-        desiredSubArray = [NSArray array];
+    if(atEndOfQueue && !unplayed)
+        desiredSubArray = array;
     else if(desiredSubArray == nil && !unplayed)
         desiredSubArray = array;
     [compiledSongs addObjectsFromArray:desiredSubArray];

@@ -128,9 +128,27 @@
 
 - (Song *)skipToPrevious
 {
-    Song *desiredSong = [mainQueue skipToPrevious].aNewSong;
+    PreliminaryNowPlaying *newNowPlaying = [mainQueue skipToPrevious];
+    
+    //user cant go backwards
+    if(newNowPlaying.aNewSong == nil){
+        //see if there is a up next queued song
+        
+        newNowPlaying = [upNextQueue obtainAndRemoveNextSong];
+        BOOL upNextQueueNotEmptyYet = (newNowPlaying.aNewSong != nil);
+        if(upNextQueueNotEmptyYet){
+            [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:YES];
+        } else{
+            //just update this var. Dont skip forward, let user be in control of that.
+            [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:NO];
+        }
+    } else
+        [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:NO];
+    
     [self printQueueContents];
-    return desiredSong;
+    [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newNowPlaying.aNewSong
+                                                  context:newNowPlaying.aNewContext];
+    return newNowPlaying.aNewSong;
 }
 - (Song *)skipForward
 {

@@ -221,12 +221,6 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
         _playbackSlider.enabled = NO;
     }
     
-    //check if this song is the last one
-    if([MusicPlaybackController isSongLastInQueue:nowPlaying])
-        [self hideNextTrackButton];
-    if([MusicPlaybackController isSongFirstInQueue:nowPlaying])
-        [self hidePreviousTrackButton];
-    
      //make sure slider hint view is at the same height as the nav bar...only in portrait
     if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
         [self setupSliderHintView];
@@ -707,9 +701,6 @@ static int accomodateInterfaceLabelsCounter = 0;
     else
         [_playbackSlider setValue:0];
     waitingForNextOrPrevVideoToLoad = NO;
-    
-    if(! [MusicPlaybackController isSongFirstInQueue:[MusicPlaybackController nowPlayingSong]])
-        [self showPreviousTrackButton];
 }
 
 //this is the one called from the notification when the player starts, hence it forces the "play" state.
@@ -730,8 +721,6 @@ static int accomodateInterfaceLabelsCounter = 0;
     [MusicPlaybackController resumePlayback];
     
     [self displayTotalSliderAndLabelDuration];
-    if(! [MusicPlaybackController isSongFirstInQueue:[MusicPlaybackController nowPlayingSong]])
-        [self showPreviousTrackButton];
 }
 
 #pragma mark - Initializing & Registering Buttons
@@ -1149,16 +1138,12 @@ static int accomodateInterfaceLabelsCounter = 0;
     [self backwardsButtonLetGo];
     
     float seconds = CMTimeGetSeconds([MusicPlaybackController obtainRawAVPlayer].currentItem.currentTime);
-    if(seconds < MZSkipToSongBeginningIfBackBtnTappedBoundary){
+    if((seconds <= MZSkipToSongBeginningIfBackBtnTappedBoundary
+       && [[NowPlayingSong sharedInstance] nowPlaying] != nil)
+       || seconds != NAN){
         //previous song will actually be loaded
         waitingForNextOrPrevVideoToLoad = YES;
-        [MusicPlaybackController pausePlayback];
         self.playbackSlider.enabled = NO;
-        [self showNextTrackButton];  //in case it wasnt on screen already
-        
-        //check if this next song is the first one in the queue
-        if([MusicPlaybackController isSongFirstInQueue:[MusicPlaybackController nowPlayingSong]])
-            [self hidePreviousTrackButton];
     }
     //else the song will simply start from the beginning...
 }
@@ -1200,15 +1185,9 @@ static int accomodateInterfaceLabelsCounter = 0;
 - (void)forwardsButtonTappedOnce
 {
     waitingForNextOrPrevVideoToLoad = YES;
-    [MusicPlaybackController pausePlayback];
     self.playbackSlider.enabled = NO;
     [MusicPlaybackController skipToNextTrack];
     [self forwardsButtonLetGo];
-    [self showPreviousTrackButton];
-    
-    //check if this next song is the last one
-    if([MusicPlaybackController isSongLastInQueue:[MusicPlaybackController nowPlayingSong]])
-        [self hideNextTrackButton];
 }
 
 - (void)forwardsButtonBeingHeld{ [self addShadowToButton:forwardButton]; }
@@ -1264,33 +1243,6 @@ static int accomodateInterfaceLabelsCounter = 0;
     [self preDealloc];
     if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark - Adding and removing GUI buttons on the fly
-- (void)hideNextTrackButton
-{
-    [forwardButton removeFromSuperview];
-}
-
-- (void)showNextTrackButton
-{
-    if([forwardButton isDescendantOfView:self.view])
-        return;
-    else
-        [self.view addSubview:forwardButton];
-}
-
-- (void)hidePreviousTrackButton
-{
-    [backwardButton removeFromSuperview];
-}
-
-- (void)showPreviousTrackButton
-{
-    if([backwardButton isDescendantOfView:self.view])
-        return;
-    else
-        [self.view addSubview:backwardButton];
 }
 
 

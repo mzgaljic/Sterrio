@@ -496,7 +496,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                                        padding:50
                                                       callback:^BOOL(MGSwipeTableCell *sender)
                                  {
-                                     
                                      NSIndexPath *indexPath;
                                      indexPath= [weakSelf.tableView indexPathForCell:sender];
                                      [weakSelf tableView:weakSelf.tableView
