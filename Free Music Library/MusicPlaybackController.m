@@ -185,8 +185,8 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 
 + (NSString *)prettyPrintNavBarTitle
 {
-    //return [NSString stringWithFormat:@"%d of %d", (int)[MusicPlaybackController indexOfNowPlaying]+1,
-     //                                              (int)[MusicPlaybackController sizeOfEntireQueue]];
+    if([nowPlayingObject nowPlaying] == nil)
+        return @"";
     if([nowPlayingObject isFromPlayNextSongs]){
         NSUInteger numMoreSongs = [playbackQueue numMoreSongsInUpNext];
         if(numMoreSongs == 0)

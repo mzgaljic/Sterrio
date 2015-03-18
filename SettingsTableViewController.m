@@ -605,8 +605,6 @@ static int tempIcloudSwitchCount = 0;
     
     if(picker)
         picker = nil;
-    
-    _photoPicker = nil;
 }
 
 - (NSString *)buildEmailBodyString
@@ -717,6 +715,8 @@ static int tempIcloudSwitchCount = 0;
                 _attachmentUIImages = [NSMutableArray array];
                 
                 _photoPicker = [[ELCImagePickerController alloc] initImagePicker];
+                _photoPicker.view.tintColor = [UIColor defaultWindowTintColor];
+                _photoPicker.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
                 _photoPicker.maximumImagesCount = 3; //Set the maximum number of images to select, defaults to 3
                 _photoPicker.returnsOriginalImage = YES; //Only return the fullScreenImage, not the fullResolutionImage
                 _photoPicker.returnsImage = YES; //Return UIimage if YES. If NO, only return asset location information
@@ -742,7 +742,6 @@ static int tempIcloudSwitchCount = 0;
     //populate our array with the users images
     for (NSDictionary *imageDictionary in info)
         [_attachmentUIImages addObject:[imageDictionary objectForKey:UIImagePickerControllerOriginalImage]];
-    
     [self launchEmailPicker];
     //photo picker is dismissed after mail popup is dismissed (both modal views are dismiseed at same time)
 }
