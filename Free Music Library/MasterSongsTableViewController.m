@@ -94,7 +94,7 @@ static BOOL haveCheckedCoreDataInit = NO;
 {
     if([self numberOfSongsInCoreDataModel] > 0){
         //create search bar, add to viewController
-        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Library"];
+        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Music"];
         _searchBar.delegate = self;
         self.tableView.tableHeaderView = _searchBar;
     }
@@ -176,12 +176,7 @@ static BOOL haveCheckedCoreDataInit = NO;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
-        _searchBar = nil;
-        self.tableView.tableHeaderView = nil;
-    }
     [self setUpSearchBar];
-    [self.tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -489,16 +484,14 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                        }]];
     } else if(direction == MGSwipeDirectionRightToLeft){
         expansionSettings.fillOnTrigger = YES;
-        expansionSettings.threshold = 1.1;
-        expansionSettings.expansionLayout = MGSwipeExpansionLayoutCenter;
+        expansionSettings.threshold = 2.3;
         expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
-        swipeSettings.transition = MGSwipeTransitionClipCenter;
-        swipeSettings.threshold = 50;
+        swipeSettings.transition = MGSwipeTransitionBorder;
         
         __weak MasterSongsTableViewController *weakSelf = self;
         MGSwipeButton *delete = [MGSwipeButton buttonWithTitle:@"Delete"
-                                               backgroundColor:initialExpansionColor
-                                                       padding:50
+                                               backgroundColor:expansionSettings.expansionColor
+                                                       padding:15
                                                       callback:^BOOL(MGSwipeTableCell *sender)
                                  {
                                      NSIndexPath *indexPath;

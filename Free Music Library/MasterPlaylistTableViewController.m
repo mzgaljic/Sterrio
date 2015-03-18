@@ -88,7 +88,7 @@
     //playlists tab is never the first one on screen. no need to animate it
     if([self numberOfPlaylistsInCoreDataModel] > 0){
         //create search bar, add to viewController
-        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Library"];
+        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Music"];
         _searchBar.delegate = self;
         self.tableView.tableHeaderView = _searchBar;
     }
@@ -176,12 +176,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    if([self numberOfPlaylistsInCoreDataModel] == 0){ //dont need search bar anymore
-        _searchBar = nil;
-        self.tableView.tableHeaderView = nil;
-    }
     [self setUpSearchBar];
-    [self.tableView reloadData];
 }
 
 - (void)viewDidLoad
@@ -221,9 +216,6 @@
     
     MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
                                                              forIndexPath:indexPath];
-    MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
-                                                                               color:[[UIColor defaultAppColorScheme] lighterColor]];
-    cell.accessoryView = coloredDisclosureIndicator;
     cell.textLabel.attributedText = [PlaylistTableViewFormatter formatPlaylistLabelUsingPlaylist:playlist];
     PlaybackContext *playlistsContext = [self contextForPlaylist:playlist];
     NowPlayingSong *nowPlayingSongObj = [NowPlayingSong sharedInstance];
@@ -360,19 +352,16 @@
                                        }]];
     } else if(direction == MGSwipeDirectionRightToLeft){
         expansionSettings.fillOnTrigger = YES;
-        expansionSettings.threshold = 1.1;
-        expansionSettings.expansionLayout = MGSwipeExpansionLayoutCenter;
+        expansionSettings.threshold = 2.3;
         expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
-        swipeSettings.transition = MGSwipeTransitionClipCenter;
-        swipeSettings.threshold = 50;
+        swipeSettings.transition = MGSwipeTransitionBorder;
         
         __weak MasterPlaylistTableViewController *weakSelf = self;
         MGSwipeButton *delete = [MGSwipeButton buttonWithTitle:@"Delete"
-                                               backgroundColor:initialExpansionColor
-                                                       padding:50
+                                               backgroundColor:expansionSettings.expansionColor
+                                                       padding:15
                                                       callback:^BOOL(MGSwipeTableCell *sender)
                                  {
-                                     
                                      NSIndexPath *indexPath;
                                      indexPath= [weakSelf.tableView indexPathForCell:sender];
                                      [weakSelf tableView:weakSelf.tableView

@@ -250,16 +250,14 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                        }]];
     } else if(direction == MGSwipeDirectionRightToLeft){
         expansionSettings.fillOnTrigger = YES;
-        expansionSettings.threshold = 1.1;
-        expansionSettings.expansionLayout = MGSwipeExpansionLayoutCenter;
+        expansionSettings.threshold = 2.3;
         expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
-        swipeSettings.transition = MGSwipeTransitionClipCenter;
-        swipeSettings.threshold = 50;
+        swipeSettings.transition = MGSwipeTransitionBorder;
         
         __weak PlaylistItemTableViewController *weakSelf = self;
         MGSwipeButton *delete = [MGSwipeButton buttonWithTitle:@"Delete"
-                                               backgroundColor:initialExpansionColor
-                                                       padding:50
+                                               backgroundColor:expansionSettings.expansionColor
+                                                       padding:15
                                                       callback:^BOOL(MGSwipeTableCell *sender)
                                  {
                                      

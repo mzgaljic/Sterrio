@@ -131,26 +131,23 @@ static void *navBarHiddenChange = &navBarHiddenChange;
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)aTableView
 {
     NSUInteger sectionCount;
-    NSNumber *objsInSectionNum;
-    //used to avoid faulting objects when asking fetchResultsController how many objects exist
-    NSString *objsInSectionPathNum = @"@sum.numberOfObjects";
+    NSUInteger numObjsInTable;
     if(_displaySearchResults){
         sectionCount =  [[self.searchFetchedResultsController sections] count];
-        objsInSectionNum = [self.searchFetchedResultsController.sections
-                            valueForKeyPath:objsInSectionPathNum];
+        numObjsInTable = [self numObjectsInTable];
         
-        //display no search results message
-        if([objsInSectionNum integerValue] == 0){
+        if(numObjsInTable == 0){
             NSString *text = @"No Search Results";
             tableView.backgroundView = [self friendlyTableEmptyUserMessageWithText:text];
         } else
             [self removeEmptyTableUserMessage];
-    } else{
+    }
+    else
+    {
         sectionCount =  [[self.fetchedResultsController sections] count];
-        objsInSectionNum = [self.fetchedResultsController.sections valueForKeyPath:objsInSectionPathNum];
+        numObjsInTable = [self numObjectsInTable];
         
-        //display empty tableview message
-        if([objsInSectionNum integerValue] == 0){
+        if(numObjsInTable == 0){
             NSString *text = self.emptyTableUserMessage;
             tableView.backgroundView = [self friendlyTableEmptyUserMessageWithText:text];
         } else
@@ -195,7 +192,7 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     }
 }
 
-#pragma  mark - TableView Empty Tableview helper
+#pragma  mark - TableView helpers
 - (UIView *)friendlyTableEmptyUserMessageWithText:(NSString *)text
 {
     tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -219,6 +216,19 @@ static void *navBarHiddenChange = &navBarHiddenChange;
 {
     tableView.backgroundView = nil;
     tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+}
+
+- (NSUInteger)numObjectsInTable
+{
+    NSNumber *totalObjCount;
+    //used to avoid faulting objects when asking fetchResultsController how many objects exist
+    NSString *totalObjCountPathNum = @"@sum.numberOfObjects";
+    if(_displaySearchResults)
+        totalObjCount = [self.searchFetchedResultsController.sections
+                         valueForKeyPath:totalObjCountPathNum];
+    else
+        totalObjCount = [self.fetchedResultsController.sections valueForKeyPath:totalObjCountPathNum];
+    return [totalObjCount integerValue];
 }
 
 #pragma mark - NSFetchedResultsControllerDelegate
@@ -311,7 +321,16 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     //going to fade in tableview
     tableView.alpha = 0.8;
     [self hideSearchBarByDefaultIfApplicable];
-    tableView.contentOffset = CGPointMake(tableView.contentOffset.x, lastKnownTableViewVerticalContentOffset);
+    tableView.contentOffset = CGPointMake(tableView.contentOffset.x,
+                                          lastKnownTableViewVerticalContentOffset);
+    
+    if([self numObjectsInTable] == 0){ //dont need search bar anymore
+        searchBar = nil;
+        tableView.tableHeaderView = nil;
+    }
+    
+    //without this, font size changes are totally screwed up
+    [tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated

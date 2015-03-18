@@ -47,20 +47,10 @@ static const short NORMAL_PLAYLIST = -1;
 - (void)setUpSearchBar
 {
     if([self numberOfSongsInCoreDataModel] > 0){
-        //BOOL needToAnimateUp = (self.searchBar == nil);
         //create search bar, add to viewController
-        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Library"];
+        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Music"];
         _searchBar.delegate = self;
         self.tableView.tableHeaderView = _searchBar;
-        /*
-        if(needToAnimateUp){
-            //now hide it by default
-            __weak UISearchBar *weakSearchBar = self.searchBar;
-            __weak UITableView *weakTableView = self.tableView;
-            [UIView animateWithDuration:0.7f delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-                weakTableView.contentOffset = CGPointMake(0, weakSearchBar.frame.size.height);
-            } completion:nil];
-        }*/
     }
     [self setSearchBar:self.searchBar];
 }
@@ -143,11 +133,6 @@ static const short NORMAL_PLAYLIST = -1;
     _songsSelected = [NSMutableArray array];
     [self setUpSearchBar];
     
-    if([self numberOfSongsInCoreDataModel] == 0){ //dont need search bar anymore
-        _searchBar = nil;
-        self.tableView.tableHeaderView = nil;
-    }
-    
     //init tableView model
     if([_receiverPlaylist.status shortValue] == IN_CREATION){  //creating new playlist
         self.rightBarButton.title = AddLater_String;
@@ -161,7 +146,6 @@ static const short NORMAL_PLAYLIST = -1;
     
     //needed to make UITableViewCellAccessoryCheckmark the nav bar color!
     self.tableView.tintColor = [UIColor defaultAppColorScheme];
-    [self.tableView reloadData];
 }
 
 - (void)viewDidLoad

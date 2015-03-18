@@ -61,6 +61,22 @@
 		87480DD7192C1FBD005CC0A4 /* Free_Music_LibraryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 87480DD6192C1FBD005CC0A4 /* Free_Music_LibraryTests.m */; };
 		874C535C19831825000382FA /* NSString+WhiteSpace_Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = 874C535B19831825000382FA /* NSString+WhiteSpace_Utility.m */; };
 		874C535F19844201000382FA /* NSObject+ObjectUUID.m in Sources */ = {isa = PBXBuildFile; fileRef = 874C535E19844201000382FA /* NSObject+ObjectUUID.m */; };
+		874DA0861ABA11DD003D69D6 /* MRBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA0611ABA11DD003D69D6 /* MRBlurView.m */; };
+		874DA0871ABA11DD003D69D6 /* UIImage+MRImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA0631ABA11DD003D69D6 /* UIImage+MRImageEffects.m */; };
+		874DA0881ABA11DD003D69D6 /* MRActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA0661ABA11DD003D69D6 /* MRActivityIndicatorView.m */; };
+		874DA0891ABA11DD003D69D6 /* MRCircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA0681ABA11DD003D69D6 /* MRCircularProgressView.m */; };
+		874DA08A1ABA11DD003D69D6 /* MRIconView.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA06A1ABA11DD003D69D6 /* MRIconView.m */; };
+		874DA08B1ABA11DD003D69D6 /* MRNavigationBarProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA06C1ABA11DD003D69D6 /* MRNavigationBarProgressView.m */; };
+		874DA08C1ABA11DD003D69D6 /* MRProgressOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA06E1ABA11DD003D69D6 /* MRProgressOverlayView.m */; };
+		874DA08D1ABA11DD003D69D6 /* MRProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA0701ABA11DD003D69D6 /* MRProgressView.m */; };
+		874DA08E1ABA11DD003D69D6 /* MRStopButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA0731ABA11DD003D69D6 /* MRStopButton.m */; };
+		874DA08F1ABA11DD003D69D6 /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 874DA0751ABA11DD003D69D6 /* README.txt */; };
+		874DA0901ABA11DD003D69D6 /* MRActivityIndicatorView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA0791ABA11DD003D69D6 /* MRActivityIndicatorView+AFNetworking.m */; };
+		874DA0911ABA11DD003D69D6 /* MRProgressOverlayView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA07B1ABA11DD003D69D6 /* MRProgressOverlayView+AFNetworking.m */; };
+		874DA0921ABA11DD003D69D6 /* MRProgressView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA07D1ABA11DD003D69D6 /* MRProgressView+AFNetworking.m */; };
+		874DA0931ABA11DD003D69D6 /* MRMessageInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA0801ABA11DD003D69D6 /* MRMessageInterceptor.m */; };
+		874DA0941ABA11DD003D69D6 /* MRMethodCopier.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA0821ABA11DD003D69D6 /* MRMethodCopier.m */; };
+		874DA0951ABA11DD003D69D6 /* MRWeakProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA0851ABA11DD003D69D6 /* MRWeakProxy.m */; };
 		87501580198C3D5300382945 /* YoutubeResultsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8750157F198C3D5300382945 /* YoutubeResultsTableViewController.m */; };
 		875984A5195D764700015243 /* PlaylistItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875984A4195D764700015243 /* PlaylistItemTableViewController.m */; };
 		875984A8195D775500015243 /* GenreItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875984A7195D775500015243 /* GenreItemTableViewController.m */; };
@@ -262,6 +278,40 @@
 		874C535B19831825000382FA /* NSString+WhiteSpace_Utility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+WhiteSpace_Utility.m"; sourceTree = "<group>"; };
 		874C535D19844201000382FA /* NSObject+ObjectUUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+ObjectUUID.h"; sourceTree = "<group>"; };
 		874C535E19844201000382FA /* NSObject+ObjectUUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+ObjectUUID.m"; sourceTree = "<group>"; };
+		874DA0601ABA11DD003D69D6 /* MRBlurView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRBlurView.h; sourceTree = "<group>"; };
+		874DA0611ABA11DD003D69D6 /* MRBlurView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRBlurView.m; sourceTree = "<group>"; };
+		874DA0621ABA11DD003D69D6 /* UIImage+MRImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+MRImageEffects.h"; sourceTree = "<group>"; };
+		874DA0631ABA11DD003D69D6 /* UIImage+MRImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+MRImageEffects.m"; sourceTree = "<group>"; };
+		874DA0651ABA11DD003D69D6 /* MRActivityIndicatorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRActivityIndicatorView.h; sourceTree = "<group>"; };
+		874DA0661ABA11DD003D69D6 /* MRActivityIndicatorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRActivityIndicatorView.m; sourceTree = "<group>"; };
+		874DA0671ABA11DD003D69D6 /* MRCircularProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRCircularProgressView.h; sourceTree = "<group>"; };
+		874DA0681ABA11DD003D69D6 /* MRCircularProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRCircularProgressView.m; sourceTree = "<group>"; };
+		874DA0691ABA11DD003D69D6 /* MRIconView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRIconView.h; sourceTree = "<group>"; };
+		874DA06A1ABA11DD003D69D6 /* MRIconView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRIconView.m; sourceTree = "<group>"; };
+		874DA06B1ABA11DD003D69D6 /* MRNavigationBarProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRNavigationBarProgressView.h; sourceTree = "<group>"; };
+		874DA06C1ABA11DD003D69D6 /* MRNavigationBarProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRNavigationBarProgressView.m; sourceTree = "<group>"; };
+		874DA06D1ABA11DD003D69D6 /* MRProgressOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRProgressOverlayView.h; sourceTree = "<group>"; };
+		874DA06E1ABA11DD003D69D6 /* MRProgressOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRProgressOverlayView.m; sourceTree = "<group>"; };
+		874DA06F1ABA11DD003D69D6 /* MRProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRProgressView.h; sourceTree = "<group>"; };
+		874DA0701ABA11DD003D69D6 /* MRProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRProgressView.m; sourceTree = "<group>"; };
+		874DA0711ABA11DD003D69D6 /* MRStopableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRStopableView.h; sourceTree = "<group>"; };
+		874DA0721ABA11DD003D69D6 /* MRStopButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRStopButton.h; sourceTree = "<group>"; };
+		874DA0731ABA11DD003D69D6 /* MRStopButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRStopButton.m; sourceTree = "<group>"; };
+		874DA0741ABA11DD003D69D6 /* MRProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRProgress.h; sourceTree = "<group>"; };
+		874DA0751ABA11DD003D69D6 /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
+		874DA0781ABA11DD003D69D6 /* MRActivityIndicatorView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MRActivityIndicatorView+AFNetworking.h"; sourceTree = "<group>"; };
+		874DA0791ABA11DD003D69D6 /* MRActivityIndicatorView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MRActivityIndicatorView+AFNetworking.m"; sourceTree = "<group>"; };
+		874DA07A1ABA11DD003D69D6 /* MRProgressOverlayView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MRProgressOverlayView+AFNetworking.h"; sourceTree = "<group>"; };
+		874DA07B1ABA11DD003D69D6 /* MRProgressOverlayView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MRProgressOverlayView+AFNetworking.m"; sourceTree = "<group>"; };
+		874DA07C1ABA11DD003D69D6 /* MRProgressView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MRProgressView+AFNetworking.h"; sourceTree = "<group>"; };
+		874DA07D1ABA11DD003D69D6 /* MRProgressView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MRProgressView+AFNetworking.m"; sourceTree = "<group>"; };
+		874DA07F1ABA11DD003D69D6 /* MRMessageInterceptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRMessageInterceptor.h; sourceTree = "<group>"; };
+		874DA0801ABA11DD003D69D6 /* MRMessageInterceptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRMessageInterceptor.m; sourceTree = "<group>"; };
+		874DA0811ABA11DD003D69D6 /* MRMethodCopier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRMethodCopier.h; sourceTree = "<group>"; };
+		874DA0821ABA11DD003D69D6 /* MRMethodCopier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRMethodCopier.m; sourceTree = "<group>"; };
+		874DA0831ABA11DD003D69D6 /* MRProgressHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRProgressHelper.h; sourceTree = "<group>"; };
+		874DA0841ABA11DD003D69D6 /* MRWeakProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRWeakProxy.h; sourceTree = "<group>"; };
+		874DA0851ABA11DD003D69D6 /* MRWeakProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRWeakProxy.m; sourceTree = "<group>"; };
 		8750157E198C3D5300382945 /* YoutubeResultsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YoutubeResultsTableViewController.h; sourceTree = "<group>"; };
 		8750157F198C3D5300382945 /* YoutubeResultsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YoutubeResultsTableViewController.m; sourceTree = "<group>"; };
 		875984A3195D764700015243 /* PlaylistItemTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistItemTableViewController.h; sourceTree = "<group>"; };
@@ -742,6 +792,87 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		874DA05E1ABA11DD003D69D6 /* MRProgress */ = {
+			isa = PBXGroup;
+			children = (
+				874DA05F1ABA11DD003D69D6 /* Blur */,
+				874DA0641ABA11DD003D69D6 /* Components */,
+				874DA0741ABA11DD003D69D6 /* MRProgress.h */,
+				874DA0751ABA11DD003D69D6 /* README.txt */,
+				874DA0761ABA11DD003D69D6 /* Support */,
+				874DA07E1ABA11DD003D69D6 /* Utils */,
+			);
+			path = MRProgress;
+			sourceTree = "<group>";
+		};
+		874DA05F1ABA11DD003D69D6 /* Blur */ = {
+			isa = PBXGroup;
+			children = (
+				874DA0601ABA11DD003D69D6 /* MRBlurView.h */,
+				874DA0611ABA11DD003D69D6 /* MRBlurView.m */,
+				874DA0621ABA11DD003D69D6 /* UIImage+MRImageEffects.h */,
+				874DA0631ABA11DD003D69D6 /* UIImage+MRImageEffects.m */,
+			);
+			path = Blur;
+			sourceTree = "<group>";
+		};
+		874DA0641ABA11DD003D69D6 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				874DA0651ABA11DD003D69D6 /* MRActivityIndicatorView.h */,
+				874DA0661ABA11DD003D69D6 /* MRActivityIndicatorView.m */,
+				874DA0671ABA11DD003D69D6 /* MRCircularProgressView.h */,
+				874DA0681ABA11DD003D69D6 /* MRCircularProgressView.m */,
+				874DA0691ABA11DD003D69D6 /* MRIconView.h */,
+				874DA06A1ABA11DD003D69D6 /* MRIconView.m */,
+				874DA06B1ABA11DD003D69D6 /* MRNavigationBarProgressView.h */,
+				874DA06C1ABA11DD003D69D6 /* MRNavigationBarProgressView.m */,
+				874DA06D1ABA11DD003D69D6 /* MRProgressOverlayView.h */,
+				874DA06E1ABA11DD003D69D6 /* MRProgressOverlayView.m */,
+				874DA06F1ABA11DD003D69D6 /* MRProgressView.h */,
+				874DA0701ABA11DD003D69D6 /* MRProgressView.m */,
+				874DA0711ABA11DD003D69D6 /* MRStopableView.h */,
+				874DA0721ABA11DD003D69D6 /* MRStopButton.h */,
+				874DA0731ABA11DD003D69D6 /* MRStopButton.m */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		874DA0761ABA11DD003D69D6 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				874DA0771ABA11DD003D69D6 /* AFNetworking */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		874DA0771ABA11DD003D69D6 /* AFNetworking */ = {
+			isa = PBXGroup;
+			children = (
+				874DA0781ABA11DD003D69D6 /* MRActivityIndicatorView+AFNetworking.h */,
+				874DA0791ABA11DD003D69D6 /* MRActivityIndicatorView+AFNetworking.m */,
+				874DA07A1ABA11DD003D69D6 /* MRProgressOverlayView+AFNetworking.h */,
+				874DA07B1ABA11DD003D69D6 /* MRProgressOverlayView+AFNetworking.m */,
+				874DA07C1ABA11DD003D69D6 /* MRProgressView+AFNetworking.h */,
+				874DA07D1ABA11DD003D69D6 /* MRProgressView+AFNetworking.m */,
+			);
+			path = AFNetworking;
+			sourceTree = "<group>";
+		};
+		874DA07E1ABA11DD003D69D6 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				874DA07F1ABA11DD003D69D6 /* MRMessageInterceptor.h */,
+				874DA0801ABA11DD003D69D6 /* MRMessageInterceptor.m */,
+				874DA0811ABA11DD003D69D6 /* MRMethodCopier.h */,
+				874DA0821ABA11DD003D69D6 /* MRMethodCopier.m */,
+				874DA0831ABA11DD003D69D6 /* MRProgressHelper.h */,
+				874DA0841ABA11DD003D69D6 /* MRWeakProxy.h */,
+				874DA0851ABA11DD003D69D6 /* MRWeakProxy.m */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		8750157D198C29CC00382945 /* Adding Music To Library */ = {
 			isa = PBXGroup;
 			children = (
@@ -973,6 +1104,7 @@
 		87A453A0199C0825004D1319 /* Imported Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				874DA05E1ABA11DD003D69D6 /* MRProgress */,
 				876210481AB65CB800CCBDA9 /* MGSwipeTableCell */,
 				876210421AB6362200CCBDA9 /* BAPulseEffect */,
 				87C0BD5519C564CA00EB7D91 /* AutoScrollLabel */,
@@ -1327,6 +1459,7 @@
 				87A453D0199C0891004D1319 /* ELCAssetPicker.xib in Resources */,
 				87A453D1199C0891004D1319 /* ELCAssetTablePicker.xib in Resources */,
 				872EA4DE1A54CAAB00F8EE9D /* iOSDeviceModelMapping.plist in Resources */,
+				874DA08F1ABA11DD003D69D6 /* README.txt in Resources */,
 				87D16D621931B7EE00DB6A34 /* Podfile in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1398,6 +1531,7 @@
 				8780134F199C854E004727A0 /* ExistingArtistPickerTableViewController.m in Sources */,
 				87DB103219C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m in Sources */,
 				87A453C9199C0891004D1319 /* ELCAsset.m in Sources */,
+				874DA08E1ABA11DD003D69D6 /* MRStopButton.m in Sources */,
 				87124BA419A3CBB8003D29CD /* AlbumModelHandler.m in Sources */,
 				87E5FF3F1A6F42AD00A09652 /* MZSongModifierTableView.m in Sources */,
 				8763351B1A84052600A229C4 /* MainScreenViewController.m in Sources */,
@@ -1412,21 +1546,26 @@
 				873001BB1A74950000C9921A /* CoreDataErrorViewController.m in Sources */,
 				87D3743B199B13B300D3B70B /* UIButton+ExpandedHitArea.m in Sources */,
 				873EEA871A4BBA210092A6DF /* YouTubeVideo.m in Sources */,
+				874DA0901ABA11DD003D69D6 /* MRActivityIndicatorView+AFNetworking.m in Sources */,
 				871BA8921A5A2F4100FB87A7 /* Song.m in Sources */,
 				872EA4D61A54A98B00F8EE9D /* MyAlerts.m in Sources */,
+				874DA08B1ABA11DD003D69D6 /* MRNavigationBarProgressView.m in Sources */,
 				87501580198C3D5300382945 /* YoutubeResultsTableViewController.m in Sources */,
 				875984A5195D764700015243 /* PlaylistItemTableViewController.m in Sources */,
 				871BA8951A5A2F4100FB87A7 /* Album.m in Sources */,
 				87D47D991934289F0057D49B /* MasterGenreTableViewController.m in Sources */,
 				87AE39751A4A8E6400C278BA /* PreloadedCoreDataModelUtility.m in Sources */,
 				87BC1B891A071979000D9B0C /* PlayerView.m in Sources */,
+				874DA0871ABA11DD003D69D6 /* UIImage+MRImageEffects.m in Sources */,
 				872EA4DC1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.m in Sources */,
 				87A453D5199C0891004D1319 /* ELCImagePickerDemoViewController.m in Sources */,
+				874DA0921ABA11DD003D69D6 /* MRProgressView+AFNetworking.m in Sources */,
 				874C535C19831825000382FA /* NSString+WhiteSpace_Utility.m in Sources */,
 				879094111AB78E5E006FDA68 /* VideoPlayerWrapper.m in Sources */,
 				873E14621A49ED0A008A385D /* SongPlayerViewDisplayUtility.m in Sources */,
 				8740723F19798129004C5C57 /* SongTableViewFormatter.m in Sources */,
 				87E980BF1A759DD900B428F0 /* MasterSongEditorViewController.m in Sources */,
+				874DA0881ABA11DD003D69D6 /* MRActivityIndicatorView.m in Sources */,
 				875B3820197ACBC0008B4409 /* SettingsTableViewController.m in Sources */,
 				874C535F19844201000382FA /* NSObject+ObjectUUID.m in Sources */,
 				87FD38D71990A89200C8D5C3 /* UIImage+ColoringExistingImage.m in Sources */,
@@ -1442,13 +1581,16 @@
 				871A0B031980835D00BACD31 /* UIColor+LighterAndDarker.m in Sources */,
 				87480DB9192C1FBD005CC0A4 /* AppDelegate.m in Sources */,
 				87A453CA199C0891004D1319 /* ELCAssetCell.m in Sources */,
+				874DA0861ABA11DD003D69D6 /* MRBlurView.m in Sources */,
 				87A41FEB19F0D9C800C037D9 /* MyAVPlayer.m in Sources */,
 				87A453CB199C0891004D1319 /* ELCAssetTablePicker.m in Sources */,
 				87D47DA419345D8E0057D49B /* MasterArtistsTableViewController.m in Sources */,
 				8734885319A1BBF4008CC6A5 /* Model.xcdatamodeld in Sources */,
+				874DA08D1ABA11DD003D69D6 /* MRProgressView.m in Sources */,
 				8772517519888F1A00A2156B /* YouTubeVideoSearchService.m in Sources */,
 				87270038199EB90500D71204 /* StackController.m in Sources */,
 				87A453CE199C0891004D1319 /* ELCOverlayImageView.m in Sources */,
+				874DA08A1ABA11DD003D69D6 /* MRIconView.m in Sources */,
 				879112FF197EF90E00DFC2DB /* PlaylistTableViewFormatter.m in Sources */,
 				87A9AF4E199D8429005B9A5B /* GenrePickerTableViewController.m in Sources */,
 				879AB34119F225F300FD6582 /* SongPlayerViewController.m in Sources */,
@@ -1460,6 +1602,7 @@
 				87362AFD194E68A5004DB544 /* Deque.m in Sources */,
 				87033B871996965E0077C7AD /* MusicPlaybackController.m in Sources */,
 				87CEDC6519731EF000780D57 /* PlaylistSongAdderTableViewController.m in Sources */,
+				874DA0941ABA11DD003D69D6 /* MRMethodCopier.m in Sources */,
 				876EC5F01965C9F6006B3C29 /* AppEnvironmentConstants.m in Sources */,
 				875B3826197AFF29008B4409 /* NSString+smartSort.m in Sources */,
 				8725B1B81A6C938700E58C3E /* UIWindow+VisibleVC.m in Sources */,
@@ -1483,8 +1626,10 @@
 				87480DB5192C1FBD005CC0A4 /* main.m in Sources */,
 				87ECAFC41AAE8D1900C527B9 /* MZPrivateUpNextPlaybackQueue.m in Sources */,
 				87A0FDD2197DFA2C008FBBF7 /* ArtistTableViewFormatter.m in Sources */,
+				874DA0891ABA11DD003D69D6 /* MRCircularProgressView.m in Sources */,
 				87440EE81A9EC07300C4DDB8 /* OperationQueuesSingeton.m in Sources */,
 				870D49E71A6324F2004496A9 /* MZConstants.m in Sources */,
+				874DA08C1ABA11DD003D69D6 /* MRProgressOverlayView.m in Sources */,
 				871BA88C1A5A2F4000FB87A7 /* Playlist.m in Sources */,
 				87A9AF53199DA36F005B9A5B /* GenreSearchService.m in Sources */,
 				870EDAE6197F4EAD001901B9 /* EditableCellTableViewController.m in Sources */,
@@ -1493,11 +1638,14 @@
 				8703444F19A1A2D4002E5077 /* CoreDataManager.m in Sources */,
 				87FA136F1A99559100A1902F /* FetchVideoInfoOperation.m in Sources */,
 				879AB33D19F1D2E100FD6582 /* PlaybackQueue.m in Sources */,
+				874DA0951ABA11DD003D69D6 /* MRWeakProxy.m in Sources */,
 				87D37438199AA99700D3B70B /* UIColor+ColorComparison.m in Sources */,
 				87BA3A5D1AA9467300A3ACA3 /* PlaybackContext.m in Sources */,
 				87A453CC199C0891004D1319 /* ELCConsole.m in Sources */,
+				874DA0911ABA11DD003D69D6 /* MRProgressOverlayView+AFNetworking.m in Sources */,
 				87A453D4199C0891004D1319 /* ELCImagePickerDemoAppDelegate.m in Sources */,
 				87A453DF199C7096004D1319 /* ExistingAlbumPickerTableViewController.m in Sources */,
+				874DA0931ABA11DD003D69D6 /* MRMessageInterceptor.m in Sources */,
 				87362B03194E9CDF004DB544 /* Stack.m in Sources */,
 				87A453D6199C0891004D1319 /* EYLargePhoto.m in Sources */,
 				87D47D8D19340F8B0057D49B /* MasterAlbumsTableViewController.m in Sources */,

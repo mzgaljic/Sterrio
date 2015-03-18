@@ -1,9 +1,6 @@
 #UIAlertView clone, that allows for custom subviews...and larger fonts.
 pod 'SDCAlertView'
 
-#variety of nice progress bars/loading animation or popups
-pod 'MRProgress'
-
 #youtube id video url extractor
 pod 'XCDYouTubeKit'
 
@@ -46,3 +43,5 @@ pod 'Reachability'
 #more more robust than the new ios8 apis. Adds more btns on swipe.
 #pod 'MGSwipeTableCell'  --using dev branch for now...
 
+#needed for MRProgressView...dont ask lol.
+pod "AFNetworking"

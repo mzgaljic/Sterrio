@@ -851,7 +851,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="PlaylistItemCell" textLabel="EDu-Dv-AOz" style="IBUITableViewCellStyleDefault" id="TIf-tt-VZc" customClass="MGSwipeTableCell">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="PlaylistItemCell" textLabel="EDu-Dv-AOz" style="IBUITableViewCellStyleDefault" id="TIf-tt-VZc" customClass="MGSwipeTableCell">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="TIf-tt-VZc" id="qV6-B8-wMm">
                                             <autoresizingMask key="autoresizingMask"/>
@@ -1021,7 +1021,7 @@
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
         <segue reference="bsh-e9-eUx"/>
-        <segue reference="N5b-x6-rhd"/>
         <segue reference="Gex-TI-pO5"/>
+        <segue reference="Il9-kd-bt3"/>
     </inferredMetricsTieBreakers>
 </document>

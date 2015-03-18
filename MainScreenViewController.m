@@ -43,7 +43,7 @@ short const dummyTabIndex = 2;
         self.viewControllers = viewControllers;
         self.tabBarUnselectedImageNames = unSelectNames;
         self.tabBarSelectedImageNames = selectNames;
-        [[UITabBar appearance] setTintColor:[UIColor defaultAppColorScheme]];
+        [[UITabBar appearance] setTintColor:[[UIColor darkGrayColor] darkerColor]];
         numTimesViewHasAppeared = 0;
     }
     return self;
