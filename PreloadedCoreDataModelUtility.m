@@ -70,8 +70,8 @@ static NSInteger const SONG7_DURATION = 137;
         }
     }
     [[CoreDataManager sharedInstance] saveContext];
-  */
-    
+    */
+  
     [PreloadedCoreDataModelUtility createSongWithName:SONG1_NAME
                                          byArtistName:ARTIST1_NAME
                                      partOfAlbumNamed:ALBUM1_NAME
