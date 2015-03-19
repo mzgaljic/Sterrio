@@ -79,19 +79,20 @@
 
 - (NSArray *)tableViewOptimizedArrayOfMainQueueSongsComingUp
 {
-    return [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:EXTERNAL_FETCH_BATCH_SIZE
-                                                nowPlayingInclusive:YES
-                                                 onlyUnplayedTracks:YES];
+    NSMutableArray *array;
+    array = [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:EXTERNAL_FETCH_BATCH_SIZE
+                                                 nowPlayingInclusive:YES
+                                                  onlyUnplayedTracks:YES];
+    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+    if(!nowPlayingObj.isFromPlayNextSongs && nowPlayingObj.nowPlaying != nil){
+        [array insertObject:nowPlayingObj.nowPlaying atIndex:0];
+    }
+    return array;
 }
 
 - (PlaybackContext *)mainQueuePlaybackContext
 {
     return playbackContext;
-}
-
-- (NSUInteger)indexOfFirstItemToDisplayFromArray
-{
-    return fetchRequestIndex;
 }
 
 - (void)clearMainQueue
@@ -220,7 +221,7 @@
 //--------------private helpers--------------
 
 //for getting an array of all up next songs, without putting all songs into memory.
-- (NSArray *)minimallyFaultedArrayOfMainQueueSongsWithBatchSize:(int)batchSize
+- (NSMutableArray *)minimallyFaultedArrayOfMainQueueSongsWithBatchSize:(int)batchSize
                                             nowPlayingInclusive:(BOOL)inclusive
                                              onlyUnplayedTracks:(BOOL)unplayed
 {
@@ -230,7 +231,11 @@
         return compiledSongs;
     [request setFetchBatchSize:INTERNAL_FETCH_BATCH_SIZE];
     NSArray *array = [[CoreDataManager context] executeFetchRequest:request error:nil];
-    NSUInteger nowPlayingIndex = [array indexOfObject:[NowPlayingSong sharedInstance].nowPlaying];
+    NSUInteger nowPlayingIndex;
+    if([NowPlayingSong sharedInstance].isFromPlayNextSongs)
+        nowPlayingIndex = [array indexOfObject:mostRecentSong];
+    else
+        nowPlayingIndex = [array indexOfObject:[NowPlayingSong sharedInstance].nowPlaying];
     NSArray *desiredSubArray;
     if(nowPlayingIndex != NSNotFound && unplayed){
         NSRange range;
@@ -242,14 +247,13 @@
                 range = NSMakeRange(nowPlayingIndex+1, array.count-1);
             else
                 //last song reached, no songs to show...return empty array instead of allowing index out of bounds.
-                return [NSArray array];
+                return [NSMutableArray array];
         }
         desiredSubArray = [array subarrayWithRange:NSMakeRange(nowPlayingIndex+1, (array.count-1) - nowPlayingIndex)];
     }
-    if(atEndOfQueue && !unplayed)
+    if((atEndOfQueue && !unplayed) || (desiredSubArray == nil && !unplayed))
         desiredSubArray = array;
-    else if(desiredSubArray == nil && !unplayed)
-        desiredSubArray = array;
+    
     [compiledSongs addObjectsFromArray:desiredSubArray];
     return compiledSongs;
 }

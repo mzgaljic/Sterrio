@@ -59,12 +59,16 @@
 
 - (NSArray *)tableViewOptimizedArrayOfUpNextSongs
 {
+    //dont need to insert a fake item in the front to represent now playing like we
+    //needed to in the private main queue (implementation detail...)
     return [self minimallyFaultedArrayOfUpNextSongsWithBatchSize:EXTERNAL_FETCH_BATCH_SIZE];
 }
 
 - (NSArray *)tableViewOptimizedArrayOfUpNextSongContexts
 {
-    return playbackContexts;
+    //dont need to insert a fake item in the front to represent now playing like we
+    //needed to in the private main queue (implementation detail...)
+    return [NSMutableArray arrayWithArray:playbackContexts];
 }
 
 - (PreliminaryNowPlaying *)obtainAndRemoveNextSong
@@ -75,7 +79,7 @@
     Song *desiredSong;
     PlaybackContext *desiredSongsContext;
     //iterate until we find a next song
-    for(int i = 0; i < playbackContexts.count; i++)
+    for(NSInteger i = 0; i < playbackContexts.count; i++)
     {
         aContext = playbackContexts[i];
         aRequest = aContext.request;
@@ -89,15 +93,16 @@
         desiredSong = [self songInArray:array atIndex:songIndex];
         desiredSongsContext = aContext;
         
+        //advance songIndexCount
+        songIndex++;
+        
         //this context is empty, or we have just pulled the very last song from this context.
-        if(desiredSong == nil || songIndex == array.count-1)
+        if(desiredSong == nil || songIndex == playbackContexts.count-1)
         {
             numContextsToDelete++;
         }
         else
         {
-            //advance songIndexCount
-            songIndex++;
             NSNumber *newIndexObj = [NSNumber numberWithInteger:songIndex];
             [fetchRequestIndexes replaceObjectAtIndex:i withObject:newIndexObj];
             break;
@@ -117,6 +122,9 @@
     return newNowPlaying;
 }
 
+
+
+//broken!!!! should iterate in the same direction as the "obtainAndRemove" method.
 - (PreliminaryNowPlaying *)peekAtNextSong
 {
     PlaybackContext *aContext;
@@ -155,7 +163,7 @@
 //--------------private helpers--------------
 
 //for getting an array of all up next songs, without putting all songs into memory.
-- (NSArray *)minimallyFaultedArrayOfUpNextSongsWithBatchSize:(int)batchSize
+- (NSMutableArray *)minimallyFaultedArrayOfUpNextSongsWithBatchSize:(int)batchSize
 {
     PlaybackContext *aContext;
     NSFetchRequest *aRequest;

@@ -33,13 +33,14 @@ extern short const EXTERNAL_FETCH_BATCH_SIZE;
 - (NSUInteger)numMoreSongsInUpNext;
 
 #pragma mark - Info for displaying Queue contexts visually
+//These 3 array methods WILL return the now playing song
+//if the now playing song is in that particular queue.
 //up next queue
 - (NSArray *)tableViewOptimizedArrayOfUpNextSongs;
 - (NSArray *)tableViewOptimizedArrayOfUpNextSongContexts;
 //main queue
 - (NSArray *)tableViewOptimizedArrayOfMainQueueSongsComingUp;
 - (PlaybackContext *)mainQueuePlaybackContext;
-- (NSUInteger)indexOfFirstItemToDisplayFromMainQueueSongsArray;
 
 #pragma mark - Performing operations on queue
 - (void)clearEntireQueue;

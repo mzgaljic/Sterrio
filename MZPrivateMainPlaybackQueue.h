@@ -27,7 +27,6 @@
 //for getting an array of all up next songs, without putting all songs into memory.
 - (NSArray *)tableViewOptimizedArrayOfMainQueueSongsComingUp;
 - (PlaybackContext *)mainQueuePlaybackContext;
-- (NSUInteger)indexOfFirstItemToDisplayFromArray;
 
 - (void)clearMainQueue;
 - (PreliminaryNowPlaying *)skipToPrevious;

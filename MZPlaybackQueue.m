@@ -73,10 +73,6 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
 {
     return [mainQueue mainQueuePlaybackContext];
 }
-- (NSUInteger)indexOfFirstItemToDisplayFromMainQueueSongsArray
-{
-
-}
 
 
 #pragma mark - Performing operations on queue
@@ -198,7 +194,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
 //crashes when queuing up an entire playlist for some reason, dont use it that way!
 - (void)printQueueContents
 {
-    /*
+    
     NSArray *upNextSongs = [upNextQueue tableViewOptimizedArrayOfUpNextSongs];
     NSArray *mainQueueSongs = [mainQueue tableViewOptimizedArrayOfMainQueueSongsComingUp];
     
@@ -228,7 +224,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
     }
     [output appendString:@"\n\n"];
     printf("%s", [output UTF8String]); //print entire queue contents
-     */
+     
 }
 
 @end
