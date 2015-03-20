@@ -10,7 +10,7 @@
 
 @interface MySearchBar ()
 {
-    UIColor *textAndCursorColor;
+    UIColor *textColor;
 }
 @end
 @implementation MySearchBar
@@ -18,7 +18,7 @@
 - (id)initWithFrame:(CGRect)frame
 {
     if(self = [super initWithFrame:frame]){
-        textAndCursorColor = [[UIColor defaultAppColorScheme] lighterColor];
+        textColor = [[UIColor defaultAppColorScheme] lighterColor];
         self.placeholder = @"Search";
         self.keyboardType = UIKeyboardTypeASCIICapable;
         [self sizeToFit];
@@ -31,7 +31,7 @@
 - (id)initWithFrame:(CGRect)frame placeholderText:(NSString *)text
 {
     if(self = [super initWithFrame:frame]){
-        textAndCursorColor = [[UIColor defaultAppColorScheme] lighterColor];
+        textColor = [[UIColor defaultAppColorScheme] lighterColor];
         self.placeholder = text;
         self.keyboardType = UIKeyboardTypeASCIICapable;
         [self sizeToFit];
@@ -69,13 +69,14 @@
             height = 30;
             break;
         case 6:
-            height = 38;
+            height = 42;
             break;
         default:
             height = 28;
             break;
     }
     //textfield background color, size of white fill, etc.
+    
     CGSize size = CGSizeMake(30, height);
     UIGraphicsBeginImageContextWithOptions(size, NO, 1);
     [[UIBezierPath bezierPathWithRoundedRect:CGRectMake(0,0,30,height) cornerRadius:3.0] addClip];
@@ -86,7 +87,7 @@
     [self setSearchFieldBackgroundImage:prettyGreyBackgroundImage forState:UIControlStateNormal];
     
     //blinking cursor color
-    self.tintColor = textAndCursorColor;
+    self.tintColor = [UIColor darkGrayColor];
     self.barTintColor = [UIColor defaultWindowTintColor];
 }
 
@@ -98,7 +99,7 @@
     //font size
     NSDictionary *dict = @{
                            NSFontAttributeName: [UIFont systemFontOfSize:fontSize],
-                           NSForegroundColorAttributeName : textAndCursorColor
+                           NSForegroundColorAttributeName : textColor
                            };
     [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil]
      setDefaultTextAttributes:dict];

@@ -50,12 +50,21 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     self.window.tintColor = [UIColor whiteColor];
     //vibrant orange
     //[UIColor defaultAppColorScheme:Rgb2UIColor(235, 95, 67)];
+    
     //emerald green
-    //[UIColor defaultAppColorScheme:[Rgb2UIColor(74, 153, 118) darkerColor]];
+    [UIColor defaultAppColorScheme:[Rgb2UIColor(74, 153, 118) darkerColor]];
+    
     //bright pink
     //[UIColor defaultAppColorScheme:[Rgb2UIColor(233, 91, 152) lighterColor]];
     
-    [UIColor defaultAppColorScheme:Rgb2UIColor(57, 104, 190)];
+    //regular blue
+    //[UIColor defaultAppColorScheme:Rgb2UIColor(57, 104, 190)];
+    
+    //purple
+    //[UIColor defaultAppColorScheme:Rgb2UIColor(111, 91, 164)];
+    
+    //yellow
+    //[UIColor defaultAppColorScheme:Rgb2UIColor(254, 200, 45)];
     
     //set cancel button color of all uisearchbars
     [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]

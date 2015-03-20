@@ -24,7 +24,7 @@ static BOOL screenShottingVideoPlayerNotAllowed = NO;
 static BOOL isPlayerEnabled;
 static BOOL canIgnoreToolbar = YES;
 float const disabledPlayerAlpa = 0.20;
-float const amountToShrinkSmallPlayerWhenRespectingToolbar = 70;
+float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
 
 #pragma mark - Class lifecycle stuff
 + (instancetype)sharedInstance
@@ -122,7 +122,13 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 70;
                              [weakPlayerView setFrame: currentPlayerFrame];
                          }
                          weakPlayerView.alpha = 1;  //in case player was killed.
-                         [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
+                         
+                         
+                         MRProgressOverlayView *view = (MRProgressOverlayView *)[MRProgressOverlayView overlayForView:weakPlayerView];
+                         if([MusicPlaybackController isSpinnerForWifiNeededOnScreen])
+                             view.titleLabelText = @"Song requires WiFi";
+                         
+                         [view manualLayoutSubviews];
                      } completion:^(BOOL finished) {}];
 }
 
@@ -146,7 +152,12 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 70;
                          else
                              currentPlayerFrame = [weakSelf smallPlayerFrameInPortrait];
                          weakPlayerView.frame = currentPlayerFrame;
-                         [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
+
+                         MRProgressOverlayView *view = (MRProgressOverlayView *)[MRProgressOverlayView overlayForView:weakPlayerView];
+                         if([MusicPlaybackController isSpinnerForWifiNeededOnScreen])
+                             view.titleLabelText = @"WiFi";
+                         
+                         [view manualLayoutSubviews];
                      } completion:^(BOOL finished) {
                          isVideoPlayerExpanded = NO;
                      }];
@@ -455,8 +466,8 @@ static BOOL wasInPlayStateBeforeGUIDisabled = NO;
 //private method
 + (int)calculateSmallVideoWidth
 {
+    int width = [UIScreen mainScreen].bounds.size.width/2.8 - MZSmallPlayerVideoFramePadding;
     //make small video width smaller than usual on older (small) devices
-    int width = [UIScreen mainScreen].bounds.size.width/2.0 - MZSmallPlayerVideoFramePadding;
     if(width > 200)
         width = 200;
     return width;

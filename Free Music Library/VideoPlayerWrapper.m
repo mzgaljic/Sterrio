@@ -60,11 +60,12 @@
 
 + (void)setupAvPlayerViewAgain
 {
-    //UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
-    //PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    //[playerView removeFromSuperview];
-    //[appWindow addSubview:playerView];
-    //[playerView setNeedsDisplay];
+    UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
+    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    [playerView removeFromSuperview];
+    [appWindow addSubview:playerView];
+    [appWindow insertSubview:playerView aboveSubview:[appWindow visibleViewController].view];
+    [playerView setNeedsDisplay];
 }
 
 @end

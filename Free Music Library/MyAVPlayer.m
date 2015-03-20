@@ -359,15 +359,24 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
         if([NSThread isMainThread]){
             PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
             [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:YES];
-            [MRProgressOverlayView showOverlayAddedTo:playerView title:@"Song requires WiFi" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
+            
+            NSString *text;
+            if([SongPlayerCoordinator isVideoPlayerExpanded])
+                text = @"Song requires WiFi";
+            else
+                text = @"WiFi";
+                
+            [MRProgressOverlayView showOverlayAddedTo:playerView title:text
+                                                 mode:MRProgressOverlayViewModeIndeterminateSmall
+                                             animated:YES];
             [MusicPlaybackController spinnerForWifiNeededOnScreen:YES];
+            playerView.userInteractionEnabled = YES;
+            [playerView setNeedsDisplay];
             
         } else{
+            __weak MyAVPlayer *weakSelf = self;
             dispatch_async(dispatch_get_main_queue(), ^{
-                PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-                [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:YES];
-                [MRProgressOverlayView showOverlayAddedTo:playerView title:@"Song requires WiFi" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
-                [MusicPlaybackController spinnerForWifiNeededOnScreen:YES];
+                [weakSelf showSpinnerForWifiNeeded];
             });
         }
     }
