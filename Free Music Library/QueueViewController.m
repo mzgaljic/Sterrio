@@ -38,7 +38,7 @@ short const SECTION_EMPTY = -1;
     needToUpdateDataModels = YES;
     [SongPlayerCoordinator setScreenShottingVideoPlayerAllowed:NO];
     stackController = [[StackController alloc] init];
-    localAppTintColor = [[[[UIColor defaultAppColorScheme] lighterColor] lighterColor] lighterColor];
+    localAppTintColor = [[[UIColor defaultAppColorScheme] lighterColor] lighterColor];
     
     queue = [MZPlaybackQueue sharedInstance];
     mainQueueSongsComingUp = [queue tableViewOptimizedArrayOfMainQueueSongsComingUp];

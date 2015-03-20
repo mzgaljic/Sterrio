@@ -69,7 +69,7 @@
             height = 30;
             break;
         case 6:
-            height = 35;
+            height = 356;
             break;
         default:
             height = 28;
@@ -93,14 +93,13 @@
 - (void)setFontSizeBasedOnUserSettings
 {
     float fontSize = [SongTableViewFormatter nonBoldSongLabelFontSize];
-    if(fontSize > 25)
-        fontSize = 25;
-    else if(fontSize < 18)
+    if(fontSize < 18)
         fontSize = 18;
     //font size
     NSDictionary *dict = @{
                            NSFontAttributeName: [UIFont systemFontOfSize:fontSize],
-                           NSForegroundColorAttributeName : textAndCursorColor};
+                           NSForegroundColorAttributeName : textAndCursorColor
+                           };
     [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil]
      setDefaultTextAttributes:dict];
 }

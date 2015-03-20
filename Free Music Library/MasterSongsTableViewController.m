@@ -472,7 +472,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         __weak MGSwipeTableCell *weakCell = cell;
         return @[[MGSwipeButton buttonWithTitle:@"Queue"
                                 backgroundColor:initialExpansionColor
-                                        padding:40
+                                        padding:15
                                        callback:^BOOL(MGSwipeTableCell *sender) {
                                            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
                                            
@@ -484,7 +484,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                        }]];
     } else if(direction == MGSwipeDirectionRightToLeft){
         expansionSettings.fillOnTrigger = YES;
-        expansionSettings.threshold = 2.3;
+        expansionSettings.threshold = 2.7;
         expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
         swipeSettings.transition = MGSwipeTransitionBorder;
         

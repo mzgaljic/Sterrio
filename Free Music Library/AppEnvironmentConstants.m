@@ -213,7 +213,8 @@ static short statusBarHeight;
 
 + (UIColor *)expandingCellGestureQueueItemColor
 {
-    return [Rgb2UIColor(111, 174, 14) lighterColor];
+    //return [Rgb2UIColor(111, 174, 14) lighterColor];
+    return Rgb2UIColor(93, 178, 48);
 }
 
 + (UIColor *)expandingCellGestureDeleteItemColor

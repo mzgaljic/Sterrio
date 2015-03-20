@@ -327,7 +327,7 @@ static BOOL PRODUCTION_MODE;
         __weak MGSwipeTableCell *weakCell = cell;
         return @[[MGSwipeButton buttonWithTitle:@"Queue"
                                 backgroundColor:initialExpansionColor
-                                        padding:40
+                                        padding:15
                                        callback:^BOOL(MGSwipeTableCell *sender) {
                                            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
                                            NSLog(@"Queing up: %@", weakArtist.artistName);
@@ -339,7 +339,7 @@ static BOOL PRODUCTION_MODE;
                                        }]];
     } else if(direction == MGSwipeDirectionRightToLeft){
         expansionSettings.fillOnTrigger = YES;
-        expansionSettings.threshold = 2.3;
+        expansionSettings.threshold = 2.7;
         expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
         swipeSettings.transition = MGSwipeTransitionBorder;
         
