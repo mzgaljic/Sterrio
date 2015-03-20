@@ -31,7 +31,7 @@
 #import <JAMAccurateSlider.h>
 #import <GCDiscreetNotificationView.h>
 #import "ReachabilitySingleton.h"
-
+#import "VideoPlayerControlInterfaceDelegate.h"
 #import "QueueViewController.h"
 #import <AFBlurSegue.h>
 

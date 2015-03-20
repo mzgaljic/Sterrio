@@ -82,7 +82,7 @@
 		875B3820197ACBC0008B4409 /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B381F197ACBC0008B4409 /* SettingsTableViewController.m */; };
 		875B3826197AFF29008B4409 /* NSString+smartSort.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B3825197AFF29008B4409 /* NSString+smartSort.m */; };
 		876210461AB6362200CCBDA9 /* BAPulseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 876210441AB6362200CCBDA9 /* BAPulseButton.m */; };
-		876210471AB6362200CCBDA9 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 876210451AB6362200CCBDA9 /* LICENSE.txt */; };
+		876210471AB6362200CCBDA9 /* LICENSE2.txt in Resources */ = {isa = PBXBuildFile; fileRef = 876210451AB6362200CCBDA9 /* LICENSE2.txt */; };
 		8762104D1AB65CB800CCBDA9 /* MGSwipeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8762104A1AB65CB800CCBDA9 /* MGSwipeButton.m */; };
 		8762104E1AB65CB800CCBDA9 /* MGSwipeTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8762104C1AB65CB800CCBDA9 /* MGSwipeTableCell.m */; };
 		8763351B1A84052600A229C4 /* MainScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8763351A1A84052600A229C4 /* MainScreenViewController.m */; };
@@ -110,7 +110,7 @@
 		87A0FD91197DD594008FBBF7 /* PreferredFontSizeUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FD90197DD594008FBBF7 /* PreferredFontSizeUtility.m */; };
 		87A0FDD2197DFA2C008FBBF7 /* ArtistTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FDD1197DFA2C008FBBF7 /* ArtistTableViewFormatter.m */; };
 		87A120921ABA259F00250B2C /* JNExpandableTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A120901ABA259F00250B2C /* JNExpandableTableView.m */; };
-		87A120931ABA259F00250B2C /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A120911ABA259F00250B2C /* LICENSE.txt */; };
+		87A120931ABA259F00250B2C /* LICENSE1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A120911ABA259F00250B2C /* LICENSE1.txt */; };
 		87A41FEB19F0D9C800C037D9 /* MyAVPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A41FEA19F0D9C800C037D9 /* MyAVPlayer.m */; };
 		87A453C8199C0891004D1319 /* ELCAlbumPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A453A5199C0891004D1319 /* ELCAlbumPickerController.m */; };
 		87A453C9199C0891004D1319 /* ELCAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A453A7199C0891004D1319 /* ELCAsset.m */; };
@@ -321,7 +321,7 @@
 		875B3825197AFF29008B4409 /* NSString+smartSort.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+smartSort.m"; sourceTree = "<group>"; };
 		876210431AB6362200CCBDA9 /* BAPulseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BAPulseButton.h; sourceTree = "<group>"; };
 		876210441AB6362200CCBDA9 /* BAPulseButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BAPulseButton.m; sourceTree = "<group>"; };
-		876210451AB6362200CCBDA9 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		876210451AB6362200CCBDA9 /* LICENSE2.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE2.txt; sourceTree = "<group>"; };
 		876210491AB65CB800CCBDA9 /* MGSwipeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeButton.h; sourceTree = "<group>"; };
 		8762104A1AB65CB800CCBDA9 /* MGSwipeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeButton.m; sourceTree = "<group>"; };
 		8762104B1AB65CB800CCBDA9 /* MGSwipeTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeTableCell.h; sourceTree = "<group>"; };
@@ -373,7 +373,7 @@
 		87A0FDD1197DFA2C008FBBF7 /* ArtistTableViewFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArtistTableViewFormatter.m; sourceTree = "<group>"; };
 		87A1208F1ABA259F00250B2C /* JNExpandableTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JNExpandableTableView.h; sourceTree = "<group>"; };
 		87A120901ABA259F00250B2C /* JNExpandableTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JNExpandableTableView.m; sourceTree = "<group>"; };
-		87A120911ABA259F00250B2C /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		87A120911ABA259F00250B2C /* LICENSE1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE1.txt; sourceTree = "<group>"; };
 		87A41FE919F0D9C800C037D9 /* MyAVPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyAVPlayer.h; sourceTree = "<group>"; };
 		87A41FEA19F0D9C800C037D9 /* MyAVPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyAVPlayer.m; sourceTree = "<group>"; };
 		87A453A4199C0891004D1319 /* ELCAlbumPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAlbumPickerController.h; sourceTree = "<group>"; };
@@ -884,7 +884,7 @@
 			children = (
 				876210431AB6362200CCBDA9 /* BAPulseButton.h */,
 				876210441AB6362200CCBDA9 /* BAPulseButton.m */,
-				876210451AB6362200CCBDA9 /* LICENSE.txt */,
+				876210451AB6362200CCBDA9 /* LICENSE2.txt */,
 			);
 			path = BAPulseEffect;
 			sourceTree = "<group>";
@@ -1089,7 +1089,7 @@
 			children = (
 				87A1208F1ABA259F00250B2C /* JNExpandableTableView.h */,
 				87A120901ABA259F00250B2C /* JNExpandableTableView.m */,
-				87A120911ABA259F00250B2C /* LICENSE.txt */,
+				87A120911ABA259F00250B2C /* LICENSE1.txt */,
 			);
 			path = JNExpandableTableView;
 			sourceTree = "<group>";
@@ -1442,10 +1442,10 @@
 				87A453D2199C0891004D1319 /* Overlay.png in Resources */,
 				87A453CF199C0891004D1319 /* ELCAlbumPickerController.xib in Resources */,
 				87A453D3199C0891004D1319 /* Overlay@2x.png in Resources */,
-				87A120931ABA259F00250B2C /* LICENSE.txt in Resources */,
+				87A120931ABA259F00250B2C /* LICENSE1.txt in Resources */,
 				87DD2A2B1A74B5F60014E115 /* Main.storyboard in Resources */,
 				87480DC4192C1FBD005CC0A4 /* Images.xcassets in Resources */,
-				876210471AB6362200CCBDA9 /* LICENSE.txt in Resources */,
+				876210471AB6362200CCBDA9 /* LICENSE2.txt in Resources */,
 				87A453D9199C0891004D1319 /* README_multi image picker.txt in Resources */,
 				87BD42A319CD1A4C005ED8CD /* Free Music Library.entitlements in Resources */,
 				87480DB3192C1FBD005CC0A4 /* InfoPlist.strings in Resources */,

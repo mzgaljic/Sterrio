@@ -192,7 +192,9 @@ static void *mPlaybackStarted = &mPlaybackStarted;
 
 - (void)beginPlaybackWithPlayerItem:(AVPlayerItem *)item
 {
-    NSLog(@"Setting player item.");
+    if(! [SongPlayerCoordinator isPlayerOnScreen])
+        return;
+    
     if([NSThread mainThread]){
         NSOperationQueue *operationQueue = [[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue];
         [self replaceCurrentItemWithPlayerItem:item];

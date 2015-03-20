@@ -501,8 +501,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     request.sortDescriptors = @[sortDescriptor];
     if(self.playbackContext == nil){
+        NSString *queueName = [NSString stringWithFormat:@"\"%@\" Playlist",_playlist.playlistName];
         self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]
-                                                             prettyQueueName:@""
+                                                             prettyQueueName:queueName
                                                                    contextId:self.playbackContextUniqueId];
     }
     //fetchedResultsController is from custom super class

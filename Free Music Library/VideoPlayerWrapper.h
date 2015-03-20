@@ -12,6 +12,7 @@
 #import <Foundation/Foundation.h>
 #import "MyAVPlayer.h"
 #import "UIWindow+VisibleVC.h"
+#import "SongPlayerViewController.h"
 
 @interface VideoPlayerWrapper : NSObject
 

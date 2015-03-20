@@ -62,9 +62,10 @@
 {
     UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    NSUInteger playerIndex = [[appWindow subviews] indexOfObject:playerView];
     [playerView removeFromSuperview];
     [appWindow addSubview:playerView];
-    [appWindow insertSubview:playerView aboveSubview:[appWindow visibleViewController].view];
+    [appWindow insertSubview:playerView atIndex:playerIndex];
     [playerView setNeedsDisplay];
 }
 
