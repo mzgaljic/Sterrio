@@ -87,6 +87,7 @@
     
     //blinking cursor color
     self.tintColor = textAndCursorColor;
+    self.barTintColor = [UIColor defaultWindowTintColor];
 }
 
 - (void)setFontSizeBasedOnUserSettings

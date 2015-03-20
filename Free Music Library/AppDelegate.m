@@ -48,15 +48,14 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     
     //set global default "AppColorScheme"
     self.window.tintColor = [UIColor whiteColor];
-    [UIColor defaultAppColorScheme:Rgb2UIColor(250, 120, 43)];
-    [[UICollectionView appearanceWhenContainedIn:[UIActionSheet class], nil] setTintColor:[UIColor blackColor]];
+    //[UIColor defaultAppColorScheme:Rgb2UIColor(250, 120, 43)]; orange
+    [UIColor defaultAppColorScheme:Rgb2UIColor(237, 145, 50)];
     
     //set cancel button color of all uisearchbars
     [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                              [[UIColor defaultAppColorScheme] lighterColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
     //set toolbar button colors
-    //set cancel button color of all uisearchbars
     [[UIBarButtonItem appearanceWhenContainedIn:[UIToolbar class], nil]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                              [[UIColor defaultAppColorScheme] lighterColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
