@@ -69,7 +69,7 @@
             height = 30;
             break;
         case 6:
-            height = 356;
+            height = 38;
             break;
         default:
             height = 28;
