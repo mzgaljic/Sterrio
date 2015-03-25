@@ -85,8 +85,13 @@ const int ALBUM_HEADER_HEIGHT = 120;
     cell.detailTextLabel.text = [self convertSecondsToPrintableNSStringWithSeconds:duration];
     cell.detailTextLabel.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
     
-    BOOL isNowPlaying = [[NowPlayingSong sharedInstance] isEqualToSong:aSong
+    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+    BOOL isNowPlaying = [nowPlayingObj isEqualToSong:aSong
                                                     compareWithContext:self.playbackContext];
+    if(! isNowPlaying){
+        isNowPlaying = [nowPlayingObj isEqualToSong:aSong
+                                 compareWithContext:self.parentVcPlaybackContext];
+    }
     if(isNowPlaying)
         cell.textLabel.textColor = [super colorForNowPlayingItem];
     else

@@ -129,7 +129,11 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
                              view.titleLabelText = @"Song requires WiFi";
                          
                          [view manualLayoutSubviews];
-                     } completion:^(BOOL finished) {}];
+
+                         CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
+                                                      fromCoordinateSpace:weakPlayerView.superview];
+                         [weakPlayerView newAirplayInUseMsgCenter:newCenter];
+                     } completion:nil];
 }
 
 - (void)beginShrinkingVideoPlayer
@@ -158,8 +162,13 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
                              view.titleLabelText = @"WiFi";
                          
                          [view manualLayoutSubviews];
+                         
+                         CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
+                                                      fromCoordinateSpace:weakPlayerView.superview];
+                         [weakPlayerView newAirplayInUseMsgCenter:newCenter];
                      } completion:^(BOOL finished) {
                          isVideoPlayerExpanded = NO;
+                         [weakPlayerView shrunkenFrameHasChanged];
                      }];
 }
 
@@ -206,7 +215,9 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
                         options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
                      animations:^{
                          weakPlayerView.alpha = 1;
-                     } completion:nil];
+                     } completion:^(BOOL finished) {
+                         [weakPlayerView shrunkenFrameHasChanged];
+                     }];
 }
 
 - (void)shrunkenVideoPlayerNeedsToBeRotated
@@ -225,6 +236,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
             currentPlayerFrame = [self smallPlayerFrameInPortrait];
         }
         [videoPlayer setFrame:currentPlayerFrame];
+        [videoPlayer shrunkenFrameHasChanged];
     }
 }
 
@@ -248,14 +260,26 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
             currentPlayerFrame = [weakSelf smallPlayerFrameInLandscape];
             weakPlayerView.frame = currentPlayerFrame;
             [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
-        } completion:nil];
+            
+            CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
+                                         fromCoordinateSpace:weakPlayerView.superview];
+            [weakPlayerView newAirplayInUseMsgCenter:newCenter];
+        } completion:^(BOOL finished) {
+            [weakPlayerView shrunkenFrameHasChanged];
+        }];
     } else{
         //portrait
         [UIView animateWithDuration:0.6f animations:^{
             currentPlayerFrame = [weakSelf smallPlayerFrameInPortrait];
             playerView.frame = currentPlayerFrame;
             [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
-        } completion:nil];
+            
+            CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
+                                         fromCoordinateSpace:weakPlayerView.superview];
+            [weakPlayerView newAirplayInUseMsgCenter:newCenter];
+        } completion:^(BOOL finished) {
+            [weakPlayerView shrunkenFrameHasChanged];
+        }];
     }
 }
 
@@ -278,14 +302,26 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
             currentPlayerFrame = [self smallPlayerFrameInLandscape];
             playerView.frame = currentPlayerFrame;
             [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
-        } completion:nil];
+            
+            CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
+                                         fromCoordinateSpace:weakPlayerView.superview];
+            [weakPlayerView newAirplayInUseMsgCenter:newCenter];
+        } completion:^(BOOL finished) {
+            [weakPlayerView shrunkenFrameHasChanged];
+        }];
     } else{
         //portrait
         [UIView animateWithDuration:0.6f animations:^{
             currentPlayerFrame = [weakSelf smallPlayerFrameInPortrait];
             playerView.frame = currentPlayerFrame;
             [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
-        } completion:nil];
+            
+            CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
+                                         fromCoordinateSpace:weakPlayerView.superview];
+            [weakPlayerView newAirplayInUseMsgCenter:newCenter];
+        } completion:^(BOOL finished) {
+            [weakPlayerView shrunkenFrameHasChanged];
+        }];
     }
 }
 
@@ -466,7 +502,18 @@ static BOOL wasInPlayStateBeforeGUIDisabled = NO;
 //private method
 + (int)calculateSmallVideoWidth
 {
-    int width = [UIScreen mainScreen].bounds.size.width/2.8 - MZSmallPlayerVideoFramePadding;
+    //I always calculate the width of the player based on the width of the screen
+    //when in portrait mode.
+    int width;
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    
+    if(orientation == UIInterfaceOrientationLandscapeLeft
+       || orientation == UIInterfaceOrientationLandscapeRight){
+        width = [UIScreen mainScreen].bounds.size.height/2.8 - MZSmallPlayerVideoFramePadding;
+    } else{
+        width = [UIScreen mainScreen].bounds.size.width/2.8 - MZSmallPlayerVideoFramePadding;
+    }
+    
     //make small video width smaller than usual on older (small) devices
     if(width > 200)
         width = 200;

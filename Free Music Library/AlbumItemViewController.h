@@ -19,6 +19,7 @@
                                                                         MGSwipeTableCellDelegate>
 
 @property (strong, nonatomic) Album *album;
+@property (strong, nonatomic) PlaybackContext *parentVcPlaybackContext;
 
 //GUI vars
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;

@@ -90,7 +90,10 @@
         
         NSNumber *indexNumObj = [fetchRequestIndexes objectAtIndex:i];
         songIndex = [indexNumObj integerValue];
-        desiredSong = [self songInArray:array atIndex:songIndex];
+        if(songIndex <= array.count-1 && array.count != 0)
+            desiredSong = [self songInArray:array atIndex:songIndex];
+        else
+            desiredSong = nil;  //index was out of bounds
         desiredSongsContext = aContext;
         
         //advance songIndexCount

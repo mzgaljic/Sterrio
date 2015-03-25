@@ -433,6 +433,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     if([[segue identifier] isEqualToString: @"albumItemSegue"]){
         [[segue destinationViewController] setAlbum:(Album *)sender];
+        [[segue destinationViewController] setParentVcPlaybackContext:self.playbackContext];
     }
 }
 

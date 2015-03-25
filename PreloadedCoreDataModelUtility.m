@@ -50,67 +50,70 @@ static NSInteger const SONG7_DURATION = 137;
 
 + (void)createCoreDataSampleMusicData
 {
-   /*
-    int songCreationCount = 5000;
-    Song *someSong;
-    //UIImage *art = [UIImage imageNamed:@"testAlbumArt"];
-    int stopToPrint = 0;
-    for(int i = 0; i < songCreationCount; i++){
-        someSong = [PreloadedCoreDataModelUtility createSongWithName:SONG2_NAME
-                                                        byArtistName:ARTIST2_NAME
-                                                    partOfAlbumNamed:ALBUM2_NAME
-                                                           youtubeID:SONG2_YTID
-                                                       videoDuration:SONG2_DURATION];
-        [someSong setAlbumArt:[UIImage imageNamed:@"testAlbumArt.jpg"]];
-        
-        if(i == stopToPrint && i != songCreationCount){
-            NSLog(@"songsCreated: %i", i);
-            stopToPrint += 500;
-            [[CoreDataManager sharedInstance] saveContext];
+    BOOL importHugeDataSetForTesting = NO;
+    
+    if(importHugeDataSetForTesting){
+        int songCreationCount = 3000;
+        Song *someSong;
+        //UIImage *art = [UIImage imageNamed:@"testAlbumArt"];
+        int stopToPrint = 0;
+        for(int i = 0; i < songCreationCount; i++){
+            someSong = [PreloadedCoreDataModelUtility createSongWithName:SONG2_NAME
+                                                            byArtistName:ARTIST2_NAME
+                                                        partOfAlbumNamed:ALBUM2_NAME
+                                                               youtubeID:SONG2_YTID
+                                                           videoDuration:SONG2_DURATION];
+            [someSong setAlbumArt:[UIImage imageNamed:@"testAlbumArt.jpg"]];
+            
+            if(i == stopToPrint && i != songCreationCount){
+                NSLog(@"songsCreated: %i", i);
+                stopToPrint += 500;
+                [[CoreDataManager sharedInstance] saveContext];
+            }
         }
+        [[CoreDataManager sharedInstance] saveContext];
     }
-    [[CoreDataManager sharedInstance] saveContext];
-    */
-  
-    [PreloadedCoreDataModelUtility createSongWithName:SONG1_NAME
-                                         byArtistName:ARTIST1_NAME
-                                     partOfAlbumNamed:ALBUM1_NAME
-                                            youtubeID:SONG1_YTID
-                                        videoDuration:SONG1_DURATION];
-    
-    [PreloadedCoreDataModelUtility createSongWithName:SONG2_NAME
-                                         byArtistName:ARTIST2_NAME
-                                     partOfAlbumNamed:ALBUM2_NAME
-                                            youtubeID:SONG2_YTID
-                                        videoDuration:SONG2_DURATION];
-    
-    [PreloadedCoreDataModelUtility createSongWithName:SONG3_NAME
-                                         byArtistName:ARTIST3_NAME
-                                     partOfAlbumNamed:nil
-                                            youtubeID:SONG3_YTID
-                                        videoDuration:SONG3_DURATION];
-    
-    [PreloadedCoreDataModelUtility createSongWithName:SONG4_NAME
-                                         byArtistName:nil
-                                     partOfAlbumNamed:nil
-                                            youtubeID:SONG4_YTID
-                                        videoDuration:SONG4_DURATION];
-    [PreloadedCoreDataModelUtility createSongWithName:SONG5_NAME
-                                         byArtistName:ARTIST5_NAME
-                                     partOfAlbumNamed:nil
-                                            youtubeID:SONG5_YTID
-                                        videoDuration:SONG5_DURATION];
-    [PreloadedCoreDataModelUtility createSongWithName:SONG6_NAME
-                                         byArtistName:ARTIST6_NAME
-                                     partOfAlbumNamed:nil
-                                            youtubeID:SONG6_YTID
-                                        videoDuration:SONG6_DURATION];
-    [PreloadedCoreDataModelUtility createSongWithName:SONG7_NAME
-                                         byArtistName:ARTIST7_NAME
-                                     partOfAlbumNamed:nil
-                                            youtubeID:SONG7_YTID
-                                        videoDuration:SONG7_DURATION];
-     [[CoreDataManager sharedInstance] saveContext];
+    else{
+        [PreloadedCoreDataModelUtility createSongWithName:SONG1_NAME
+                                             byArtistName:ARTIST1_NAME
+                                         partOfAlbumNamed:ALBUM1_NAME
+                                                youtubeID:SONG1_YTID
+                                            videoDuration:SONG1_DURATION];
+        
+        [PreloadedCoreDataModelUtility createSongWithName:SONG2_NAME
+                                             byArtistName:ARTIST2_NAME
+                                         partOfAlbumNamed:ALBUM2_NAME
+                                                youtubeID:SONG2_YTID
+                                            videoDuration:SONG2_DURATION];
+        
+        [PreloadedCoreDataModelUtility createSongWithName:SONG3_NAME
+                                             byArtistName:ARTIST3_NAME
+                                         partOfAlbumNamed:nil
+                                                youtubeID:SONG3_YTID
+                                            videoDuration:SONG3_DURATION];
+        
+        [PreloadedCoreDataModelUtility createSongWithName:SONG4_NAME
+                                             byArtistName:nil
+                                         partOfAlbumNamed:nil
+                                                youtubeID:SONG4_YTID
+                                            videoDuration:SONG4_DURATION];
+        [PreloadedCoreDataModelUtility createSongWithName:SONG5_NAME
+                                             byArtistName:ARTIST5_NAME
+                                         partOfAlbumNamed:nil
+                                                youtubeID:SONG5_YTID
+                                            videoDuration:SONG5_DURATION];
+        [PreloadedCoreDataModelUtility createSongWithName:SONG6_NAME
+                                             byArtistName:ARTIST6_NAME
+                                         partOfAlbumNamed:nil
+                                                youtubeID:SONG6_YTID
+                                            videoDuration:SONG6_DURATION];
+        [PreloadedCoreDataModelUtility createSongWithName:SONG7_NAME
+                                             byArtistName:ARTIST7_NAME
+                                         partOfAlbumNamed:nil
+                                                youtubeID:SONG7_YTID
+                                            videoDuration:SONG7_DURATION];
+        [[CoreDataManager sharedInstance] saveContext];
+    }
 }
 
 + (Song *)createSongWithName:(NSString *)songName

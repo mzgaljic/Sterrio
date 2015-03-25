@@ -390,9 +390,11 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
             }
         }];
         
+        __weak UIApplication *weakApplication = [UIApplication sharedApplication];
         //Start the long-running task and return immediately.
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             pthread_setname_np("Bckgrnd long vid state checker");
+            [weakApplication beginReceivingRemoteControlEvents];
             int sleepInterval = 3;
             Song *nowPlaying;
             while (true){

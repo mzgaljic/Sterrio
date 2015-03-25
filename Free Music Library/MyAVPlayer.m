@@ -15,7 +15,6 @@
     
     BOOL stallHasOccured;
     
-    NSString *AVPLAYER_DONE_PLAYING;  //queue has finished
     NSString *CURRENT_SONG_DONE_PLAYING;
     NSString *CURRENT_SONG_STOPPED_PLAYBACK;
     NSString *CURRENT_SONG_RESUMED_PLAYBACK;
@@ -32,12 +31,12 @@ static void *mCurrentItem = &mCurrentItem;
 static void *mPlaybackRate = &mPlaybackRate;
 
 static void *mPlaybackStarted = &mPlaybackStarted;
+static void *airplayStateChanged = &airplayStateChanged;
 
 - (id)init
 {
     if(self = [super init]){
         reachability = [ReachabilitySingleton sharedInstance];
-        AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
         CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update gui please!";
         CURRENT_SONG_STOPPED_PLAYBACK = @"playback has stopped for some unknown reason (stall?)";
         CURRENT_SONG_RESUMED_PLAYBACK = @"playback has resumed from a stall probably";
@@ -147,12 +146,6 @@ static void *mPlaybackStarted = &mPlaybackStarted;
             else
                 [MusicPlaybackController returnToPreviousTrack];
         }
-    }
-    else{  //last song just ended (happens when playback ends by itself, not when tracks are skipped)
-        [MusicPlaybackController explicitlyPausePlayback:YES];
-        [MusicPlaybackController pausePlayback];
-        [[NSNotificationCenter defaultCenter] postNotificationName:AVPLAYER_DONE_PLAYING
-                                                            object:nil];
     }
 }
 
@@ -429,6 +422,10 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
            forKeyPath:@"rate"
               options:NSKeyValueObservingOptionNew
               context:mPlaybackRate];
+    [self addObserver:self
+           forKeyPath:@"externalPlaybackActive"
+              options:NSKeyValueObservingOptionNew
+              context:airplayStateChanged];
 }
 
 - (void)deregisterForObservers
@@ -451,6 +448,9 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
         [self removeObserver:self
                   forKeyPath:@"rate"
                      context:mPlaybackRate];
+        [self removeObserver:self
+                  forKeyPath:@"externalPlaybackActive"
+                     context:airplayStateChanged];
     }
     //do nothing, obviously it wasn't attached because an exception was thrown
     @catch(id anException){}
@@ -549,6 +549,10 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
             [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged
                                                                 object:nil];
         }
+    } else if(context == airplayStateChanged){
+        BOOL airplayActive = self.externalPlaybackActive;
+        
+        [[MusicPlaybackController obtainRawPlayerView] showAirPlayInUseMsg:airplayActive];
     } else
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }

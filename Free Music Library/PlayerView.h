@@ -17,11 +17,17 @@
 
 - (void)setPlayer:(AVPlayer *)player;
 
+//used so the player view knows where it was initially before
+//a user started dragging it off screen (when they decide to kill it)
+- (void)shrunkenFrameHasChanged;
 
 - (void)removeLayerFromPlayer;
 - (void)reattachLayerToPlayer;
 - (UIImage *)screenshotOfPlayer;
 
 - (void)userKilledPlayer;
+
+- (void)showAirPlayInUseMsg:(BOOL)show;
+- (void)newAirplayInUseMsgCenter:(CGPoint)newCenter;
 
 @end

@@ -113,6 +113,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
             [MusicPlaybackController resumePlayback];
             [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged
                                                                 object:nil];
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlaying];
         }
         
     } else{
@@ -129,6 +130,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
                 [MusicPlaybackController resumePlayback];
                 [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged
                                                                     object:nil];
+                [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlaying];
             }
         });
     }

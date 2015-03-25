@@ -28,6 +28,8 @@ typedef enum{
     
     GCDiscreetNotificationView *sliderHint;  //slider hint
     
+    CMTime lastScrubbingSeekTime;
+    
     BOOL playerButtonsSetUp;
     DurationLabelStates stateOfDurationLabels;
     GUIPlaybackState stateOfGUIPlayback;
@@ -48,11 +50,11 @@ static UIInterfaceOrientation lastKnownOrientation;
 static BOOL playAfterMovingSlider = YES;
 static BOOL sliderIsBeingTouched = NO;
 static BOOL waitingForNextOrPrevVideoToLoad;
+static BOOL isPlayerOnExternalDisplayWhileScrubbing = NO;
 static const short longDurationLabelOffset = 24;
 static int numTimesSetupKeyValueObservers = 0;
 const CGFloat observationsPerSecond = 15.0f;  //for timeObserver var
 
-NSString * const AVPLAYER_DONE_PLAYING = @"Avplayer has no more items to play.";
 NSString * const CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update gui please!";
 NSString * const CURRENT_SONG_STOPPED_PLAYBACK = @"playback has stopped for some unknown reason (stall?)";
 NSString * const CURRENT_SONG_RESUMED_PLAYBACK = @"playback has resumed from a stall probably";
@@ -74,6 +76,11 @@ static void *kDurationDidChangeKVO     = &kDurationDidChangeKVO;
 static void *kTimeRangesKVO            = &kTimeRangesKVO;
 
 static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
+
+- (ASValueTrackingSlider *)playbackSlider
+{
+    return _playbackSlider;
+}
 
 #pragma mark - VC Life Cycle
 - (void)viewDidLoad
@@ -110,10 +117,6 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(updateScreenWithInfoForNewSong:)
                                                  name:MZNewSongLoading
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(lastSongHasFinishedPlayback:)
-                                                 name:AVPLAYER_DONE_PLAYING
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(playbackOfVideoHasBegun)
@@ -277,17 +280,6 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 }
 
 #pragma mark - Check and update GUI based on device orientation (or responding to events)
-- (void)lastSongHasFinishedPlayback:(NSNotification *)object
-{
-    //seek to end of track, if its not already (just in case)
-    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
-    if(player){
-        if(player.currentItem)
-            [player seekToTime:player.currentItem.asset.duration];
-    }
-    [self toggleDisplayToPausedState];
-}
-
 //NOT the same as updating the lock screen. this is specifically the info shown
 //in this VC (song name, updating song index, etc)
 - (void)updateScreenWithInfoForNewSong:(NSNotification *)object
@@ -451,6 +443,8 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     [player pause];
     [MusicPlaybackController explicitlyPausePlayback:YES];
     [self toggleDisplayToPausedState];
+    if(player.isExternalPlaybackActive)
+        isPlayerOnExternalDisplayWhileScrubbing = YES;
 }
 - (IBAction)playbackSliderEditingHasEndedA:(id)sender  //touch up inside
 {
@@ -463,6 +457,9 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     [sliderHint hideAnimated];
     [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlaying];
     [self playerControlsShouldBeUpdated];
+    
+    if(isPlayerOnExternalDisplayWhileScrubbing)
+        [[MusicPlaybackController obtainRawAVPlayer] seekToTime:lastScrubbingSeekTime];
 }
 - (IBAction)playbackSliderEditingHasEndedB:(id)sender  //touch up outside
 {
@@ -472,7 +469,9 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 - (IBAction)playbackSliderValueHasChanged:(id)sender
 {
     CMTime newTime = CMTimeMakeWithSeconds(_playbackSlider.value, NSEC_PER_SEC);
-    [[MusicPlaybackController obtainRawAVPlayer] seekToTime:newTime];
+    if(! isPlayerOnExternalDisplayWhileScrubbing)
+        [[MusicPlaybackController obtainRawAVPlayer] seekToTime:newTime];
+    lastScrubbingSeekTime = newTime;
 }
 
 - (NSString *)slider:(ASValueTrackingSlider *)slider stringForValue:(float)value
@@ -628,8 +627,10 @@ static int accomodateInterfaceLabelsCounter = 0;
     //another method will reenable it when necessary
     if(moreSongsInQueue)
         self.playbackSlider.enabled = NO;
-    else
-        self.playbackSlider.enabled = YES;  //this is the last song anyway, slider can remain active.
+    else{
+        //this is the last song anyway, slider can remain active.
+        self.playbackSlider.enabled = YES;
+    }
 }
 
 
@@ -1137,15 +1138,16 @@ static int accomodateInterfaceLabelsCounter = 0;
 //BACK BUTTON
 - (void)backwardsButtonTappedOnce
 {
-    [MusicPlaybackController returnToPreviousTrack];
     [self backwardsButtonLetGo];
 
     if(! [MusicPlaybackController shouldSeekToStartOnBackPress]){
         //previous song will actually be loaded
         waitingForNextOrPrevVideoToLoad = YES;
         self.playbackSlider.enabled = NO;
-    }
-    //else the song will simply start from the beginning...
+    } else
+        [self toggleDisplayToPlayingState];
+    //order matters here...this call should be after the if statement.
+    [MusicPlaybackController returnToPreviousTrack];
 }
 
 - (void)backwardsButtonBeingHeld{ [self addShadowToButton:backwardButton]; }
@@ -1208,6 +1210,11 @@ static int accomodateInterfaceLabelsCounter = 0;
 //read comment in method above
 - (void)toggleDisplayToPlayingState
 {
+    if(sliderIsBeingTouched){
+        [self toggleDisplayToPausedState];
+        return;
+    }
+    
     if(stateOfGUIPlayback == GUIPlaybackStatePaused && ![MusicPlaybackController isPlayerStalled]){
         UIColor *color = [UIColor blackColor];
         UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
@@ -1288,7 +1295,7 @@ static int accomodateInterfaceLabelsCounter = 0;
 }
 
 - (void)playerControlsShouldBeUpdated  //MZAVPlayerStallStateChanged
-{
+{   
     if([MusicPlaybackController isPlayerStalled]){
         [self toggleDisplayToPausedState];
     } else{

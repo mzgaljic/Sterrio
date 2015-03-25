@@ -21,6 +21,8 @@
     NSMutableArray *lastTouchesDirection;
     BOOL userDidSwipePlayerOffScreenManually;
     int xValueBeforeDrag;
+    
+    UIImageView *airplayMsgView;
 }
 @end
 @implementation PlayerView
@@ -28,7 +30,7 @@
 static UIImageView *screenshotOfPlayer;
 typedef enum {leftDirection, rightDirection} HorizontalDirection;
 
-- (void)newSongPlaying
+- (void)shrunkenFrameHasChanged
 {
     xValueBeforeDrag = self.frame.origin.x;
 }
@@ -37,16 +39,11 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 - (id)init
 {
     if (self = [super init]) {
-        xValueBeforeDrag = 0;
         AVPlayerLayer *layer = (AVPlayerLayer *)self.layer;
         layer.masksToBounds = YES;
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(orientationNeedsToChanged)
                                                      name:UIDeviceOrientationDidChangeNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(newSongPlaying)
-                                                     name:MZNewSongLoading
-                                                   object:nil];
         
         lastOrientation = [UIApplication sharedApplication].statusBarOrientation;
         self.multipleTouchEnabled = NO;
@@ -152,6 +149,39 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     [SongPlayerCoordinator placePlayerInDisabledState:NO];
     [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
     [[MZPlaybackQueue sharedInstance] clearEntireQueue];
+}
+
+#pragma mark - Airplay state stuff
+- (void)showAirPlayInUseMsg:(BOOL)show
+{
+    if(show){
+        if(airplayMsgView == nil){
+            [self removeLayerFromPlayer];
+            UIImage *airplayImg = [UIImage imageNamed:@"airplay"];
+            airplayImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+                                                        :airplayImg];
+            
+            airplayMsgView = [[UIImageView alloc] initWithImage:airplayImg];
+            [self addSubview:airplayMsgView];
+        
+            airplayMsgView.center = [self convertPoint:self.center fromView:self.superview];
+            [self bringSubviewToFront:airplayMsgView];
+            [CATransaction flush];  //force immdiate redraw
+        }
+    } else{
+        if(airplayMsgView){
+            [airplayMsgView removeFromSuperview];
+            airplayMsgView = nil;
+            [self reattachLayerToPlayer];
+        }
+    }
+}
+
+- (void)newAirplayInUseMsgCenter:(CGPoint)newCenter
+{
+    if(airplayMsgView){
+        airplayMsgView.center = newCenter;
+    }
 }
 
 #pragma mark - Orientation and view "touch" code
@@ -321,7 +351,6 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 //The SongPlayerViewController class handles the big video rotation.
 - (void)orientationNeedsToChanged
 {
-    xValueBeforeDrag = self.frame.origin.x;
     if([SongPlayerCoordinator isVideoPlayerExpanded])
         return;   //don't touch the player when it is expanded
     else{

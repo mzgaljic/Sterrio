@@ -18,7 +18,7 @@
 
 //used by private playback queue classes.
 short const INTERNAL_FETCH_BATCH_SIZE = 1;
-short const EXTERNAL_FETCH_BATCH_SIZE = 50;
+short const EXTERNAL_FETCH_BATCH_SIZE = 100;
 
 
 + (instancetype)sharedInstance
