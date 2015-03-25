@@ -20,6 +20,7 @@
     int killSlideXBoundary;
     NSMutableArray *lastTouchesDirection;
     BOOL userDidSwipePlayerOffScreenManually;
+    int xValueBeforeDrag;
 }
 @end
 @implementation PlayerView
@@ -27,20 +28,25 @@
 static UIImageView *screenshotOfPlayer;
 typedef enum {leftDirection, rightDirection} HorizontalDirection;
 
-- (void)setFrame:(CGRect)frame
+- (void)newSongPlaying
 {
-    [super setFrame:frame];
+    xValueBeforeDrag = self.frame.origin.x;
 }
 
 #pragma mark - UIView lifecycle
 - (id)init
 {
     if (self = [super init]) {
+        xValueBeforeDrag = 0;
         AVPlayerLayer *layer = (AVPlayerLayer *)self.layer;
         layer.masksToBounds = YES;
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(orientationNeedsToChanged)
                                                      name:UIDeviceOrientationDidChangeNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(newSongPlaying)
+                                                     name:MZNewSongLoading
+                                                   object:nil];
         
         lastOrientation = [UIApplication sharedApplication].statusBarOrientation;
         self.multipleTouchEnabled = NO;
@@ -189,6 +195,13 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
                             frame.origin.y,
                             frame.size.width,
                             frame.size.height);
+    float percentageTowardLeft;
+    int xVal = self.frame.origin.x;
+    percentageTowardLeft = xVal/(float)xValueBeforeDrag;
+    if(percentageTowardLeft < 0.2)
+        percentageTowardLeft = 0.2;
+    self.alpha = percentageTowardLeft;
+    [CATransaction flush];  //force immdiate redraw
 }
 
 //detects when view (this AVPlayer) was tapped (fires when touch is released)
@@ -197,6 +210,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     BOOL playerExpanded = [SongPlayerCoordinator isVideoPlayerExpanded];
     if(userDidSwipeDown || userDidSwipeUp || userDidTap || playerExpanded){
         [lastTouchesDirection removeAllObjects];
+        self.alpha = 1;
         return;
     }
     
@@ -231,6 +245,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
         }else{
             //user changed his/her mind
             [self movePlayerBackToOriginalLocation];
+            self.alpha = 1;
         }
     }
     [lastTouchesDirection removeAllObjects];
@@ -306,6 +321,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 //The SongPlayerViewController class handles the big video rotation.
 - (void)orientationNeedsToChanged
 {
+    xValueBeforeDrag = self.frame.origin.x;
     if([SongPlayerCoordinator isVideoPlayerExpanded])
         return;   //don't touch the player when it is expanded
     else{
@@ -313,6 +329,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
         lastOrientation = newOrientation;
         [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerNeedsToBeRotated];
     }
+    
 }
 
 #pragma mark - Handling Poping and pushing of the player VC along with this view
