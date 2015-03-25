@@ -28,7 +28,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     } else{
         dispatch_async(dispatch_get_main_queue(), ^(void){
             //Run UI Updates
-            [player play];
+            [MusicPlaybackController resumePlayback];
         });
     }
 }
@@ -41,7 +41,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     } else{
         dispatch_async(dispatch_get_main_queue(), ^(void){
             //Run UI Updates
-            [player pause];
+            [MusicPlaybackController pausePlayback];
         });
     }
 }
@@ -56,10 +56,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     } else{
         dispatch_async(dispatch_get_main_queue(), ^(void){
             //Run UI Updates
-            
-            Song *skippedSong = [MusicPlaybackController nowPlayingSong];
-            Song *nextSong = [playbackQueue skipForward];
-            [VideoPlayerWrapper startPlaybackOfSong:nextSong goingForward:YES oldSong:skippedSong];
+            [MusicPlaybackController skipToNextTrack];
         });
     }
 }
@@ -85,15 +82,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
         __block NSNumber* numAsSecondBlock = numAsSecond;
         dispatch_async(dispatch_get_main_queue(), ^(void){
             //Run UI Updates
-            Song *currentSong = [MusicPlaybackController nowPlayingSong];
-            if([currentSong.duration integerValue] < [numAsSecond integerValue])
-                //setting to second before end to be safe
-                numAsSecondBlock = [NSNumber numberWithInteger:[currentSong.duration integerValue] -1];
-            
-            AVPlayer *player = [self obtainRawAVPlayer];
-            Float64 seconds = [numAsSecondBlock floatValue];
-            CMTime targetTime = CMTimeMakeWithSeconds(seconds, NSEC_PER_SEC);
-            [player seekToTime:targetTime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+            [MusicPlaybackController seekToVideoSecond:numAsSecondBlock];
         });
     }
 }
@@ -119,19 +108,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     } else{
         dispatch_async(dispatch_get_main_queue(), ^(void){
             //Run UI Updates
-            if(! [MusicPlaybackController shouldSeekToStartOnBackPress]){
-                Song *skippedSong = [MusicPlaybackController nowPlayingSong];
-                Song *previousSong = [playbackQueue skipToPrevious];
-                [VideoPlayerWrapper startPlaybackOfSong:previousSong
-                                           goingForward:NO
-                                                oldSong:skippedSong];
-            } else{
-                [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
-                [MusicPlaybackController resumePlayback];
-                [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged
-                                                                    object:nil];
-                [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlaying];
-            }
+            [MusicPlaybackController returnToPreviousTrack];
         });
     }
 }

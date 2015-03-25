@@ -107,9 +107,7 @@ static void *airplayStateChanged = &airplayStateChanged;
     } else{
         __weak MyAVPlayer *weakself = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            [weakself allowSongDidFinishNotificationToProceed:YES];
-            [weakself songDidFinishPlaying:nil];
-            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+            [weakself songNeedsToBeSkippedDueToIssue];
         });
     }
 }

@@ -10,7 +10,7 @@
 
 @implementation VideoPlayerWrapper
 
-+ (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)yes oldSong:(Song *)oldSong
++ (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)forward oldSong:(Song *)oldSong
 {
     BOOL allowSongDidFinishToExecute;
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
@@ -30,7 +30,7 @@
     [MusicPlaybackController setAVPlayerTimeObserver:nil];
     
     [playerView reattachLayerToPlayer];
-    [newPlayer startPlaybackOfSong:aSong goingForward:YES oldSong:oldSong];
+    [newPlayer startPlaybackOfSong:aSong goingForward:forward oldSong:oldSong];
     [VideoPlayerWrapper setupAvPlayerViewAgain];
 }
 

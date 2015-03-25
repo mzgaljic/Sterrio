@@ -379,6 +379,7 @@
 {
     if([[segue identifier] isEqualToString: @"playlistItemSegue"]){
         [[segue destinationViewController] setPlaylist:(Playlist *)sender];
+        [[segue destinationViewController] setParentVcPlaybackContext:self.playbackContext];
     }
 }
 

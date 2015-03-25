@@ -30,6 +30,8 @@
 }
 
 @property (nonatomic, strong) Playlist *playlist;
+@property (strong, nonatomic) PlaybackContext *parentVcPlaybackContext;
+
 @property (nonatomic, strong) NSArray *originalLeftBarButtonItems;
 @property (nonatomic, strong) NSArray *originalRightBarButtonItems;
 @property (nonatomic, strong) UINavigationItem *navBar;

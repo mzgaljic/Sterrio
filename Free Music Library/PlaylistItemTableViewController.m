@@ -24,6 +24,7 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     _playlist = nil;
+    _parentVcPlaybackContext = nil;
     _txtField = nil;
 }
 
@@ -104,7 +105,14 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    BOOL songIsNowPlaying = [[NowPlayingSong sharedInstance] isEqualToSong:song compareWithContext:self.playbackContext];
+    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+    BOOL songIsNowPlaying = [nowPlayingObj isEqualToSong:song
+                                                        compareWithContext:self.playbackContext];
+    if(! songIsNowPlaying){
+        songIsNowPlaying = [nowPlayingObj isEqualToSong:song
+                                     compareWithContext:self.parentVcPlaybackContext];
+    }
+    
     if(songIsNowPlaying)
         cell.textLabel.textColor = [super colorForNowPlayingItem];
     else
@@ -204,6 +212,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    if(self.editing)
+        return;
+    
     Song *selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
     [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext];
 }

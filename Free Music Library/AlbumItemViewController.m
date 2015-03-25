@@ -110,6 +110,26 @@ const int ALBUM_HEADER_HEIGHT = 120;
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
         
+        //obtain object for the deleted song
+        Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        [MusicPlaybackController songAboutToBeDeleted:song deletionContext:self.playbackContext];
+        [song removeAlbumArt];
+        
+        NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:[CoreDataManager context]];
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        [request setEntity:entityDesc];
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"song_id == %@", song.song_id];
+        [request setPredicate:predicate];
+        
+        NSError *error;
+        NSArray *matchingData = [[CoreDataManager context] executeFetchRequest:request error:&error];
+        if(matchingData.count == 1)
+            [[CoreDataManager context] deleteObject:matchingData[0]];
+        [[CoreDataManager sharedInstance] saveContext];
+        
+        /*
+        //this is for deleting the song from this album. not useful here.
         Song *deletedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
         [MusicPlaybackController songAboutToBeDeleted:deletedSong
                                       deletionContext:self.playbackContext];
@@ -118,6 +138,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
         [mutableSet removeObject:deletedSong];
         self.album.albumSongs = mutableSet;
         [[CoreDataManager sharedInstance] saveContext];
+         */
         
         [self generateAlbumSectionHeaderView];
         [self.tableView beginUpdates];
