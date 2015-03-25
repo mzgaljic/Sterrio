@@ -59,6 +59,7 @@
 		87480DCD192C1FBD005CC0A4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DAC192C1FBD005CC0A4 /* UIKit.framework */; };
 		87480DD5192C1FBD005CC0A4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 87480DD3192C1FBD005CC0A4 /* InfoPlist.strings */; };
 		87480DD7192C1FBD005CC0A4 /* Free_Music_LibraryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 87480DD6192C1FBD005CC0A4 /* Free_Music_LibraryTests.m */; };
+		874814591AC23D1B00F447C1 /* MZAlbumSectionHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 874814581AC23D1B00F447C1 /* MZAlbumSectionHeader.m */; };
 		874C535C19831825000382FA /* NSString+WhiteSpace_Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = 874C535B19831825000382FA /* NSString+WhiteSpace_Utility.m */; };
 		874C535F19844201000382FA /* NSObject+ObjectUUID.m in Sources */ = {isa = PBXBuildFile; fileRef = 874C535E19844201000382FA /* NSObject+ObjectUUID.m */; };
 		874DA0861ABA11DD003D69D6 /* MRBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA0611ABA11DD003D69D6 /* MRBlurView.m */; };
@@ -273,6 +274,8 @@
 		87480DD2192C1FBD005CC0A4 /* Free Music LibraryTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Free Music LibraryTests-Info.plist"; sourceTree = "<group>"; };
 		87480DD4192C1FBD005CC0A4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		87480DD6192C1FBD005CC0A4 /* Free_Music_LibraryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Free_Music_LibraryTests.m; sourceTree = "<group>"; };
+		874814571AC23D1B00F447C1 /* MZAlbumSectionHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZAlbumSectionHeader.h; sourceTree = "<group>"; };
+		874814581AC23D1B00F447C1 /* MZAlbumSectionHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZAlbumSectionHeader.m; sourceTree = "<group>"; };
 		874C535A19831825000382FA /* NSString+WhiteSpace_Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+WhiteSpace_Utility.h"; sourceTree = "<group>"; };
 		874C535B19831825000382FA /* NSString+WhiteSpace_Utility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+WhiteSpace_Utility.m"; sourceTree = "<group>"; };
 		874C535D19844201000382FA /* NSObject+ObjectUUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+ObjectUUID.h"; sourceTree = "<group>"; };
@@ -787,6 +790,15 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		874814561AC23CF100F447C1 /* Album Section Header */ = {
+			isa = PBXGroup;
+			children = (
+				874814571AC23D1B00F447C1 /* MZAlbumSectionHeader.h */,
+				874814581AC23D1B00F447C1 /* MZAlbumSectionHeader.m */,
+			);
+			name = "Album Section Header";
+			sourceTree = "<group>";
+		};
 		874DA05E1ABA11DD003D69D6 /* MRProgress */ = {
 			isa = PBXGroup;
 			children = (
@@ -1258,6 +1270,7 @@
 		87ECF5221A57C5FB00D58EDF /* Custom GUI Elements/Classes */ = {
 			isa = PBXGroup;
 			children = (
+				874814561AC23CF100F447C1 /* Album Section Header */,
 				870EDAE7197F4EB0001901B9 /* Editing Field View */,
 				87BBBE031A58A77300248E2F /* Custom Search Bar */,
 				872EA4E81A54F42A00F8EE9D /* Custom ViewControllers */,
@@ -1526,6 +1539,7 @@
 				87A453C9199C0891004D1319 /* ELCAsset.m in Sources */,
 				874DA08E1ABA11DD003D69D6 /* MRStopButton.m in Sources */,
 				87124BA419A3CBB8003D29CD /* AlbumModelHandler.m in Sources */,
+				874814591AC23D1B00F447C1 /* MZAlbumSectionHeader.m in Sources */,
 				87E5FF3F1A6F42AD00A09652 /* MZSongModifierTableView.m in Sources */,
 				8763351B1A84052600A229C4 /* MainScreenViewController.m in Sources */,
 				871C2BF01A97CAA0007A1DE5 /* NowPlayingSong.m in Sources */,

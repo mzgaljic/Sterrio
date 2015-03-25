@@ -343,7 +343,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                 
                 __weak UIImage *cellImg = albumArt;
                 //calculate how much one length varies from the other.
-                int diff = abs(albumArt.size.width - albumArt.size.height);
+                int diff = abs(cellImg.size.width - cellImg.size.height);
                 if(diff > 10){
                     //image is not a perfect (or close to perfect) square. Compensate for this...
                     cellImg = [albumArt imageScaledToFitSize:cell.imageView.frame.size];
@@ -416,7 +416,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     if([self.editButton.title isEqualToString:@"Edit"]){  //tapping song plays the song
-        [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:self];
         [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext];
         
     } else if([self.editButton.title isEqualToString:@"Done"]){  //tapping song triggers edit segue

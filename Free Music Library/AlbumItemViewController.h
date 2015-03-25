@@ -8,13 +8,16 @@
 
 #import <UIKit/UIKit.h>
 #import "AlbumArtUtilities.h"
-#import "AppEnvironmentConstants.h"
 #import "Album.h"
 #import "Song.h"
-#import "SDWebImageManager.h"
-#import "MyViewController.h"
+#import "MZAlbumSectionHeader.h"
+#import "CoreDataCustomTableViewController.h"
+#import "ArtistTableViewFormatter.h"
 
-@interface AlbumItemViewController : MyViewController
+@interface AlbumItemViewController : CoreDataCustomTableViewController <UITableViewDataSource,
+                                                                        UITableViewDelegate,
+                                                                        MGSwipeTableCellDelegate>
+
 @property (strong, nonatomic) Album *album;
 
 //GUI vars

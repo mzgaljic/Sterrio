@@ -32,7 +32,10 @@
     [super viewDidLoad];
     //this works better than a unique random id since this class can be dealloced and re-alloced
     //later. Id must stay the same across all allocations.  :)
-    self.playbackContextUniqueId = NSStringFromClass([self class]);
+    NSMutableString *uniqueID = [NSMutableString string];
+    [uniqueID appendString:NSStringFromClass([self class])];
+    [uniqueID appendString:self.playlist.playlist_id];
+    self.playbackContextUniqueId = uniqueID;
     self.emptyTableUserMessage = @"Playlist Empty";
     [self setUpNavBarItems];
     self.navBar = self.navigationItem;
@@ -202,7 +205,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     Song *selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:self];
     [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext];
 }
 
@@ -474,9 +476,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (PlaybackContext *)contextForPlaylistSong:(Song *)aSong
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    NSPredicate *playlistSongsPredicate = [NSPredicate predicateWithFormat:@"ANY playlistIAmIn.playlist_id == %@ ", _playlist.playlist_id];
+    NSPredicate *playlistSongsPredicate = [NSPredicate predicateWithFormat:@"ANY playlistIAmIn.playlist_id == %@", _playlist.playlist_id];
     NSPredicate *desiredSongInPlaylist = [NSPredicate predicateWithFormat:@"ANY song_id == %@", aSong.song_id];
-    request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[playlistSongsPredicate, desiredSongInPlaylist]];\
+    request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[playlistSongsPredicate, desiredSongInPlaylist]];
     //descriptor doesnt really matter here
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistIAmIn"
                                                                      ascending:YES];

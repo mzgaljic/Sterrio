@@ -314,9 +314,10 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     
     //hides empty cells at the end
     tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    //all tableviews subclassing this class are on a white background so this looks nice.
+    //all tableviews subclassing this class are on a white background.
     //(playback queue tableview is inheriting from something else, dont worry about that).
-    tableView.indicatorStyle = UIScrollViewIndicatorStyleBlack;
+    //making the scroll indicator invisible.
+    tableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
     
     //going to fade in tableview
     tableView.alpha = 0.8;
@@ -337,9 +338,14 @@ static void *navBarHiddenChange = &navBarHiddenChange;
 {
     [super viewDidAppear:animated];
     //fading in tableview
-    [UIView animateWithDuration:0.20 animations:^{
-        tableView.alpha = 1;
-    }];
+    [UIView animateWithDuration:0.15
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction
+                     animations:^{
+                         tableView.alpha = 1;
+                         tableView.userInteractionEnabled = YES;
+                     }
+                     completion:nil];
     [self compensateTableViewInsetForPlayer];
 }
 
@@ -448,10 +454,13 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     UIEdgeInsets currentInsets = tableView.contentInset;
     UIEdgeInsets insetIncreaseContent = UIEdgeInsetsMake(currentInsets.top,
                                                          0,
-                                                         offsetHeightWhenPlayerVisible,
+                                                         offsetHeightWhenPlayerVisible + MZTabBarHeight,
                                                          0);
-    UIEdgeInsets defaultInsets = UIEdgeInsetsMake(currentInsets.top, 0, 0, 0);
-    [UIView animateWithDuration:0.8 animations:^{
+    UIEdgeInsets defaultInsets = UIEdgeInsetsMake(currentInsets.top, 0, MZTabBarHeight, 0);
+    [UIView animateWithDuration:0.75
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction
+                     animations:^{
         if([SongPlayerCoordinator isPlayerOnScreen])
         {
             if(insetState == ContentInsetStateDefault){
@@ -468,7 +477,7 @@ static void *navBarHiddenChange = &navBarHiddenChange;
                 insetState = ContentInsetStateDefault;
             }
         }
-    }];
+    } completion:nil];
 }
 
 - (void)playerOnScreenStateChanged

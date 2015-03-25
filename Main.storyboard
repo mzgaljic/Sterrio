@@ -153,31 +153,48 @@
             </objects>
             <point key="canvasLocation" x="1868" y="-2094"/>
         </scene>
-        <!--album name-->
+        <!--Album Item-->
         <scene sceneID="COP-Ij-JKb">
             <objects>
-                <viewController extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" id="G0K-FY-YuF" customClass="AlbumItemViewController" sceneMemberID="viewController">
+                <viewController title="Album Item" extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" id="G0K-FY-YuF" customClass="AlbumItemViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="InS-Cu-fn0">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="nmS-nT-zJ7">
-                                <rect key="frame" x="0.0" y="63" width="320" height="568"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="hGe-GP-Xus">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <subviews>
-                                    <view contentMode="scaleToFill" id="MNz-m8-bhd">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="101"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                                    </view>
-                                </subviews>
-                            </scrollView>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="albumSongCell" textLabel="eNW-0j-WEy" detailTextLabel="0V3-vC-s3L" style="IBUITableViewCellStyleValue1" id="PKD-fW-ahE" customClass="MGSwipeTableCell">
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="PKD-fW-ahE" id="sJs-Ha-wdQ">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="eNW-0j-WEy">
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="0V3-vC-s3L">
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" title="album name" id="GSd-xq-T5s"/>
                     <connections>
                         <outlet property="navBar" destination="GSd-xq-T5s" id="htQ-fI-HqV"/>
+                        <outlet property="tableView" destination="hGe-GP-Xus" id="1Vu-CU-y7l"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F17-Uc-yQa" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -245,7 +262,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uvy-Lq-rZq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3963" y="-2188"/>
+            <point key="canvasLocation" x="4979" y="-1670"/>
         </scene>
         <!--Existing Album Picker Table View Controller-->
         <scene sceneID="yj8-b3-HKE">
@@ -290,48 +307,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Fme-iV-E6f" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4499" y="-2188"/>
-        </scene>
-        <!--Genre Picker Table View Controller-->
-        <scene sceneID="Uho-ed-DrP">
-            <objects>
-                <tableViewController storyboardIdentifier="genrePickerView" useStoryboardIdentifierAsRestorationIdentifier="YES" id="YfS-Z1-bSz" customClass="GenrePickerTableViewController" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="iUu-TG-EZd">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="aGenreCell" textLabel="nTL-mD-T45" style="IBUITableViewCellStyleDefault" id="clI-NQ-sjm">
-                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="clI-NQ-sjm" id="Rcw-Ko-ZAd">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="nTL-mD-T45">
-                                            <rect key="frame" x="15" y="0.0" width="290" height="43"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="YfS-Z1-bSz" id="soE-wF-eoS"/>
-                            <outlet property="delegate" destination="YfS-Z1-bSz" id="odC-kB-EWH"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" id="14K-Pn-n7M"/>
-                    <connections>
-                        <outlet property="navBar" destination="14K-Pn-n7M" id="f6K-gd-UhB"/>
-                    </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="8OE-2B-1iw" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="4717" y="-1512"/>
+            <point key="canvasLocation" x="4845" y="-914"/>
         </scene>
         <!--Editable Cell Table View Controller-->
         <scene sceneID="6Bo-yS-uEW">
@@ -370,7 +346,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yab-2D-NHw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3319" y="-2166"/>
+            <point key="canvasLocation" x="4543" y="-2168"/>
         </scene>
         <!--Settings-->
         <scene sceneID="B5X-97-CTG">
@@ -453,7 +429,6 @@
                     </view>
                     <navigationItem key="navigationItem" id="yIi-4b-7vu"/>
                     <connections>
-                        <segue destination="YfS-Z1-bSz" kind="push" identifier="editGenreFieldSegue" id="ql6-9j-60T"/>
                         <segue destination="jOb-Dc-qbt" kind="push" identifier="browseExistingAlbumsSegue" id="kv1-r6-FxZ"/>
                         <segue destination="tA4-jx-Xwj" kind="push" identifier="browseExistingArtistsSegue" id="vyd-Dn-Zdk"/>
                         <segue destination="ue5-WF-jye" kind="push" identifier="editFieldSegue" id="D3D-zj-zDg"/>
@@ -651,9 +626,6 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                        <connections>
-                                            <segue destination="G0K-FY-YuF" kind="push" identifier="albumItemSegue" id="U9i-bW-lhd"/>
-                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
@@ -664,6 +636,7 @@
                         <outlet property="tableView" destination="GTt-24-u0Q" id="qcj-La-bI6"/>
                         <segue destination="V5K-xF-P6M" kind="modal" identifier="addMusicToLibSegue" modalTransitionStyle="coverVertical" id="jag-Bp-C7x"/>
                         <segue destination="Lxg-v4-Z1q" kind="modal" identifier="settingsSegue" modalTransitionStyle="coverVertical" id="q5e-fY-LN3"/>
+                        <segue destination="G0K-FY-YuF" kind="push" identifier="albumItemSegue" id="fhi-MU-k4o"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hra-II-HUs" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -901,8 +874,8 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="Gex-TI-pO5"/>
+        <segue reference="jag-Bp-C7x"/>
+        <segue reference="q5e-fY-LN3"/>
         <segue reference="Il9-kd-bt3"/>
-        <segue reference="bsh-e9-eUx"/>
     </inferredMetricsTieBreakers>
 </document>

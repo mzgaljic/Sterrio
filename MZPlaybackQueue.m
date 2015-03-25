@@ -95,6 +95,12 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 50;
     [mainQueue setMainQueueWithNewNowPlayingSong:aSong inContext:aContext];
     [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:NO];
     [[NowPlayingSong sharedInstance] setNewNowPlayingSong:aSong context:aContext];
+    
+    //start playback in minimzed state
+    [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
+    [VideoPlayerWrapper startPlaybackOfSong:aSong
+                               goingForward:YES
+                                    oldSong:nil];
     [self printQueueContents];
 }
 

@@ -49,7 +49,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     //set global default "AppColorScheme"
     self.window.tintColor = [UIColor whiteColor];
     //vibrant orange
-    [UIColor defaultAppColorScheme:Rgb2UIColor(235, 95, 67)];
+    [UIColor defaultAppColorScheme:Rgb2UIColor(240, 110, 50)];
     
     //emerald green
     //[UIColor defaultAppColorScheme:[Rgb2UIColor(74, 153, 118) darkerColor]];

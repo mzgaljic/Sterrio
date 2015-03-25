@@ -122,7 +122,7 @@
         return attrString;
         
     } else if(artistString == nil && albumString == nil)
-        return nil;
+        return [[NSAttributedString alloc] initWithString:@" "];
     
     else if(artistString == nil && albumString != nil){
         NSMutableString *entireString = [NSMutableString stringWithString:albumString];
@@ -146,7 +146,7 @@
         return attrString;
 
     } else  //case should never happen
-        return nil;
+        return [[NSAttributedString alloc] initWithString:@" "];
 }
 
 @end

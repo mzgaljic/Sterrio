@@ -10,7 +10,6 @@
 
 @interface MasterAlbumsTableViewController()
 @property (nonatomic, assign) int indexOfEditingArtist;
-@property (nonatomic, assign) int selectedRowIndexValue;
 @property (nonatomic, strong) MySearchBar* searchBar;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
@@ -210,7 +209,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
                                                              forIndexPath:indexPath];
-    
     if (!cell)
         cell = [[MZTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                       reuseIdentifier:self.cellReuseId];
@@ -235,6 +233,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     [AlbumTableViewFormatter formatAlbumDetailLabelUsingAlbum:album andCell:&cell];
     
     //check if a song in this album is the now playing song
+#warning this check is wrong! should be fixed to be more accurate (use context)
     BOOL albumHasNowPlaying = NO;
     for(Song *albumSong in album.albumSongs)
     {
@@ -332,6 +331,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if(self.editing)
+        return;
+    else{
+        Album *tappedAlbum = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        [self performSegueWithIdentifier:@"albumItemSegue" sender:tappedAlbum];
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -339,7 +345,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     return [AlbumTableViewFormatter preferredAlbumCellHeight];
 }
 
-- (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView
+           editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (self.tableView.editing)
     {
@@ -425,19 +432,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if([[segue identifier] isEqualToString: @"albumItemSegue"]){
-        //[[segue destinationViewController] setAlbum:self.albums[self.selectedRowIndexValue]];
-        
-        SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Unfinished"
-                                                          message:@"This action is coming soon."
-                                                         delegate:nil
-                                                cancelButtonTitle:@"OK"
-                                                otherButtonTitles: nil];
-        alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        alert.normalButtonFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        alert.buttonTextColor = [UIColor defaultAppColorScheme];
-        [alert show];
+        [[segue destinationViewController] setAlbum:(Album *)sender];
     }
 }
 
@@ -553,7 +548,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     self.fetchedResultsController = nil;
     NSManagedObjectContext *context = [CoreDataManager context];
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Album"];
-    request.predicate = nil;  //means i want all of the songs
+    request.predicate = nil;  //means i want all of the albums
     
     NSSortDescriptor *sortDescriptor;
     if([AppEnvironmentConstants smartAlphabeticalSort])

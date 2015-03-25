@@ -110,7 +110,8 @@ short const dummyTabIndex = 2;
     CGRect desiredVcFrame = CGRectMake(0,
                                        0,
                                        self.view.frame.size.width,
-                                       self.view.frame.size.height - MZTabBarHeight);
+                                       //self.view.frame.size.height - MZTabBarHeight);
+                                       self.view.frame.size.height);
     [self addChildViewController:newNavController];
     newNavController.view.frame = desiredVcFrame;
     
@@ -122,6 +123,9 @@ short const dummyTabIndex = 2;
     [newNavController setNavigationBarHidden:oldNavBarHidden animated:NO];
     
     [self.view addSubview:newNavController.view];
+    //make sure tab bar is not covered by the new nav controllers view
+    [self.view insertSubview:self.tabBarView aboveSubview:self.view];
+    
     [newNavController didMoveToParentViewController:self];
     [newVc viewDidAppear:YES];
     [newVc setNeedsStatusBarAppearanceUpdate];
@@ -147,9 +151,17 @@ short const dummyTabIndex = 2;
 //helper for setupTabBarAndTabBarView, and used for screen rotation
 - (void)setupTabBarAndTabBarViewUsingOrientation:(UIInterfaceOrientation)orientation
 {
+    UIVisualEffectView *visualEffectView;
+    
     if(self.tabBarView == nil){
         self.tabBarView = [[UIView alloc] init];
+        
+        UIVisualEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+        visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+        visualEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        [self.tabBarView addSubview:visualEffectView];
         self.tabBar = [[UITabBar alloc] init];
+        [self.tabBar setBackgroundImage:[UIImage new]];
         self.tabBar.delegate = self;
         self.centerButtonImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
                                                               :[UIImage imageNamed:CENTER_BTN_IMG_NAME]];
@@ -168,6 +180,9 @@ short const dummyTabIndex = 2;
     self.tabBar.frame = CGRectMake(0, 0, self.tabBarView.frame.size.width, self.tabBarView.frame.size.height);
     self.centerButton.frame = [self centerBtnFrameGivenTabBarViewFrame:self.tabBarView.frame
                                                           centerBtnImg:self.centerButtonImg];
+    if(visualEffectView){
+        visualEffectView.frame = self.tabBarView.bounds;
+    }
     [self.tabBarView addSubview:self.tabBar];
     [self.tabBarView addSubview:self.centerButton];
     [self.tabBarView setMultipleTouchEnabled:NO];
