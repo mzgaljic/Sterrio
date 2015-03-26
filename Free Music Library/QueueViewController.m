@@ -12,10 +12,8 @@
 {
     UINavigationBar *navBar;
     UIColor *localAppTintColor;  //specific for this VC (its been made brighter)
-    short UP_NEXT_SECTION_NUM;
-    short MAIN_QUEUE_SECTION_NUM;
+    
     MZPlaybackQueue *queue;
-    BOOL needToUpdateDataModels;
     
     //data models
     NSArray *mainQueueSongsComingUp;
@@ -35,7 +33,6 @@ short const SECTION_EMPTY = -1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    needToUpdateDataModels = YES;
     [SongPlayerCoordinator setScreenShottingVideoPlayerAllowed:NO];
     stackController = [[StackController alloc] init];
     localAppTintColor = [[[UIColor defaultAppColorScheme] lighterColor] lighterColor];
@@ -117,9 +114,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *cellIdentifier = @"SongQueueItemCell";
-    MZTableViewCell *cell = (MZTableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    MZQueueSongCell *cell = (MZQueueSongCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell)
-        cell = [[MZTableViewCell alloc] init];
+        cell = [[MZQueueSongCell alloc] init];
     else
     {
         // If an existing cell is being reused, reset the image to the default until it is populated.
@@ -138,7 +135,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
     // Set up other aspects of the cell content.
     Song *song = [self songForIndexPath:indexPath];
-    PlaybackContext *songContext = [self contextForIndexPath:indexPath];
     
     //init cell fields
     cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
@@ -146,11 +142,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
     [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
     
-    if([[NowPlayingSong sharedInstance] isEqualToSong:song compareWithContext:songContext]
-       && indexPath.row == 0){
+    if(indexPath.row == 0){
         cell.textLabel.textColor = localAppTintColor;
     }
     else{
+        cell.isQueuedSong = [self isUpNextSongPresentAtIndexPath:indexPath];
         cell.textLabel.textColor = [UIColor whiteColor];
     }
     
@@ -201,12 +197,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    [self updateSectionNumsBasedOnQueueData];
-    if(section == UP_NEXT_SECTION_NUM){
-        return @"  Queued Songs";
-    } else if(section == MAIN_QUEUE_SECTION_NUM){
+    if(section == 0){
         return [NSString stringWithFormat:@"  %@",mainQueueContext.queueName];
-    } else
+    }
+    else
         return @"";
 }
 
@@ -250,22 +244,26 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    [self updateSectionNumsBasedOnQueueData];
-    short sectionCount = 0;
-    if(UP_NEXT_SECTION_NUM != SECTION_EMPTY)
-        sectionCount++;
-    if(MAIN_QUEUE_SECTION_NUM != SECTION_EMPTY)
-        sectionCount++;
-    return sectionCount;
+    int nowPlayingCount = 0;
+    BOOL nowPlayingSongExists = [[NowPlayingSong sharedInstance] nowPlaying] ? YES : NO;
+    if(nowPlayingSongExists)
+        nowPlayingCount = 1;
+    if(upNextSongs.count + mainQueueSongsComingUp.count + nowPlayingCount > 0)
+        return 1;
+    else
+        return 0;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    [self updateSectionNumsBasedOnQueueData];
-    if(section == UP_NEXT_SECTION_NUM){
-        return upNextSongs.count;
-    } else if(section == MAIN_QUEUE_SECTION_NUM){
-        return mainQueueSongsComingUp.count;
+    if(section == 0){
+        BOOL nowPlayingSongExists = [[NowPlayingSong sharedInstance] nowPlaying] ? YES : NO;
+        NSUInteger numRows;
+        if(nowPlayingSongExists)
+            numRows = upNextSongs.count + mainQueueSongsComingUp.count +1;
+        else
+            numRows = upNextSongs.count + mainQueueSongsComingUp.count;
+        return numRows;
     } else
         return 0;
 }
@@ -282,76 +280,28 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+#warning unfinished and broken method.
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     NSUInteger numSectionsBeforeTap = [self numberOfSectionsInTableView:self.tableView];
     
     Song *tappedSong = [self songForIndexPath:indexPath];
     PlaybackContext *tappedSongsContext = [self contextForIndexPath:indexPath];
     if([[NowPlayingSong sharedInstance] isEqualToSong:tappedSong
-                                   compareWithContext:tappedSongsContext]){
+                                   compareWithContext:tappedSongsContext])
+    {
         [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
         [MusicPlaybackController resumePlayback];
     } else{
         NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
         
-        //was a queued song tapped or a main queue song tapped?
-        if(indexPath.section == MAIN_QUEUE_SECTION_NUM){
-            if(nowPlayingObj.isFromPlayNextSongs)
-                [queue skipForward];
-            [MusicPlaybackController newQueueWithSong:tappedSong withContext:tappedSongsContext];
+        if(indexPath.section == 0){
+            //if(nowPlayingObj.isFromPlayNextSongs)
+              //  [queue skipForward];
+            //[MusicPlaybackController newQueueWithSong:tappedSong withContext:tappedSongsContext];
         }
-        else if(indexPath.section == UP_NEXT_SECTION_NUM){
             
-            //skip as many of the queued songs as needed...
-            NSUInteger numSongsShouldBeSkipped;
-            if(indexPath.row == 0){
-                if(nowPlayingObj.isFromPlayNextSongs)
-                    numSongsShouldBeSkipped = 1;
-                else
-                    numSongsShouldBeSkipped = 1;
-            }
-            if(nowPlayingObj.isFromPlayNextSongs){
-                numSongsShouldBeSkipped = indexPath.row;
-                for(int i = 0; i < numSongsShouldBeSkipped; i++)
-                    [queue skipForward];
-                Song *previousSong = [nowPlayingObj nowPlaying];
-                [VideoPlayerWrapper startPlaybackOfSong:tappedSong
-                                           goingForward:YES
-                                                oldSong:previousSong];
-            }
-            else{
-                [MusicPlaybackController skipToNextTrack];
-            }
-        }
-        
-        //model needs updating! (will do lazy loading)
-        needToUpdateDataModels = YES;
-        [self updateSectionNumsBasedOnQueueData];
-        
-        /*
-        //now update table
-        [self.tableView beginUpdates];
-        NSUInteger numSections = [self numberOfSectionsInTableView:self.tableView];
-        if(numSectionsBeforeTap == numSections){
-            for(int section = 0; section < numSections; section++){
-                [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:section]
-                              withRowAnimation:UITableViewRowAnimationAutomatic];
-            }
-        } else{
-            //an entire section will be deleted
-            if(MAIN_QUEUE_SECTION_NUM == 0){
-                [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0]
-                              withRowAnimation:UITableViewRowAnimationTop];
-            } else{
-                [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:1]
-                              withRowAnimation:UITableViewRowAnimationTop];
-            }
-        }
-        
-        [self.tableView endUpdates];
-         */
+
         [self.tableView reloadData];
-#warning add fancy animations at a later time.
     }
 }
 
@@ -364,60 +314,72 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 #pragma mark - Tableview datasource helper
 - (Song *)songForIndexPath:(NSIndexPath *)indexPath
 {
-    [self updateSectionNumsBasedOnQueueData];
-    if(indexPath.section == MAIN_QUEUE_SECTION_NUM){
-        return (Song *)mainQueueSongsComingUp[indexPath.row];
-    } else if(indexPath.section == UP_NEXT_SECTION_NUM){
-        return (Song *)upNextSongs[indexPath.row];
-    } else
-        return nil;
+    if(indexPath.section == 0){
+        int row = (int)indexPath.row;
+        if(row == 0)
+            return [[NowPlayingSong sharedInstance] nowPlaying];
+        
+        if(! [self isUpNextSongPresentAtIndexPath:indexPath]){
+            row -= upNextSongs.count;  //1 is for the main now playing song
+            row--;
+            return (Song *)mainQueueSongsComingUp[row];
+        } else{
+            row--;
+            return (Song *)upNextSongs[row];
+        }
+    }
+    return nil;
+}
+
+- (BOOL)isUpNextSongPresentAtIndexPath:(NSIndexPath *)indexPath
+{
+    if(indexPath.section == 0){
+        int row = (int)indexPath.row;
+        if(row == 0)
+            return NO;
+        row--;  //take into account the now playing song.
+        int lastUpNextSongArrayIndex = (int)upNextSongs.count - 1;
+        if(row > lastUpNextSongArrayIndex)
+            return NO;
+        else
+            return YES;
+    }
+    return NO;
 }
 
 - (PlaybackContext *)contextForIndexPath:(NSIndexPath *)indexPath
 {
-    [self updateSectionNumsBasedOnQueueData];
-    if(indexPath.section == MAIN_QUEUE_SECTION_NUM){
-        return mainQueueContext;
-    } else if(indexPath.section == UP_NEXT_SECTION_NUM){
-        NSUInteger row = indexPath.row;
-        return upNextPlaybackContexts[row];
-    } else
-        return nil;
+    if(indexPath.section == 0){
+
+        int row = (int)indexPath.row;
+        if(! [self isUpNextSongPresentAtIndexPath:indexPath]){
+            return mainQueueContext;
+        } else
+             return upNextPlaybackContexts[--row];
+    }
+    return nil;
 }
 
-- (void)updateSectionNumsBasedOnQueueData
-{
-    if(! needToUpdateDataModels)
-        return;
-    needToUpdateDataModels = NO;
-    
-    upNextSongs = [queue tableViewOptimizedArrayOfUpNextSongs];
-    upNextPlaybackContexts = [queue tableViewOptimizedArrayOfUpNextSongContexts];
-    mainQueueSongsComingUp = [queue tableViewOptimizedArrayOfMainQueueSongsComingUp];
-    mainQueueContext = [queue mainQueuePlaybackContext];
-    
-    if(upNextSongs.count > 0)
-        UP_NEXT_SECTION_NUM = 0;
-    else
-        UP_NEXT_SECTION_NUM = SECTION_EMPTY;
-    if(mainQueueSongsComingUp.count > 0){
-        if(UP_NEXT_SECTION_NUM != SECTION_EMPTY)
-            MAIN_QUEUE_SECTION_NUM = 1;
-        else
-            MAIN_QUEUE_SECTION_NUM = 0;
-    } else
-        MAIN_QUEUE_SECTION_NUM = SECTION_EMPTY;
-}
 
 - (void)newSongsIsLoading
 {
-#warning need to delete a row somewhere to get rid of the finished song from the list.
-    needToUpdateDataModels = YES;
+    if(mainQueueSongsComingUp.count + upNextSongs.count > 0){
+        mainQueueSongsComingUp = [queue tableViewOptimizedArrayOfMainQueueSongsComingUp];
+        upNextSongs = [queue tableViewOptimizedArrayOfUpNextSongs];
+        upNextPlaybackContexts = [queue tableViewOptimizedArrayOfUpNextSongContexts];
+        
+        [self.tableView beginUpdates];
+        [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]]
+                              withRowAnimation:UITableViewRowAnimationTop];
+        [self.tableView endUpdates];
+    }
 }
 
 #pragma mark - Rotation status bar methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    
     float widthOfScreenRoationIndependant;
     float heightOfScreenRotationIndependant;
     float  a = [[UIScreen mainScreen] bounds].size.height;
@@ -459,8 +421,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                           vcWidth,
                                           vcHeight - navBarHeight);
     }
-    
-    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
 - (void)dismissQueueTapped

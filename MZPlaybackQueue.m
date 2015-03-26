@@ -200,7 +200,6 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
 //crashes when queuing up an entire playlist for some reason, dont use it that way!
 - (void)printQueueContents
 {
-    /*
     NSArray *upNextSongs = [upNextQueue tableViewOptimizedArrayOfUpNextSongs];
     NSArray *mainQueueSongs = [mainQueue tableViewOptimizedArrayOfMainQueueSongsComingUp];
     
@@ -230,7 +229,6 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
     }
     [output appendString:@"\n\n"];
     printf("%s", [output UTF8String]); //print entire queue contents
-     */
 }
 
 @end

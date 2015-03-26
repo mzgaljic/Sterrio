@@ -34,8 +34,9 @@
 
 - (void)addSongsToUpNextWithContexts:(NSArray *)contexts
 {
-    NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, contexts.count)];
-    [playbackContexts insertObjects:contexts atIndexes:indexes];
+    //NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, contexts.count)];
+    //[playbackContexts insertObjects:contexts atIndexes:indexes];
+    [playbackContexts addObjectsFromArray:contexts];
     NSNumber *index = [NSNumber numberWithInt:0];
     NSMutableArray *tempNSNumsArray = [NSMutableArray array];
     for(int i = 0; i < contexts.count; i++){
@@ -79,7 +80,7 @@
     Song *desiredSong;
     PlaybackContext *desiredSongsContext;
     //iterate until we find a next song
-    for(NSInteger i = 0; i < playbackContexts.count; i++)
+    for(NSInteger i = playbackContexts.count-1; i > 0; i--)
     {
         aContext = playbackContexts[i];
         aRequest = aContext.request;
@@ -97,10 +98,10 @@
         desiredSongsContext = aContext;
         
         //advance songIndexCount
-        songIndex++;
+        songIndex--;
         
         //this context is empty, or we have just pulled the very last song from this context.
-        if(desiredSong == nil || songIndex == playbackContexts.count-1)
+        if(desiredSong == nil || songIndex == array.count)
         {
             numContextsToDelete++;
         }
@@ -113,7 +114,7 @@
     }
     
     //delete the contexts no longer needed
-    for(int i = 0; i < numContextsToDelete; i++){
+    for(int i = numContextsToDelete; i > 0; i--){
         if(playbackContexts.count-1 >= i){
             [playbackContexts removeObjectAtIndex:i];
             [fetchRequestIndexes removeObjectAtIndex:i];

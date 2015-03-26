@@ -79,15 +79,9 @@
 
 - (NSArray *)tableViewOptimizedArrayOfMainQueueSongsComingUp
 {
-    NSMutableArray *array;
-    array = [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:EXTERNAL_FETCH_BATCH_SIZE
-                                                 nowPlayingInclusive:YES
-                                                  onlyUnplayedTracks:YES];
-    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-    if(!nowPlayingObj.isFromPlayNextSongs && nowPlayingObj.nowPlaying != nil){
-        [array insertObject:nowPlayingObj.nowPlaying atIndex:0];
-    }
-    return array;
+    return [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:EXTERNAL_FETCH_BATCH_SIZE
+                                                nowPlayingInclusive:YES
+                                                 onlyUnplayedTracks:YES];
 }
 
 - (PlaybackContext *)mainQueuePlaybackContext

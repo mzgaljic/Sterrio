@@ -19,7 +19,8 @@
 #import "UIColor+ColorComparison.h"
 #import "MusicPlaybackController.h"
 #import <FXImageView/UIImage+FX.h>
-#import "MZTableViewCell.h"
+//#import "MZTableViewCell.h"
+#import "MZQueueSongCell.h"
 #import "UIColor+LighterAndDarker.h"
 
 @interface QueueViewController : UIViewController
