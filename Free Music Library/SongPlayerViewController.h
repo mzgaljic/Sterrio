@@ -34,6 +34,11 @@
 #import "VideoPlayerControlInterfaceDelegate.h"
 #import "QueueViewController.h"
 #import <AFBlurSegue.h>
+#import "ActionSheetDatePicker.h"
+
+//for the playback timer
+#import "pthread.h"
+#import "BAPulseButton.h"  //category on uibutton that adds a pulse effect. imported lib...
 
 
 @class MusicPlaybackController;
@@ -42,7 +47,8 @@
 @interface SongPlayerViewController : MyViewController <AVAudioSessionDelegate,
                                                         AVAudioPlayerDelegate,
                                                         ASValueTrackingSliderDataSource,
-                                                        VideoPlayerControlInterfaceDelegate>
+                                                        VideoPlayerControlInterfaceDelegate,
+                                                        UIActionSheetDelegate>
 
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;  //really the navBar title item
 

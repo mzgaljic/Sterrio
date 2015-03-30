@@ -25,6 +25,7 @@ typedef enum{
     UIButton *playButton;
     UIButton *forwardButton;
     UIButton *backwardButton;
+    BAPulseButton *timerButton;
     
     GCDiscreetNotificationView *sliderHint;  //slider hint
     
@@ -67,6 +68,9 @@ NSString * const FORWARD_IMAGE_FILLED = @"Seek-Filled";
 NSString * const FORWARD_IMAGE_UNFILLED = @"Seek-Line";
 NSString * const BACKWARD_IMAGE_FILLED = @"Backward-Filled";
 NSString * const BACKWARD_IMAGE_UNFILLED = @"Backward-Line";
+
+NSString * const TIMER_INACTIVE = @"timer_inactive";
+NSString * const TIMER_ACTIVE = @"timer_active";
 
 //key value observing (AVPlayer)
 static void *kCurrentItemDidChangeKVO  = &kCurrentItemDidChangeKVO;
@@ -153,6 +157,10 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(playerControlsShouldBeUpdated)
                                                  name:MZAVPlayerStallStateChanged
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateSleepTimerIcon)
+                                                 name:TIMER_IMG_NEEDS_UPDATE
                                                object:nil];
     self.playbackSlider.dataSource = self;
     [[SongPlayerCoordinator sharedInstance] setDelegate:self];
@@ -365,9 +373,15 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    if(lastKnownOrientation == UIInterfaceOrientationLandscapeLeft && toInterfaceOrientation == UIInterfaceOrientationLandscapeRight)
+    //in case the timer picker is on screen...need to do this since it cant "cancel" itself
+    //and run the appropriate cancel code simply when the screen rotates. sadly...
+    [VideoPlayerWrapper temporarilyDisableUpdatingPlayerView:NO];
+    
+    if(lastKnownOrientation == UIInterfaceOrientationLandscapeLeft
+       && toInterfaceOrientation == UIInterfaceOrientationLandscapeRight)
         return;  //we dont need to do anything, video player should still remain full screen.
-    if(lastKnownOrientation == UIInterfaceOrientationLandscapeRight && toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft)
+    if(lastKnownOrientation == UIInterfaceOrientationLandscapeRight
+       && toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft)
         return;  //same reason as first if
     if(lastKnownOrientation == toInterfaceOrientation)
         return;
@@ -733,6 +747,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     backwardButton = [UIButton buttonWithType:UIButtonTypeCustom];
     playButton = [UIButton buttonWithType:UIButtonTypeCustom];
     forwardButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    timerButton = [BAPulseButton buttonWithType:UIButtonTypeCustom];
     
     [backwardButton addTarget:self
                        action:@selector(backwardsButtonTappedOnce)
@@ -761,6 +776,16 @@ static int accomodateInterfaceLabelsCounter = 0;
     [forwardButton addTarget:self
                       action:@selector(forwardsButtonLetGo)
             forControlEvents:UIControlEventTouchUpOutside];
+    
+    [timerButton addTarget:self
+                    action:@selector(timerButtonTappedOnce)
+          forControlEvents:UIControlEventTouchUpInside];
+    [timerButton addTarget:self
+                    action:@selector(timerButtonBeingHeld)
+          forControlEvents:UIControlEventTouchDown];
+    [timerButton addTarget:self
+                    action:@selector(timerButtonLetGo)
+          forControlEvents:UIControlEventTouchUpOutside];
     
     musicButtons = @[backwardButton, playButton, forwardButton];
 }
@@ -793,14 +818,15 @@ static int accomodateInterfaceLabelsCounter = 0;
                          completion:nil];
     }
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+    if(orientation == UIInterfaceOrientationLandscapeLeft
+       || orientation == UIInterfaceOrientationLandscapeRight)
         return;
     
     //make images fill up frame, change button hit area
     for(UIButton *aButton in musicButtons){
         aButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentFill;
         aButton.contentVerticalAlignment = UIControlContentVerticalAlignmentFill;
-        [aButton setHitTestEdgeInsets:UIEdgeInsetsMake(-32, -32, -32, -32)];
+        [aButton setHitTestEdgeInsets:UIEdgeInsetsMake(-30, -30, -30, -30)];
     }
     
     float imgScaleFactor = 1.4f;
@@ -809,11 +835,11 @@ static int accomodateInterfaceLabelsCounter = 0;
     CGFloat screenHeight = screenRect.size.height;
     CGFloat screenWidth = screenRect.size.width;
     
-    UIColor *appTint = [UIColor blackColor];
+    UIColor *buttonTint = [UIColor blackColor];
     float yValue, xValue;
     //play button or pause button
     if([MusicPlaybackController obtainRawAVPlayer].rate == 0){
-        UIImage *playFilled = [UIImage colorOpaquePartOfImage:appTint
+        UIImage *playFilled = [UIImage colorOpaquePartOfImage:buttonTint
                                                              :[UIImage imageNamed:PLAY_IMAGE_FILLED]];
         
         float playButtonWidth = playFilled.size.width * imgScaleFactor;
@@ -824,7 +850,7 @@ static int accomodateInterfaceLabelsCounter = 0;
         playButton.frame = CGRectMake(xValue +0, yValue, playButtonWidth, playButtonHeight);
         [playButton setImage:playFilled forState:UIControlStateNormal];
     } else{
-        UIImage *playFilled = [UIImage colorOpaquePartOfImage:appTint
+        UIImage *playFilled = [UIImage colorOpaquePartOfImage:buttonTint
                                                              :[UIImage imageNamed:PAUSE_IMAGE_FILLED]];
         
         float playButtonWidth = playFilled.size.width * imgScaleFactor;
@@ -837,7 +863,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     }
     
     //seek backward button
-    UIImage *backFilled = [UIImage colorOpaquePartOfImage:appTint
+    UIImage *backFilled = [UIImage colorOpaquePartOfImage:buttonTint
                                                          :[UIImage imageNamed:BACKWARD_IMAGE_FILLED]];
     
     float backwardButtonWidth = backFilled.size.width * imgScaleFactor;
@@ -850,8 +876,8 @@ static int accomodateInterfaceLabelsCounter = 0;
     backwardButton.frame = CGRectMake(xValue-3, yValue -1, backwardButtonWidth, backwardButtonHeight);
     [backwardButton setImage:backFilled forState:UIControlStateNormal];
     
-    //see forward button
-    UIImage *forwardFilled = [UIImage colorOpaquePartOfImage:appTint
+    //seek forward button
+    UIImage *forwardFilled = [UIImage colorOpaquePartOfImage:buttonTint
                                                             :[UIImage imageNamed:FORWARD_IMAGE_FILLED]];
     
     float forwardButtonWidth = forwardFilled.size.width * imgScaleFactor;
@@ -861,6 +887,30 @@ static int accomodateInterfaceLabelsCounter = 0;
     yValue = (middlePointVertically - (forwardFilled.size.height/1.5));
     forwardButton.frame = CGRectMake(xValue +3, yValue -1, forwardButtonWidth, forwardButtonHeight);
     [forwardButton setImage:forwardFilled forState:UIControlStateNormal];
+    
+    //timer button
+    NSString *btnImgName;
+    if([AppEnvironmentConstants isPlaybackTimerActive])
+        btnImgName = TIMER_ACTIVE;
+    else
+        btnImgName = TIMER_INACTIVE;
+    short paddingFromScreenBottom = 5;
+    UIColor *appTint = [UIColor defaultAppColorScheme];
+    UIImage *timerImg = [UIImage colorOpaquePartOfImage:appTint :[UIImage imageNamed:btnImgName]];
+    CGRect timerBtnFrame = CGRectMake(screenWidth/2 - timerImg.size.width/2,
+                                      screenHeight - timerImg.size.height - paddingFromScreenBottom,
+                                      timerImg.size.width,
+                                      timerImg.size.height);
+    timerButton.frame = timerBtnFrame;
+    [timerButton setImage:timerImg forState:UIControlStateNormal];
+    timerButton.alpha = 0;
+    [self.view addSubview:timerButton];
+    [UIView animateWithDuration:0.70  //now animate a "fade in"
+                          delay:0.1
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
+                     animations:^{ timerButton.alpha = 1.0; }
+                     completion:nil];
+
     
     //add buttons to the viewControllers view
     for(UIButton *aButton in musicButtons){
@@ -1134,6 +1184,142 @@ static int accomodateInterfaceLabelsCounter = 0;
     }
 }
 
+#pragma mark - Responding to Button Events (SleepTimer stuff)
+//TIMER BUTTON
+- (void)timerButtonTappedOnce
+{
+    [timerButton buttonPressAnimation];
+    [self timerButtonLetGo];
+    [VideoPlayerWrapper temporarilyDisableUpdatingPlayerView:YES];
+    [self performSelector:@selector(showTimerPicker) withObject:nil afterDelay:0.2];
+}
+
+- (void)timerButtonBeingHeld { [self addShadowToButton:timerButton]; }
+
+- (void)timerButtonLetGo{ [self removeShadowForButton:timerButton]; }
+
+- (void)showTimerPicker
+{
+    if([AppEnvironmentConstants isPlaybackTimerActive] && !userReplacingExistingTimer){
+        [self showTimerActionSheeet];
+        return;
+    }
+    __weak SongPlayerViewController *weakself = self;
+    [ActionSheetDatePicker showPickerWithTitle:@"Timer"
+                                datePickerMode:UIDatePickerModeCountDownTimer
+                                  selectedDate:nil
+                                   minimumDate:nil
+                                   maximumDate:nil
+                                     doneBlock:^(ActionSheetDatePicker *picker, id selectedDate, id origin) {
+                                         [weakself resetPlayerViewStateAfterPickerDismiss];
+                                         NSTimeInterval timeInterval = picker.countDownDuration;
+                                         if(timeInterval == 0){
+                                             //set default (bug)
+                                             timeInterval = 60;
+                                         }
+                                         [weakself startPlaybackTimerWithSeconds:timeInterval];
+                                         userReplacingExistingTimer = NO;
+                                         
+                                     } cancelBlock:^(ActionSheetDatePicker *picker) {
+                                         [weakself resetPlayerViewStateAfterPickerDismiss];
+                                         userReplacingExistingTimer = NO;
+                                     }
+                                        origin:self.view];
+}
+
+- (void)showTimerActionSheeet
+{
+    UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:nil
+                                                       delegate:self
+                                              cancelButtonTitle:@"Cancel"
+                                         destructiveButtonTitle:@"Remove Timer"
+                                              otherButtonTitles:@"New Timer", nil];
+    
+    [popup showInView:[UIApplication sharedApplication].keyWindow];
+}
+
+static BOOL userReplacingExistingTimer = NO;
+- (void)actionSheet:(UIActionSheet *)popup clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    switch (buttonIndex)
+    {
+        case 0:
+            [AppEnvironmentConstants setPlaybackTimerActive:NO onThreadNum:-1];
+            [self updateSleepTimerIcon];
+            break;
+        case 1:
+            userReplacingExistingTimer = YES;
+            [self showTimerPicker];
+            break;
+        case 2:
+            break;
+        default:
+            break;
+    }
+}
+
+- (void)resetPlayerViewStateAfterPickerDismiss
+{
+    double delayInSeconds = 0.3;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [VideoPlayerWrapper temporarilyDisableUpdatingPlayerView:NO];
+        [VideoPlayerWrapper setupAvPlayerViewAgain];
+        
+        [[UIApplication sharedApplication].keyWindow bringSubviewToFront:[MusicPlaybackController obtainRawPlayerView]];
+    });
+}
+
+static NSUInteger threadIdPlaybackSleepTimerCounter = 0;
+static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
+- (void)startPlaybackTimerWithSeconds:(NSTimeInterval)timeIntervalInSeconds
+{
+    __weak SongPlayerViewController *weakself = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSInteger threadNum = ++threadIdPlaybackSleepTimerCounter;
+        [AppEnvironmentConstants setPlaybackTimerActive:YES onThreadNum:threadNum];
+        pthread_setname_np("MZMusic: Playback Timer");
+        
+        NSLog(@"Creating playback timer for %f seconds", timeIntervalInSeconds);
+        [weakself updateSleepTimerIcon];
+        [NSThread sleepForTimeInterval:timeIntervalInSeconds];
+        
+        if(threadNum == [AppEnvironmentConstants threadNumOfPlaybackSleepTimerThreadWhichShouldFire])
+        {
+            [MusicPlaybackController explicitlyPausePlayback:YES];
+            [MusicPlaybackController pausePlayback];
+            NSLog(@"Playback timer has fired");
+            [AppEnvironmentConstants setPlaybackTimerActive:NO onThreadNum:0];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged
+                                                                    object:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:TIMER_IMG_NEEDS_UPDATE
+                                                                    object:nil];
+                [CATransaction flush];  //force immediate redraw
+            });
+        }
+    });
+}
+
+- (void)updateSleepTimerIcon
+{
+    NSString *btnImgName;
+    if([AppEnvironmentConstants isPlaybackTimerActive])
+        btnImgName = TIMER_ACTIVE;
+    else
+        btnImgName = TIMER_INACTIVE;
+    UIColor *appTint = [UIColor defaultAppColorScheme];
+    UIImage *timerImg = [UIImage colorOpaquePartOfImage:appTint :[UIImage imageNamed:btnImgName]];
+    [UIView animateWithDuration:1
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction |  UIViewAnimationOptionCurveEaseIn
+                     animations:^{
+                         [timerButton setImage:timerImg forState:UIControlStateNormal];
+                     }
+                     completion:nil];
+    [CATransaction flush];  //force immediate redraw
+}
+
 #pragma mark - Responding to Button Events
 //BACK BUTTON
 - (void)backwardsButtonTappedOnce
@@ -1267,10 +1453,6 @@ static int accomodateInterfaceLabelsCounter = 0;
 
 - (void)removeObservers
 {
-    //temporarily disable logging since this "crash" when removing observers does not impact the program at all.
-    Fabric *myFabric = [Fabric sharedSDK];
-    myFabric.debug = YES;
-    
     @try {
         [_totalDurationLabel removeObserver:self forKeyPath:@"text" context:kTotalDurationLabelDidChange];
     }
@@ -1279,7 +1461,6 @@ static int accomodateInterfaceLabelsCounter = 0;
     
     [self killTimeObserver];
     [MusicPlaybackController setAVPlayerTimeObserver:nil];
-    myFabric.debug = NO;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath

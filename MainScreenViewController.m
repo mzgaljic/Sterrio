@@ -16,6 +16,8 @@ short const dummyTabIndex = 2;
     //used to avoid a blank screen on initial launch when calling
     //'replaceNavControllerOnScreenWithNavController'
     NSUInteger numTimesViewHasAppeared;
+    
+    BOOL alwaysKeepStatusBarVisible;
 }
 @property (nonatomic, strong) UIView *tabBarView;  //contains the tab bar and center button - the whole visual thing.
 @property (nonatomic, strong) UITabBar *tabBar;  //this tab bar is containing within a tab bar view
@@ -49,15 +51,33 @@ short const dummyTabIndex = 2;
     return self;
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     self.currentNavController = self.navControllers[0];
     self.view.backgroundColor = [UIColor clearColor];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(portraitStatusBarStateChanging:)
+                                                 name:MZMainScreenVCStatusBarAlwaysVisible
+                                               object:nil];
 }
 
-- (UIStatusBarStyle) preferredStatusBarStyle {
+- (UIStatusBarStyle) preferredStatusBarStyle
+{
     return UIStatusBarStyleLightContent;
+}
+
+- (void)portraitStatusBarStateChanging:(NSNotification *)notification
+{
+    alwaysKeepStatusBarVisible = [(NSNumber *)notification.object boolValue];
+    [UIView animateWithDuration:0.35 animations:^{
+        [self setNeedsStatusBarAppearanceUpdate];
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -128,7 +148,9 @@ short const dummyTabIndex = 2;
     
     [newNavController didMoveToParentViewController:self];
     [newVc viewDidAppear:YES];
-    [newVc setNeedsStatusBarAppearanceUpdate];
+    [UIView animateWithDuration:0.35 animations:^{
+        [newVc setNeedsStatusBarAppearanceUpdate];
+    }];
     
     self.currentNavController = newNavController;
     
@@ -156,13 +178,18 @@ short const dummyTabIndex = 2;
     if(self.tabBarView == nil){
         self.tabBarView = [[UIView alloc] init];
         
-        UIVisualEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
-        visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-        visualEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        [self.tabBarView addSubview:visualEffectView];
         self.tabBar = [[UITabBar alloc] init];
-        [self.tabBar setBackgroundImage:[UIImage new]];
         self.tabBar.delegate = self;
+        
+        if ([AppEnvironmentConstants isUserOniOS8OrAbove])
+        {
+            UIVisualEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+            visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+            visualEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+            [self.tabBarView addSubview:visualEffectView];
+            [self.tabBar setBackgroundImage:[UIImage new]];
+        }
+        
         self.centerButtonImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
                                                               :[UIImage imageNamed:CENTER_BTN_IMG_NAME]];
         self.centerButton = [[BAPulseButton alloc] init];
@@ -275,25 +302,10 @@ short const dummyTabIndex = 2;
 }
 
 #pragma nav bar helper
-
-/*
-static BOOL navBarWasHidden = NO;
-- (void)navBarStateIsChanging
-{
-    BOOL isNavBarHidden = self.currentNavController.navigationBar.frame.origin.y < 0;
-    BOOL navBarStateHasChanged = (isNavBarHidden != navBarWasHidden);
-    if(navBarStateHasChanged){
-        navBarWasHidden = self.currentNavController.navigationBarHidden;
-        [UIView animateWithDuration:0.2 animations:^{
-            [self.currentNavController setNeedsStatusBarAppearanceUpdate];
-            [self setNeedsStatusBarAppearanceUpdate];
-        }];
-    }
-}
- */
-
 - (BOOL)prefersStatusBarHidden
 {
+    if(alwaysKeepStatusBarVisible)
+        return NO;
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication]statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft
        || orientation == UIInterfaceOrientationLandscapeRight){
@@ -314,12 +326,20 @@ static BOOL navBarWasHidden = NO;
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [self setupTabBarAndTabBarViewUsingOrientation:toInterfaceOrientation];
+    if([SongPlayerCoordinator isVideoPlayerExpanded]){
+        self.tabBarView.alpha = 0;
+        double delayInSeconds = 0.7;
+        __weak UIView *weakTabBarView = self.tabBarView;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            weakTabBarView.alpha = 1;
+        });
+    }
 }
 
 #pragma mark - adding music to library
 - (void)centerButtonTapped
 {
-    [self.centerButton changePulseOutlineColor:[UIColor redColor]];
     [self.centerButton buttonPressAnimation];
     
     UIViewController *currentVc;

@@ -45,3 +45,6 @@ pod 'Reachability'
 
 #needed for MRProgressView...dont ask lol.
 pod "AFNetworking"
+
+#used to create a "semi modal" segue/popup
+pod 'KNSemiModalViewController', '~> 0.3'

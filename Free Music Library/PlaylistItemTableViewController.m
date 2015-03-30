@@ -503,9 +503,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)setFetchedResultsControllerAndSortStyle
 {
     self.fetchedResultsController = nil;
-    
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
     request.predicate = [NSPredicate predicateWithFormat:@"ANY playlistIAmIn.playlist_id == %@", _playlist.playlist_id];
+    
     
     //picked genreCode because its a useless value...need that so the results of the
     //nsorderedset dont get re-ordered

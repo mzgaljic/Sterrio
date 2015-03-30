@@ -22,6 +22,7 @@ NSString * const MZAppWasBackgrounded = @"appEnteredBackgroundState";
 NSString * const MZNewTimeObserverCanBeAdded = @"new avplayer has been created.";
 
 NSString * const MZPlayerToggledOnScreenStatus = @"the status has been toggled";
+NSString * const MZMainScreenVCStatusBarAlwaysVisible = @"status bar should always be visible";
 
 NSString * const MZNewSongLoading = @"AVPlayer will try to load a new song now";
 NSString * const MZAVPlayerStallStateChanged = @"AVPlayer stalls changed";

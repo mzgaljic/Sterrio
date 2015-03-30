@@ -103,17 +103,7 @@ NSString* const GCDiscreetNotificationViewActivityKey = @"activity";
     
     CGFloat maxLabelWidth = self.view.frame.size.width - self.activityIndicator.frame.size.width * withActivity - baseWidth;
     CGSize maxLabelSize = CGSizeMake(maxLabelWidth, GCDiscreetNotificationViewHeight);
-    
-    
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    CGFloat textSizeWidth = (self.textLabel != nil) ?
-    [self.textLabel sizeWithFont:self.label.font
-               constrainedToSize:maxLabelSize
-                   lineBreakMode:NSLineBreakByTruncatingTail].width
-    :
-    0;
-#pragma GCC diagnostic warning "-Wdeprecated-declarations"
-    
+    CGFloat textSizeWidth = (self.textLabel != nil) ? [self.textLabel sizeWithFont:self.label.font constrainedToSize:maxLabelSize lineBreakMode:UILineBreakModeTailTruncation].width : 0;
     
     CGFloat activityIndicatorWidth = (self.activityIndicator != nil) ? self.activityIndicator.frame.size.width : 0;
     CGRect bounds = CGRectMake(0, 0, baseWidth + textSizeWidth + activityIndicatorWidth, GCDiscreetNotificationViewHeight);

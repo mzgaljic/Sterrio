@@ -27,6 +27,9 @@ typedef enum {
 
 @interface AppEnvironmentConstants : NSObject
 
+//runtime configuration
++ (BOOL)isUserOniOS8OrAbove;
+
 + (BOOL)shouldDisplayWhatsNewScreen;
 + (void)markShouldDisplayWhatsNewScreenTrue;
 
@@ -48,6 +51,11 @@ typedef enum {
 + (void)setUserIsPreviewingAVideo:(BOOL)aValue;
 + (void)setCurrentPreviewPlayerState:(PREVIEW_PLAYBACK_STATE)state;
 + (PREVIEW_PLAYBACK_STATE)currrentPreviewPlayerState;
+
+
++ (void)setPlaybackTimerActive:(BOOL)active onThreadNum:(NSInteger)threadNum;
++ (BOOL)isPlaybackTimerActive;
++ (NSInteger)threadNumOfPlaybackSleepTimerThreadWhichShouldFire;
 
 //app settings
 + (short)preferredSizeSetting;

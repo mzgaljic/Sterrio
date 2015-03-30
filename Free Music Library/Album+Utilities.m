@@ -165,17 +165,12 @@ static void *albumSongsChanged = &albumSongsChanged;
 
 - (void)willTurnIntoFault
 {
-    //temporarily disable logging since this "crash" when removing observers does not impact the program at all.
-    Fabric *myFabric = [Fabric sharedSDK];
-    myFabric.debug = YES;
-    
     //bad practice but it works. A Sigbart occurs here when editing album info under a song edit (and cancelling the edit).
     @try{
         [self removeObserver:self forKeyPath:@"albumSongs" context:albumSongsChanged];
     }@catch(id anException){
         //do nothing, obviously it wasn't attached because an exception was thrown
     }
-    myFabric.debug = NO;
 }
 
 @end

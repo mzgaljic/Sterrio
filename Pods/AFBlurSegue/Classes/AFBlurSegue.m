@@ -31,7 +31,7 @@
     
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
         
-        UIImage *background;
+        UIImage *background = [UIImage new];
         
         if ([sourceController isKindOfClass:[UITableViewController class]]) {
             
@@ -124,8 +124,7 @@
         [sourceController presentViewController:destinationController
                                        animated:self.animate
                                      completion:^{
-            
-        }];
+                                     }];
 
         [destinationController.transitionCoordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
             

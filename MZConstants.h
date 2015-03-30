@@ -22,6 +22,7 @@ extern NSString * const MZAppWasBackgrounded;
 extern NSString * const MZNewTimeObserverCanBeAdded;
 
 extern NSString * const MZPlayerToggledOnScreenStatus;
+extern NSString * const MZMainScreenVCStatusBarAlwaysVisible;
 
 extern NSString * const MZNewSongLoading;
 extern NSString * const MZAVPlayerStallStateChanged;

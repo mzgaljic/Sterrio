@@ -7,8 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <objc/runtime.h>
-#import "StackController.h"
 #import "NSString+smartSort.h"
 #import "CoreDataCustomTableViewController.h"
 #import "AppEnvironmentConstants.h"
@@ -23,16 +21,12 @@
 #import "MainScreenViewControllerDelegate.h"
 #import <FXImageView/UIImage+FX.h>
 #import "PlaybackContext.h"
+#import "AllSongsDataSource.h"
 
 @class StackController;
 @interface MasterSongsTableViewController : CoreDataCustomTableViewController
-                                                            <UISearchBarDelegate,
-                                                            UITableViewDataSource,
-                                                            UITableViewDelegate,
+                                                            <SearchBarDataSourceDelegate,
+                                                            EditableSongDataSourceDelegate,
                                                             MainScreenViewControllerDelegate,
                                                             MGSwipeTableCellDelegate>
-{
-    StackController *stackController;
-}
-
 @end

@@ -7,29 +7,20 @@
 //
 
 #import "PlaylistSongAdderTableViewController.h"
-#define Done_String @"Add"
-#define AddLater_String @"Add later"
-#define Cancel_String @"Cancel"
 
 @interface PlaylistSongAdderTableViewController()
+{
+    CGRect originalTableViewFrame;
+    BOOL alwaysKeepStatusBarVisible;
+}
 @property (nonatomic, strong) MySearchBar *searchBar;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
+@property AllSongsDataSource *tableViewDataSourceAndDelegate;
 @end
 
 @implementation PlaylistSongAdderTableViewController
-@synthesize songsSelected = _songsSelected, receiverPlaylist = _receiverPlaylist;
-static BOOL PRODUCTION_MODE;
 
-//playlist status codes
-static const short IN_CREATION = 0;
-static const short CREATED_BUT_EMPTY = 1;
-static const short NORMAL_PLAYLIST = -1;
-
-- (void)setProductionModeValue
-{
-    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
-}
 
 - (id)initWithPlaylist:(Playlist *)aPlaylist
 {
@@ -43,126 +34,99 @@ static const short NORMAL_PLAYLIST = -1;
     return self;
 }
 
-#pragma mark - UISearchBar
-- (void)setUpSearchBar
+#pragma mark - SearchBarDataSourceDelegate implementation
+- (void)searchBarIsBecomingActive
 {
-    if([self numberOfSongsInCoreDataModel] > 0){
-        //create search bar, add to viewController
-        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Music"];
-        _searchBar.delegate = self;
-        self.tableView.tableHeaderView = _searchBar;
-    }
-    [self setSearchBar:self.searchBar];
+    alwaysKeepStatusBarVisible = YES;
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+    if(CGRectIsNull(originalTableViewFrame))
+        originalTableViewFrame = self.tableView.frame;
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         self.view.backgroundColor = [UIColor defaultAppColorScheme];
+                         int statusBarHeight = [AppEnvironmentConstants statusBarHeight];
+                         self.tableView.frame = CGRectMake(0,
+                                                           statusBarHeight,
+                                                           self.view.frame.size.width,
+                                                           self.view.frame.size.height);
+                     }
+                     completion:nil];
 }
 
-- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
+- (void)searchBarIsBecomingInactive
 {
-    self.searchFetchedResultsController = nil;
-    [self setFetchedResultsControllerAndSortStyle];
-}
-
-//user tapped search box
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
-{
-    self.searchFetchedResultsController = nil;
-    self.fetchedResultsController = nil;
+    alwaysKeepStatusBarVisible = NO;
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
     
-    //show the cancel button
-    [_searchBar setShowsCancelButton:YES animated:YES];
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         self.view.backgroundColor = [UIColor clearColor];
+                         CGRect viewFrame = self.view.frame;
+                         self.tableView.frame = CGRectMake(originalTableViewFrame.origin.x,
+                                                           originalTableViewFrame.origin.y,
+                                                           viewFrame.size.width,
+                                                           viewFrame.size.height);
+                     }
+                     completion:^(BOOL finished) {
+                         originalTableViewFrame = CGRectNull;
+                     }];
 }
 
-//user tapped "Search"
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+
+#pragma mark - Miscellaneous
+- (void)establishTableViewDataSource
 {
-    //search results already appear as the user types. Just hide the keyboard...
-    [_searchBar resignFirstResponder];
+    self.tableViewDataSourceAndDelegate = [[AllSongsDataSource alloc] initWithSongDataSourceType:SONG_DATA_SRC_TYPE_Playlist_MultiSelect
+                                                                     searchBarDataSourceDelegate:self];
+    self.tableViewDataSourceAndDelegate.fetchedResultsController = self.fetchedResultsController;
+    self.tableViewDataSourceAndDelegate.tableView = self.tableView;
+    self.tableViewDataSourceAndDelegate.cellReuseId = @"playlistSongItemPickerCell";
+    self.tableViewDataSourceAndDelegate.playlistSongAdderDelegate = self;
+    self.tableViewDataSourceAndDelegate.emptyTableUserMessage = @"No Songs";
+    self.tableView.dataSource = self.tableViewDataSourceAndDelegate;
+    self.tableView.delegate = self.tableViewDataSourceAndDelegate;
 }
-
-//User tapped "Cancel"
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
-{
-    [self setFetchedResultsControllerAndSortStyle];
-    
-    //dismiss search bar and hide cancel button
-    [_searchBar setShowsCancelButton:NO animated:YES];
-    [_searchBar resignFirstResponder];
-}
-
-//User typing as we speak, fetch latest results to populate results as they type
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
-{
-    if(searchText.length == 0)
-    {
-        self.displaySearchResults = NO;
-        self.searchFetchedResultsController = nil;
-    }
-    else
-    {
-        self.displaySearchResults = YES;
-        
-        self.searchFetchedResultsController = nil;
-        NSManagedObjectContext *context = [CoreDataManager context];
-        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-        
-        if([AppEnvironmentConstants smartAlphabeticalSort])
-            
-            request.predicate = [NSPredicate predicateWithFormat:@"smartSortSongName CONTAINS[cd] %@", searchText];
-        else
-            request.predicate = [NSPredicate predicateWithFormat:@"songName CONTAINS[cd] %@", searchText];
-        
-        NSSortDescriptor *sortDescriptor;
-        if([AppEnvironmentConstants smartAlphabeticalSort])
-            sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
-                                                           ascending:YES
-                                                            selector:@selector(localizedStandardCompare:)];
-        else
-            sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
-                                                           ascending:YES
-                                                            selector:@selector(localizedStandardCompare:)];
-        request.sortDescriptors = @[sortDescriptor];
-        //searchResults
-        self.searchFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-    }
-}
-
 
 #pragma mark - View Controller life cycle
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    _songsSelected = [NSMutableArray array];
-    [self setUpSearchBar];
+    self.searchBar = [self.tableViewDataSourceAndDelegate setUpSearchBar];
+    [super setSearchBar:self.searchBar];
     
-    //init tableView model
-    if([_receiverPlaylist.status shortValue] == IN_CREATION){  //creating new playlist
-        self.rightBarButton.title = AddLater_String;
-    } else if([_receiverPlaylist.status shortValue] == NORMAL_PLAYLIST){  //adding songs to existing playlist
-        //i disable songs in the existing playlist in cellForRowAtIndexpath
-        self.rightBarButton.title = @"";
-    } else if([_receiverPlaylist.status shortValue] == CREATED_BUT_EMPTY){  //possibly adding songs to existing playlist
-        self.rightBarButton.title = @"";
-        //i disable songs in the existing playlist in cellForRowAtIndexpath
+    switch ([_receiverPlaylist.status shortValue])
+    {
+        case PLAYLIST_STATUS_In_Creation:  //creating new playlist
+        {
+            self.rightBarButton.title = AddLater_String;
+            break;
+        }
+        case PLAYLIST_STATUS_Normal_Playlist:  //adding songs to existing playlist
+        case PLAYLIST_STATUS_Created_But_Empty:  //possibly adding songs to existing playlist
+            self.rightBarButton.title = @"";
+            break;
+            
+        default:
+            break;
     }
     
     //needed to make UITableViewCellAccessoryCheckmark the nav bar color!
     self.tableView.tintColor = [UIColor defaultAppColorScheme];
+    [self.rightBarButton setStyle:UIBarButtonItemStyleDone];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.emptyTableUserMessage = @"No Songs in Library";
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
+    originalTableViewFrame = CGRectNull;
     [self setTableForCoreDataView:self.tableView];
-    self.cellReuseId = @"playlistSongItemPickerCell";
+    [self initFetchResultsController];
+    [self establishTableViewDataSource];
     
-    self.searchFetchedResultsController = nil;
-    [self setFetchedResultsControllerAndSortStyle];
-    
-    stackController = [[StackController alloc] init];
-    
-    [self setProductionModeValue];
     self.tableView.allowsSelectionDuringEditing = YES;
 }
 
@@ -179,155 +143,21 @@ static const short NORMAL_PLAYLIST = -1;
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([self class]));
 }
 
-#pragma mark - Table View Data Source
-static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+#pragma mark - PlaylistSongAdderDataSourceDelegate protocol implementation
+- (void)setSuccessNavBarButtonStringValue:(NSString *)newValue
 {
-    MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
-                                                             forIndexPath:indexPath];
-
-    if (!cell)
-        cell = [[MZTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                      reuseIdentifier:self.cellReuseId];
-    else
-    {
-        // If an existing cell is being reused, reset the image to the default until it is
-        // populated. Without this code, previous images are displayed against the new people
-        // during rapid scrolling.
-        cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
-    }
-
-    [cell setAccessoryType:UITableViewCellAccessoryNone];
-    for(int i = 0; i < _songsSelected.count; i++){
-        NSUInteger num = [[_songsSelected objectAtIndex:i] intValue];
-        if(num == indexPath.row){
-            [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
-            break;  //found the match
-        }
-    }
-    
-    // Set up other aspects of the cell content.
-    Song *song;
-    if(self.displaySearchResults)
-        song = [self.searchFetchedResultsController objectAtIndexPath:indexPath];
-    else
-        song = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    
-    cell.textLabel.enabled = YES;
-    cell.detailTextLabel.enabled = YES;
-    cell.selectionStyle = UITableViewCellSelectionStyleDefault;
-    
-    //check if we should disable this cell
-    for(int i = 0; i < _receiverPlaylist.playlistSongs.count; i++)
-    {
-        if([song.song_id isEqualToString:[[_receiverPlaylist.playlistSongs objectAtIndex:i] song_id]])
-        {
-            cell.textLabel.enabled = NO;
-            cell.detailTextLabel.enabled = NO;
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            break;
-        }
-    }
-    
-    //init cell fields
-    cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
-    if(! [SongTableViewFormatter songNameIsBold])
-        cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
-    [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
-    
-    // Store a reference to the current cell that will enable the image to be associated with the correct
-    // cell, when the image is subsequently loaded asynchronously.
-    objc_setAssociatedObject(cell,
-                             &songIndexPathAssociationKey,
-                             indexPath,
-                             OBJC_ASSOCIATION_RETAIN);
-    
-    // Queue a block that obtains/creates the image and then loads it into the cell.
-    // The code block will be run asynchronously in a last-in-first-out queue, so that when
-    // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
-    [stackController addBlock:^{
-        UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
-                                                    [AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]]];
-        if(albumArt == nil) //see if this song has an album. If so, check if it has art.
-            if(song.album != nil)
-                albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
-                                                   [AlbumArtUtilities albumArtFileNameToNSURL:song.album.albumArtFileName]]];
-        // The block will be processed on a background Grand Central Dispatch queue.
-        // Therefore, ensure that this code that updates the UI will run on the main queue.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            NSIndexPath *cellIndexPath = (NSIndexPath *)objc_getAssociatedObject(cell, &songIndexPathAssociationKey);
-            if ([indexPath isEqual:cellIndexPath]) {
-                // Only set cell image if the cell currently being displayed is the one that actually required this image.
-                // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
-
-                __weak UIImage *cellImg = albumArt;
-                //calculate how much one length varies from the other.
-                int diff = abs(albumArt.size.width - albumArt.size.height);
-                if(diff > 10){
-                    //image is not a perfect (or close to perfect) square. Compensate for this...
-                    cellImg = [albumArt imageScaledToFitSize:cell.imageView.frame.size];
-                }
-                [UIView transitionWithView:cell.imageView
-                                  duration:MZCellImageViewFadeDuration
-                                   options:UIViewAnimationOptionTransitionCrossDissolve
-                                animations:^{
-                                    cell.imageView.image = cellImg;
-                                } completion:nil];
-            }
-        });
-    }];
-
-    return cell;
+    self.rightBarButton.title = newValue;
 }
 
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+- (PLAYLIST_STATUS)currentPlaylistStatus
 {
-    return NO;
+    return [_receiverPlaylist.status shortValue];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+- (NSOrderedSet *)existingPlaylistSongs
 {
-    return [SongTableViewFormatter preferredSongCellHeight];
+    return _receiverPlaylist.playlistSongs;
 }
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *selectedCell = [tableView cellForRowAtIndexPath:indexPath];
-    
-    //prohibit checking cells that have been disabled on purpose (songs already in playlist)
-    if(selectedCell.textLabel.enabled == NO)
-        return;
-    
-    if([selectedCell accessoryType] == UITableViewCellAccessoryNone){  //selected row
-        if(_songsSelected.count == 0){
-             self.rightBarButton.title = Done_String;
-            [self.rightBarButton setStyle:UIBarButtonItemStyleDone];
-        }
-        [selectedCell setAccessoryType:UITableViewCellAccessoryCheckmark];
-        [_songsSelected addObject:[NSNumber numberWithInt:(int)indexPath.row]];
-        
-    } else{  //deselected row
-        if(_songsSelected.count == 1 && [_receiverPlaylist.status shortValue] == IN_CREATION)
-            self.rightBarButton.title = AddLater_String;  //only happens when playlist created from scratch
-        
-        else if(_songsSelected.count == 1 && [_receiverPlaylist.status shortValue] == CREATED_BUT_EMPTY)
-            self.rightBarButton.title = @"";
-        
-        else if(_songsSelected.count == 1 && [_receiverPlaylist.status shortValue] == NORMAL_PLAYLIST)
-            self.rightBarButton.title = @"";
-        
-        [selectedCell setAccessoryType:UITableViewCellAccessoryNone];
-        [_songsSelected removeObject:[NSNumber numberWithInt:(int)indexPath.row]];
-    }
-    
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
-- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section {
-    id <NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController.sections objectAtIndex:section];
-    return sectionInfo.numberOfObjects;
-}
-
 
 #pragma mark - User button actions
 - (IBAction)rightBarButtonTapped:(id)sender
@@ -338,31 +168,24 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     Playlist *replacementPlaylist;
     if([title isEqualToString:Done_String]){
         
-        NSMutableArray *newSongsArray = [NSMutableArray array];
-        Song *song;
-        int tappedSongRowNum;
-        for(int i = 0; i < _songsSelected.count; i++)
-        {
-            //the selectedSongs array contains row numbers for all the chosen songs! I use that to get the needed songs.
-            tappedSongRowNum = [[_songsSelected objectAtIndex:i] intValue];
-            song = [self.fetchedResultsController objectAtIndexPath: [NSIndexPath indexPathForRow:tappedSongRowNum inSection:0]];
-            [newSongsArray addObject:song];
-        }
+        NSArray *newSongsArray = [self.tableViewDataSourceAndDelegate minimallyFaultedArrayOfSelectedPlaylistSongs];
         NSArray *oldSongsArray = [_receiverPlaylist.playlistSongs array];
-        NSMutableArray *finalArray = [NSMutableArray array];
+        NSMutableArray *finalArray = [NSMutableArray arrayWithCapacity:newSongsArray.count + oldSongsArray.count];
         [finalArray addObjectsFromArray:oldSongsArray];
         [finalArray addObjectsFromArray:newSongsArray];
         NSString *originalPlaylistId = _receiverPlaylist.playlist_id;
+        
+        //not all songs are saved as a set. hence i dont need to worry about duplicated (nor is it possible to save duplicates)
         replacementPlaylist = [Playlist createNewPlaylistWithName:_receiverPlaylist.playlistName
                                                                  usingSongs:finalArray inManagedContext:[CoreDataManager context]];
-        replacementPlaylist.status = [NSNumber numberWithShort:NORMAL_PLAYLIST];
+        replacementPlaylist.status = [NSNumber numberWithShort:PLAYLIST_STATUS_Normal_Playlist];
         [[CoreDataManager context] deleteObject:_receiverPlaylist];
         [[CoreDataManager sharedInstance] saveContext];
         replacementPlaylist.playlist_id = originalPlaylistId;
 
     } else if([title isEqualToString:AddLater_String]){
         //leave playlist empty and "pop" this modal view off the screen
-        _receiverPlaylist.status = [NSNumber numberWithShort:CREATED_BUT_EMPTY];
+        _receiverPlaylist.status = [NSNumber numberWithShort:PLAYLIST_STATUS_Created_But_Empty];
     }
     [[CoreDataManager sharedInstance] saveContext];  //save in core data
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -373,7 +196,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (IBAction)leftBarButtonTapped:(id)sender
 {
     NSString *title = self.leftBarButton.title;
-    if([title isEqualToString:Cancel_String] && [_receiverPlaylist.status shortValue] == IN_CREATION){
+    if([title isEqualToString:Cancel_String] && [_receiverPlaylist.status shortValue] == PLAYLIST_STATUS_In_Creation){
         //cancel the creation of the playlist and "pop" this modal view off the screen.
         [[CoreDataManager context] deleteObject:_receiverPlaylist];
         [[CoreDataManager sharedInstance] saveContext];  //save in core data
@@ -395,6 +218,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (BOOL)prefersStatusBarHidden
 {
+    if(alwaysKeepStatusBarVisible)
+        return NO;
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
         return YES;
@@ -424,7 +249,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 }
 
 #pragma mark - fetching and sorting
-- (void)setFetchedResultsControllerAndSortStyle
+- (void)initFetchResultsController
 {
     self.fetchedResultsController = nil;
     NSManagedObjectContext *context = [CoreDataManager context];

@@ -115,10 +115,6 @@ static void *didEnterEditingMode = &didEnterEditingMode;
 #pragma mark - utilities
 - (void)removeObservers
 {
-    //temporarily disable logging since this "crash" when removing observers does not impact the program at all.
-    Fabric *myFabric = [Fabric sharedSDK];
-    myFabric.debug = YES;
-    
     @try{
         while(true){
             [self removeObserver:self forKeyPath:@"editing" context:didEnterEditingMode];
@@ -126,8 +122,6 @@ static void *didEnterEditingMode = &didEnterEditingMode;
     }
     //do nothing, obviously it wasn't attached because an exception was thrown
     @catch(id anException){}
-
-    myFabric.debug = NO;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }

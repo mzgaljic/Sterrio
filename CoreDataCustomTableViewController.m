@@ -317,7 +317,8 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     //all tableviews subclassing this class are on a white background.
     //(playback queue tableview is inheriting from something else, dont worry about that).
     //making the scroll indicator invisible.
-    tableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
+    tableView.showsVerticalScrollIndicator = YES;
+    tableView.indicatorStyle = UIScrollViewIndicatorStyleBlack;
     
     //going to fade in tableview
     tableView.alpha = 0.8;
@@ -376,6 +377,7 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     offsetHeightWhenPlayerVisible = smallPlayerHeight + (MZSmallPlayerVideoFramePadding * 2);
     self.edgesForExtendedLayout = UIRectEdgeNone;
     lastKnownTableViewVerticalContentOffset = 0;
+    self.automaticallyAdjustsScrollViewInsets = YES;
 }
 
 - (void)dealloc

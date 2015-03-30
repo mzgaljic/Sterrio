@@ -80,6 +80,8 @@
 		874DA0941ABA11DD003D69D6 /* MRMethodCopier.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA0821ABA11DD003D69D6 /* MRMethodCopier.m */; };
 		874DA0951ABA11DD003D69D6 /* MRWeakProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 874DA0851ABA11DD003D69D6 /* MRWeakProxy.m */; };
 		87501580198C3D5300382945 /* YoutubeResultsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8750157F198C3D5300382945 /* YoutubeResultsTableViewController.m */; };
+		8756960E1AC4E9BE00ACF04E /* AllSongsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 8756960D1AC4E9BE00ACF04E /* AllSongsDataSource.m */; };
+		875696141AC4F39800ACF04E /* PlayableBaseDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 875696131AC4F39800ACF04E /* PlayableBaseDataSource.m */; };
 		875984A5195D764700015243 /* PlaylistItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875984A4195D764700015243 /* PlaylistItemTableViewController.m */; };
 		875B3820197ACBC0008B4409 /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B381F197ACBC0008B4409 /* SettingsTableViewController.m */; };
 		875B3826197AFF29008B4409 /* NSString+smartSort.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B3825197AFF29008B4409 /* NSString+smartSort.m */; };
@@ -160,6 +162,14 @@
 		87E980BF1A759DD900B428F0 /* MasterSongEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E980BE1A759DD900B428F0 /* MasterSongEditorViewController.m */; };
 		87ECAFC41AAE8D1900C527B9 /* MZPrivateUpNextPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87ECAFC31AAE8D1900C527B9 /* MZPrivateUpNextPlaybackQueue.m */; };
 		87ECAFC81AAEB21F00C527B9 /* MZPrivateMainPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87ECAFC71AAEB21F00C527B9 /* MZPrivateMainPlaybackQueue.m */; };
+		87F686A61AC9F48800EFF1E0 /* AbstractActionSheetPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F686951AC9F48800EFF1E0 /* AbstractActionSheetPicker.m */; };
+		87F686A71AC9F48800EFF1E0 /* ActionSheetCustomPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F686971AC9F48800EFF1E0 /* ActionSheetCustomPicker.m */; };
+		87F686A81AC9F48800EFF1E0 /* ActionSheetDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F6869A1AC9F48800EFF1E0 /* ActionSheetDatePicker.m */; };
+		87F686A91AC9F48800EFF1E0 /* ActionSheetDistancePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F6869C1AC9F48800EFF1E0 /* ActionSheetDistancePicker.m */; };
+		87F686AA1AC9F48800EFF1E0 /* ActionSheetLocalePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F6869E1AC9F48800EFF1E0 /* ActionSheetLocalePicker.m */; };
+		87F686AB1AC9F48800EFF1E0 /* ActionSheetStringPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F686A11AC9F48800EFF1E0 /* ActionSheetStringPicker.m */; };
+		87F686AC1AC9F48800EFF1E0 /* DistancePickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F686A31AC9F48800EFF1E0 /* DistancePickerView.m */; };
+		87F686AD1AC9F48800EFF1E0 /* SWActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F686A51AC9F48800EFF1E0 /* SWActionSheet.m */; };
 		87FA136F1A99559100A1902F /* FetchVideoInfoOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FA136E1A99559100A1902F /* FetchVideoInfoOperation.m */; };
 		87FA13721A99601400A1902F /* DetermineVideoPlayableOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FA13711A99601400A1902F /* DetermineVideoPlayableOperation.m */; };
 		87FA13761A998AFA00A1902F /* ReachabilitySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FA13751A998AFA00A1902F /* ReachabilitySingleton.m */; };
@@ -319,6 +329,10 @@
 		874DA0851ABA11DD003D69D6 /* MRWeakProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRWeakProxy.m; sourceTree = "<group>"; };
 		8750157E198C3D5300382945 /* YoutubeResultsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YoutubeResultsTableViewController.h; sourceTree = "<group>"; };
 		8750157F198C3D5300382945 /* YoutubeResultsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YoutubeResultsTableViewController.m; sourceTree = "<group>"; };
+		8756960C1AC4E9BE00ACF04E /* AllSongsDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllSongsDataSource.h; sourceTree = "<group>"; };
+		8756960D1AC4E9BE00ACF04E /* AllSongsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AllSongsDataSource.m; sourceTree = "<group>"; };
+		875696121AC4F39800ACF04E /* PlayableBaseDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayableBaseDataSource.h; sourceTree = "<group>"; };
+		875696131AC4F39800ACF04E /* PlayableBaseDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayableBaseDataSource.m; sourceTree = "<group>"; };
 		875984A3195D764700015243 /* PlaylistItemTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistItemTableViewController.h; sourceTree = "<group>"; };
 		875984A4195D764700015243 /* PlaylistItemTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistItemTableViewController.m; sourceTree = "<group>"; };
 		875B381E197ACBC0008B4409 /* SettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsTableViewController.h; sourceTree = "<group>"; };
@@ -473,6 +487,25 @@
 		87ECAFC31AAE8D1900C527B9 /* MZPrivateUpNextPlaybackQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPrivateUpNextPlaybackQueue.m; sourceTree = "<group>"; };
 		87ECAFC61AAEB21F00C527B9 /* MZPrivateMainPlaybackQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPrivateMainPlaybackQueue.h; sourceTree = "<group>"; };
 		87ECAFC71AAEB21F00C527B9 /* MZPrivateMainPlaybackQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPrivateMainPlaybackQueue.m; sourceTree = "<group>"; };
+		87F6868B1AC9211A00EFF1E0 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		87F686941AC9F48800EFF1E0 /* AbstractActionSheetPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractActionSheetPicker.h; sourceTree = "<group>"; };
+		87F686951AC9F48800EFF1E0 /* AbstractActionSheetPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AbstractActionSheetPicker.m; sourceTree = "<group>"; };
+		87F686961AC9F48800EFF1E0 /* ActionSheetCustomPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionSheetCustomPicker.h; sourceTree = "<group>"; };
+		87F686971AC9F48800EFF1E0 /* ActionSheetCustomPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionSheetCustomPicker.m; sourceTree = "<group>"; };
+		87F686981AC9F48800EFF1E0 /* ActionSheetCustomPickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionSheetCustomPickerDelegate.h; sourceTree = "<group>"; };
+		87F686991AC9F48800EFF1E0 /* ActionSheetDatePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionSheetDatePicker.h; sourceTree = "<group>"; };
+		87F6869A1AC9F48800EFF1E0 /* ActionSheetDatePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionSheetDatePicker.m; sourceTree = "<group>"; };
+		87F6869B1AC9F48800EFF1E0 /* ActionSheetDistancePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionSheetDistancePicker.h; sourceTree = "<group>"; };
+		87F6869C1AC9F48800EFF1E0 /* ActionSheetDistancePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionSheetDistancePicker.m; sourceTree = "<group>"; };
+		87F6869D1AC9F48800EFF1E0 /* ActionSheetLocalePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionSheetLocalePicker.h; sourceTree = "<group>"; };
+		87F6869E1AC9F48800EFF1E0 /* ActionSheetLocalePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionSheetLocalePicker.m; sourceTree = "<group>"; };
+		87F6869F1AC9F48800EFF1E0 /* ActionSheetPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionSheetPicker.h; sourceTree = "<group>"; };
+		87F686A01AC9F48800EFF1E0 /* ActionSheetStringPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionSheetStringPicker.h; sourceTree = "<group>"; };
+		87F686A11AC9F48800EFF1E0 /* ActionSheetStringPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionSheetStringPicker.m; sourceTree = "<group>"; };
+		87F686A21AC9F48800EFF1E0 /* DistancePickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistancePickerView.h; sourceTree = "<group>"; };
+		87F686A31AC9F48800EFF1E0 /* DistancePickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DistancePickerView.m; sourceTree = "<group>"; };
+		87F686A41AC9F48800EFF1E0 /* SWActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SWActionSheet.h; sourceTree = "<group>"; };
+		87F686A51AC9F48800EFF1E0 /* SWActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SWActionSheet.m; sourceTree = "<group>"; };
 		87FA136D1A99559100A1902F /* FetchVideoInfoOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FetchVideoInfoOperation.h; sourceTree = "<group>"; };
 		87FA136E1A99559100A1902F /* FetchVideoInfoOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FetchVideoInfoOperation.m; sourceTree = "<group>"; };
 		87FA13701A99601400A1902F /* DetermineVideoPlayableOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetermineVideoPlayableOperation.h; sourceTree = "<group>"; };
@@ -721,6 +754,7 @@
 				87FA13731A998AD400A1902F /* Singletons */,
 				872EA4D31A54A96900F8EE9D /* Alerts */,
 				87362AFA194E3F27004DB544 /* GUI and GUI Controllers */,
+				8756960A1AC4E97E00ACF04E /* VC DataSources */,
 				8777AF2B1A8ECE000053BB21 /* Crashlytics.framework */,
 				8777AF2C1A8ECE000053BB21 /* Fabric.framework */,
 				87480DC3192C1FBD005CC0A4 /* Images.xcassets */,
@@ -746,6 +780,7 @@
 		87480DA7192C1FBD005CC0A4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				87F6868B1AC9211A00EFF1E0 /* MobileCoreServices.framework */,
 				873CF45B1A45435E00716B52 /* QuartzCore.framework */,
 				8727003D199F0C1F00D71204 /* CoreData.framework */,
 				8732FB111999D7E300FE6693 /* ImageIO.framework */,
@@ -892,6 +927,25 @@
 				87FB3A6B1A5A4682006F3163 /* YouTubeSongAdderViewController.m */,
 			);
 			name = "Adding Music To Library";
+			sourceTree = "<group>";
+		};
+		8756960A1AC4E97E00ACF04E /* VC DataSources */ = {
+			isa = PBXGroup;
+			children = (
+				875696121AC4F39800ACF04E /* PlayableBaseDataSource.h */,
+				875696131AC4F39800ACF04E /* PlayableBaseDataSource.m */,
+				8756960B1AC4E99400ACF04E /* Songs */,
+			);
+			name = "VC DataSources";
+			sourceTree = "<group>";
+		};
+		8756960B1AC4E99400ACF04E /* Songs */ = {
+			isa = PBXGroup;
+			children = (
+				8756960C1AC4E9BE00ACF04E /* AllSongsDataSource.h */,
+				8756960D1AC4E9BE00ACF04E /* AllSongsDataSource.m */,
+			);
+			name = Songs;
 			sourceTree = "<group>";
 		};
 		876210421AB6362200CCBDA9 /* BAPulseEffect */ = {
@@ -1112,6 +1166,7 @@
 		87A453A0199C0825004D1319 /* Imported Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				87F686931AC9F48800EFF1E0 /* SkyWinder ActionSheetPicker */,
 				87A1208E1ABA259F00250B2C /* JNExpandableTableView */,
 				874DA05E1ABA11DD003D69D6 /* MRProgress */,
 				876210481AB65CB800CCBDA9 /* MGSwipeTableCell */,
@@ -1290,6 +1345,31 @@
 				875B381F197ACBC0008B4409 /* SettingsTableViewController.m */,
 			);
 			name = "Settings View";
+			sourceTree = "<group>";
+		};
+		87F686931AC9F48800EFF1E0 /* SkyWinder ActionSheetPicker */ = {
+			isa = PBXGroup;
+			children = (
+				87F686941AC9F48800EFF1E0 /* AbstractActionSheetPicker.h */,
+				87F686951AC9F48800EFF1E0 /* AbstractActionSheetPicker.m */,
+				87F686961AC9F48800EFF1E0 /* ActionSheetCustomPicker.h */,
+				87F686971AC9F48800EFF1E0 /* ActionSheetCustomPicker.m */,
+				87F686981AC9F48800EFF1E0 /* ActionSheetCustomPickerDelegate.h */,
+				87F686991AC9F48800EFF1E0 /* ActionSheetDatePicker.h */,
+				87F6869A1AC9F48800EFF1E0 /* ActionSheetDatePicker.m */,
+				87F6869B1AC9F48800EFF1E0 /* ActionSheetDistancePicker.h */,
+				87F6869C1AC9F48800EFF1E0 /* ActionSheetDistancePicker.m */,
+				87F6869D1AC9F48800EFF1E0 /* ActionSheetLocalePicker.h */,
+				87F6869E1AC9F48800EFF1E0 /* ActionSheetLocalePicker.m */,
+				87F6869F1AC9F48800EFF1E0 /* ActionSheetPicker.h */,
+				87F686A01AC9F48800EFF1E0 /* ActionSheetStringPicker.h */,
+				87F686A11AC9F48800EFF1E0 /* ActionSheetStringPicker.m */,
+				87F686A21AC9F48800EFF1E0 /* DistancePickerView.h */,
+				87F686A31AC9F48800EFF1E0 /* DistancePickerView.m */,
+				87F686A41AC9F48800EFF1E0 /* SWActionSheet.h */,
+				87F686A51AC9F48800EFF1E0 /* SWActionSheet.m */,
+			);
+			path = "SkyWinder ActionSheetPicker";
 			sourceTree = "<group>";
 		};
 		87FA13731A998AD400A1902F /* Singletons */ = {
@@ -1536,11 +1616,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8756960E1AC4E9BE00ACF04E /* AllSongsDataSource.m in Sources */,
 				877C4BA7199FE4B800CE86BC /* Album+Utilities.m in Sources */,
 				87A453C8199C0891004D1319 /* ELCAlbumPickerController.m in Sources */,
 				876210461AB6362200CCBDA9 /* BAPulseButton.m in Sources */,
 				8780134F199C854E004727A0 /* ExistingArtistPickerTableViewController.m in Sources */,
 				87DB103219C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m in Sources */,
+				87F686AA1AC9F48800EFF1E0 /* ActionSheetLocalePicker.m in Sources */,
 				87A453C9199C0891004D1319 /* ELCAsset.m in Sources */,
 				874DA08E1ABA11DD003D69D6 /* MRStopButton.m in Sources */,
 				87124BA419A3CBB8003D29CD /* AlbumModelHandler.m in Sources */,
@@ -1551,6 +1633,7 @@
 				87A453D8199C0891004D1319 /* UIImage+EYFixOrientation.m in Sources */,
 				87270032199E815000D71204 /* NSString+Levenshtein_Distance.m in Sources */,
 				87A453CD199C0891004D1319 /* ELCImagePickerController.m in Sources */,
+				87F686A91AC9F48800EFF1E0 /* ActionSheetDistancePicker.m in Sources */,
 				87BBBE061A58A78A00248E2F /* MySearchBar.m in Sources */,
 				8733440B198DC915002B9E18 /* UIImage+colorImages.m in Sources */,
 				87D47D93193428350057D49B /* MasterPlaylistTableViewController.m in Sources */,
@@ -1562,6 +1645,7 @@
 				871BA8921A5A2F4100FB87A7 /* Song.m in Sources */,
 				872EA4D61A54A98B00F8EE9D /* MyAlerts.m in Sources */,
 				874DA08B1ABA11DD003D69D6 /* MRNavigationBarProgressView.m in Sources */,
+				87F686A81AC9F48800EFF1E0 /* ActionSheetDatePicker.m in Sources */,
 				87501580198C3D5300382945 /* YoutubeResultsTableViewController.m in Sources */,
 				875984A5195D764700015243 /* PlaylistItemTableViewController.m in Sources */,
 				871BA8951A5A2F4100FB87A7 /* Album.m in Sources */,
@@ -1588,10 +1672,12 @@
 				87BA3A601AA9652200A3ACA3 /* MZPlaybackQueue.m in Sources */,
 				8762104D1AB65CB800CCBDA9 /* MGSwipeButton.m in Sources */,
 				87E1C5A0193A5E8B009AE399 /* GenreConstants.m in Sources */,
+				87F686AB1AC9F48800EFF1E0 /* ActionSheetStringPicker.m in Sources */,
 				87270035199E820700D71204 /* LevenshteinDistanceItem.m in Sources */,
 				871A0B031980835D00BACD31 /* UIColor+LighterAndDarker.m in Sources */,
 				87480DB9192C1FBD005CC0A4 /* AppDelegate.m in Sources */,
 				87A453CA199C0891004D1319 /* ELCAssetCell.m in Sources */,
+				875696141AC4F39800ACF04E /* PlayableBaseDataSource.m in Sources */,
 				874DA0861ABA11DD003D69D6 /* MRBlurView.m in Sources */,
 				87A41FEB19F0D9C800C037D9 /* MyAVPlayer.m in Sources */,
 				87A453CB199C0891004D1319 /* ELCAssetTablePicker.m in Sources */,
@@ -1602,11 +1688,13 @@
 				87270038199EB90500D71204 /* StackController.m in Sources */,
 				87A453CE199C0891004D1319 /* ELCOverlayImageView.m in Sources */,
 				874DA08A1ABA11DD003D69D6 /* MRIconView.m in Sources */,
+				87F686A71AC9F48800EFF1E0 /* ActionSheetCustomPicker.m in Sources */,
 				879112FF197EF90E00DFC2DB /* PlaylistTableViewFormatter.m in Sources */,
 				879AB34119F225F300FD6582 /* SongPlayerViewController.m in Sources */,
 				87D47D8C19340F8B0057D49B /* AlbumItemViewController.m in Sources */,
 				87A0FD8A197DCEDF008FBBF7 /* AlbumTableViewFormatter.m in Sources */,
 				87D3CD201AA823EF00B7D5B6 /* QueueViewController.m in Sources */,
+				87F686AC1AC9F48800EFF1E0 /* DistancePickerView.m in Sources */,
 				87FCD02C19A5BC0B00C600D3 /* CustomYoutubeTableViewCell.m in Sources */,
 				872EA4E41A54F1EA00F8EE9D /* MyTableViewController.m in Sources */,
 				87362AFD194E68A5004DB544 /* Deque.m in Sources */,
@@ -1635,6 +1723,7 @@
 				87480DB5192C1FBD005CC0A4 /* main.m in Sources */,
 				87ECAFC41AAE8D1900C527B9 /* MZPrivateUpNextPlaybackQueue.m in Sources */,
 				87A0FDD2197DFA2C008FBBF7 /* ArtistTableViewFormatter.m in Sources */,
+				87F686AD1AC9F48800EFF1E0 /* SWActionSheet.m in Sources */,
 				874DA0891ABA11DD003D69D6 /* MRCircularProgressView.m in Sources */,
 				87440EE81A9EC07300C4DDB8 /* OperationQueuesSingeton.m in Sources */,
 				870D49E71A6324F2004496A9 /* MZConstants.m in Sources */,
@@ -1664,6 +1753,7 @@
 				878ACD64192D48EF005938F5 /* MasterSongsTableViewController.m in Sources */,
 				872EA4E71A54F1FC00F8EE9D /* MyViewController.m in Sources */,
 				87A120921ABA259F00250B2C /* JNExpandableTableView.m in Sources */,
+				87F686A61AC9F48800EFF1E0 /* AbstractActionSheetPicker.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

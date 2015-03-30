@@ -152,8 +152,6 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
 {
     if(_creatingANewSong && _songIAmEditing.songName.length > 0)
         return 2;
-    else if(! _creatingANewSong)
-        return 2;
     else
         return 1;
 }
@@ -239,11 +237,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                           reuseIdentifier:cellIdentifier];
         if(indexPath.row == 0){
-            if(! _creatingANewSong){
-                cell.textLabel.text = @"Delete Song";
-                cell.textLabel.textColor = [UIColor redColor];
-                
-            } else if(_creatingANewSong && _songIAmEditing.songName.length > 0
+            if(_creatingANewSong && _songIAmEditing.songName.length > 0
                       && canShowAddtoLibButton){
                 cell.textLabel.text = @"Add to library";
                 cell.textLabel.textColor = [UIColor defaultAppColorScheme];
@@ -422,14 +416,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     
     if(indexPath.section == 1){
         if(indexPath.row == 0){
-            if(! _creatingANewSong){
-                [_songIAmEditing removeAlbumArt];
-                
-                [[CoreDataManager context] deleteObject:_songIAmEditing];
-                [[CoreDataManager sharedInstance] saveContext];
-                [self.VC dismissViewControllerAnimated:YES completion:nil];
-            } else{
-                
+            if(_creatingANewSong){
                 [_songIAmEditing setAlbumArt:self.currentAlbumArt];
                 
                 //save song into library
@@ -531,7 +518,6 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     NSString *artistName = (NSString *)notification.object;
     artistName = [artistName removeIrrelevantWhitespace];
     
-    //not checking for some album name because we CAN create albums with the same name!
     if(artistName.length == 0)  //was all whitespace, or user gave us an empty string
         return;
     
@@ -648,8 +634,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                 if(! _songIAmEditing.artist){  //add song to an existing artist
                     ExistingArtistPickerTableViewController *vc = [[ExistingArtistPickerTableViewController alloc]
                                                                    initWithCurrentArtist:_songIAmEditing.artist];
-                    //[self.VC.navigationController pushViewController:vc animated:YES];
-                    [self performSelector:@selector(showUnsupportedAlert) withObject:nil afterDelay:0.7];
+                    [self.VC.navigationController pushViewController:vc animated:YES];
                 } else if(_songIAmEditing.artist){  //remove from current artist
                     _songIAmEditing.artist = nil;
                     [self reloadData];
@@ -707,11 +692,10 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                     _songIAmEditing.album = nil;
                     [self reloadData];
                 } else{ //choose existing album
-                    /*
+                    
                     ExistingAlbumPickerTableViewController *vc = [[ExistingAlbumPickerTableViewController alloc]
                                                                   initWithCurrentAlbum:_songIAmEditing.album];
-                    //[self.VC.navigationController pushViewController:vc animated:YES];*/
-                    [self performSelector:@selector(showUnsupportedAlert) withObject:nil afterDelay:0.7];
+                    [self.VC.navigationController pushViewController:vc animated:YES];
                 }
                 break;
             case 1:
@@ -728,12 +712,9 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                     [self.VC.navigationController pushViewController:vc animated:YES];
                     break;
                 } else{  //place in different album (existing album picker)
-                    [self performSelector:@selector(showUnsupportedAlert) withObject:nil afterDelay:0.7];
-                    /*
                     ExistingAlbumPickerTableViewController *vc = [[ExistingAlbumPickerTableViewController alloc]
                                                                   initWithCurrentAlbum:_songIAmEditing.album];
                     [self.VC.navigationController pushViewController:vc animated:YES];
-                     */
                 }
                 
                 break;
@@ -789,29 +770,14 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     }
 }
 
-#pragma mark - Unsupported actions code
-- (void)showUnsupportedAlert
-{
-    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Unfinished"
-                                                      message:@"This action is not yet supported."
-                                                     delegate:nil
-                                            cancelButtonTitle:@"OK"
-                                            otherButtonTitles: nil];
-    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.normalButtonFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
-    alert.buttonTextColor = [UIColor defaultAppColorScheme];
-    [alert show];
-}
-
 #pragma mark - Album Art Methods
 - (void)pickNewAlbumArtFromPhotos
 {
     UIImagePickerController *photoPickerController = [[UIImagePickerController alloc] init];
     photoPickerController.delegate = self;
     //set tint color specifically for this VC so that the cancel buttons are invisible
-    [photoPickerController.view setTintColor:[UIColor defaultWindowTintColor]];
+    photoPickerController.view.tintColor = [UIColor defaultWindowTintColor];
+    photoPickerController.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
     [self.theDelegate pushThisVC:photoPickerController];
 }
 
@@ -928,7 +894,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Cannot Edit Album Art"
                                                       message:msg
                                                      delegate:self
-                                            cancelButtonTitle:@"OK"
+                                            cancelButtonTitle:@"Cancel"
                                             otherButtonTitles:@"Go to Album", nil];
     
     alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];

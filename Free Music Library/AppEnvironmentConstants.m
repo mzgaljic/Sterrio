@@ -20,6 +20,10 @@ static BOOL isFirstTimeAppLaunched = NO;
 static BOOL whatsNewMsgIsNew = NO;
 static BOOL USER_EDITING_MEDIA = YES;
 static BOOL userIsPreviewingAVideo = NO;
+
+static BOOL playbackTimerActive = NO;
+static NSInteger activePlaybackTimerThreadNum;
+
 static PREVIEW_PLAYBACK_STATE currentPreviewPlayerState = PREVIEW_PLAYBACK_STATE_Uninitialized;
 
 static short preferredSizeValue;
@@ -31,6 +35,18 @@ static BOOL icloudSettingsSync;
 
 static int navBarHeight;
 static short statusBarHeight;
+
+
+//runtime configuration
++ (BOOL)isUserOniOS8OrAbove
+{
+    // conditionally check for any version >= iOS 8 using 'isOperatingSystemAtLeastVersion'
+    if ([NSProcessInfo instancesRespondToSelector:@selector(isOperatingSystemAtLeastVersion:)])
+        return YES;
+    else
+        return NO;
+}
+
 
 + (BOOL)isAppInProductionMode
 {
@@ -108,6 +124,30 @@ static short statusBarHeight;
 {
     return currentPreviewPlayerState;
 }
+
+
+static NSLock *playbackTimerLock;
++ (void)setPlaybackTimerActive:(BOOL)active onThreadNum:(NSInteger)threadNum
+{
+    [playbackTimerLock lock];
+    
+    playbackTimerActive = active;
+    activePlaybackTimerThreadNum = threadNum;
+    
+    [playbackTimerLock unlock];
+}
+
++ (BOOL)isPlaybackTimerActive
+{
+    return playbackTimerActive;
+}
+
++ (NSInteger)threadNumOfPlaybackSleepTimerThreadWhichShouldFire
+{
+    return activePlaybackTimerThreadNum;
+}
+
+
 
 //app settings
 + (short)preferredSizeSetting

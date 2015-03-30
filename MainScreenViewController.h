@@ -14,6 +14,7 @@
 #import "UIImage+colorImages.h"
 #import "MainScreenViewControllerDelegate.h"
 #import "BAPulseButton.h"  //category on uibutton that adds a pulse effect. imported lib...
+#import "SongPlayerCoordinator.h"
 
 @interface MainScreenViewController : UIViewController <UITabBarDelegate>
 

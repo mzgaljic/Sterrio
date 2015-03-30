@@ -24,14 +24,30 @@
     CGFloat _valueRange;
 }
 
-#pragma mark - initialization
 
+#pragma mark - public
+- (void)disablePopupSliderCompletely:(BOOL)disable;
+{
+    if(disable)
+        self.popUpView = nil;
+}
+
+- (BOOL)isPopupSliderCompletelyDisabled
+{
+    return (self.popUpView == nil) ? YES : NO;
+}
+
+- (void)setParentValue:(float)value animated:(BOOL)animated
+{
+    [super setValue:value animated:animated];
+}
+
+#pragma mark - initialization
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
         [self setup];
-        
     }
     return self;
 }
@@ -46,17 +62,6 @@
 }
 
 #pragma mark - public
-
-- (void)disablePopupSliderCompletely:(BOOL)disable;
-{
-    if(disable)
-        self.popUpView = nil;
-}
-
-- (BOOL)isPopupSliderCompletelyDisabled
-{
-    return (self.popUpView == nil) ? YES : NO;
-}
 
 - (void)setAutoAdjustTrackColor:(BOOL)autoAdjust
 {
@@ -354,11 +359,6 @@
     } else {
         [super setValue:value animated:animated];
     }
-}
-
-- (void)setParentValue:(float)value animated:(BOOL)animated
-{
-    [super setValue:value animated:animated];
 }
 
 - (void)setMinimumTrackTintColor:(UIColor *)color

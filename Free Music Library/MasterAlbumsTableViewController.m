@@ -9,7 +9,6 @@
 #import "MasterAlbumsTableViewController.h"
 
 @interface MasterAlbumsTableViewController()
-@property (nonatomic, assign) int indexOfEditingArtist;
 @property (nonatomic, strong) MySearchBar* searchBar;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
@@ -226,7 +225,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     cell.editingAccessoryView = coloredDisclosureIndicator;
     cell.accessoryView = coloredDisclosureIndicator;
     
-    cell.textLabel.text = @"empty string";
     cell.textLabel.attributedText = [AlbumTableViewFormatter formatAlbumLabelUsingAlbum:album];
     if(! [AlbumTableViewFormatter albumNameIsBold])
         cell.textLabel.font = [UIFont systemFontOfSize:[AlbumTableViewFormatter nonBoldAlbumLabelFontSize]];
@@ -437,17 +435,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     }
 }
 
-- (NSAttributedString *)BoldAttributedStringWithString:(NSString *)aString withFontSize:(float)fontSize
-{
-    if(! aString)
-        return nil;
-    
-    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:aString];
-    [attributedText addAttribute: NSFontAttributeName value:[UIFont boldSystemFontOfSize:fontSize] range:NSMakeRange(0, [aString length])];
-    return attributedText;
-}
-
-#pragma mark - artist editing
+#pragma mark - album editing
 - (void)editingModeCompleted:(NSNotification *)notification
 {
     if([notification.name isEqualToString:@"AlbumEditDone"]){

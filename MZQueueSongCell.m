@@ -22,9 +22,9 @@
 }
 @end
 @implementation MZQueueSongCell
-short const textLabelsPaddingFromImgView = 10;
+short const textLabelsPaddingFromImgView2 = 10;
 short const dotLabelPadding = 20;
-short const editingModeChevronWidthCompensation = 55;
+short const editingModeChevronWidthCompensation2 = 55;
 
 static void *didEnterEditingMode = &didEnterEditingMode;
 
@@ -117,7 +117,7 @@ static void *didEnterEditingMode = &didEnterEditingMode;
 
 - (CGRect)textLabelFrameWithoutEditingMode
 {
-    int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
+    int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView2;
     int width = self.frame.size.width - xOrigin;
     textLabelFrameWithoutEditingMode = CGRectMake(xOrigin, self.textLabel.frame.origin.y, width, self.textLabel.frame.size.height);
     return textLabelFrameWithoutEditingMode;
@@ -125,17 +125,17 @@ static void *didEnterEditingMode = &didEnterEditingMode;
 
 - (CGRect)textLabelFrameInEditingMode
 {
-    int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
+    int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView2;
     int yOrigin = textLabelFrameWithoutEditingMode.origin.y;
     //padding so we dont hit the chevron
-    int width = self.frame.size.width - xOrigin - editingModeChevronWidthCompensation;
+    int width = self.frame.size.width - xOrigin - editingModeChevronWidthCompensation2;
     
     return CGRectMake(xOrigin, yOrigin, width, self.textLabel.frame.size.height);
 }
 
 - (CGRect)detailTextLabelFrameWithoutEditingMode
 {
-    int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
+    int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView2;
     int width = self.frame.size.width - xOrigin;
     detailTextLabelFrameWithoutEditingMode = CGRectMake(xOrigin,
                                                         self.detailTextLabel.frame.origin.y,
@@ -146,9 +146,9 @@ static void *didEnterEditingMode = &didEnterEditingMode;
 
 - (CGRect)detailTextLabelFrameInEditingMode
 {
-    int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
+    int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView2;
     int yOrigin = detailTextLabelFrameWithoutEditingMode.origin.y;
-    int width = self.frame.size.width - xOrigin - editingModeChevronWidthCompensation;
+    int width = self.frame.size.width - xOrigin - editingModeChevronWidthCompensation2;
     
     // Assign the the new frame to textLabel
     return CGRectMake(xOrigin,

@@ -9,6 +9,7 @@
 #import "VideoPlayerWrapper.h"
 
 @implementation VideoPlayerWrapper
+static BOOL updatingPlayerViewDisabled = NO;
 
 + (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)forward oldSong:(Song *)oldSong
 {
@@ -60,13 +61,24 @@
 
 + (void)setupAvPlayerViewAgain
 {
+    if(updatingPlayerViewDisabled)
+        return;
+    
     UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     NSUInteger playerIndex = [[appWindow subviews] indexOfObject:playerView];
     [playerView removeFromSuperview];
     [appWindow addSubview:playerView];
-    [appWindow insertSubview:playerView atIndex:playerIndex];
+    if(playerIndex != NSNotFound)
+        [appWindow insertSubview:playerView atIndex:playerIndex];
+    else
+        [appWindow insertSubview:playerView atIndex:0];
     [playerView setNeedsDisplay];
+}
+
++ (void)temporarilyDisableUpdatingPlayerView:(BOOL)disable
+{
+    updatingPlayerViewDisabled = disable;
 }
 
 @end

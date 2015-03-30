@@ -60,6 +60,9 @@
 	self.titleLabel.font = visualStyle.titleLabelFont;
 	self.messageLabel.font = visualStyle.messageLabelFont;
 	
+	self.titleLabel.textColor = visualStyle.titleLabelColor;
+	self.messageLabel.textColor = visualStyle.messageLabelColor;
+	
 	[self setNeedsLayout];
 }
 
@@ -115,6 +118,11 @@
 
 - (void)layoutSubviews {
 	[super layoutSubviews];
+	[self invalidateIntrinsicContentSize];
+}
+
+- (void)invalidateIntrinsicContentSize {
+	[super invalidateIntrinsicContentSize];
 	self.contentSize = CGSizeMake(self.contentSize.width, [self intrinsicContentSize].height);
 }
 

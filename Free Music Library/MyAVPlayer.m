@@ -173,7 +173,8 @@ static void *airplayStateChanged = &airplayStateChanged;
     if([SongPlayerCoordinator isPlayerInDisabledState]){
         if([aSong.duration integerValue] <= MZLongestCellularPlayableDuration){
             //enable GUI again, this song is short enough to play on cellular
-            [MusicPlaybackController explicitlyPausePlayback:NO];
+            if(! [AppEnvironmentConstants isPlaybackTimerActive])
+                [MusicPlaybackController explicitlyPausePlayback:NO];
             [SongPlayerCoordinator placePlayerInDisabledState:NO];
             
             [[NSNotificationCenter defaultCenter] postNotificationName:MZInterfaceNeedsToBlockCurrentSongPlayback object:[NSNumber numberWithBool:NO]];
@@ -193,16 +194,21 @@ static void *airplayStateChanged = &airplayStateChanged;
         [[NSNotificationCenter defaultCenter] postNotificationName:MZNewTimeObserverCanBeAdded
                                                             object:nil];
         [operationQueue cancelAllOperations];
+        
+        double delayInSeconds = 2.0;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            if([MusicPlaybackController playbackExplicitlyPaused])
+                [MusicPlaybackController pausePlayback];
+            else
+                [MusicPlaybackController resumePlayback];
+        });
+
     } else{
         __weak MyAVPlayer *weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^(void){
             //Run UI Updates
-            NSOperationQueue *operationQueue = [[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue];
-            [weakSelf replaceCurrentItemWithPlayerItem:item];
-            [weakSelf play];
-            [[NSNotificationCenter defaultCenter] postNotificationName:MZNewTimeObserverCanBeAdded
-                                                                object:nil];
-            [operationQueue cancelAllOperations];
+            [weakSelf beginPlaybackWithPlayerItem:item];
         });
     }
 }
@@ -428,8 +434,6 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
 
 - (void)deregisterForObservers
 {
-    Fabric *myFabric = [Fabric sharedSDK];
-    myFabric.debug = YES;
     @try{
         [self removeObserver:self
                   forKeyPath:@"currentItem.playbackBufferEmpty"
@@ -452,7 +456,6 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
     }
     //do nothing, obviously it wasn't attached because an exception was thrown
     @catch(id anException){}
-    myFabric.debug = NO;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath

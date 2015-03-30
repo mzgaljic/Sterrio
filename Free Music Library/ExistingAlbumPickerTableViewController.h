@@ -9,16 +9,21 @@
 #import <UIKit/UIKit.h>
 #import "AppEnvironmentConstants.h"
 #import "AlbumArtUtilities.h"
-#import "AlbumItemViewController.h"
 #import "Album.h"
-#import "SDWebImageManager.h"
-#import <SDWebImage/UIImageView+WebCache.h>
 #import "AlbumTableViewFormatter.h"
 #import "UIImage+colorImages.h"
-#import "MyTableViewController.h"
+#import "CoreDataCustomTableViewController.h"
+#import "StackController.h"
 
-@interface ExistingAlbumPickerTableViewController : MyTableViewController
+@interface ExistingAlbumPickerTableViewController : CoreDataCustomTableViewController
+                                                    <UISearchBarDelegate,
+                                                    UITableViewDataSource,
+                                                    UITableViewDelegate>
+{
+    StackController *stackController;
+}
 
 - (id)initWithCurrentAlbum:(Album *)anAlbum;
+
 
 @end

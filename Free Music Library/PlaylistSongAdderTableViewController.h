@@ -8,8 +8,6 @@
 
 //This class controls how the user adds songs to their playlist
 #import <Foundation/Foundation.h>
-#import <objc/runtime.h>
-#import "StackController.h"
 #import "Song.h"
 #import "Playlist+Utilities.h"
 #import "AppEnvironmentConstants.h"
@@ -21,17 +19,11 @@
 #import "CoreDataCustomTableViewController.h"
 
 @interface PlaylistSongAdderTableViewController : CoreDataCustomTableViewController
-                                                                <UISearchBarDelegate,
-                                                                UITableViewDataSource,
-                                                                UITableViewDelegate>
-{
-    StackController *stackController;
-}
+                                                                <SearchBarDataSourceDelegate,
+                                                                PlaylistSongAdderDataSourceDelegate>
 
 - (id)initWithPlaylist:(Playlist *)aPlaylist;
 
-@property (nonatomic, assign) int selectedRowIndexValue;
-@property (nonatomic, strong) NSMutableArray *songsSelected;
 @property (nonatomic, strong) Playlist *receiverPlaylist;  //the playlist the chosen songs will be a part of
 
 //gui vars

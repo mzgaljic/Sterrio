@@ -31,6 +31,8 @@
 
 + (void)runDisplayAlertCodeWithAlertType:(ALERT_TYPE)type
 {
+#warning delete this line.
+    int CSNotificationViewStyleInfo = 0;
     switch (type) {
         case ALERT_TYPE_CannotConnectToYouTube:
         {
@@ -189,6 +191,8 @@
                        delay:(float)seconds
                shortDuration:(BOOL)shortduration
 {
+#warning commented out.
+    /*
     float duration = 0;
     if(shortduration)
         duration = kCSNotificationViewDefaultShowDuration;
@@ -207,6 +211,7 @@
             [MyAlerts displayBannerWithMsg:weakMsg style:style delay:0 shortDuration:shortduration];
         });
     }
+     */
 }
 
 + (void)launchAlertViewWithDialogUsingTitle:(NSString *)title andMessage:(NSString *)msg
