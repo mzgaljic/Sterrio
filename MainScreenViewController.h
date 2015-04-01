@@ -13,7 +13,7 @@
 #import "UIButton+ExpandedHitArea.h"
 #import "UIImage+colorImages.h"
 #import "MainScreenViewControllerDelegate.h"
-#import "BAPulseButton.h"  //category on uibutton that adds a pulse effect. imported lib...
+#import "SSBouncyButton.h"
 #import "SongPlayerCoordinator.h"
 
 @interface MainScreenViewController : UIViewController <UITabBarDelegate>

@@ -22,10 +22,11 @@ typedef enum{
 @interface SongPlayerViewController ()
 {
     NSArray *musicButtons;
-    UIButton *playButton;
-    UIButton *forwardButton;
-    UIButton *backwardButton;
-    BAPulseButton *timerButton;
+    SSBouncyButton *playButton;
+    SSBouncyButton *forwardButton;
+    SSBouncyButton *backwardButton;
+    SSBouncyButton *timerButton;
+    SSBouncyButton *repeatModeButton;
     
     GCDiscreetNotificationView *sliderHint;  //slider hint
     
@@ -744,48 +745,29 @@ static int accomodateInterfaceLabelsCounter = 0;
 #pragma mark - Initializing & Registering Buttons
 - (void)initAndRegisterAllButtons
 {
-    backwardButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    playButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    forwardButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    timerButton = [BAPulseButton buttonWithType:UIButtonTypeCustom];
+    backwardButton = [[SSBouncyButton alloc] initAsImage];
+    playButton = [[SSBouncyButton alloc] initAsImage];
+    forwardButton = [[SSBouncyButton alloc] initAsImage];
+    timerButton = [[SSBouncyButton alloc] initAsImage];
+    repeatModeButton = [[SSBouncyButton alloc] init];
+    
     
     [backwardButton addTarget:self
                        action:@selector(backwardsButtonTappedOnce)
              forControlEvents:UIControlEventTouchUpInside];
-    [backwardButton addTarget:self
-                       action:@selector(backwardsButtonBeingHeld)
-             forControlEvents:UIControlEventTouchDown];
-    [backwardButton addTarget:self
-                       action:@selector(backwardsButtonLetGo)
-             forControlEvents:UIControlEventTouchUpOutside];
     [playButton addTarget:self
                    action:@selector(playOrPauseButtonTapped)
          forControlEvents:UIControlEventTouchUpInside];
-    [playButton addTarget:self
-                   action:@selector(playOrPauseButtonBeingHeld)
-         forControlEvents:UIControlEventTouchDown];
-    [playButton addTarget:self
-                   action:@selector(playOrPauseButtonLetGo)
-         forControlEvents:UIControlEventTouchUpOutside];
     [forwardButton addTarget:self
                       action:@selector(forwardsButtonTappedOnce)
             forControlEvents:UIControlEventTouchUpInside];
-    [forwardButton addTarget:self
-                      action:@selector(forwardsButtonBeingHeld)
-            forControlEvents:UIControlEventTouchDown];
-    [forwardButton addTarget:self
-                      action:@selector(forwardsButtonLetGo)
-            forControlEvents:UIControlEventTouchUpOutside];
-    
     [timerButton addTarget:self
                     action:@selector(timerButtonTappedOnce)
           forControlEvents:UIControlEventTouchUpInside];
-    [timerButton addTarget:self
-                    action:@selector(timerButtonBeingHeld)
-          forControlEvents:UIControlEventTouchDown];
-    [timerButton addTarget:self
-                    action:@selector(timerButtonLetGo)
-          forControlEvents:UIControlEventTouchUpOutside];
+    [repeatModeButton addTarget:self
+                         action:@selector(repeatModeButtonTapped)
+               forControlEvents:UIControlEventTouchUpInside];
+    [self updateRepeatButtonGivenNewRepeatState];
     
     musicButtons = @[backwardButton, playButton, forwardButton];
 }
@@ -826,7 +808,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     for(UIButton *aButton in musicButtons){
         aButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentFill;
         aButton.contentVerticalAlignment = UIControlContentVerticalAlignmentFill;
-        [aButton setHitTestEdgeInsets:UIEdgeInsetsMake(-30, -30, -30, -30)];
+        [aButton setHitTestEdgeInsets:UIEdgeInsetsMake(-15, -15, -15, -15)];
     }
     
     float imgScaleFactor = 1.4f;
@@ -904,11 +886,31 @@ static int accomodateInterfaceLabelsCounter = 0;
     timerButton.frame = timerBtnFrame;
     [timerButton setImage:timerImg forState:UIControlStateNormal];
     timerButton.alpha = 0;
+    [timerButton setHitTestEdgeInsets:UIEdgeInsetsMake(-15, -25, -15, -25)];
     [self.view addSubview:timerButton];
     [UIView animateWithDuration:0.70  //now animate a "fade in"
                           delay:0.1
                         options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
                      animations:^{ timerButton.alpha = 1.0; }
+                     completion:nil];
+    
+    //repeat mode button
+    short bottomTextButtonsWidth = 90;
+    short bottomTextButtonsHeight = 30;
+    repeatModeButton.center = timerButton.center;
+    CGRect repeatModeBtnFrame = CGRectMake(screenWidth/3.5 - bottomTextButtonsWidth,
+                                           repeatModeButton.frame.origin.y - bottomTextButtonsHeight/2,
+                                           bottomTextButtonsWidth,
+                                           bottomTextButtonsHeight);
+    repeatModeButton.frame = repeatModeBtnFrame;
+    repeatModeButton.tintColor = [UIColor defaultAppColorScheme];
+    repeatModeButton.alpha = 0;
+    [repeatModeButton setHitTestEdgeInsets:UIEdgeInsetsMake(-15, -25, -15, -25)];
+    [self.view addSubview:repeatModeButton];
+    [UIView animateWithDuration:0.70  //now animate a "fade in"
+                          delay:0.1
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
+                     animations:^{ repeatModeButton.alpha = 1.0; }
                      completion:nil];
 
     
@@ -1185,27 +1187,30 @@ static int accomodateInterfaceLabelsCounter = 0;
 }
 
 #pragma mark - Responding to Button Events (SleepTimer stuff)
+//tapping timer button twice very fast would launch two pickers lol. this fixes that bug.
+static BOOL goingToAnimateTimerPicker = NO;
 //TIMER BUTTON
 - (void)timerButtonTappedOnce
 {
-    [timerButton buttonPressAnimation];
-    [self timerButtonLetGo];
+    if(goingToAnimateTimerPicker)
+        return;
     [VideoPlayerWrapper temporarilyDisableUpdatingPlayerView:YES];
-    [self performSelector:@selector(showTimerPicker) withObject:nil afterDelay:0.2];
+    
+    if([AppEnvironmentConstants isPlaybackTimerActive] && !userReplacingExistingTimer){
+        [self performSelector:@selector(showTimerActionSheeet)
+                   withObject:nil
+                   afterDelay:0.4];
+        return;
+    }
+    
+    goingToAnimateTimerPicker = YES;
+    [self performSelector:@selector(showTimerPicker) withObject:nil afterDelay:0.4];
 }
-
-- (void)timerButtonBeingHeld { [self addShadowToButton:timerButton]; }
-
-- (void)timerButtonLetGo{ [self removeShadowForButton:timerButton]; }
 
 - (void)showTimerPicker
 {
-    if([AppEnvironmentConstants isPlaybackTimerActive] && !userReplacingExistingTimer){
-        [self showTimerActionSheeet];
-        return;
-    }
     __weak SongPlayerViewController *weakself = self;
-    [ActionSheetDatePicker showPickerWithTitle:@"Timer"
+    [ActionSheetDatePicker showPickerWithTitle:@"Sleep Timer"
                                 datePickerMode:UIDatePickerModeCountDownTimer
                                   selectedDate:nil
                                    minimumDate:nil
@@ -1225,6 +1230,7 @@ static int accomodateInterfaceLabelsCounter = 0;
                                          userReplacingExistingTimer = NO;
                                      }
                                         origin:self.view];
+    goingToAnimateTimerPicker = NO;
 }
 
 - (void)showTimerActionSheeet
@@ -1232,8 +1238,8 @@ static int accomodateInterfaceLabelsCounter = 0;
     UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:nil
                                                        delegate:self
                                               cancelButtonTitle:@"Cancel"
-                                         destructiveButtonTitle:@"Remove Timer"
-                                              otherButtonTitles:@"New Timer", nil];
+                                         destructiveButtonTitle:@"Remove Sleep Timer"
+                                              otherButtonTitles:@"New Sleep Timer", nil];
     
     [popup showInView:[UIApplication sharedApplication].keyWindow];
 }
@@ -1321,11 +1327,66 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
 }
 
 #pragma mark - Responding to Button Events
+- (void)repeatModeButtonTapped
+{
+    switch ([AppEnvironmentConstants playbackRepeatType])
+    {
+        case PLABACK_REPEAT_MODE_disabled:
+        {
+            [AppEnvironmentConstants setPlaybackRepeatType:PLABACK_REPEAT_MODE_Song];
+            break;
+        }
+        case PLABACK_REPEAT_MODE_Song:
+        {
+            [AppEnvironmentConstants setPlaybackRepeatType:PLABACK_REPEAT_MODE_All];
+            break;
+        }
+        case PLABACK_REPEAT_MODE_All:
+        {
+            [AppEnvironmentConstants setPlaybackRepeatType:PLABACK_REPEAT_MODE_disabled];
+            break;
+        }
+        default:
+            break;
+    }
+    [self updateRepeatButtonGivenNewRepeatState];
+}
+
+- (void)updateRepeatButtonGivenNewRepeatState
+{
+    switch ([AppEnvironmentConstants playbackRepeatType])
+    {
+        case PLABACK_REPEAT_MODE_disabled:
+        {
+            repeatModeButton.selected = NO;
+            break;
+        }
+        case PLABACK_REPEAT_MODE_Song:
+        {
+            repeatModeButton.selected = YES;
+            break;
+        }
+        case PLABACK_REPEAT_MODE_All:
+        {
+            repeatModeButton.selected = YES;
+            break;
+        }
+        default:
+            break;
+    }
+    UIControlState controlState;
+    if(repeatModeButton.selected)
+        controlState = UIControlStateSelected;
+    else
+        controlState = UIControlStateNormal;
+    
+    [repeatModeButton setTitle:[AppEnvironmentConstants stringRepresentationOfRepeatMode]
+                      forState:controlState];
+}
+
 //BACK BUTTON
 - (void)backwardsButtonTappedOnce
 {
-    [self backwardsButtonLetGo];
-
     if(! [MusicPlaybackController shouldSeekToStartOnBackPress]){
         //previous song will actually be loaded
         waitingForNextOrPrevVideoToLoad = YES;
@@ -1333,11 +1394,11 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
     } else
         [self toggleDisplayToPlayingState];
     //order matters here...this call should be after the if statement.
-    [MusicPlaybackController returnToPreviousTrack];
+    //delay helps keep the button animations responsive.
+    [MusicPlaybackController performSelector:@selector(returnToPreviousTrack)
+                                  withObject:nil
+                                  afterDelay:0.1];
 }
-
-- (void)backwardsButtonBeingHeld{ [self addShadowToButton:backwardButton]; }
-- (void)backwardsButtonLetGo{ [self removeShadowForButton:backwardButton]; }
 
 //PLAY BUTTON
 - (void)playOrPauseButtonTapped
@@ -1363,23 +1424,18 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
         [MusicPlaybackController pausePlayback];
     }
     playButton.enabled = YES;
-    [self playOrPauseButtonLetGo];
 }
-
-- (void)playOrPauseButtonBeingHeld{ [self addShadowToButton:playButton]; }
-- (void)playOrPauseButtonLetGo{ [self removeShadowForButton:playButton]; }
 
 //FORWARD BUTTON
 - (void)forwardsButtonTappedOnce
 {
     waitingForNextOrPrevVideoToLoad = YES;
     self.playbackSlider.enabled = NO;
-    [MusicPlaybackController skipToNextTrack];
-    [self forwardsButtonLetGo];
+    //delay helps keep the button animations responsive.
+    [MusicPlaybackController performSelector:@selector(skipToNextTrack)
+                                  withObject:nil
+                                  afterDelay:0.1];
 }
-
-- (void)forwardsButtonBeingHeld{ [self addShadowToButton:forwardButton]; }
-- (void)forwardsButtonLetGo{ [self removeShadowForButton:forwardButton]; }
 
 //only toggles the gui! does not mean user hit pause! Used for responding to rate changes during buffering.
 - (void)toggleDisplayToPausedState
@@ -1411,23 +1467,6 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
         stateOfGUIPlayback = GUIPlaybackStatePlaying;
     else
         [self toggleDisplayToPausedState];
-}
-
-//BUTTON SHADOWS
-- (void)addShadowToButton:(UIButton *)aButton
-{
-    aButton.layer.shadowColor = [[UIColor defaultAppColorScheme] darkerColor].CGColor;
-    aButton.layer.shadowRadius = 5.0f;
-    aButton.layer.shadowOpacity = 1.0f;
-    aButton.layer.shadowOffset = CGSizeZero;
-}
-
-- (void)removeShadowForButton:(UIButton *)aButton
-{
-    aButton.layer.shadowColor = [UIColor clearColor].CGColor;
-    aButton.layer.shadowRadius = 5.0f;
-    aButton.layer.shadowOpacity = 1.0f;
-    aButton.layer.shadowOffset = CGSizeZero;
 }
 
 - (void)dismissVCButtonTapped

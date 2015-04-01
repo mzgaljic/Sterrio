@@ -21,7 +21,7 @@ short const dummyTabIndex = 2;
 }
 @property (nonatomic, strong) UIView *tabBarView;  //contains the tab bar and center button - the whole visual thing.
 @property (nonatomic, strong) UITabBar *tabBar;  //this tab bar is containing within a tab bar view
-@property (nonatomic, strong) BAPulseButton *centerButton;
+@property (nonatomic, strong) SSBouncyButton *centerButton;
 @property (nonatomic, strong) UIImage *centerButtonImg;
 @property (nonatomic, strong) NSArray *navControllers;
 @property (nonatomic, strong) NSArray *viewControllers;
@@ -192,7 +192,7 @@ short const dummyTabIndex = 2;
         
         self.centerButtonImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
                                                               :[UIImage imageNamed:CENTER_BTN_IMG_NAME]];
-        self.centerButton = [[BAPulseButton alloc] init];
+        self.centerButton = [[SSBouncyButton alloc] initAsImage];
         [self.centerButton setImage:self.centerButtonImg forState:UIControlStateNormal];
         [self.centerButton setHitTestEdgeInsets:UIEdgeInsetsMake(-10, -10, -10, -10)];
         [self.centerButton addTarget:self action:@selector(centerButtonTapped) forControlEvents:UIControlEventTouchUpInside];
@@ -325,7 +325,8 @@ short const dummyTabIndex = 2;
                                 duration:(NSTimeInterval)duration
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    [self setupTabBarAndTabBarViewUsingOrientation:toInterfaceOrientation];
+    [self ensureTabBarRotatesSmoothlyToInterfaceOrientation:toInterfaceOrientation];
+    
     if([SongPlayerCoordinator isVideoPlayerExpanded]){
         self.tabBarView.alpha = 0;
         double delayInSeconds = 0.7;
@@ -337,11 +338,38 @@ short const dummyTabIndex = 2;
     }
 }
 
+- (void)ensureTabBarRotatesSmoothlyToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+    if(toInterfaceOrientation == UIInterfaceOrientationPortrait
+       || toInterfaceOrientation == UIInterfaceOrientationPortraitUpsideDown){
+        [UIView animateWithDuration:0.3
+                              delay:0
+                            options:UIViewAnimationOptionAllowAnimatedContent
+                         animations:^{
+                             [self setupTabBarAndTabBarViewUsingOrientation:toInterfaceOrientation];
+                         } completion:nil];
+    } else{
+        int originalWidth = self.tabBarView.frame.size.width;
+        [self setupTabBarAndTabBarViewUsingOrientation:toInterfaceOrientation];
+        [self.tabBarView setFrame:CGRectMake(self.tabBarView.frame.origin.x,
+                                             self.tabBarView.frame.origin.y,
+                                             originalWidth,
+                                             self.tabBarView.frame.size.height)];
+        
+        double delayInSeconds = 0.35;
+        __weak MainScreenViewController *weakSelf = self;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [UIView animateWithDuration:0.2 animations:^{
+                [weakSelf setupTabBarAndTabBarViewUsingOrientation:toInterfaceOrientation];
+            }];
+        });
+    }
+}
+
 #pragma mark - adding music to library
 - (void)centerButtonTapped
 {
-    [self.centerButton buttonPressAnimation];
-    
     UIViewController *currentVc;
     for(UIViewController *aViewController in self.viewControllers){
         if(aViewController.navigationController == self.currentNavController){

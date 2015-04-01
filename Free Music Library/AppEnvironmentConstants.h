@@ -25,6 +25,12 @@ typedef enum {
     PREVIEW_PLAYBACK_STATE_Paused
 } PREVIEW_PLAYBACK_STATE;
 
+typedef enum{
+    PLABACK_REPEAT_MODE_disabled,
+    PLABACK_REPEAT_MODE_Song,
+    PLABACK_REPEAT_MODE_All
+} PLABACK_REPEAT_MODE;
+
 @interface AppEnvironmentConstants : NSObject
 
 //runtime configuration
@@ -56,6 +62,10 @@ typedef enum {
 + (void)setPlaybackTimerActive:(BOOL)active onThreadNum:(NSInteger)threadNum;
 + (BOOL)isPlaybackTimerActive;
 + (NSInteger)threadNumOfPlaybackSleepTimerThreadWhichShouldFire;
+
++ (PLABACK_REPEAT_MODE)playbackRepeatType;
++ (void)setPlaybackRepeatType:(PLABACK_REPEAT_MODE)type;
++ (NSString *)stringRepresentationOfRepeatMode;
 
 //app settings
 + (short)preferredSizeSetting;

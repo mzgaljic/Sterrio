@@ -24,6 +24,8 @@ static BOOL userIsPreviewingAVideo = NO;
 static BOOL playbackTimerActive = NO;
 static NSInteger activePlaybackTimerThreadNum;
 
+static PLABACK_REPEAT_MODE repeatType;
+
 static PREVIEW_PLAYBACK_STATE currentPreviewPlayerState = PREVIEW_PLAYBACK_STATE_Uninitialized;
 
 static short preferredSizeValue;
@@ -148,6 +150,32 @@ static NSLock *playbackTimerLock;
 }
 
 
++ (PLABACK_REPEAT_MODE)playbackRepeatType
+{
+    return repeatType;
+}
+
++ (void)setPlaybackRepeatType:(PLABACK_REPEAT_MODE)type
+{
+    repeatType = type;
+}
+
++ (NSString *)stringRepresentationOfRepeatMode
+{
+    switch (repeatType)
+    {
+        case PLABACK_REPEAT_MODE_disabled:
+            return @"Repeat Off";
+            break;
+        case PLABACK_REPEAT_MODE_Song:
+            return @"Repeat Song";
+        case PLABACK_REPEAT_MODE_All:
+            return @"Repeat All";
+        default:
+            return @"";
+            break;
+    }
+}
 
 //app settings
 + (short)preferredSizeSetting

@@ -106,8 +106,8 @@ CG_INLINE BOOL isIPhone4()
                                                                                            supportedInterfaceOrientationsForWindow:
                                                                                                    [UIApplication sharedApplication].keyWindow];
 
-        UIBarButtonItem *sysDoneButton = [self createButtonWithType:UIBarButtonSystemItemDone target:self
-                                                             action:@selector(actionPickerDone:)];
+        
+        UIBarButtonItem *sysDoneButton = [[UIBarButtonItem alloc] initWithTitle:@"Start" style:UIBarButtonItemStyleDone target:self action:@selector(actionPickerDone:)];
 
         UIBarButtonItem *sysCancelButton = [self createButtonWithType:UIBarButtonSystemItemCancel target:self
                                                                action:@selector(actionPickerCancel:)];

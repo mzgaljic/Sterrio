@@ -81,7 +81,7 @@
     popAnimation.repeatCount=1;
     popAnimation.autoreverses=YES;
     popAnimation.fromValue=@1.0;
-    popAnimation.toValue=@1.1;
+    popAnimation.toValue=@1.2;
     [self.layer addAnimation:popAnimation forKey:@"animateOpacity"];
     
     CABasicAnimation *pulseAnimation;
@@ -89,7 +89,7 @@
     pulseAnimation.duration=.4;
     pulseAnimation.repeatCount=1;
     pulseAnimation.fromValue=@1.0;
-    pulseAnimation.toValue=@1.8;
+    pulseAnimation.toValue=@1.3;
     [pulseOutline addAnimation:pulseAnimation forKey:@"animateOpacity"];
     
     

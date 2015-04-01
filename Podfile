@@ -48,3 +48,6 @@ pod "AFNetworking"
 
 #used to create a "semi modal" segue/popup
 pod 'KNSemiModalViewController', '~> 0.3'
+
+#SSBouncyButton - a fancy animated text button with 2 states
+pod 'SSBouncyButton'
