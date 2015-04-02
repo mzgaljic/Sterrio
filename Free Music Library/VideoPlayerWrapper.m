@@ -63,17 +63,23 @@ static BOOL updatingPlayerViewDisabled = NO;
 {
     if(updatingPlayerViewDisabled)
         return;
-    
+    [CATransaction flush];
+    /*
     UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     NSUInteger playerIndex = [[appWindow subviews] indexOfObject:playerView];
     [playerView removeFromSuperview];
     [appWindow addSubview:playerView];
-    if(playerIndex != NSNotFound)
-        [appWindow insertSubview:playerView atIndex:playerIndex];
-    else
-        [appWindow insertSubview:playerView atIndex:0];
+    [UIView animateWithDuration:0.25
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction
+                     animations:^{
+                         if(playerIndex != NSNotFound)
+                             [appWindow insertSubview:playerView atIndex:playerIndex];
+                     }
+                     completion:nil];
     [playerView setNeedsDisplay];
+     */
 }
 
 + (void)temporarilyDisableUpdatingPlayerView:(BOOL)disable

@@ -196,6 +196,13 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
     return newNowPlaying.aNewSong;
 }
 
+//jumps back to index 0 in the main queue. if shuffle is on, it reshuffles before jumping to index 0.
+- (Song *)skipToBeginningOfQueueReshufflingIfNeeded
+{
+#warning incomplete implementation
+    return nil;
+}
+
 #pragma mark - DEBUG
 //crashes when queuing up an entire playlist for some reason, dont use it that way!
 - (void)printQueueContents

@@ -177,6 +177,24 @@ static NSLock *playbackTimerLock;
     }
 }
 
+//fonts
++ (NSString *)regularFontName
+{
+    return @"Ubuntu";
+}
++ (NSString *)boldFontName
+{
+    return @"Ubuntu-Bold";
+}
++ (NSString *)italicFontName
+{
+    return @"Ubuntu-Italic";
+}
++ (NSString *)boldItalicFontName
+{
+    return @"Ubuntu-BoldItalic";
+}
+
 //app settings
 + (short)preferredSizeSetting
 {

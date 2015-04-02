@@ -216,7 +216,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
     else
         headerFontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:5];
-    header.textLabel.font = [UIFont systemFontOfSize:headerFontSize];
+    header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                            size:headerFontSize];
     
     //making background clear, and then placing a blur view across the entire header (execpt the uilabel)
     UIVisualEffectView *blurEffectView;

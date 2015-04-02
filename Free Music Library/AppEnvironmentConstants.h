@@ -67,6 +67,12 @@ typedef enum{
 + (void)setPlaybackRepeatType:(PLABACK_REPEAT_MODE)type;
 + (NSString *)stringRepresentationOfRepeatMode;
 
+//fonts
++ (NSString *)regularFontName;
++ (NSString *)boldFontName;
++ (NSString *)italicFontName;
++ (NSString *)boldItalicFontName;
+
 //app settings
 + (short)preferredSizeSetting;
 + (void)setPreferredSizeSetting:(short)numUpToFive;

@@ -72,6 +72,7 @@
 + (void)newQueueWithSong:(Song *)song
              withContext:(PlaybackContext *)context;
 + (void)queueUpNextSongsWithContexts:(NSArray *)contexts;
++ (void)repeatEntireMainQueue;
 
 #pragma mark - Playback status
 + (BOOL)playbackExplicitlyPaused;

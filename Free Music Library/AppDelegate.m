@@ -46,40 +46,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [AppDelegateSetupHelper setupDiskAndMemoryWebCache];
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     
-    //set global default "AppColorScheme"
-    self.window.tintColor = [UIColor whiteColor];
-    //vibrant orange
-    [UIColor defaultAppColorScheme:Rgb2UIColor(240, 110, 50)];
-    
-    //emerald green
-    //[UIColor defaultAppColorScheme:[Rgb2UIColor(74, 153, 118) darkerColor]];
-    
-    //bright pink
-    //[UIColor defaultAppColorScheme:[Rgb2UIColor(233, 91, 152) lighterColor]];
-    
-    //regular blue
-    //[UIColor defaultAppColorScheme:Rgb2UIColor(57, 104, 190)];
-    
-    //purple
-    //[UIColor defaultAppColorScheme:Rgb2UIColor(111, 91, 164)];
-    
-    //yellow
-    //[UIColor defaultAppColorScheme:Rgb2UIColor(254, 200, 45)];
-    
-    //set cancel button color of all uisearchbars
-    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
-     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             [[UIColor defaultAppColorScheme] lighterColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
-    //set toolbar button colors
-    [[UIBarButtonItem appearanceWhenContainedIn:[UIToolbar class], nil]
-     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             [[UIColor defaultAppColorScheme] lighterColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
-    
-    //set nav bar title color of all navbars
-    NSDictionary *navbarTitleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                               [UIColor defaultWindowTintColor],NSForegroundColorAttributeName,nil];
-    
-    [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
+    [self setGlobalFontsAndColors];
     
     BOOL appLaunchedFirstTime = [AppDelegateSetupHelper appLaunchedFirstTime];
     [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime: appLaunchedFirstTime];
@@ -100,6 +67,63 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
     return YES;
+}
+
+- (void)setGlobalFontsAndColors
+{
+    //set global default "AppColorScheme"
+    self.window.tintColor = [UIColor whiteColor];
+    //vibrant orange
+    [UIColor defaultAppColorScheme:Rgb2UIColor(240, 110, 50)];
+    
+    //emerald green
+    //[UIColor defaultAppColorScheme:[Rgb2UIColor(74, 153, 118) darkerColor]];
+    //bright pink
+    //[UIColor defaultAppColorScheme:[Rgb2UIColor(233, 91, 152) lighterColor]];
+    //regular blue
+    //[UIColor defaultAppColorScheme:Rgb2UIColor(57, 104, 190)];
+    //purple
+    //[UIColor defaultAppColorScheme:Rgb2UIColor(111, 91, 164)];
+    //yellow
+    //[UIColor defaultAppColorScheme:Rgb2UIColor(254, 200, 45)];
+    
+    //cancel button color of all uisearchbars
+    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             [[UIColor defaultAppColorScheme] lighterColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
+    
+    //tab bar font
+    UIFont *tabBarFont = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                         size:10];
+    [[UITabBarItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:tabBarFont, NSFontAttributeName, nil] forState:UIControlStateNormal];
+    
+    UIFont *barButtonFonts = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:17];
+    NSDictionary *barButtonAttributes = @{
+                                        NSForegroundColorAttributeName : [UIColor defaultWindowTintColor],
+                                        NSFontAttributeName : barButtonFonts
+                                            };
+    
+    //toolbar button colors
+    [[UIBarButtonItem appearanceWhenContainedIn:[UIToolbar class], nil]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             [[UIColor defaultAppColorScheme] lighterColor],
+                             NSForegroundColorAttributeName,
+                             barButtonFonts, NSFontAttributeName, nil] forState:UIControlStateNormal];
+    
+    //nav bar attributes
+    UIFont *navBarFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:20];
+    NSDictionary *navBarTitleAttributes = @{
+                                       NSForegroundColorAttributeName : [UIColor defaultWindowTintColor],
+                                       NSFontAttributeName : navBarFont
+                                       };
+    [[UINavigationBar appearance] setTitleTextAttributes:navBarTitleAttributes];
+    [[UIBarButtonItem appearance] setTitleTextAttributes:barButtonAttributes
+                                                forState:UIControlStateNormal];
+    //search bar cancel button font
+    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTitleTextAttributes:@{NSFontAttributeName:barButtonFonts} forState:UIControlStateNormal];
+    
+    //particulary useful for alert views.
+    [[UITextField appearance] setTintColor:[UIColor darkGrayColor]];
 }
 
 - (void)setupMainVC

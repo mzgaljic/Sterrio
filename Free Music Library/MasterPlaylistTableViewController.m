@@ -389,11 +389,14 @@
     _createPlaylistAlert.alertViewStyle = SDCAlertViewStylePlainTextInput;
     _createPlaylistAlert.title = @"New Playlist";
     [_createPlaylistAlert textFieldAtIndex:0].placeholder = @"Name me";
-    UIFont *normalFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    int fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+    UIFont *normalFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:fontSize];
     _createPlaylistAlert.textFieldFont = normalFont;
     _createPlaylistAlert.normalButtonFont = normalFont;
-    _createPlaylistAlert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    _createPlaylistAlert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    _createPlaylistAlert.titleLabelFont = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                                          size:fontSize];
+    _createPlaylistAlert.suggestedButtonFont = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                                               size:fontSize];
     _createPlaylistAlert.delegate = self;  //delgate of entire alertView
     [_createPlaylistAlert addButtonWithTitle:@"Cancel"];
     [_createPlaylistAlert addButtonWithTitle:@"Create"];

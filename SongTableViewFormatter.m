@@ -54,7 +54,9 @@
     //now change the detail label
     [*aCell detailTextLabel].attributedText = [SongTableViewFormatter generateDetailLabelAttrStringWithArtistName:aSongInstance.artist.artistName
                                                                                                      andAlbumName:aSongInstance.album.albumName];
-    [*aCell detailTextLabel].font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
+    int fontSize = [PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize];
+    [*aCell detailTextLabel].font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                    size:fontSize];
 }
 
 //used when formatting for non-bold names
@@ -94,7 +96,9 @@
         return nil;
     
     NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:aString];
-    [attributedText addAttribute: NSFontAttributeName value:[UIFont boldSystemFontOfSize:fontSize] range:NSMakeRange(0, [aString length])];
+    UIFont *font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                   size:fontSize];
+    [attributedText addAttribute: NSFontAttributeName value:font range:NSMakeRange(0, [aString length])];
     return attributedText;
 }
 
@@ -122,7 +126,7 @@
         return attrString;
         
     } else if(artistString == nil && albumString == nil)
-        return [[NSAttributedString alloc] initWithString:@" "];
+        return nil;
     
     else if(artistString == nil && albumString != nil){
         NSMutableString *entireString = [NSMutableString stringWithString:albumString];
@@ -146,7 +150,7 @@
         return attrString;
 
     } else  //case should never happen
-        return [[NSAttributedString alloc] initWithString:@" "];
+        return nil;
 }
 
 @end

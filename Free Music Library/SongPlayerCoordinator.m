@@ -98,8 +98,10 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     __weak PlayerView *weakPlayerView = playerView;
     
-    [UIView animateWithDuration:0.425f
+    [UIView animateWithDuration:0.75
                           delay:0
+         usingSpringWithDamping:0.85f
+          initialSpringVelocity:1
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^{
                          if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
@@ -129,10 +131,11 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
                              view.titleLabelText = @"Song requires WiFi";
                          
                          [view manualLayoutSubviews];
-
+                         
                          CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
                                                       fromCoordinateSpace:weakPlayerView.superview];
                          [weakPlayerView newAirplayInUseMsgCenter:newCenter];
+
                      } completion:nil];
 }
 
@@ -147,8 +150,10 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
         needLandscapeFrame = NO;
     
-    [UIView animateWithDuration:0.56
+    [UIView animateWithDuration:0.56f
                           delay:0
+         usingSpringWithDamping:0.80f
+          initialSpringVelocity:0.2f
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^{
                          if(needLandscapeFrame)
@@ -156,7 +161,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
                          else
                              currentPlayerFrame = [weakSelf smallPlayerFrameInPortrait];
                          weakPlayerView.frame = currentPlayerFrame;
-
+                         
                          MRProgressOverlayView *view = (MRProgressOverlayView *)[MRProgressOverlayView overlayForView:weakPlayerView];
                          if([MusicPlaybackController isSpinnerForWifiNeededOnScreen])
                              view.titleLabelText = @"WiFi";
@@ -212,7 +217,9 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     __weak PlayerView *weakPlayerView = playerView;
     [UIView animateWithDuration:1
                           delay:0
-                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
+         usingSpringWithDamping:0.85f
+          initialSpringVelocity:1.0f
+                        options:UIViewAnimationOptionCurveLinear | UIViewAnimationOptionAllowUserInteraction
                      animations:^{
                          weakPlayerView.alpha = 1;
                      } completion:^(BOOL finished) {

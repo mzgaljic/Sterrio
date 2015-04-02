@@ -4,12 +4,7 @@
 
 #import "SWActionSheet.h"
 
-
-static const float delay = 0.f;
-
-static const float duration = .25f;
-
-static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEaseIn;
+static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction;
 
 
 @interface SWActionSheetVC : UIViewController
@@ -57,7 +52,13 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
     };
     // Do actions animated or not
     if (animated) {
-        [UIView animateWithDuration:duration delay:delay options:options animations:actions completion:completion];
+        [UIView animateWithDuration:1.2
+                              delay:0
+             usingSpringWithDamping:0.6
+              initialSpringVelocity:0.1
+                            options:options
+                         animations:actions
+                         completion:completion];
     } else {
         actions();
         completion(YES);
@@ -117,8 +118,9 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
 
 - (void)configureFrameForBounds:(CGRect)bounds
 {
-    self.frame = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height + view.bounds.size.height);
-    view.frame = CGRectMake(view.bounds.origin.x, bounds.size.height, view.bounds.size.width, view.bounds.size.height);
+    int verticalBottomBouncePadding = 80;
+    self.frame = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height + view.bounds.size.height + verticalBottomBouncePadding);
+    view.frame = CGRectMake(view.bounds.origin.x, bounds.size.height + 80, view.bounds.size.width, view.bounds.size.height + verticalBottomBouncePadding);
     view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
     _bgView.frame = view.frame;
     _bgView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -145,14 +147,23 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
     CGPoint toPoint;
     CGFloat y = self.center.y - CGRectGetHeight(view.frame);
     toPoint = CGPointMake(self.center.x, y);
+    
     // Present actions
     void (^animations)() = ^{
         self.center = toPoint;
         self.backgroundColor = [UIColor colorWithWhite:0.f alpha:0.5f];
     };
     // Present sheet
-    if (animated)
-        [UIView animateWithDuration:duration delay:delay options:options animations:animations completion:nil];
+    if (animated){
+        //stuff is here
+        [UIView animateWithDuration:0.45
+                              delay:0
+             usingSpringWithDamping:0.70
+              initialSpringVelocity:0.1
+                            options:options
+                         animations:animations
+                         completion:nil];
+    }
     else
         animations();
     self.presented = YES;

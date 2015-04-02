@@ -16,6 +16,7 @@
 + (float)actualDetailLabelFontSizeFromCurrentPreferredSize;
 
 + (float)actualCellHeightFromCurrentPreferredSize;
++ (float)hypotheticalCellHeightForPreferredSize:(int)aSize;
 + (CGSize)actualAlbumArtSizeFromCurrentPreferredSize;
 
 @end

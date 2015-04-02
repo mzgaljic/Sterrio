@@ -79,11 +79,15 @@ const int ALBUM_HEADER_HEIGHT = 120;
         cell = [[MZTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                       reuseIdentifier:self.cellReuseId];
     cell.textLabel.text = aSong.songName;
-    cell.textLabel.font = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    
+    int fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+    cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                          size:fontSize];
     
     NSUInteger duration = [aSong.duration integerValue];
     cell.detailTextLabel.text = [self convertSecondsToPrintableNSStringWithSeconds:duration];
-    cell.detailTextLabel.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    cell.detailTextLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                size:fontSize];
     
     NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
     BOOL isNowPlaying = [nowPlayingObj isEqualToSong:aSong

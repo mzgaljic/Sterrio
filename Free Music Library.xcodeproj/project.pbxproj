@@ -110,6 +110,20 @@
 		879112FF197EF90E00DFC2DB /* PlaylistTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 879112FE197EF90E00DFC2DB /* PlaylistTableViewFormatter.m */; };
 		879AB33D19F1D2E100FD6582 /* PlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 879AB33C19F1D2E100FD6582 /* PlaybackQueue.m */; };
 		879AB34119F225F300FD6582 /* SongPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 879AB34019F225F300FD6582 /* SongPlayerViewController.m */; };
+		87A04C781ACC6C90007C9245 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 87A04C771ACC6C90007C9245 /* LaunchScreen.storyboard */; };
+		87A04C8F1ACCA81B007C9245 /* Ubuntu.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 87A04C8E1ACCA81B007C9245 /* Ubuntu.ttf */; };
+		87A04C911ACCA823007C9245 /* Ubuntu-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 87A04C901ACCA823007C9245 /* Ubuntu-Bold.ttf */; };
+		87A04C931ACCAA1C007C9245 /* Ubuntu-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 87A04C921ACCAA1C007C9245 /* Ubuntu-Italic.ttf */; };
+		87A04C951ACCAA2B007C9245 /* Ubuntu-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 87A04C941ACCAA2B007C9245 /* Ubuntu-BoldItalic.ttf */; };
+		87A04C9D1ACCAB96007C9245 /* CONTRIBUTING_ubuntu.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A04C961ACCAB96007C9245 /* CONTRIBUTING_ubuntu.txt */; };
+		87A04C9E1ACCAB96007C9245 /* copyright_ubuntu.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A04C971ACCAB96007C9245 /* copyright_ubuntu.txt */; };
+		87A04C9F1ACCAB96007C9245 /* FONTLOG_ubuntu.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A04C981ACCAB96007C9245 /* FONTLOG_ubuntu.txt */; };
+		87A04CA01ACCAB96007C9245 /* LICENCE-FAQ_ubuntu.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A04C991ACCAB96007C9245 /* LICENCE-FAQ_ubuntu.txt */; };
+		87A04CA11ACCAB96007C9245 /* LICENCE_ubuntu.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A04C9A1ACCAB96007C9245 /* LICENCE_ubuntu.txt */; };
+		87A04CA21ACCAB96007C9245 /* README_ubuntu.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A04C9B1ACCAB96007C9245 /* README_ubuntu.txt */; };
+		87A04CA31ACCAB96007C9245 /* TRADEMARKS_ubuntu.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A04C9C1ACCAB96007C9245 /* TRADEMARKS_ubuntu.txt */; };
+		87A04CAA1ACCDDCE007C9245 /* IBActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A04CA81ACCDDCE007C9245 /* IBActionSheet.m */; };
+		87A04CAB1ACCDDCE007C9245 /* LICENSE_IBActionSheet.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A04CA91ACCDDCE007C9245 /* LICENSE_IBActionSheet.txt */; };
 		87A0FD8A197DCEDF008FBBF7 /* AlbumTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FD89197DCEDF008FBBF7 /* AlbumTableViewFormatter.m */; };
 		87A0FD91197DD594008FBBF7 /* PreferredFontSizeUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FD90197DD594008FBBF7 /* PreferredFontSizeUtility.m */; };
 		87A0FDD2197DFA2C008FBBF7 /* ArtistTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FDD1197DFA2C008FBBF7 /* ArtistTableViewFormatter.m */; };
@@ -385,6 +399,21 @@
 		879AB33C19F1D2E100FD6582 /* PlaybackQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaybackQueue.m; sourceTree = "<group>"; };
 		879AB33F19F225F300FD6582 /* SongPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SongPlayerViewController.h; sourceTree = "<group>"; };
 		879AB34019F225F300FD6582 /* SongPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SongPlayerViewController.m; sourceTree = "<group>"; };
+		87A04C771ACC6C90007C9245 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		87A04C8E1ACCA81B007C9245 /* Ubuntu.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ubuntu.ttf; sourceTree = "<group>"; };
+		87A04C901ACCA823007C9245 /* Ubuntu-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Ubuntu-Bold.ttf"; sourceTree = "<group>"; };
+		87A04C921ACCAA1C007C9245 /* Ubuntu-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Ubuntu-Italic.ttf"; sourceTree = "<group>"; };
+		87A04C941ACCAA2B007C9245 /* Ubuntu-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Ubuntu-BoldItalic.ttf"; sourceTree = "<group>"; };
+		87A04C961ACCAB96007C9245 /* CONTRIBUTING_ubuntu.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CONTRIBUTING_ubuntu.txt; sourceTree = "<group>"; };
+		87A04C971ACCAB96007C9245 /* copyright_ubuntu.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = copyright_ubuntu.txt; sourceTree = "<group>"; };
+		87A04C981ACCAB96007C9245 /* FONTLOG_ubuntu.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = FONTLOG_ubuntu.txt; sourceTree = "<group>"; };
+		87A04C991ACCAB96007C9245 /* LICENCE-FAQ_ubuntu.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "LICENCE-FAQ_ubuntu.txt"; sourceTree = "<group>"; };
+		87A04C9A1ACCAB96007C9245 /* LICENCE_ubuntu.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENCE_ubuntu.txt; sourceTree = "<group>"; };
+		87A04C9B1ACCAB96007C9245 /* README_ubuntu.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README_ubuntu.txt; sourceTree = "<group>"; };
+		87A04C9C1ACCAB96007C9245 /* TRADEMARKS_ubuntu.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TRADEMARKS_ubuntu.txt; sourceTree = "<group>"; };
+		87A04CA71ACCDDCE007C9245 /* IBActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IBActionSheet.h; sourceTree = "<group>"; };
+		87A04CA81ACCDDCE007C9245 /* IBActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IBActionSheet.m; sourceTree = "<group>"; };
+		87A04CA91ACCDDCE007C9245 /* LICENSE_IBActionSheet.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE_IBActionSheet.txt; sourceTree = "<group>"; };
 		87A0FD88197DCEDF008FBBF7 /* AlbumTableViewFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumTableViewFormatter.h; sourceTree = "<group>"; };
 		87A0FD89197DCEDF008FBBF7 /* AlbumTableViewFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumTableViewFormatter.m; sourceTree = "<group>"; };
 		87A0FD8F197DD594008FBBF7 /* PreferredFontSizeUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferredFontSizeUtility.h; sourceTree = "<group>"; };
@@ -740,7 +769,9 @@
 		87480D9C192C1FBD005CC0A4 = {
 			isa = PBXGroup;
 			children = (
+				87A04C871ACC9BCD007C9245 /* Fonts */,
 				87BD42A219CD1A4C005ED8CD /* Free Music Library.entitlements */,
+				87A04C771ACC6C90007C9245 /* LaunchScreen.storyboard */,
 				87DD2A2A1A74B5F60014E115 /* Main.storyboard */,
 				87480DB7192C1FBD005CC0A4 /* AppDelegate.h */,
 				87480DB8192C1FBD005CC0A4 /* AppDelegate.m */,
@@ -1126,6 +1157,50 @@
 			name = "AVPlayer (Player) interaction";
 			sourceTree = "<group>";
 		};
+		87A04C871ACC9BCD007C9245 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				87A04CA41ACCABAB007C9245 /* Ubuntu */,
+			);
+			name = Fonts;
+			sourceTree = "<group>";
+		};
+		87A04CA41ACCABAB007C9245 /* Ubuntu */ = {
+			isa = PBXGroup;
+			children = (
+				87A04CA51ACCABB4007C9245 /* License stuff */,
+				87A04C941ACCAA2B007C9245 /* Ubuntu-BoldItalic.ttf */,
+				87A04C921ACCAA1C007C9245 /* Ubuntu-Italic.ttf */,
+				87A04C901ACCA823007C9245 /* Ubuntu-Bold.ttf */,
+				87A04C8E1ACCA81B007C9245 /* Ubuntu.ttf */,
+			);
+			name = Ubuntu;
+			sourceTree = "<group>";
+		};
+		87A04CA51ACCABB4007C9245 /* License stuff */ = {
+			isa = PBXGroup;
+			children = (
+				87A04C961ACCAB96007C9245 /* CONTRIBUTING_ubuntu.txt */,
+				87A04C971ACCAB96007C9245 /* copyright_ubuntu.txt */,
+				87A04C981ACCAB96007C9245 /* FONTLOG_ubuntu.txt */,
+				87A04C991ACCAB96007C9245 /* LICENCE-FAQ_ubuntu.txt */,
+				87A04C9A1ACCAB96007C9245 /* LICENCE_ubuntu.txt */,
+				87A04C9B1ACCAB96007C9245 /* README_ubuntu.txt */,
+				87A04C9C1ACCAB96007C9245 /* TRADEMARKS_ubuntu.txt */,
+			);
+			name = "License stuff";
+			sourceTree = "<group>";
+		};
+		87A04CA61ACCDDCE007C9245 /* IBActionSheet */ = {
+			isa = PBXGroup;
+			children = (
+				87A04CA71ACCDDCE007C9245 /* IBActionSheet.h */,
+				87A04CA81ACCDDCE007C9245 /* IBActionSheet.m */,
+				87A04CA91ACCDDCE007C9245 /* LICENSE_IBActionSheet.txt */,
+			);
+			path = IBActionSheet;
+			sourceTree = "<group>";
+		};
 		87A0FD93197DD932008FBBF7 /* Song Formatter */ = {
 			isa = PBXGroup;
 			children = (
@@ -1166,6 +1241,7 @@
 		87A453A0199C0825004D1319 /* Imported Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				87A04CA61ACCDDCE007C9245 /* IBActionSheet */,
 				87F686931AC9F48800EFF1E0 /* SkyWinder ActionSheetPicker */,
 				87A1208E1ABA259F00250B2C /* JNExpandableTableView */,
 				874DA05E1ABA11DD003D69D6 /* MRProgress */,
@@ -1540,15 +1616,28 @@
 				87A453D2199C0891004D1319 /* Overlay.png in Resources */,
 				87A453CF199C0891004D1319 /* ELCAlbumPickerController.xib in Resources */,
 				87A453D3199C0891004D1319 /* Overlay@2x.png in Resources */,
+				87A04C9D1ACCAB96007C9245 /* CONTRIBUTING_ubuntu.txt in Resources */,
+				87A04C931ACCAA1C007C9245 /* Ubuntu-Italic.ttf in Resources */,
+				87A04CA01ACCAB96007C9245 /* LICENCE-FAQ_ubuntu.txt in Resources */,
 				87A120931ABA259F00250B2C /* LICENSE1.txt in Resources */,
+				87A04C9F1ACCAB96007C9245 /* FONTLOG_ubuntu.txt in Resources */,
 				87DD2A2B1A74B5F60014E115 /* Main.storyboard in Resources */,
 				87480DC4192C1FBD005CC0A4 /* Images.xcassets in Resources */,
+				87A04CA11ACCAB96007C9245 /* LICENCE_ubuntu.txt in Resources */,
+				87A04C911ACCA823007C9245 /* Ubuntu-Bold.ttf in Resources */,
 				876210471AB6362200CCBDA9 /* LICENSE2.txt in Resources */,
+				87A04C9E1ACCAB96007C9245 /* copyright_ubuntu.txt in Resources */,
 				87A453D9199C0891004D1319 /* README_multi image picker.txt in Resources */,
 				87BD42A319CD1A4C005ED8CD /* Free Music Library.entitlements in Resources */,
+				87A04CA21ACCAB96007C9245 /* README_ubuntu.txt in Resources */,
+				87A04C8F1ACCA81B007C9245 /* Ubuntu.ttf in Resources */,
+				87A04CA31ACCAB96007C9245 /* TRADEMARKS_ubuntu.txt in Resources */,
+				87A04CAB1ACCDDCE007C9245 /* LICENSE_IBActionSheet.txt in Resources */,
+				87A04C781ACC6C90007C9245 /* LaunchScreen.storyboard in Resources */,
 				87480DB3192C1FBD005CC0A4 /* InfoPlist.strings in Resources */,
 				87A453D0199C0891004D1319 /* ELCAssetPicker.xib in Resources */,
 				87A453D1199C0891004D1319 /* ELCAssetTablePicker.xib in Resources */,
+				87A04C951ACCAA2B007C9245 /* Ubuntu-BoldItalic.ttf in Resources */,
 				872EA4DE1A54CAAB00F8EE9D /* iOSDeviceModelMapping.plist in Resources */,
 				874DA08F1ABA11DD003D69D6 /* README.txt in Resources */,
 				87D16D621931B7EE00DB6A34 /* Podfile in Resources */,
@@ -1709,6 +1798,7 @@
 				87124B9E19A3C392003D29CD /* SongModelHandler.m in Sources */,
 				87FA13721A99601400A1902F /* DetermineVideoPlayableOperation.m in Sources */,
 				87FB3A6C1A5A4682006F3163 /* YouTubeSongAdderViewController.m in Sources */,
+				87A04CAA1ACCDDCE007C9245 /* IBActionSheet.m in Sources */,
 				87ECAFC81AAEB21F00C527B9 /* MZPrivateMainPlaybackQueue.m in Sources */,
 				87449AF419971A58009F01EA /* AppDelegateSetupHelper.m in Sources */,
 				872EA4E11A54CAF200F8EE9D /* UIDevice+DeviceName.m in Sources */,

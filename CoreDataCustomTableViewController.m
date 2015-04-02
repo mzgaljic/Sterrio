@@ -192,6 +192,19 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     }
 }
 
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
+    UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
+    if([header respondsToSelector:@selector(textLabel)]){
+        int headerFontSize;
+        if([AppEnvironmentConstants preferredSizeSetting] < 5)
+            headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+        else
+            headerFontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:5];
+        header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                size:headerFontSize];
+    }
+}
+
 #pragma  mark - TableView helpers
 - (UIView *)friendlyTableEmptyUserMessageWithText:(NSString *)text
 {
@@ -306,10 +319,6 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     self.navigationController.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
     //set nav bar title color and transparency
     self.navigationController.navigationBar.translucent = YES;
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObject:[UIColor defaultWindowTintColor]
-                        forKey:UITextAttributeTextColor]];
-#pragma clang diagnostic warning "-Wdeprecated-declarations"
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;  //makes status bar text light and readable
     
     //hides empty cells at the end

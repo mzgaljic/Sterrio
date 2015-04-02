@@ -247,6 +247,13 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     }
 }
 
++ (void)repeatEntireMainQueue
+{
+    Song *originalSong = [MusicPlaybackController nowPlayingSong];
+    Song *firstSong = [[MZPlaybackQueue sharedInstance] skipToBeginningOfQueueReshufflingIfNeeded];
+    [VideoPlayerWrapper startPlaybackOfSong:firstSong goingForward:YES oldSong:originalSong];
+}
+
 #pragma mark - Playback status
 + (BOOL)playbackExplicitlyPaused
 {

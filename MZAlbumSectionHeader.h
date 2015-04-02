@@ -11,6 +11,7 @@
 #import "Song.h"
 #import "AlbumArtUtilities.h"
 #import "UIImage+colorImages.h"
+#import "AppEnvironmentConstants.h"
 
 @interface MZAlbumSectionHeader : UIView
 

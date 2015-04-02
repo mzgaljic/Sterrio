@@ -61,14 +61,10 @@ NSString * const CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update
 NSString * const CURRENT_SONG_STOPPED_PLAYBACK = @"playback has stopped for some unknown reason (stall?)";
 NSString * const CURRENT_SONG_RESUMED_PLAYBACK = @"playback has resumed from a stall probably";
 
-NSString * const PAUSE_IMAGE_FILLED = @"Pause-Filled";
-NSString * const PAUSE_IMAGE_UNFILLED = @"Pause-Line";
-NSString * const PLAY_IMAGE_FILLED = @"Play-Filled";
-NSString * const PLAY_IMAGE_UNFILLED = @"Play-Line";
-NSString * const FORWARD_IMAGE_FILLED = @"Seek-Filled";
-NSString * const FORWARD_IMAGE_UNFILLED = @"Seek-Line";
-NSString * const BACKWARD_IMAGE_FILLED = @"Backward-Filled";
-NSString * const BACKWARD_IMAGE_UNFILLED = @"Backward-Line";
+NSString * const PAUSE_IMAGE = @"Pause";
+NSString * const PLAY_IMAGE = @"Play";
+NSString * const FORWARD_IMAGE = @"Forward";
+NSString * const BACKWARD_IMAGE = @"Backward";
 
 NSString * const TIMER_INACTIVE = @"timer_inactive";
 NSString * const TIMER_ACTIVE = @"timer_active";
@@ -469,7 +465,9 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
         [MusicPlaybackController explicitlyPausePlayback:NO];
     }
     playAfterMovingSlider = YES;  //reset value
+    
     [sliderHint hideAnimated];
+    
     [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlaying];
     [self playerControlsShouldBeUpdated];
     
@@ -703,13 +701,13 @@ static int accomodateInterfaceLabelsCounter = 0;
     
     //want to make the gui respect the current playback state here
     if(player.rate == 1){
-        UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
-        UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];
-        [playButton setImage:pauseFilled forState:UIControlStateNormal];
+        UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE];
+        UIImage *pauseImg = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];
+        [playButton setImage:pauseImg forState:UIControlStateNormal];
     } else{
-        UIImage *tempImage = [UIImage imageNamed:PLAY_IMAGE_FILLED];
-        UIImage *playFilled = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];
-        [playButton setImage:playFilled forState:UIControlStateNormal];
+        UIImage *tempImage = [UIImage imageNamed:PLAY_IMAGE];
+        UIImage *playImg = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];
+        [playButton setImage:playImg forState:UIControlStateNormal];
     }
     
     [self displayTotalSliderAndLabelDuration];
@@ -732,10 +730,10 @@ static int accomodateInterfaceLabelsCounter = 0;
     else
         [_playbackSlider setValue:0];
     waitingForNextOrPrevVideoToLoad = NO;
-    UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
-    UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];
+    UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE];
+    UIImage *pauseImg = [UIImage colorOpaquePartOfImage:[UIColor blackColor] :tempImage];
     
-    [playButton setImage:pauseFilled forState:UIControlStateNormal];
+    [playButton setImage:pauseImg forState:UIControlStateNormal];
     [MusicPlaybackController explicitlyPausePlayback:NO];
     [MusicPlaybackController resumePlayback];
     
@@ -750,6 +748,8 @@ static int accomodateInterfaceLabelsCounter = 0;
     forwardButton = [[SSBouncyButton alloc] initAsImage];
     timerButton = [[SSBouncyButton alloc] initAsImage];
     repeatModeButton = [[SSBouncyButton alloc] init];
+    repeatModeButton.titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                       size:repeatModeButton.titleLabel.font.pointSize];
     
     
     [backwardButton addTarget:self
@@ -811,64 +811,56 @@ static int accomodateInterfaceLabelsCounter = 0;
         [aButton setHitTestEdgeInsets:UIEdgeInsetsMake(-15, -15, -15, -15)];
     }
     
-    float imgScaleFactor = 1.4f;
     float percentDownScreen = 0.84f;
+    float yValue, xValue;
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     CGFloat screenHeight = screenRect.size.height;
     CGFloat screenWidth = screenRect.size.width;
     
     UIColor *buttonTint = [UIColor blackColor];
-    float yValue, xValue;
+    
     //play button or pause button
-    if([MusicPlaybackController obtainRawAVPlayer].rate == 0){
-        UIImage *playFilled = [UIImage colorOpaquePartOfImage:buttonTint
-                                                             :[UIImage imageNamed:PLAY_IMAGE_FILLED]];
-        
-        float playButtonWidth = playFilled.size.width * imgScaleFactor;
-        float playButtonHeight = playFilled.size.height * imgScaleFactor;
-        yValue = ceil(screenHeight * percentDownScreen);  //want the play button to be 84% of the way down the screen
-        //want play button to be in the middle of the screen horizontally
-        xValue = (screenWidth * 0.5) - (playButtonWidth/2);
-        playButton.frame = CGRectMake(xValue +0, yValue, playButtonWidth, playButtonHeight);
-        [playButton setImage:playFilled forState:UIControlStateNormal];
-    } else{
-        UIImage *playFilled = [UIImage colorOpaquePartOfImage:buttonTint
-                                                             :[UIImage imageNamed:PAUSE_IMAGE_FILLED]];
-        
-        float playButtonWidth = playFilled.size.width * imgScaleFactor;
-        float playButtonHeight = playFilled.size.height * imgScaleFactor;
-        yValue = ceil(screenHeight * percentDownScreen);  //want the play button to be 84% of the way down the screen
-        //want play button to be in the middle of the screen horizontally
-        xValue = (screenWidth * 0.5) - (playButtonWidth/2);
-        playButton.frame = CGRectMake(xValue +1, yValue, playButtonWidth, playButtonHeight);
-        [playButton setImage:playFilled forState:UIControlStateNormal];
-    }
+    UIImage *playBtnImage;
+    if([MusicPlaybackController obtainRawAVPlayer].rate == 0)
+        playBtnImage = [UIImage colorOpaquePartOfImage:buttonTint
+                                                      :[UIImage imageNamed:PLAY_IMAGE]];
+    else
+        playBtnImage = [UIImage colorOpaquePartOfImage:buttonTint
+                                                      :[UIImage imageNamed:PAUSE_IMAGE]];
+    
+    [playButton setImage:playBtnImage forState:UIControlStateNormal];
+    float playButtonWidth = playBtnImage.size.width;
+    float playButtonHeight = playBtnImage.size.height;
+    //want the play button to be 84% of the way down the screen
+    yValue = round(screenHeight * percentDownScreen);
+    
+    //+1 is just for visual offset. code is perfect without it but the +1 makes it FEEL better.
+    xValue = (screenWidth/2) - (playButtonWidth/2)+1;
+    playButton.frame = CGRectMake(xValue, yValue, playButtonWidth, playButtonHeight);
     
     //seek backward button
-    UIImage *backFilled = [UIImage colorOpaquePartOfImage:buttonTint
-                                                         :[UIImage imageNamed:BACKWARD_IMAGE_FILLED]];
+    UIImage *backImg = [UIImage colorOpaquePartOfImage:buttonTint
+                                                      :[UIImage imageNamed:BACKWARD_IMAGE]];
     
-    float backwardButtonWidth = backFilled.size.width * imgScaleFactor;
-    float backwardButtonHeight = backFilled.size.height * imgScaleFactor;
+    float backwardButtonWidth = backImg.size.width;
+    float backwardButtonHeight = backImg.size.height;
     //will be in between the play button and left side of screen
-    xValue = (((screenWidth /2) - ((screenWidth /2) /2)) - backwardButtonWidth/2);
-    //middle y value in the center of the play button
-    float middlePointVertically = playButton.center.y;
-    yValue = (middlePointVertically - (backFilled.size.height/1.5));
+    xValue = ((screenWidth/2)/2) - backwardButtonWidth/2;
+    yValue = playButton.center.y - backwardButtonHeight/2;
     backwardButton.frame = CGRectMake(xValue-3, yValue -1, backwardButtonWidth, backwardButtonHeight);
-    [backwardButton setImage:backFilled forState:UIControlStateNormal];
+    [backwardButton setImage:backImg forState:UIControlStateNormal];
     
     //seek forward button
-    UIImage *forwardFilled = [UIImage colorOpaquePartOfImage:buttonTint
-                                                            :[UIImage imageNamed:FORWARD_IMAGE_FILLED]];
+    UIImage *forwardImg = [UIImage colorOpaquePartOfImage:buttonTint
+                                                         :[UIImage imageNamed:FORWARD_IMAGE]];
     
-    float forwardButtonWidth = forwardFilled.size.width * imgScaleFactor;
-    float forwardButtonHeight = forwardFilled.size.height * imgScaleFactor;
+    float forwardButtonWidth = forwardImg.size.width;
+    float forwardButtonHeight = forwardImg.size.height;
     //will be in between the play button and right side of screen
-    xValue = (((screenWidth /2) + ((screenWidth /2) /2)) - forwardButtonWidth/2);
-    yValue = (middlePointVertically - (forwardFilled.size.height/1.5));
+    xValue = ((screenWidth /2) + ((screenWidth/2)/2) - forwardButtonWidth/2);
+    yValue = playButton.center.y - forwardButtonHeight/2;
     forwardButton.frame = CGRectMake(xValue +3, yValue -1, forwardButtonWidth, forwardButtonHeight);
-    [forwardButton setImage:forwardFilled forState:UIControlStateNormal];
+    [forwardButton setImage:forwardImg forState:UIControlStateNormal];
     
     //timer button
     NSString *btnImgName;
@@ -963,7 +955,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     _artistAndAlbumLabel.scrollDuration = duration;
     _songNameLabel.fadeLength = 6.0f;
     _artistAndAlbumLabel.fadeLength = 6.0f;
-    UIFont *font = [UIFont fontWithName:@"HelveticaNeue-Light"
+    UIFont *font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                    size:songNameFontSize];
     _songNameLabel.font = font;
     _artistAndAlbumLabel.font = font;
@@ -1070,7 +1062,7 @@ static int accomodateInterfaceLabelsCounter = 0;
 #pragma mark - Playback Time Slider
 - (void)positionPlaybackSliderOnScreen
 {
-    NSString *nameOfFontForTimeLabels = @"HelveticaNeue-Medium";
+    NSString *nameOfFontForTimeLabels = [AppEnvironmentConstants regularFontName];
     short timeLabelFontSize = _currentTimeLabel.font.pointSize;
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
@@ -1204,7 +1196,7 @@ static BOOL goingToAnimateTimerPicker = NO;
     }
     
     goingToAnimateTimerPicker = YES;
-    [self performSelector:@selector(showTimerPicker) withObject:nil afterDelay:0.4];
+    [self performSelector:@selector(showTimerPicker) withObject:nil afterDelay:0.25];
 }
 
 - (void)showTimerPicker
@@ -1224,10 +1216,12 @@ static BOOL goingToAnimateTimerPicker = NO;
                                          }
                                          [weakself startPlaybackTimerWithSeconds:timeInterval];
                                          userReplacingExistingTimer = NO;
+                                         picker = nil;
                                          
                                      } cancelBlock:^(ActionSheetDatePicker *picker) {
                                          [weakself resetPlayerViewStateAfterPickerDismiss];
                                          userReplacingExistingTimer = NO;
+                                         picker = nil;
                                      }
                                         origin:self.view];
     goingToAnimateTimerPicker = NO;
@@ -1405,25 +1399,48 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
 {
     UIColor *color = [UIColor blackColor];
     UIImage *tempImage;
+    UIImage *newBtnImage;
     if([MusicPlaybackController obtainRawAVPlayer].rate == 0)  //currently paused, resume..
     {
-        tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
-        UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:color :tempImage];
-        
-        [playButton setImage:pauseFilled forState:UIControlStateNormal];
+        tempImage = [UIImage imageNamed:PAUSE_IMAGE];
+        newBtnImage = [UIImage colorOpaquePartOfImage:color :tempImage];
         [MusicPlaybackController explicitlyPausePlayback:NO];
         [MusicPlaybackController resumePlayback];
     }
     else  //playing now, pause..
     {
-        tempImage = [UIImage imageNamed:PLAY_IMAGE_FILLED];
-        UIImage *playFilled = [UIImage colorOpaquePartOfImage:color :tempImage];
-        
-        [playButton setImage:playFilled forState:UIControlStateNormal];
+        tempImage = [UIImage imageNamed:PLAY_IMAGE];
+        newBtnImage = [UIImage colorOpaquePartOfImage:color :tempImage];
         [MusicPlaybackController explicitlyPausePlayback:YES];
         [MusicPlaybackController pausePlayback];
     }
     playButton.enabled = YES;
+    [self performSelector:@selector(changePlayButtonImageTo:) withObject:newBtnImage afterDelay:0.3];
+    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlaying];
+}
+
+- (void)changePlayButtonImageTo:(UIImage *)newBtnImage
+{
+    [playButton setImage:newBtnImage forState:UIControlStateNormal];
+    int screenWidth = [UIScreen mainScreen].bounds.size.width;
+    int screenHeight = [UIScreen mainScreen].bounds.size.height;
+    
+    //+1 is just for visual offset. code is perfect without it but the +1 makes it FEEL better.
+    int xOrig = (screenWidth/2) - (newBtnImage.size.width/2) +1;
+    //want the play button to be 84% of the way down the screen
+    int yOrig = round(screenHeight * 0.84);
+
+    //y orig can remain the same, both play & pause images are same height
+    [UIView animateWithDuration:0.2
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent
+                     animations:^{
+                         [playButton setFrame:CGRectMake(xOrig,
+                                                         yOrig,
+                                                         newBtnImage.size.width,
+                                                         newBtnImage.size.height)];
+                     }
+                     completion:nil];
 }
 
 //FORWARD BUTTON
@@ -1443,9 +1460,9 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
     if(stateOfGUIPlayback == GUIPlaybackStatePlaying ||
        (stateOfGUIPlayback == GUIPlaybackStatePaused && [MusicPlaybackController isPlayerStalled])){
         UIColor *color = [UIColor blackColor];
-        UIImage *tempImage = [UIImage imageNamed:PLAY_IMAGE_FILLED];
-        UIImage *playFilled = [UIImage colorOpaquePartOfImage:color :tempImage];
-        [playButton setImage:playFilled forState:UIControlStateNormal];
+        UIImage *tempImage = [UIImage imageNamed:PLAY_IMAGE];
+        UIImage *playImg = [UIImage colorOpaquePartOfImage:color :tempImage];
+        [self changePlayButtonImageTo:playImg];
     }
     stateOfGUIPlayback = GUIPlaybackStatePaused;
 }
@@ -1459,9 +1476,9 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
     
     if(stateOfGUIPlayback == GUIPlaybackStatePaused && ![MusicPlaybackController isPlayerStalled]){
         UIColor *color = [UIColor blackColor];
-        UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE_FILLED];
-        UIImage *pauseFilled = [UIImage colorOpaquePartOfImage:color :tempImage];
-        [playButton setImage:pauseFilled forState:UIControlStateNormal];
+        UIImage *tempImage = [UIImage imageNamed:PAUSE_IMAGE];
+        UIImage *pauseImg = [UIImage colorOpaquePartOfImage:color :tempImage];
+        [self changePlayButtonImageTo:pauseImg];
     }
     if(![MusicPlaybackController isPlayerStalled])
         stateOfGUIPlayback = GUIPlaybackStatePlaying;
@@ -1569,8 +1586,9 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
         
         NSArray *activityItems = [NSArray arrayWithObjects:shareString, nil];
         
-        __block UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems
-                                                                                         applicationActivities:nil];
+        __block UIActivityViewController *activityVC = [[UIActivityViewController alloc]
+                                                        initWithActivityItems:activityItems
+                                                        applicationActivities:nil];
         __weak UIActivityViewController *weakActivityVC = activityVC;
         __weak SongPlayerViewController *weakSelf = self;
         
@@ -1582,12 +1600,11 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
         [activityVC.view setTintColor:[UIColor defaultAppColorScheme]];
         
         [self removeObservers];
+        
         [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
             //finish your code when the user finish or dismiss...
             [weakSelf restoreTimeObserver];
         }];
-        
-        
         [self presentViewController:activityVC
                            animated:YES
                          completion:^{

@@ -9,6 +9,9 @@
 #import "SettingsTableViewController.h"
 
 @interface SettingsTableViewController ()
+{
+    IBActionSheet *popup;
+}
 @property (nonatomic, strong) SDCAlertView *alertView;
 @property (nonatomic, strong) UIImage *attachmentImage;
 @property (nonatomic, strong) NSMutableArray *attachmentUIImages;
@@ -240,6 +243,10 @@ static const int CELL_STREAM_PICKER_TAG = 107;
             }
         }
     }
+    cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                          size:cell.textLabel.font.pointSize];
+    cell.detailTextLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                size:cell.detailTextLabel.font.pointSize];
     return cell;
 }
 
@@ -264,13 +271,91 @@ static const int CELL_STREAM_PICKER_TAG = 107;
             [self launchAlertViewWithPicker:FONT_SIZE_PICKER_TAG];
         }
     } else if(indexPath.section == 4){
+        /*
         UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:@"Compose Email" delegate:self cancelButtonTitle:@"Cancel"
                                              destructiveButtonTitle:nil otherButtonTitles:@"Attach Screenshot(s)",
                                 @"Regular Email", nil];
-        popup.tag = 1;
-        [popup showInView:[self.navigationController view]];
+         */
+        __weak SettingsTableViewController *weakself = self;
+        popup = [[IBActionSheet alloc] initWithTitle:@"Testing"
+                                            callback:^(IBActionSheet *actionSheet, NSInteger buttonIndex){
+                                                [weakself handleActionClickWithButtonIndex:buttonIndex];
+                                            } cancelButtonTitle:@"Cancel"
+                              destructiveButtonTitle:nil
+                                   otherButtonTitles:@"Attach Screenshot(s)", @"Regular Email", nil];
+        
+        for(UIButton *aButton in popup.buttons){
+            aButton.titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                      size:20];
+        }
+        [popup setButtonTextColor:[UIColor defaultAppColorScheme]];
+        [popup setTitleTextColor:[UIColor darkGrayColor]];
+        [popup setCancelButtonFont:[UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                                   size:20]];
+        [popup setTitleFont:[UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18]];
+        [popup showInView:[UIApplication sharedApplication].keyWindow];
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
+    UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
+    int headerFontSize;
+    int prefSize = [AppEnvironmentConstants preferredSizeSetting];
+    if(prefSize < 5 && prefSize > 2)
+        headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+    else
+        headerFontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:4];
+    header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                            size:headerFontSize];
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayFooterView:(UIView *)view forSection:(NSInteger)section
+{
+    UITableViewHeaderFooterView *footer = (UITableViewHeaderFooterView *)view;
+
+    int footerFontSize;
+    int prefSize = [AppEnvironmentConstants preferredSizeSetting];
+    if(prefSize < 4 && prefSize > 2)
+        footerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+    else
+        footerFontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:3];
+    
+    footer.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                            size:footerFontSize];
+}
+
+#pragma mark - Handling action sheet
+- (void)handleActionClickWithButtonIndex:(NSInteger) buttonIndex
+{
+    _photoPicker = nil;
+    
+    switch (buttonIndex)
+    {
+        case 0:
+        {
+            //start with fresh array
+            _attachmentUIImages = [NSMutableArray array];
+            
+            _photoPicker = [[ELCImagePickerController alloc] initImagePicker];
+            _photoPicker.view.tintColor = [UIColor defaultWindowTintColor];
+            _photoPicker.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
+            _photoPicker.maximumImagesCount = 3; //Set the maximum number of images to select, defaults to 3
+            _photoPicker.returnsOriginalImage = YES; //Only return the fullScreenImage, not the fullResolutionImage
+            _photoPicker.returnsImage = YES; //Return UIimage if YES. If NO, only return asset location information
+            _photoPicker.onOrder = YES; //For multiple image selection, display and return selected order of images
+            _photoPicker.imagePickerDelegate = self;
+            _photoPicker.mediaTypes = @[(NSString *)kUTTypeImage];
+            
+            [self presentViewController:_photoPicker animated:YES completion:nil];
+            break;
+        }
+        case 1:
+            [self launchEmailPicker];
+            break;
+        default:
+            break;
+    }
 }
 
 #pragma mark - AlertView with embedded pickerView
@@ -540,6 +625,18 @@ static int tempIcloudSwitchCount = 0;
         [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
     }
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self performSelector:@selector(rotateActionSheet) withObject:nil afterDelay:0.1];
+}
+
+- (void)rotateActionSheet
+{
+    [UIView animateWithDuration:0.2
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent
+                     animations:^{
+                         [popup rotateToCurrentOrientation];
+                     }
+                     completion:nil];
 }
 
 - (BOOL)prefersStatusBarHidden
@@ -587,6 +684,7 @@ static int tempIcloudSwitchCount = 0;
     // Set up recipients
     [picker setToRecipients:@[MZEmailBugReport]];
     [picker setMessageBody:[self buildEmailBodyString] isHTML:NO];
+    picker.navigationBar.tintColor = [UIColor defaultAppColorScheme];
     if(_attachmentUIImages.count > 0){
         int count = 1;
         for(UIImage *attachmentImage in _attachmentUIImages){
@@ -701,40 +799,6 @@ static int tempIcloudSwitchCount = 0;
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:email]];
 }
 
-#pragma mark - UIActionSheet methods (and image picker stuff)
-- (void)actionSheet:(UIActionSheet *)popup clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if(popup.tag == 1){
-        _photoPicker = nil;
-        
-        switch (buttonIndex)
-        {
-            case 0:
-            {
-                //start with fresh array
-                _attachmentUIImages = [NSMutableArray array];
-                
-                _photoPicker = [[ELCImagePickerController alloc] initImagePicker];
-                _photoPicker.view.tintColor = [UIColor defaultWindowTintColor];
-                _photoPicker.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
-                _photoPicker.maximumImagesCount = 3; //Set the maximum number of images to select, defaults to 3
-                _photoPicker.returnsOriginalImage = YES; //Only return the fullScreenImage, not the fullResolutionImage
-                _photoPicker.returnsImage = YES; //Return UIimage if YES. If NO, only return asset location information
-                _photoPicker.onOrder = YES; //For multiple image selection, display and return selected order of images
-                _photoPicker.imagePickerDelegate = self;
-                _photoPicker.mediaTypes = @[(NSString *)kUTTypeImage];
-
-                [self presentViewController:_photoPicker animated:YES completion:nil];
-                break;
-            }
-            case 1:
-                [self launchEmailPicker];
-                break;
-            default:
-                break;
-        }
-    }
-}
 
 #pragma mark - Multi image picker stuff
 - (void)elcImagePickerController:(ELCImagePickerController *)picker didFinishPickingMediaWithInfo:(NSArray *)info

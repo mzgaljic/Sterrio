@@ -340,7 +340,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     UITableViewCell *loadMoreCell = [self.tableView cellForRowAtIndexPath:indexPath];
     //change "Load More" button
     loadMoreCell.textLabel.text = Network_Error_Loading_More_Results_Msg;
-    loadMoreCell.textLabel.font = [UIFont systemFontOfSize:19];
+    loadMoreCell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                  size:19];
     loadMoreCell.textLabel.textColor = [UIColor redColor];
     [loadingMoreResultsSpinner stopAnimating];
     _networkErrorLoadingMoreResults = YES;
@@ -572,9 +573,11 @@ static BOOL userClearedTextField = NO;
                 
             int minLabelFontSize = 3;
             if([AppEnvironmentConstants preferredSizeSetting] >= minLabelFontSize)
-                label.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+                label.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                             size:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
             else
-                label.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:minLabelFontSize]];
+                label.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                              size:[PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:minLabelFontSize]];
             CGSize maximumLabelSize = CGSizeMake(label.frame.size.width, CGFLOAT_MAX);
             CGSize requiredSize = [label sizeThatFits:maximumLabelSize];
             CGRect labelFrame = label.frame;
@@ -605,9 +608,11 @@ static BOOL userClearedTextField = NO;
             label.textColor = [UIColor defaultAppColorScheme];
             int minLabelFontSize = 5;
             if([AppEnvironmentConstants preferredSizeSetting] >= minLabelFontSize)
-                label.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+                label.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                         size:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
             else
-                label.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:minLabelFontSize]];
+                label.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                            size:[PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:minLabelFontSize]];
             CGSize maximumLabelSize = CGSizeMake(label.frame.size.width, CGFLOAT_MAX);
             CGSize requiredSize = [label sizeThatFits:maximumLabelSize];
             CGRect labelFrame = label.frame;
@@ -650,9 +655,17 @@ static BOOL userClearedTextField = NO;
             
             CustomYoutubeTableViewCell *customCell;
             customCell = [tableView dequeueReusableCellWithIdentifier:@"youtubeResultCell" forIndexPath:indexPath];
+            customCell.videoChannel.enabled = YES;
+            customCell.videoTitle.enabled = YES;
+            customCell.textLabel.enabled = YES;
+            customCell.detailTextLabel.enabled = YES;
             customCell.videoTitle.text = ytVideo.videoName;
             customCell.videoChannel.textColor = [UIColor grayColor];
             customCell.videoChannel.text = ytVideo.channelTitle;
+            customCell.videoTitle.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                        size:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+            customCell.videoChannel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                        size:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
             
             // If an existing cell is being reused, reset the image to the default until it is populated.
             // Without this code, previous images are displayed against the new cells during rapid scrolling.
@@ -681,11 +694,10 @@ static BOOL userClearedTextField = NO;
             
         }
     }else{  //auto suggestions will populate the table
-        if(_searchSuggestions.count-1 < indexPath.row){
-            NSLog(@"Woah!");
-        }
         cell = [tableView dequeueReusableCellWithIdentifier:@"youtubeSuggsestCell" forIndexPath:indexPath];
         cell.textLabel.text = [_searchSuggestions objectAtIndex:indexPath.row];
+        cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                              size:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
         cell.imageView.image = nil;
     }
     ytVideo = nil;
@@ -746,6 +758,17 @@ static BOOL userClearedTextField = NO;
             [self searchBarSearchButtonClicked:_searchBar];
         }
     }
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
+    UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
+    int headerFontSize;
+    if([AppEnvironmentConstants preferredSizeSetting] < 5)
+        headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+    else
+        headerFontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:5];
+    header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                            size:headerFontSize];
 }
 
 - (void)downloadImageWithURL:(NSURL *)url completionBlock:(void (^)(BOOL succeeded, UIImage *image))completionBlock

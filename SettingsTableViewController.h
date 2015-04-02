@@ -17,6 +17,7 @@
 #import "UIDevice+DeviceName.h"
 #import "MyTableViewController.h"
 #import <MobileCoreServices/UTCoreTypes.h>  //filtering media in image pickers
+#import "IBActionSheet.h"
 
 
 @interface SettingsTableViewController : MyTableViewController <UIPickerViewDelegate,

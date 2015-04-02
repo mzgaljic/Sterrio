@@ -9,6 +9,9 @@
 #import "AllSongsDataSource.h"
 
 @interface AllSongsDataSource ()
+{
+    NSString *cellReuseIdDetailLabelNull;
+}
 @property (nonatomic, assign, readwrite) SONG_DATA_SRC_TYPE dataSourceType;
 @property (nonatomic, strong) NSMutableArray *selectedSongIds;
 @property (nonatomic, strong) NSOrderedSet *existingPlaylistSongs;
@@ -18,16 +21,19 @@
 @end
 @implementation AllSongsDataSource
 
-- (void)setDisplaySearchResults:(BOOL)displaySearchResults
+- (void)setCellReuseId:(NSString *)cellReuseId
 {
-    _displaySearchResults = displaySearchResults;
+    _cellReuseId = cellReuseId;
+    cellReuseIdDetailLabelNull = [NSString stringWithFormat:@"%@_nilDetail", cellReuseId];
 }
+
 - (NSOrderedSet *)existingPlaylistSongs
 {
     if(_existingPlaylistSongs == nil && _playlistSongAdderDelegate != nil)
         _existingPlaylistSongs = [_playlistSongAdderDelegate existingPlaylistSongs];
     return _existingPlaylistSongs;
 }
+
 
 #pragma mark - Lifecycle
 - (void)dealloc
@@ -71,11 +77,17 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     else
         song = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
+    NSString *reuseID;
+    if(song.artist || song.album)
+        reuseID = self.cellReuseId;
+    else
+        reuseID = cellReuseIdDetailLabelNull;
+    
     MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
                                                              forIndexPath:indexPath];
     if (!cell)
         cell = [[MZTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                      reuseIdentifier:self.cellReuseId];
+                                      reuseIdentifier:reuseID];
     else
     {
         // If an existing cell is being reused, reset the image to the default until it is
@@ -319,6 +331,17 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     }
 }
 
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
+    UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
+    int headerFontSize;
+    if([AppEnvironmentConstants preferredSizeSetting] < 5)
+        headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+    else
+        headerFontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:5];
+    header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                            size:headerFontSize];
+}
+
 #pragma  mark - TableView helpers
 - (UIView *)friendlyTableUserMessageWithText:(NSString *)text
 {
@@ -334,7 +357,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     //multi lines strings ARE possible, this is just a weird api detail
     label.numberOfLines = 0;
     label.textAlignment = NSTextAlignmentCenter;
-    label.font = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    int fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+    label.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                 size:fontSize];
     [label sizeToFit];
     return label;
 }

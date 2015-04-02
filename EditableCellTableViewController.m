@@ -73,7 +73,7 @@
     txtField.autoresizesSubviews = YES;
     txtField.layer.cornerRadius = 10.0;
     [txtField setBorderStyle:UITextBorderStyleRoundedRect];
-    txtField.tintColor = [[UIColor defaultAppColorScheme] lighterColor];
+    txtField.tintColor = [UIColor darkGrayColor];
     if(_stringUserIsEditing == nil)
         [txtField setPlaceholder:@"Start Typing"];
     else{

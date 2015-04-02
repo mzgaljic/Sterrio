@@ -128,6 +128,13 @@ static void *airplayStateChanged = &airplayStateChanged;
     //dont want to respond if this was just the preview player.
     if([AppEnvironmentConstants isUserPreviewingAVideo])
         return;
+    
+    if([AppEnvironmentConstants playbackRepeatType] == PLABACK_REPEAT_MODE_Song){
+        [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
+        [MusicPlaybackController resumePlayback];
+        return;
+    }
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_DONE_PLAYING object:nil];
     [self dismissAllSpinners];
     
@@ -143,6 +150,12 @@ static void *airplayStateChanged = &airplayStateChanged;
                 [MusicPlaybackController skipToNextTrack];
             else
                 [MusicPlaybackController returnToPreviousTrack];
+        }
+    } else{
+        //last song in queue reached
+        if([AppEnvironmentConstants playbackRepeatType] == PLABACK_REPEAT_MODE_All){
+            [MusicPlaybackController repeatEntireMainQueue];
+            return;
         }
     }
 }

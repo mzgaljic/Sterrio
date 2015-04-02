@@ -97,8 +97,9 @@
     if(fontSize < 18)
         fontSize = 18;
     //font size
+    UIFont *font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:fontSize];
     NSDictionary *dict = @{
-                           NSFontAttributeName: [UIFont systemFontOfSize:fontSize],
+                           NSFontAttributeName: font,
                            NSForegroundColorAttributeName : textColor
                            };
     [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil]

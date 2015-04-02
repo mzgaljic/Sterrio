@@ -140,8 +140,13 @@
 
 + (float)actualCellHeightFromCurrentPreferredSize
 {
-    
-    switch ([AppEnvironmentConstants preferredSizeSetting])
+    int prefSize = [AppEnvironmentConstants preferredSizeSetting];
+    return [PreferredFontSizeUtility hypotheticalCellHeightForPreferredSize:prefSize];
+}
+
++ (float)hypotheticalCellHeightForPreferredSize:(int)aSize
+{
+    switch (aSize)
     {
         case 1:
             return 45.0;
@@ -164,7 +169,6 @@
         default:
             return 65.0;
     }
-
 }
 
 + (CGSize)actualAlbumArtSizeFromCurrentPreferredSize

@@ -490,7 +490,6 @@ CG_INLINE BOOL isIPhone4()
     CGFloat strikeWidth;
     CGSize textSize;
 
-
     if (titleTextAttributes) {
         toolBarItemLabel.attributedText = [[NSAttributedString alloc] initWithString:aTitle attributes:titleTextAttributes];
         textSize = toolBarItemLabel.attributedText.size;
@@ -501,7 +500,8 @@ CG_INLINE BOOL isIPhone4()
     else
     {
         [toolBarItemLabel setTextColor:(NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) ? [UIColor blackColor] : [UIColor whiteColor]];
-        [toolBarItemLabel setFont:[UIFont boldSystemFontOfSize:16]];
+        [toolBarItemLabel setFont:[UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                                  size:16]];
         toolBarItemLabel.text = aTitle;
 
         if ( NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1 )

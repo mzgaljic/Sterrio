@@ -75,7 +75,8 @@ const float SEPERATOR_HEIGHT = 0.5;
     UILabel *albumLabel = [UILabel new];
     albumLabel.numberOfLines = 1;
     albumLabel.text = anAlbum.albumName;
-    albumLabel.font = [UIFont boldSystemFontOfSize:ALBUM_NAME_FONT_SIZE];
+    albumLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                      size:ALBUM_NAME_FONT_SIZE];
     [albumLabel sizeToFit];
     int labelXVal = ALBUM_ART_EDGE_PADDING + img.frame.size.width + LABEL_PADDING_FROM_ART;
     CGRect albumLabelFrame = CGRectMake(labelXVal,
@@ -87,7 +88,8 @@ const float SEPERATOR_HEIGHT = 0.5;
     
     UILabel *detailLabel = [UILabel new];
     detailLabel.numberOfLines = 1;
-    detailLabel.font = [UIFont systemFontOfSize:DETAIL_LABEL_FONT_SIZE];
+    detailLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                       size:DETAIL_LABEL_FONT_SIZE];
     detailLabel.attributedText = [self generateDetailLabelAttributedStringForAlbum:anAlbum];
     [detailLabel sizeToFit];
     CGRect detailLabelFrame = CGRectMake(labelXVal,

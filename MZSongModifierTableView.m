@@ -21,7 +21,7 @@
 @implementation MZSongModifierTableView
 @synthesize songIAmEditing = _songIAmEditing;
 static BOOL PRODUCTION_MODE;
-static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
+float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
 
 #pragma mark - Other stuff
 - (void)initWasCalled
@@ -98,7 +98,10 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
         return;
     } else{
         _currentAlbumArt = newArt;
-        CGSize size = CGSizeMake(HEIGHT_OF_ALBUM_ART_CELL - 4, HEIGHT_OF_ALBUM_ART_CELL - 4);
+        int heightOfAlbumArtCell = [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize] *2;
+        if(heightOfAlbumArtCell > MAX_ALBUM_ART_CELL_HEIGHT)
+            heightOfAlbumArtCell = MAX_ALBUM_ART_CELL_HEIGHT;
+        CGSize size = CGSizeMake(heightOfAlbumArtCell - 4, heightOfAlbumArtCell - 4);
         
         //calculate how much one length varies from the other.
         int diff = abs(newArt.size.width - newArt.size.height);
@@ -218,17 +221,20 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                 cell.accessoryView = nil;
             cell.detailTextLabel.text = @"";
             
-        } else if(indexPath.row == 4){/*  //Genre
-            cell.textLabel.text = @"Genre";
-            if([_songIAmEditing.genreCode intValue] != [GenreConstants noGenreSelectedGenreCode]){
-                NSString *genreString = [GenreConstants genreCodeToString:[_songIAmEditing.genreCode intValue]];
-                cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:genreString];
-            }else{
-                cell.detailTextLabel.text = nil;
-                cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[UIColor defaultAppColorScheme] lighterColor]];
-            }*/
-        } else
+        }else
             return nil;
+        
+        int fontSize;
+        if([AppEnvironmentConstants preferredSizeSetting] < 5
+           && [AppEnvironmentConstants preferredSizeSetting] > 1)
+            fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+        else
+            fontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:4];
+        
+        cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                              size:fontSize];
+        cell.detailTextLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                    size:fontSize];
     }
     else if(indexPath.section == 1){
         static NSString *cellIdentifier = @"bottomActionCell";  //delete button or "add to lib" button
@@ -252,8 +258,10 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
                 cell.accessoryView = spinner;
                 [spinner startAnimating];
             }
+            
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
-            cell.textLabel.font = [UIFont boldSystemFontOfSize:17.0f];
+            cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                  size:17.0f];
         }
     }
     
@@ -291,10 +299,17 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(indexPath.row == 3)
-        return HEIGHT_OF_ALBUM_ART_CELL;
+    int prefCellHeight;
+    int prefSizeSetting = [AppEnvironmentConstants preferredSizeSetting];
+    if(prefSizeSetting > 1 && prefSizeSetting < 5)
+        prefCellHeight = [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
     else
-        return 50.0;
+        prefCellHeight = [PreferredFontSizeUtility hypotheticalCellHeightForPreferredSize:4];
+    
+    if(indexPath.row == 3)  //album art cell
+        return prefCellHeight * 2;
+    else
+        return prefCellHeight * .7;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -480,7 +495,7 @@ static int const HEIGHT_OF_ALBUM_ART_CELL = 120;
     __weak MZSongModifierTableView *weakself = self;
     // Delay execution of my block for 10 seconds.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        if(weakself)
+        if(weakself && _creatingANewSong)
             [weakself scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
                     atScrollPosition:UITableViewScrollPositionTop animated:YES];
     });
