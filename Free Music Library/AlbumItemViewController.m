@@ -16,6 +16,8 @@
 #import "MZAlbumSectionHeader.h"
 #import "MZTableViewCell.h"
 #import "MusicPlaybackController.h"
+#import "MGSwipeTableCell.h"
+#import "MGSwipeButton.h"
 
 @interface AlbumItemViewController ()
 @property (weak, nonatomic) IBOutlet UITableView *tableView;

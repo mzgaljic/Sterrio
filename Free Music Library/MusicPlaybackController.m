@@ -413,7 +413,8 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
             [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
         }
         
-        [songInfo setObject:nowPlayingSong.songName forKey:MPMediaItemPropertyTitle];
+        if(nowPlayingSong.songName)
+        [   songInfo setObject:nowPlayingSong.songName forKey:MPMediaItemPropertyTitle];
         
         if(nowPlayingSong.artist.artistName != nil)
             [songInfo setObject:nowPlayingSong.artist.artistName forKey:MPMediaItemPropertyArtist];

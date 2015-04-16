@@ -7,6 +7,8 @@
 //
 
 #import "MasterPlaylistTableViewController.h"
+#import "MGSwipeTableCell.h"
+#import "MGSwipeButton.h"
 
 @interface MasterPlaylistTableViewController ()
 @property(nonatomic, strong) SDCAlertView *createPlaylistAlert;

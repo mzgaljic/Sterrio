@@ -18,13 +18,12 @@
 #import "YouTubeSongAdderViewController.h"
 #import "CustomYoutubeTableViewCell.h"
 
-
+//NOTE loadingMoreResultsSpinner is not currently used. To use again, call "reload" on tableview
+//right before loading more results.
 @interface YoutubeResultsTableViewController ()
 {
     UIActivityIndicatorView *loadingMoreResultsSpinner;
     UIActivityIndicatorView *loadingResultsIndicator;
-    BOOL userScrolledPastBottomOfResults;
-    BOOL dragEnded;
 }
 @property (nonatomic, strong) MySearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray *searchResults;
@@ -71,7 +70,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     loadingMoreResultsSpinner = nil;
     _searchBar = nil;
     _searchResults = nil;
-    _searchSuggestions = nil;
+    self.searchSuggestions = nil;
     _lastSuccessfullSuggestions = nil;
     _cancelButton = nil;
     _scrollToTopButton = nil;
@@ -114,7 +113,10 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 - (void)scrollToTopTapped
 {
-    [self.tableView setContentOffset:(self.tableView.contentOffset = CGPointMake(0, 0 - self.tableView.contentInset.top)) animated:YES];
+    if([self.tableView numberOfRowsInSection:0] > 0){
+        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
+                              atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    }
 }
 
 #pragma mark - View Controller life cycle
@@ -158,7 +160,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 {
     [super viewDidLoad];
     
-    _searchSuggestions = [NSMutableArray array];
+    self.searchSuggestions = [NSMutableArray array];
     _searchResults = [NSMutableArray array];
     _lastSuccessfullSuggestions = [NSMutableArray array];
     
@@ -227,7 +229,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     //I deleted section 0 when search was tapped
     if([self.tableView numberOfSections] == 0){
         [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0]
-                      withRowAnimation:UITableViewRowAnimationRight];
+                      withRowAnimation:UITableViewRowAnimationMiddle];
     }
     [self.tableView endUpdates];
 }
@@ -247,7 +249,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         for (NSUInteger item = count; item < count + moreResultsCount; item++)
             [insertIndexPaths addObject:[NSIndexPath indexPathForRow:item inSection:0]];
         
-        [self.tableView insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationLeft];
+        [self.tableView insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationMiddle];
         
         // construct index path of original last cell in first section (before new results insertion)
         NSIndexPath *pathToOriginalLastRow = [NSIndexPath indexPathForRow:count -1 inSection:0];
@@ -278,8 +280,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)ytVideoAutoCompleteResultsDidDownload:(NSArray *)arrayOfNSStrings
 {
     //only going to use 5 of the 10 results returned. 10 is too much (searchSuggestions array is already empty-emptied in search bar text did change)
-    int searchSuggestionsCountBefore = (int)_searchSuggestions.count;
-    [_searchSuggestions removeAllObjects];
+    int searchSuggestionsCountBefore = (int)self.searchSuggestions.count;
+    [self.searchSuggestions removeAllObjects];
     [_lastSuccessfullSuggestions removeAllObjects];
     
     int upperBound = -1;
@@ -289,7 +291,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         upperBound = (int)arrayOfNSStrings.count;
     
     for(int i = 0; i < upperBound; i++){
-        [_searchSuggestions addObject:[arrayOfNSStrings[i] copy]];
+        [self.searchSuggestions addObject:[arrayOfNSStrings[i] copy]];
         [_lastSuccessfullSuggestions addObject:[arrayOfNSStrings[i] copy]];
     }
     arrayOfNSStrings = nil;
@@ -309,11 +311,20 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         
         [self.tableView beginUpdates];
         [self.tableView deleteRowsAtIndexPaths:oldPaths withRowAnimation:UITableViewRowAnimationNone];
-        [self.tableView insertRowsAtIndexPaths:newPaths withRowAnimation:UITableViewRowAnimationAutomatic];
+        [self.tableView insertRowsAtIndexPaths:newPaths withRowAnimation:UITableViewRowAnimationMiddle];
         [self.tableView endUpdates];
     }
-    else
-        [self.tableView reloadData];
+    else{
+        //number of rows is the same, just fade in the new results
+        NSMutableArray *allPaths = [NSMutableArray array];
+        for(int i = 0; i < upperBound; i++){
+            [allPaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
+        }
+        
+        [self.tableView beginUpdates];
+        [self.tableView reloadRowsAtIndexPaths:allPaths withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView endUpdates];
+    }
 }
 
 - (void)networkErrorHasOccuredSearchingYoutube
@@ -398,9 +409,9 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     if(self.searchInitiatedAlready){
         [self.tableView beginUpdates];
         [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0]
-                      withRowAnimation:UITableViewRowAnimationRight];
+                      withRowAnimation:UITableViewRowAnimationMiddle];
         [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0]
-                      withRowAnimation:UITableViewRowAnimationRight];
+                      withRowAnimation:UITableViewRowAnimationMiddle];
         [self.tableView endUpdates];
     }
     else
@@ -423,7 +434,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     
     [self.tableView beginUpdates];
     [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0]
-                  withRowAnimation:UITableViewRowAnimationNone];
+                  withRowAnimation:UITableViewRowAnimationMiddle];
     [self.tableView endUpdates];
     
     [self startTimingExecution];
@@ -450,14 +461,14 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         //restore state of search bar and table before uncommited search bar edit began
         [_searchBar setText:_lastSuccessfullSearchString];
         if(userClearedTextField)
-            [_searchSuggestions addObjectsFromArray:_lastSuccessfullSuggestions];
+            [self.searchSuggestions addObjectsFromArray:_lastSuccessfullSuggestions];
         userClearedTextField = NO;
         
         if(self.displaySearchResults == NO && _searchResults.count > 0){  //bring user back to previous results
             //restore state of search bar before uncommited search bar edit began
             [_searchBar setText:_lastSuccessfullSearchString];
             
-            //[_searchSuggestions removeAllObjects];
+            //[self.searchSuggestions removeAllObjects];
             
             [_searchBar resignFirstResponder];
             self.displaySearchResults = YES;
@@ -468,8 +479,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
             [_searchBar resignFirstResponder];
             
             [self.tableView beginUpdates];
-            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:YES];
-            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:YES];
+            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationMiddle];
+            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationMiddle];
             [self.tableView endUpdates];
             return;
         }
@@ -499,13 +510,13 @@ static BOOL userClearedTextField = NO;
         if(! self.displaySearchResults)
             self.tableView.scrollEnabled = NO;
         
-        int numSearchSuggestions = (int)_searchSuggestions.count;
+        int numSearchSuggestions = (int)self.searchSuggestions.count;
         
         if([searchBar isFirstResponder])  //keyboard on screen
-            [_searchSuggestions removeAllObjects];
+            [self.searchSuggestions removeAllObjects];
         else{
             [searchBar becomeFirstResponder];  //bring up keyboard
-            [_searchSuggestions removeAllObjects];
+            [self.searchSuggestions removeAllObjects];
         }
         self.displaySearchResults = NO;
         
@@ -549,9 +560,7 @@ static BOOL userClearedTextField = NO;
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     if(! self.displaySearchResults){
-        if(section == 0 && _searchSuggestions.count > 0){
-            return @"Top Hits";
-        }
+        return @"Top Hits";
     }
     return @"";
 }
@@ -636,7 +645,7 @@ static BOOL userClearedTextField = NO;
             return -1;
     }else{
         //user has not pressed "search" yet, only showing autosuggestions
-        return _searchSuggestions.count;
+        return self.searchSuggestions.count;
     }
 }
 
@@ -695,7 +704,7 @@ static BOOL userClearedTextField = NO;
         }
     }else{  //auto suggestions will populate the table
         cell = [tableView dequeueReusableCellWithIdentifier:@"youtubeSuggsestCell" forIndexPath:indexPath];
-        cell.textLabel.text = [_searchSuggestions objectAtIndex:indexPath.row];
+        cell.textLabel.text = [self.searchSuggestions objectAtIndex:indexPath.row];
         cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                               size:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
         cell.imageView.image = nil;
@@ -749,7 +758,7 @@ static BOOL userClearedTextField = NO;
     }
     else{  //auto suggestions in table
         int index = (int)indexPath.row;
-        NSString *chosenSuggestion = _searchSuggestions[index];
+        NSString *chosenSuggestion = self.searchSuggestions[index];
         
         if(chosenSuggestion.length != 0){
             self.waitingOnYoutubeResults = YES;
@@ -842,30 +851,22 @@ static BOOL userClearedTextField = NO;
         CGFloat scrollViewBottomOffset = scrollContentSizeHeight + bottomInset - scrollViewHeight;
         
         if (scrollView.contentOffset.y >= scrollViewBottomOffset && self.displaySearchResults){
-            if(!dragEnded)
-                userScrolledPastBottomOfResults = YES;
+            [self userDidScrollToBottomOfTable];
             if(self.waitingOnNextPageResults)
                 return;
         }
     }
 }
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
-{
-    dragEnded = NO;
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
-{
-    if(userScrolledPastBottomOfResults)
-        [self userDidScrollToBottomOfTable];
-    userScrolledPastBottomOfResults = NO;
-    dragEnded = YES;
-}
 
 - (void)userDidScrollToBottomOfTable
 {
-    //efficiently refresh footer view
-    [self.tableView reloadData];
+    if(self.waitingOnNextPageResults || !self.displaySearchResults)
+        return;
+    //covers an edge case where the user scrolls down to the bottom while the
+    //search results are showing...and a crash occurs due to the fact that there are
+    //no valid sections yet. and the "next page" delegate assumes it can just insert new rows lol.
+    if(self.displaySearchResults && [self.tableView numberOfSections] == 0)
+        return;
 
     self.waitingOnNextPageResults = YES;
     //try to load more results

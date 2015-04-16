@@ -17,6 +17,7 @@
 		8719172C1ADF765800FFC791 /* Playlist.m in Sources */ = {isa = PBXBuildFile; fileRef = 8719172B1ADF765800FFC791 /* Playlist.m */; };
 		8719172F1ADF765800FFC791 /* Song.m in Sources */ = {isa = PBXBuildFile; fileRef = 8719172E1ADF765800FFC791 /* Song.m */; };
 		871917321ADF765800FFC791 /* Artist.m in Sources */ = {isa = PBXBuildFile; fileRef = 871917311ADF765800FFC791 /* Artist.m */; };
+		871917351ADF7CAB00FFC791 /* AllAlbumsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 871917341ADF7CAB00FFC791 /* AllAlbumsDataSource.m */; };
 		871A0B031980835D00BACD31 /* UIColor+LighterAndDarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 871A0B021980835D00BACD31 /* UIColor+LighterAndDarker.m */; };
 		871C2BF01A97CAA0007A1DE5 /* NowPlayingSong.m in Sources */ = {isa = PBXBuildFile; fileRef = 871C2BEF1A97CAA0007A1DE5 /* NowPlayingSong.m */; };
 		871FA7711A8D8A9A0045196C /* UIView+ScreenshotView.m in Sources */ = {isa = PBXBuildFile; fileRef = 871FA7701A8D8A9A0045196C /* UIView+ScreenshotView.m */; };
@@ -174,6 +175,7 @@
 		87E980BF1A759DD900B428F0 /* MasterSongEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E980BE1A759DD900B428F0 /* MasterSongEditorViewController.m */; };
 		87ECAFC41AAE8D1900C527B9 /* MZPrivateUpNextPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87ECAFC31AAE8D1900C527B9 /* MZPrivateUpNextPlaybackQueue.m */; };
 		87ECAFC81AAEB21F00C527B9 /* MZPrivateMainPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87ECAFC71AAEB21F00C527B9 /* MZPrivateMainPlaybackQueue.m */; };
+		87F050301AE037AE00BB0B2F /* PlayableDataSearchDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F0502F1AE037AE00BB0B2F /* PlayableDataSearchDataSource.m */; };
 		87F686A61AC9F48800EFF1E0 /* AbstractActionSheetPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F686951AC9F48800EFF1E0 /* AbstractActionSheetPicker.m */; };
 		87F686A71AC9F48800EFF1E0 /* ActionSheetCustomPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F686971AC9F48800EFF1E0 /* ActionSheetCustomPicker.m */; };
 		87F686A81AC9F48800EFF1E0 /* ActionSheetDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F6869A1AC9F48800EFF1E0 /* ActionSheetDatePicker.m */; };
@@ -221,6 +223,9 @@
 		8719172E1ADF765800FFC791 /* Song.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Song.m; sourceTree = "<group>"; };
 		871917301ADF765800FFC791 /* Artist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Artist.h; sourceTree = "<group>"; };
 		871917311ADF765800FFC791 /* Artist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Artist.m; sourceTree = "<group>"; };
+		871917331ADF7CAB00FFC791 /* AllAlbumsDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllAlbumsDataSource.h; sourceTree = "<group>"; };
+		871917341ADF7CAB00FFC791 /* AllAlbumsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AllAlbumsDataSource.m; sourceTree = "<group>"; };
+		871917371ADF7EFB00FFC791 /* ActionableAlbumDataSourceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionableAlbumDataSourceDelegate.h; sourceTree = "<group>"; };
 		871A0B011980835D00BACD31 /* UIColor+LighterAndDarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIColor+LighterAndDarker.h"; path = "../UIColor+LighterAndDarker.h"; sourceTree = "<group>"; };
 		871A0B021980835D00BACD31 /* UIColor+LighterAndDarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIColor+LighterAndDarker.m"; path = "../UIColor+LighterAndDarker.m"; sourceTree = "<group>"; };
 		871C2BEE1A97CAA0007A1DE5 /* NowPlayingSong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NowPlayingSong.h; path = "Free Music Library/NowPlayingSong.h"; sourceTree = "<group>"; };
@@ -513,6 +518,9 @@
 		87ECAFC31AAE8D1900C527B9 /* MZPrivateUpNextPlaybackQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPrivateUpNextPlaybackQueue.m; sourceTree = "<group>"; };
 		87ECAFC61AAEB21F00C527B9 /* MZPrivateMainPlaybackQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPrivateMainPlaybackQueue.h; sourceTree = "<group>"; };
 		87ECAFC71AAEB21F00C527B9 /* MZPrivateMainPlaybackQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPrivateMainPlaybackQueue.m; sourceTree = "<group>"; };
+		87F0502E1AE037AE00BB0B2F /* PlayableDataSearchDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayableDataSearchDataSource.h; sourceTree = "<group>"; };
+		87F0502F1AE037AE00BB0B2F /* PlayableDataSearchDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayableDataSearchDataSource.m; sourceTree = "<group>"; };
+		87F050321AE039DF00BB0B2F /* PlayableDataSearchDataSourceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayableDataSearchDataSourceDelegate.h; sourceTree = "<group>"; };
 		87F6868B1AC9211A00EFF1E0 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		87F686941AC9F48800EFF1E0 /* AbstractActionSheetPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractActionSheetPicker.h; sourceTree = "<group>"; };
 		87F686951AC9F48800EFF1E0 /* AbstractActionSheetPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AbstractActionSheetPicker.m; sourceTree = "<group>"; };
@@ -605,6 +613,15 @@
 				871CDAC7198048FA00E72357 /* Editing a string */,
 			);
 			name = "Editing Field View";
+			sourceTree = "<group>";
+		};
+		871917361ADF7CBD00FFC791 /* Albums */ = {
+			isa = PBXGroup;
+			children = (
+				871917331ADF7CAB00FFC791 /* AllAlbumsDataSource.h */,
+				871917341ADF7CAB00FFC791 /* AllAlbumsDataSource.m */,
+			);
+			name = Albums;
 			sourceTree = "<group>";
 		};
 		871CDAC7198048FA00E72357 /* Editing a string */ = {
@@ -967,7 +984,9 @@
 				875696131AC4F39800ACF04E /* PlayableBaseDataSource.m */,
 				87585DB11ADEFD340053EAA9 /* KnownEnums.h */,
 				87585DB01ADEFD140053EAA9 /* Protocols */,
+				871917361ADF7CBD00FFC791 /* Albums */,
 				8756960B1AC4E99400ACF04E /* Songs */,
+				87F050311AE037B200BB0B2F /* Encapsulated Search functionality */,
 			);
 			name = "VC DataSources";
 			sourceTree = "<group>";
@@ -985,8 +1004,9 @@
 			isa = PBXGroup;
 			children = (
 				87585DAD1ADEFA610053EAA9 /* SearchBarDataSourceDelegate.h */,
-				87585DAE1ADEFBDE0053EAA9 /* EditableSongDataSourceDelegate.h */,
 				87585DAF1ADEFC530053EAA9 /* PlaylistSongAdderDataSourceDelegate.h */,
+				87585DAE1ADEFBDE0053EAA9 /* EditableSongDataSourceDelegate.h */,
+				871917371ADF7EFB00FFC791 /* ActionableAlbumDataSourceDelegate.h */,
 			);
 			name = Protocols;
 			sourceTree = "<group>";
@@ -1414,6 +1434,16 @@
 			name = "Custom GUI Elements/Classes";
 			sourceTree = "<group>";
 		};
+		87F050311AE037B200BB0B2F /* Encapsulated Search functionality */ = {
+			isa = PBXGroup;
+			children = (
+				87F0502E1AE037AE00BB0B2F /* PlayableDataSearchDataSource.h */,
+				87F0502F1AE037AE00BB0B2F /* PlayableDataSearchDataSource.m */,
+				87F050321AE039DF00BB0B2F /* PlayableDataSearchDataSourceDelegate.h */,
+			);
+			name = "Encapsulated Search functionality";
+			sourceTree = "<group>";
+		};
 		87F10BCF19682EDF003EDFB2 /* Settings View */ = {
 			isa = PBXGroup;
 			children = (
@@ -1783,6 +1813,7 @@
 				872EA4E41A54F1EA00F8EE9D /* MyTableViewController.m in Sources */,
 				87362AFD194E68A5004DB544 /* Deque.m in Sources */,
 				87033B871996965E0077C7AD /* MusicPlaybackController.m in Sources */,
+				87F050301AE037AE00BB0B2F /* PlayableDataSearchDataSource.m in Sources */,
 				87CEDC6519731EF000780D57 /* PlaylistSongAdderTableViewController.m in Sources */,
 				874DA0941ABA11DD003D69D6 /* MRMethodCopier.m in Sources */,
 				871917291ADF765700FFC791 /* Album.m in Sources */,
@@ -1817,6 +1848,7 @@
 				870EDAE6197F4EAD001901B9 /* EditableCellTableViewController.m in Sources */,
 				876335271A8496D000A229C4 /* MZTableViewCell.m in Sources */,
 				877C4BAA199FE4CF00CE86BC /* Artist+Utilities.m in Sources */,
+				871917351ADF7CAB00FFC791 /* AllAlbumsDataSource.m in Sources */,
 				8703444F19A1A2D4002E5077 /* CoreDataManager.m in Sources */,
 				87FA136F1A99559100A1902F /* FetchVideoInfoOperation.m in Sources */,
 				879AB33D19F1D2E100FD6582 /* PlaybackQueue.m in Sources */,

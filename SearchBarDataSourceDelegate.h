@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+//The view controllers that would like to respond to the search bar
+//state should conform to this protocol.
 @protocol SearchBarDataSourceDelegate <NSObject>
 - (void)searchBarIsBecomingActive;
 - (void)searchBarIsBecomingInactive;

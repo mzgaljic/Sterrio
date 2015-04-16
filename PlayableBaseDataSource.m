@@ -7,6 +7,16 @@
 //
 
 #import "PlayableBaseDataSource.h"
+#import "StackController.h"
+#import "PlaybackContext.h"
+#import "MZTableViewCell.h"
+#import "PreferredFontSizeUtility.h"
+
+#import "AlbumArtUtilities.h"
+#import "MZCoreDataModelDeletionService.h"
+#import "MusicPlaybackController.h"
+
+#import "NSString+WhiteSpace_Utility.h"
 
 @implementation PlayableBaseDataSource
 

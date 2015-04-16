@@ -181,9 +181,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         UIColor *appThemeSuperLight = [[[[[UIColor defaultAppColorScheme] lighterColor] lighterColor] lighterColor] lighterColor];
         cell.backgroundColor = appThemeSuperLight;
         [cell setUserInteractionEnabled:NO];
+        cell.textLabel.textColor = [UIColor whiteColor];
+        cell.detailTextLabel.textColor = [UIColor whiteColor];
     } else{
         cell.backgroundColor = [UIColor clearColor];
         [cell setUserInteractionEnabled:YES];
+        cell.textLabel.textColor = [UIColor blackColor];
+        cell.detailTextLabel.textColor = [UIColor blackColor];
     }
     
     // Store a reference to the current cell that will enable the image to be associated with the correct

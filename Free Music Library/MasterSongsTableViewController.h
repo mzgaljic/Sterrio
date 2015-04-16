@@ -25,8 +25,7 @@
 #import "SearchBarDataSourceDelegate.h"
 #import "EditableSongDataSourceDelegate.h"
 #import "PlayableBaseDataSource.h"
-
-@class StackController;
+#import "MGSwipeTableCell.h"
 
 @interface MasterSongsTableViewController : CoreDataCustomTableViewController
                                                             <SearchBarDataSourceDelegate,

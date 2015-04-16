@@ -19,6 +19,10 @@ typedef enum{
 } SONG_DATA_SRC_TYPE;
 
 typedef enum{
+    ALBUM_DATA_SRC_TYPE_Default
+} ALBUM_DATA_SRC_TYPE;
+
+typedef enum{
     PLAYLIST_STATUS_In_Creation,
     PLAYLIST_STATUS_Created_But_Empty,
     PLAYLIST_STATUS_Normal_Playlist

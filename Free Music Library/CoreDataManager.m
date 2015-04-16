@@ -53,6 +53,7 @@ static NSString *MODEL_NAME = @"Model 1.0";
 
 + (NSManagedObjectContext *)context
 {
+    NSAssert([NSThread isMainThread], @"Core Data Context was accessed off the main thread.");
     return [[CoreDataManager sharedInstance] managedObjectContext];
 }
 

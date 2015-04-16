@@ -7,28 +7,21 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <objc/runtime.h>
-#import "StackController.h"
 #import "UIImage+colorImages.h"
-#import <FXImageView/UIImage+FX.h>
-#import "PlaybackContext.h"
-#import "MZTableViewCell.h"
-#import "SongTableViewFormatter.h"
-#import "PreferredFontSizeUtility.h"
-#import "MSCellAccessory.h"
 #import "UIColor+LighterAndDarker.h"
-#import "AlbumArtUtilities.h"
-#import "MZCoreDataModelDeletionService.h"
-#import "MusicPlaybackController.h"
+#import <FXImageView/UIImage+FX.h>
+#import "MSCellAccessory.h"
 #import "MGSwipeButton.h"
-#import "MySearchBar.h"
-#import "NSString+WhiteSpace_Utility.h"
+#import "MGSwipeTableCell.h"
 #import "SearchBarDataSourceDelegate.h"
+#import "PlayableDataSearchDataSource.h"
 #import "KnownEnums.h"
 
 
+@class MySearchBar;
 @interface PlayableBaseDataSource : NSObject <UISearchBarDelegate>
 
+@property (nonatomic, assign) BOOL displaySearchResults;
 @property (nonatomic, assign) id <SearchBarDataSourceDelegate> searchBarDataSourceDelegate;
 @property (nonatomic, strong) NSString *emptyTableUserMessage;
 

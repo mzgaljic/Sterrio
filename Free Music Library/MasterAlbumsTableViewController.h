@@ -23,13 +23,14 @@
 #import <FXImageView/UIImage+FX.h>
 #import <MSCellAccessory.h>
 
+
+#import "SearchBarDataSourceDelegate.h"
+#import "PlayableBaseDataSource.h"
+#import "AllAlbumsDataSource.h"
+
 @interface MasterAlbumsTableViewController : CoreDataCustomTableViewController
-                                                                <UISearchBarDelegate,
-                                                                UITableViewDataSource,
-                                                                UITableViewDelegate,
+                                                                <SearchBarDataSourceDelegate,
+                                                                ActionableAlbumDataSourceDelegate,
                                                                 MainScreenViewControllerDelegate,
                                                                 MGSwipeTableCellDelegate>
-{
-    StackController *stackController;
-}
 @end

@@ -195,6 +195,7 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
                 cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:_songIAmEditing.artist.artistName];
             else
                 cell.detailTextLabel.text = @"";
+            cell.accessoryView = nil;
             
         } else if(indexPath.row == 2){  //Album
             cell.textLabel.text = @"Album";
@@ -202,6 +203,7 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
                 cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:_songIAmEditing.album.albumName];
             else
                 cell.detailTextLabel.text = @"";
+            cell.accessoryView = nil;
             
         } else if(indexPath.row == 3){  //Album Art
             cell.textLabel.text = @"Album Art";
@@ -459,24 +461,39 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
     //edge case, if name is something like 'the', dont remove all characters! Keep original name.
     if(_songIAmEditing.smartSortSongName.length == 0)
         _songIAmEditing.smartSortSongName = newName;
-    [self beginUpdates];
-    [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]]
-                withRowAnimation:UITableViewRowAnimationFade];
-    if(_creatingANewSong){
-        if(! [self isRowPresentInTableView:0 withSection:1]){
-            [self insertSections:[NSIndexSet indexSetWithIndex:1]
-                withRowAnimation:UITableViewRowAnimationNone];
-        }
-    }
-    [self endUpdates];
-    [self reloadData];
-    
+
     __weak MZSongModifierTableView *weakself = self;
-    // Delay execution of my block for 10 seconds.
+    //animate the song name in place
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 0.6 * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        
+        [weakself beginUpdates];
+        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]]
+                    withRowAnimation:UITableViewRowAnimationFade];
+        if(_creatingANewSong){
+            if(! [weakself isRowPresentInTableView:0 withSection:1]){
+                [weakself insertSections:[NSIndexSet indexSetWithIndex:1]
+                    withRowAnimation:UITableViewRowAnimationNone];
+            }
+        }
+        [weakself endUpdates];
+        [weakself reloadData];
+    });
+    
+    //add "add to lib" cell in section 2 and scroll to it
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        if(weakself && _creatingANewSong)
+        if(weakself && _creatingANewSong){
+            [weakself beginUpdates];
+            if(_creatingANewSong){
+                if(! [weakself isRowPresentInTableView:0 withSection:1]){
+                    [weakself insertSections:[NSIndexSet indexSetWithIndex:1]
+                            withRowAnimation:UITableViewRowAnimationNone];
+                }
+            }
+            [weakself endUpdates];
             [weakself scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
-                    atScrollPosition:UITableViewScrollPositionTop animated:YES];
+                            atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        }
     });
 }
 
@@ -529,11 +546,19 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
         [[CoreDataManager context] deleteObject:_songIAmEditing.artist];
     _songIAmEditing.artist = newArtist;
     
-    [self beginUpdates];
-    [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]]
-                withRowAnimation:UITableViewRowAnimationFade];
-    [self endUpdates];
-    [self reloadData];
+    double delayInSeconds = 0.6;
+    __weak MZSongModifierTableView *weakself = self;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        
+        [weakself beginUpdates];
+        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]]
+                    withRowAnimation:UITableViewRowAnimationFade];
+        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:3 inSection:0]]
+                        withRowAnimation:UITableViewRowAnimationFade];
+        [weakself endUpdates];
+        [weakself reloadData];
+    });
 }
 
 - (void)albumNameCreationCompleteAndSetUpAlbum:(NSNotification *)notification
@@ -556,12 +581,20 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
     _songIAmEditing.album = newAlbum;
     if(_songIAmEditing.artist)
         newAlbum.artist = _songIAmEditing.artist;
-
-    [self beginUpdates];
-    [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
-                withRowAnimation:UITableViewRowAnimationFade];
-    [self endUpdates];
-    [self reloadData];
+    
+    double delayInSeconds = 0.6;
+    __weak MZSongModifierTableView *weakself = self;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        
+        [weakself beginUpdates];
+        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
+                    withRowAnimation:UITableViewRowAnimationFade];
+        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:3 inSection:0]]
+                        withRowAnimation:UITableViewRowAnimationFade];
+        [weakself endUpdates];
+        [weakself reloadData];
+    });
 }
 
 #pragma mark - existing album and artist chosen
@@ -579,28 +612,43 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
         self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.album.albumArtFileName];
         _songIAmEditing.artist = _songIAmEditing.album.artist;
         
-        [self beginUpdates];
-        [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
-                    withRowAnimation:UITableViewRowAnimationFade];
-        [self endUpdates];
-        [self reloadData];
+        double delayInSeconds = 0.6;
+        __weak MZSongModifierTableView *weakself = self;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            
+            [weakself beginUpdates];
+            [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
+                        withRowAnimation:UITableViewRowAnimationFade];
+            [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:3 inSection:0]]
+                            withRowAnimation:UITableViewRowAnimationFade];
+            [weakself endUpdates];
+            [weakself reloadData];
+        });
     }
 }
 
 - (void)existingArtistHasBeenChosen:(NSNotification *)notification
 {
     if([notification.name isEqualToString:@"existing artist chosen"]){
-        if(_songIAmEditing.artist)
-        {
+        if(_songIAmEditing.artist){
             [MZCoreDataModelDeletionService removeSongFromItsArtist:_songIAmEditing];
         }
         _songIAmEditing.artist = (Artist *)notification.object;
-        
-        [self beginUpdates];
-        [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]]
-                    withRowAnimation:UITableViewRowAnimationFade];
-        [self endUpdates];
-        [self reloadData];
+
+        double delayInSeconds = 0.6;
+        __weak MZSongModifierTableView *weakself = self;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            
+            [weakself beginUpdates];
+            [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]]
+                        withRowAnimation:UITableViewRowAnimationFade];
+            [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:3 inSection:0]]
+                            withRowAnimation:UITableViewRowAnimationFade];
+            [weakself endUpdates];
+            [weakself reloadData];
+        });
     }
 }
 

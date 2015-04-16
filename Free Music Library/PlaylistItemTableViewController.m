@@ -7,6 +7,9 @@
 //
 
 #import "PlaylistItemTableViewController.h"
+#import "MGSwipeTableCell.h"
+#import "MGSwipeButton.h"
+#import "MZTableViewCell.h"
 
 @interface PlaylistItemTableViewController()
 @property (nonatomic, assign) int lastTableViewModelCount;
