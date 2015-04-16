@@ -19,8 +19,6 @@
     NSString *CURRENT_SONG_STOPPED_PLAYBACK;
     NSString *CURRENT_SONG_RESUMED_PLAYBACK;
     NSString *PlaybackHasBegun;
-    
-    ReachabilitySingleton *reachability;
 }
 @end
 
@@ -33,10 +31,14 @@ static void *mPlaybackRate = &mPlaybackRate;
 static void *mPlaybackStarted = &mPlaybackStarted;
 static void *airplayStateChanged = &airplayStateChanged;
 
+static ReachabilitySingleton *reachability;
+
 - (id)init
 {
     if(self = [super init]){
-        reachability = [ReachabilitySingleton sharedInstance];
+        if(reachability == nil)
+            reachability = [ReachabilitySingleton sharedInstance];
+        
         CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update gui please!";
         CURRENT_SONG_STOPPED_PLAYBACK = @"playback has stopped for some unknown reason (stall?)";
         CURRENT_SONG_RESUMED_PLAYBACK = @"playback has resumed from a stall probably";
@@ -85,7 +87,8 @@ static void *airplayStateChanged = &airplayStateChanged;
         [self beginLoadingVideoWithSong:aSong];
         [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     } else{
-        //playback wont ever start...
+        //make sure last song doesnt continue playing...
+        [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
         [self dismissAllSpinners];
         
         if([MusicPlaybackController numMoreSongsInQueue] == 0)
@@ -195,37 +198,6 @@ static void *airplayStateChanged = &airplayStateChanged;
     }
 }
 
-- (void)beginPlaybackWithPlayerItem:(AVPlayerItem *)item
-{
-    if(! [SongPlayerCoordinator isPlayerOnScreen])
-        return;
-    
-    if([NSThread mainThread]){
-        NSOperationQueue *operationQueue = [[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue];
-        [self replaceCurrentItemWithPlayerItem:item];
-        [self play];
-        [[NSNotificationCenter defaultCenter] postNotificationName:MZNewTimeObserverCanBeAdded
-                                                            object:nil];
-        [operationQueue cancelAllOperations];
-        
-        double delayInSeconds = 2.0;
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            if([MusicPlaybackController playbackExplicitlyPaused])
-                [MusicPlaybackController pausePlayback];
-            else
-                [MusicPlaybackController resumePlayback];
-        });
-
-    } else{
-        __weak MyAVPlayer *weakSelf = self;
-        dispatch_async(dispatch_get_main_queue(), ^(void){
-            //Run UI Updates
-            [weakSelf beginPlaybackWithPlayerItem:item];
-        });
-    }
-}
-
 #pragma mark - responding to current connection state
 - (void)connectionStateChanged
 {
@@ -254,8 +226,10 @@ static void *airplayStateChanged = &airplayStateChanged;
         {
             if([nowPlaying.duration integerValue] >= MZLongestCellularPlayableDuration){
                 //disable GUI, alert user that he/she needs to be on wifi
+
                 [self showSpinnerForWifiNeeded];
-                [[NSNotificationCenter defaultCenter] postNotificationName:MZInterfaceNeedsToBlockCurrentSongPlayback object:[NSNumber numberWithBool:YES]];
+                [[NSNotificationCenter defaultCenter] postNotificationName:MZInterfaceNeedsToBlockCurrentSongPlayback
+                                                                    object:[NSNumber numberWithBool:YES]];
                 return;
             }
             if(stallHasOccured)
@@ -332,14 +306,9 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                                              animated:YES];
             [MusicPlaybackController internetProblemSpinnerOnScreen:YES];
         } else{
+            __weak MyAVPlayer *weakSelf = self;
             dispatch_async(dispatch_get_main_queue(), ^{
-                PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-                [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:YES];
-                [MRProgressOverlayView showOverlayAddedTo:playerView
-                                                    title:@"Connection lost"
-                                                     mode:MRProgressOverlayViewModeIndeterminateSmall
-                                                 animated:YES];
-                [MusicPlaybackController internetProblemSpinnerOnScreen:YES];
+                [weakSelf showSpinnerForInternetConnectionIssueIfAppropriate];
             });
         }
     }
@@ -355,11 +324,9 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
             [MusicPlaybackController simpleSpinnerOnScreen:YES];
 
         } else{
+            __weak MyAVPlayer *weakSelf = self;
             dispatch_async(dispatch_get_main_queue(), ^{
-                PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-                [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:YES];
-                [MRProgressOverlayView showOverlayAddedTo:playerView title:@"" mode:MRProgressOverlayViewModeIndeterminateSmall animated:YES];
-                [MusicPlaybackController simpleSpinnerOnScreen:YES];
+                [weakSelf showSpinnerForBasicLoading];
             });
         }
     }
@@ -408,10 +375,9 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
         [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:YES];
         [MusicPlaybackController noSpinnersOnScreen];
     } else{
+        __weak MyAVPlayer *weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-            [MRProgressOverlayView dismissAllOverlaysForView:playerView animated:YES];
-            [MusicPlaybackController noSpinnersOnScreen];
+            [weakSelf dismissAllSpinners];
         });
     }
 }
@@ -492,8 +458,9 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                         [MusicPlaybackController pausePlayback];
                     [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_STOPPED_PLAYBACK
                                                                         object:nil];
-                    //let this method figure out which spinner to show
-                    [self connectionStateChanged];
+
+                    [self connectionStateChanged];  //let this method figure out which spinner to show
+                    
                     [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
                 }
                 
@@ -519,8 +486,8 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                         [MusicPlaybackController pausePlayback];
                     [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_STOPPED_PLAYBACK
                                                                         object:nil];
-                    //let this method figure out which spinner to show
-                    [self connectionStateChanged];
+                    [self connectionStateChanged];  //let this method figure out which spinner to show
+
                     [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
                     
                 } else if(newSecondsBuff > _secondsLoaded && stallHasOccured && [[ReachabilitySingleton sharedInstance] isConnectedToInternet]){

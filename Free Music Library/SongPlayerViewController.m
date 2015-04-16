@@ -366,6 +366,11 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     }
     if(fromInterfaceOrientation != UIInterfaceOrientationPortrait)
         [self setupSliderHintView];
+    
+    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    CGPoint newCenter = [playerView convertPoint:playerView.center
+                              fromCoordinateSpace:playerView.superview];
+    [playerView newAirplayInUseMsgCenter:newCenter];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
@@ -878,7 +883,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     timerButton.frame = timerBtnFrame;
     [timerButton setImage:timerImg forState:UIControlStateNormal];
     timerButton.alpha = 0;
-    [timerButton setHitTestEdgeInsets:UIEdgeInsetsMake(-15, -25, -15, -25)];
+    [timerButton setHitTestEdgeInsets:UIEdgeInsetsMake(-20, -30, -15, -30)];
     [self.view addSubview:timerButton];
     [UIView animateWithDuration:0.70  //now animate a "fade in"
                           delay:0.1
@@ -945,23 +950,34 @@ static int accomodateInterfaceLabelsCounter = 0;
     if(phoneHeight < iphone5Height)
         songNameFontSize = 20;
     
+    _songNameLabel.text = [MusicPlaybackController nowPlayingSong].songName;
+    _artistAndAlbumLabel.text = [self generateArtistAndAlbumString];
+    
     //this const factor will provide a duration "feel" similar to the
     //duration "8" on an iphone 6 width. This const factor will help us
     //generate a duration value that gives the same feel on other devices
     //with a different screen size.
     float constantFactor = 1/119.0f;
-    int duration = constantFactor * phoneWidth;
-    _songNameLabel.scrollDuration = duration;
-    _artistAndAlbumLabel.scrollDuration = duration;
+    
+    //durations also need to take into account the length of the strings they will
+    //be displaying.
+    float duration1 = constantFactor * phoneWidth;
+    for(int i = 0; i < _songNameLabel.text.length; i++){
+        duration1 += 0.13;
+    }
+    float duration2 = constantFactor * phoneWidth;
+    for(int i = 0; i < _artistAndAlbumLabel.text.length; i++){
+        duration2 += 0.13;
+    }
+    
+    _songNameLabel.scrollDuration = duration1;
+    _artistAndAlbumLabel.scrollDuration = duration2;
     _songNameLabel.fadeLength = 6.0f;
     _artistAndAlbumLabel.fadeLength = 6.0f;
     UIFont *font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                    size:songNameFontSize];
     _songNameLabel.font = font;
     _artistAndAlbumLabel.font = font;
-    
-    _songNameLabel.text = [MusicPlaybackController nowPlayingSong].songName;
-    _artistAndAlbumLabel.text = [self generateArtistAndAlbumString];
     [self configureSongAndArtistAlbumLabelFramesAnimated:animate onRotation:rotating];
 }
 
@@ -1582,14 +1598,14 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
         NSString *youtubeLinkBase = @"www.youtube.com/watch?v=";
         NSMutableString *shareString = [NSMutableString stringWithString:@"\n"];
         [shareString appendString:youtubeLinkBase];
-        [shareString appendString:nowPlayingSong.youtube_id];
+        [shareString appendString:nowPlayingSong.song_id];
         
         NSArray *activityItems = [NSArray arrayWithObjects:shareString, nil];
         
-        __block UIActivityViewController *activityVC = [[UIActivityViewController alloc]
+        __block MZActivityViewController *activityVC = [[MZActivityViewController alloc]
                                                         initWithActivityItems:activityItems
                                                         applicationActivities:nil];
-        __weak UIActivityViewController *weakActivityVC = activityVC;
+        __weak MZActivityViewController *weakActivityVC = activityVC;
         __weak SongPlayerViewController *weakSelf = self;
         
         activityVC.excludedActivityTypes = @[UIActivityTypePrint,

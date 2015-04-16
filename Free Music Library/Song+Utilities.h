@@ -32,18 +32,20 @@
 @param  context             An NSManagedObjectContext object, which is requied for the backing core data store. If this
                             parameter is nil, nil shall be returned. Optional (but crucial) argument.
  @param durationInSeconds   An NSUInteger specifying the duration in seconds of the song to be created.
+ @param songId              A unique song id. This is the YouTube video identifier.
  */
 + (Song *)createNewSongWithName:(NSString *)songName
            inNewOrExistingAlbum:(id)albumOrAlbumName
           byNewOrExistingArtist:(id)artistOrArtistName
                         inGenre:(int)genreCode
                inManagedContext:(NSManagedObjectContext *)context
-                   withDuration:(NSInteger)durationInSeconds;
+                   withDuration:(NSInteger)durationInSeconds
+                         songId:(NSString *)songId;
 
 /**
  Creates a song object which has no name (ie: it is in the process of user creation).
  */
-+ (Song *)createNewSongWithNoNameAndManagedContext:(NSManagedObjectContext *)context;
++ (Song *)createNewSongWithNoNameAndManagedContext:(NSManagedObjectContext *)context songId:(NSString *)songId;
 
 /**
  @Description Returns YES if (and only if) both songs in the array are considered to be 'equal', or the 'same'. All

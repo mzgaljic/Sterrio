@@ -37,6 +37,13 @@
         NSLog(@"operation cancelled");
         return;
     }
+    
+    if (![NSThread isMainThread])
+    {
+        [self performSelectorOnMainThread:@selector(start) withObject:nil waitUntilDone:NO];
+        return;
+    }
+    
     //check if any of my dependancies were cancelled. In such an event, cancel this operation as well.
     for(int i = 0; i < self.dependencies.count; i++){
         if([self.dependencies[i] isCancelled]){
@@ -57,11 +64,9 @@
             }
         }
     }
-    if (![NSThread isMainThread])
-    {
-        [self performSelectorOnMainThread:@selector(start) withObject:nil waitUntilDone:NO];
-        return;
-    }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZStartBackgroundTaskHandlerIfInactive
+                                                        object:nil];
     
     NSLog(@"Starting FetchVideoInfo Operation");
     [self willChangeValueForKey:@"isExecuting"];
@@ -78,7 +83,7 @@
         return;
     }
     
-    __weak NSString *weakId = aSong.youtube_id;
+    __weak NSString *weakId = aSong.song_id;
     __weak SongPlayerCoordinator *weakCoordinator = [SongPlayerCoordinator sharedInstance];
     __weak FetchVideoInfoOperation *weakSelf = self;
     
@@ -103,6 +108,7 @@
         //NOTE: the MusicPlaybackController methods called from this completion block have
         //been made thread safe.
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+            
             if ([weakSelf isCancelled]){
                 [weakSelf finishBecauseOfCancel];
                 return;
@@ -155,26 +161,18 @@
             
             AVURLAsset *asset = [AVURLAsset assetWithURL: currentItemLink];
             
-            if(! asset.playable){
-                //error initializing video with the url given. Notify user (and perhaps
-                //determine the cause...ie: vevo video, video no longer exists, etc)
-                //note this is NOT an internet problem (99% sure).
-#warning implementation needed
-            }
-            
-            if(allowedToPlayVideo && video != nil && asset.playable){
+            if(allowedToPlayVideo && video != nil){
                 MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
                 [player allowSongDidFinishNotificationToProceed:YES];
-                if ([weakSelf isCancelled]){
+                if ([weakSelf isCancelled]){ 
                     [weakSelf finishBecauseOfCancel];
                     return;
                 }
                 [weakCoordinator enablePlayerAgain];
-                AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:asset];
-                //allowSongDidFinishToExecute = YES;
+                __block AVPlayerItem *weakPlayerItem = [AVPlayerItem playerItemWithAsset:asset];
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     // update the UI here
-                    [VideoPlayerWrapper beginPlaybackWithPlayerItem:playerItem];
+                    [VideoPlayerWrapper beginPlaybackWithPlayerItem:weakPlayerItem];
                 }];
                 
                 [weakSelf finish];  //cleans up this operation and marks it as finished.

@@ -81,7 +81,8 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 - (void)removeLayerFromPlayer
 {    
     AVPlayerLayer *playerLayer = (AVPlayerLayer *)[self layer];
-    [playerLayer setPlayer:nil];
+    if([playerLayer player] != nil)
+        [playerLayer setPlayer:nil];
 }
 
 - (UIImage *)screenshotOfPlayer
@@ -95,8 +96,10 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
         [screenshotOfPlayer removeFromSuperview];
         screenshotOfPlayer = nil;
     }
+    
     AVPlayerLayer *playerLayer = (AVPlayerLayer *)[self layer];
-    [playerLayer setPlayer:[MusicPlaybackController obtainRawAVPlayer]];
+    if([playerLayer player] == nil)
+        [playerLayer setPlayer:[MusicPlaybackController obtainRawAVPlayer]];
 }
 
 - (AVPlayer *)player {
@@ -162,6 +165,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
                                                         :airplayImg];
             
             airplayMsgView = [[UIImageView alloc] initWithImage:airplayImg];
+            airplayMsgView.userInteractionEnabled = NO;
             [self addSubview:airplayMsgView];
         
             airplayMsgView.center = [self convertPoint:self.center fromView:self.superview];

@@ -51,3 +51,6 @@ pod 'KNSemiModalViewController', '~> 0.3'
 
 #SSBouncyButton - a fancy animated text button with 2 states
 pod 'SSBouncyButton'
+
+#Bolts framework (used for very convenient async tasks)
+pod 'Bolts'

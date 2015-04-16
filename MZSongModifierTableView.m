@@ -28,7 +28,7 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
 {
     if(_songIAmEditing == nil){
         self.creatingANewSong = YES;
-        _songIAmEditing = [Song createNewSongWithNoNameAndManagedContext:[CoreDataManager context]];
+        _songIAmEditing = [Song createNewSongWithNoNameAndManagedContext:[CoreDataManager context] songId:self.aNewSongId];
     }
     
     self.delegate = self;
@@ -37,9 +37,6 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
     
     [self setProductionModeValue];
     [AppEnvironmentConstants setUserIsEditingSongOrAlbumOrArtist: YES];
-    
-    [CoreDataManager context].undoManager = [[NSUndoManager alloc] init];
-    [[CoreDataManager context].undoManager beginUndoGrouping];
     
     if(! self.creatingANewSong){
         self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.albumArtFileName];
@@ -104,7 +101,7 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
         CGSize size = CGSizeMake(heightOfAlbumArtCell - 4, heightOfAlbumArtCell - 4);
         
         //calculate how much one length varies from the other.
-        int diff = abs(newArt.size.width - newArt.size.height);
+        int diff = abs((int)newArt.size.width - (int)newArt.size.height);
         if(diff > 10){
             //image is not a perfect (or close to perfect) square. Compensate for this...
             _currentSmallAlbumArt = [newArt imageScaledToFitSize:size];
@@ -439,14 +436,27 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
                 NSError *error;
                 [self.theDelegate performCleanupBeforeSongIsSaved:_songIAmEditing];
                 
-                if ([[CoreDataManager context] save:&error] == NO) {
-                    //save failed
-                    saved = NO;
-                    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveHasFailed];
-                }
-                if(saved)
+                //check if song with this id already exists in core data. if so, dont commit the changes.
+                NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Song"];
+                fetchRequest.predicate = [NSPredicate predicateWithFormat:@"song_id == %@", _songIAmEditing.song_id];
+                //descriptor doesnt really matter here
+                NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
+                                                                                 ascending:YES];
+                fetchRequest.sortDescriptors = @[sortDescriptor];
+                NSArray *results = [[CoreDataManager context] executeFetchRequest:fetchRequest error:nil];
+                if(results.count == 1)
                 {
-                    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveSuccess];
+                    //this exact video is already in the library, dont commit changes.
+                    [[CoreDataManager context] rollback];
+                    [[CoreDataManager context] reset];
+                }
+                else
+                {
+                    if ([[CoreDataManager context] save:&error] == NO) {
+                        //save failed
+                        saved = NO;
+                        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveHasFailed];
+                    }
                 }
             }  //end 'creatingNewSong'
         }  //end indexPath.row == 0
@@ -593,7 +603,7 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
         {
             [AlbumArtUtilities makeCopyOfArtWithName:_songIAmEditing.album.albumArtFileName andNameIt:@"temp art-editing mode-Mark Zgaljic.jpg"];
             [AlbumArtUtilities deleteAlbumArtFileWithName:_songIAmEditing.album.albumArtFileName];
-            [[CoreDataManager context] deleteObject:_songIAmEditing.album];
+            [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];
         }
         
         _songIAmEditing.album = (Album *)notification.object;
@@ -613,7 +623,9 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
 {
     if([notification.name isEqualToString:@"existing artist chosen"]){
         if(_songIAmEditing.artist)
-            [[CoreDataManager context] deleteObject:_songIAmEditing.artist];
+        {
+            [MZCoreDataModelDeletionService removeSongFromItsArtist:_songIAmEditing];
+        }
         _songIAmEditing.artist = (Artist *)notification.object;
         
         [self beginUpdates];
@@ -651,6 +663,7 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
                                                                    initWithCurrentArtist:_songIAmEditing.artist];
                     [self.VC.navigationController pushViewController:vc animated:YES];
                 } else if(_songIAmEditing.artist){  //remove from current artist
+                    [MZCoreDataModelDeletionService removeSongFromItsArtist:_songIAmEditing];
                     _songIAmEditing.artist = nil;
                     [self reloadData];
                 }
@@ -704,6 +717,7 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
         {
             case 0:
                 if(_songIAmEditing.album){  //remove song from album (and reset some data)
+                    [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];
                     _songIAmEditing.album = nil;
                     [self reloadData];
                 } else{ //choose existing album
@@ -751,6 +765,7 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
                     [self.VC.navigationController pushViewController:vc animated:YES];
                 } else{
                     //remove song from album
+                    [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];
                     _songIAmEditing.album = nil;
                     [self reloadData];
                 }
@@ -843,9 +858,9 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
 #pragma mark - public methods
 - (void)cancelEditing
 {
-    [[CoreDataManager context].undoManager endUndoGrouping];
-    [[CoreDataManager context].undoManager undo];
-    [CoreDataManager context].undoManager = nil;
+    //now reset any context deletions, insertions, blah blah...
+    [[CoreDataManager context] rollback];
+    [[CoreDataManager context] reset];
     
     //restore old album art file
     if(_songIAmEditing.album)
@@ -853,15 +868,6 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
     else
         [AlbumArtUtilities makeCopyOfArtWithName:@"temp art-editing mode-Mark Zgaljic.jpg" andNameIt:_songIAmEditing.albumArtFileName];
     [AlbumArtUtilities deleteAlbumArtFileWithName:@"temp art-editing mode-Mark Zgaljic.jpg"];
-    
-    if(self.creatingANewSong){
-        //dont need to warn that im about to delete the song, its impossible for the user to be
-        //listening to this song if he never finished creating it.
-        [[CoreDataManager context] deleteObject:_songIAmEditing];
-    }
-    
-    NSError *error = nil;
-    [[CoreDataManager context] save:&error];  //saves the context to disk
 
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
     [self.VC dismissViewControllerAnimated:YES completion:nil];
@@ -870,9 +876,6 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
 //this method is only used for ACTUAL editing. Song creation is handled in "didSelectCell..."
 - (void)songEditingWasSuccessful
 {
-    [[CoreDataManager context].undoManager endUndoGrouping];
-    [CoreDataManager context].undoManager = nil;
-    
     //need to create copy of image in memory since we are deleting the original
     UIImage *currImg = self.currentAlbumArt;
     CGRect placeholderImgRect = CGRectMake(0, 0, currImg.size.width, currImg.size.height);

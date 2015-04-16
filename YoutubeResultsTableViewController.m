@@ -743,8 +743,8 @@ static BOOL userClearedTextField = NO;
             CustomYoutubeTableViewCell *cell;
             cell = (CustomYoutubeTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
             UIImage *img = [UIImage imageWithCGImage:cell.videoThumbnail.image.CGImage];
-            [self.navigationController pushViewController:[[YouTubeSongAdderViewController alloc] initWithYouTubeVideo:ytVideo thumbnail:img] animated:YES];
-            
+            [self.navigationController pushViewController:[[YouTubeSongAdderViewController alloc] initWithYouTubeVideo:ytVideo thumbnail:img]
+                                                 animated:YES];
         }
     }
     else{  //auto suggestions in table

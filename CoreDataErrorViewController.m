@@ -36,13 +36,14 @@
 
 - (void)coreDataInitFail
 {
-    NSString *msg = @"It seems the database can no longer be read. This is possibly due to an update or because the database is corrupt. Your music can't be loaded in its current state. Sorry about that!😟";
-    _alertView = [[SDCAlertView alloc] initWithTitle:@"Database Problem⚠️"
+    NSString *msg = @"It seems the database can no longer be read. It is likely there was a problem with a recent update, or the database became corrupted. Your music can't be loaded in the Apps current state. \n\nSorry about that.";
+    _alertView = [[SDCAlertView alloc] initWithTitle:@"Database Problem"
                                              message:msg
                                             delegate:self
                                    cancelButtonTitle:@"Quit the app"
-                                   otherButtonTitles: @"Continue and delete old library", @"Email developer", nil];
+                                   otherButtonTitles: @"Delete old library & Continue", @"Email developer", nil];
     _alertView.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    _alertView.titleLabelTextColor = [UIColor redColor];
     _alertView.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
     _alertView.normalButtonFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
     _alertView.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
@@ -62,7 +63,7 @@
         }
         else if(buttonIndex == 1)
         {
-            NSString *msg = @"Proceeding will erase ALL music within this App, and a new library will be created. This is premanent.";
+            NSString *msg = @"Proceeding will erase ALL music within this App, and a new library will be created. \n\nThis is premanent.";
             _alertView = [[SDCAlertView alloc] initWithTitle:@"CAUTION"
                                                      message:msg
                                                     delegate:self
@@ -107,7 +108,7 @@
 - (void)deleteOldCoreDataStoreOnDiskAndRemake
 {
     if([[CoreDataManager sharedInstance] deleteOldStoreAndMakeNewOne]){
-        NSString *msg = @"New library has been created. \nPlease relaunch the app.";
+        NSString *msg = @"New library has been created. \n\nPlease relaunch the App.";
         _alertView = [[SDCAlertView alloc] initWithTitle:@"Success"
                                                  message:msg
                                                 delegate:self
@@ -164,10 +165,14 @@
 -(void)displayComposerModalView
 {
     MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
-    picker.mailComposeDelegate = self;
-    NSString *emailSubject = @"CoreDate DB init problem";
-    [picker setSubject:emailSubject];
     
+    picker.navigationBar.tintColor = [UIColor standardIOS7PlusTintColor];
+    picker.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor defaultAppColorScheme]};
+    
+    picker.mailComposeDelegate = self;
+    NSString *emailSubject = @"CoreData DB init issue";
+    [picker setSubject:emailSubject];
+
     // Set up recipients
     [picker setToRecipients:@[MZEmailBugReport]];
     [picker setMessageBody:[self buildEmailBodyString] isHTML:NO];
@@ -233,7 +238,7 @@
     }
     if(alertMessage == nil){
         //user cancelled composing
-        alertMessage = @"Unfortunately there is nothing else that can be done unless you wish to delete your music library, or reconsider reporting the problem. Sorry once again for the inconvenience.";
+        alertMessage = @"Unfortunately there is nothing else that can be done unless you wish to delete your music library, or reconsider reporting the problem. \n\nSorry once again for the inconvenience.";
     }
     _alertView = [[SDCAlertView alloc] initWithTitle:@"Developer Email"
                                              message:alertMessage

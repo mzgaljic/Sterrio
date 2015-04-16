@@ -145,7 +145,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                 
                 __weak UIImage *cellImg = albumArt;
                 //calculate how much one length varies from the other.
-                int diff = abs(albumArt.size.width - albumArt.size.height);
+                int diff = abs((int)albumArt.size.width - (int)albumArt.size.height);
                 if(diff > 10){
                     //image is not a perfect (or close to perfect) square. Compensate for this...
                     cellImg = [albumArt imageScaledToFitSize:cell.imageView.frame.size];

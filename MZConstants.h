@@ -10,6 +10,9 @@
 
 @interface MZConstants : NSObject
 
+//backgrounding
+extern NSString * const MZStartBackgroundTaskHandlerIfInactive;
+
 //reachability
 extern NSString * const MZReachabilityStateChanged;
 extern NSString * const MZInterfaceNeedsToBlockCurrentSongPlayback;
@@ -41,8 +44,11 @@ extern short const MZLongestCellularPlayableDuration;
 
 extern float const MZCellImageViewFadeDuration;
 extern float const MZSmallPlayerVideoFramePadding;
-extern short const MZTabBarHeight;
 extern short const MZSkipToSongBeginningIfBackBtnTappedBoundary;
+
+//Tab bar
+extern short const MZTabBarHeight;
+extern NSString * const MZHideTabBarAnimated;
 
 extern NSString * const MZWhatsNewUserMsg;
 

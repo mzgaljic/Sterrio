@@ -15,10 +15,11 @@
                         inGenre:(int)genreCode
                inManagedContext:(NSManagedObjectContext *)context
                    withDuration:(NSInteger)durationInSeconds
+                         songId:(NSString *)songId
 {
     if(context == nil)
         return nil;
-    Song *newSong = [Song createNewSongWithName:songName inManagedContext:context];
+    Song *newSong = [Song createNewSongWithName:songName inManagedContext:context songId:songId];
     newSong.duration = [NSNumber numberWithInteger:durationInSeconds];
     Album *newOrExistingAlbum;
     Artist *newOrExistingArtist;
@@ -57,16 +58,8 @@
                 newOrExistingAlbum.artist = newOrExistingArtist;
             }
         }
-/*
-        if(albumOrAlbumName){  //need to avoid duplicate songs
-            NSArray *standAloneSongs = [newOrExistingArtist.standAloneSongs allObjects];
-            if([standAloneSongs containsObject:newSong]){
-                NSMutableSet *mutableSet = [NSMutableSet setWithSet:newOrExistingArtist.standAloneSongs];
-                [mutableSet removeObject:newSong];
-                newOrExistingArtist.standAloneSongs = mutableSet;
-            }
-        }
- */newSong.artist = newOrExistingArtist;
+        
+        newSong.artist = newOrExistingArtist;
     }
     return newSong;
 }
@@ -127,6 +120,7 @@
     }
 }
 
+/*
 - (void)prepareForDeletion
 {
     if(self.artist != nil){
@@ -158,13 +152,14 @@
     }
     [AlbumArtUtilities deleteAlbumArtFileWithName:self.albumArtFileName];
 }
+ */
 
 #pragma mark - private implementation
-+ (Song *)createNewSongWithName:(NSString *)name inManagedContext:(NSManagedObjectContext *)context
++ (Song *)createNewSongWithName:(NSString *)name inManagedContext:(NSManagedObjectContext *)context songId:(NSString *)songId
 {
     Song *song = [NSEntityDescription insertNewObjectForEntityForName:@"Song"
                                                inManagedObjectContext:context];
-    song.song_id = [[NSObject UUID] copy];
+    song.song_id = [songId copy];
     song.songName = name;
     song.smartSortSongName = [name regularStringToSmartSortString];
     if(song.smartSortSongName.length == 0)  //edge case...if name itself is just something like 'the', dont remove all characters! Keep original name.
@@ -172,11 +167,11 @@
     return song;
 }
 
-+ (Song *)createNewSongWithNoNameAndManagedContext:(NSManagedObjectContext *)context
++ (Song *)createNewSongWithNoNameAndManagedContext:(NSManagedObjectContext *)context songId:(NSString *)songId
 {
     Song *song = [NSEntityDescription insertNewObjectForEntityForName:@"Song"
                                                inManagedObjectContext:context];
-    song.song_id = [[NSObject UUID] copy];
+    song.song_id = [songId copy];
     return song;
 }
 

@@ -15,6 +15,7 @@
 #import "MainScreenViewControllerDelegate.h"
 #import "SSBouncyButton.h"
 #import "SongPlayerCoordinator.h"
+#import "AFDropdownNotification.h"
 
 @interface MainScreenViewController : UIViewController <UITabBarDelegate>
 

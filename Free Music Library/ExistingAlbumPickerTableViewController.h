@@ -7,14 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "AppEnvironmentConstants.h"
-#import "AlbumArtUtilities.h"
-#import "Album.h"
-#import "AlbumTableViewFormatter.h"
-#import "UIImage+colorImages.h"
 #import "CoreDataCustomTableViewController.h"
-#import "StackController.h"
 
+@class StackController;
+@class Album;
 @interface ExistingAlbumPickerTableViewController : CoreDataCustomTableViewController
                                                     <UISearchBarDelegate,
                                                     UITableViewDataSource,

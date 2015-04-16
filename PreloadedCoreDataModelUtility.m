@@ -127,8 +127,8 @@ static NSInteger const SONG7_DURATION = 137;
                       byNewOrExistingArtist:artistName
                                     inGenre:[GenreConstants noGenreSelectedGenreCode]
                            inManagedContext:[CoreDataManager context]
-                               withDuration:durationInSecs];
-    myNewSong.youtube_id = ytID;
+                               withDuration:durationInSecs
+                                     songId:ytID];
     return myNewSong;
 }
 

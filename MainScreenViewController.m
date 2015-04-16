@@ -18,6 +18,9 @@ short const dummyTabIndex = 2;
     NSUInteger numTimesViewHasAppeared;
     
     BOOL alwaysKeepStatusBarVisible;
+    BOOL tabBarVisible;
+    BOOL tabBarAnimationInProgress;
+    UIInterfaceOrientation lastVisibleTabBarOrientation;
 }
 @property (nonatomic, strong) UIView *tabBarView;  //contains the tab bar and center button - the whole visual thing.
 @property (nonatomic, strong) UITabBar *tabBar;  //this tab bar is containing within a tab bar view
@@ -29,6 +32,7 @@ short const dummyTabIndex = 2;
 @property (nonatomic, strong) NSArray *tabBarSelectedImageNames;
 @property (nonatomic, strong) NSArray *tabBarItems;
 @property (nonatomic, strong) UINavigationController *currentNavController;
+@property (nonatomic, strong) AFDropdownNotification *notification;
 @end
 
 
@@ -47,6 +51,8 @@ short const dummyTabIndex = 2;
         self.tabBarSelectedImageNames = selectNames;
         [[UITabBar appearance] setTintColor:[[UIColor defaultAppColorScheme] lighterColor]];
         numTimesViewHasAppeared = 0;
+        tabBarVisible = YES;
+        tabBarAnimationInProgress = NO;
     }
     return self;
 }
@@ -61,9 +67,14 @@ short const dummyTabIndex = 2;
     [super viewDidLoad];
     self.currentNavController = self.navControllers[0];
     self.view.backgroundColor = [UIColor clearColor];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(portraitStatusBarStateChanging:)
                                                  name:MZMainScreenVCStatusBarAlwaysVisible
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(hideTabBarAnimated:)
+                                                 name:MZHideTabBarAnimated
                                                object:nil];
 }
 
@@ -108,7 +119,6 @@ short const dummyTabIndex = 2;
     int visualTabIndex = tabIndex;
     if(tabIndex > dummyTabIndex)
         visualTabIndex--;
-    NSLog(@"Visual index tapped:%i Actual tab index tapped: %i", visualTabIndex, tabIndex);
     [self replaceNavControllerOnScreenWithNavController:self.navControllers[visualTabIndex]];
 }
 
@@ -213,7 +223,13 @@ short const dummyTabIndex = 2;
     [self.tabBarView addSubview:self.tabBar];
     [self.tabBarView addSubview:self.centerButton];
     [self.tabBarView setMultipleTouchEnabled:NO];
-    [self.view addSubview:self.tabBarView];
+    
+    if(tabBarVisible){
+        lastVisibleTabBarOrientation = [UIApplication sharedApplication].statusBarOrientation;
+        if(! self.tabBarView.superview)
+            [self.view addSubview:self.tabBarView];
+        self.tabBarView.alpha = 1;
+    }
 }
 
 - (void)setTabBarItems
@@ -301,6 +317,78 @@ short const dummyTabIndex = 2;
                       centerBtnDiameter);
 }
 
+- (void)hideTabBarAnimated:(NSNotification *)notification
+{
+    tabBarAnimationInProgress = YES;
+    NSNumber *boolAsNum = [notification object];
+    BOOL hide = [boolAsNum boolValue];
+    CGRect visibleRect;
+    UIInterfaceOrientation currentInterfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
+    if(UIInterfaceOrientationIsPortrait((currentInterfaceOrientation)))
+        visibleRect = [self portraitTabBarViewFrame];
+    else
+        visibleRect = [self landscapeTabBarViewFrame];
+    
+    float duration = 0.8;
+    float delay = 0;
+    float springDamping = 0.80;
+    float initialVelocity = 0.5;
+    
+    if(hide)
+    {
+        lastVisibleTabBarOrientation = currentInterfaceOrientation;
+        CGRect hiddenFrame = CGRectMake(visibleRect.origin.x,
+                                        visibleRect.origin.y + MZTabBarHeight,
+                                        visibleRect.size.width,
+                                        visibleRect.size.height);
+        [UIView animateWithDuration:duration
+                              delay:delay
+             usingSpringWithDamping:springDamping
+              initialSpringVelocity:initialVelocity
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             [self.tabBarView setFrame:hiddenFrame];
+                             self.tabBarView.alpha = 1;
+                         }
+                         completion:^(BOOL finished) {
+                             [self.tabBarView removeFromSuperview];
+                             tabBarVisible = NO;
+                             tabBarAnimationInProgress = NO;
+                         }];
+    }
+    else
+    {
+        //checking if orientations have changed (meaningfully anyway...as far as needing to redraw the tab bar)
+        if(! (UIInterfaceOrientationIsPortrait(lastVisibleTabBarOrientation)
+              && UIInterfaceOrientationIsPortrait(currentInterfaceOrientation))
+           ||
+           ! (UIInterfaceOrientationIsLandscape(lastVisibleTabBarOrientation)
+            && UIInterfaceOrientationIsLandscape(currentInterfaceOrientation)))
+        {
+            [self setupTabBarAndTabBarViewUsingOrientation:currentInterfaceOrientation];
+            [self.tabBarView setFrame:CGRectMake(self.tabBarView.frame.origin.x,
+                                                 self.tabBarView.frame.origin.y + MZTabBarHeight,
+                                                 self.tabBarView.frame.size.width,
+                                                 self.tabBarView.frame.size.height)];
+        }
+             
+        [UIView animateWithDuration:duration
+                              delay:delay
+             usingSpringWithDamping:springDamping + 0.1
+              initialSpringVelocity:initialVelocity
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             [self.tabBarView setFrame:visibleRect];
+                             self.tabBarView.alpha = 1;
+                         }
+                         completion:^(BOOL finished) {
+                             tabBarVisible = YES;
+                             [self.view addSubview:self.tabBarView];
+                             tabBarAnimationInProgress = NO;
+                         }];
+    }
+}
+
 #pragma nav bar helper
 - (BOOL)prefersStatusBarHidden
 {
@@ -325,11 +413,22 @@ short const dummyTabIndex = 2;
                                 duration:(NSTimeInterval)duration
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    if(! tabBarVisible && !tabBarAnimationInProgress)
+        return;
+    
+    if(tabBarAnimationInProgress){
+        if(tabBarVisible)
+            //resolves issue
+            self.tabBarView.alpha = 0;  //animation is going to hide it anyway...
+        
+        [self setupTabBarAndTabBarViewUsingOrientation:toInterfaceOrientation];
+    }
+    
     [self ensureTabBarRotatesSmoothlyToInterfaceOrientation:toInterfaceOrientation];
     
     if([SongPlayerCoordinator isVideoPlayerExpanded]){
         self.tabBarView.alpha = 0;
-        double delayInSeconds = 0.7;
+        double delayInSeconds = 0.5;
         __weak UIView *weakTabBarView = self.tabBarView;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){

@@ -50,6 +50,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 + (void)skipToNextTrack
 {
     if([NSThread mainThread]){
+        [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
         Song *skippedSong = [MusicPlaybackController nowPlayingSong];
         Song *nextSong = [playbackQueue skipForward];
         [VideoPlayerWrapper startPlaybackOfSong:nextSong goingForward:YES oldSong:skippedSong];
@@ -92,11 +93,12 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 {
     if([NSThread mainThread]){
         if(! [MusicPlaybackController shouldSeekToStartOnBackPress]){
-            Song *skippedSong = [MusicPlaybackController nowPlayingSong];
+            [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
+            Song *oldNowPlaying = [MusicPlaybackController nowPlayingSong];
             Song *previousSong = [playbackQueue skipToPrevious];
             [VideoPlayerWrapper startPlaybackOfSong:previousSong
                                        goingForward:NO
-                                            oldSong:skippedSong];
+                                            oldSong:oldNowPlaying];
         } else{
             [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
             [MusicPlaybackController resumePlayback];
@@ -184,14 +186,17 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     if([nowPlayingObject isFromPlayNextSongs]){
         NSUInteger numMoreSongs = [playbackQueue numMoreSongsInUpNext];
         if(numMoreSongs == 0)
-            return @"";
+            return @"No More Songs";
         else if(numMoreSongs == 1)
             return @"1 Song Queued";
         else
             return [NSString stringWithFormat:@"%lu Songs Queued", (unsigned long)numMoreSongs];
     }
-    else
-        return [NSString stringWithFormat:@"-- of %lu", (unsigned long)[playbackQueue numSongsInEntireMainQueue]];
+    else{
+        NSUInteger mainQueueSongsPlayed = [playbackQueue numSongsInEntireMainQueue] - [playbackQueue numMoreSongsInMainQueue];
+        return [NSString stringWithFormat:@"%lu of %lu", (unsigned long)mainQueueSongsPlayed,
+                                                        (unsigned long)[playbackQueue numSongsInEntireMainQueue]];
+    }
 }
 
 #pragma mark - Now Playing Song
@@ -271,45 +276,83 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     short maxDesiredQuality = aQualitySetting;
     NSDictionary *vidQualityDict = aDictionary;
     NSURL *url;
+    NSArray *arrayOfValidQualities = nil;
+    
     switch (maxDesiredQuality) {
         case 240:
         {
+            arrayOfValidQualities = @[
+                                      [NSNumber numberWithInt:36]
+                                      ];
+            
             url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualitySmall240]];
-            if(url != nil)
-                return url;
-            else if(url == nil)
-                url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityMedium360]];
-            else if(url == nil)
-                url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityHD720]];
             break;
         }
         case 360:
         {
+            arrayOfValidQualities = @[
+                                      [NSNumber numberWithInt:36],
+                                      [NSNumber numberWithInt:18],
+                                      [NSNumber numberWithInt:34],
+                                      [NSNumber numberWithInt:82],
+                                      [NSNumber numberWithInt:133],
+                                      [NSNumber numberWithInt:134],
+                                      ];
+            
             url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityMedium360]];
-            if(url != nil)
-                return url;
-            else if(url == nil)
+            if(url == nil)
                 url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualitySmall240]];
-            else if(url == nil)
-                url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityHD720]];
             break;
         }
         case 720:
         {
+            arrayOfValidQualities = @[
+                                      [NSNumber numberWithInt:18],
+                                      [NSNumber numberWithInt:22],
+                                      [NSNumber numberWithInt:34],
+                                      [NSNumber numberWithInt:35],
+                                      [NSNumber numberWithInt:36],
+                                      [NSNumber numberWithInt:43],
+                                      [NSNumber numberWithInt:44],
+                                      [NSNumber numberWithInt:45],
+                                      [NSNumber numberWithInt:82],
+                                      [NSNumber numberWithInt:83],
+                                      [NSNumber numberWithInt:84],
+                                      [NSNumber numberWithInt:133],
+                                      [NSNumber numberWithInt:134],
+                                      [NSNumber numberWithInt:135],
+                                      [NSNumber numberWithInt:136],
+                                      [NSNumber numberWithInt:298],
+                                      ];
+            
             url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityHD720]];
-            if(url != nil)
-                return url;
-            else if(url == nil)
+            if(url == nil)
                 url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityMedium360]];
-            else if(url == nil)
+            if(url == nil)
                 url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualitySmall240]];
             break;
         }
         default:
-            url = [vidQualityDict objectForKey:[NSNumber numberWithUnsignedInteger:XCDYouTubeVideoQualityMedium360]];
+        {
             break;
+        }
     }
+    //in case no valid URL was found by this point.
+    if(url == nil){
+        url = [MusicPlaybackController grabAnyValidUrlFromDict:vidQualityDict arrayOfMaxItagValues:arrayOfValidQualities];
+    }
+    
     return url;
+}
+
++ (NSURL *)grabAnyValidUrlFromDict:(NSDictionary *)aDictionary arrayOfMaxItagValues:(NSArray *)arrayOfValues
+{
+    for(int i = 0; i < arrayOfValues.count; i++){
+        if(aDictionary[arrayOfValues[i]] != nil)
+            return aDictionary[arrayOfValues[i]];
+    }
+    
+    return nil;
 }
 
 #pragma mark - Helper methods

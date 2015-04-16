@@ -10,6 +10,10 @@
 
 @implementation MZConstants
 
+//backgrounding
+NSString * const MZStartBackgroundTaskHandlerIfInactive = @"background handler will begin if not running";
+
+
 //reachability
 NSString * const MZReachabilityStateChanged = @"Reachability state change";
 NSString * const MZInterfaceNeedsToBlockCurrentSongPlayback = @"pass bool as NSNumber for state.";
@@ -42,10 +46,11 @@ short const MZLongestCellularPlayableDuration = 600;
 
 float const MZCellImageViewFadeDuration = 0.49f;
 float const MZSmallPlayerVideoFramePadding = 6.0f;
-short const MZTabBarHeight = 50;
 short const MZSkipToSongBeginningIfBackBtnTappedBoundary = 3;
 
-
+//Tab bar
+short const MZTabBarHeight = 50;
+NSString * const MZHideTabBarAnimated = @"BOOL passed in notification indicates whether or not tab bar will hide.";
 
 
 

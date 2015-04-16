@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "060ECD709FDB3AED7E54B450"
+               BlueprintIdentifier = "C15C459FB2F708203461CFC5"
                BuildableName = "libPods-GCDiscreetNotificationView.a"
                BlueprintName = "Pods-GCDiscreetNotificationView"
                ReferencedContainer = "container:Pods.xcodeproj">

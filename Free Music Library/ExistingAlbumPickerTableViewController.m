@@ -8,6 +8,18 @@
 
 #import "ExistingAlbumPickerTableViewController.h"
 
+#import "StackController.h"
+#import "CoreDataManager.h"
+#import "AppEnvironmentConstants.h"
+#import "AlbumArtUtilities.h"
+#import "Album.h"
+#import "AlbumTableViewFormatter.h"
+#import "UIImage+colorImages.h"
+#import "MySearchBar.h"
+#import "MGSwipeTableCell.h"
+#import "MZTableViewCell.h"
+#import <FXImageView/UIImage+FX.h>
+
 @interface ExistingAlbumPickerTableViewController ()
 @property (nonatomic, strong) MySearchBar* searchBar;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -165,10 +177,14 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     BOOL isCurrentlySelectedAlbum = [_usersCurrentAlbum.album_id isEqualToString:album.album_id];
     
-    if(isCurrentlySelectedAlbum)
-        cell.textLabel.textColor = [super colorForNowPlayingItem];
-    else
-        cell.textLabel.textColor = [UIColor blackColor];
+    if(isCurrentlySelectedAlbum){
+        UIColor *appThemeSuperLight = [[[[[UIColor defaultAppColorScheme] lighterColor] lighterColor] lighterColor] lighterColor];
+        cell.backgroundColor = appThemeSuperLight;
+        [cell setUserInteractionEnabled:NO];
+    } else{
+        cell.backgroundColor = [UIColor clearColor];
+        [cell setUserInteractionEnabled:YES];
+    }
     
     // Store a reference to the current cell that will enable the image to be associated with the correct
     // cell, when the image is subsequently loaded asynchronously.

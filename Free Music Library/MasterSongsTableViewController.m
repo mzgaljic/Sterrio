@@ -7,6 +7,7 @@
 //
 
 #import "MasterSongsTableViewController.h"
+#import "AllSongsDataSource.h"
 
 @interface MasterSongsTableViewController ()
 {

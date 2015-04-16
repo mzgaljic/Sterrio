@@ -675,7 +675,7 @@ static int tempIcloudSwitchCount = 0;
 -(void)displayComposerModalView
 {
     MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
-    picker.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
+    picker.navigationBar.tintColor = [UIColor standardIOS7PlusTintColor];
     picker.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor defaultAppColorScheme]};
     picker.mailComposeDelegate = self;
     NSString *emailSubject = @"Bug Report";
@@ -684,7 +684,6 @@ static int tempIcloudSwitchCount = 0;
     // Set up recipients
     [picker setToRecipients:@[MZEmailBugReport]];
     [picker setMessageBody:[self buildEmailBodyString] isHTML:NO];
-    picker.navigationBar.tintColor = [UIColor defaultAppColorScheme];
     if(_attachmentUIImages.count > 0){
         int count = 1;
         for(UIImage *attachmentImage in _attachmentUIImages){

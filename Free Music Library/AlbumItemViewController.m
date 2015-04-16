@@ -8,6 +8,15 @@
 
 #import "AlbumItemViewController.h"
 
+#import "ArtistTableViewFormatter.h"
+#import "MZCoreDataModelDeletionService.h"
+#import "AlbumArtUtilities.h"
+#import "Album.h"
+#import "Song.h"
+#import "MZAlbumSectionHeader.h"
+#import "MZTableViewCell.h"
+#import "MusicPlaybackController.h"
+
 @interface AlbumItemViewController ()
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) UIView *albumHeader;
@@ -40,6 +49,12 @@ const int ALBUM_HEADER_HEIGHT = 120;
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
     self.navBar.title = nil;
     [self generateAlbumSectionHeaderView];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:[NSNumber numberWithBool:NO]];
 }
 
 - (void)dealloc
@@ -117,7 +132,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
         //obtain object for the deleted song
         Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
         [MusicPlaybackController songAboutToBeDeleted:song deletionContext:self.playbackContext];
-        [song removeAlbumArt];
+        [MZCoreDataModelDeletionService prepareSongForDeletion:song];
         
         NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:[CoreDataManager context]];
         NSFetchRequest *request = [[NSFetchRequest alloc] init];
@@ -269,7 +284,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
 - (PlaybackContext *)contextForSpecificSong:(Song *)aSong
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY song_id == %@", aSong.song_id];
+    request.predicate = [NSPredicate predicateWithFormat:@"song_id == %@", aSong.song_id];
     //descriptor doesnt really matter here
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
                                                                      ascending:YES];
@@ -296,7 +311,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
     NSManagedObjectContext *context = [CoreDataManager context];
 
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    NSPredicate *albumPredicate = [NSPredicate predicateWithFormat:@"ANY album.album_id == %@", self.album.album_id];
+    NSPredicate *albumPredicate = [NSPredicate predicateWithFormat:@"album.album_id == %@", self.album.album_id];
     request.predicate = albumPredicate;
     //descriptor doesnt really matter here
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"

@@ -8,16 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
-#import "CoreDataManager.h"
-#import "UIColor+LighterAndDarker.h"
-#import "MySearchBar.h"
-#import "MusicPlaybackController.h"
-#import "NowPlayingSong.h"
-#import "MGSwipeTableCell.h"
-#import "MGSwipeButton.h"
-#import "MZTableViewCell.h"
-#import "NSObject+ObjectUUID.h"
 
+@class MySearchBar;
+@class PlaybackContext;
 @interface CoreDataCustomTableViewController : UIViewController <NSFetchedResultsControllerDelegate,
                                                                 UITableViewDelegate>
 

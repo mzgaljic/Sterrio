@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "Song.h"
 #import "PlaybackContext.h"
-#import "NowPlayingSong.h"
 #import "CoreDataManager.h"
 #import "MZPrivateMainPlaybackQueue.h"
 #import "MZPrivateUpNextPlaybackQueue.h"

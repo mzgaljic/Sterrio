@@ -84,6 +84,7 @@ static void *albumSongsChanged = &albumSongsChanged;
 }
 
 #pragma mark - Code For Custom setters/KVO (observing when album songs goes to 0)
+/*
 - (void)awakeFromInsert
 {
     [self observeStuff];
@@ -172,5 +173,6 @@ static void *albumSongsChanged = &albumSongsChanged;
         //do nothing, obviously it wasn't attached because an exception was thrown
     }
 }
+*/
 
 @end

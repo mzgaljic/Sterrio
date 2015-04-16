@@ -1,8 +1,8 @@
 //
 //  Song.m
-//  Muzic
+//  Free Music Library
 //
-//  Created by Mark Zgaljic on 1/4/15.
+//  Created by Mark Zgaljic on 4/15/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
@@ -16,12 +16,11 @@
 
 @dynamic albumArtFileName;
 @dynamic associatedWithAlbum;
+@dynamic duration;
 @dynamic genreCode;
 @dynamic smartSortSongName;
 @dynamic song_id;
 @dynamic songName;
-@dynamic youtube_id;
-@dynamic duration;
 @dynamic album;
 @dynamic artist;
 @dynamic playlistIAmIn;

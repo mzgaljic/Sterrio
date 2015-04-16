@@ -11,6 +11,10 @@
 @interface AllSongsDataSource ()
 {
     NSString *cellReuseIdDetailLabelNull;
+    UILabel *tableViewEmptyMsgLabel;
+    BOOL keyboardIsVisible;
+    int emptyTableMsgKeyboardPadding;
+    BOOL firstTimeCreatingEmptyTableMsg;
 }
 @property (nonatomic, assign, readwrite) SONG_DATA_SRC_TYPE dataSourceType;
 @property (nonatomic, strong) NSMutableArray *selectedSongIds;
@@ -63,6 +67,9 @@
         
         self.displaySearchResults = NO;
         self.searchResults = [NSMutableArray array];
+        keyboardIsVisible = NO;
+        emptyTableMsgKeyboardPadding = [UIScreen mainScreen].bounds.size.height * 0.15;
+        firstTimeCreatingEmptyTableMsg = YES;
     }
     return self;
 }
@@ -160,7 +167,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                 
                 __weak UIImage *cellImg = albumArt;
                 //calculate how much one length varies from the other.
-                int diff = abs(cellImg.size.width - cellImg.size.height);
+                int diff = abs((int)cellImg.size.width - (int)cellImg.size.height);
                 if(diff > 10){
                     //image is not a perfect (or close to perfect) square. Compensate for this...
                     cellImg = [albumArt imageScaledToFitSize:cell.imageView.frame.size];
@@ -208,8 +215,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             song = [self.searchResults objectAtIndex:indexPath.row];
         else
             song = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        
         [MusicPlaybackController songAboutToBeDeleted:song deletionContext:self.playbackContext];
-        [song removeAlbumArt];
+        [MZCoreDataModelDeletionService prepareSongForDeletion:song];
         
         NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:[CoreDataManager context]];
         NSFetchRequest *request = [[NSFetchRequest alloc] init];
@@ -242,8 +250,19 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     if(self.dataSourceType == SONG_DATA_SRC_TYPE_Default)
     {
-        if(! tableView.editing)
+        if(! tableView.editing){
+            
+            BOOL playerEnabled = [SongPlayerCoordinator isPlayerEnabled];
+            BOOL playerOnScreen = [SongPlayerCoordinator isPlayerOnScreen];
+            BOOL nowPlayingAndActive = [[NowPlayingSong sharedInstance] isEqualToSong:selectedSong compareWithContext:self.playbackContext] && playerEnabled && playerOnScreen;
+            
+            if(nowPlayingAndActive){
+                UIViewController *visibleVc = [super topViewController];
+                [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:visibleVc];
+            }
+            
             [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext];
+        }
         else if(tableView.editing)  //tapping song triggers edit segue
             [self.editableSongDelegate performEditSegueWithSong:selectedSong];
     }
@@ -305,7 +324,19 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         else
         {
             NSString *text = @"No Search Results";
-            tableView.backgroundView = [self friendlyTableUserMessageWithText:text];
+            UILabel *aLabel = (UILabel *)[self friendlyTableUserMessageWithText:text];
+            tableView.backgroundView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+            
+            CGPoint newLabelCenter;
+            if(firstTimeCreatingEmptyTableMsg){
+                firstTimeCreatingEmptyTableMsg = NO;
+                newLabelCenter = tableView.backgroundView.center;
+            } else
+                newLabelCenter = CGPointMake(tableView.backgroundView.center.x,
+                                             tableView.backgroundView.center.y - emptyTableMsgKeyboardPadding);
+                
+            aLabel.center = newLabelCenter;
+            [tableView.backgroundView addSubview:aLabel];
             return 0;
         }
     }
@@ -345,28 +376,38 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 #pragma  mark - TableView helpers
 - (UIView *)friendlyTableUserMessageWithText:(NSString *)text
 {
+    if(tableViewEmptyMsgLabel){
+        if([tableViewEmptyMsgLabel.text isEqualToString:text])
+            return tableViewEmptyMsgLabel;
+        
+        tableViewEmptyMsgLabel.text = text;
+        [tableViewEmptyMsgLabel sizeToFit];
+        return tableViewEmptyMsgLabel;
+    }
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0,
-                                                               0,
-                                                               self.tableView.bounds.size.width,
-                                                               self.tableView.bounds.size.height)];
+    tableViewEmptyMsgLabel = [[UILabel alloc] initWithFrame:CGRectMake(0,
+                                                                       0,
+                                                                       self.tableView.bounds.size.width,
+                                                                       self.tableView.bounds.size.height)];
     if(text == nil)
         text = @"";
-    label.text = text;
-    label.textColor = [UIColor darkGrayColor];
+    tableViewEmptyMsgLabel.text = text;
+    tableViewEmptyMsgLabel.textColor = [UIColor darkGrayColor];
     //multi lines strings ARE possible, this is just a weird api detail
-    label.numberOfLines = 0;
-    label.textAlignment = NSTextAlignmentCenter;
+    tableViewEmptyMsgLabel.numberOfLines = 0;
+    tableViewEmptyMsgLabel.textAlignment = NSTextAlignmentCenter;
     int fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-    label.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+    tableViewEmptyMsgLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                  size:fontSize];
-    [label sizeToFit];
-    return label;
+    [tableViewEmptyMsgLabel sizeToFit];
+    return tableViewEmptyMsgLabel;
 }
 
 - (void)removeTableUserMessage
 {
+    [tableViewEmptyMsgLabel removeFromSuperview];
     self.tableView.backgroundView = nil;
+    tableViewEmptyMsgLabel = nil;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
 }
 
@@ -450,7 +491,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (PlaybackContext *)contextForSpecificSong:(Song *)aSong
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY song_id == %@", aSong.song_id];
+    request.predicate = [NSPredicate predicateWithFormat:@"song_id == %@", aSong.song_id];
     //descriptor doesnt really matter here
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
                                                                      ascending:YES];
@@ -464,7 +505,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (Song *)songObjectGivenSongId:(NSString *)songId
 {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Song"];
-    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"ANY song_id == %@", songId];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"song_id == %@", songId];
     //descriptor doesnt really matter here
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
                                                                      ascending:YES];
@@ -512,17 +553,22 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
+    keyboardIsVisible = NO;
+    [self animateTableEmtpyLabelUp:NO];
 }
 
 //user tapped search box
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
+    keyboardIsVisible = YES;
+    
     if(searchBar.text.length == 0)
         self.searchResults = [NSArray array];
     
     //show the cancel button
     [searchBar setShowsCancelButton:YES animated:YES];
     [self.searchBarDataSourceDelegate searchBarIsBecomingActive];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:[NSNumber numberWithBool:YES]];
     BOOL oldDisplayResultsVal = self.displaySearchResults;
     self.displaySearchResults = YES;
     
@@ -530,6 +576,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         //user is now transitioning into the "search" mode
         [self.tableView reloadData];
     }
+    
+    [self animateTableEmtpyLabelUp:YES];
 }
 
 //user tapped "Search"
@@ -537,6 +585,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     //search results already appear as the user types. Just hide the keyboard...
     [searchBar resignFirstResponder];
+    keyboardIsVisible = NO;
     self.displaySearchResults = YES;
 }
 
@@ -544,12 +593,17 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     self.displaySearchResults = NO;
+    keyboardIsVisible = NO;
+    firstTimeCreatingEmptyTableMsg = YES;
     
     //dismiss search bar and hide cancel button
     [searchBar setShowsCancelButton:NO animated:YES];
     searchBar.text = @"";
     [searchBar resignFirstResponder];
     [self.searchBarDataSourceDelegate searchBarIsBecomingInactive];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:[NSNumber numberWithBool:NO]];
+    
+    [self removeTableUserMessage];
     [self.tableView reloadData];
 }
 
@@ -560,9 +614,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     self.displaySearchResults = YES;
     if(searchText.length == 0){
         [self.tableView reloadData];
+        [self animateTableEmtpyLabelUp:YES];
         return;
+    } else{
+        [self removeTableUserMessage];
     }
-    
     searchText = [searchText removeIrrelevantWhitespace];
     NSManagedObjectContext *context = [CoreDataManager context];
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
@@ -608,6 +664,53 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     {
         self.searchResults = [NSMutableArray arrayWithArray:[context executeFetchRequest:request error:nil]];
         [self.tableView reloadData];
+    }
+}
+
+#pragma mark - Changing interface based on keyboard
+- (void)animateTableEmtpyLabelUp:(BOOL)animateUp
+{
+    if(tableViewEmptyMsgLabel)
+    {
+        UIView *backgroundView = self.tableView.backgroundView;
+        float duration = 1;
+        float delay = 0.3;
+        float springDamping = 0.80;
+        float initialVelocity = 0.5;
+        
+        //see if the center values are roughly the same...
+        if(fabs(tableViewEmptyMsgLabel.center.y -  backgroundView.center.y) <= 20)
+        {
+            if(! animateUp)
+                return;
+            CGRect newLabelFrame = CGRectMake(tableViewEmptyMsgLabel.frame.origin.x,
+                                              tableViewEmptyMsgLabel.frame.origin.y - emptyTableMsgKeyboardPadding,
+                                              tableViewEmptyMsgLabel.frame.size.width,
+                                              tableViewEmptyMsgLabel.frame.size.height);
+            [UIView animateWithDuration:duration
+                                  delay:delay
+                 usingSpringWithDamping:springDamping
+                  initialSpringVelocity:initialVelocity
+                                options:UIViewAnimationOptionBeginFromCurrentState
+                             animations:^{
+                                 [tableViewEmptyMsgLabel setFrame:newLabelFrame];
+                             }
+                             completion:nil];
+        }
+        else
+        {
+            if(animateUp)
+                return;
+            [UIView animateWithDuration:duration
+                                  delay:delay
+                 usingSpringWithDamping:springDamping
+                  initialSpringVelocity:initialVelocity
+                                options:UIViewAnimationOptionBeginFromCurrentState
+                             animations:^{
+                                 tableViewEmptyMsgLabel.center = backgroundView.center;
+                             }
+                             completion:nil];
+        }
     }
 }
 

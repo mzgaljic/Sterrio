@@ -10,6 +10,14 @@
 
 @implementation MyTableViewController
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    //makes the keyboard dismiss when the tableview is touched (useful for search bar stuff)
+    self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];

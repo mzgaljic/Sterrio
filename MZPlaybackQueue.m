@@ -177,7 +177,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
     [self printQueueContents];
     [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newNowPlaying.aNewSong
                                                   context:newNowPlaying.aNewContext];
-    return newNowPlaying.aNewSong;
+    return newNowPlaying.aNewSong;;
 }
 - (Song *)skipForward
 {

@@ -7,13 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "AlbumArtUtilities.h"
-#import "Album.h"
-#import "Song.h"
-#import "MZAlbumSectionHeader.h"
 #import "CoreDataCustomTableViewController.h"
-#import "ArtistTableViewFormatter.h"
+#import "MGSwipeTableCell.h"
 
+@class Album;
 @interface AlbumItemViewController : CoreDataCustomTableViewController <UITableViewDataSource,
                                                                         UITableViewDelegate,
                                                                         MGSwipeTableCellDelegate>

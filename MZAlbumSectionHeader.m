@@ -65,7 +65,7 @@ const float SEPERATOR_HEIGHT = 0.5;
     
     short yOriginOffset = 0;
     //calculate how much one length varies from the other.
-    int diff = abs(albumArt.size.width - albumArt.size.height);
+    int diff = abs((int)albumArt.size.width - (int)albumArt.size.height);
     if(diff > 0){
         //aspect ratio is aspect FIT, which means in this case, the img y origin wont
         //be the same as where the image appears the being (since the image is wide here)

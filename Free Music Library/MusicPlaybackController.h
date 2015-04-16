@@ -17,7 +17,6 @@
 #import "MZPlaybackQueue.h"
 #import "MyAVPlayer.h"  //custom AVPlayer class
 #import "GenreConstants.h"
-#import "NowPlayingSong.h"
 #import "PlaybackContext.h"
 #import "VideoPlayerWrapper.h"
 @class PlayerView;  //import doesnt work here

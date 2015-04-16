@@ -27,7 +27,6 @@
 @property (nonatomic, assign, readonly) NSUInteger secondsLoaded;
 
 - (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)yes oldSong:(Song *)oldSong;
-- (void)beginPlaybackWithPlayerItem:(AVPlayerItem *)item;
 
 - (void)showSpinnerForInternetConnectionIssueIfAppropriate;
 - (void)showSpinnerForBasicLoading;

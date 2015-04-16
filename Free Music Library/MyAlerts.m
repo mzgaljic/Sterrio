@@ -15,6 +15,8 @@
 #import "UIWindow+VisibleVC.h"
 #import "SongPlayerViewController.h"  //needed just to call preDealloc
 
+static AFDropdownNotification *notification;
+
 @implementation MyAlerts
 
 + (void)displayAlertWithAlertType:(ALERT_TYPE)type
@@ -31,44 +33,80 @@
 
 + (void)runDisplayAlertCodeWithAlertType:(ALERT_TYPE)type
 {
-#warning delete this line.
-    int CSNotificationViewStyleInfo = 0;
     switch (type) {
         case ALERT_TYPE_CannotConnectToYouTube:
         {
             //alert user to internet problem
-            NSString *msg = @"Cannot connect to YouTube.";
-            [MyAlerts displayBannerWithMsg:msg
-                                     style:CSNotificationViewStyleError
-                                     delay:0.8
-                             shortDuration:NO];
+            
+            notification = [[AFDropdownNotification alloc] init];
+            notification.titleText = @"Cannot connect to YouTube.";
+            notification.image = [UIImage colorOpaquePartOfImage:[UIColor redColor]
+                                                                :[UIImage imageNamed:@"x_icon"]];
+            notification.topButtonText = @"Retry";
+            notification.bottomButtonText = @"Okay";
+            notification.dismissOnTap = NO;
+            [notification presentInView:[UIApplication sharedApplication].keyWindow
+                   withGravityAnimation:YES];
+            
+            [notification listenEventsWithBlock:^(AFDropdownNotificationEvent event) {
+                switch (event) {
+                    case AFDropdownNotificationEventTopButton:
+                        [VideoPlayerWrapper startPlaybackOfSong:[NowPlayingSong sharedInstance].nowPlaying
+                                                   goingForward:YES
+                                                        oldSong:nil];
+                        break;
+                    default:
+                        break;
+                }
+            }];
             break;
         }
         case ALERT_TYPE_CannotLoadVideo:
         {
-            NSString *msg = @"An unknown problem occured while loading your song.";
-            [MyAlerts displayBannerWithMsg:msg
-                                     style:CSNotificationViewStyleError
-                                     delay:0
-                             shortDuration:NO];
+            notification = [[AFDropdownNotification alloc] init];
+            notification.titleText =  @"An unknown problem occured while loading your song.";
+            notification.topButtonText = @"Retry";
+            notification.bottomButtonText = @"Okay";
+            notification.image = [UIImage colorOpaquePartOfImage:[UIColor redColor]
+                                                                :[UIImage imageNamed:@"x_icon"]];
+            notification.dismissOnTap = NO;
+            [notification presentInView:[UIApplication sharedApplication].keyWindow
+                   withGravityAnimation:YES];
+            
+            [notification listenEventsWithBlock:^(AFDropdownNotificationEvent event) {
+                switch (event) {
+                    case AFDropdownNotificationEventTopButton:
+                        [VideoPlayerWrapper startPlaybackOfSong:[NowPlayingSong sharedInstance].nowPlaying
+                                                   goingForward:YES
+                                                        oldSong:nil];
+                        break;
+                    default:
+                        break;
+                }
+            }];
             break;
         }
         case ALERT_TYPE_FatalSongDurationError:
         {
-            NSString *msg = @"Song duration not available.";
-            [MyAlerts displayBannerWithMsg:msg
-                                     style:CSNotificationViewStyleInfo
-                                     delay:0
-                             shortDuration:YES];
+            notification = [[AFDropdownNotification alloc] init];
+            notification.titleText = @"Song duration not available.";
+            notification.bottomButtonText = @"Okay";
+            notification.dismissOnTap = NO;
+            [notification presentInView:[UIApplication sharedApplication].keyWindow
+                   withGravityAnimation:YES];
             break;
         }
         case ALERT_TYPE_PotentialVideoDurationFetchFail:
         {
-            NSString *msg = @"This video cannot be saved in its current state. An error has occured fetching information.";
-            [MyAlerts displayBannerWithMsg:msg
-                                     style:CSNotificationViewStyleError
-                                     delay:0
-                             shortDuration:NO];
+            notification = [[AFDropdownNotification alloc] init];
+            notification.titleText = @"Video Fetch Issue";
+            notification.subtitleText = @"This video cannot be saved in its current state. An error has occured fetching information.";
+            notification.bottomButtonText = @"Okay";
+            notification.image = [UIImage colorOpaquePartOfImage:[UIColor yellowColor]
+                                                                                   :[UIImage imageNamed:@"warning"]] ;
+            notification.dismissOnTap = NO;
+            [notification presentInView:[UIApplication sharedApplication].keyWindow
+                   withGravityAnimation:YES];
             break;
         }
         case ALERT_TYPE_LongVideoSkippedOnCellular:
@@ -77,20 +115,30 @@
             
             if([[UIApplication sharedApplication] applicationState] == UIApplicationStateActive)
             {
-                NSString *msg;
+                NSString *subtitle;
                 
                 int numSkipped = [MusicPlaybackController numLongVideosSkippedOnCellularConnection];
                 if(numSkipped == 0)
                     return;
                 else if (numSkipped == 1)
-                    msg = @"1 Song was skipped. Long songs are skipped on a cellular connection.";
+                    subtitle = @"1 Song was skipped. Long songs are skipped on a cellular connection.";
                 else
-                    msg = [NSString stringWithFormat:@"%i Songs skipped. Long songs are skipped on a cellular connection.", numSkipped];
+                    subtitle = [NSString stringWithFormat:@"%i Songs skipped. Long songs are skipped on a cellular connection.", numSkipped];
                 
-                [MyAlerts displayBannerWithMsg:msg
-                                         style:CSNotificationViewStyleInfo
-                                         delay:0.6
-                                 shortDuration:NO];
+                NSString *title;
+                if(numSkipped == 1)
+                    title = @"Song Skipped";
+                else
+                    title = @"Songs Skipped";
+
+                notification = [[AFDropdownNotification alloc] init];
+                notification.titleText = title;
+                notification.subtitleText = subtitle;
+                notification.dismissOnTap = NO;
+                notification.bottomButtonText = @"Okay";
+                [notification presentInView:[UIApplication sharedApplication].keyWindow
+                       withGravityAnimation:YES];
+                
                 [MusicPlaybackController resetNumberOfLongVideosSkippedOnCellularConnection];
             }
             
@@ -98,74 +146,83 @@
         }
         case ALERT_TYPE_LongPreviewVideoSkippedOnCellular:
         {
-            NSString *msg = @"This video is too long to preview on a cellular connection.";
-            [MyAlerts displayBannerWithMsg:msg
-                                     style:CSNotificationViewStyleInfo
-                                     delay:0.6
-                             shortDuration:NO];
+            notification = [[AFDropdownNotification alloc] init];
+            notification.titleText = @"Long Video";
+            notification.subtitleText = @"This video is too long to preview on a cellular connection.";
+            notification.image = [UIImage colorOpaquePartOfImage:[UIColor yellowColor]
+                                                                :[UIImage imageNamed:@"warning"]];
+            notification.dismissOnTap = NO;
+            notification.bottomButtonText = @"Okay";
+            [notification presentInView:[UIApplication sharedApplication].keyWindow
+                   withGravityAnimation:YES];
             break;
         }
         case ALERT_TYPE_TroubleSharingVideo:
         {
-            NSString *msg = @"Sorry, this video could not be shared.";
-            [MyAlerts displayBannerWithMsg:msg
-                                     style:CSNotificationViewStyleError
-                                     delay:0
-                             shortDuration:YES];
+            notification = [[AFDropdownNotification alloc] init];
+            notification.titleText = @"Sorry, a problem occured sharing your video.";
+            notification.dismissOnTap = NO;
+            [notification presentInView:[UIApplication sharedApplication].keyWindow
+                   withGravityAnimation:YES];
             break;
         }
         case ALERT_TYPE_TroubleSharingLibrarySong:
         {
-            NSString *msg = @"Sorry, this song could not be shared.";
-            [MyAlerts displayBannerWithMsg:msg
-                                     style:CSNotificationViewStyleError
-                                     delay:0
-                             shortDuration:YES];
+            notification = [[AFDropdownNotification alloc] init];
+            notification.titleText = @"Sorry, this song could not be shared.";
+            notification.dismissOnTap = NO;
+            [notification presentInView:[UIApplication sharedApplication].keyWindow
+                   withGravityAnimation:YES];
             break;
         }
         case ALERT_TYPE_CannotOpenSafariError:
         {
-            NSString *msg = @"Whoops, something went wrong trying to launch Safari.";
-            [MyAlerts displayBannerWithMsg:msg
-                                     style:CSNotificationViewStyleError
-                                     delay:0
-                             shortDuration:YES];
+            notification = [[AFDropdownNotification alloc] init];
+            notification.titleText = @"Whoops";
+            notification.subtitleText = @"Something went wrong trying to launch Safari.";
+            UIImage *x = [UIImage colorOpaquePartOfImage:[UIColor redColor]
+                                                        :[UIImage imageNamed:@"x_icon"]];
+            notification.image = x;
+            notification.bottomButtonText = @"Okay";
+            notification.dismissOnTap = NO;
+            [notification presentInView:[UIApplication sharedApplication].keyWindow
+                   withGravityAnimation:YES];
             break;
         }
         case ALERT_TYPE_CannotOpenSelectedImageError:
         {
-            NSString *msg = @"The selected image could not be opened. Try a different image.";
-            [MyAlerts displayBannerWithMsg:msg
-                                     style:CSNotificationViewStyleError
-                                     delay:1.0
-                             shortDuration:NO];
-            break;
-        }
-        case ALERT_TYPE_SongSaveSuccess:
-        {
-            NSString *msg = @"Song saved.";
-            [MyAlerts displayBannerWithMsg:msg
-                                     style:CSNotificationViewStyleSuccess
-                                     delay:1.0
-                             shortDuration:YES];
+            notification = [[AFDropdownNotification alloc] init];
+            notification.titleText = @"Bad Image";
+            notification.subtitleText = @"The selected image could not be opened. Try a different image.";
+            notification.dismissOnTap = NO;
+            notification.bottomButtonText = @"Okay";
+            [notification presentInView:[UIApplication sharedApplication].keyWindow
+                   withGravityAnimation:YES];
             break;
         }
         case ALERT_TYPE_SongSaveHasFailed:
         {
-            NSString *msg = @"Oh no! Something went wrong saving your song.";
-            [MyAlerts displayBannerWithMsg:msg
-                                     style:CSNotificationViewStyleError
-                                     delay:1.0
-                             shortDuration:NO];
+            notification = [[AFDropdownNotification alloc] init];
+            notification.titleText = @"Song Not Saved";
+            notification.subtitleText = @"Sorry, something went wrong saving your song.";
+            notification.image = [UIImage colorOpaquePartOfImage:[UIColor redColor]
+                                                                :[UIImage imageNamed:@"x_icon"]];
+            notification.bottomButtonText = @"Okay";
+            notification.dismissOnTap = NO;
+            [notification presentInView:[UIApplication sharedApplication].keyWindow
+                   withGravityAnimation:YES];
             break;
         }
         case ALERT_TYPE_SongQueued:
         {
+#warning alert doesnt do anything
+            /*
             NSString *msg = @"Queued";
             [MyAlerts displayBannerWithMsg:msg
                                      style:CSNotificationViewStyleSuccess
                                      delay:0
                              shortDuration:YES];
+             */
             break;
         }
         default:
@@ -186,33 +243,6 @@
     [vc dismissViewControllerAnimated:YES completion:nil];
 }
 
-+ (void)displayBannerWithMsg:(NSString *)msg
-                       style:(CSNotificationViewStyle)style
-                       delay:(float)seconds
-               shortDuration:(BOOL)shortduration
-{
-#warning commented out.
-    /*
-    float duration = 0;
-    if(shortduration)
-        duration = kCSNotificationViewDefaultShowDuration;
-    else
-        duration = kCSNotificationViewLongShowDuration;
-    
-    if(seconds == 0){
-        UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];
-        [CSNotificationView showInViewController:[keyWindow visibleViewController]
-                                           style:style
-                                         message:msg
-                                        duration:duration];
-    } else{
-        __weak NSString *weakMsg = msg;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (seconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [MyAlerts displayBannerWithMsg:weakMsg style:style delay:0 shortDuration:shortduration];
-        });
-    }
-     */
-}
 
 + (void)launchAlertViewWithDialogUsingTitle:(NSString *)title andMessage:(NSString *)msg
 {
@@ -229,7 +259,6 @@
     alert.buttonTextColor = [UIColor defaultAppColorScheme];
     [alert show];
 }
-
 
 
 //---------------------------------------------------------

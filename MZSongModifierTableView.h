@@ -18,6 +18,7 @@
 #import "NSString+HTTP_Char_Escape.h"
 #import "GenreConstants.h"
 #import "MusicPlaybackController.h"
+#import "MZCoreDataModelDeletionService.h"
 
 #import "ExistingAlbumPickerTableViewController.h"
 #import "ExistingArtistPickerTableViewController.h"
@@ -35,6 +36,7 @@
                                                 UITableViewDataSource>
 
 @property (nonatomic, strong) Song *songIAmEditing;
+@property (nonatomic, strong) NSString *aNewSongId;
 @property (nonatomic, assign) NSInteger lastTappedRow;  //only used for section 0
 
 @property (nonatomic, strong) UIViewController *VC;

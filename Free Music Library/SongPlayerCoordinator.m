@@ -244,6 +244,10 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
         }
         [videoPlayer setFrame:currentPlayerFrame];
         [videoPlayer shrunkenFrameHasChanged];
+        
+        CGPoint newCenter = [videoPlayer convertPoint:videoPlayer.center
+                                     fromCoordinateSpace:videoPlayer.superview];
+        [videoPlayer newAirplayInUseMsgCenter:newCenter];
     }
 }
 

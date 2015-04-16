@@ -15,6 +15,7 @@ static BOOL updatingPlayerViewDisabled = NO;
 {
     BOOL allowSongDidFinishToExecute;
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    [player replaceCurrentItemWithPlayerItem:nil];  //stop any ongoing playback
     allowSongDidFinishToExecute = player.allowSongDidFinishToExecute;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     [playerView removeLayerFromPlayer];
@@ -49,21 +50,40 @@ static BOOL updatingPlayerViewDisabled = NO;
     [MusicPlaybackController setRawAVPlayer:nil];
     player = nil;
     
-    MyAVPlayer *newPlayer = [[MyAVPlayer  alloc] init];
+    MyAVPlayer *newPlayer = [[MyAVPlayer  alloc] initWithPlayerItem:item];
     [newPlayer allowSongDidFinishNotificationToProceed:allowSongDidFinishToExecute];
     [MusicPlaybackController setRawAVPlayer:newPlayer];
     [MusicPlaybackController setAVPlayerTimeObserver:nil];
     
     [playerView reattachLayerToPlayer];
-    [newPlayer beginPlaybackWithPlayerItem:item];
+    [VideoPlayerWrapper newPlayerItemAddedCleanup];
     [VideoPlayerWrapper setupAvPlayerViewAgain];
+}
+
++ (void)newPlayerItemAddedCleanup
+{
+    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    BOOL airplayActive = player.externalPlaybackActive;
+    [[MusicPlaybackController obtainRawPlayerView] showAirPlayInUseMsg:airplayActive];
+    
+    NSOperationQueue *operationQueue = [[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZNewTimeObserverCanBeAdded
+                                                        object:nil];
+    [operationQueue cancelAllOperations];
+    double delayInSeconds = 2.0;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        if([MusicPlaybackController playbackExplicitlyPaused])
+            [MusicPlaybackController pausePlayback];
+        else
+            [MusicPlaybackController resumePlayback];
+    });
 }
 
 + (void)setupAvPlayerViewAgain
 {
     if(updatingPlayerViewDisabled)
         return;
-    [CATransaction flush];
     /*
     UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];

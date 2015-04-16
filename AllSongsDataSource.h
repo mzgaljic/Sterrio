@@ -8,18 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import "PlayableBaseDataSource.h"
+#import "PlaylistSongAdderDataSourceDelegate.h"
 
 
 //for playlists
 #define Done_String @"Add"
 #define AddLater_String @"Add later"
 #define Cancel_String @"Cancel"
-
-
-@protocol EditableSongDataSourceDelegate <NSObject>
-- (void)performEditSegueWithSong:(Song *)songToBeEdited;
-@end
-
 
 
 @interface AllSongsDataSource : PlayableBaseDataSource <UITableViewDataSource, UITableViewDelegate, MGSwipeTableCellDelegate, UISearchBarDelegate>

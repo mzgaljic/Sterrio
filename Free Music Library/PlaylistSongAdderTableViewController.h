@@ -8,16 +8,12 @@
 
 //This class controls how the user adds songs to their playlist
 #import <Foundation/Foundation.h>
-#import "Song.h"
-#import "Playlist+Utilities.h"
-#import "AppEnvironmentConstants.h"
-#import "MasterSongsTableViewController.h"
-#import "SongTableViewFormatter.h"
-#import "SDWebImageManager.h"
-#import <SDWebImage/UIImageView+WebCache.h>
 #import "CoreDataManager.h"
 #import "CoreDataCustomTableViewController.h"
+#import "PlaylistSongAdderDataSourceDelegate.h"
+#import "SearchBarDataSourceDelegate.h"
 
+@class Playlist;
 @interface PlaylistSongAdderTableViewController : CoreDataCustomTableViewController
                                                                 <SearchBarDataSourceDelegate,
                                                                 PlaylistSongAdderDataSourceDelegate>

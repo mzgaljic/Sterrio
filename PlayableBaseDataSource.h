@@ -17,35 +17,14 @@
 #import "PreferredFontSizeUtility.h"
 #import "MSCellAccessory.h"
 #import "UIColor+LighterAndDarker.h"
-#import "NowPlayingSong.h"
 #import "AlbumArtUtilities.h"
+#import "MZCoreDataModelDeletionService.h"
 #import "MusicPlaybackController.h"
 #import "MGSwipeButton.h"
 #import "MySearchBar.h"
 #import "NSString+WhiteSpace_Utility.h"
-
-
-typedef enum{
-    SONG_DATA_SRC_TYPE_Default,
-    SONG_DATA_SRC_TYPE_Playlist_MultiSelect
-} SONG_DATA_SRC_TYPE;
-
-typedef enum{
-    PLAYLIST_STATUS_In_Creation,
-    PLAYLIST_STATUS_Created_But_Empty,
-    PLAYLIST_STATUS_Normal_Playlist
-} PLAYLIST_STATUS;
-
-@protocol PlaylistSongAdderDataSourceDelegate <NSObject>
-- (void)setSuccessNavBarButtonStringValue:(NSString *)newValue;
-- (PLAYLIST_STATUS)currentPlaylistStatus;
-- (NSOrderedSet *)existingPlaylistSongs;
-@end
-
-@protocol SearchBarDataSourceDelegate <NSObject>
-- (void)searchBarIsBecomingActive;
-- (void)searchBarIsBecomingInactive;
-@end
+#import "SearchBarDataSourceDelegate.h"
+#import "KnownEnums.h"
 
 
 @interface PlayableBaseDataSource : NSObject
@@ -53,6 +32,10 @@ typedef enum{
 @property (nonatomic, strong) NSString *emptyTableUserMessage;
 - (UIColor *)colorForNowPlayingItem;
 - (MySearchBar *)setUpSearchBar;
+
+#pragma mark - Boring utility methods for subclasses
+- (UIViewController *)topViewController;
+- (UIViewController *)topViewController:(UIViewController *)rootViewController;
 @end
 
 /*

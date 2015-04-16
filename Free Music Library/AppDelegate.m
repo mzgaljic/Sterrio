@@ -15,6 +15,8 @@
     AVAudioSession *aSession;
     UIView *playerSnapshot;  //used to make it appear as if the playerlayer is still attached to the player in backgrounded mode.
     UIBackgroundTaskIdentifier task;
+    
+    BOOL backgroundTaskIsRunning;
 }
 @end
 
@@ -66,6 +68,10 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [self setupMainVC];
     
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(startupBackgroundTask)
+                                                 name:MZStartBackgroundTaskHandlerIfInactive
+                                               object:nil];
     return YES;
 }
 
@@ -164,6 +170,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     if(! [SongPlayerCoordinator screenShottingVideoPlayerNotAllowed]){
         playerSnapshot = [playerView snapshotViewAfterScreenUpdates:NO];
         playerSnapshot.frame = playerView.frame;
+        playerSnapshot.userInteractionEnabled = NO;
         [self.window addSubview:playerSnapshot];
     }
     playerView.alpha = 0;
@@ -394,15 +401,20 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
 
 - (void)startupBackgroundTask
 {
+    if(backgroundTaskIsRunning)
+        return;
+    
     //check if we should continue to allow the app to monitor network changes for a limited time
     NSOperationQueue *loadingSongsQueue;
     loadingSongsQueue = [[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue];
     if([SongPlayerCoordinator isPlayerOnScreen] || loadingSongsQueue.operationCount > 0){
+        backgroundTaskIsRunning = YES;
         UIApplication *app = [UIApplication sharedApplication];
         __weak UIApplication *weakApp = app;
         __weak AppDelegate *weakSelf = self;
         task = [app beginBackgroundTaskWithExpirationHandler:^{
             
+            backgroundTaskIsRunning = NO;
             [weakApp endBackgroundTask:task];
             task = UIBackgroundTaskInvalid;
             
@@ -411,6 +423,8 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
                     //start a new task if it makes sense to do so.
                     [weakSelf startupBackgroundTask];
                 }
+                else
+                    [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
             }
         }];
         

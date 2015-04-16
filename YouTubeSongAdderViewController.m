@@ -55,6 +55,7 @@
         songEditTable = [[MZSongModifierTableView alloc] initWithFrame:self.view.frame
                                                                  style:UITableViewStyleGrouped];
         songEditTable.VC = self;
+        songEditTable.aNewSongId = youtubeVideoObject.videoId;
         self.tableView = songEditTable;
         self.tableView.theDelegate = self;
         self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight |
@@ -523,9 +524,9 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
         
         NSArray *activityItems = [NSArray arrayWithObjects:shareString, nil];
         
-        __block UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems
+        __block MZActivityViewController *activityVC = [[MZActivityViewController alloc] initWithActivityItems:activityItems
                                                                                          applicationActivities:nil];
-        __weak UIActivityViewController *weakActivityVC = activityVC;
+        __weak MZActivityViewController *weakActivityVC = activityVC;
         
         activityVC.excludedActivityTypes = @[UIActivityTypePrint,
                                              UIActivityTypeAssignToContact,
@@ -597,10 +598,18 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
 {
     if([video.videoId isEqualToString:ytVideo.videoId]){
         if(details){
-            videoDetails = [details copy];
-            details = nil;
-            [self.tableView canShowAddToLibraryButton];
-            [self loadVideo];
+            NSNumber *duration = [details objectForKey:MZKeyVideoDuration];
+            NSUInteger twenty_four_hours = 86400;
+            if([duration integerValue] > twenty_four_hours){
+                [self launchAlertViewWithDialogTitle:@"Video Duration Exceeded"
+                                          andMessage:@"Unfortunately, this App only supports videos with a total duration of 24 hours or less."];
+                [self.navigationController popToRootViewControllerAnimated:YES];
+            } else{
+                videoDetails = [details copy];
+                details = nil;
+                [self.tableView canShowAddToLibraryButton];
+                [self loadVideo];
+            }
         }
     }else
         return;
@@ -628,7 +637,6 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
 {
     NSNumber *duration = [videoDetails valueForKey:MZKeyVideoDuration];
     newLibSong.duration = duration;
-    newLibSong.youtube_id = ytVideo.videoId;
     userCreatedHisSong = YES;
     [self performSelector:@selector(destructThisVCDelayed) withObject:nil afterDelay:0.2];
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
@@ -641,6 +649,22 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
         if([MusicPlaybackController nowPlayingSong])
             [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     }];
+}
+
+#pragma mark - AlertView
+- (void)launchAlertViewWithDialogTitle:(NSString *)title andMessage:(NSString *)message
+{
+    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:title
+                                                      message:message
+                                                     delegate:self
+                                            cancelButtonTitle:@"OK"
+                                            otherButtonTitles:nil];
+    
+    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
+    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    alert.buttonTextColor = [UIColor defaultAppColorScheme];
+    [alert show];
 }
 
 @end

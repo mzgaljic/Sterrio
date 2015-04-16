@@ -13,7 +13,6 @@
 #import <Foundation/Foundation.h>
 #import "Song.h"
 #import "PlaybackContext.h"
-#import "NowPlayingSong.h"
 #import "CoreDataManager.h"
 #import "PreliminaryNowPlaying.h"
 #import "MZPlaybackQueue.h"  //for imported constants

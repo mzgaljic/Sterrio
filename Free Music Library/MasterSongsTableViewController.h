@@ -21,9 +21,13 @@
 #import "MainScreenViewControllerDelegate.h"
 #import <FXImageView/UIImage+FX.h>
 #import "PlaybackContext.h"
-#import "AllSongsDataSource.h"
+
+#import "SearchBarDataSourceDelegate.h"
+#import "EditableSongDataSourceDelegate.h"
+#import "PlayableBaseDataSource.h"
 
 @class StackController;
+
 @interface MasterSongsTableViewController : CoreDataCustomTableViewController
                                                             <SearchBarDataSourceDelegate,
                                                             EditableSongDataSourceDelegate,

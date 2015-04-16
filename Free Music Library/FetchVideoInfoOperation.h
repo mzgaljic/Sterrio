@@ -10,6 +10,7 @@
 #import "Song.h"
 #import "PlayerView.h"
 #import "VideoPlayerWrapper.h"
+#import "AppDelegate.h"
 
 @interface FetchVideoInfoOperation : NSOperation
 

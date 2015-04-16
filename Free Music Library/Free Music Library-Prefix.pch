@@ -12,12 +12,10 @@
 //determine aspect ratio for player based on width, etc.
 #import "SongPlayerViewDisplayUtility.h"
 
+#import "NowPlayingSong.h"
+
 #import "MZConstants.h"
 #import "UIColor+SystemTintColor.h"
-
-//crash reporting framework
-#import <Fabric/Fabric.h>
-#import <Crashlytics/Crashlytics.h>
 
 #ifndef __IPHONE_5_0
 #warning "This project uses features only available in iOS SDK 5.0 and later."
@@ -26,4 +24,9 @@
 #ifdef __OBJC__
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
+#endif
+
+//disables NSLog in release builds.
+#ifndef DEBUG
+#define NSLog(...);
 #endif

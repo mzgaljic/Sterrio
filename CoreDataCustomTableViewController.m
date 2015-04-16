@@ -8,6 +8,15 @@
 
 #import "CoreDataCustomTableViewController.h"
 
+#import "CoreDataManager.h"
+#import "UIColor+LighterAndDarker.h"
+#import "MySearchBar.h"
+#import "MusicPlaybackController.h"
+#import "MGSwipeTableCell.h"
+#import "MGSwipeButton.h"
+#import "MZTableViewCell.h"
+#import "NSObject+ObjectUUID.h"
+
 typedef enum{
     ContentInsetStateDefault,
     ContentInsetStateCompensatingForPlayer
@@ -38,6 +47,9 @@ static void *navBarHiddenChange = &navBarHiddenChange;
 - (void)setTableForCoreDataView:(UITableView *)aTableView;
 {
     tableView = aTableView;
+    
+    //makes the keyboard dismiss when the tableview is touched (useful for search bar stuff)
+    tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
 }
 
 - (void)setSearchBar:(MySearchBar *)aSearchBar

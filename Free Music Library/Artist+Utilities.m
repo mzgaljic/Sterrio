@@ -13,6 +13,7 @@ static void *standAloneSongsDidChange = &standAloneSongsDidChange;
 static void *albumsDidChange = &albumsDidChange;
 
 #pragma mark - Code For Custom setters/KVO (just standaloneSongs)
+/*
 - (void)awakeFromInsert
 {
     [self observeStuff];
@@ -127,7 +128,7 @@ static void *albumsDidChange = &albumsDidChange;
     [self removeObserver:self forKeyPath:@"standAloneSongs" context:standAloneSongsDidChange];
     [self removeObserver:self forKeyPath:@"albums" context:albumsDidChange];
 }
-
+*/
 
 #pragma mark - implementation
 //when no album was created

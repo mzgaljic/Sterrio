@@ -85,6 +85,9 @@ static NSString *MODEL_NAME = @"Model 1.0";
     {
         __managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
         [__managedObjectContext setPersistentStoreCoordinator:coordinator];
+        
+        NSUndoManager *undoManager = [[NSUndoManager alloc] init];
+        [__managedObjectContext setUndoManager:undoManager];
     }
     return __managedObjectContext;
 }

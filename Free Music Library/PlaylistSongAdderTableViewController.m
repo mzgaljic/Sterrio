@@ -8,6 +8,15 @@
 
 #import "PlaylistSongAdderTableViewController.h"
 
+#import "Song.h"
+#import "Playlist+Utilities.h"
+#import "AppEnvironmentConstants.h"
+#import "MasterSongsTableViewController.h"
+#import "SongTableViewFormatter.h"
+#import "SDWebImageManager.h"
+#import <SDWebImage/UIImageView+WebCache.h>
+#import "AllSongsDataSource.h"
+
 @interface PlaylistSongAdderTableViewController()
 {
     CGRect originalTableViewFrame;
