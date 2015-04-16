@@ -12,7 +12,6 @@
 + (Song *)createNewSongWithName:(NSString *)songName
            inNewOrExistingAlbum:(id)albumOrAlbumName
           byNewOrExistingArtist:(id)artistOrArtistName
-                        inGenre:(int)genreCode
                inManagedContext:(NSManagedObjectContext *)context
                    withDuration:(NSInteger)durationInSeconds
                          songId:(NSString *)songId
@@ -23,11 +22,6 @@
     newSong.duration = [NSNumber numberWithInteger:durationInSeconds];
     Album *newOrExistingAlbum;
     Artist *newOrExistingArtist;
-    
-    if([GenreConstants isValidGenreCode:genreCode])
-        newSong.genreCode = [NSNumber numberWithInt:genreCode];
-    else
-        newSong.genreCode = [NSNumber numberWithInt:[GenreConstants noGenreSelectedGenreCode]];
     
     if(albumOrAlbumName){
         //need to create new album in core data

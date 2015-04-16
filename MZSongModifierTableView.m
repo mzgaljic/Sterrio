@@ -60,10 +60,6 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(existingArtistHasBeenChosen:)
                                                  name:@"existing artist chosen" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(newGenreHasBeenChosen:)
-                                                 name:@"new genre has been chosen"
-                                               object:nil];
 
 }
 
@@ -75,7 +71,6 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"existing album chosen" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"existing artist chosen" object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"new genre has been chosen" object:nil];
     [AppEnvironmentConstants setUserIsEditingSongOrAlbumOrArtist: NO];
 }
 
@@ -397,32 +392,6 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
                 _lastTappedRow = 3;
                 break;
             }
-            case 4://Genres
-                /*
-                if([_songIAmEditing.genreCode intValue] == [GenreConstants noGenreSelectedGenreCode]){  //adding genre
-                    GenrePickerTableViewController *vc;
-                    int genreCode = [_songIAmEditing.genreCode intValue];
-                    NSString *post = @"new genre has been chosen";
-                    BOOL fullscreen;
-                    if(_creatingANewSong)
-                        fullscreen = YES;
-                    else
-                        fullscreen = NO;
-                    vc = [[GenrePickerTableViewController alloc] initWithGenreCode: genreCode
-                                                            notificationNameToPost:post
-                                                                        fullScreen:fullscreen];
-                    [self.VC.navigationController pushViewController:vc animated:YES];
-                } else{  //option to remove genre or choose a different one
-                    
-                    UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:@"Genre" delegate:self cancelButtonTitle:@"Cancel"
-                                                         destructiveButtonTitle:@"Remove Genre"
-                                                              otherButtonTitles:@"Choose Different Genre", nil];
-                    popup.tag = 4;
-                    [popup showInView:[self.VC view]];
-                }
-                
-                _lastTappedRow = 4;*/
-                break;
         }
     }
     
@@ -609,7 +578,6 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
         _songIAmEditing.album = (Album *)notification.object;
         self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.album.albumArtFileName];
         _songIAmEditing.artist = _songIAmEditing.album.artist;
-        _songIAmEditing.genreCode = _songIAmEditing.album.genreCode;
         
         [self beginUpdates];
         [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
@@ -630,20 +598,6 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
         
         [self beginUpdates];
         [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]]
-                    withRowAnimation:UITableViewRowAnimationFade];
-        [self endUpdates];
-        [self reloadData];
-    }
-}
-
-- (void)newGenreHasBeenChosen:(NSNotification *)notification
-{
-    if([notification.name isEqualToString:@"new genre has been chosen"]){
-        NSString *genreString = (NSString *)notification.object;
-        _songIAmEditing.genreCode = [NSNumber numberWithInt:[GenreConstants genreStringToCode:genreString]];
-        
-        [self beginUpdates];
-        [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:4 inSection:0]]
                     withRowAnimation:UITableViewRowAnimationFade];
         [self endUpdates];
         [self reloadData];

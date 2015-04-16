@@ -27,23 +27,17 @@
 #import "KnownEnums.h"
 
 
-@interface PlayableBaseDataSource : NSObject
+@interface PlayableBaseDataSource : NSObject <UISearchBarDelegate>
+
 @property (nonatomic, assign) id <SearchBarDataSourceDelegate> searchBarDataSourceDelegate;
 @property (nonatomic, strong) NSString *emptyTableUserMessage;
+
+
 - (UIColor *)colorForNowPlayingItem;
 - (MySearchBar *)setUpSearchBar;
 
-#pragma mark - Boring utility methods for subclasses
+//Boring utility methods for subclasses
 - (UIViewController *)topViewController;
 - (UIViewController *)topViewController:(UIViewController *)rootViewController;
 @end
 
-/*
-@protocol DataSourceEmptyCallbackDelegate <NSObject>
-
-//Classes may implement this method if they wish to be
-//notified anytime the interface is
-//- (void)shouldDisplayEmptyDataSource:(BOOL)empty;
-
-@end
-*/

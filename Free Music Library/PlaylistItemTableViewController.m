@@ -507,7 +507,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     request.predicate = [NSPredicate predicateWithFormat:@"ANY playlistIAmIn.playlist_id == %@", _playlist.playlist_id];
     
     
-    //picked genreCode because its a useless value...need that so the results of the
+    //picked playlistIAmIn because its a useless value...need that so the results of the
     //nsorderedset dont get re-ordered
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistIAmIn"
                                                                      ascending:YES];

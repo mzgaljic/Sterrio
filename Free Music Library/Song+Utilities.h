@@ -12,14 +12,13 @@
 #import "Album+Utilities.h"
 #import "Artist.h"
 #import "Artist+Utilities.h"
-#import "GenreConstants.h"
 #import "NSObject+ObjectUUID.h"
 #import "NSString+smartSort.h"
 
 @interface Song (Utilities)
 
 /**
- @Description Creates a new song given the arguments provided. All are optional except songName and genreCode.
+ @Description Creates a new song given the arguments provided. All are optional except songName.
 *note: The GenreConstants class contains a convenience method to obtain a 'no genre code selected' int value. Use 
  this if required. Genre constant will be set to 'no genre code selected' if the provided genre code is invalid.
 @param  songName   name for the created song; required field.
@@ -27,8 +26,6 @@
                             object (with the albums name) if an album should be created for this song. nil if not desired.
 @param  artistOrArtistName  an Artist object (if the created song should be a part of that artist), or an NSString
                             object (with the artists name) if an artist should be created for this song. nil if not desired.
-@param  genreCode           The genre code to be given to this song after it is created. If genreCode is an invalid genre
-                            code, the 'no genre code selected' code will be applied by default; required field.
 @param  context             An NSManagedObjectContext object, which is requied for the backing core data store. If this
                             parameter is nil, nil shall be returned. Optional (but crucial) argument.
  @param durationInSeconds   An NSUInteger specifying the duration in seconds of the song to be created.
@@ -37,7 +34,6 @@
 + (Song *)createNewSongWithName:(NSString *)songName
            inNewOrExistingAlbum:(id)albumOrAlbumName
           byNewOrExistingArtist:(id)artistOrArtistName
-                        inGenre:(int)genreCode
                inManagedContext:(NSManagedObjectContext *)context
                    withDuration:(NSInteger)durationInSeconds
                          songId:(NSString *)songId;

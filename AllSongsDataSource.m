@@ -68,7 +68,7 @@
         self.displaySearchResults = NO;
         self.searchResults = [NSMutableArray array];
         keyboardIsVisible = NO;
-        emptyTableMsgKeyboardPadding = [UIScreen mainScreen].bounds.size.height * 0.15;
+        emptyTableMsgKeyboardPadding = [UIScreen mainScreen].bounds.size.height * 0.11;
         firstTimeCreatingEmptyTableMsg = YES;
     }
     return self;
@@ -109,7 +109,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
     if(! [SongTableViewFormatter songNameIsBold])
         cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
-    [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
+    
+    if(![reuseID isEqualToString:cellReuseIdDetailLabelNull])
+        [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
+    else
+        cell.detailTextLabel.text = nil;
     
     BOOL isNowPlaying = [[NowPlayingSong sharedInstance] isEqualToSong:song compareWithContext:self.playbackContext];
     if(isNowPlaying)

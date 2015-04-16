@@ -125,7 +125,6 @@ static NSInteger const SONG7_DURATION = 137;
     myNewSong = [Song createNewSongWithName:songName
                        inNewOrExistingAlbum:albumName
                       byNewOrExistingArtist:artistName
-                                    inGenre:[GenreConstants noGenreSelectedGenreCode]
                            inManagedContext:[CoreDataManager context]
                                withDuration:durationInSecs
                                      songId:ytID];

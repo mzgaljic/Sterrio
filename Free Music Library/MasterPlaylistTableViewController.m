@@ -484,7 +484,7 @@
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
     request.predicate = [NSPredicate predicateWithFormat:@"ANY playlistIAmIn.playlist_id == %@", aPlaylist.playlist_id];
     
-    //picked genreCode because its a useless value...need that so the results of the
+    //picked playlistIAmIn because its a useless value...need that so the results of the
     //nsorderedset dont get re-ordered
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistIAmIn"
                                                                      ascending:YES];

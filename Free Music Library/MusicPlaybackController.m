@@ -457,7 +457,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     }
 }
 
-//helper method for songArrayGivenSong: album: artist: playlist: genreCode: method.
+//helper method for songArrayGivenSong: album: artist: playlist: method.
 + (NSArray *)arrayOfAllSongsInSongTab
 {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];

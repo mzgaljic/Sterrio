@@ -2,7 +2,7 @@
 //  Artist.h
 //  Free Music Library
 //
-//  Created by Mark Zgaljic on 4/15/15.
+//  Created by Mark Zgaljic on 4/16/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
