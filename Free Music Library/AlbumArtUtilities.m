@@ -163,8 +163,10 @@
     // get a data provider referencing the relevant file
     CGDataProviderRef dataProvider = CGDataProviderCreateWithFilename([path UTF8String]);
     
-    // use the data provider to get a CGImage; release the data provider
+    if(dataProvider == NULL)
+        return nil;
     
+    // use the data provider to get a CGImage; release the data provider
     CGImageRef image = CGImageCreateWithJPEGDataProvider(dataProvider,
                                                          NULL,
                                                          NO,
