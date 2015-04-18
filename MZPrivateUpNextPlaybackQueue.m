@@ -34,8 +34,6 @@
 
 - (void)addSongsToUpNextWithContexts:(NSArray *)contexts
 {
-    //NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, contexts.count)];
-    //[playbackContexts insertObjects:contexts atIndexes:indexes];
     [playbackContexts addObjectsFromArray:contexts];
     NSNumber *index = [NSNumber numberWithInt:0];
     NSMutableArray *tempNSNumsArray = [NSMutableArray array];
@@ -80,7 +78,7 @@
     Song *desiredSong;
     PlaybackContext *desiredSongsContext;
     //iterate until we find a next song
-    for(NSInteger i = playbackContexts.count-1; i > 0; i--)
+    for(NSInteger i = 0; i < playbackContexts.count; i++)
     {
         aContext = playbackContexts[i];
         aRequest = aContext.request;
@@ -114,7 +112,7 @@
     }
     
     //delete the contexts no longer needed
-    for(int i = numContextsToDelete; i > 0; i--){
+    for(int i = 0; i < numContextsToDelete; i++){
         if(playbackContexts.count-1 >= i){
             [playbackContexts removeObjectAtIndex:i];
             [fetchRequestIndexes removeObjectAtIndex:i];
@@ -126,9 +124,6 @@
     return newNowPlaying;
 }
 
-
-
-//broken!!!! should iterate in the same direction as the "obtainAndRemove" method.
 - (PreliminaryNowPlaying *)peekAtNextSong
 {
     PlaybackContext *aContext;
@@ -154,6 +149,11 @@
     newNowPlaying.aNewSong = desiredSong;
     newNowPlaying.aNewContext = desiredSongsContext;
     return newNowPlaying;
+}
+
+- (void)skipThisManySongsInQueue:(NSUInteger)numSongsToSkip
+{
+    
 }
 
 - (void)clearUpNext
@@ -195,6 +195,15 @@
             songIndex = [indexNumObj integerValue];
             NSArray *songsToAdd = [self songsInArray:array fromThisIndexOnward:songIndex];
             [compiledSongs addObjectsFromArray:songsToAdd];
+        }
+    }
+    
+    //remove song at first index if its actually the now playing one.
+    
+    if(compiledSongs.count > 0){
+        Song *firstSong = [compiledSongs objectAtIndex:0];
+        if([[NowPlayingSong sharedInstance] isEqualToSong:firstSong compareWithContext:playbackContexts[0]]){
+            [compiledSongs removeObjectAtIndex:0];
         }
     }
     

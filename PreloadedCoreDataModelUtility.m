@@ -53,17 +53,32 @@ static NSInteger const SONG7_DURATION = 137;
     BOOL importHugeDataSetForTesting = NO;
     
     if(importHugeDataSetForTesting){
-        int songCreationCount = 3000;
+        int songCreationCount = 2000;
         Song *someSong;
         //UIImage *art = [UIImage imageNamed:@"testAlbumArt"];
         int stopToPrint = 0;
         for(int i = 0; i < songCreationCount; i++){
-            someSong = [PreloadedCoreDataModelUtility createSongWithName:SONG2_NAME
-                                                            byArtistName:ARTIST2_NAME
-                                                        partOfAlbumNamed:ALBUM2_NAME
-                                                               youtubeID:SONG2_YTID
-                                                           videoDuration:SONG2_DURATION];
-            [someSong setAlbumArt:[UIImage imageNamed:@"testAlbumArt.jpg"]];
+            
+        
+            if (i % 2 == 0) {
+                // even
+                
+                someSong = [PreloadedCoreDataModelUtility createSongWithName:SONG2_NAME
+                                                                byArtistName:ARTIST2_NAME
+                                                            partOfAlbumNamed:ALBUM2_NAME
+                                                                   youtubeID:SONG2_YTID
+                                                               videoDuration:SONG2_DURATION];
+                [someSong setAlbumArt:[UIImage imageNamed:@"testAlbumArt.jpg"]];
+
+            } else {
+                // odd
+                
+                [PreloadedCoreDataModelUtility createSongWithName:SONG4_NAME
+                                                     byArtistName:nil
+                                                 partOfAlbumNamed:nil
+                                                        youtubeID:SONG4_YTID
+                                                    videoDuration:SONG4_DURATION];
+            }
             
             if(i == stopToPrint && i != songCreationCount){
                 NSLog(@"songsCreated: %i", i);

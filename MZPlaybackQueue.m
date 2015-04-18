@@ -88,6 +88,33 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
     [self printQueueContents];
 }
 
+- (void)skipOverThisManyQueueSongsEfficiently:(NSUInteger)totalSongsWeNeedToSkip
+{
+    NSUInteger numMoreSongsToSkip = totalSongsWeNeedToSkip;
+    NSUInteger numMoreUpNextSongs = [upNextQueue numMoreUpNextSongsCount];
+    if(numMoreUpNextSongs < numMoreSongsToSkip)
+    {
+        numMoreSongsToSkip -= numMoreUpNextSongs;
+        //even if we clear the entire upNextSongs queue, we'll still have to skip songs! so lets do it...
+        [upNextQueue clearUpNext];
+    }
+    else
+    {
+        //pain in the ass case
+        for(int i = 0; i < numMoreSongsToSkip; i++){
+            [upNextQueue obtainAndRemoveNextSong];
+            numMoreSongsToSkip--;
+        }
+    }
+    
+    if(numMoreSongsToSkip > 0)
+    {
+        for(int i = 0; i < numMoreSongsToSkip; i++){
+            [mainQueue skipForward];
+        }
+    }
+}
+
 //should be used when a user moves into a different context and wants to destroy their
 //current queue. This does not clear the "up next" section.
 - (void)setMainQueueWithNewNowPlayingSong:(Song *)aSong inContext:(PlaybackContext *)aContext

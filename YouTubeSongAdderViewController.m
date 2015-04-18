@@ -43,6 +43,11 @@
         if(youtubeVideoObject == nil)
             return nil;
         
+        #warning WARNING, should post notification to init audio session after playback begins. Do after chaning preview player to AVPlayer.
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZInitAudioSession object:nil];
+
+        
+        
         ytVideo = youtubeVideoObject;
         
         //fire off network request for video duration ASAP

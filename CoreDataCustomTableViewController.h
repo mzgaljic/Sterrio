@@ -39,4 +39,7 @@
 - (void)setSearchBar:(MySearchBar *)searchBar;
 - (UIColor *)colorForNowPlayingItem;
 
+//exposed publicly for MainScreenViewController
+- (void)viewWillAppearComingFromAnotherTab;
+
 @end

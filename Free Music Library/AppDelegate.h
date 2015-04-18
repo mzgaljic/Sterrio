@@ -21,6 +21,7 @@
 #import "UIColor+LighterAndDarker.h"
 #import "MusicPlaybackController.h"
 #import "OperationQueuesSingeton.h"
+#import "LQAlbumArtBackgroundUpdater.h"
 
 #import "MainScreenViewController.h"
 #import "MasterSongsTableViewController.h"

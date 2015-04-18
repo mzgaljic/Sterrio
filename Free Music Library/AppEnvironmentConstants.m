@@ -9,6 +9,9 @@
 #import "AppEnvironmentConstants.h"
 #import "UIColor+LighterAndDarker.h"
 
+#import <CoreTelephony/CTCallCenter.h>
+#import <CoreTelephony/CTCall.h>
+
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 @implementation AppEnvironmentConstants
@@ -35,8 +38,11 @@ static BOOL boldName;
 static BOOL smartAlphabeticalSort;
 static BOOL icloudSettingsSync;
 
+static BOOL tabBarIsHidden = NO;
+
 static int navBarHeight;
 static short statusBarHeight;
+static NSInteger lastPlayerViewIndex = NSNotFound;
 
 
 //runtime configuration
@@ -47,6 +53,28 @@ static short statusBarHeight;
         return YES;
     else
         return NO;
+}
+
+
++ (BOOL)isUserCurrentlyOnCall
+{    
+    CTCallCenter *callCenter = [[CTCallCenter alloc] init];
+    for (CTCall *call in callCenter.currentCalls)  {
+        if (call.callState == CTCallStateConnected) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
++ (void)recordIndexOfPlayerView:(NSUInteger)index
+{
+    lastPlayerViewIndex = index;
+}
+
++ (NSUInteger)lastIndexOfPlayerView
+{
+    return lastPlayerViewIndex;
 }
 
 
@@ -94,6 +122,16 @@ static short statusBarHeight;
 {
     isFirstTimeAppLaunched = YES;
 }
+
++ (BOOL)isTabBarHidden
+{
+    return tabBarIsHidden;
+}
++ (void)setTabBarHidden:(BOOL)hidden
+{
+    tabBarIsHidden = hidden;
+}
+
 
 + (BOOL)isUserEditingSongOrAlbumOrArtist
 {

@@ -11,6 +11,7 @@
 @interface MZSongModifierTableView ()
 {
     BOOL canShowAddtoLibButton;
+    BOOL userReplacedDefaultYoutubeArt;
     UIActivityIndicatorView *spinner;
 }
 @property (nonatomic, strong) UIImage *currentAlbumArt;
@@ -22,6 +23,7 @@
 @synthesize songIAmEditing = _songIAmEditing;
 static BOOL PRODUCTION_MODE;
 float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
+float const updateCellWithAnimationFadeDelay = 0.4;
 
 #pragma mark - Other stuff
 - (void)initWasCalled
@@ -37,6 +39,7 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
     
     [self setProductionModeValue];
     [AppEnvironmentConstants setUserIsEditingSongOrAlbumOrArtist: YES];
+    userReplacedDefaultYoutubeArt = NO;
     
     if(! self.creatingANewSong){
         self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.albumArtFileName];
@@ -415,7 +418,8 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
                                                                                  ascending:YES];
                 fetchRequest.sortDescriptors = @[sortDescriptor];
                 NSArray *results = [[CoreDataManager context] executeFetchRequest:fetchRequest error:nil];
-                if(results.count == 1)
+                //checking for 2 since the song we are creating will be returned by the fetch request.
+                if(results.count == 2)
                 {
                     //this exact video is already in the library, dont commit changes.
                     [[CoreDataManager context] rollback];
@@ -427,6 +431,15 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
                         //save failed
                         saved = NO;
                         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveHasFailed];
+                    }
+                    else
+                    {
+                        //save success
+                        
+                        if(! userReplacedDefaultYoutubeArt){
+                            [LQAlbumArtBackgroundUpdater downloadHqAlbumArtWhenConvenientForSongId:_songIAmEditing.song_id];
+                            [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
+                        }
                     }
                 }
             }  //end 'creatingNewSong'
@@ -464,7 +477,7 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
 
     __weak MZSongModifierTableView *weakself = self;
     //animate the song name in place
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 0.6 * NSEC_PER_SEC);
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, updateCellWithAnimationFadeDelay * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
         
         [weakself beginUpdates];
@@ -546,9 +559,8 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
         [[CoreDataManager context] deleteObject:_songIAmEditing.artist];
     _songIAmEditing.artist = newArtist;
     
-    double delayInSeconds = 0.6;
     __weak MZSongModifierTableView *weakself = self;
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, updateCellWithAnimationFadeDelay * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
         
         [weakself beginUpdates];
@@ -582,9 +594,8 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
     if(_songIAmEditing.artist)
         newAlbum.artist = _songIAmEditing.artist;
     
-    double delayInSeconds = 0.6;
     __weak MZSongModifierTableView *weakself = self;
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, updateCellWithAnimationFadeDelay * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
         
         [weakself beginUpdates];
@@ -612,9 +623,8 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
         self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.album.albumArtFileName];
         _songIAmEditing.artist = _songIAmEditing.album.artist;
         
-        double delayInSeconds = 0.6;
         __weak MZSongModifierTableView *weakself = self;
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, updateCellWithAnimationFadeDelay * NSEC_PER_SEC);
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             
             [weakself beginUpdates];
@@ -636,9 +646,8 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
         }
         _songIAmEditing.artist = (Artist *)notification.object;
 
-        double delayInSeconds = 0.6;
         __weak MZSongModifierTableView *weakself = self;
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, updateCellWithAnimationFadeDelay * NSEC_PER_SEC);
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             
             [weakself beginUpdates];
@@ -779,11 +788,13 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
         switch (buttonIndex)
         {
             case 0:
-                if(_currentAlbumArt)  //remove art
+                if(_currentAlbumArt){  //remove art
                     self.currentAlbumArt = nil;
+                    userReplacedDefaultYoutubeArt = YES;
+                }
                 else  //chose photo from phone for art
                     [self pickNewAlbumArtFromPhotos];
-                [self reloadData];
+                //[self reloadData];
                 break;
             case 1:
                 if(! _currentAlbumArt){  //search for art
@@ -852,6 +863,7 @@ float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
     if(img == nil)
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotOpenSelectedImageError];
     self.currentAlbumArt = img;
+    userReplacedDefaultYoutubeArt = YES;
     NSArray *paths = @[[NSIndexPath indexPathForRow:3 inSection:0]];
     [self reloadRowsAtIndexPaths:paths withRowAnimation:UITableViewRowAnimationAutomatic];
 }

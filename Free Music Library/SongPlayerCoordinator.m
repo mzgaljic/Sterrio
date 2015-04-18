@@ -12,6 +12,7 @@
 {
     CGRect currentPlayerFrame;
     short SMALL_VIDEO_WIDTH;
+    BOOL wasTabBarHiddenBeforePlayerExpansion;
 }
 @end
 
@@ -48,6 +49,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
             isVideoPlayerExpanded = NO;
         
         [self setSmallVideoWidth];
+        wasTabBarHiddenBeforePlayerExpansion = NO;
     }
     return self;
 }
@@ -75,6 +77,11 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     if(isVideoPlayerExpanded == YES)
         return;
     
+    if([AppEnvironmentConstants isTabBarHidden])
+        wasTabBarHiddenBeforePlayerExpansion = YES;
+    else
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:[NSNumber numberWithBool:YES]];
+    
     //I want this to be set "too early", just playing it safe.
     isVideoPlayerExpanded = YES;
     
@@ -90,6 +97,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
         [MusicPlaybackController setRawPlayerView:playerView];
         [playerView setBackgroundColor:[UIColor blackColor]];
         [appWindow addSubview:playerView];
+        [AppEnvironmentConstants recordIndexOfPlayerView:[[appWindow subviews] indexOfObject:playerView]];
         //setting a temp frame in the bottom right corner for now
         [playerView setFrame:CGRectMake(appWindow.frame.size.width, appWindow.frame.size.height, 1, 1)];
         //real playerView frame set below...
@@ -98,9 +106,9 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     __weak PlayerView *weakPlayerView = playerView;
     
-    [UIView animateWithDuration:0.75
+    [UIView animateWithDuration:0.70
                           delay:0
-         usingSpringWithDamping:0.85f
+         usingSpringWithDamping:0.80f
           initialSpringVelocity:1
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^{
@@ -125,7 +133,6 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
                          }
                          weakPlayerView.alpha = 1;  //in case player was killed.
                          
-                         
                          MRProgressOverlayView *view = (MRProgressOverlayView *)[MRProgressOverlayView overlayForView:weakPlayerView];
                          if([MusicPlaybackController isSpinnerForWifiNeededOnScreen])
                              view.titleLabelText = @"Song requires WiFi";
@@ -143,6 +150,11 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
 {
     if(isVideoPlayerExpanded == NO)
         return;
+    
+    if(! wasTabBarHiddenBeforePlayerExpansion)
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:[NSNumber numberWithBool:NO]];
+    
+    wasTabBarHiddenBeforePlayerExpansion = NO;
     
     __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
     __weak SongPlayerCoordinator *weakSelf = self;
@@ -213,6 +225,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
         currentPlayerFrame = [self smallPlayerFrameInPortrait];
     playerView.frame = currentPlayerFrame;
     [appWindow addSubview:playerView];
+    [AppEnvironmentConstants recordIndexOfPlayerView:[[appWindow subviews] indexOfObject:playerView]];
     
     __weak PlayerView *weakPlayerView = playerView;
     [UIView animateWithDuration:1

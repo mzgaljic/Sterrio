@@ -33,7 +33,7 @@
 #import "ReachabilitySingleton.h"
 #import "VideoPlayerControlInterfaceDelegate.h"
 #import "QueueViewController.h"
-#import <AFBlurSegue.h>
+#import "AFBlurSegue.h"
 #import "ActionSheetDatePicker.h"
 #import "SSBouncyButton.h"
 #import "MZActivityViewController.h"

@@ -271,11 +271,11 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     switch(type)
     {
         case NSFetchedResultsChangeInsert:
-            [tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
+            [tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationNone];
             break;
             
         case NSFetchedResultsChangeDelete:
-            [tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
+            [tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationNone];
             break;
             //I added the next 2 cases in myself. xcode was complaining.
         case NSFetchedResultsChangeMove:
@@ -295,24 +295,24 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     {
         case NSFetchedResultsChangeInsert:
             [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
-                                  withRowAnimation:UITableViewRowAnimationFade];
+                                  withRowAnimation:UITableViewRowAnimationNone];
             break;
             
         case NSFetchedResultsChangeDelete:
             [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-                                  withRowAnimation:UITableViewRowAnimationFade];
+                                  withRowAnimation:UITableViewRowAnimationNone];
             break;
             
         case NSFetchedResultsChangeUpdate:
             [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-                                  withRowAnimation:UITableViewRowAnimationFade];
+                                  withRowAnimation:UITableViewRowAnimationNone];
             break;
             
         case NSFetchedResultsChangeMove:
             [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-                                  withRowAnimation:UITableViewRowAnimationFade];
+                                  withRowAnimation:UITableViewRowAnimationNone];
             [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
-                                  withRowAnimation:UITableViewRowAnimationFade];
+                                  withRowAnimation:UITableViewRowAnimationNone];
             break;
     }
 }
@@ -335,14 +335,13 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     
     //hides empty cells at the end
     tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
     //all tableviews subclassing this class are on a white background.
     //(playback queue tableview is inheriting from something else, dont worry about that).
     //making the scroll indicator invisible.
     tableView.showsVerticalScrollIndicator = YES;
     tableView.indicatorStyle = UIScrollViewIndicatorStyleBlack;
     
-    //going to fade in tableview
-    tableView.alpha = 0.8;
     [self hideSearchBarByDefaultIfApplicable];
     tableView.contentOffset = CGPointMake(tableView.contentOffset.x,
                                           lastKnownTableViewVerticalContentOffset);
@@ -352,22 +351,31 @@ static void *navBarHiddenChange = &navBarHiddenChange;
         tableView.tableHeaderView = nil;
     }
     
-    //without this, font size changes are totally screwed up
+    //simple reload take place if font size wasnt changed
     [tableView reloadData];
+}
+
+- (void)viewWillAppearComingFromAnotherTab
+{
+    //going to fade in tableview
+    tableView.alpha = 0.8;
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    //fading in tableview
-    [UIView animateWithDuration:0.15
-                          delay:0
-                        options:UIViewAnimationOptionAllowUserInteraction
-                     animations:^{
-                         tableView.alpha = 1;
-                         tableView.userInteractionEnabled = YES;
-                     }
-                     completion:nil];
+    if(tableView.alpha != 1){
+        //fading in tableview
+        [UIView animateWithDuration:0.15
+                              delay:0
+                            options:UIViewAnimationOptionAllowUserInteraction
+                         animations:^{
+                             tableView.alpha = 1;
+                             tableView.userInteractionEnabled = YES;
+                         }
+                         completion:nil];
+    }
+    
     [self compensateTableViewInsetForPlayer];
 }
 
@@ -408,9 +416,22 @@ static void *navBarHiddenChange = &navBarHiddenChange;
 
 - (void)settingsPossiblyChanged
 {
-    //tableview alrady re-draws itself after settings change, but reloading
-    //the entire table fixes weird issues with the cells.
-    //tableView reloadData];
+    /*
+    //without reloading all rows, font size changes dont take effect.
+    NSMutableArray *indexPaths = [NSMutableArray array];
+    NSUInteger numSections = self.fetchedResultsController.sections.count;
+    for(NSUInteger i = 0; i < numSections; i++)
+    {
+        NSUInteger numRowsInSection = [tableView numberOfRowsInSection:i];
+        for(NSUInteger j = 0; j < numRowsInSection; j++)
+        {
+            [indexPaths addObject:[NSIndexPath indexPathForRow:j inSection:i]];
+        }
+    }
+    [tableView beginUpdates];
+    [tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationFade];
+    [tableView endUpdates];
+     */
 }
 
 - (void)hideSearchBarByDefaultIfApplicable

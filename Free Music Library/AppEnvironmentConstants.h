@@ -36,6 +36,14 @@ typedef enum{
 //runtime configuration
 + (BOOL)isUserOniOS8OrAbove;
 
+/**
+ Returns YES if the user is currently on a phone call
+ */
++ (BOOL)isUserCurrentlyOnCall;
+
++ (void)recordIndexOfPlayerView:(NSUInteger)index;
++ (NSUInteger)lastIndexOfPlayerView;
+
 + (BOOL)shouldDisplayWhatsNewScreen;
 + (void)markShouldDisplayWhatsNewScreenTrue;
 
@@ -49,6 +57,9 @@ typedef enum{
 + (BOOL)isAppInProductionMode;
 + (BOOL)isFirstTimeAppLaunched;
 + (void)markAppAsLaunchedForFirstTime;
+
++ (BOOL)isTabBarHidden;
++ (void)setTabBarHidden:(BOOL)hidden;
 
 + (BOOL)isUserEditingSongOrAlbumOrArtist;
 + (void)setUserIsEditingSongOrAlbumOrArtist:(BOOL)aValue;

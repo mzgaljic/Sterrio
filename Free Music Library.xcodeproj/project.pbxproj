@@ -10,6 +10,8 @@
 		4E84E32E6B78490A99C7EFDB /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C84B413EAF4C57BC10A21B /* libPods.a */; };
 		87033B871996965E0077C7AD /* MusicPlaybackController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87033B861996965E0077C7AD /* MusicPlaybackController.m */; };
 		8703444F19A1A2D4002E5077 /* CoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8703444D19A1A2D4002E5077 /* CoreDataManager.m */; };
+		870CF9CF1AE20BCB00E4A97A /* LQAlbumArtItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 870CF9CE1AE20BCB00E4A97A /* LQAlbumArtItem.m */; };
+		870CF9D21AE2117E00E4A97A /* LQAlbumArtBackgroundUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = 870CF9D11AE2117E00E4A97A /* LQAlbumArtBackgroundUpdater.m */; };
 		870D49E71A6324F2004496A9 /* MZConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 870D49E61A6324F2004496A9 /* MZConstants.m */; };
 		870EDAE6197F4EAD001901B9 /* EditableCellTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 870EDAE5197F4EAD001901B9 /* EditableCellTableViewController.m */; };
 		8715AC4D19846AB900A51165 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8715AC4C19846AB900A51165 /* MessageUI.framework */; };
@@ -38,6 +40,9 @@
 		8734885319A1BBF4008CC6A5 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8727003F199F0F5600D71204 /* Model.xcdatamodeld */; };
 		87362AFD194E68A5004DB544 /* Deque.m in Sources */ = {isa = PBXBuildFile; fileRef = 87362AFC194E68A5004DB544 /* Deque.m */; };
 		87362B03194E9CDF004DB544 /* Stack.m in Sources */ = {isa = PBXBuildFile; fileRef = 87362B01194E9CDF004DB544 /* Stack.m */; };
+		8738E4CB1AE1EE0D00BA915F /* ASValuePopUpView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8738E4C71AE1EE0D00BA915F /* ASValuePopUpView.m */; };
+		8738E4CC1AE1EE0D00BA915F /* ASValueTrackingSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8738E4C91AE1EE0D00BA915F /* ASValueTrackingSlider.m */; };
+		8738E4CD1AE1EE0D00BA915F /* LICENSE asvalue tracking slider.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8738E4CA1AE1EE0D00BA915F /* LICENSE asvalue tracking slider.txt */; };
 		87394BE31965FFE100E750B1 /* Queue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87394BE21965FFE100E750B1 /* Queue.m */; };
 		873CF45C1A45435E00716B52 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 873CF45B1A45435E00716B52 /* QuartzCore.framework */; };
 		873E14621A49ED0A008A385D /* SongPlayerViewDisplayUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 873E14611A49ED0A008A385D /* SongPlayerViewDisplayUtility.m */; };
@@ -176,6 +181,9 @@
 		87F0504A1AE084F400BB0B2F /* Playlist.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F050491AE084F400BB0B2F /* Playlist.m */; };
 		87F0504D1AE084F500BB0B2F /* Album.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F0504C1AE084F400BB0B2F /* Album.m */; };
 		87F050501AE084F500BB0B2F /* Song.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F0504F1AE084F500BB0B2F /* Song.m */; };
+		87F050611AE0BBD200BB0B2F /* AFBlurSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F0505D1AE0BBD200BB0B2F /* AFBlurSegue.m */; };
+		87F050621AE0BBD200BB0B2F /* LICENSE blurSegue.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87F0505E1AE0BBD200BB0B2F /* LICENSE blurSegue.txt */; };
+		87F050631AE0BBD200BB0B2F /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F050601AE0BBD200BB0B2F /* UIImage+ImageEffects.m */; };
 		87F686A61AC9F48800EFF1E0 /* AbstractActionSheetPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F686951AC9F48800EFF1E0 /* AbstractActionSheetPicker.m */; };
 		87F686A71AC9F48800EFF1E0 /* ActionSheetCustomPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F686971AC9F48800EFF1E0 /* ActionSheetCustomPicker.m */; };
 		87F686A81AC9F48800EFF1E0 /* ActionSheetDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F6869A1AC9F48800EFF1E0 /* ActionSheetDatePicker.m */; };
@@ -209,6 +217,10 @@
 		87033B861996965E0077C7AD /* MusicPlaybackController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MusicPlaybackController.m; sourceTree = "<group>"; };
 		8703444D19A1A2D4002E5077 /* CoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataManager.m; sourceTree = "<group>"; };
 		8703444E19A1A2D4002E5077 /* CoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataManager.h; sourceTree = "<group>"; };
+		870CF9CD1AE20BCB00E4A97A /* LQAlbumArtItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LQAlbumArtItem.h; sourceTree = "<group>"; };
+		870CF9CE1AE20BCB00E4A97A /* LQAlbumArtItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LQAlbumArtItem.m; sourceTree = "<group>"; };
+		870CF9D01AE2117E00E4A97A /* LQAlbumArtBackgroundUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LQAlbumArtBackgroundUpdater.h; sourceTree = "<group>"; };
+		870CF9D11AE2117E00E4A97A /* LQAlbumArtBackgroundUpdater.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LQAlbumArtBackgroundUpdater.m; sourceTree = "<group>"; };
 		870D49E41A62E685004496A9 /* YouTubeVideoDetailLookupDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YouTubeVideoDetailLookupDelegate.h; sourceTree = "<group>"; };
 		870D49E51A6324F2004496A9 /* MZConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZConstants.h; sourceTree = "<group>"; };
 		870D49E61A6324F2004496A9 /* MZConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZConstants.m; sourceTree = "<group>"; };
@@ -266,6 +278,16 @@
 		87362B01194E9CDF004DB544 /* Stack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Stack.m; sourceTree = "<group>"; };
 		87362B02194E9CDF004DB544 /* Stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stack.h; sourceTree = "<group>"; };
 		873784DA1A85B79E00AA78A3 /* MainScreenViewControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainScreenViewControllerDelegate.h; sourceTree = "<group>"; };
+		8738E4C61AE1EE0D00BA915F /* ASValuePopUpView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASValuePopUpView.h; sourceTree = "<group>"; };
+		8738E4C71AE1EE0D00BA915F /* ASValuePopUpView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASValuePopUpView.m; sourceTree = "<group>"; };
+		8738E4C81AE1EE0D00BA915F /* ASValueTrackingSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASValueTrackingSlider.h; sourceTree = "<group>"; };
+		8738E4C91AE1EE0D00BA915F /* ASValueTrackingSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASValueTrackingSlider.m; sourceTree = "<group>"; };
+		8738E4CA1AE1EE0D00BA915F /* LICENSE asvalue tracking slider.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "LICENSE asvalue tracking slider.txt"; sourceTree = "<group>"; };
+		8738E4D31AE1F68B00BA915F /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
+		8738E4D51AE1F69700BA915F /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		8738E4D71AE1F6A700BA915F /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		8738E4D91AE1F6BB00BA915F /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		8738E4DB1AE1F6D500BA915F /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		87394BE11965FFE100E750B1 /* Queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Queue.h; sourceTree = "<group>"; };
 		87394BE21965FFE100E750B1 /* Queue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Queue.m; sourceTree = "<group>"; };
 		873CF45B1A45435E00716B52 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -521,6 +543,11 @@
 		87F0504C1AE084F400BB0B2F /* Album.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Album.m; sourceTree = "<group>"; };
 		87F0504E1AE084F500BB0B2F /* Song.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Song.h; sourceTree = "<group>"; };
 		87F0504F1AE084F500BB0B2F /* Song.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Song.m; sourceTree = "<group>"; };
+		87F0505C1AE0BBD200BB0B2F /* AFBlurSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFBlurSegue.h; sourceTree = "<group>"; };
+		87F0505D1AE0BBD200BB0B2F /* AFBlurSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFBlurSegue.m; sourceTree = "<group>"; };
+		87F0505E1AE0BBD200BB0B2F /* LICENSE blurSegue.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "LICENSE blurSegue.txt"; sourceTree = "<group>"; };
+		87F0505F1AE0BBD200BB0B2F /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
+		87F050601AE0BBD200BB0B2F /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
 		87F6868B1AC9211A00EFF1E0 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		87F686941AC9F48800EFF1E0 /* AbstractActionSheetPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractActionSheetPicker.h; sourceTree = "<group>"; };
 		87F686951AC9F48800EFF1E0 /* AbstractActionSheetPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AbstractActionSheetPicker.m; sourceTree = "<group>"; };
@@ -598,13 +625,13 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
-		8703442319A01909002E5077 /* Core Data tableview integreation */ = {
+		8703442319A01909002E5077 /* Core Data tableview integration */ = {
 			isa = PBXGroup;
 			children = (
 				876335221A847B9D00A229C4 /* CoreDataCustomTableViewController.h */,
 				876335231A847B9D00A229C4 /* CoreDataCustomTableViewController.m */,
 			);
-			name = "Core Data tableview integreation";
+			name = "Core Data tableview integration";
 			sourceTree = "<group>";
 		};
 		870EDAE7197F4EB0001901B9 /* Editing Field View */ = {
@@ -760,6 +787,18 @@
 			name = "GUI and GUI Controllers";
 			sourceTree = "<group>";
 		};
+		8738E4C51AE1EE0D00BA915F /* ASValueTrackingSlider */ = {
+			isa = PBXGroup;
+			children = (
+				8738E4C61AE1EE0D00BA915F /* ASValuePopUpView.h */,
+				8738E4C71AE1EE0D00BA915F /* ASValuePopUpView.m */,
+				8738E4C81AE1EE0D00BA915F /* ASValueTrackingSlider.h */,
+				8738E4C91AE1EE0D00BA915F /* ASValueTrackingSlider.m */,
+				8738E4CA1AE1EE0D00BA915F /* LICENSE asvalue tracking slider.txt */,
+			);
+			path = ASValueTrackingSlider;
+			sourceTree = "<group>";
+		};
 		8740724019798130004C5C57 /* GUI (VC) consistent style helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -827,6 +866,11 @@
 		87480DA7192C1FBD005CC0A4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8738E4DB1AE1F6D500BA915F /* SystemConfiguration.framework */,
+				8738E4D91AE1F6BB00BA915F /* AudioToolbox.framework */,
+				8738E4D71AE1F6A700BA915F /* CoreTelephony.framework */,
+				8738E4D51AE1F69700BA915F /* CoreMotion.framework */,
+				8738E4D31AE1F68B00BA915F /* libc++.dylib */,
 				87FA94301ACD10B200E70541 /* libPods-google-plus-ios-sdk.a */,
 				87F6868B1AC9211A00EFF1E0 /* MobileCoreServices.framework */,
 				873CF45B1A45435E00716B52 /* QuartzCore.framework */,
@@ -1027,7 +1071,7 @@
 			children = (
 				8740724019798130004C5C57 /* GUI (VC) consistent style helpers */,
 				87270039199EB9DB00D71204 /* LIFO Stack Controller - for VC */,
-				8703442319A01909002E5077 /* Core Data tableview integreation */,
+				8703442319A01909002E5077 /* Core Data tableview integration */,
 			);
 			name = "ViewController utility stuff";
 			sourceTree = "<group>";
@@ -1262,6 +1306,8 @@
 		87A453A0199C0825004D1319 /* Imported Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				8738E4C51AE1EE0D00BA915F /* ASValueTrackingSlider */,
+				87F050641AE0BBD700BB0B2F /* AFBlurSegue */,
 				87220CF41ACF03450047F7F4 /* AFDropdownNotification */,
 				87A04CA61ACCDDCE007C9245 /* IBActionSheet */,
 				87F686931AC9F48800EFF1E0 /* SkyWinder ActionSheetPicker */,
@@ -1444,6 +1490,18 @@
 			name = "Encapsulated Search functionality";
 			sourceTree = "<group>";
 		};
+		87F050641AE0BBD700BB0B2F /* AFBlurSegue */ = {
+			isa = PBXGroup;
+			children = (
+				87F0505C1AE0BBD200BB0B2F /* AFBlurSegue.h */,
+				87F0505D1AE0BBD200BB0B2F /* AFBlurSegue.m */,
+				87F0505E1AE0BBD200BB0B2F /* LICENSE blurSegue.txt */,
+				87F0505F1AE0BBD200BB0B2F /* UIImage+ImageEffects.h */,
+				87F050601AE0BBD200BB0B2F /* UIImage+ImageEffects.m */,
+			);
+			name = AFBlurSegue;
+			sourceTree = "<group>";
+		};
 		87F10BCF19682EDF003EDFB2 /* Settings View */ = {
 			isa = PBXGroup;
 			children = (
@@ -1543,6 +1601,10 @@
 				873EEA861A4BBA210092A6DF /* YouTubeVideo.m */,
 				87BA3A5B1AA9467300A3ACA3 /* PlaybackContext.h */,
 				87BA3A5C1AA9467300A3ACA3 /* PlaybackContext.m */,
+				870CF9CD1AE20BCB00E4A97A /* LQAlbumArtItem.h */,
+				870CF9CE1AE20BCB00E4A97A /* LQAlbumArtItem.m */,
+				870CF9D01AE2117E00E4A97A /* LQAlbumArtBackgroundUpdater.h */,
+				870CF9D11AE2117E00E4A97A /* LQAlbumArtBackgroundUpdater.m */,
 			);
 			name = Models;
 			path = "Free Music Library";
@@ -1647,6 +1709,7 @@
 				87A04C9D1ACCAB96007C9245 /* CONTRIBUTING_ubuntu.txt in Resources */,
 				87A04C931ACCAA1C007C9245 /* Ubuntu-Italic.ttf in Resources */,
 				87A04CA01ACCAB96007C9245 /* LICENCE-FAQ_ubuntu.txt in Resources */,
+				87F050621AE0BBD200BB0B2F /* LICENSE blurSegue.txt in Resources */,
 				87A120931ABA259F00250B2C /* LICENSE1.txt in Resources */,
 				87A04C9F1ACCAB96007C9245 /* FONTLOG_ubuntu.txt in Resources */,
 				87DD2A2B1A74B5F60014E115 /* Main.storyboard in Resources */,
@@ -1669,6 +1732,7 @@
 				872EA4DE1A54CAAB00F8EE9D /* iOSDeviceModelMapping.plist in Resources */,
 				874DA08F1ABA11DD003D69D6 /* README.txt in Resources */,
 				87D16D621931B7EE00DB6A34 /* Podfile in Resources */,
+				8738E4CD1AE1EE0D00BA915F /* LICENSE asvalue tracking slider.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1765,6 +1829,7 @@
 				87501580198C3D5300382945 /* YoutubeResultsTableViewController.m in Sources */,
 				875984A5195D764700015243 /* PlaylistItemTableViewController.m in Sources */,
 				87AE39751A4A8E6400C278BA /* PreloadedCoreDataModelUtility.m in Sources */,
+				8738E4CC1AE1EE0D00BA915F /* ASValueTrackingSlider.m in Sources */,
 				87BC1B891A071979000D9B0C /* PlayerView.m in Sources */,
 				874DA0871ABA11DD003D69D6 /* UIImage+MRImageEffects.m in Sources */,
 				87F050471AE084F400BB0B2F /* Artist.m in Sources */,
@@ -1782,6 +1847,7 @@
 				87FD38D71990A89200C8D5C3 /* UIImage+ColoringExistingImage.m in Sources */,
 				87FA13761A998AFA00A1902F /* ReachabilitySingleton.m in Sources */,
 				876335241A847B9D00A229C4 /* CoreDataCustomTableViewController.m in Sources */,
+				870CF9D21AE2117E00E4A97A /* LQAlbumArtBackgroundUpdater.m in Sources */,
 				87334418198E0332002B9E18 /* UIColor+SystemTintColor.m in Sources */,
 				877C4BAD199FE4E700CE86BC /* Playlist+Utilities.m in Sources */,
 				87BA3A601AA9652200A3ACA3 /* MZPlaybackQueue.m in Sources */,
@@ -1807,6 +1873,7 @@
 				879AB34119F225F300FD6582 /* SongPlayerViewController.m in Sources */,
 				87D47D8C19340F8B0057D49B /* AlbumItemViewController.m in Sources */,
 				87A0FD8A197DCEDF008FBBF7 /* AlbumTableViewFormatter.m in Sources */,
+				87F050631AE0BBD200BB0B2F /* UIImage+ImageEffects.m in Sources */,
 				87D3CD201AA823EF00B7D5B6 /* QueueViewController.m in Sources */,
 				87F686AC1AC9F48800EFF1E0 /* DistancePickerView.m in Sources */,
 				87FCD02C19A5BC0B00C600D3 /* CustomYoutubeTableViewCell.m in Sources */,
@@ -1866,12 +1933,15 @@
 				87362B03194E9CDF004DB544 /* Stack.m in Sources */,
 				87A453D6199C0891004D1319 /* EYLargePhoto.m in Sources */,
 				87D47D8D19340F8B0057D49B /* MasterAlbumsTableViewController.m in Sources */,
+				87F050611AE0BBD200BB0B2F /* AFBlurSegue.m in Sources */,
 				87394BE31965FFE100E750B1 /* Queue.m in Sources */,
 				872F78771A47B17900288FDD /* SongPlayerCoordinator.m in Sources */,
 				878ACD64192D48EF005938F5 /* MasterSongsTableViewController.m in Sources */,
 				872EA4E71A54F1FC00F8EE9D /* MyViewController.m in Sources */,
 				87A120921ABA259F00250B2C /* JNExpandableTableView.m in Sources */,
 				87F686A61AC9F48800EFF1E0 /* AbstractActionSheetPicker.m in Sources */,
+				8738E4CB1AE1EE0D00BA915F /* ASValuePopUpView.m in Sources */,
+				870CF9CF1AE20BCB00E4A97A /* LQAlbumArtItem.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1994,15 +2064,15 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Instabug",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Free Music Library/Free Music Library-Prefix.pch";
 				INFOPLIST_FILE = "Free Music Library/Free Music Library-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Pods/build/Debug-iphoneos",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = "Free Music Library";
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -2019,15 +2089,15 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Instabug",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Free Music Library/Free Music Library-Prefix.pch";
 				INFOPLIST_FILE = "Free Music Library/Free Music Library-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Pods/build/Debug-iphoneos",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = "Free Music Library";
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = YES;

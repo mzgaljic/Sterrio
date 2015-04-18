@@ -16,9 +16,10 @@
     self = [super initWithIdentifier:identifier source:source destination:destination];
     
     if (self) {
-        _blurRadius = 20;
-        _tintColor = [UIColor clearColor];
-        _saturationDeltaFactor = 0.5;
+        _blurRadius             = 20;
+        _tintColor              = [UIColor clearColor];
+        _saturationDeltaFactor  = 0.5;
+        _blurEffectStyle        = UIBlurEffectStyleDark;
     }
     
     return self;
@@ -94,20 +95,18 @@
             [destinationController.view sendSubviewToBack:blurredBackground];
         }
         
-        [sourceController presentViewController:destinationController
-                                       animated:self.animate
-                                     completion:nil];
+        [sourceController presentViewController:destinationController animated:YES completion:nil];
         
         [destinationController.transitionCoordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-            
             [UIView animateWithDuration:[context transitionDuration] animations:^{
                 blurredBackground.frame = CGRectMake(0, 0, backgroundRect.size.width, backgroundRect.size.height);
             }];
         } completion:nil];
     } else {
         
-        UIVisualEffect *visualEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-        UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:visualEffect];
+        UIBlurEffect *visualEffect              = [UIBlurEffect effectWithStyle:_blurEffectStyle];
+        UIVisualEffectView *blurView            = [[UIVisualEffectView alloc] initWithEffect:visualEffect];
+        blurView.contentView.backgroundColor    = _tintColor;
         
         blurView.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -121,15 +120,15 @@
         destinationController.view.backgroundColor = [UIColor clearColor];
         destinationController.modalPresentationStyle = UIModalPresentationOverFullScreen;
 
-        [sourceController presentViewController:destinationController
-                                       animated:self.animate
-                                     completion:^{
-                                     }];
+        [sourceController presentViewController:destinationController animated:YES completion:^{
+            
+        }];
 
         [destinationController.transitionCoordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
             
         } completion:nil];
     }
 }
+
 
 @end

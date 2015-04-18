@@ -17,8 +17,6 @@
 @implementation ASValueTrackingSlider
 {
     NSNumberFormatter *_numberFormatter;
-    CGSize _defaultPopUpViewSize; // size that fits largest string from _numberFormatter
-    CGSize _popUpViewSize; // usually == _defaultPopUpViewSize, but can vary if dataSource is used
     UIColor *_popUpViewColor;
     NSArray *_keyTimes;
     CGFloat _valueRange;
@@ -41,6 +39,7 @@
 {
     [super setValue:value animated:animated];
 }
+
 
 #pragma mark - initialization
 - (instancetype)initWithFrame:(CGRect)frame
@@ -89,8 +88,6 @@
     NSAssert(font, @"font can not be nil, it must be a valid UIFont");
     _font = font;
     [self.popUpView setFont:font];
-
-    [self calculatePopUpViewSize];
 }
 
 // return the currently displayed color if possible, otherwise return _popUpViewColor
@@ -146,14 +143,12 @@
 {
     [super setMaximumValue:maximumValue];
     _valueRange = self.maximumValue - self.minimumValue;
-    [self calculatePopUpViewSize];
 }
 
 - (void)setMinimumValue:(float)minimumValue
 {
     [super setMinimumValue:minimumValue];
     _valueRange = self.maximumValue - self.minimumValue;
-    [self calculatePopUpViewSize];
 }
 
 // set max and min digits to same value to keep string length consistent
@@ -161,13 +156,11 @@
 {
     [_numberFormatter setMaximumFractionDigits:maxDigits];
     [_numberFormatter setMinimumFractionDigits:maxDigits];
-    [self calculatePopUpViewSize];
 }
 
 - (void)setNumberFormatter:(NSNumberFormatter *)numberFormatter
 {
     _numberFormatter = [numberFormatter copy];
-    [self calculatePopUpViewSize];
 }
 
 - (NSNumberFormatter *)numberFormatter
@@ -238,12 +231,12 @@
 - (void)updatePopUpView
 {
     NSString *valueString; // ask dataSource for string, if nil or blank, get string from _numberFormatter
-    
+    CGSize popUpViewSize;
     if ((valueString = [self.dataSource slider:self stringForValue:self.value]) && valueString.length != 0) {
-        _popUpViewSize = [self.popUpView popUpSizeForString:valueString];
+        popUpViewSize = [self.popUpView popUpSizeForString:valueString];
     } else {
         valueString = [_numberFormatter stringFromNumber:@(self.value)];
-        _popUpViewSize = _defaultPopUpViewSize;
+        popUpViewSize = [self calculatePopUpViewSize];
     }
     
     // calculate the popUpView frame
@@ -251,8 +244,8 @@
     CGFloat thumbW = thumbRect.size.width;
     CGFloat thumbH = thumbRect.size.height;
     
-    CGRect popUpRect = CGRectInset(thumbRect, (thumbW - _popUpViewSize.width)/2, (thumbH - _popUpViewSize.height)/2);
-    popUpRect.origin.y = thumbRect.origin.y - _popUpViewSize.height;
+    CGRect popUpRect = CGRectInset(thumbRect, (thumbW - popUpViewSize.width)/2, (thumbH - popUpViewSize.height)/2);
+    popUpRect.origin.y = thumbRect.origin.y - popUpViewSize.height;
     
     // determine if popUpRect extends beyond the frame of the progress view
     // if so adjust frame and set the center offset of the PopUpView's arrow
@@ -265,14 +258,13 @@
     [self.popUpView setFrame:popUpRect arrowOffset:offset text:valueString];
 }
 
-- (void)calculatePopUpViewSize
+- (CGSize)calculatePopUpViewSize
 {
-    // set _popUpViewSize to the maximum size required (negative values need more width than positive values)
+    // negative values need more width than positive values
     CGSize minValSize = [self.popUpView popUpSizeForString:[_numberFormatter stringFromNumber:@(self.minimumValue)]];
     CGSize maxValSize = [self.popUpView popUpSizeForString:[_numberFormatter stringFromNumber:@(self.maximumValue)]];
 
-    _defaultPopUpViewSize = (minValSize.width >= maxValSize.width) ? minValSize : maxValSize;
-    _popUpViewSize = _defaultPopUpViewSize;
+    return (minValSize.width >= maxValSize.width) ? minValSize : maxValSize;
 }
 
 // takes an array of NSNumbers in the range self.minimumValue - self.maximumValue

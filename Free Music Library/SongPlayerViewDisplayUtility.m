@@ -10,7 +10,7 @@
 #import "SongPlayerViewDisplayUtility.h"
 #import "SongPlayerNavController.h"
 #import "SongPlayerCoordinator.h"
-#import <AFBlurSegue.h>
+#import "AFBlurSegue.h"
 
 @implementation SongPlayerViewDisplayUtility
 
@@ -47,7 +47,7 @@ int nearestEvenInt(int to)
         
         [sourceController prepareForSegue:segue sender:nil];
         
-        vc.view.layer.speed = 0.85;  //slows down the modal transition
+        vc.view.layer.speed = 0.90;  //slows down the modal transition
         [segue perform];
         
 

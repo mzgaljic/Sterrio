@@ -1,5 +1,4 @@
 PODS:
-  - AFBlurSegue (1.2)
   - AFNetworking (2.5.2):
     - AFNetworking/NSURLConnection (= 2.5.2)
     - AFNetworking/NSURLSession (= 2.5.2)
@@ -21,7 +20,6 @@ PODS:
   - AFNetworking/UIKit (2.5.2):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - ASValueTrackingSlider (0.9.4)
   - Bolts (1.1.4)
   - BRYSerialAnimationQueue (1.0.0)
   - CSNotificationView (0.5.4)
@@ -29,7 +27,7 @@ PODS:
   - GCDiscreetNotificationView (1.0.2)
   - JAMAccurateSlider (1.1.1)
   - KNSemiModalViewController (0.3)
-  - MarqueeLabel (2.2.1)
+  - MarqueeLabel (2.2.2)
   - MSCellAccessory (1.1.2)
   - RBBAnimation (0.3.0)
   - Reachability (3.2)
@@ -50,9 +48,7 @@ PODS:
   - XCDYouTubeKit (2.1.1)
 
 DEPENDENCIES:
-  - AFBlurSegue
   - AFNetworking
-  - ASValueTrackingSlider
   - Bolts
   - CSNotificationView (~> 0.5)
   - FXImageView
@@ -69,9 +65,7 @@ DEPENDENCIES:
   - XCDYouTubeKit
 
 SPEC CHECKSUMS:
-  AFBlurSegue: c1e9bd234881d5898a5b1bb016fd84d8e635dc06
   AFNetworking: fefbce9660acb17f48ae0011292d4da0f457bf36
-  ASValueTrackingSlider: 4efbaaf57749868938584439ffd588dfdcdb7899
   Bolts: f8e2f94edbf9fec7bb8de5ecaaa3aa6b7de6f64e
   BRYSerialAnimationQueue: 75feef56345338619a6c2111f2a81de28a59c368
   CSNotificationView: 0792f5220163c2befaf1a9716aa3d5a7d6bd4fb1
@@ -79,7 +73,7 @@ SPEC CHECKSUMS:
   GCDiscreetNotificationView: b093cce1fe82f6d9784169a156b48ecb1465ad8a
   JAMAccurateSlider: a97899a146b3f8b6341968e754b8e59968797af6
   KNSemiModalViewController: 8c0056377714b5170c52c65977d540200405411f
-  MarqueeLabel: c024bab67a1558e8e127132be3b6d66a702405fe
+  MarqueeLabel: dd13ddc7e7d23ea5db0e37062cb79248955432a1
   MSCellAccessory: 8265f3cd2386c1f372da00232472605ab11426e4
   RBBAnimation: cb6cb419f511434ce932f7d0fabf369612fafb4e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96

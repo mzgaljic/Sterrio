@@ -27,8 +27,12 @@ extern NSString * const MZNewTimeObserverCanBeAdded;
 extern NSString * const MZPlayerToggledOnScreenStatus;
 extern NSString * const MZMainScreenVCStatusBarAlwaysVisible;
 
+extern NSString * const MZFileNameOfLqAlbumArtObjs;
 extern NSString * const MZNewSongLoading;
 extern NSString * const MZAVPlayerStallStateChanged;
+
+extern NSString * const MZInitAudioSession;
+extern NSString * const MZExpandPlayerViewWithAnimationDuration;
 
 extern NSString * const MZKeyNumLikes;
 extern NSString * const MZKeyNumDislikes;
@@ -45,6 +49,7 @@ extern short const MZLongestCellularPlayableDuration;
 extern float const MZCellImageViewFadeDuration;
 extern float const MZSmallPlayerVideoFramePadding;
 extern short const MZSkipToSongBeginningIfBackBtnTappedBoundary;
+
 
 //Tab bar
 extern short const MZTabBarHeight;

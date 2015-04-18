@@ -19,7 +19,6 @@
     UILabel *tableViewEmptyMsgLabel;
     BOOL keyboardIsVisible;
     int emptyTableMsgKeyboardPadding;
-    BOOL firstTimeCreatingEmptyTableMsg;
 }
 @property (nonatomic, strong) UITableView *tableView;
 //naming of these two delegate protocols could be significantly improved. very confusing at the moment.
@@ -50,7 +49,6 @@
         
         keyboardIsVisible = NO;
         emptyTableMsgKeyboardPadding = [UIScreen mainScreen].bounds.size.height * 0.11;
-        firstTimeCreatingEmptyTableMsg = YES;
     }
     return self;
 }
@@ -114,7 +112,6 @@
 {
     [self.playableDataSearchDataSourceDelegate searchResultsShouldBeDisplayed:NO];
     keyboardIsVisible = NO;
-    firstTimeCreatingEmptyTableMsg = YES;
     
     //dismiss search bar and hide cancel button
     [searchBar setShowsCancelButton:NO animated:YES];
@@ -174,28 +171,29 @@
     self.tableView.backgroundView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     
     CGPoint newLabelCenter;
-    if(firstTimeCreatingEmptyTableMsg){
-        firstTimeCreatingEmptyTableMsg = NO;
+    if(((PlayableBaseDataSource *)self.playableDataSearchDataSourceDelegate).displaySearchResults == NO){
         newLabelCenter = self.tableView.backgroundView.center;
+        newLabelCenter = CGPointMake(newLabelCenter.x, newLabelCenter.y);
     } else
         newLabelCenter = CGPointMake(self.tableView.backgroundView.center.x,
                                      self.tableView.backgroundView.center.y - emptyTableMsgKeyboardPadding);
     
     aLabel.center = newLabelCenter;
+    aLabel.alpha = 0.3;
     [self.tableView.backgroundView addSubview:aLabel];
+    [UIView animateWithDuration:0.4 animations:^{
+        aLabel.alpha = 1;
+    }];
+    
 }
 
 - (UIView *)friendlyTableUserMessageWithText:(NSString *)text
 {
-    if(tableViewEmptyMsgLabel){
-        if([tableViewEmptyMsgLabel.text isEqualToString:text])
-            return tableViewEmptyMsgLabel;
-        
-        tableViewEmptyMsgLabel.text = text;
-        [tableViewEmptyMsgLabel sizeToFit];
-        return tableViewEmptyMsgLabel;
-    }
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    if(tableViewEmptyMsgLabel){
+        [tableViewEmptyMsgLabel removeFromSuperview];
+        tableViewEmptyMsgLabel = nil;
+    }
     tableViewEmptyMsgLabel = [[UILabel alloc] initWithFrame:CGRectMake(0,
                                                                        0,
                                                                        self.tableView.bounds.size.width,

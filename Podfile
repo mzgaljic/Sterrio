@@ -7,9 +7,6 @@ pod 'XCDYouTubeKit'
 #used by very few classes but still necessary (yt result VC, etc)
 pod 'SDWebImage', '~>3.6'
 
-#Percentage when sliding a tracking bar
-pod 'ASValueTrackingSlider'
-
 #TransitionKit -state machine library
 #pod 'TransitionKit', '~> 2.0.0'  ---not used yet
 
@@ -24,9 +21,6 @@ pod 'TBXML'
 
 #scrolling label (Marquee)
 pod 'MarqueeLabel'
-
-#blur modal segue
-pod 'AFBlurSegue'
 
 #drop in uislider replacement allowing fine grain selection
 pod 'JAMAccurateSlider'
@@ -54,3 +48,6 @@ pod 'SSBouncyButton'
 
 #Bolts framework (used for very convenient async tasks)
 pod 'Bolts'
+
+#bug reporting tool
+#pod 'Instabug'

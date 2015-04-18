@@ -21,7 +21,9 @@
     
     //fixes issue where playerview is sometimes "behind" a presented modal view (usually multiple modals)
     [[MusicPlaybackController obtainRawPlayerView] removeFromSuperview];
-    [[[[UIApplication sharedApplication] delegate] window] addSubview:[MusicPlaybackController obtainRawPlayerView]];
+    UIWindow *appWindow = [[[UIApplication sharedApplication] delegate] window];
+    [appWindow addSubview:[MusicPlaybackController obtainRawPlayerView]];
+    [AppEnvironmentConstants recordIndexOfPlayerView:[[appWindow subviews] indexOfObject:[MusicPlaybackController obtainRawPlayerView]]];
     [super viewWillAppear:animated];
 }
 

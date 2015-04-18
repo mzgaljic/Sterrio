@@ -6,12 +6,6 @@
 // project.
 
 
-// AFBlurSegue
-#define COCOAPODS_POD_AVAILABLE_AFBlurSegue
-#define COCOAPODS_VERSION_MAJOR_AFBlurSegue 1
-#define COCOAPODS_VERSION_MINOR_AFBlurSegue 2
-#define COCOAPODS_VERSION_PATCH_AFBlurSegue 0
-
 // AFNetworking
 #define COCOAPODS_POD_AVAILABLE_AFNetworking
 #define COCOAPODS_VERSION_MAJOR_AFNetworking 2
@@ -53,12 +47,6 @@
 #define COCOAPODS_VERSION_MAJOR_AFNetworking_UIKit 2
 #define COCOAPODS_VERSION_MINOR_AFNetworking_UIKit 5
 #define COCOAPODS_VERSION_PATCH_AFNetworking_UIKit 2
-
-// ASValueTrackingSlider
-#define COCOAPODS_POD_AVAILABLE_ASValueTrackingSlider
-#define COCOAPODS_VERSION_MAJOR_ASValueTrackingSlider 0
-#define COCOAPODS_VERSION_MINOR_ASValueTrackingSlider 9
-#define COCOAPODS_VERSION_PATCH_ASValueTrackingSlider 4
 
 // BRYSerialAnimationQueue
 #define COCOAPODS_POD_AVAILABLE_BRYSerialAnimationQueue
@@ -112,7 +100,7 @@
 #define COCOAPODS_POD_AVAILABLE_MarqueeLabel
 #define COCOAPODS_VERSION_MAJOR_MarqueeLabel 2
 #define COCOAPODS_VERSION_MINOR_MarqueeLabel 2
-#define COCOAPODS_VERSION_PATCH_MarqueeLabel 1
+#define COCOAPODS_VERSION_PATCH_MarqueeLabel 2
 
 // RBBAnimation
 #define COCOAPODS_POD_AVAILABLE_RBBAnimation

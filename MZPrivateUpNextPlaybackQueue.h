@@ -20,7 +20,7 @@
 
 @interface MZPrivateUpNextPlaybackQueue : NSObject
 
-//added in front of the existing ones.
+//appended to existing ones contexts
 - (void)addSongsToUpNextWithContexts:(NSArray *)contexts;
 - (NSUInteger)numMoreUpNextSongsCount;
 //for getting an array of all up next songs, without putting all songs into memory.
@@ -31,6 +31,7 @@
 - (PreliminaryNowPlaying *)obtainAndRemoveNextSong;
 - (PreliminaryNowPlaying *)peekAtNextSong;  //not used but maybe useful at some point?
 
+- (void)skipThisManySongsInQueue:(NSUInteger)numSongsToSkip;
 - (void)clearUpNext;
 
 @end

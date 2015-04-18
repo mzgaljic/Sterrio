@@ -1641,9 +1641,8 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
                                                           source:self
                                                      destination:vc];
     segue.animate = YES;
-    segue.blurRadius = 100;
-    segue.saturationDeltaFactor = .9;
-    segue.tintColor = [UIColor blackColor];
+    segue.blurRadius = 50;
+    segue.saturationDeltaFactor = .1;
     [segue perform];
 }
 

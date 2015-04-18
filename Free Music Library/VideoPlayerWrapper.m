@@ -62,6 +62,8 @@ static BOOL updatingPlayerViewDisabled = NO;
 
 + (void)newPlayerItemAddedCleanup
 {
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZInitAudioSession object:nil];
+    
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     BOOL airplayActive = player.externalPlaybackActive;
     [[MusicPlaybackController obtainRawPlayerView] showAirPlayInUseMsg:airplayActive];
@@ -84,13 +86,16 @@ static BOOL updatingPlayerViewDisabled = NO;
 {
     if(updatingPlayerViewDisabled)
         return;
-    /*
     UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    NSUInteger playerIndex = [[appWindow subviews] indexOfObject:playerView];
+    NSUInteger playerIndex = [AppEnvironmentConstants lastIndexOfPlayerView];
+    
     [playerView removeFromSuperview];
-    [appWindow addSubview:playerView];
-    [UIView animateWithDuration:0.25
+    if([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive)
+        //blocks "implicit" animation that can lock up the playerview (so it loses touch responsiveness)
+        [CATransaction flush];
+    
+    [UIView animateWithDuration:0.20
                           delay:0
                         options:UIViewAnimationOptionAllowUserInteraction
                      animations:^{
@@ -98,8 +103,6 @@ static BOOL updatingPlayerViewDisabled = NO;
                              [appWindow insertSubview:playerView atIndex:playerIndex];
                      }
                      completion:nil];
-    [playerView setNeedsDisplay];
-     */
 }
 
 + (void)temporarilyDisableUpdatingPlayerView:(BOOL)disable

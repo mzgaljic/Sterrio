@@ -15,5 +15,8 @@
    // to the persistent store coordinator for the application.
    + (NSManagedObjectContext *)context;
 
+//I use this ONLY for fetching, have NOT tested insertions concurrently, and probably best i dont.
+   + (NSManagedObjectContext *)backgroundThreadContext;
+
    - (NSManagedObjectContext *)deleteOldStoreAndMakeNewOne;
 @end

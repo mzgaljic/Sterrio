@@ -44,6 +44,7 @@ extern short const EXTERNAL_FETCH_BATCH_SIZE;
 #pragma mark - Performing operations on queue
 - (void)clearEntireQueue;
 - (void)clearUpNext;
+- (void)skipOverThisManyQueueSongsEfficiently:(NSUInteger)numSongsToSkip;
 
 //should be used when a user moves into a different context and wants to destroy their
 //current queue. This does not clear the "up next" section.

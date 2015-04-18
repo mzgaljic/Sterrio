@@ -23,4 +23,8 @@
 
 //image manipulation at run time
 + (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize;
+
+//fetching path to the NSCoder file which contains objects that help us update LQ album art.
++ (NSString *)pathToLqAlbumArtNSCodedFile;
+
 @end

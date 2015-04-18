@@ -12,7 +12,7 @@
 
 @interface AppDelegate ()
 {
-    AVAudioSession *aSession;
+    AVAudioSession *audioSession;
     UIView *playerSnapshot;  //used to make it appear as if the playerlayer is still attached to the player in backgrounded mode.
     UIBackgroundTaskIdentifier task;
     
@@ -22,17 +22,12 @@
 
 @implementation AppDelegate
 
-static BOOL PRODUCTION_MODE;
+static NSDate *nextEarliestAlbumArtUpdateForceTime;
 static NSString * const storyboardFileName = @"Main";
 static NSString * const songsVcSbId = @"songs view controller storyboard ID";
 static NSString * const albumsVcSbId = @"albums view controller storyboard ID";
 static NSString * const artistsVcSbId = @"artists view controller storyboard ID";
 static NSString * const playlistsVcSbId = @"playlists view controller storyboard ID";
-
-- (void)setProductionModeValue
-{
-    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
-}
 
 - (void)dealloc
 {
@@ -41,9 +36,11 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    [self setProductionModeValue];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    
     [ReachabilitySingleton sharedInstance];  //init reachability class
+    [LQAlbumArtBackgroundUpdater beginWaitingForEfficientMomentsToUpdateAlbumArt];
+    [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
     
     [AppDelegateSetupHelper setupDiskAndMemoryWebCache];
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
@@ -56,21 +53,23 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     if(appLaunchedFirstTime){
         //do stuff that you'd want to see the first time you launch!
         [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
-        
         [AppDelegateSetupHelper reduceEncryptionStrengthOnRelevantDirs];
     }
     
     [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY
                                                forKey:APP_ALREADY_LAUNCHED_KEY];
-    [self setupAudioSession];
-    [self setupAudioSessionNotifications];
     
     [self setupMainVC];
     
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(startupBackgroundTask)
                                                  name:MZStartBackgroundTaskHandlerIfInactive
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(initAudioSession)
+                                                 name:MZInitAudioSession
                                                object:nil];
     return YES;
 }
@@ -171,7 +170,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         playerSnapshot = [playerView snapshotViewAfterScreenUpdates:NO];
         playerSnapshot.frame = playerView.frame;
         playerSnapshot.userInteractionEnabled = NO;
-        [self.window addSubview:playerSnapshot];
+        [playerView addSubview:playerSnapshot];
     }
     playerView.alpha = 0;
 }
@@ -216,23 +215,41 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
                          if(playerSnapshot){
                              [playerSnapshot removeFromSuperview];
                              playerSnapshot = nil;
+                             [VideoPlayerWrapper setupAvPlayerViewAgain];
                          }
                      }];
 
     //non-snapshot code below...
     if([AppEnvironmentConstants isUserPreviewingAVideo]){
-        if(resumePlaybackAfterInterruptionPreviewPlayer){
+        if(resumePlaybackAfterInterruptionPreviewPlayer && ! [AppEnvironmentConstants isUserCurrentlyOnCall]){
             [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay object:nil];
             resumePlaybackAfterInterruptionPreviewPlayer = NO;
         }
     }
-    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
-    if(player != nil){
-        if(resumePlaybackAfterInterruption){
-            [player play];
-            resumePlaybackAfterInterruption = NO;
+    
+    if(nextEarliestAlbumArtUpdateForceTime == nil){
+        nextEarliestAlbumArtUpdateForceTime = [NSDate date];
+        nextEarliestAlbumArtUpdateForceTime = [self generateNextEarliestAlbumArtUpdateForceTime];
+        [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
+    }
+    else
+    {
+        if ([self isNSDateObjInPast:nextEarliestAlbumArtUpdateForceTime]) {
+            // Date and time have passed
+            nextEarliestAlbumArtUpdateForceTime = [self generateNextEarliestAlbumArtUpdateForceTime];
         }
     }
+}
+
+//helpers for the above method
+- (NSDate *)generateNextEarliestAlbumArtUpdateForceTime
+{
+    return [nextEarliestAlbumArtUpdateForceTime dateByAddingTimeInterval:20];
+}
+
+- (BOOL)isNSDateObjInPast:(NSDate *)date
+{
+    return ([date timeIntervalSinceNow] < 0.0) ? YES : NO;
 }
 
 #pragma mark - AVAudio Player delegate stuff
@@ -240,13 +257,19 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     switch (event.subtype)
     {
+            BOOL userCurrentlyOnCall = [AppEnvironmentConstants isUserCurrentlyOnCall];
         case UIEventSubtypeRemoteControlTogglePlayPause:
             if([AppEnvironmentConstants isUserPreviewingAVideo])
-               [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerTogglePlayPause object:nil];
-            else if([player rate] == 0 && ![SongPlayerCoordinator isPlayerInDisabledState]){
+                [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerTogglePlayPause object:nil];
+            else if([player rate] == 0
+                    && ![SongPlayerCoordinator isPlayerInDisabledState]
+                    && !userCurrentlyOnCall){
                 [MusicPlaybackController explicitlyPausePlayback:NO];
                 [player play];
-            } else if([player rate] == 0 && [SongPlayerCoordinator isPlayerInDisabledState]){
+            }
+            else if([player rate] == 0
+                    && [SongPlayerCoordinator isPlayerInDisabledState]
+                    && !userCurrentlyOnCall){
                 break;
             }else{
                 [MusicPlaybackController explicitlyPausePlayback:YES];
@@ -258,7 +281,9 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
             if([AppEnvironmentConstants isUserPreviewingAVideo])
                 [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay object:nil];
             else{
-                if([player rate] == 0 && ![SongPlayerCoordinator isPlayerInDisabledState]){
+                if([player rate] == 0
+                   && ![SongPlayerCoordinator isPlayerInDisabledState]
+                   && !userCurrentlyOnCall){
                     [MusicPlaybackController explicitlyPausePlayback:NO];
                     [player play];
                 }
@@ -273,12 +298,12 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
             }
             break;
         case UIEventSubtypeRemoteControlNextTrack:
-            if([AppEnvironmentConstants isUserPreviewingAVideo])
+            if([AppEnvironmentConstants isUserPreviewingAVideo] || userCurrentlyOnCall)
                 return;
             [MusicPlaybackController skipToNextTrack];
             break;
         case UIEventSubtypeRemoteControlPreviousTrack:
-            if([AppEnvironmentConstants isUserPreviewingAVideo])
+            if([AppEnvironmentConstants isUserPreviewingAVideo] || userCurrentlyOnCall)
                 return;
             [MusicPlaybackController returnToPreviousTrack];
             break;
@@ -293,98 +318,80 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 }
 
 
+
 #pragma mark - AVAudioSession stuff
 /*
  useful link talking about the following methods:
  http://stackoverflow.com/questions/20736809/avplayer-handle-when-incoming-call-come
  */
-
-static BOOL resumePlaybackAfterInterruption = NO;
 static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
 
-- (void)setupAudioSession
+- (void)initAudioSession
 {
-    NSError *error;
-    aSession = [AVAudioSession sharedInstance];
-    [aSession setCategory:AVAudioSessionCategoryPlayback
-              withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker
-                    error:&error];
-    [aSession setMode:AVAudioSessionModeDefault error:&error];
+    audioSession = nil;
+    audioSession = [AVAudioSession sharedInstance];
+    [audioSession setCategory:AVAudioSessionCategoryPlayback
+              withOptions:AVAudioSessionCategoryOptionAllowBluetooth
+                            | AVAudioSessionCategoryOptionDefaultToSpeaker
+                    error:nil];
+    [audioSession setActive:YES error:nil];
     
-    double sampleRate = 44100.0;  //44.1 Khz
-    [aSession setPreferredSampleRate:sampleRate error:&error];
-    
-    [aSession setActive:YES error: &error];
-    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    [aSession setDelegate: self];
-    #pragma GCC diagnostic warning "-Wdeprecated-declarations"
-}
-
-- (void)setupAudioSessionNotifications
-{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleAudioSessionInterruption:)
+                                                 name:AVAudioSessionInterruptionNotification
+                                               object:audioSession];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleMediaServicesReset)
                                                  name:AVAudioSessionMediaServicesWereResetNotification
-                                               object:aSession];
+                                               object:audioSession];
 }
 
-- (void)beginInterruption
+//incoming call, alarm clock, etc.
+- (void)handleAudioSessionInterruption:(NSNotification*)notification
 {
-    if([AppEnvironmentConstants isUserPreviewingAVideo]){
-        if([AppEnvironmentConstants currrentPreviewPlayerState] == PREVIEW_PLAYBACK_STATE_Playing)
-            resumePlaybackAfterInterruptionPreviewPlayer = YES;
-        [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPause object:nil];
-    }
-    AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
-    if([player rate] == 1){  //only works in foreground or when app is on screen
-        resumePlaybackAfterInterruption = YES;
-        [player pause];
-    }
-}
-
-- (void)endInterruption
-{
-    [self setupAudioSession];
-    if(resumePlaybackAfterInterruptionPreviewPlayer){
-        [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay object:nil];
-        resumePlaybackAfterInterruptionPreviewPlayer = NO;
-    }
-    if(resumePlaybackAfterInterruption){
-        [[MusicPlaybackController obtainRawAVPlayer] play];
-        resumePlaybackAfterInterruption = NO;
-    }
-}
-
-- (void)endInterruptionWithFlags:(NSUInteger)flags
-{
-    if(flags == AVAudioSessionInterruptionOptionShouldResume){
-        [self setupAudioSession];
-        if(resumePlaybackAfterInterruptionPreviewPlayer){
-            [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay object:nil];
-            resumePlaybackAfterInterruptionPreviewPlayer = NO;
+    NSNumber *interruptionType = [[notification userInfo] objectForKey:AVAudioSessionInterruptionTypeKey];
+    NSNumber *interruptionOption = [[notification userInfo] objectForKey:AVAudioSessionInterruptionOptionKey];
+    
+    switch (interruptionType.unsignedIntegerValue)
+    {
+        case AVAudioSessionInterruptionTypeBegan:
+        {
+            // • Audio has stopped, already inactive
+            // • Change state of UI, etc., to reflect non-playing state
+            
+            
+            //this notification will also force the playerVC to check the apps playback rate...
+            [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged object:nil];
+            break;
         }
-        if(resumePlaybackAfterInterruption){
-            [[MusicPlaybackController obtainRawAVPlayer] play];
-            resumePlaybackAfterInterruption = NO;
+        case AVAudioSessionInterruptionTypeEnded:
+        {
+            // • Make session active
+            // • Update user interface
+            // • AVAudioSessionInterruptionOptionShouldResume option
+            if (interruptionOption.unsignedIntegerValue == AVAudioSessionInterruptionOptionShouldResume
+                && [AppEnvironmentConstants isUserCurrentlyOnCall])
+            {
+                // Here you should continue playback.
+                [MusicPlaybackController resumePlayback];
+            }
+            break;
         }
+        default:
+            break;
     }
 }
 
+//if the media server resets for any reason, you should handle this notification to reconfigure audio or do any
+//housekeeping. By the way the notification dictionary won't contain any object.
 - (void)handleMediaServicesReset
 {
-    [self setupAudioSession];
-    if(resumePlaybackAfterInterruptionPreviewPlayer){
-        [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay object:nil];
-        resumePlaybackAfterInterruptionPreviewPlayer = NO;
-    }
-    if(resumePlaybackAfterInterruption){
-        AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
-        if(player){
-            [player play];
-        }
-    }
+    // • No userInfo dictionary for this notification
+    // • Audio streaming objects are invalidated (zombies)
+    // • Handle this notification by fully reconfiguring audio
+    [self initAudioSession];
 }
+
 
 #pragma mark - AVPlayer layer code
 - (void)removePlayerFromPlayerLayer

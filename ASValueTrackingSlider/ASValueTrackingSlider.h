@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "JAMAccurateSlider.h"
+#import <JAMAccurateSlider.h>
 @protocol ASValueTrackingSliderDelegate;
 @protocol ASValueTrackingSliderDataSource;
 

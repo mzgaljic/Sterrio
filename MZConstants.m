@@ -28,8 +28,12 @@ NSString * const MZNewTimeObserverCanBeAdded = @"new avplayer has been created."
 NSString * const MZPlayerToggledOnScreenStatus = @"the status has been toggled";
 NSString * const MZMainScreenVCStatusBarAlwaysVisible = @"status bar should always be visible";
 
+NSString * const MZFileNameOfLqAlbumArtObjs = @"Pending Album Art Updates.txt";
 NSString * const MZNewSongLoading = @"AVPlayer will try to load a new song now";
 NSString * const MZAVPlayerStallStateChanged = @"AVPlayer stalls changed";
+
+NSString * const MZInitAudioSession = @"Init the audio session if it isnt already setup";
+NSString * const MZExpandPlayerViewWithAnimationDuration = @"A duration will be passed";
 
 NSString * const MZKeyNumLikes = @"numLikes";
 NSString * const MZKeyNumDislikes = @"numDislikes";

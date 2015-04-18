@@ -1,4 +1,6 @@
 #import "CoreDataManager.h"
+#import <AVFoundation/AVFoundation.h>
+#import <UIKit/UIKit.h>
 
 //static instance for singleton implementation
 static CoreDataManager __strong *manager = nil;
@@ -11,9 +13,13 @@ static CoreDataManager __strong *manager = nil;
 // bound to the persistent store coordinator for the application.
 @property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 
+@property (readonly, strong, nonatomic) NSManagedObjectContext *backgroundManagedObjectContext;
+
 // Returns the managed object model for the application.
 // If the model doesn't already exist, it is created from the application's model.
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
+
+@property (readonly, strong, nonatomic) NSManagedObjectModel *backgroundManagedObjectModel;
 
 // Returns the persistent store coordinator for the application.
 // If the coordinator doesn't already exist, it is created and the application's 
@@ -29,6 +35,8 @@ static CoreDataManager __strong *manager = nil;
 static NSString *SQL_FILE_NAME = @"Muzic.sqlite";
 static NSString *MODEL_NAME = @"Model 1.0";
 @synthesize managedObjectContext = __managedObjectContext;
+@synthesize backgroundManagedObjectContext = __backgroundManagedObjectContext;
+@synthesize backgroundManagedObjectModel = __backgroundManagedObjectModel;
 @synthesize managedObjectModel = __managedObjectModel;
 @synthesize persistentStoreCoordinator = __persistentStoreCoordinator;
 
@@ -53,8 +61,12 @@ static NSString *MODEL_NAME = @"Model 1.0";
 
 + (NSManagedObjectContext *)context
 {
-    NSAssert([NSThread isMainThread], @"Core Data Context was accessed off the main thread.");
     return [[CoreDataManager sharedInstance] managedObjectContext];
+}
+
++ (NSManagedObjectContext *)backgroundThreadContext
+{
+    return [[CoreDataManager sharedInstance] backgroundThreadManagedObjectContext];
 }
 
 //Saves the Data Model onto the DB
@@ -91,6 +103,23 @@ static NSString *MODEL_NAME = @"Model 1.0";
         [__managedObjectContext setUndoManager:undoManager];
     }
     return __managedObjectContext;
+}
+
+- (NSManagedObjectContext *)backgroundThreadManagedObjectContext
+{
+    if (__backgroundManagedObjectContext != nil)
+        return __backgroundManagedObjectContext;
+    
+    NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
+    if (coordinator != nil)
+    {
+        __backgroundManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        [__backgroundManagedObjectContext setPersistentStoreCoordinator:coordinator];
+        
+        NSUndoManager *undoManager = [[NSUndoManager alloc] init];
+        [__backgroundManagedObjectContext setUndoManager:undoManager];
+    }
+    return __backgroundManagedObjectContext;
 }
 
 // Returns the managed object model for the application.

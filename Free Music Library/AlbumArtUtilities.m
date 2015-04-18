@@ -12,6 +12,11 @@
 
 + (UIImage *)albumArtFileNameToUiImage:(NSString *)albumArtFileName
 {
+    //make sure file name has .jpg at the end
+    NSString *lastThreeChars = [albumArtFileName substringFromIndex: [albumArtFileName length] - 4];
+    if(! [lastThreeChars isEqualToString:@".jpg"])
+        albumArtFileName = [NSString stringWithFormat:@"%@.jpg", albumArtFileName];
+    
     NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString *artDirPath = [documentsPath stringByAppendingPathComponent:@"Album Art"];
     NSString* path = [artDirPath stringByAppendingPathComponent: albumArtFileName];
@@ -20,6 +25,11 @@
 
 + (NSURL *)albumArtFileNameToNSURL:(NSString *)albumArtFileName
 {
+    //make sure file name has .jpg at the end
+    NSString *lastThreeChars = [albumArtFileName substringFromIndex: [albumArtFileName length] - 4];
+    if(! [lastThreeChars isEqualToString:@".jpg"])
+        albumArtFileName = [NSString stringWithFormat:@"%@.jpg", albumArtFileName];
+    
     NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString *artDirPath = [documentsPath stringByAppendingPathComponent:@"Album Art"];
     NSString* path = [artDirPath stringByAppendingPathComponent: albumArtFileName];
@@ -29,6 +39,11 @@
 + (BOOL)deleteAlbumArtFileWithName:(NSString *)fileName
 {
     if(fileName){
+        //make sure file name has .jpg at the end
+        NSString *lastThreeChars = [fileName substringFromIndex: [fileName length] - 4];
+        if(! [lastThreeChars isEqualToString:@".jpg"])
+            fileName = [NSString stringWithFormat:@"%@.jpg", fileName];
+        
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
         
@@ -42,6 +57,11 @@
 + (BOOL)saveAlbumArtFileWithName:(NSString *)fileName andImage:(UIImage *)albumArtImage
 {
     if(fileName && albumArtImage){
+        //make sure file name has .jpg at the end
+        NSString *lastThreeChars = [fileName substringFromIndex: [fileName length] - 4];
+        if(! [lastThreeChars isEqualToString:@".jpg"])
+            fileName = [NSString stringWithFormat:@"%@.jpg", fileName];
+        
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         
         NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
@@ -76,6 +96,11 @@
 + (BOOL)isAlbumArtAlreadySavedOnDisk:(NSString *)albumArtFileName
 {
     if(albumArtFileName){
+        //make sure file name has .jpg at the end
+        NSString *lastThreeChars = [albumArtFileName substringFromIndex: [albumArtFileName length] - 4];
+        if(! [lastThreeChars isEqualToString:@".jpg"])
+            albumArtFileName = [NSString stringWithFormat:@"%@.jpg", albumArtFileName];
+        
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         
         NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
@@ -93,6 +118,16 @@
 + (BOOL)renameAlbumArtFileFrom:(NSString *)original to:(NSString *)newName
 {
     if(original && newName){
+        //make sure file names have .jpg at the end
+        NSString *lastThreeChars = [original substringFromIndex: [original length] - 4];
+        if(! [lastThreeChars isEqualToString:@".jpg"])
+            original = [NSString stringWithFormat:@"%@.jpg", original];
+        
+        lastThreeChars = [newName substringFromIndex: [newName length] - 4];
+        if(! [lastThreeChars isEqualToString:@".jpg"])
+            newName = [NSString stringWithFormat:@"%@.jpg", newName];
+        
+        
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         
         NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
@@ -119,6 +154,17 @@
 + (BOOL)makeCopyOfArtWithName:(NSString *)fileName andNameIt:(NSString *)newName
 {
     if(fileName && newName){
+        //make sure file names have .jpg at the end
+        NSString *lastThreeChars = [fileName substringFromIndex: [fileName length] - 4];
+        if(! [lastThreeChars isEqualToString:@".jpg"])
+            fileName = [NSString stringWithFormat:@"%@.jpg", fileName];
+        
+        lastThreeChars = [newName substringFromIndex: [newName length] - 4];
+        if(! [lastThreeChars isEqualToString:@".jpg"])
+            newName = [NSString stringWithFormat:@"%@.jpg", newName];
+        
+    
+        
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         
         NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
@@ -160,9 +206,14 @@
 //http://stackoverflow.com/questions/5266272/non-lazy-image-loading-in-ios
 + (UIImage *)getImageWithoutLazyLoadingAtPath:(NSString *)path
 {
+    //make sure file name has .jpg at the end
+    NSString *lastThreeChars = [path substringFromIndex: [path length] - 4];
+    if(! [lastThreeChars isEqualToString:@".jpg"])
+        path = [NSString stringWithFormat:@"%@.jpg", path];
+    
     // get a data provider referencing the relevant file
     CGDataProviderRef dataProvider = CGDataProviderCreateWithFilename([path UTF8String]);
-    
+
     if(dataProvider == NULL)
         return nil;
     
@@ -207,7 +258,6 @@
 #pragma mark -File compression
 + (NSData *)dataWithCompressionOnImage:(UIImage *)compressMe
 {
-    
     CGFloat compression = 0.95f;
     CGFloat maxCompression = 0.5f;
     int oneKB = 1000;
@@ -223,6 +273,16 @@
         imageData = UIImageJPEGRepresentation(compressMe, compression);
     }
     return imageData;
+}
+
+//fetching path to the NSCoder file which contains objects that help us update LQ album art.
++ (NSString *)pathToLqAlbumArtNSCodedFile
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    
+    NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
+    NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:MZFileNameOfLqAlbumArtObjs];
+    return dataPath;
 }
 
 @end
