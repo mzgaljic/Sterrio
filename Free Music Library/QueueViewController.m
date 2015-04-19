@@ -201,6 +201,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     if(section == 0){
+        if(mainQueueContext.queueName == nil)
+            return @"";
         return [NSString stringWithFormat:@"  %@",mainQueueContext.queueName];
     }
     else

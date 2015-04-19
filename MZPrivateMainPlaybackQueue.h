@@ -32,5 +32,6 @@
 - (PreliminaryNowPlaying *)skipForward;
 
 - (void)skipThisManySongsInQueue:(NSUInteger)numSongsToSkip;
+- (Song *)skipToBeginningOfQueue;
 
 @end

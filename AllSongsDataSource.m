@@ -78,6 +78,23 @@
     return self;
 }
 
+#pragma mark - Overriding functionality
+- (NSIndexPath *)indexPathInSearchTableForObject:(id)someObject
+{
+    if([someObject isMemberOfClass:[Song class]])
+    {
+        Song *someSong = (Song *)someObject;
+        NSUInteger songIndex = [self.searchResults indexOfObject:someSong];
+        if(songIndex == NSNotFound)
+            return nil;
+        else{
+            return [NSIndexPath indexPathForRow:songIndex inSection:0];
+        }
+    }
+    else
+        return nil;
+}
+
 #pragma mark - UITableViewDataSource
 static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -94,7 +111,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     else
         reuseID = cellReuseIdDetailLabelNull;
     
-    MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
+    MZTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
                                                              forIndexPath:indexPath];
     if (!cell)
         cell = [[MZTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
@@ -105,14 +122,20 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         // populated. Without this code, previous images are displayed against the new people
         // during rapid scrolling.
         cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
+        cell.albumArtFileName = nil;
+    }
+    
+    if(song.albumArtFileName)
+        cell.albumArtFileName = song.albumArtFileName;
+    else if(song.album){
+        if(song.album.albumArtFileName)
+            cell.albumArtFileName = song.album.albumArtFileName;
     }
     
     // Set up other aspects of the cell content.
     cell.editingAccessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
                                                              color:[[UIColor defaultAppColorScheme] lighterColor]];
-    cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
-    if(! [SongTableViewFormatter songNameIsBold])
-        cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
+    cell.textLabel.text = song.songName;
     
     if(![reuseID isEqualToString:cellReuseIdDetailLabelNull])
         [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
@@ -211,7 +234,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [SongTableViewFormatter preferredSongCellHeight];
+    return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
 }
 
 //editing the tableView items

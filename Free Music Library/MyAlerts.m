@@ -33,6 +33,7 @@ static AFDropdownNotification *notification;
 
 + (void)runDisplayAlertCodeWithAlertType:(ALERT_TYPE)type
 {
+    return;
     switch (type) {
         case ALERT_TYPE_CannotConnectToYouTube:
         {

@@ -19,6 +19,8 @@
 }
 @end
 @implementation LQAlbumArtBackgroundUpdater
+
+const int limitPerFetchOnBattery = 4;
 static LQAlbumArtBackgroundUpdater *internalSingleton;
 static NSLock *myLock1;
 static BOOL isAsyncUpdateInProgress = NO;
@@ -165,8 +167,16 @@ static BOOL abortAsyncArtUpdate = NO;
     if(setOfLqAlbumArtItems == nil || setOfLqAlbumArtItems.count == 0)
         return;
     
+    NSInteger updateLimit = NSIntegerMax;
+    UIDeviceBatteryState batteryState = [UIDevice currentDevice].batteryState;
+    if (batteryState == UIDeviceBatteryStateUnplugged
+        || batteryState == UIDeviceBatteryStateUnknown) {
+        updateLimit = limitPerFetchOnBattery;
+    }
+    
     NSMutableArray *itemsToDelete = [NSMutableArray array];
     int counter = 0;
+    
     for(LQAlbumArtItem *lqItem in setOfLqAlbumArtItems)
     {
         if([LQAlbumArtBackgroundUpdater shouldAbortAsyncArtUpdate])
@@ -205,6 +215,9 @@ static BOOL abortAsyncArtUpdate = NO;
         
         if(downloadedHqArtSuccessfully || songStillExists == NO)
             [itemsToDelete addObject:lqItem];
+        
+        if(updateLimit == counter)
+            break;
     }
     
     //fetch set from disk again before we modify it, since the user could have

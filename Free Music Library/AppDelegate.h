@@ -40,4 +40,6 @@
 
 @property (strong, nonatomic) UIWindow *window;
 
+- (void)restoreMainWindow;
+
 @end

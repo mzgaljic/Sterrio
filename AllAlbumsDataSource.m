@@ -82,6 +82,23 @@
     return self;
 }
 
+#pragma mark - Overriding functionality
+- (NSIndexPath *)indexPathInSearchTableForObject:(id)someObject
+{
+    if([someObject isMemberOfClass:[Album class]])
+    {
+        Album *someAlbum = (Album *)someObject;
+        NSUInteger albumIndex = [self.searchResults indexOfObject:someAlbum];
+        if(albumIndex == NSNotFound)
+            return nil;
+        else{
+            return [NSIndexPath indexPathForRow:albumIndex inSection:0];
+        }
+    }
+    else
+        return nil;
+}
+
 #pragma mark - UITableViewDataSource
 static char albumIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -98,7 +115,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     else
         reuseID = cellReuseIdDetailLabelNull;
     
-    MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
+    MZTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
                                                              forIndexPath:indexPath];
     if (!cell)
         cell = [[MZTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
@@ -109,7 +126,11 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         // populated. Without this code, previous images are displayed against the new people
         // during rapid scrolling.
         cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
+        cell.albumArtFileName = nil;
     }
+    
+    if(album.albumArtFileName)
+        cell.albumArtFileName = album.albumArtFileName;
     
     //Set up other aspects of the cell content.
     MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
@@ -117,9 +138,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     cell.editingAccessoryView = coloredDisclosureIndicator;
     cell.accessoryView = coloredDisclosureIndicator;
     
-    cell.textLabel.attributedText = [AlbumTableViewFormatter formatAlbumLabelUsingAlbum:album];
-    if(! [AlbumTableViewFormatter albumNameIsBold])
-        cell.textLabel.font = [UIFont systemFontOfSize:[AlbumTableViewFormatter nonBoldAlbumLabelFontSize]];
+    cell.textLabel.text = album.albumName;
     
     if(![reuseID isEqualToString:cellReuseIdDetailLabelNull])
         [AlbumTableViewFormatter formatAlbumDetailLabelUsingAlbum:album andCell:&cell];
@@ -127,11 +146,13 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         cell.detailTextLabel.text = nil;
     
     //check if a song in this album is the now playing song
-#warning this check is wrong! should be fixed to be more accurate (use context)
     BOOL albumHasNowPlaying = NO;
+    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
     for(Song *albumSong in album.albumSongs)
     {
-        if([[MusicPlaybackController nowPlayingSong].song_id isEqual:albumSong.song_id]){
+        //using general album context here becasue the albumItemVC uses its parents playback context
+        if([nowPlayingObj isEqualToSong:albumSong compareWithContext:self.playbackContext])
+        {
             albumHasNowPlaying = YES;
             break;
         }

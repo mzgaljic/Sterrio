@@ -21,6 +21,8 @@ typedef enum{
 
 @interface SongPlayerViewController ()
 {
+    IBActionSheet *popup;
+    
     NSArray *musicButtons;
     SSBouncyButton *playButton;
     SSBouncyButton *forwardButton;
@@ -375,6 +377,8 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
+    short cancelButtonIndex = 2;
+    [popup dismissWithClickedButtonIndex:cancelButtonIndex animated:NO];
     //in case the timer picker is on screen...need to do this since it cant "cancel" itself
     //and run the appropriate cancel code simply when the screen rotates. sadly...
     [VideoPlayerWrapper temporarilyDisableUpdatingPlayerView:NO];
@@ -1245,17 +1249,31 @@ static BOOL goingToAnimateTimerPicker = NO;
 
 - (void)showTimerActionSheeet
 {
-    UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:nil
-                                                       delegate:self
-                                              cancelButtonTitle:@"Cancel"
-                                         destructiveButtonTitle:@"Remove Sleep Timer"
-                                              otherButtonTitles:@"New Sleep Timer", nil];
+    __weak SongPlayerViewController *weakself = self;
+    popup = [[IBActionSheet alloc] initWithTitle:nil
+                                        callback:^(IBActionSheet *actionSheet, NSInteger buttonIndex){
+                                            [weakself handleActionClickWithButtonIndex:buttonIndex];
+                                        } cancelButtonTitle:@"Cancel"
+                          destructiveButtonTitle:@"Remove Sleep Timer"
+                               otherButtonTitles:@"New Sleep Timer", nil];
     
+    for(UIButton *aButton in popup.buttons){
+        aButton.titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                  size:20];
+    }
+    [popup setButtonTextColor:[UIColor defaultAppColorScheme]];
+    short destructiveButtonIndex = 0;
+    [popup setButtonTextColor:[UIColor redColor] forButtonAtIndex:destructiveButtonIndex];
+    [popup setTitleTextColor:[UIColor darkGrayColor]];
+    [popup setCancelButtonFont:[UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                               size:20]];
+    [popup setTitleFont:[UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18]];
     [popup showInView:[UIApplication sharedApplication].keyWindow];
 }
 
 static BOOL userReplacingExistingTimer = NO;
-- (void)actionSheet:(UIActionSheet *)popup clickedButtonAtIndex:(NSInteger)buttonIndex
+#pragma mark - Handling action sheet
+- (void)handleActionClickWithButtonIndex:(NSInteger) buttonIndex
 {
     switch (buttonIndex)
     {
@@ -1265,7 +1283,7 @@ static BOOL userReplacingExistingTimer = NO;
             break;
         case 1:
             userReplacingExistingTimer = YES;
-            [self showTimerPicker];
+            [self performSelector:@selector(showTimerPicker) withObject:nil afterDelay:0.1];
             break;
         case 2:
             break;
@@ -1279,10 +1297,7 @@ static BOOL userReplacingExistingTimer = NO;
     double delayInSeconds = 0.3;
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-        [VideoPlayerWrapper temporarilyDisableUpdatingPlayerView:NO];
-        [VideoPlayerWrapper setupAvPlayerViewAgain];
-        
-        [[UIApplication sharedApplication].keyWindow bringSubviewToFront:[MusicPlaybackController obtainRawPlayerView]];
+        [[SongPlayerCoordinator sharedInstance] begingExpandingVideoPlayer];
     });
 }
 

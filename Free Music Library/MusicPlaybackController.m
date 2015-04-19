@@ -50,10 +50,28 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 + (void)skipToNextTrack
 {
     if([NSThread mainThread]){
-        [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
-        Song *skippedSong = [MusicPlaybackController nowPlayingSong];
-        Song *nextSong = [playbackQueue skipForward];
-        [VideoPlayerWrapper startPlaybackOfSong:nextSong goingForward:YES oldSong:skippedSong];
+        
+        NSString *playerVcNotifString = @"PlaybackStartedNotification";
+        if([AppEnvironmentConstants playbackRepeatType] == PLABACK_REPEAT_MODE_Song){
+            [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
+            [MusicPlaybackController resumePlayback];
+            [[NSNotificationCenter defaultCenter] postNotificationName:playerVcNotifString
+                                                                object:nil];
+            return;
+        }
+        
+        if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more songs in queue
+            [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
+            Song *skippedSong = [MusicPlaybackController nowPlayingSong];
+            MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+            [player allowSongDidFinishNotificationToProceed:YES];
+            Song *nextSong = [playbackQueue skipForward];
+            [VideoPlayerWrapper startPlaybackOfSong:nextSong goingForward:YES oldSong:skippedSong];
+        } else{
+            //last song in queue reached
+            if([AppEnvironmentConstants playbackRepeatType] == PLABACK_REPEAT_MODE_All)
+                [MusicPlaybackController repeatEntireMainQueue];
+        }
     } else{
         dispatch_async(dispatch_get_main_queue(), ^(void){
             //Run UI Updates

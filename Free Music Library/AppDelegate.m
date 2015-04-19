@@ -34,6 +34,15 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)restoreMainWindow
+{
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    [self.window setRootViewController:nil];
+    self.window.backgroundColor = [UIColor whiteColor];
+    [self.window makeKeyAndVisible];
+
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -166,13 +175,40 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    if(playerView == nil)
+        return;
+    
     if(! [SongPlayerCoordinator screenShottingVideoPlayerNotAllowed]){
-        playerSnapshot = [playerView snapshotViewAfterScreenUpdates:NO];
-        playerSnapshot.frame = playerView.frame;
-        playerSnapshot.userInteractionEnabled = NO;
-        [playerView addSubview:playerSnapshot];
+        
+        //is the player visible already on the screen? sometimes the user quits
+        //before the playerview has a chance to be rendered again (user leaving and resuming
+        //app very aggresively).
+        if(! playerViewFadingBackOnScreen){
+            //we can capture a fresh snapshot with no worries.
+            playerSnapshot = [playerView snapshotViewAfterScreenUpdates:NO];
+            playerSnapshot.frame = playerView.frame;
+            playerSnapshot.userInteractionEnabled = NO;
+            [self.window insertSubview:playerSnapshot belowSubview:playerView];
+            NSLog(@"creating new snapshot");
+        }
+        else{
+            //too early to take fresh snapshot of player (alpha not 1 yet).
+            //(its still below the playerView in hierarchy if code reaches this point)
+            //we dont need to do anything...playerView wont be rendered anyway.
+            NSLog(@"doing nothing");
+        }
     }
     playerView.alpha = 0;
+}
+
+- (void)removePlayerSnapshot
+{
+    if(! playerViewFadingBackOnScreen
+       && [UIApplication sharedApplication].applicationState == UIApplicationStateActive){
+        NSLog(@"removed old snapshot");
+        [playerSnapshot removeFromSuperview];
+        playerSnapshot = nil;
+    }
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -195,10 +231,13 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 {
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
     [[SDImageCache sharedImageCache] clearMemory];
+    playerSnapshot = nil;
 }
 
+static BOOL playerViewFadingBackOnScreen = NO;
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
+    playerViewFadingBackOnScreen = YES;
     //animate player back from snapshot
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     float animationDuration = 0.74f;
@@ -206,17 +245,17 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
                           delay:0
                         options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
                      animations:^{
-                         playerSnapshot.alpha = 0.0;
                          if([SongPlayerCoordinator isPlayerEnabled])
                              playerView.alpha = 1;
                          else
                              playerView.alpha = [SongPlayerCoordinator alphaValueForDisabledPlayer];
                      } completion:^(BOOL finished) {
                          if(playerSnapshot){
-                             [playerSnapshot removeFromSuperview];
-                             playerSnapshot = nil;
-                             [VideoPlayerWrapper setupAvPlayerViewAgain];
+                             [self performSelector:@selector(removePlayerSnapshot)
+                                        withObject:nil
+                                        afterDelay:1];
                          }
+                         playerViewFadingBackOnScreen = NO;
                      }];
 
     //non-snapshot code below...

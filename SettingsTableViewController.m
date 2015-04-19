@@ -271,13 +271,8 @@ static const int CELL_STREAM_PICKER_TAG = 107;
             [self launchAlertViewWithPicker:FONT_SIZE_PICKER_TAG];
         }
     } else if(indexPath.section == 4){
-        /*
-        UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:@"Compose Email" delegate:self cancelButtonTitle:@"Cancel"
-                                             destructiveButtonTitle:nil otherButtonTitles:@"Attach Screenshot(s)",
-                                @"Regular Email", nil];
-         */
         __weak SettingsTableViewController *weakself = self;
-        popup = [[IBActionSheet alloc] initWithTitle:@"Testing"
+        popup = [[IBActionSheet alloc] initWithTitle:@"Compose Email"
                                             callback:^(IBActionSheet *actionSheet, NSInteger buttonIndex){
                                                 [weakself handleActionClickWithButtonIndex:buttonIndex];
                                             } cancelButtonTitle:@"Cancel"
@@ -492,6 +487,7 @@ NSArray *CellStreamOptions;
     }
 }
 
+static BOOL userChangedFontSize = NO;
 -(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
 {
     switch (_lastTappedPickerCell)
@@ -501,6 +497,7 @@ NSArray *CellStreamOptions;
             _lastSelectedFontSize = (short)[[fontOptions objectAtIndex:row] intValue];
             //_alertView.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility
               //                                                        hypotheticalLabelFontSizeForPreferredSize:_lastSelectedFontSize]];
+            userChangedFontSize = YES;
             break;
         }
         case WIFI_STREAM_PICKER_TAG:
@@ -820,11 +817,16 @@ static int tempIcloudSwitchCount = 0;
 
 - (IBAction)doneDismissButtonTapped:(id)sender
 {
+    
     [self dismissViewControllerAnimated:YES completion:^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:MZUserFinishedWithReviewingSettings
+        if(userChangedFontSize)
+            [[NSNotificationCenter defaultCenter] postNotificationName:MZUserChangedFontSize
+                                                                object:nil];
+        NSString *settingsChangesNotifString = MZUserFinishedWithReviewingSettings;
+        [[NSNotificationCenter defaultCenter] postNotificationName:settingsChangesNotifString
                                                             object:nil];
+        userChangedFontSize = NO;
     }];
-
 }
 
 @end

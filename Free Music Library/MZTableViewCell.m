@@ -11,25 +11,26 @@
 //editing mode by disabling the button.
 
 #import "MZTableViewCell.h"
+#import "PreferredFontSizeUtility.h"
+#import "AlbumArtUtilities.h"
 
 @interface MZTableViewCell ()
 {
-    int layoutSubviewCount;
-    int currentImageViewPadding;
     CGRect imgViewFrameBeforeEditingMode;
-    CGRect textLabelFrameWithoutEditingMode;
-    CGRect detailTextLabelFrameWithoutEditingMode;
+    short lastPrefSizeUsed;
 }
 @end
 @implementation MZTableViewCell
 short const textLabelsPaddingFromImgView = 10;
 short const editingModeChevronWidthCompensation = 55;
+short const imgPaddingFromLeft = 5;
 
 static void *didEnterEditingMode = &didEnterEditingMode;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     if(self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]){
+        lastPrefSizeUsed = [AppEnvironmentConstants preferredSizeSetting];
     }
     return self;
 }
@@ -37,57 +38,76 @@ static void *didEnterEditingMode = &didEnterEditingMode;
 - (void)awakeFromNib
 {
     [super awakeFromNib];
-    layoutSubviewCount = 0;
     //add observer
     [self addObserver:self forKeyPath:@"editing" options:NSKeyValueObservingOptionNew context:didEnterEditingMode];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(settingsMayHaveChanged)
-                                                 name:MZUserFinishedWithReviewingSettings
-                                               object:nil];
+
 }
 
-- (void)settingsMayHaveChanged
+- (BOOL)shouldReloadCellImages
 {
-    int cellHeight = self.frame.size.height;
-    self.imageView.frame = CGRectMake(currentImageViewPadding,
-                                      currentImageViewPadding/2,
-                                      cellHeight - currentImageViewPadding,
-                                      cellHeight - currentImageViewPadding);
-    imgViewFrameBeforeEditingMode = self.imageView.frame;
-    [self layoutSubviews];
+    //cell images get blurry when going from small to big size
+    BOOL retVal = NO;
+    if(lastPrefSizeUsed < [AppEnvironmentConstants preferredSizeSetting]
+       && abs(lastPrefSizeUsed - [AppEnvironmentConstants preferredSizeSetting]) >=2)
+        retVal = YES;
+    lastPrefSizeUsed = [AppEnvironmentConstants preferredSizeSetting];
+    return retVal;
 }
 
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    currentImageViewPadding = self.frame.size.height * 0.12;  //12% of height
+    [self.contentView layoutIfNeeded];
     
     // Makes imageView get placed in the corner
-    if(layoutSubviewCount == 0){
-        int cellHeight = self.frame.size.height;
-        self.imageView.frame = CGRectMake(currentImageViewPadding,
-                                          currentImageViewPadding/2,
-                                          cellHeight - currentImageViewPadding,
-                                          cellHeight - currentImageViewPadding);
-        imgViewFrameBeforeEditingMode = self.imageView.frame;
-        self.imageView.contentMode = UIViewContentModeScaleAspectFit;
-    }
-    if(self.editing)
-        self.imageView.frame = imgViewFrameBeforeEditingMode;
-    else
-        self.imageView.frame = imgViewFrameBeforeEditingMode;
+    int cellHeight = self.frame.size.height;
+    self.imageView.frame = CGRectMake(imgPaddingFromLeft,
+                                      imgPaddingFromLeft/2,
+                                      cellHeight - imgPaddingFromLeft,
+                                      cellHeight - imgPaddingFromLeft);
+    
+    self.imageView.contentMode = UIViewContentModeScaleAspectFit;
     
     [self setLabelsFramesBasedOnEditingMode];
+    UIFont *textLabelFont;
+    NSString *regularFontName = [AppEnvironmentConstants regularFontName];
+    NSString *boldFontName = [AppEnvironmentConstants boldFontName];
+    int suggestedFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+    
+    if([AppEnvironmentConstants boldNames])
+        textLabelFont = [MZTableViewCell findAdaptiveFontWithName:boldFontName
+                                   forUILabelSize:self.textLabel.frame.size
+                                  withMinimumSize:suggestedFontSize - 10];
+    else
+        textLabelFont = [MZTableViewCell findAdaptiveFontWithName:regularFontName
+                                   forUILabelSize:self.textLabel.frame.size
+                                  withMinimumSize:suggestedFontSize - 10];
+    
+    self.textLabel.font = textLabelFont;
+    
+    CGSize detailTextSize = self.detailTextLabel.frame.size;
+    self.detailTextLabel.font = [MZTableViewCell findAdaptiveFontWithName:regularFontName
+                                                           forUILabelSize:detailTextSize
+                                                          withMinimumSize:suggestedFontSize - 10];
     [self fixiOS7PlusSeperatorBug];
     
-    layoutSubviewCount++;
+    if([self shouldReloadCellImages]){
+        if(self.albumArtFileName){
+            //try to load a new copy of the image on disk.
+            UIImage *originalImage = self.imageView.image;
+            self.imageView.image = nil;
+            self.imageView.image = [AlbumArtUtilities albumArtFileNameToUiImage:self.albumArtFileName];
+            if(self.imageView.image == nil)
+                self.imageView.image = originalImage;
+        }
+    }
 }
 
 - (UIEdgeInsets)layoutMargins
 {
     //it should match the padding (created in the method above), so the line starts exactly where
     //the album art starts
-    return UIEdgeInsetsMake(0, currentImageViewPadding, 0, 0);
+    return UIEdgeInsetsMake(0, imgPaddingFromLeft, 0, 0);
 }
 
 #pragma mark - Key value observation
@@ -104,11 +124,13 @@ static void *didEnterEditingMode = &didEnterEditingMode;
 
 - (void)prepareForReuse
 {
+    self.albumArtFileName = nil;
     [super prepareForReuse];
 }
 
 - (void)dealloc
 {
+    self.albumArtFileName = nil;
     [self removeObservers];
 }
 
@@ -139,44 +161,61 @@ static void *didEnterEditingMode = &didEnterEditingMode;
 
 - (CGRect)textLabelFrameWithoutEditingMode
 {
-    int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
-    int width = self.frame.size.width - xOrigin;
-    textLabelFrameWithoutEditingMode = CGRectMake(xOrigin, self.textLabel.frame.origin.y, width, self.textLabel.frame.size.height);
-    return textLabelFrameWithoutEditingMode;
+    int xOrigin, yOrigin, width, height;
+    
+    xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
+    width = self.frame.size.width - xOrigin;
+    height = self.frame.size.height * 0.35;
+    
+    if(self.detailTextLabel.text == nil)
+        //there is not detail label, just center this one.
+        yOrigin = (self.frame.size.height/2) - (height/2);
+    else
+        yOrigin = self.frame.size.height * .12;  //should be 12% down from top
+
+    return CGRectMake(xOrigin, yOrigin, width, height);
 }
 
 - (CGRect)textLabelFrameInEditingMode
 {
-    int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
-    int yOrigin = textLabelFrameWithoutEditingMode.origin.y;
-    //padding so we dont hit the chevron
-    int width = self.frame.size.width - xOrigin - editingModeChevronWidthCompensation;
+    int xOrigin, yOrigin, width, height;
     
-    return CGRectMake(xOrigin, yOrigin, width, self.textLabel.frame.size.height);
+    xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
+    width = self.frame.size.width - xOrigin - editingModeChevronWidthCompensation;
+    height = self.frame.size.height * 0.35;
+    
+    if(self.detailTextLabel.text == nil)
+        //there is not detail label, just center this one.
+        yOrigin = (self.frame.size.height/2) - (height/2);
+    else
+        yOrigin = self.frame.size.height * .12;  //should be 12% down from top
+
+    return CGRectMake(xOrigin, yOrigin, width, height);
 }
 
 - (CGRect)detailTextLabelFrameWithoutEditingMode
 {
     int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
     int width = self.frame.size.width - xOrigin;
-    detailTextLabelFrameWithoutEditingMode = CGRectMake(xOrigin,
-                                                        self.detailTextLabel.frame.origin.y,
-                                                        width,
-                                                        self.detailTextLabel.frame.size.height);
-    return detailTextLabelFrameWithoutEditingMode;
+    int yOrigin = self.frame.size.height * .53;  //should be 53% from top
+    int height = self.frame.size.height * 0.35;
+    return CGRectMake(xOrigin,
+                      yOrigin,
+                      width,
+                      height);
 }
 
 - (CGRect)detailTextLabelFrameInEditingMode
 {
     int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
-    int yOrigin = detailTextLabelFrameWithoutEditingMode.origin.y;
+    int yOrigin = self.frame.size.height * .53;  //should be 53% from top
     int width = self.frame.size.width - xOrigin - editingModeChevronWidthCompensation;
-    
-    // Assign the the new frame to textLabel
+    int height = self.frame.size.height * 0.35;
+
     return CGRectMake(xOrigin,
                       yOrigin,
                       width,
-                      self.detailTextLabel.frame.size.height);
+                      height);
 }
 
 - (void)fixiOS7PlusSeperatorBug
@@ -186,6 +225,44 @@ static void *didEnterEditingMode = &didEnterEditingMode;
             subview.hidden = NO;
         }
     }
+}
+
++ (UIFont *)findAdaptiveFontWithName:(NSString *)fontName
+                      forUILabelSize:(CGSize)labelSize
+                     withMinimumSize:(NSInteger)minSize
+{
+    UIFont *tempFont = nil;
+    NSString *testString = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    
+    NSInteger tempMin = minSize;
+    NSInteger tempMax = 256;
+    NSInteger mid = 0;
+    NSInteger difference = 0;
+    
+    while (tempMin <= tempMax) {
+        @autoreleasepool {
+            mid = tempMin + (tempMax - tempMin) / 2;
+            tempFont = [UIFont fontWithName:fontName size:mid];
+            difference = labelSize.height - [testString sizeWithFont:tempFont].height;
+            
+            if (mid == tempMin || mid == tempMax) {
+                if (difference < 0) {
+                    return [UIFont fontWithName:fontName size:(mid - 1)];
+                }
+                return [UIFont fontWithName:fontName size:mid];
+            }
+            
+            if (difference < 0) {
+                tempMax = mid - 1;
+            } else if (difference > 0) {
+                tempMin = mid + 1;
+            } else {
+                return [UIFont fontWithName:fontName size:mid];
+            }
+        }
+    }
+    
+    return [UIFont fontWithName:fontName size:mid];
 }
 
 @end

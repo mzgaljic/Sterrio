@@ -43,13 +43,12 @@ int nearestEvenInt(int to)
         if(! animate)
             vc.view.hidden = YES;
         
-        [[SongPlayerCoordinator sharedInstance] begingExpandingVideoPlayer];
-        
         [sourceController prepareForSegue:segue sender:nil];
         
         vc.view.layer.speed = 0.90;  //slows down the modal transition
         [segue perform];
         
+        [[SongPlayerCoordinator sharedInstance] begingExpandingVideoPlayer];
 
         if(!animate){
             __weak UIViewController *weakVC = vc;

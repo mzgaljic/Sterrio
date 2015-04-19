@@ -19,8 +19,8 @@
     
     NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString *artDirPath = [documentsPath stringByAppendingPathComponent:@"Album Art"];
-    NSString* path = [artDirPath stringByAppendingPathComponent: albumArtFileName];
-    return [AlbumArtUtilities getImageWithoutLazyLoadingAtPath:path];
+    NSString *path = [artDirPath stringByAppendingPathComponent: albumArtFileName];
+    return  [AlbumArtUtilities getImageWithoutLazyLoadingAtPath:path];
 }
 
 + (NSURL *)albumArtFileNameToNSURL:(NSString *)albumArtFileName

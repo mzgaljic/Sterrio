@@ -7,7 +7,6 @@
 //
 
 #import "MainScreenViewController.h"
-#import "CoreDataCustomTableViewController.h"
 
 NSString * const CENTER_BTN_IMG_NAME = @"plus_sign";
 short const dummyTabIndex = 2;
@@ -162,9 +161,6 @@ short const dummyTabIndex = 2;
     
     index = [self.navControllers indexOfObjectIdenticalTo:newNavController];
     UIViewController *newVc = self.viewControllers[index];
-    if([newVc respondsToSelector:@selector(viewWillAppearComingFromAnotherTab)]){
-        [newVc performSelector:@selector(viewWillAppearComingFromAnotherTab)];  //only want to fade in new views
-    }
     [newVc viewWillAppear:YES];
     [newNavController setNavigationBarHidden:oldNavBarHidden animated:NO];
     

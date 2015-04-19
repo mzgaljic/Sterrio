@@ -43,6 +43,7 @@ NSString * const MZEmailBugReport = @"marksBetaMusicApp@gmail.com";
 NSString * const MZAddSongToUpNextString = @"Play Next";
 NSString * const MZUserCanTransitionToMainInterface = @"user can transition to main interface";
 NSString * const MZUserFinishedWithReviewingSettings = @"User finished looking at Settings VC";
+NSString * const MZUserChangedFontSize = @"Font size has just been changed in settings";
 
 short const MZMinutesInAnHour = 60;
 short const MZSecondsInAMinute = 60;

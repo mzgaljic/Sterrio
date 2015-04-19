@@ -211,6 +211,33 @@
     }
 }
 
+- (Song *)skipToBeginningOfQueue
+{
+    //fetchRequestIndex
+    if(playbackContext == nil)
+        return nil;
+    else{
+        NSArray *songs = [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
+                                                              nowPlayingInclusive:YES
+                                                               onlyUnplayedTracks:NO];
+        if(songs.count > 0){
+            Song *firstSongInMainQueue = [songs objectAtIndex:0];
+            fetchRequestIndex = 0;
+            mostRecentSong = firstSongInMainQueue;
+            if(songs.count == 1)
+                atEndOfQueue = YES;
+            else
+                atEndOfQueue = NO;
+            userWentBeyondStartOfQueue = NO;
+            userWentBeyondEndOfQueue = NO;
+            return firstSongInMainQueue;
+        }
+        else{
+            return nil;
+        }
+    }
+}
+
 
 //--------------private helpers--------------
 

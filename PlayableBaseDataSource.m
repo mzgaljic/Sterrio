@@ -31,7 +31,11 @@
     return nil;
 }
 
-
+//override for real functionality in subclasses.
+- (NSIndexPath *)indexPathInSearchTableForObject:(id)someObject
+{
+    return nil;
+}
 
 #pragma mark - Boring utility methods for subclasses
 - (UIViewController *)topViewController

@@ -28,6 +28,7 @@
 
 - (UIColor *)colorForNowPlayingItem;
 - (MySearchBar *)setUpSearchBar;
+- (NSIndexPath *)indexPathInSearchTableForObject:(id)someObject;
 
 //Boring utility methods for subclasses
 - (UIViewController *)topViewController;

@@ -132,12 +132,6 @@ static ReachabilitySingleton *reachability;
     if([AppEnvironmentConstants isUserPreviewingAVideo])
         return;
     
-    if([AppEnvironmentConstants playbackRepeatType] == PLABACK_REPEAT_MODE_Song){
-        [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
-        [MusicPlaybackController resumePlayback];
-        return;
-    }
-    
     [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_DONE_PLAYING object:nil];
     [self dismissAllSpinners];
     
@@ -145,22 +139,16 @@ static ReachabilitySingleton *reachability;
         return;
     _allowSongDidFinishToExecute = NO;
     
-    if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more songs in queue
-        if(movingForward)
+    if(movingForward)
+        [MusicPlaybackController skipToNextTrack];
+    else{
+        if([MusicPlaybackController isSongFirstInQueue:[MusicPlaybackController nowPlayingSong]])
             [MusicPlaybackController skipToNextTrack];
-        else{
-            if([MusicPlaybackController isSongFirstInQueue:[MusicPlaybackController nowPlayingSong]])
-                [MusicPlaybackController skipToNextTrack];
-            else
-                [MusicPlaybackController returnToPreviousTrack];
-        }
-    } else{
-        //last song in queue reached
-        if([AppEnvironmentConstants playbackRepeatType] == PLABACK_REPEAT_MODE_All){
-            [MusicPlaybackController repeatEntireMainQueue];
-            return;
-        }
+        else
+            [MusicPlaybackController returnToPreviousTrack];
     }
+    //code dealing with reaching the end of the queue should be placed in the
+    //MusicPlaybackControllers "SkipToNextSong" method.
 }
 
 #pragma mark - initiating playback
@@ -507,6 +495,8 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                                                                         object:nil];
                     //places approprate spinners on player if needed...or dismisses spinner.
                     [self connectionStateChanged];
+                    stallHasOccured = NO;
+                    [MusicPlaybackController setPlayerInStall:NO];
                     NSLog(@"playback started");
                     [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
                 }

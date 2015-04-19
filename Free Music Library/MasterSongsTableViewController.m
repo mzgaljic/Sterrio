@@ -101,6 +101,7 @@ static BOOL haveCheckedCoreDataInit = NO;
     self.tableViewDataSourceAndDelegate.editableSongDelegate = self;
     self.tableView.dataSource = self.tableViewDataSourceAndDelegate;
     self.tableView.delegate = self.tableViewDataSourceAndDelegate;
+    self.tableDataSource = self.tableViewDataSourceAndDelegate;
 }
 
 #pragma mark - View Controller life cycle

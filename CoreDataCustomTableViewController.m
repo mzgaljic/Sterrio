@@ -350,32 +350,11 @@ static void *navBarHiddenChange = &navBarHiddenChange;
         searchBar = nil;
         tableView.tableHeaderView = nil;
     }
-    
-    //simple reload take place if font size wasnt changed
-    [tableView reloadData];
-}
-
-- (void)viewWillAppearComingFromAnotherTab
-{
-    //going to fade in tableview
-    tableView.alpha = 0.8;
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    [super viewDidAppear:animated];
-    if(tableView.alpha != 1){
-        //fading in tableview
-        [UIView animateWithDuration:0.15
-                              delay:0
-                            options:UIViewAnimationOptionAllowUserInteraction
-                         animations:^{
-                             tableView.alpha = 1;
-                             tableView.userInteractionEnabled = YES;
-                         }
-                         completion:nil];
-    }
-    
+    [super viewDidAppear:animated];    
     [self compensateTableViewInsetForPlayer];
 }
 
@@ -391,6 +370,10 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(settingsPossiblyChanged)
                                                  name:MZUserFinishedWithReviewingSettings
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(fontSizeChanged)
+                                                 name:MZUserChangedFontSize
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(nowPlayingSongsHasChanged:)
@@ -414,24 +397,17 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+//only called if a more specific notification wasnt fired (such as font size update)
 - (void)settingsPossiblyChanged
 {
-    /*
-    //without reloading all rows, font size changes dont take effect.
-    NSMutableArray *indexPaths = [NSMutableArray array];
-    NSUInteger numSections = self.fetchedResultsController.sections.count;
-    for(NSUInteger i = 0; i < numSections; i++)
-    {
-        NSUInteger numRowsInSection = [tableView numberOfRowsInSection:i];
-        for(NSUInteger j = 0; j < numRowsInSection; j++)
-        {
-            [indexPaths addObject:[NSIndexPath indexPathForRow:j inSection:i]];
-        }
-    }
+#warning should only use this when font size is changed (and nothing else). optimize!
     [tableView beginUpdates];
-    [tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationFade];
     [tableView endUpdates];
-     */
+}
+
+- (void)fontSizeChanged
+{
+    
 }
 
 - (void)hideSearchBarByDefaultIfApplicable
@@ -448,9 +424,7 @@ static void *navBarHiddenChange = &navBarHiddenChange;
 {
     if ([[notification name] isEqualToString:MZNewSongLoading]){
         if([NSThread isMainThread]){
-            [self performSelectorOnMainThread:@selector(reflectNowPlayingChangesInTableview:)
-                                   withObject:notification
-                                waitUntilDone:YES];
+            [self reflectNowPlayingChangesInTableview:notification];
         } else{
             [self performSelectorOnMainThread:@selector(reflectNowPlayingChangesInTableview:)
                                    withObject:notification
@@ -465,6 +439,7 @@ static void *navBarHiddenChange = &navBarHiddenChange;
         //view controller is not on screen, dont need to update cells on the fly...
         return;
     }
+    
     Song *songToReplace = (Song *)[notification object];
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
     Song *newSong = nowPlaying.nowPlaying;
@@ -472,9 +447,14 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     if(self.playbackContext == nil)
         return;
     
-    //tries to obtain the path to the changed songs if possible.
-    oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
-    newPath = [self.fetchedResultsController indexPathForObject:newSong];
+     //tries to obtain the path to the changed songs if possible.
+    if(self.tableDataSource.displaySearchResults){
+        oldPath = [self.tableDataSource indexPathInSearchTableForObject:songToReplace];
+        newPath = [self.tableDataSource indexPathInSearchTableForObject:newSong];
+    } else{
+        oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
+        newPath = [self.fetchedResultsController indexPathForObject:newSong];
+    }
     
     if(oldPath || newPath){
         [tableView beginUpdates];

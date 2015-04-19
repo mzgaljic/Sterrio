@@ -41,6 +41,7 @@ extern NSString * const MZEmailBugReport;
 extern NSString * const MZAddSongToUpNextString;
 extern NSString * const MZUserCanTransitionToMainInterface;
 extern NSString * const MZUserFinishedWithReviewingSettings;
+extern NSString * const MZUserChangedFontSize;
 
 extern short const MZMinutesInAnHour;
 extern short const MZSecondsInAMinute;

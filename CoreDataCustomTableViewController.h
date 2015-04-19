@@ -11,12 +11,15 @@
 
 @class MySearchBar;
 @class PlaybackContext;
+@class PlayableBaseDataSource;
 @interface CoreDataCustomTableViewController : UIViewController <NSFetchedResultsControllerDelegate,
                                                                 UITableViewDelegate>
 
 //The controller (this class fetches nothing if it is not set).
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSFetchedResultsController *searchFetchedResultsController;
+
+@property (nonatomic, strong) PlayableBaseDataSource *tableDataSource;
 @property (nonatomic, assign) BOOL displaySearchResults;
 @property (nonatomic, strong) PlaybackContext *playbackContext;
 @property (nonatomic, strong) NSString *emptyTableUserMessage;
@@ -38,8 +41,5 @@
 //nice additions that allow code re-use for tableviews displaying songs
 - (void)setSearchBar:(MySearchBar *)searchBar;
 - (UIColor *)colorForNowPlayingItem;
-
-//exposed publicly for MainScreenViewController
-- (void)viewWillAppearComingFromAnotherTab;
 
 @end

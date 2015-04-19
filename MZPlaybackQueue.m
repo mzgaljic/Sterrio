@@ -227,7 +227,13 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
 - (Song *)skipToBeginningOfQueueReshufflingIfNeeded
 {
 #warning incomplete implementation
-    return nil;
+    //dont take into account shuffle mode here
+    
+    Song *newNowPlaying = [mainQueue skipToBeginningOfQueue];
+    PlaybackContext *currentContext = [NowPlayingSong sharedInstance].context;
+    [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newNowPlaying
+                                                  context:currentContext];
+    return newNowPlaying;
 }
 
 #pragma mark - DEBUG
