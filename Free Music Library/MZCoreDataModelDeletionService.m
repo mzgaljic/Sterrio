@@ -17,8 +17,7 @@
     
     //now do the same with the songs artist
     [MZCoreDataModelDeletionService removeSongFromItsArtist:songToDelete];
-    
-    [songToDelete removeAlbumArt];
+    songToDelete.albumArt = nil;
 }
 
 + (void)deleteArtistInManagedObjectContextWithoutSave:(Artist *)artistToDelete

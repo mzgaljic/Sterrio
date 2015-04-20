@@ -39,15 +39,14 @@
             UIView *viewToRender = [(UITableViewController *)sourceController tableView];
             CGPoint contentOffset = [[(UITableViewController *)sourceController tableView]contentOffset];
             
-            UIGraphicsBeginImageContext(viewToRender.bounds.size);
+            UIGraphicsBeginImageContextWithOptions(viewToRender.bounds.size, NO, [UIScreen mainScreen].scale);
             CGContextRef context = UIGraphicsGetCurrentContext();
             CGContextTranslateCTM(context, 0, -contentOffset.y);
             [viewToRender.layer renderInContext:context];
             background = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
         } else {
-            
-            UIGraphicsBeginImageContextWithOptions(sourceController.view.bounds.size, YES, 0);
+            UIGraphicsBeginImageContextWithOptions(sourceController.view.bounds.size, NO, [UIScreen mainScreen].scale);
             CGContextRef context = UIGraphicsGetCurrentContext();
             [sourceController.view.layer renderInContext:context];
             background = UIGraphicsGetImageFromCurrentImageContext();

@@ -40,6 +40,9 @@
 
 @property (strong, nonatomic) UIWindow *window;
 
+//used to make it appear as if the playerlayer is still attached to the player in backgrounded mode.
+@property (strong, nonatomic) UIView *playerSnapshot;
+
 - (void)restoreMainWindow;
 
 @end

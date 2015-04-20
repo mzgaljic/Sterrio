@@ -192,6 +192,12 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 //used to help the touchesMoved method below get the swipe length
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    if(appDelegate.playerSnapshot){
+        [appDelegate.playerSnapshot removeFromSuperview];
+        appDelegate.playerSnapshot = nil;
+    }
+    
     userDidSwipeUp = NO;
     userDidSwipeDown = NO;
     userDidTap = NO;

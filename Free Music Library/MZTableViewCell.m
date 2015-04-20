@@ -92,6 +92,7 @@ static void *didEnterEditingMode = &didEnterEditingMode;
     [self fixiOS7PlusSeperatorBug];
     
     if([self shouldReloadCellImages]){
+        /*
         if(self.albumArtFileName){
             //try to load a new copy of the image on disk.
             UIImage *originalImage = self.imageView.image;
@@ -100,6 +101,7 @@ static void *didEnterEditingMode = &didEnterEditingMode;
             if(self.imageView.image == nil)
                 self.imageView.image = originalImage;
         }
+         */
     }
 }
 
@@ -124,13 +126,13 @@ static void *didEnterEditingMode = &didEnterEditingMode;
 
 - (void)prepareForReuse
 {
-    self.albumArtFileName = nil;
+    //self.albumArtFileName = nil;
     [super prepareForReuse];
 }
 
 - (void)dealloc
 {
-    self.albumArtFileName = nil;
+    //self.albumArtFileName = nil;
     [self removeObservers];
 }
 

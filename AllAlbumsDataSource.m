@@ -11,6 +11,7 @@
 #import "MZTableViewCell.h"
 #import "AlbumTableViewFormatter.h"
 #import "MusicPlaybackController.h"
+#import "AlbumAlbumArt+Utilities.h"
 
 @interface AllAlbumsDataSource ()
 {
@@ -99,15 +100,23 @@
         return nil;
 }
 
-#pragma mark - UITableViewDataSource
-static char albumIndexPathAssociationKey;  //used to associate cells with images when scrolling
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+#pragma mark - Custom stuff
+//exposed so that the Album VC can check if any visible Album cells contain "dirty" album art.
+- (Album *)albumAtIndexPath:(NSIndexPath *)indexPath
 {
     Album *album;
     if(self.displaySearchResults)
         album = [self.searchResults objectAtIndex:indexPath.row];
     else
         album = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    return album;
+}
+
+#pragma mark - UITableViewDataSource
+static char albumIndexPathAssociationKey;  //used to associate cells with images when scrolling
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    Album *album = [self albumAtIndexPath:indexPath];
     
     NSString *reuseID;
     if(album.artist || album.albumSongs.count > 0)
@@ -126,11 +135,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         // populated. Without this code, previous images are displayed against the new people
         // during rapid scrolling.
         cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
-        cell.albumArtFileName = nil;
     }
-    
-    if(album.albumArtFileName)
-        cell.albumArtFileName = album.albumArtFileName;
     
     //Set up other aspects of the cell content.
     MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
@@ -170,11 +175,18 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
                              indexPath,
                              OBJC_ASSOCIATION_RETAIN);
     
+    __weak Album *weakalbum = album;
+    [cell layoutIfNeeded];
+    CGSize cellImgSize = cell.imageView.frame.size;
+    
     // Queue a block that obtains/creates the image and then loads it into the cell.
     // The code block will be run asynchronously in a last-in-first-out queue, so that when
     // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
     [stackController addBlock:^{
-        UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:[AlbumArtUtilities albumArtFileNameToNSURL:album.albumArtFileName]]];
+        UIImage *albumArt;
+        if(weakalbum.albumArt){
+            albumArt = [weakalbum.albumArt imageWithSize:cellImgSize];
+        }
         
         // The block will be processed on a background Grand Central Dispatch queue.
         // Therefore, ensure that this code that updates the UI will run on the main queue.
@@ -219,7 +231,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [AlbumTableViewFormatter preferredAlbumCellHeight];
+    return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -232,6 +244,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         else
              album = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
+#warning not preparing album for deletion
         //[MusicPlaybackController songAboutToBeDeleted:song deletionContext:self.playbackContext];
         //[MZCoreDataModelDeletionService prepareSongForDeletion:song];
         
@@ -240,7 +253,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         {
             [MusicPlaybackController songAboutToBeDeleted:aSong
                                           deletionContext:self.playbackContext];
-            [aSong removeAlbumArt];
+            aSong.albumArt = nil;
         }
         
         //delete the album and save changes
@@ -454,6 +467,11 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
 }
 
 #pragma mark - SearchBarDataSourceDelegate implementation
+- (NSString *)placeholderTextForSearchBar
+{
+    return [self.searchBarDataSourceDelegate placeholderTextForSearchBar];
+}
+
 - (void)searchBarIsBecomingActive
 {
     [self.searchBarDataSourceDelegate searchBarIsBecomingActive];

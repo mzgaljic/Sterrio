@@ -35,7 +35,6 @@
                                                 UITableViewDataSource>
 
 @property (nonatomic, strong) Song *songIAmEditing;
-@property (nonatomic, strong) NSString *aNewSongId;
 @property (nonatomic, assign) NSInteger lastTappedRow;  //only used for section 0
 
 @property (nonatomic, strong) UIViewController *VC;

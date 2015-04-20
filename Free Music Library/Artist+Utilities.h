@@ -30,12 +30,7 @@
                           usingAlbum:(Album *)anAlbum
                    inManagedContext:(NSManagedObjectContext *)context;
 
-/**
- @Description Returns YES if (and only if) both artists in the array are considered to be 'equal', or the 'same'. All
-                other cases result in NO being returned. Comaprison is accomplished via the objects artist id.
- @param arrayOfTwoArtistObjects   Comparisons will only take place if the argument conatins exactly two Artist objects.
- */
-+ (BOOL)areArtistsEqual:(NSArray *)arrayOfTwoArtistObjects;
++ (BOOL)isArtist:(Artist *)artist1 equalToArtist:(Artist *)artist2;
 
 
 @end

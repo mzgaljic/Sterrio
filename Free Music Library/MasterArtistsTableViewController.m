@@ -238,15 +238,14 @@ static BOOL PRODUCTION_MODE;
         {
             [MusicPlaybackController songAboutToBeDeleted:aSong
                                           deletionContext:self.playbackContext];
-            [aSong removeAlbumArt];
+            aSong.albumArt = nil;
         }
         for(Album *anAlbum in artist.albums)
         {
             for(Song *aSong in anAlbum.albumSongs)
                 [MusicPlaybackController songAboutToBeDeleted:aSong
                                               deletionContext:self.playbackContext];
-            
-            [anAlbum removeAlbumArt];
+            anAlbum.albumArt = nil;
         }
         
         //delete the artist and save changes

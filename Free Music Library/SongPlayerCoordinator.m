@@ -77,6 +77,12 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     if(isVideoPlayerExpanded == YES)
         return;
     
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    if(appDelegate.playerSnapshot){
+        [appDelegate.playerSnapshot removeFromSuperview];
+        appDelegate.playerSnapshot = nil;
+    }
+    
     if([AppEnvironmentConstants isTabBarHidden])
         wasTabBarHiddenBeforePlayerExpansion = YES;
     else
@@ -150,6 +156,12 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
 {
     if(isVideoPlayerExpanded == NO)
         return;
+    
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    if(appDelegate.playerSnapshot){
+        [appDelegate.playerSnapshot removeFromSuperview];
+        appDelegate.playerSnapshot = nil;
+    }
     
     if(! wasTabBarHiddenBeforePlayerExpansion)
         [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:[NSNumber numberWithBool:NO]];
@@ -245,6 +257,13 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     if(! UIDeviceOrientationIsValidInterfaceOrientation([UIDevice currentDevice].orientation))
         return;
     if([SongPlayerCoordinator isPlayerOnScreen]){
+        
+        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        if(appDelegate.playerSnapshot){
+            [appDelegate.playerSnapshot removeFromSuperview];
+            appDelegate.playerSnapshot = nil;
+        }
+        
         PlayerView *videoPlayer = [MusicPlaybackController obtainRawPlayerView];
         UIInterfaceOrientation orientation = (UIInterfaceOrientation)[UIDevice currentDevice].orientation;
         if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){

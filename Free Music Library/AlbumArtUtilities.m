@@ -10,190 +10,32 @@
 
 @implementation AlbumArtUtilities
 
-+ (UIImage *)albumArtFileNameToUiImage:(NSString *)albumArtFileName
++ (NSData *)compressedDataFromUIImage:(UIImage *)anImage
 {
-    //make sure file name has .jpg at the end
-    NSString *lastThreeChars = [albumArtFileName substringFromIndex: [albumArtFileName length] - 4];
-    if(! [lastThreeChars isEqualToString:@".jpg"])
-        albumArtFileName = [NSString stringWithFormat:@"%@.jpg", albumArtFileName];
+    if(anImage == nil)
+        return nil;
+    CGFloat compression = 0.95f;
+    CGFloat maxCompression = 0.65f;
+    int oneKB = 1000;
+    int maxFileSize = 90 * oneKB;
     
-    NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    NSString *artDirPath = [documentsPath stringByAppendingPathComponent:@"Album Art"];
-    NSString *path = [artDirPath stringByAppendingPathComponent: albumArtFileName];
-    return  [AlbumArtUtilities getImageWithoutLazyLoadingAtPath:path];
-}
-
-+ (NSURL *)albumArtFileNameToNSURL:(NSString *)albumArtFileName
-{
-    //make sure file name has .jpg at the end
-    NSString *lastThreeChars = [albumArtFileName substringFromIndex: [albumArtFileName length] - 4];
-    if(! [lastThreeChars isEqualToString:@".jpg"])
-        albumArtFileName = [NSString stringWithFormat:@"%@.jpg", albumArtFileName];
+    NSData *imageData = UIImageJPEGRepresentation(anImage, compression);
+    if([imageData length] < maxFileSize)
+        return imageData;
     
-    NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    NSString *artDirPath = [documentsPath stringByAppendingPathComponent:@"Album Art"];
-    NSString* path = [artDirPath stringByAppendingPathComponent: albumArtFileName];
-    return [NSURL fileURLWithPath:path];
-}
-
-+ (BOOL)deleteAlbumArtFileWithName:(NSString *)fileName
-{
-    if(fileName){
-        //make sure file name has .jpg at the end
-        NSString *lastThreeChars = [fileName substringFromIndex: [fileName length] - 4];
-        if(! [lastThreeChars isEqualToString:@".jpg"])
-            fileName = [NSString stringWithFormat:@"%@.jpg", fileName];
-        
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-        
-        NSString *artDirPath = [documentsPath stringByAppendingPathComponent:@"Album Art"];
-        NSString *filePath = [artDirPath stringByAppendingPathComponent:fileName];
-        return [fileManager removeItemAtPath:filePath error:nil];
+    //else we try to compress without losing too much quality
+    while ([imageData length] > maxFileSize && compression > maxCompression){
+        compression -= 0.1;
+        imageData = UIImageJPEGRepresentation(anImage, compression);
     }
-    return YES;
-}
-
-+ (BOOL)saveAlbumArtFileWithName:(NSString *)fileName andImage:(UIImage *)albumArtImage
-{
-    if(fileName && albumArtImage){
-        //make sure file name has .jpg at the end
-        NSString *lastThreeChars = [fileName substringFromIndex: [fileName length] - 4];
-        if(! [lastThreeChars isEqualToString:@".jpg"])
-            fileName = [NSString stringWithFormat:@"%@.jpg", fileName];
-        
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        
-        NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
-        NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"Album Art"];
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        
-        if (![fileManager fileExistsAtPath:dataPath]){
-            NSArray *keys = [NSArray arrayWithObjects:NSFileProtectionKey, nil];
-            NSArray *objects = [NSArray arrayWithObjects: NSFileProtectionCompleteUntilFirstUserAuthentication, nil];
-            NSDictionary *permission = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
-            
-            //Create folder with weaker encryption
-            [fileManager createDirectoryAtPath:dataPath
-                   withIntermediateDirectories:YES
-                                    attributes:permission
-                                         error:nil];
-        }
-        
-        NSString *filePath = [dataPath stringByAppendingPathComponent:fileName];
-        NSData *data = [AlbumArtUtilities dataWithCompressionOnImage:albumArtImage];
-        
-        BOOL success = [fileManager createFileAtPath:filePath contents:data attributes:nil];
-        
-        //now set encryption to a weaker value
-        NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[fileManager attributesOfItemAtPath:filePath error:nil]];
-        [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
-        return success;
-    }
-    return YES;
-}
-
-+ (BOOL)isAlbumArtAlreadySavedOnDisk:(NSString *)albumArtFileName
-{
-    if(albumArtFileName){
-        //make sure file name has .jpg at the end
-        NSString *lastThreeChars = [albumArtFileName substringFromIndex: [albumArtFileName length] - 4];
-        if(! [lastThreeChars isEqualToString:@".jpg"])
-            albumArtFileName = [NSString stringWithFormat:@"%@.jpg", albumArtFileName];
-        
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        
-        NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
-        
-        NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"Album Art"];
-        dataPath = [dataPath stringByAppendingPathComponent:albumArtFileName];
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        
-        return [fileManager fileExistsAtPath:dataPath];
-    }
-    return YES;
-}
-
-//rarely used
-+ (BOOL)renameAlbumArtFileFrom:(NSString *)original to:(NSString *)newName
-{
-    if(original && newName){
-        //make sure file names have .jpg at the end
-        NSString *lastThreeChars = [original substringFromIndex: [original length] - 4];
-        if(! [lastThreeChars isEqualToString:@".jpg"])
-            original = [NSString stringWithFormat:@"%@.jpg", original];
-        
-        lastThreeChars = [newName substringFromIndex: [newName length] - 4];
-        if(! [lastThreeChars isEqualToString:@".jpg"])
-            newName = [NSString stringWithFormat:@"%@.jpg", newName];
-        
-        
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        
-        NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
-        
-        NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"Album Art"];
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        
-        if (![fileManager fileExistsAtPath:dataPath])
-            //file doesnt exist, operation failed
-            return NO;
-        
-        NSString *originalFilePath = [dataPath stringByAppendingPathComponent:original];
-        NSString *newFilePath = [dataPath stringByAppendingPathComponent:newName];
-        
-        BOOL success = [fileManager moveItemAtPath:originalFilePath toPath:newFilePath error:nil];
-        //now set encryption to a weaker value
-        NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[fileManager attributesOfItemAtPath:newFilePath error:nil]];
-        [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
-        return success;
-    }
-    return YES;
-}
-
-+ (BOOL)makeCopyOfArtWithName:(NSString *)fileName andNameIt:(NSString *)newName
-{
-    if(fileName && newName){
-        //make sure file names have .jpg at the end
-        NSString *lastThreeChars = [fileName substringFromIndex: [fileName length] - 4];
-        if(! [lastThreeChars isEqualToString:@".jpg"])
-            fileName = [NSString stringWithFormat:@"%@.jpg", fileName];
-        
-        lastThreeChars = [newName substringFromIndex: [newName length] - 4];
-        if(! [lastThreeChars isEqualToString:@".jpg"])
-            newName = [NSString stringWithFormat:@"%@.jpg", newName];
-        
-    
-        
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        
-        NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
-        
-        NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"Album Art"];
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        
-        if (![fileManager fileExistsAtPath:dataPath])
-            //file doesnt exist, operation failed
-            return NO;
-        
-        NSString *originalFilePath = [dataPath stringByAppendingPathComponent:fileName];
-        NSString *newFilePath = [dataPath stringByAppendingPathComponent:newName];
-        
-        BOOL success = [fileManager copyItemAtPath:originalFilePath toPath:newFilePath error:nil];
-        //now set encryption to a weaker value
-        NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[fileManager attributesOfItemAtPath:newFilePath error:nil]];
-        [attributes setValue:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
-        return success;
-    }
-    return YES;
+    return imageData;
 }
 
 + (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize
 {
-    //UIGraphicsBeginImageContext(newSize);
-    // In next line, pass 0.0 to use the current device's pixel scaling factor (and thus account for Retina resolution).
-    // Pass 1.0 to force exact pixel size.
-    UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
+    if(image == nil)
+        return nil;
+    UIGraphicsBeginImageContextWithOptions(newSize, NO, [UIScreen mainScreen].scale);
     [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
     UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
@@ -201,19 +43,14 @@
     return newImage;
 }
 
-
-//ideally improve this to eventually be async like this:
-//http://stackoverflow.com/questions/5266272/non-lazy-image-loading-in-ios
-+ (UIImage *)getImageWithoutLazyLoadingAtPath:(NSString *)path
++ (UIImage *)getImageWithoutLazyLoadingUsingNSData:(NSData *)imageData
 {
-    //make sure file name has .jpg at the end
-    NSString *lastThreeChars = [path substringFromIndex: [path length] - 4];
-    if(! [lastThreeChars isEqualToString:@".jpg"])
-        path = [NSString stringWithFormat:@"%@.jpg", path];
+    if(imageData == nil)
+        return nil;
     
-    // get a data provider referencing the relevant file
-    CGDataProviderRef dataProvider = CGDataProviderCreateWithFilename([path UTF8String]);
-
+    // get a data provider referencing the nsdata obj
+    CGDataProviderRef dataProvider = CGDataProviderCreateWithCFData((__bridge CFDataRef)imageData);
+    
     if(dataProvider == NULL)
         return nil;
     
@@ -251,28 +88,8 @@
     CGImageRelease(outputImage);
     CGContextRelease(imageContext);
     free(imageBuffer);
-
+    
     return returnImg;
-}
-
-#pragma mark -File compression
-+ (NSData *)dataWithCompressionOnImage:(UIImage *)compressMe
-{
-    CGFloat compression = 0.95f;
-    CGFloat maxCompression = 0.5f;
-    int oneKB = 1000;
-    int maxFileSize = 100 * oneKB;
-    
-    NSData *imageData = UIImageJPEGRepresentation(compressMe, compression);
-    if([imageData length] < maxFileSize)
-        return imageData;
-    
-    //else we try to compress without losing too much quality
-    while ([imageData length] > maxFileSize && compression > maxCompression){
-        compression -= 0.1;
-        imageData = UIImageJPEGRepresentation(compressMe, compression);
-    }
-    return imageData;
 }
 
 //fetching path to the NSCoder file which contains objects that help us update LQ album art.

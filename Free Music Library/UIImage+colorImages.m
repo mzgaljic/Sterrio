@@ -15,7 +15,7 @@
 {
     CGRect rect = CGRectMake(0, 0, widthValue, heightValue);
     // Create a 1 by 1 pixel context
-    UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0);
+    UIGraphicsBeginImageContextWithOptions(rect.size, NO, [UIScreen mainScreen].scale);
     [color setFill];
     UIRectFill(rect);   // Fill it with your color
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();

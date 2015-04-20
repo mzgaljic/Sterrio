@@ -258,7 +258,7 @@ static NSString * kUIImageSize = @"kUIImageSize";
     CGFloat scale = self.scale;
     CGSize size = CGSizeMake(scale * self.size.width, scale * self.size.height);
     
-    UIGraphicsBeginImageContext(size);
+    UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     
@@ -393,7 +393,7 @@ static NSString * kUIImageSize = @"kUIImageSize";
     size.width *= scale;
     size.height *= scale;
     
-    UIGraphicsBeginImageContext(size);
+    UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
     
     [self drawInRect:CGRectMake( 0, 0, size.width, size.height)];
     
@@ -547,7 +547,7 @@ static NSString * kUIImageSize = @"kUIImageSize";
     
     CGRect rect = CGRectMake(0, 0, size.width, size.height);
     
-    UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0.0);
+    UIGraphicsBeginImageContextWithOptions(rect.size, NO, [UIScreen mainScreen].scale);
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     

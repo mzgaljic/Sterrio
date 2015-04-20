@@ -34,5 +34,7 @@
 //- (NSArray *)minimallyFaultedArrayOfSelectedPlaylistSongs;
 - (instancetype)initWithAlbumDataSourceType:(ALBUM_DATA_SRC_TYPE)type
                searchBarDataSourceDelegate:(id<SearchBarDataSourceDelegate>)delegate;
+//exposed so that the Album VC can check if any visible Album cells contain "dirty" album art.
+- (Album *)albumAtIndexPath:(NSIndexPath *)indexPath;
 
 @end

@@ -60,7 +60,6 @@
         songEditTable = [[MZSongModifierTableView alloc] initWithFrame:self.view.frame
                                                                  style:UITableViewStyleGrouped];
         songEditTable.VC = self;
-        songEditTable.aNewSongId = youtubeVideoObject.videoId;
         self.tableView = songEditTable;
         self.tableView.theDelegate = self;
         self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight |
@@ -642,6 +641,7 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
 {
     NSNumber *duration = [videoDetails valueForKey:MZKeyVideoDuration];
     newLibSong.duration = duration;
+    newLibSong.youtube_id = ytVideo.videoId;
     userCreatedHisSong = YES;
     [self performSelector:@selector(destructThisVCDelayed) withObject:nil afterDelay:0.2];
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];

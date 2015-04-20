@@ -10,6 +10,8 @@
 #import "MGSwipeTableCell.h"
 #import "MGSwipeButton.h"
 #import "MZTableViewCell.h"
+#import "AlbumAlbumArt+Utilities.h"
+#import "SongAlbumArt+Utilities.h"
 
 @interface PlaylistItemTableViewController()
 @property (nonatomic, assign) int lastTableViewModelCount;
@@ -128,16 +130,17 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                              indexPath,
                              OBJC_ASSOCIATION_RETAIN);
     
+    __weak Song *weakSong = song;
+    
     // Queue a block that obtains/creates the image and then loads it into the cell.
     // The code block will be run asynchronously in a last-in-first-out queue, so that when
     // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
     [stackController addBlock:^{
-        UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
-                                                    [AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]]];
-        if(albumArt == nil) //see if this song has an album. If so, check if it has art.
-            if(song.album != nil)
-                albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
-                                                   [AlbumArtUtilities albumArtFileNameToNSURL:song.album.albumArtFileName]]];
+        UIImage *albumArt;
+        if(weakSong.albumArt){
+            albumArt = [weakSong.albumArt imageFromImageData];
+        }
+
         // The block will be processed on a background Grand Central Dispatch queue.
         // Therefore, ensure that this code that updates the UI will run on the main queue.
         dispatch_async(dispatch_get_main_queue(), ^{

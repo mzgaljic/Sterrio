@@ -83,7 +83,7 @@
         return;
     }
     
-    __weak NSString *weakId = aSong.song_id;
+    __weak NSString *weakId = aSong.youtube_id;
     __weak SongPlayerCoordinator *weakCoordinator = [SongPlayerCoordinator sharedInstance];
     __weak FetchVideoInfoOperation *weakSelf = self;
     

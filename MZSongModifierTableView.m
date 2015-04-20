@@ -7,6 +7,8 @@
 //
 
 #import "MZSongModifierTableView.h"
+#import "AlbumAlbumArt+Utilities.h"
+#import "SongAlbumArt+Utilities.h"
 
 @interface MZSongModifierTableView ()
 {
@@ -30,22 +32,21 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 {
     if(_songIAmEditing == nil){
         self.creatingANewSong = YES;
-        _songIAmEditing = [Song createNewSongWithNoNameAndManagedContext:[CoreDataManager context] songId:self.aNewSongId];
+        NSManagedObjectContext *context = [CoreDataManager context];
+        _songIAmEditing = [Song createNewSongWithNoNameAndManagedContext:context];
+        SongAlbumArt *newArtObj = [SongAlbumArt createNewAlbumArtWithUIImage:nil withContext:context];
+        _songIAmEditing.albumArt = newArtObj;
     }
     
     self.delegate = self;
     self.dataSource = self;
-    
     
     [self setProductionModeValue];
     [AppEnvironmentConstants setUserIsEditingSongOrAlbumOrArtist: YES];
     userReplacedDefaultYoutubeArt = NO;
     
     if(! self.creatingANewSong){
-        self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.albumArtFileName];
-        if(self.currentAlbumArt == nil)  //maybe this songs album (if it has one) has album art
-            if(_songIAmEditing.album != nil)
-                self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.album.albumArtFileName];
+        self.currentAlbumArt = [_songIAmEditing.albumArt imageFromImageData];
     }
     
     //remove header gap at top of table, and remove some scrolling space under the delete button (update scroll insets too)
@@ -93,10 +94,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         return;
     } else{
         _currentAlbumArt = newArt;
-        int heightOfAlbumArtCell = [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize] *2;
-        if(heightOfAlbumArtCell > MAX_ALBUM_ART_CELL_HEIGHT)
-            heightOfAlbumArtCell = MAX_ALBUM_ART_CELL_HEIGHT;
-        CGSize size = CGSizeMake(heightOfAlbumArtCell - 4, heightOfAlbumArtCell - 4);
+        CGSize size = [self albumArtSizeGivenPrefSizeSetting];
         
         //calculate how much one length varies from the other.
         int diff = abs((int)newArt.size.width - (int)newArt.size.height);
@@ -111,6 +109,14 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         newArt = nil;
         return;
     }
+}
+
+- (CGSize)albumArtSizeGivenPrefSizeSetting
+{
+    int heightOfAlbumArtCell = [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize] *2;
+    if(heightOfAlbumArtCell > MAX_ALBUM_ART_CELL_HEIGHT)
+        heightOfAlbumArtCell = MAX_ALBUM_ART_CELL_HEIGHT;
+    return  CGSizeMake(heightOfAlbumArtCell - 4, heightOfAlbumArtCell - 4);
 }
 
 - (void)provideDefaultAlbumArt:(UIImage *)image
@@ -370,30 +376,23 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 break;
             }
             case 3:  //editing album art
-            {//can only edit album art w/ a song that is part of an album IF you edit the album itself.
-                if(! _songIAmEditing.album.albumArtFileName)
-                {
-                    if(_currentAlbumArt)  //song already contains album art
-                    {  //ask to remove art or add new art (photo or safari)
-                        UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:@"Album Art" delegate:self cancelButtonTitle:@"Cancel"
-                                                             destructiveButtonTitle:@"Remove Art"
-                                                                  otherButtonTitles:@"Choose Different Photo", @"Search for Art", nil];
-                        popup.tag = 3;
-                        [popup showInView:[self.VC view]];
-                    }
-                    else
-                    {   //album art not picked yet, dont show option to remove album art
-                        UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:@"Album Art" delegate:self cancelButtonTitle:@"Cancel"
-                                                             destructiveButtonTitle:nil
-                                                                  otherButtonTitles:@"Choose Photo", @"Search for Art", nil];
-                        popup.tag = 3;
-                        [popup showInView:[self.VC view]];
-                    }
+            {
+                if(_currentAlbumArt)  //song already contains album art
+                {  //ask to remove art or add new art (photo or safari)
+                    UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:@"Album Art" delegate:self cancelButtonTitle:@"Cancel"
+                                                         destructiveButtonTitle:@"Remove Art"
+                                                              otherButtonTitles:@"Choose Different Photo", @"Search for Art", nil];
+                    popup.tag = 3;
+                    [popup showInView:[self.VC view]];
                 }
                 else
-                    //custom alertview, request that user edits album art in the album itself.
-                    [self launchAlertViewWithDialog];
-                
+                {   //album art not picked yet, dont show option to remove album art
+                    UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:@"Album Art" delegate:self cancelButtonTitle:@"Cancel"
+                                                         destructiveButtonTitle:nil
+                                                              otherButtonTitles:@"Choose Photo", @"Search for Art", nil];
+                    popup.tag = 3;
+                    [popup showInView:[self.VC view]];
+                }
                 _lastTappedRow = 3;
                 break;
             }
@@ -403,45 +402,30 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     if(indexPath.section == 1){
         if(indexPath.row == 0){
             if(_creatingANewSong){
-                [_songIAmEditing setAlbumArt:self.currentAlbumArt];
+                
+                if(self.currentAlbumArt){
+                    _songIAmEditing.albumArt.image = [AlbumArtUtilities compressedDataFromUIImage:self.currentAlbumArt];
+                }
                 
                 //save song into library
                 BOOL saved = YES;
                 NSError *error;
                 [self.theDelegate performCleanupBeforeSongIsSaved:_songIAmEditing];
                 
-                //check if song with this id already exists in core data. if so, dont commit the changes.
-                NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Song"];
-                fetchRequest.predicate = [NSPredicate predicateWithFormat:@"song_id == %@", _songIAmEditing.song_id];
-                //descriptor doesnt really matter here
-                NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
-                                                                                 ascending:YES];
-                fetchRequest.sortDescriptors = @[sortDescriptor];
-                NSArray *results = [[CoreDataManager context] executeFetchRequest:fetchRequest error:nil];
-                //checking for 2 since the song we are creating will be returned by the fetch request.
-                if(results.count == 2)
-                {
-                    //this exact video is already in the library, dont commit changes.
-                    [[CoreDataManager context] rollback];
-                    [[CoreDataManager context] reset];
+                if ([[CoreDataManager context] save:&error] == NO) {
+                    //save failed
+                    saved = NO;
+                    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveHasFailed];
                 }
                 else
                 {
-                    if ([[CoreDataManager context] save:&error] == NO) {
-                        //save failed
-                        saved = NO;
-                        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveHasFailed];
-                    }
-                    else
-                    {
-                        //save success
-                        
-                        if(! userReplacedDefaultYoutubeArt){
-                            [LQAlbumArtBackgroundUpdater downloadHqAlbumArtWhenConvenientForSongId:_songIAmEditing.song_id];
-                            [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
-                        }
+                    //save success
+                    if(! userReplacedDefaultYoutubeArt){
+                        [LQAlbumArtBackgroundUpdater downloadHqAlbumArtWhenConvenientForSongId:_songIAmEditing.song_id];
+                        [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
                     }
                 }
+                
             }  //end 'creatingNewSong'
         }  //end indexPath.row == 0
         else
@@ -494,13 +478,13 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     });
     
     //add "add to lib" cell in section 2 and scroll to it
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.35 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         if(weakself && _creatingANewSong){
             [weakself beginUpdates];
             if(_creatingANewSong){
                 if(! [weakself isRowPresentInTableView:0 withSection:1]){
                     [weakself insertSections:[NSIndexSet indexSetWithIndex:1]
-                            withRowAnimation:UITableViewRowAnimationNone];
+                            withRowAnimation:UITableViewRowAnimationBottom];
                 }
             }
             [weakself endUpdates];
@@ -583,11 +567,10 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     if(albumName.length == 0)  //was all whitespace, or user gave us an empty string
         return;
     
-    Album *newAlbum = [Album createNewAlbumWithName:albumName usingSong:_songIAmEditing inManagedContext:[CoreDataManager context]];
+    Album *newAlbum = [Album createNewAlbumWithName:albumName usingSong:_songIAmEditing
+                                   inManagedContext:[CoreDataManager context]];
     if(_songIAmEditing.album)
     {
-        [AlbumArtUtilities makeCopyOfArtWithName:_songIAmEditing.album.albumArtFileName andNameIt:@"temp art-editing mode-Mark Zgaljic.jpg"];
-        [AlbumArtUtilities deleteAlbumArtFileWithName:_songIAmEditing.album.albumArtFileName];
         [[CoreDataManager context] deleteObject:_songIAmEditing.album];
     }
     _songIAmEditing.album = newAlbum;
@@ -614,13 +597,11 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     if([notification.name isEqualToString:@"existing album chosen"]){
         if(_songIAmEditing.album)
         {
-            [AlbumArtUtilities makeCopyOfArtWithName:_songIAmEditing.album.albumArtFileName andNameIt:@"temp art-editing mode-Mark Zgaljic.jpg"];
-            [AlbumArtUtilities deleteAlbumArtFileWithName:_songIAmEditing.album.albumArtFileName];
             [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];
         }
         
         _songIAmEditing.album = (Album *)notification.object;
-        self.currentAlbumArt = [AlbumArtUtilities albumArtFileNameToUiImage:_songIAmEditing.album.albumArtFileName];
+        _songIAmEditing.album.albumArt.isDirty = [NSNumber numberWithBool:YES];
         _songIAmEditing.artist = _songIAmEditing.album.artist;
         
         __weak MZSongModifierTableView *weakself = self;
@@ -784,17 +765,25 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             default:
                 break;
         }
-    } else if(popup.tag == 3){  //album art (if this song isn't part of an album, otherwise an alert is displayed)
+    } else if(popup.tag == 3){  //album art
         switch (buttonIndex)
         {
             case 0:
                 if(_currentAlbumArt){  //remove art
                     self.currentAlbumArt = nil;
+                    _songIAmEditing.albumArt = nil;
+                    if(_songIAmEditing.album){
+                        _songIAmEditing.album.albumArt.isDirty = [NSNumber numberWithBool:YES];
+                    }
                     userReplacedDefaultYoutubeArt = YES;
                 }
                 else  //chose photo from phone for art
                     [self pickNewAlbumArtFromPhotos];
-                //[self reloadData];
+                
+                [self beginUpdates];
+                [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:3 inSection:0]]
+                            withRowAnimation:UITableViewRowAnimationFade];
+                [self endUpdates];
                 break;
             case 1:
                 if(! _currentAlbumArt){  //search for art
@@ -851,11 +840,6 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     return albumArtSearchTerm;
 }
 
-- (void)removeAlbumArtFromSongAndDisk  //ONLY call when commiting saved changes to disk!
-{
-    [_songIAmEditing removeAlbumArt];
-}
-
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     [picker dismissViewControllerAnimated:YES completion:nil];
@@ -863,9 +847,22 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     if(img == nil)
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotOpenSelectedImageError];
     self.currentAlbumArt = img;
+    
+    if(_songIAmEditing.albumArt == nil)
+        _songIAmEditing.albumArt = [SongAlbumArt createNewAlbumArtWithUIImage:img
+                                                                  withContext:[CoreDataManager context]];
+    else
+        _songIAmEditing.albumArt.image = [AlbumArtUtilities compressedDataFromUIImage:img];
     userReplacedDefaultYoutubeArt = YES;
-    NSArray *paths = @[[NSIndexPath indexPathForRow:3 inSection:0]];
-    [self reloadRowsAtIndexPaths:paths withRowAnimation:UITableViewRowAnimationAutomatic];
+    
+    if(_songIAmEditing.album){
+        _songIAmEditing.album.albumArt.isDirty = [NSNumber numberWithBool:YES];
+    }
+
+    [self beginUpdates];
+    [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:3 inSection:0]]
+                withRowAnimation:UITableViewRowAnimationFade];
+    [self endUpdates];
 }
 
 
@@ -875,13 +872,6 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     //now reset any context deletions, insertions, blah blah...
     [[CoreDataManager context] rollback];
     [[CoreDataManager context] reset];
-    
-    //restore old album art file
-    if(_songIAmEditing.album)
-        [AlbumArtUtilities makeCopyOfArtWithName:@"temp art-editing mode-Mark Zgaljic.jpg" andNameIt:_songIAmEditing.album.albumArtFileName];
-    else
-        [AlbumArtUtilities makeCopyOfArtWithName:@"temp art-editing mode-Mark Zgaljic.jpg" andNameIt:_songIAmEditing.albumArtFileName];
-    [AlbumArtUtilities deleteAlbumArtFileWithName:@"temp art-editing mode-Mark Zgaljic.jpg"];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
     [self.VC dismissViewControllerAnimated:YES completion:nil];
@@ -890,60 +880,10 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 //this method is only used for ACTUAL editing. Song creation is handled in "didSelectCell..."
 - (void)songEditingWasSuccessful
 {
-    //need to create copy of image in memory since we are deleting the original
-    UIImage *currImg = self.currentAlbumArt;
-    CGRect placeholderImgRect = CGRectMake(0, 0, currImg.size.width, currImg.size.height);
-    CGImageRef imageRef = CGImageCreateWithImageInRect(currImg.CGImage, placeholderImgRect);
-    UIImage *tempPlaceHolder = [UIImage imageWithCGImage:imageRef];
-    CGImageRelease(imageRef);
-    
-    //delete current album art on disk in case there was one set. Skipping this would cause
-    //the new art to not be saved (setAlbumArt method tries to optimize the saving...)
-    NSString *artFileName = [NSString stringWithFormat:@"%@.jpg", _songIAmEditing.song_id];
-    [AlbumArtUtilities deleteAlbumArtFileWithName:artFileName];
-    
-    //save the new album art
-    if(_songIAmEditing.album)
-        [_songIAmEditing.album setAlbumArt:tempPlaceHolder];
-    else
-        [_songIAmEditing setAlbumArt:tempPlaceHolder];
-    
-    //delete temp copy of old art file
-    if([AlbumArtUtilities isAlbumArtAlreadySavedOnDisk:@"temp art-editing mode-Mark Zgaljic"]){
-        [AlbumArtUtilities deleteAlbumArtFileWithName:@"temp art-editing mode-Mark Zgaljic.jpg"];
-    }
-    
     [[CoreDataManager sharedInstance] saveContext]; //saves the context to disk
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
     
     [self.VC dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark - AlertView
-- (void)launchAlertViewWithDialog
-{
-    NSString * msg = @"This song is part of an album in your library. Therefore, any changes to the album art must be made on the album itself.";
-    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Cannot Edit Album Art"
-                                                      message:msg
-                                                     delegate:self
-                                            cancelButtonTitle:@"Cancel"
-                                            otherButtonTitles:@"Go to Album", nil];
-    
-    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
-    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.normalButtonFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
-    alert.buttonTextColor = [UIColor defaultAppColorScheme];
-    [alert show];
-}
-
-- (void)alertView:(SDCAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if(buttonIndex == 0)  //ok tapped
-        return;
-    if(buttonIndex == 1){  //segue to album edit (user wants to change album art i guess?)
-        [self performSelector:@selector(showUnsupportedAlert) withObject:nil afterDelay:0.7];
-    }
 }
 
 @end

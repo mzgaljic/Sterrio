@@ -10,6 +10,7 @@
 #import "ReachabilitySingleton.h"
 #import "AlbumArtUtilities.h"
 #import "LQAlbumArtItem.h"
+#import "SongAlbumArt+Utilities.h"
 #import "CoreDataManager.h"
 #import "pthread.h"
 
@@ -184,14 +185,12 @@ static BOOL abortAsyncArtUpdate = NO;
         
         Song *itemSong = [self songObjectGivenSongId:lqItem.songId];
         BOOL songStillExists = (itemSong != nil);
-        
-        NSString *albumArtNameOnDisk = [self getAlbumArtNameForSong:itemSong];
         BOOL downloadedHqArtSuccessfully = NO;
         
-        if(songStillExists && albumArtNameOnDisk)
+        if(songStillExists && itemSong.albumArt)
         {
             NSData *data;
-            NSArray *hqThumbnailUrls = [self highQualityThumbnailUrlsForYoutubeVideoId:lqItem.songId];
+            NSArray *hqThumbnailUrls = [self highQualityThumbnailUrlsForYoutubeVideoId:itemSong.youtube_id];
             for(int i = 0; i < hqThumbnailUrls.count; i++)
             {
                 NSURL *url = [NSURL URLWithString:hqThumbnailUrls[i]];
@@ -207,8 +206,8 @@ static BOOL abortAsyncArtUpdate = NO;
             {
                 UIImage *hqArt = [[UIImage alloc] initWithData:data];
                 //will overwrite the existing file
-                albumArtNameOnDisk = [self addImageJpgExtensionIfNotPresent:albumArtNameOnDisk];
-                [AlbumArtUtilities saveAlbumArtFileWithName:albumArtNameOnDisk andImage:hqArt];
+                NSData *hqImageData = [AlbumArtUtilities compressedDataFromUIImage:hqArt];
+                itemSong.albumArt.image = hqImageData;
                 counter++;
             }
         }
@@ -247,25 +246,6 @@ static BOOL abortAsyncArtUpdate = NO;
     return @[maxResDefault, sdDefault, hqDefault];
 }
 
-
-- (NSString *)getAlbumArtNameForSong:(Song *)aSong
-{
-    NSString *artFileName = [NSString stringWithFormat:@"%@.jpg", aSong.song_id];
-    BOOL isOnDisk = [AlbumArtUtilities isAlbumArtAlreadySavedOnDisk:artFileName];
-    if(isOnDisk && aSong != nil)
-        return artFileName;
-    else
-    {
-        if(aSong){
-            //check if this album art is still saved under the songs id. if not,
-            //figure out what its current name is (ie: its under an album name now).
-            if(aSong.album != nil)
-                return aSong.album.albumArtFileName;
-        }
-        return nil;
-    }
-}
-
 - (Song *)songObjectGivenSongId:(NSString *)songId
 {
     if(songId == nil)
@@ -280,20 +260,6 @@ static BOOL abortAsyncArtUpdate = NO;
     NSArray *results = [[CoreDataManager backgroundThreadContext] executeFetchRequest:fetchRequest error:nil];
     if(results.count == 1)
         return results[0];
-    else
-        return nil;
-}
-
-- (NSString *)addImageJpgExtensionIfNotPresent:(NSString *)fileName
-{
-    if(fileName){
-        //make sure file name has .jpg at the end
-        NSString *lastThreeChars = [fileName substringFromIndex: [fileName length] - 4];
-        if(! [lastThreeChars isEqualToString:@".jpg"])
-            return [NSString stringWithFormat:@"%@.jpg", fileName];
-        else
-            return fileName;
-    }
     else
         return nil;
 }

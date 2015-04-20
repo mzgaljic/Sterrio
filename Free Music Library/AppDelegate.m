@@ -13,7 +13,6 @@
 @interface AppDelegate ()
 {
     AVAudioSession *audioSession;
-    UIView *playerSnapshot;  //used to make it appear as if the playerlayer is still attached to the player in backgrounded mode.
     UIBackgroundTaskIdentifier task;
     
     BOOL backgroundTaskIsRunning;
@@ -185,17 +184,15 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         //app very aggresively).
         if(! playerViewFadingBackOnScreen){
             //we can capture a fresh snapshot with no worries.
-            playerSnapshot = [playerView snapshotViewAfterScreenUpdates:NO];
-            playerSnapshot.frame = playerView.frame;
-            playerSnapshot.userInteractionEnabled = NO;
-            [self.window insertSubview:playerSnapshot belowSubview:playerView];
-            NSLog(@"creating new snapshot");
+            _playerSnapshot = [playerView snapshotViewAfterScreenUpdates:NO];
+            _playerSnapshot.frame = playerView.frame;
+            _playerSnapshot.userInteractionEnabled = NO;
+            [self.window insertSubview:_playerSnapshot belowSubview:playerView];
         }
         else{
             //too early to take fresh snapshot of player (alpha not 1 yet).
             //(its still below the playerView in hierarchy if code reaches this point)
             //we dont need to do anything...playerView wont be rendered anyway.
-            NSLog(@"doing nothing");
         }
     }
     playerView.alpha = 0;
@@ -203,11 +200,13 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 - (void)removePlayerSnapshot
 {
-    if(! playerViewFadingBackOnScreen
-       && [UIApplication sharedApplication].applicationState == UIApplicationStateActive){
-        NSLog(@"removed old snapshot");
-        [playerSnapshot removeFromSuperview];
-        playerSnapshot = nil;
+    if(_playerSnapshot != nil){
+        if(! playerViewFadingBackOnScreen
+           && [UIApplication sharedApplication].applicationState == UIApplicationStateActive){
+            NSLog(@"removed old snapshot");
+            [_playerSnapshot removeFromSuperview];
+            _playerSnapshot = nil;
+        }
     }
 }
 
@@ -231,7 +230,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 {
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
     [[SDImageCache sharedImageCache] clearMemory];
-    playerSnapshot = nil;
+    _playerSnapshot = nil;
 }
 
 static BOOL playerViewFadingBackOnScreen = NO;
@@ -250,7 +249,7 @@ static BOOL playerViewFadingBackOnScreen = NO;
                          else
                              playerView.alpha = [SongPlayerCoordinator alphaValueForDisabledPlayer];
                      } completion:^(BOOL finished) {
-                         if(playerSnapshot){
+                         if(_playerSnapshot){
                              [self performSelector:@selector(removePlayerSnapshot)
                                         withObject:nil
                                         afterDelay:1];

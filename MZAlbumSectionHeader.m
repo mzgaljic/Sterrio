@@ -7,6 +7,7 @@
 //
 
 #import "MZAlbumSectionHeader.h"
+#import "AlbumAlbumArt+Utilities.h"
 
 @interface MZAlbumSectionHeader ()
 {
@@ -45,8 +46,11 @@ const float SEPERATOR_HEIGHT = 0.5;
     int height = self.frame.size.height;
     int artSize = height - ALBUM_ART_EDGE_PADDING - ALBUM_ART_EDGE_PADDING;
     
-    NSURL *artUrl = [AlbumArtUtilities albumArtFileNameToNSURL:anAlbum.albumArtFileName];
-    UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:artUrl]];
+    UIImage *albumArt;
+    if(anAlbum){
+        albumArt = [anAlbum.albumArt imageWithSize:CGSizeMake(artSize, artSize)];
+    }
+    
     
     UIImageView *img = [[UIImageView alloc] initWithImage:albumArt];
     img.contentMode = UIViewContentModeScaleAspectFit;

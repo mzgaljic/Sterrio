@@ -209,6 +209,11 @@ static BOOL haveCheckedCoreDataInit = NO;
 }
 
 #pragma mark - SearchBarDataSourceDelegate implementation
+- (NSString *)placeholderTextForSearchBar
+{
+    return @"Search My Songs";
+}
+
 - (void)searchBarIsBecomingActive
 {
     [self.navigationController setNavigationBarHidden:YES animated:YES];

@@ -173,9 +173,9 @@ static const CGFloat BFCloseButtonHeight = 12.0;
     [_closeButton setImage:closeButtonImage forState:UIControlStateNormal];
 }
 
-- (UIImage *)drawCloseButtonImageWithColor:(UIColor *)color {
-
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(BFCloseButtonWidth, BFCloseButtonHeight), NO, 0.0f);
+- (UIImage *)drawCloseButtonImageWithColor:(UIColor *)color
+{
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(BFCloseButtonWidth, BFCloseButtonHeight), NO, [UIScreen mainScreen].scale);
 
     CGContextRef context = UIGraphicsGetCurrentContext();
 

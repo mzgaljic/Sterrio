@@ -7,6 +7,7 @@
 //
 
 #import "MusicPlaybackController.h"
+#import "SongAlbumArt+Utilities.h"
 static MyAVPlayer *player = nil;
 static PlayerView *playerView = nil;
 static MZPlaybackQueue *playbackQueue = nil;
@@ -417,13 +418,9 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
         NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
         MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
         
-        UIImage *albumArtImage = [AlbumArtUtilities albumArtFileNameToUiImage:nowPlayingSong.albumArtFileName];
-        if(albumArtImage == nil){
-            //song has no album art, check if its album does
-            Album *songsAlbum = song.album;
-            if(songsAlbum){
-                albumArtImage = [AlbumArtUtilities albumArtFileNameToUiImage:songsAlbum.albumArtFileName];
-            }
+        UIImage *albumArtImage;
+        if(nowPlayingSong.albumArt){
+            albumArtImage = [nowPlayingSong.albumArt imageFromImageData];
         }
         
         if(albumArtImage != nil){

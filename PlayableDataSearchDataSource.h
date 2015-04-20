@@ -22,6 +22,5 @@
 - (void)removeEmptyTableUserMessage;
 
 - (MySearchBar *)setUpSearchBar;
-//- (void)prepareForDealloc;
 
 @end

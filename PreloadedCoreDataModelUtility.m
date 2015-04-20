@@ -10,6 +10,7 @@
 #import "Song+Utilities.h"
 #import "Artist+Utilities.h"
 #import "Album+Utilities.h"
+#import "SongAlbumArt+Utilities.h"
 
 @implementation PreloadedCoreDataModelUtility
 static NSString * const SONG1_NAME = @"Bleeding Love";
@@ -52,6 +53,7 @@ static NSInteger const SONG7_DURATION = 137;
 {
     BOOL importHugeDataSetForTesting = NO;
     
+    NSManagedObjectContext *context = [CoreDataManager context];
     if(importHugeDataSetForTesting){
         int songCreationCount = 2000;
         Song *someSong;
@@ -59,20 +61,18 @@ static NSInteger const SONG7_DURATION = 137;
         int stopToPrint = 0;
         for(int i = 0; i < songCreationCount; i++){
             
-        
             if (i % 2 == 0) {
                 // even
-                
                 someSong = [PreloadedCoreDataModelUtility createSongWithName:SONG2_NAME
                                                                 byArtistName:ARTIST2_NAME
                                                             partOfAlbumNamed:ALBUM2_NAME
                                                                    youtubeID:SONG2_YTID
                                                                videoDuration:SONG2_DURATION];
-                [someSong setAlbumArt:[UIImage imageNamed:@"testAlbumArt.jpg"]];
+                UIImage *someImage = [UIImage imageNamed:@"testAlbumArt.jpg"];
+                someSong.albumArt = [SongAlbumArt createNewAlbumArtWithUIImage:someImage withContext:context];
 
             } else {
                 // odd
-                
                 [PreloadedCoreDataModelUtility createSongWithName:SONG4_NAME
                                                      byArtistName:nil
                                                  partOfAlbumNamed:nil
@@ -134,15 +134,16 @@ static NSInteger const SONG7_DURATION = 137;
 + (Song *)createSongWithName:(NSString *)songName
               byArtistName:(NSString *)artistName
           partOfAlbumNamed:(NSString *)albumName
-                 youtubeID:(NSString *)ytID videoDuration:(NSUInteger)durationInSecs
+                 youtubeID:(NSString *)ytID
+               videoDuration:(NSUInteger)durationInSecs
 {
     Song *myNewSong;
     myNewSong = [Song createNewSongWithName:songName
                        inNewOrExistingAlbum:albumName
                       byNewOrExistingArtist:artistName
                            inManagedContext:[CoreDataManager context]
-                               withDuration:durationInSecs
-                                     songId:ytID];
+                               withDuration:durationInSecs];
+    myNewSong.youtube_id = ytID;
     return myNewSong;
 }
 

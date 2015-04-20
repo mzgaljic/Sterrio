@@ -201,7 +201,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     // The code block will be run asynchronously in a last-in-first-out queue, so that when
     // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
     [stackController addBlock:^{
-        UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:[AlbumArtUtilities albumArtFileNameToNSURL:album.albumArtFileName]]];
+#warning code left out here for setting art. all this stuff is junk anyway. should reuse the custom datasources.
         
         // The block will be processed on a background Grand Central Dispatch queue.
         // Therefore, ensure that this code that updates the UI will run on the main queue.
@@ -211,6 +211,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                 // Only set cell image if the cell currently being displayed is the one that actually required this image.
                 // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
                 
+                UIImage *albumArt;
                 __weak UIImage *cellImg = albumArt;
                 //calculate how much one length varies from the other.
                 int diff = abs(albumArt.size.width - albumArt.size.height);

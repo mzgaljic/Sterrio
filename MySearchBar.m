@@ -78,7 +78,7 @@
     //textfield background color, size of white fill, etc.
     
     CGSize size = CGSizeMake(30, height);
-    UIGraphicsBeginImageContextWithOptions(size, NO, 1);
+    UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
     [[UIBezierPath bezierPathWithRoundedRect:CGRectMake(0,0,30,height) cornerRadius:3.0] addClip];
     [[UIColor whiteColor] setFill];
     UIRectFill(CGRectMake(0, 0, size.width, size.height));

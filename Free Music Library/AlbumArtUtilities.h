@@ -10,16 +10,9 @@
 
 @interface AlbumArtUtilities : NSObject
 
-//file IO
-+ (UIImage *)albumArtFileNameToUiImage:(NSString *)albumArtFileName;
-+ (NSURL *)albumArtFileNameToNSURL:(NSString *)albumArtFileName;
-+ (BOOL)deleteAlbumArtFileWithName:(NSString *)fileName;
-+ (BOOL)saveAlbumArtFileWithName:(NSString *)fileName andImage:(UIImage *)albumArtImage;
-+ (BOOL)isAlbumArtAlreadySavedOnDisk:(NSString *)albumArtFileName;
++ (NSData *)compressedDataFromUIImage:(UIImage *)anImage;
 
-//rarely used
-+ (BOOL)renameAlbumArtFileFrom:(NSString *)original to:(NSString *)newName;
-+ (BOOL)makeCopyOfArtWithName:(NSString *)fileName andNameIt:(NSString *)newName;
++ (UIImage *)getImageWithoutLazyLoadingUsingNSData:(NSData *)imageData;
 
 //image manipulation at run time
 + (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize;

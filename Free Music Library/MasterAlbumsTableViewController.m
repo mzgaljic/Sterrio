@@ -7,6 +7,7 @@
 //
 
 #import "MasterAlbumsTableViewController.h"
+#import "AlbumAlbumArt+Utilities.h"
 
 @interface MasterAlbumsTableViewController()
 {
@@ -112,6 +113,24 @@ static BOOL PRODUCTION_MODE;
     [super viewWillAppear:animated];
     self.searchBar = [self.tableViewDataSourceAndDelegate setUpSearchBar];
     [super setSearchBar:self.searchBar];
+    
+    //if any albums in the table have a dirty image, reload those cells only!
+    NSArray *visibleCells = [self.tableView visibleCells];
+    
+    NSMutableArray *indexPathsInNeedOfReload = [NSMutableArray array];
+    for(UITableViewCell *aVisibleCell in visibleCells)
+    {
+        NSIndexPath *path = [self.tableView indexPathForCell:aVisibleCell];
+        Album *anAlbum = [self.tableViewDataSourceAndDelegate albumAtIndexPath:path];
+        if([anAlbum.albumArt.isDirty isEqualToNumber:@YES])
+            [indexPathsInNeedOfReload addObject:path];
+    }
+    if(indexPathsInNeedOfReload.count > 0){
+        [self.tableView beginUpdates];
+        [self.tableView reloadRowsAtIndexPaths:indexPathsInNeedOfReload
+                              withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView endUpdates];
+    }
 }
 
 
@@ -138,6 +157,11 @@ static BOOL PRODUCTION_MODE;
 }
 
 #pragma mark - SearchBarDataSourceDelegate implementation
+- (NSString *)placeholderTextForSearchBar
+{
+    return @"Search My Albums";
+}
+
 - (void)searchBarIsBecomingActive
 {
     [self.navigationController setNavigationBarHidden:YES animated:YES];

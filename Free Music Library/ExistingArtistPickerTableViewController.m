@@ -76,7 +76,8 @@ static BOOL PRODUCTION_MODE;
     // Configure the cell...
     Artist *artist = [self.allArtists objectAtIndex: indexPath.row];  //get artist object at this index
     
-    if([Artist areArtistsEqual:[NSArray arrayWithObjects:artist, _usersCurrentArtist, nil]]){  //disable this cell
+    if([Artist isArtist:artist equalToArtist:_usersCurrentArtist]){
+        //disable this cell
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.userInteractionEnabled = NO;
         cell.textLabel.textColor = [UIColor defaultAppColorScheme];

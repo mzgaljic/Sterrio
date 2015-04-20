@@ -13,4 +13,5 @@
 @protocol SearchBarDataSourceDelegate <NSObject>
 - (void)searchBarIsBecomingActive;
 - (void)searchBarIsBecomingInactive;
+- (NSString *)placeholderTextForSearchBar;
 @end

@@ -162,7 +162,7 @@
     CGSize size = self.frame.size;
     
     // Begin context (with device scale)
-    UIGraphicsBeginImageContextWithOptions(size, NO, 0);
+    UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
     const CGContextRef context = UIGraphicsGetCurrentContext();
     
     // Apply window tranforms

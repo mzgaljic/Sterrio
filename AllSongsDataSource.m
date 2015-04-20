@@ -12,6 +12,8 @@
 #import "SongTableViewFormatter.h"
 #import "AlbumArtUtilities.h"
 #import "MusicPlaybackController.h"
+#import "AlbumAlbumArt+Utilities.h"
+#import "SongAlbumArt+Utilities.h"
 
 @interface AllSongsDataSource ()
 {
@@ -122,14 +124,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         // populated. Without this code, previous images are displayed against the new people
         // during rapid scrolling.
         cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
-        cell.albumArtFileName = nil;
-    }
-    
-    if(song.albumArtFileName)
-        cell.albumArtFileName = song.albumArtFileName;
-    else if(song.album){
-        if(song.album.albumArtFileName)
-            cell.albumArtFileName = song.album.albumArtFileName;
     }
     
     // Set up other aspects of the cell content.
@@ -170,7 +164,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         }
     }
     
-    
     // Store a reference to the current cell that will enable the image to be associated with the correct
     // cell, when the image is subsequently loaded asynchronously.
     objc_setAssociatedObject(cell,
@@ -178,16 +171,19 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                              indexPath,
                              OBJC_ASSOCIATION_RETAIN);
     
+    __weak Song *weakSong = song;
+    
     // Queue a block that obtains/creates the image and then loads it into the cell.
     // The code block will be run asynchronously in a last-in-first-out queue, so that when
     // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
     [stackController addBlock:^{
-        UIImage *albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
-                                                    [AlbumArtUtilities albumArtFileNameToNSURL:song.albumArtFileName]]];
-        if(albumArt == nil) //see if this song has an album. If so, check if it has art.
-            if(song.album != nil)
-                albumArt = [UIImage imageWithData:[NSData dataWithContentsOfURL:
-                                                   [AlbumArtUtilities albumArtFileNameToNSURL:song.album.albumArtFileName]]];
+        UIImage *albumArt;
+        if(weakSong){
+            if(weakSong.albumArt){
+                albumArt = [weakSong.albumArt imageFromImageData];
+            }
+        }
+        
         // The block will be processed on a background Grand Central Dispatch queue.
         // Therefore, ensure that this code that updates the UI will run on the main queue.
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -515,6 +511,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 }
 
 #pragma mark - SearchBarDataSourceDelegate implementation
+- (NSString *)placeholderTextForSearchBar
+{
+    return [self.searchBarDataSourceDelegate placeholderTextForSearchBar];
+}
+
 - (void)searchBarIsBecomingActive
 {
     [self.searchBarDataSourceDelegate searchBarIsBecomingActive];

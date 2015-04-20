@@ -30,6 +30,16 @@
     return NO;
 }
 
++ (BOOL)isPlaylist:(Playlist *)playlist1 equalToPlaylist:(Playlist *)playlist2
+{
+    if(playlist1 == playlist2)
+        return YES;
+    if([[playlist1 playlist_id] isEqualToString:[playlist2 playlist_id]])
+        return YES;
+    
+    return NO;
+}
+
 #pragma mark - private implementation
 + (Playlist *)createNewPlaylistWithName:(NSString *)name inManagedContext:(NSManagedObjectContext *)context
 {

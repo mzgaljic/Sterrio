@@ -16,24 +16,19 @@
 
 /**
  @Description Creates a new album given the arguments provided. All arguments required except for context.
- @param  name                name for the created album.
- @param  aSong               Song object which will be used to create this album (required since albums cannot
-                            exist without songs)
- @param  context             An NSManagedObjectContext object, which is requied for the backing core data store. If this
-                            parameter is nil, nil shall be returned.*/
+                
+            Returned albums AlbumArt relationship is GURANTEED to be non-nil after this method call.
+ 
+ @param  name       name for the created album.
+ @param  aSong      Song object which will be used to create this album (required since albums cannot
+                    exist without songs)
+ @param  context    An NSManagedObjectContext object, which is requied for the backing core data store. 
+                    If this parameter is nil, nil shall be returned.*/
 + (Album *)createNewAlbumWithName:(NSString *)name
                         usingSong:(Song *)aSong
                  inManagedContext:(NSManagedObjectContext *)context;
 
-/**
- @Description Returns YES if (and only if) both albums in the array are considered to be 'equal', or the 'same'. All
-                other cases result in NO being returned. Comaprison is accomplished via the objects album id.
- @param arrayOfTwoAlbumObjects   Comparisons will only take place if the argument conatins exactly two Album objects.
- */
-+ (BOOL)areAlbumsEqual:(NSArray *)arrayOfTwoAlbumObjects;
 
-
-- (BOOL)setAlbumArt:(UIImage *)image;
-- (void)removeAlbumArt;
++ (BOOL)isAlbum:(Album *)album1 equalToAlbum:(Album *)album2;
 
 @end
