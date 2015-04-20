@@ -97,6 +97,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
         numMoreSongsToSkip -= numMoreUpNextSongs;
         //even if we clear the entire upNextSongs queue, we'll still have to skip songs! so lets do it...
         [upNextQueue clearUpNext];
+        [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:NO];
     }
     else
     {

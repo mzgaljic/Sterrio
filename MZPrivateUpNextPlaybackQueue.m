@@ -96,7 +96,7 @@
         desiredSongsContext = aContext;
         
         //advance songIndexCount
-        songIndex--;
+        songIndex++;
         
         //this context is empty, or we have just pulled the very last song from this context.
         if(desiredSong == nil || songIndex == array.count)

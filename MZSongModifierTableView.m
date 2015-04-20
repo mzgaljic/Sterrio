@@ -601,7 +601,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         }
         
         _songIAmEditing.album = (Album *)notification.object;
-        _songIAmEditing.album.albumArt.isDirty = [NSNumber numberWithBool:YES];
+        _songIAmEditing.album.albumArt.isDirty = @YES;
         _songIAmEditing.artist = _songIAmEditing.album.artist;
         
         __weak MZSongModifierTableView *weakself = self;

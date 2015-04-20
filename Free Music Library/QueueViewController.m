@@ -396,8 +396,12 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         int row = (int)indexPath.row;
         if(! [self isUpNextSongPresentAtIndexPath:indexPath]){
             return mainQueueContext;
-        } else
-             return upNextPlaybackContexts[--row];
+        } else{
+            //NEED to differentiate between a context being one row (representing one song)
+            //and a context in the table representing a bunch of songs from an album, etc.
+#warning CRITICAL bug.
+            return upNextPlaybackContexts[--row];
+        }
     }
     return nil;
 }
