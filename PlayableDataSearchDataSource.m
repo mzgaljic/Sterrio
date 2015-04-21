@@ -98,6 +98,9 @@
     }
     
     [self animateTableEmtpyLabelUp:YES];
+    
+    if(searchBar.text.length > 0)  //force data refresh if i manually restore the text in the searchBar...
+        [self searchBar:searchBar textDidChange:searchBar.text];
 }
 
 //user tapped "Search"

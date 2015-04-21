@@ -64,9 +64,16 @@
     Artist *artist = album.artist;
     if(artist)
     {
-        NSMutableSet *mutableSet = [NSMutableSet setWithSet:artist.albums];
-        [mutableSet removeObject:album];
-        artist.albums = mutableSet;
+        NSMutableSet *mutableSet = [NSMutableSet setWithSet:album.albumSongs];
+        for(Song *albumSong in album.albumSongs)
+        {
+            [mutableSet removeObject:albumSong];
+        }
+        artist.standAloneSongs = mutableSet;
+        
+        NSMutableSet *mutableSet2 = [NSMutableSet setWithSet:artist.albums];
+        [mutableSet2 removeObject:album];
+        artist.albums = mutableSet2;
         
         NSUInteger standAloneSongCount = artist.standAloneSongs.count;
         if(artist.albums.count == 0 && standAloneSongCount == 0){

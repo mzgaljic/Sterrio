@@ -10,20 +10,15 @@
 #import "AppEnvironmentConstants.h"
 #import "Album.h"
 #import "Song+Utilities.h"
-#import "ArtistTableViewFormatter.h"
-#import "NSString+smartSort.h"
-#import "SDWebImageManager.h"
 #import "MusicPlaybackController.h"
 #import "UIColor+LighterAndDarker.h"
-#import <SDCAlertView.h>
 #import "CoreDataCustomTableViewController.h"
 #import "MainScreenViewControllerDelegate.h"
-#import <MSCellAccessory.h>
+#import "ActionableArtistDataSourceDelegate.h"
 
 @interface MasterArtistsTableViewController : CoreDataCustomTableViewController
-                                                            <UISearchBarDelegate,
-                                                            UITableViewDataSource,
-                                                            UITableViewDelegate,
+                                                            <SearchBarDataSourceDelegate,
+                                                            ActionableArtistDataSourceDelegate,
                                                             MainScreenViewControllerDelegate,
                                                             MGSwipeTableCellDelegate>
 

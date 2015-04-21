@@ -30,5 +30,9 @@
     self.navigationController.navigationBar.translucent = YES;
 }
 
+- (void)dealloc
+{
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:[NSNumber numberWithBool:NO]];
+}
 
 @end

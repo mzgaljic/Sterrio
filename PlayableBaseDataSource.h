@@ -27,6 +27,8 @@
 
 
 - (UIColor *)colorForNowPlayingItem;
+- (void)clearSearchResultsDataSource;
+- (void)searchResultsShouldBeDisplayed:(BOOL)displaySearchResults;
 - (MySearchBar *)setUpSearchBar;
 - (NSIndexPath *)indexPathInSearchTableForObject:(id)someObject;
 

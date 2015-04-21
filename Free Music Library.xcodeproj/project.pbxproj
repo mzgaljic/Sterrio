@@ -95,6 +95,7 @@
 		875984A5195D764700015243 /* PlaylistItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875984A4195D764700015243 /* PlaylistItemTableViewController.m */; };
 		875B3820197ACBC0008B4409 /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B381F197ACBC0008B4409 /* SettingsTableViewController.m */; };
 		875B3826197AFF29008B4409 /* NSString+smartSort.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B3825197AFF29008B4409 /* NSString+smartSort.m */; };
+		876037461AE5F693004FA831 /* AllArtistsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 876037451AE5F693004FA831 /* AllArtistsDataSource.m */; };
 		8762104D1AB65CB800CCBDA9 /* MGSwipeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8762104A1AB65CB800CCBDA9 /* MGSwipeButton.m */; };
 		8762104E1AB65CB800CCBDA9 /* MGSwipeTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8762104C1AB65CB800CCBDA9 /* MGSwipeTableCell.m */; };
 		8763351B1A84052600A229C4 /* MainScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8763351A1A84052600A229C4 /* MainScreenViewController.m */; };
@@ -391,6 +392,9 @@
 		875B381F197ACBC0008B4409 /* SettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTableViewController.m; sourceTree = "<group>"; };
 		875B3824197AFF29008B4409 /* NSString+smartSort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+smartSort.h"; sourceTree = "<group>"; };
 		875B3825197AFF29008B4409 /* NSString+smartSort.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+smartSort.m"; sourceTree = "<group>"; };
+		876037441AE5F693004FA831 /* AllArtistsDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllArtistsDataSource.h; sourceTree = "<group>"; };
+		876037451AE5F693004FA831 /* AllArtistsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AllArtistsDataSource.m; sourceTree = "<group>"; };
+		876037471AE5FEDB004FA831 /* ActionableArtistDataSourceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionableArtistDataSourceDelegate.h; sourceTree = "<group>"; };
 		876210491AB65CB800CCBDA9 /* MGSwipeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeButton.h; sourceTree = "<group>"; };
 		8762104A1AB65CB800CCBDA9 /* MGSwipeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeButton.m; sourceTree = "<group>"; };
 		8762104B1AB65CB800CCBDA9 /* MGSwipeTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeTableCell.h; sourceTree = "<group>"; };
@@ -1033,6 +1037,7 @@
 				875696131AC4F39800ACF04E /* PlayableBaseDataSource.m */,
 				87585DB11ADEFD340053EAA9 /* KnownEnums.h */,
 				87585DB01ADEFD140053EAA9 /* Protocols */,
+				876037431AE5F670004FA831 /* Artists */,
 				871917361ADF7CBD00FFC791 /* Albums */,
 				8756960B1AC4E99400ACF04E /* Songs */,
 				87F050311AE037B200BB0B2F /* Encapsulated Search functionality */,
@@ -1056,8 +1061,18 @@
 				87585DAF1ADEFC530053EAA9 /* PlaylistSongAdderDataSourceDelegate.h */,
 				87585DAE1ADEFBDE0053EAA9 /* EditableSongDataSourceDelegate.h */,
 				871917371ADF7EFB00FFC791 /* ActionableAlbumDataSourceDelegate.h */,
+				876037471AE5FEDB004FA831 /* ActionableArtistDataSourceDelegate.h */,
 			);
 			name = Protocols;
+			sourceTree = "<group>";
+		};
+		876037431AE5F670004FA831 /* Artists */ = {
+			isa = PBXGroup;
+			children = (
+				876037441AE5F693004FA831 /* AllArtistsDataSource.h */,
+				876037451AE5F693004FA831 /* AllArtistsDataSource.m */,
+			);
+			name = Artists;
 			sourceTree = "<group>";
 		};
 		876210481AB65CB800CCBDA9 /* MGSwipeTableCell */ = {
@@ -1804,6 +1819,7 @@
 				874814591AC23D1B00F447C1 /* MZAlbumSectionHeader.m in Sources */,
 				87E5FF3F1A6F42AD00A09652 /* MZSongModifierTableView.m in Sources */,
 				8763351B1A84052600A229C4 /* MainScreenViewController.m in Sources */,
+				876037461AE5F693004FA831 /* AllArtistsDataSource.m in Sources */,
 				871C2BF01A97CAA0007A1DE5 /* NowPlayingSong.m in Sources */,
 				87A453D8199C0891004D1319 /* UIImage+EYFixOrientation.m in Sources */,
 				87270032199E815000D71204 /* NSString+Levenshtein_Distance.m in Sources */,

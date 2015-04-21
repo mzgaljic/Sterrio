@@ -80,6 +80,11 @@
 }
 
 #pragma mark - Overriding functionality
+- (void)clearSearchResultsDataSource
+{
+    self.searchResults = [NSArray array];
+}
+
 - (NSIndexPath *)indexPathInSearchTableForObject:(id)someObject
 {
     if([someObject isMemberOfClass:[Song class]])
@@ -247,17 +252,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         [MusicPlaybackController songAboutToBeDeleted:song deletionContext:self.playbackContext];
         [MZCoreDataModelDeletionService prepareSongForDeletion:song];
         
-        NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:[CoreDataManager context]];
-        NSFetchRequest *request = [[NSFetchRequest alloc] init];
-        [request setEntity:entityDesc];
-        
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"song_id == %@", song.song_id];
-        [request setPredicate:predicate];
-        
-        NSError *error;
-        NSArray *matchingData = [[CoreDataManager context] executeFetchRequest:request error:&error];
-        if(matchingData.count == 1)
-            [[CoreDataManager context] deleteObject:matchingData[0]];
+        [[CoreDataManager context] deleteObject:song];
         [[CoreDataManager sharedInstance] saveContext];
         
         if([self numObjectsInTable] == 0){ //dont need search bar anymore
@@ -602,10 +597,15 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 #pragma mark - Miscellaneous
 - (NSUInteger)numObjectsInTable
 {
-    //used to avoid faulting objects when asking fetchResultsController how many objects exist
-    NSString *totalObjCountPathNum = @"@sum.numberOfObjects";
-    NSNumber *totalObjCount = [self.fetchedResultsController.sections valueForKeyPath:totalObjCountPathNum];
-    return [totalObjCount integerValue];
+    if(self.displaySearchResults)
+        return self.searchResults.count;
+    else
+    {
+        //used to avoid faulting objects when asking fetchResultsController how many objects exist
+        NSString *totalObjCountPathNum = @"@sum.numberOfObjects";
+        NSNumber *totalObjCount = [self.fetchedResultsController.sections valueForKeyPath:totalObjCountPathNum];
+        return [totalObjCount integerValue];
+    }
 }
 
 - (NSAttributedString *)generateDetailLabelAttrStringForSong:(Song *)aSong

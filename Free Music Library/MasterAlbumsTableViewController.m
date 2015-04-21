@@ -25,12 +25,6 @@
 @end
 
 @implementation MasterAlbumsTableViewController
-static BOOL PRODUCTION_MODE;
-
-- (void)setProductionModeValue
-{
-    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
-}
 
 #pragma mark - NavBarItem Delegate
 - (NSArray *)leftBarButtonItemsForNavigationBar
@@ -116,6 +110,24 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    if(didForcefullyCloseSearchBarBeforeSegue){
+        [self.tableViewDataSourceAndDelegate searchResultsShouldBeDisplayed:YES];
+        self.searchBar.text = lastQueryBeforeForceClosingSearchBar;
+        [self searchBarIsBecomingActive];
+        
+        double delayInSeconds = 0.25;
+        __weak MasterAlbumsTableViewController *weakself = self;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [weakself.searchBar becomeFirstResponder];
+            didForcefullyCloseSearchBarBeforeSegue = NO;
+            lastQueryBeforeForceClosingSearchBar = nil;
+        });
+    }
+}
 
 - (void)viewDidLoad
 {
@@ -189,6 +201,9 @@ static BOOL PRODUCTION_MODE;
 }
 
 #pragma mark - ActionableAlbumDataSourceDelegate implementation
+static BOOL didForcefullyCloseSearchBarBeforeSegue = NO;
+static NSString *lastQueryBeforeForceClosingSearchBar;
+
 - (void)performEditSegueWithAlbum:(Album *)albumToBeEdited
 {
 #warning implementation needed.
@@ -196,7 +211,29 @@ static BOOL PRODUCTION_MODE;
 
 - (void)performAlbumDetailVCSegueWithAlbum:(Album *)anAlbum
 {
-    [self performSegueWithIdentifier:@"albumItemSegue" sender:anAlbum];
+    if(self.searchBar.isFirstResponder){
+        lastQueryBeforeForceClosingSearchBar = self.searchBar.text;
+        [self.searchBar resignFirstResponder];
+        [self searchBarIsBecomingInactive];
+        [self popAndSegueWithDelayUsingAlbum:anAlbum];
+    }
+    else
+        [self performSegueWithIdentifier:@"albumItemSegue" sender:anAlbum];
+}
+
+- (void)popAndSegueWithDelayUsingAlbum:(Album *)anAlbum
+{
+    double delayInSeconds = 0.25;
+    __weak MasterAlbumsTableViewController *weakself = self;
+    __weak Album *weakAlbum = anAlbum;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [weakself.navigationController popViewControllerAnimated:YES];
+        [weakself performSegueWithIdentifier:@"albumItemSegue" sender:weakAlbum];
+        didForcefullyCloseSearchBarBeforeSegue = YES;
+        [weakself.tableViewDataSourceAndDelegate clearSearchResultsDataSource];
+        [weakself.tableViewDataSourceAndDelegate searchResultsShouldBeDisplayed:NO];
+    });
 }
 
 #pragma mark - other stuff
@@ -206,6 +243,16 @@ static BOOL PRODUCTION_MODE;
         [[segue destinationViewController] setAlbum:(Album *)sender];
         [[segue destinationViewController] setParentVcPlaybackContext:self.playbackContext];
         [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:[NSNumber numberWithBool:YES]];
+    }
+}
+
+#pragma mark - album editing
+- (void)editingModeCompleted:(NSNotification *)notification
+{
+    if([notification.name isEqualToString:@"AlbumEditDone"]){
+        //leave editing mode
+        //no observer set up!
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:@"AlbumEditDone" object:nil];
     }
 }
 

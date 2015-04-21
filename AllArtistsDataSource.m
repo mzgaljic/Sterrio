@@ -1,31 +1,30 @@
 //
-//  AllAlbumsDataSource.m
+//  AllArtistsDataSource.m
 //  Free Music Library
 //
-//  Created by Mark Zgaljic on 4/16/15.
+//  Created by Mark Zgaljic on 4/20/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
-#import "AllAlbumsDataSource.h"
+#import "AllArtistsDataSource.h"
 #import "StackController.h"
 #import "MZTableViewCell.h"
 #import "MusicPlaybackController.h"
-#import "AlbumAlbumArt+Utilities.h"
 
-@interface AllAlbumsDataSource ()
+@interface AllArtistsDataSource ()
 {
     NSString *cellReuseIdDetailLabelNull;
     PlayableDataSearchDataSource *playableSearchBarDataSourceDelegate;
 }
-@property (nonatomic, assign, readwrite) ALBUM_DATA_SRC_TYPE dataSourceType;
+@property (nonatomic, assign, readwrite) ARTIST_DATA_SRC_TYPE dataSourceType;
 @property (nonatomic, strong) NSArray *searchResults;
-@property (nonatomic, strong) Album *selectedAlbum;  //for album picker VC's
+@property (nonatomic, strong) Artist *selectedArtist;  //for artist picker VC's
 
 //@property (nonatomic, strong) NSMutableArray *selectedSongIds;
 //@property (nonatomic, strong) NSOrderedSet *existingPlaylistSongs;
-@end
 
-@implementation AllAlbumsDataSource
+@end
+@implementation AllArtistsDataSource
 
 - (void)setCellReuseId:(NSString *)cellReuseId
 {
@@ -34,12 +33,12 @@
 }
 
 /*
-- (NSOrderedSet *)existingPlaylistSongs
-{
-    if(_existingPlaylistSongs == nil && _playlistSongAdderDelegate != nil)
-        _existingPlaylistSongs = [_playlistSongAdderDelegate existingPlaylistSongs];
-    return _existingPlaylistSongs;
-}
+ - (NSOrderedSet *)existingPlaylistSongs
+ {
+ if(_existingPlaylistSongs == nil && _playlistSongAdderDelegate != nil)
+ _existingPlaylistSongs = [_playlistSongAdderDelegate existingPlaylistSongs];
+ return _existingPlaylistSongs;
+ }
  */
 
 - (void)setTableView:(UITableView *)tableView
@@ -60,7 +59,7 @@
     self.tableView = nil;
     self.playbackContext = nil;
     self.cellReuseId = nil;
-    self.actionableAlbumDelegate = nil;
+    self.actionableArtistDelegate = nil;
     //self.playlistSongAdderDelegate = nil;
     self.searchBarDataSourceDelegate = nil;
     
@@ -69,7 +68,7 @@
     NSLog(@"%@ dealloced!", NSStringFromClass([self class]));
 }
 
-- (instancetype)initWithAlbumDataSourceType:(ALBUM_DATA_SRC_TYPE)type
+- (instancetype)initWithArtistDataSourceType:(ARTIST_DATA_SRC_TYPE)type
                 searchBarDataSourceDelegate:(id<SearchBarDataSourceDelegate>)delegate;
 {
     if(self = [super init]){
@@ -82,12 +81,12 @@
     return self;
 }
 
-- (instancetype)initWithAlbumDataSourceType:(ALBUM_DATA_SRC_TYPE)type
-                              selectedAlbum:(Album *)anAlbum
+- (instancetype)initWithArtistDataSourceType:(ARTIST_DATA_SRC_TYPE)type
+                             selectedArtist:(Artist *)anArtist
                 searchBarDataSourceDelegate:(id<SearchBarDataSourceDelegate>)delegate
 {
     if(self = [super init]){
-        self.selectedAlbum = anAlbum;
+        self.selectedArtist = anArtist;
         stackController = [[StackController alloc] init];
         self.dataSourceType = type;
         self.searchBarDataSourceDelegate = delegate;
@@ -95,18 +94,20 @@
     return self;
 }
 
+
 #pragma mark - Overriding functionality
 - (void)clearSearchResultsDataSource
 {
     self.searchResults = [NSArray array];
+    [self.tableView reloadData];
 }
 
 - (NSIndexPath *)indexPathInSearchTableForObject:(id)someObject
 {
     if([someObject isMemberOfClass:[Album class]])
     {
-        Album *someAlbum = (Album *)someObject;
-        NSUInteger albumIndex = [self.searchResults indexOfObject:someAlbum];
+        Artist *someArtist = (Artist *)someObject;
+        NSUInteger albumIndex = [self.searchResults indexOfObject:someArtist];
         if(albumIndex == NSNotFound)
             return nil;
         else{
@@ -117,83 +118,31 @@
         return nil;
 }
 
-#pragma mark - Custom stuff
-//exposed so that the Album VC can check if any visible Album cells contain "dirty" album art.
-- (Album *)albumAtIndexPath:(NSIndexPath *)indexPath
-{
-    Album *album;
-    if(self.displaySearchResults)
-        album = [self.searchResults objectAtIndex:indexPath.row];
-    else
-        album = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    return album;
-}
-
 #pragma mark - UITableViewDataSource
-static char albumIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    Album *album = [self albumAtIndexPath:indexPath];
-    
-    NSString *reuseID;
-    if(album.artist)
-        reuseID = self.cellReuseId;
+    Artist *artist;
+    if(self.displaySearchResults)
+        artist = [self.searchResults objectAtIndex:indexPath.row];
     else
-        reuseID = cellReuseIdDetailLabelNull;
+        artist = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     MZTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
-                                                             forIndexPath:indexPath];
+                                                            forIndexPath:indexPath];
     if (!cell)
         cell = [[MZTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                       reuseIdentifier:self.cellReuseId];
-    else
+    
+    if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Default)
     {
-        // If an existing cell is being reused, reset the image to the default until it is
-        // populated. Without this code, previous images are displayed against the new people
-        // during rapid scrolling.
-        cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
+        //check if artist is now playing context, if so make cell changes here...
+        
     }
-    
-    cell.textLabel.text = album.albumName;
-    
-    if(![reuseID isEqualToString:cellReuseIdDetailLabelNull])
-        cell.detailTextLabel.text = album.artist.artistName;
-    else
-        cell.detailTextLabel.text = nil;
-    
-    if(self.dataSourceType == ALBUM_DATA_SRC_TYPE_Default)
+    else if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Single_Artist_Picker)
     {
-        //Set up other aspects of the cell content.
-        short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
-        UIColor *appTheme = [[UIColor defaultAppColorScheme] lighterColor];
-        MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
-                                                                                   color:appTheme];
-        cell.editingAccessoryView = coloredDisclosureIndicator;
-        cell.accessoryView = coloredDisclosureIndicator;
+        BOOL isCurrentlySelectedArtist = [self.selectedArtist.artistName isEqualToString:artist.artist_id];
         
-        //check if a song in this album is the now playing song
-        BOOL albumHasNowPlaying = NO;
-        NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-        for(Song *albumSong in album.albumSongs)
-        {
-            //using general album context here becasue the albumItemVC uses its parents playback context
-            if([nowPlayingObj isEqualToSong:albumSong compareWithContext:self.playbackContext])
-            {
-                albumHasNowPlaying = YES;
-                break;
-            }
-        }
-        
-        if(albumHasNowPlaying)
-            cell.textLabel.textColor = [super colorForNowPlayingItem];
-        else
-            cell.textLabel.textColor = [UIColor blackColor];
-    }
-    else if(self.dataSourceType == ALBUM_DATA_SRC_TYPE_Single_Album_Picker)
-    {
-        BOOL isCurrentlySelectedAlbum = [self.selectedAlbum.album_id isEqualToString:album.album_id];
-        
-        if(isCurrentlySelectedAlbum){
+        if(isCurrentlySelectedArtist){
             UIColor *appThemeSuperLight = [[[[[UIColor defaultAppColorScheme] lighterColor] lighterColor] lighterColor] lighterColor];
             cell.backgroundColor = appThemeSuperLight;
             [cell setUserInteractionEnabled:NO];
@@ -206,53 +155,19 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
             cell.detailTextLabel.textColor = [UIColor blackColor];
         }
     }
+
+    UIColor *appTheme = [[UIColor defaultAppColorScheme] lighterColor];
+    short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
+    MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
+                                                                               color:appTheme];
     
-    // Store a reference to the current cell that will enable the image to be associated with the correct
-    // cell, when the image is subsequently loaded asynchronously.
-    objc_setAssociatedObject(cell,
-                             &albumIndexPathAssociationKey,
-                             indexPath,
-                             OBJC_ASSOCIATION_RETAIN);
-    
-    __weak Album *weakalbum = album;
-    cell.anAlbumArtClass = album.albumArt;
-    [cell layoutIfNeeded];
-    CGSize cellImgSize = cell.imageView.frame.size;
-    
-    // Queue a block that obtains/creates the image and then loads it into the cell.
-    // The code block will be run asynchronously in a last-in-first-out queue, so that when
-    // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
-    [stackController addBlock:^{
-        UIImage *albumArt;
-        if(weakalbum.albumArt){
-            albumArt = [weakalbum.albumArt imageWithSize:cellImgSize];
-        }
-        
-        // The block will be processed on a background Grand Central Dispatch queue.
-        // Therefore, ensure that this code that updates the UI will run on the main queue.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            NSIndexPath *cellIndexPath = (NSIndexPath *)objc_getAssociatedObject(cell, &albumIndexPathAssociationKey);
-            if ([indexPath isEqual:cellIndexPath]) {
-                // Only set cell image if the cell currently being displayed is the one that actually required this image.
-                // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
-                
-                __weak UIImage *cellImg = albumArt;
-                //calculate how much one length varies from the other.
-                int diff = abs((int)albumArt.size.width - (int)albumArt.size.height);
-                if(diff > 10){
-                    //image is not a perfect (or close to perfect) square. Compensate for this...
-                    cellImg = [albumArt imageScaledToFitSize:cell.imageView.frame.size];
-                }
-                [UIView transitionWithView:cell.imageView
-                                  duration:MZCellImageViewFadeDuration
-                                   options:UIViewAnimationOptionTransitionCrossDissolve
-                                animations:^{
-                                    cell.imageView.image = cellImg;
-                                } completion:nil];
-            }
-        });
-    }];
+    cell.editingAccessoryView = coloredDisclosureIndicator;
+    cell.accessoryView = coloredDisclosureIndicator;
+    cell.textLabel.attributedText = [ArtistTableViewFormatter formatArtistLabelUsingArtist:artist];
+    cell.detailTextLabel.text = [self stringForArtistDetailLabelGivenArtist:artist];
     cell.delegate = self;
+    
+    #warning NOT setting artist textlabel color based on whether or not a song from this artist is playing (in same context)!
     return cell;
 }
 
@@ -261,9 +176,9 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     if(self.displaySearchResults)
         return NO;
     
-    if(self.dataSourceType == ALBUM_DATA_SRC_TYPE_Single_Album_Picker)
+    if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Single_Artist_Picker)
         return NO;
-    else if (self.dataSourceType == SONG_DATA_SRC_TYPE_Default)
+    else if (self.dataSourceType == ARTIST_DATA_SRC_TYPE_Default)
         return YES;
     else
         return YES;
@@ -277,25 +192,25 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
-        //obtain object for the deleted album
-        Album *album;
-        if(self.displaySearchResults)
-            album = [self.searchResults objectAtIndex:indexPath.row];
-        else
-             album = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        Artist *artist = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
-        [MZCoreDataModelDeletionService prepareAlbumForDeletion:album];
-        
-        //remove songs from queue if they are in it
-        for(Song *aSong in album.albumSongs)
+        //remove songs from queue
+        for(Song *aSong in artist.standAloneSongs)
         {
             [MusicPlaybackController songAboutToBeDeleted:aSong
                                           deletionContext:self.playbackContext];
             aSong.albumArt = nil;
         }
+        for(Album *anAlbum in artist.albums)
+        {
+            for(Song *aSong in anAlbum.albumSongs)
+                [MusicPlaybackController songAboutToBeDeleted:aSong
+                                              deletionContext:self.playbackContext];
+            anAlbum.albumArt = nil;
+        }
         
-        //delete the album and save changes
-        [[CoreDataManager context] deleteObject:album];
+        //delete the artist and save changes
+        [[CoreDataManager context] deleteObject:artist];
         [[CoreDataManager sharedInstance] saveContext];
         
         if([self numObjectsInTable] == 0){ //dont need search bar anymore
@@ -308,22 +223,22 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    Album *tappedAlbum;
+    Artist *tappedArtist;
     if(self.displaySearchResults)
-        tappedAlbum = [self.searchResults objectAtIndex:indexPath.row];
+        tappedArtist = [self.searchResults objectAtIndex:indexPath.row];
     else
-        tappedAlbum = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        tappedArtist = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
-    if(self.dataSourceType == ALBUM_DATA_SRC_TYPE_Default)
+    if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Default)
     {
         if(tableView.editing)
-            [self.actionableAlbumDelegate performEditSegueWithAlbum:tappedAlbum];
+            [self.actionableArtistDelegate performEditSegueWithArtist:tappedArtist];
         else
-            [self.actionableAlbumDelegate performAlbumDetailVCSegueWithAlbum:tappedAlbum];
+            [self.actionableArtistDelegate performArtistDetailVCSegueWithArtist:tappedArtist];
     }
-    else if(self.dataSourceType == ALBUM_DATA_SRC_TYPE_Single_Album_Picker)
+    else if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Single_Artist_Picker)
     {
-        [self.actionableAlbumDelegate userDidSelectAlbumFromSinglePicker:tappedAlbum];
+        [self.actionableArtistDelegate userDidSelectArtistFromSinglePicker:tappedArtist];
     }
 }
 
@@ -388,7 +303,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
 #pragma mark - MGSwipeTableCell delegates
 - (BOOL)swipeTableCell:(MGSwipeTableCell*)cell canSwipe:(MGSwipeDirection)direction
 {
-    if(self.dataSourceType == ALBUM_DATA_SRC_TYPE_Default)
+    if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Default)
         return YES;
     else
         return NO;
@@ -402,11 +317,12 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     swipeSettings.transition = MGSwipeTransitionBorder;
     expansionSettings.buttonIndex = 0;
     UIColor *initialExpansionColor = [AppEnvironmentConstants expandingCellGestureInitialColor];
+    __weak AllArtistsDataSource *weakSelf = self;
     
     if(direction == MGSwipeDirectionLeftToRight){
         //queue
-        Album *album = [self.fetchedResultsController
-                        objectAtIndexPath:[self.tableView indexPathForCell:cell]];
+        Artist *artist = [self.fetchedResultsController
+                          objectAtIndexPath:[self.tableView indexPathForCell:cell]];
         
         expansionSettings.fillOnTrigger = NO;
         expansionSettings.threshold = 1;
@@ -415,17 +331,16 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         swipeSettings.transition = MGSwipeTransitionClipCenter;
         swipeSettings.threshold = 9999;
         
-        __weak AllAlbumsDataSource *weakself = self;
-        __weak Album *weakAlbum = album;
+        __weak Artist *weakArtist = artist;
         __weak MGSwipeTableCell *weakCell = cell;
         return @[[MGSwipeButton buttonWithTitle:@"Queue"
                                 backgroundColor:initialExpansionColor
                                         padding:15
                                        callback:^BOOL(MGSwipeTableCell *sender) {
                                            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
-                                           NSLog(@"Queing up: %@", weakAlbum.albumName);
+                                           NSLog(@"Queing up: %@", weakArtist.artistName);
                                            
-                                           PlaybackContext *context = [weakself contextForSpecificAlbum:weakAlbum];
+                                           PlaybackContext *context = [weakSelf contextForSpecificArtist:weakArtist];
                                            [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];
                                            return YES;
@@ -436,7 +351,6 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
         swipeSettings.transition = MGSwipeTransitionBorder;
         
-        __weak AllAlbumsDataSource *weakSelf = self;
         MGSwipeButton *delete = [MGSwipeButton buttonWithTitle:@"Delete"
                                                backgroundColor:expansionSettings.expansionColor
                                                        padding:15
@@ -451,15 +365,13 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
                                  }];
         return @[delete];
     }
-    
     return nil;
 }
 
-- (PlaybackContext *)contextForSpecificAlbum:(Album *)anAlbum
+- (PlaybackContext *)contextForSpecificArtist:(Artist *)anArtist
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY album.album_id == %@", anAlbum.album_id];
-    
+    request.predicate = [NSPredicate predicateWithFormat:@"ANY artist.artist_id == %@", anArtist.artist_id];
     NSSortDescriptor *sortDescriptor;
     if([AppEnvironmentConstants smartAlphabeticalSort])
         sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
@@ -476,24 +388,24 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
 }
 
 /*
-- (NSArray *)minimallyFaultedArrayOfSelectedPlaylistSongs
-{
-    if(self.dataSourceType == SONG_DATA_SRC_TYPE_Playlist_MultiSelect)
-    {
-        //incomplete implementation
-        NSMutableArray *selectedSongs = [NSMutableArray arrayWithCapacity:_selectedSongIds.count];
-        Song *aSong;
-        for(NSString *aSongId in _selectedSongIds)
-        {
-            aSong = [self songObjectGivenSongId:aSongId];
-            if(aSong != nil)
-                [selectedSongs addObject:aSong];
-        }
-        return selectedSongs;
-    }
-    else
-        return nil;
-}
+ - (NSArray *)minimallyFaultedArrayOfSelectedPlaylistSongs
+ {
+ if(self.dataSourceType == SONG_DATA_SRC_TYPE_Playlist_MultiSelect)
+ {
+ //incomplete implementation
+ NSMutableArray *selectedSongs = [NSMutableArray arrayWithCapacity:_selectedSongIds.count];
+ Song *aSong;
+ for(NSString *aSongId in _selectedSongIds)
+ {
+ aSong = [self songObjectGivenSongId:aSongId];
+ if(aSong != nil)
+ [selectedSongs addObject:aSong];
+ }
+ return selectedSongs;
+ }
+ else
+ return nil;
+ }
  */
 
 - (MySearchBar *)setUpSearchBar
@@ -520,24 +432,39 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
 #pragma mark - PlayableDataSearchDataSourceDelegate implementation
 - (NSFetchRequest *)fetchRequestForSearchBarQuery:(NSString *)query
 {
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Album"];
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Artist"];
     request.returnsObjectsAsFaults = NO;
     [request setFetchBatchSize:50];
     NSSortDescriptor *sortDescriptor;
     if([AppEnvironmentConstants smartAlphabeticalSort])
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortAlbumName"
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortArtistName"
                                                        ascending:YES
                                                         selector:@selector(localizedStandardCompare:)];
     else
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"albumName"
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"artistName"
                                                        ascending:YES
                                                         selector:@selector(localizedStandardCompare:)];
     
-    request.sortDescriptors = @[sortDescriptor];    
-    request.predicate = [self generateCompoundedPredicateGivenQuery:query];
+    request.sortDescriptors = @[sortDescriptor];
+    
+    NSMutableString *searchWithWildcards = [NSMutableString stringWithFormat:@"*%@*", query];
+    if (searchWithWildcards.length > 3){
+        for (int i = 2; i < query.length * 2; i += 2)
+            [searchWithWildcards insertString:@"*" atIndex:i];
+    }
+    
+    //matches against exact string ANYWHERE within the album name
+    NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"artistName contains[cd] %@",  query];
+    
+    //matches partial string with song name as long as sequence of letters is correct.
+    //see: http://stackoverflow.com/questions/15091155/nspredicate-match-any-characters
+    NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"artistName LIKE[cd] %@",  searchWithWildcards];
+    
+    request.predicate = [NSCompoundPredicate orPredicateWithSubpredicates:@[predicate1,predicate2]];
     return request;
 }
 
+//also overriding superclass at the same time with this method.
 - (void)searchResultsShouldBeDisplayed:(BOOL)displaySearchResults
 {
     self.displaySearchResults = displaySearchResults;
@@ -553,33 +480,39 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     return [self numObjectsInTable];
 }
 
-- (NSPredicate *)generateCompoundedPredicateGivenQuery:(NSString *)query
+
+#pragma mark - Other Helpers
+- (NSString *)stringForArtistDetailLabelGivenArtist:(Artist *)artist
 {
-    NSMutableString *searchWithWildcards = [NSMutableString stringWithFormat:@"*%@*", query];
-    if (searchWithWildcards.length > 3){
-        for (int i = 2; i < query.length * 2; i += 2)
-            [searchWithWildcards insertString:@"*" atIndex:i];
+    //count all the songs that are associated with albums for this artist
+    NSMutableSet *allAlbumSongsFromArtist = [[NSMutableSet alloc] initWithCapacity:6];
+    for(Album *artistAlbum in artist.albums)
+    {
+        NSSet *albumSongs = artistAlbum.albumSongs;
+        NSSet *tempNewSet = [allAlbumSongsFromArtist setByAddingObjectsFromSet:albumSongs];
+        allAlbumSongsFromArtist = [NSMutableSet setWithSet:tempNewSet];
     }
+    NSSet *albumSongs = artist.standAloneSongs;
+    NSSet *uniqueSongsByThisArtist = [allAlbumSongsFromArtist setByAddingObjectsFromSet:albumSongs];
     
-    //matches against exact string ANYWHERE within the album name
-    NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"albumName contains[cd] %@",  query];
+    NSString *albumPart, *songPart;
+    if((int)artist.albums.count == 1)
+        albumPart = @"1 Album";
+    else
+        albumPart = [NSString stringWithFormat:@"%d Albums", (int)artist.albums.count];
     
-    //matches partial string with song name as long as sequence of letters is correct.
-    //see: http://stackoverflow.com/questions/15091155/nspredicate-match-any-characters
-    NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"albumName LIKE[cd] %@",  searchWithWildcards];
+    NSUInteger totalSongCount = uniqueSongsByThisArtist.count;
+    if(totalSongCount == 1)
+        songPart = @"1 Song ";
+    else
+        songPart = [NSString stringWithFormat:@"%d Songs", (int)totalSongCount];
     
-    //matches against exact string ANYWHERE within the albums artist name
-    NSPredicate *predicate3 = [NSPredicate predicateWithFormat:@"self.artist.artistName contains[cd] %@",  query];
-    
-    //matches partial string with albums artist name as long as sequence of letters is correct. (see link few lines above)
-    NSPredicate *predicate4 = [NSPredicate predicateWithFormat:@"self.artist.artistName LIKE[cd] %@",  searchWithWildcards];
-    return [NSCompoundPredicate orPredicateWithSubpredicates:@[predicate1,
-                                                               predicate2,
-                                                               predicate3,
-                                                               predicate4]];
+    NSMutableString *finalDetailLabel = [NSMutableString stringWithString:albumPart];
+    [finalDetailLabel appendString:@" "];
+    [finalDetailLabel appendString:songPart];
+    return finalDetailLabel;
 }
 
-#pragma mark - Miscellaneous
 - (NSUInteger)numObjectsInTable
 {
     if(self.displaySearchResults)
@@ -592,5 +525,6 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         return [totalObjCount integerValue];
     }
 }
+
 
 @end

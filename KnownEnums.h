@@ -24,6 +24,11 @@ typedef enum{
 } ALBUM_DATA_SRC_TYPE;
 
 typedef enum{
+    ARTIST_DATA_SRC_TYPE_Default,
+    ARTIST_DATA_SRC_TYPE_Single_Artist_Picker
+} ARTIST_DATA_SRC_TYPE;
+
+typedef enum{
     PLAYLIST_STATUS_In_Creation,
     PLAYLIST_STATUS_Created_But_Empty,
     PLAYLIST_STATUS_Normal_Playlist
