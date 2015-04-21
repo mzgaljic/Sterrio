@@ -13,7 +13,6 @@
 #import "AlbumArtUtilities.h"
 #import "AlbumItemViewController.h"
 #import "Album.h"
-#import "AlbumTableViewFormatter.h"
 #import "UIImage+colorImages.h"
 #import "UIColor+LighterAndDarker.h"
 #import "CoreDataCustomTableViewController.h"

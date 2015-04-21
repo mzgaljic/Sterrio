@@ -10,7 +10,6 @@
 #import "Playlist+Utilities.h"
 #import "Song+Utilities.h"
 #import "AppEnvironmentConstants.h"
-#import "SongTableViewFormatter.h"
 #import "UIColor+LighterAndDarker.h"
 #import "SDWebImageManager.h"
 #import "CoreDataCustomTableViewController.h"

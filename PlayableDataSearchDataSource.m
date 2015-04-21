@@ -9,6 +9,7 @@
 
 #import "PlayableDataSearchDataSource.h"
 #import "NSString+WhiteSpace_Utility.h"
+#import "PreferredFontSizeUtility.h"
 #import "CoreDataManager.h"
 #import "MySearchBar.h"
 #import "PlayableBaseDataSource.h"
@@ -147,11 +148,12 @@
         NSAsynchronousFetchRequest *asynchronousFetchRequest =
         [[NSAsynchronousFetchRequest alloc] initWithFetchRequest:request
                                                  completionBlock:^(NSAsynchronousFetchResult *result) {
-                                                     if (! result.operationError)
-                                                     {
-                                                         [weakself.playableDataSearchDataSourceDelegate searchResultsFromUsersQuery:result.finalResult];
-                                                     }
+                                                     
                                                      dispatch_async(dispatch_get_main_queue(), ^{
+                                                         if (! result.operationError)
+                                                         {
+                                                             [weakself.playableDataSearchDataSourceDelegate searchResultsFromUsersQuery:result.finalResult];
+                                                         }
                                                          [weakself.tableView reloadData];
                                                      });
                                                  }];

@@ -27,6 +27,7 @@ static BOOL PRODUCTION_MODE;
 float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
 float const updateCellWithAnimationFadeDelay = 0.4;
 
+
 #pragma mark - Other stuff
 - (void)initWasCalled
 {
@@ -57,25 +58,43 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         [self setContentInset:UIEdgeInsetsMake(-32,0,-30,0)];
         [self setScrollIndicatorInsets:UIEdgeInsetsMake(-32,0,-30,0)];
     }
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(existingAlbumHasBeenChosen:)
-                                                 name:@"existing album chosen" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(existingArtistHasBeenChosen:)
-                                                 name:@"existing artist chosen" object:nil];
-
 }
 
-- (void)didReceiveMemoryWarning
+- (Song *)songObjectGivenSongId:(NSString *)songId
 {
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Song"];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"song_id == %@", songId];
+    //descriptor doesnt really matter here
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
+                                                                     ascending:YES];
+    fetchRequest.sortDescriptors = @[sortDescriptor];
+    NSArray *results = [[CoreDataManager context] executeFetchRequest:fetchRequest error:nil];
+    if(results.count == 1)
+        return results[0];
+    else
+        return nil;
+}
+
+- (Album *)albumObjectGivenAlbumId:(NSString *)albumId
+{
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Album"];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"album_id == %@", albumId];
+    //descriptor doesnt really matter here
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"albumName"
+                                                                     ascending:YES];
+    fetchRequest.sortDescriptors = @[sortDescriptor];
+    NSArray *results = [[CoreDataManager context] executeFetchRequest:fetchRequest error:nil];
+    if(results.count == 1)
+        return results[0];
+    else
+        return nil;
 }
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"existing album chosen" object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"existing artist chosen" object:nil];
     [AppEnvironmentConstants setUserIsEditingSongOrAlbumOrArtist: NO];
+    //doing this just in case. found a bug once where tab bar was gone after this editor closing.
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@NO];
 }
 
 - (void)preDealloc
@@ -194,7 +213,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:detailLabelValue];
             }
             else{
-                cell.detailTextLabel.text = nil;
+                cell.detailTextLabel.text = @"  ";
             }
             cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[UIColor defaultAppColorScheme] lighterColor]];
             
@@ -203,7 +222,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             if(_songIAmEditing.artist != nil)
                 cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:_songIAmEditing.artist.artistName];
             else
-                cell.detailTextLabel.text = @"";
+                cell.detailTextLabel.text = @"  ";
             cell.accessoryView = nil;
             
         } else if(indexPath.row == 2){  //Album
@@ -211,7 +230,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             if(_songIAmEditing.album != nil)
                 cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:_songIAmEditing.album.albumName];
             else
-                cell.detailTextLabel.text = @"";
+                cell.detailTextLabel.text = @"  ";
             cell.accessoryView = nil;
             
         } else if(indexPath.row == 3){  //Album Art
@@ -222,7 +241,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             }
             else
                 cell.accessoryView = nil;
-            cell.detailTextLabel.text = @"";
+            cell.detailTextLabel.text = @"  ";
             
         }else
             return nil;
@@ -304,10 +323,12 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 {
     int prefCellHeight;
     int prefSizeSetting = [AppEnvironmentConstants preferredSizeSetting];
-    if(prefSizeSetting > 1 && prefSizeSetting < 5)
+    if(prefSizeSetting >= 3 && prefSizeSetting < 6)
         prefCellHeight = [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
+    else if(prefSizeSetting < 3)
+        prefCellHeight = [PreferredFontSizeUtility hypotheticalCellHeightForPreferredSize:3];
     else
-        prefCellHeight = [PreferredFontSizeUtility hypotheticalCellHeightForPreferredSize:4];
+        prefCellHeight = [PreferredFontSizeUtility hypotheticalCellHeightForPreferredSize:5];
     
     if(indexPath.row == 3)  //album art cell
         return prefCellHeight * 2;
@@ -529,18 +550,21 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     if(artistName.length == 0)  //was all whitespace, or user gave us an empty string
         return;
     
+    if(_songIAmEditing.artist){
+        [MZCoreDataModelDeletionService removeSongFromItsArtist:_songIAmEditing];
+    }
+    
     Artist *newArtist;
     if(_songIAmEditing.album){  //song had album
         if(! _songIAmEditing.album.artist){  //album does NOT have an artist
             newArtist = [Artist createNewArtistWithName:artistName usingAlbum:_songIAmEditing.album inManagedContext:[CoreDataManager context]];
         } else{  //album already has artist, remove this song from the album.
-            _songIAmEditing.album = nil;
+            [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];
         }
     }
     else
         newArtist = [Artist createNewArtistWithName:artistName inManagedContext:[CoreDataManager context]];
-    if(_songIAmEditing.artist)
-        [[CoreDataManager context] deleteObject:_songIAmEditing.artist];
+    
     _songIAmEditing.artist = newArtist;
     
     __weak MZSongModifierTableView *weakself = self;
@@ -550,8 +574,6 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         [weakself beginUpdates];
         [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]]
                     withRowAnimation:UITableViewRowAnimationFade];
-        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:3 inSection:0]]
-                        withRowAnimation:UITableViewRowAnimationFade];
         [weakself endUpdates];
         [weakself reloadData];
     });
@@ -571,20 +593,21 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                                    inManagedContext:[CoreDataManager context]];
     if(_songIAmEditing.album)
     {
-        [[CoreDataManager context] deleteObject:_songIAmEditing.album];
+        [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];
     }
     _songIAmEditing.album = newAlbum;
-    if(_songIAmEditing.artist)
+    if(_songIAmEditing.artist){
         newAlbum.artist = _songIAmEditing.artist;
+    }
     
     __weak MZSongModifierTableView *weakself = self;
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, updateCellWithAnimationFadeDelay * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
         
         [weakself beginUpdates];
-        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
+        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]]
                     withRowAnimation:UITableViewRowAnimationFade];
-        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:3 inSection:0]]
+        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
                         withRowAnimation:UITableViewRowAnimationFade];
         [weakself endUpdates];
         [weakself reloadData];
@@ -592,31 +615,40 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 }
 
 #pragma mark - existing album and artist chosen
-- (void)existingAlbumHasBeenChosen:(NSNotification *)notification
+
+- (void)existingAlbumHasBeenChosen:(Album *)album
 {
-    if([notification.name isEqualToString:@"existing album chosen"]){
-        if(_songIAmEditing.album)
-        {
+    if(_songIAmEditing.album)
+    {
+        if(! [_songIAmEditing.album.album_id isEqualToString:album.album_id])
             [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];
-        }
-        
-        _songIAmEditing.album = (Album *)notification.object;
-        _songIAmEditing.album.albumArt.isDirty = @YES;
-        _songIAmEditing.artist = _songIAmEditing.album.artist;
-        
-        __weak MZSongModifierTableView *weakself = self;
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, updateCellWithAnimationFadeDelay * NSEC_PER_SEC);
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            
-            [weakself beginUpdates];
-            [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
-                        withRowAnimation:UITableViewRowAnimationFade];
-            [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:3 inSection:0]]
-                            withRowAnimation:UITableViewRowAnimationFade];
-            [weakself endUpdates];
-            [weakself reloadData];
-        });
     }
+    
+    _songIAmEditing.album = album;
+    if(_songIAmEditing.artist)
+    {
+        if(! [_songIAmEditing.artist.artist_id isEqualToString:album.artist.artist_id]
+           && album.artist != nil)
+            [MZCoreDataModelDeletionService removeSongFromItsArtist:_songIAmEditing];
+        else
+            _songIAmEditing.album.artist = _songIAmEditing.artist;
+    }
+    
+    _songIAmEditing.album.albumArt.isDirty = @YES;
+    _songIAmEditing.artist = _songIAmEditing.album.artist;
+    
+    __weak MZSongModifierTableView *weakself = self;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, updateCellWithAnimationFadeDelay * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        
+        [weakself beginUpdates];
+        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]]
+                        withRowAnimation:UITableViewRowAnimationFade];
+        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
+                        withRowAnimation:UITableViewRowAnimationFade];
+        [weakself endUpdates];
+        [weakself reloadData];
+    });
 }
 
 - (void)existingArtistHasBeenChosen:(NSNotification *)notification
@@ -634,8 +666,6 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             [weakself beginUpdates];
             [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]]
                         withRowAnimation:UITableViewRowAnimationFade];
-            [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:3 inSection:0]]
-                            withRowAnimation:UITableViewRowAnimationFade];
             [weakself endUpdates];
             [weakself reloadData];
         });
@@ -656,7 +686,9 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     [self.VC.navigationController pushViewController:vc animated:YES];
                 } else if(_songIAmEditing.artist){  //remove from current artist
                     [MZCoreDataModelDeletionService removeSongFromItsArtist:_songIAmEditing];
+                    [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];
                     _songIAmEditing.artist = nil;
+                    _songIAmEditing.album = nil;
                     [self reloadData];
                 }
             }
@@ -714,8 +746,10 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     [self reloadData];
                 } else{ //choose existing album
                     
-                    ExistingAlbumPickerTableViewController *vc = [[ExistingAlbumPickerTableViewController alloc]
-                                                                  initWithCurrentAlbum:_songIAmEditing.album];
+                    ExistingAlbumPickerTableViewController *vc;
+                    Album *album = _songIAmEditing.album;
+                    vc = [[ExistingAlbumPickerTableViewController alloc] initWithCurrentAlbum:album
+                                                                 existingEntityPickerDelegate:self];
                     [self.VC.navigationController pushViewController:vc animated:YES];
                 }
                 break;
@@ -733,8 +767,10 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     [self.VC.navigationController pushViewController:vc animated:YES];
                     break;
                 } else{  //place in different album (existing album picker)
-                    ExistingAlbumPickerTableViewController *vc = [[ExistingAlbumPickerTableViewController alloc]
-                                                                  initWithCurrentAlbum:_songIAmEditing.album];
+                    ExistingAlbumPickerTableViewController *vc;
+                    Album *album = _songIAmEditing.album;
+                    vc = [[ExistingAlbumPickerTableViewController alloc] initWithCurrentAlbum:album
+                                                                 existingEntityPickerDelegate:self];
                     [self.VC.navigationController pushViewController:vc animated:YES];
                 }
                 
@@ -875,6 +911,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
     [self.VC dismissViewControllerAnimated:YES completion:nil];
+    [self preDealloc];
 }
 
 //this method is only used for ACTUAL editing. Song creation is handled in "didSelectCell..."
@@ -882,8 +919,8 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 {
     [[CoreDataManager sharedInstance] saveContext]; //saves the context to disk
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
-    
     [self.VC dismissViewControllerAnimated:YES completion:nil];
+    [self preDealloc];
 }
 
 @end

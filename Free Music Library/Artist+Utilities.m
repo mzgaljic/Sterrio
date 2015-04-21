@@ -9,8 +9,40 @@
 #import "Artist+Utilities.h"
 
 @implementation Artist (Utilities)
+NSString * const ARTIST_ALBUMS_KEY = @"albums";
+NSString * const STANDALONE_SONGS_KEY = @"standAloneSongs";
 
-#pragma mark - implementation
+- (void)setAlbums:(NSSet *)albums
+{
+    if(albums.count == 0 && self.standAloneSongs.count == 0){
+        [Artist deleteArtistWithDelay:self];
+    }
+    [self willChangeValueForKey:ARTIST_ALBUMS_KEY];
+    [self setPrimitiveValue:albums forKey:ARTIST_ALBUMS_KEY];
+    [self didChangeValueForKey:ARTIST_ALBUMS_KEY];
+}
+
+- (void)setStandAloneSongs:(NSSet *)standAloneSongs
+{
+    if(standAloneSongs.count == 0 && self.albums.count == 0){
+        [Artist deleteArtistWithDelay:self];
+    }
+    [self willChangeValueForKey:STANDALONE_SONGS_KEY];
+    [self setPrimitiveValue:standAloneSongs forKey:STANDALONE_SONGS_KEY];
+    [self didChangeValueForKey:STANDALONE_SONGS_KEY];
+}
+
++ (void)deleteArtistWithDelay:(Artist *)artist
+{
+    double delayInSeconds = 1;
+    __weak Artist *anArtist = artist;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        //code to be executed on the main queue after delay
+        [[CoreDataManager context] deleteObject:anArtist];
+    });
+}
+
 //when no album was created
 + (Artist *)createNewArtistWithName:(NSString *)name inManagedContext:(NSManagedObjectContext *)context
 {

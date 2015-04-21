@@ -19,7 +19,8 @@ typedef enum{
 } SONG_DATA_SRC_TYPE;
 
 typedef enum{
-    ALBUM_DATA_SRC_TYPE_Default
+    ALBUM_DATA_SRC_TYPE_Default,
+    ALBUM_DATA_SRC_TYPE_Single_Album_Picker
 } ALBUM_DATA_SRC_TYPE;
 
 typedef enum{

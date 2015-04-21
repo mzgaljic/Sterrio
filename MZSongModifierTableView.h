@@ -26,13 +26,15 @@
 
 #import <MSCellAccessory.h>
 #import <FXImageView/UIImage+FX.h>
+#import "ExistingEntityPickerDelegate.h"
 
 //This class breaks so much MVC it's not even funny. it's like a sin...but it works lol
 @interface MZSongModifierTableView : UITableView <UIActionSheetDelegate,
                                                 UINavigationControllerDelegate,
                                                 UIImagePickerControllerDelegate,
                                                 UITableViewDelegate,
-                                                UITableViewDataSource>
+                                                UITableViewDataSource,
+                                                ExistingEntityPickerDelegate>
 
 @property (nonatomic, strong) Song *songIAmEditing;
 @property (nonatomic, assign) NSInteger lastTappedRow;  //only used for section 0

@@ -256,7 +256,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="existingArtistItemPickerCell" textLabel="qUg-w0-DgB" detailTextLabel="1LC-is-19G" style="IBUITableViewCellStyleSubtitle" id="bjf-8Z-SqL">
-                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bjf-8Z-SqL" id="LKY-Ib-arj">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -305,7 +305,7 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="existingAlbumCell" textLabel="eWz-JA-Aiu" detailTextLabel="oxl-vF-C9h" style="IBUITableViewCellStyleSubtitle" id="whk-5v-eqZ" customClass="MZTableViewCell">
-                                        <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                                        <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="whk-5v-eqZ" id="4hy-5P-ibk">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -950,8 +950,8 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
+        <segue reference="q5e-fY-LN3"/>
+        <segue reference="jag-Bp-C7x"/>
         <segue reference="N5b-x6-rhd"/>
-        <segue reference="gkr-Yw-cad"/>
-        <segue reference="mNA-W8-wpb"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -9,7 +9,6 @@
 #import "AllAlbumsDataSource.h"
 #import "StackController.h"
 #import "MZTableViewCell.h"
-#import "AlbumTableViewFormatter.h"
 #import "MusicPlaybackController.h"
 #import "AlbumAlbumArt+Utilities.h"
 
@@ -19,11 +18,11 @@
     PlayableDataSearchDataSource *playableSearchBarDataSourceDelegate;
 }
 @property (nonatomic, assign, readwrite) ALBUM_DATA_SRC_TYPE dataSourceType;
+@property (nonatomic, strong) NSArray *searchResults;
+@property (nonatomic, strong) Album *selectedAlbum;  //for album picker VC's
+
 //@property (nonatomic, strong) NSMutableArray *selectedSongIds;
 //@property (nonatomic, strong) NSOrderedSet *existingPlaylistSongs;
-
-@property (nonatomic, strong) NSArray *searchResults;
-
 @end
 
 @implementation AllAlbumsDataSource
@@ -83,6 +82,19 @@
     return self;
 }
 
+- (instancetype)initWithAlbumDataSourceType:(ALBUM_DATA_SRC_TYPE)type
+                              selectedAlbum:(Album *)anAlbum
+                searchBarDataSourceDelegate:(id<SearchBarDataSourceDelegate>)delegate
+{
+    if(self = [super init]){
+        self.selectedAlbum = anAlbum;
+        stackController = [[StackController alloc] init];
+        self.dataSourceType = type;
+        self.searchBarDataSourceDelegate = delegate;
+    }
+    return self;
+}
+
 #pragma mark - Overriding functionality
 - (NSIndexPath *)indexPathInSearchTableForObject:(id)someObject
 {
@@ -137,36 +149,58 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
     }
     
-    //Set up other aspects of the cell content.
-    MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
-                                                                               color:[[UIColor defaultAppColorScheme] lighterColor]];
-    cell.editingAccessoryView = coloredDisclosureIndicator;
-    cell.accessoryView = coloredDisclosureIndicator;
-    
     cell.textLabel.text = album.albumName;
     
     if(![reuseID isEqualToString:cellReuseIdDetailLabelNull])
-        [AlbumTableViewFormatter formatAlbumDetailLabelUsingAlbum:album andCell:&cell];
+        cell.detailTextLabel.text = album.artist.artistName;
     else
         cell.detailTextLabel.text = nil;
     
-    //check if a song in this album is the now playing song
-    BOOL albumHasNowPlaying = NO;
-    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-    for(Song *albumSong in album.albumSongs)
+    if(self.dataSourceType == ALBUM_DATA_SRC_TYPE_Default)
     {
-        //using general album context here becasue the albumItemVC uses its parents playback context
-        if([nowPlayingObj isEqualToSong:albumSong compareWithContext:self.playbackContext])
+        //Set up other aspects of the cell content.
+        short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
+        UIColor *appTheme = [[UIColor defaultAppColorScheme] lighterColor];
+        MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
+                                                                                   color:appTheme];
+        cell.editingAccessoryView = coloredDisclosureIndicator;
+        cell.accessoryView = coloredDisclosureIndicator;
+        
+        //check if a song in this album is the now playing song
+        BOOL albumHasNowPlaying = NO;
+        NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+        for(Song *albumSong in album.albumSongs)
         {
-            albumHasNowPlaying = YES;
-            break;
+            //using general album context here becasue the albumItemVC uses its parents playback context
+            if([nowPlayingObj isEqualToSong:albumSong compareWithContext:self.playbackContext])
+            {
+                albumHasNowPlaying = YES;
+                break;
+            }
+        }
+        
+        if(albumHasNowPlaying)
+            cell.textLabel.textColor = [super colorForNowPlayingItem];
+        else
+            cell.textLabel.textColor = [UIColor blackColor];
+    }
+    else if(self.dataSourceType == ALBUM_DATA_SRC_TYPE_Single_Album_Picker)
+    {
+        BOOL isCurrentlySelectedAlbum = [self.selectedAlbum.album_id isEqualToString:album.album_id];
+        
+        if(isCurrentlySelectedAlbum){
+            UIColor *appThemeSuperLight = [[[[[UIColor defaultAppColorScheme] lighterColor] lighterColor] lighterColor] lighterColor];
+            cell.backgroundColor = appThemeSuperLight;
+            [cell setUserInteractionEnabled:NO];
+            cell.textLabel.textColor = [UIColor whiteColor];
+            cell.detailTextLabel.textColor = [UIColor whiteColor];
+        } else{
+            cell.backgroundColor = [UIColor clearColor];
+            [cell setUserInteractionEnabled:YES];
+            cell.textLabel.textColor = [UIColor blackColor];
+            cell.detailTextLabel.textColor = [UIColor blackColor];
         }
     }
-    
-    if(albumHasNowPlaying)
-        cell.textLabel.textColor = [super colorForNowPlayingItem];
-    else
-        cell.textLabel.textColor = [UIColor blackColor];
     
     // Store a reference to the current cell that will enable the image to be associated with the correct
     // cell, when the image is subsequently loaded asynchronously.
@@ -176,6 +210,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
                              OBJC_ASSOCIATION_RETAIN);
     
     __weak Album *weakalbum = album;
+    cell.anAlbumArtClass = album.albumArt;
     [cell layoutIfNeeded];
     CGSize cellImgSize = cell.imageView.frame.size;
     
@@ -244,9 +279,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         else
              album = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
-#warning not preparing album for deletion
-        //[MusicPlaybackController songAboutToBeDeleted:song deletionContext:self.playbackContext];
-        //[MZCoreDataModelDeletionService prepareSongForDeletion:song];
+        [MZCoreDataModelDeletionService prepareAlbumForDeletion:album];
         
         //remove songs from queue if they are in it
         for(Song *aSong in album.albumSongs)
@@ -286,10 +319,17 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     else
         tappedAlbum = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
-    if(tableView.editing)
-        [self.actionableAlbumDelegate performEditSegueWithAlbum:tappedAlbum];
-    else
-        [self.actionableAlbumDelegate performAlbumDetailVCSegueWithAlbum:tappedAlbum];
+    if(self.dataSourceType == ALBUM_DATA_SRC_TYPE_Default)
+    {
+        if(tableView.editing)
+            [self.actionableAlbumDelegate performEditSegueWithAlbum:tappedAlbum];
+        else
+            [self.actionableAlbumDelegate performAlbumDetailVCSegueWithAlbum:tappedAlbum];
+    }
+    else if(self.dataSourceType == ALBUM_DATA_SRC_TYPE_Single_Album_Picker)
+    {
+        [self.actionableAlbumDelegate userDidSelectAlbumFromSinglePicker:tappedAlbum];
+    }
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -489,11 +529,37 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     request.returnsObjectsAsFaults = NO;
     [request setFetchBatchSize:50];
     NSSortDescriptor *sortDescriptor;
-    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"albumName"
-                                                   ascending:YES
-                                                    selector:@selector(localizedStandardCompare:)];
-    request.sortDescriptors = @[sortDescriptor];
+    if([AppEnvironmentConstants smartAlphabeticalSort])
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortAlbumName"
+                                                       ascending:YES
+                                                        selector:@selector(localizedStandardCompare:)];
+    else
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"albumName"
+                                                       ascending:YES
+                                                        selector:@selector(localizedStandardCompare:)];
     
+    request.sortDescriptors = @[sortDescriptor];    
+    request.predicate = [self generateCompoundedPredicateGivenQuery:query];
+    return request;
+}
+
+- (void)searchResultsShouldBeDisplayed:(BOOL)displaySearchResults
+{
+    self.displaySearchResults = displaySearchResults;
+}
+
+- (void)searchResultsFromUsersQuery:(NSArray *)modelObjects
+{
+    self.searchResults = modelObjects;
+}
+
+- (NSUInteger)playableDataSourceEntireModelCount
+{
+    return [self numObjectsInTable];
+}
+
+- (NSPredicate *)generateCompoundedPredicateGivenQuery:(NSString *)query
+{
     NSMutableString *searchWithWildcards = [NSMutableString stringWithFormat:@"*%@*", query];
     if (searchWithWildcards.length > 3){
         for (int i = 2; i < query.length * 2; i += 2)
@@ -512,24 +578,10 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     
     //matches partial string with albums artist name as long as sequence of letters is correct. (see link few lines above)
     NSPredicate *predicate4 = [NSPredicate predicateWithFormat:@"self.artist.artistName LIKE[cd] %@",  searchWithWildcards];
-    
-    request.predicate = [NSCompoundPredicate orPredicateWithSubpredicates:@[predicate1, predicate2, predicate3, predicate4]];
-    return request;
-}
-
-- (void)searchResultsShouldBeDisplayed:(BOOL)displaySearchResults
-{
-    self.displaySearchResults = displaySearchResults;
-}
-
-- (void)searchResultsFromUsersQuery:(NSArray *)modelObjects
-{
-    self.searchResults = modelObjects;
-}
-
-- (NSUInteger)playableDataSourceEntireModelCount
-{
-    return [self numObjectsInTable];
+    return [NSCompoundPredicate orPredicateWithSubpredicates:@[predicate1,
+                                                               predicate2,
+                                                               predicate3,
+                                                               predicate4]];
 }
 
 #pragma mark - Miscellaneous

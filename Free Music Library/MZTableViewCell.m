@@ -13,10 +13,11 @@
 #import "MZTableViewCell.h"
 #import "PreferredFontSizeUtility.h"
 #import "AlbumArtUtilities.h"
+#import "SongAlbumArt+Utilities.h"
+#import "AlbumAlbumArt+Utilities.h"
 
 @interface MZTableViewCell ()
 {
-    CGRect imgViewFrameBeforeEditingMode;
     short lastPrefSizeUsed;
 }
 @end
@@ -24,8 +25,6 @@
 short const textLabelsPaddingFromImgView = 10;
 short const editingModeChevronWidthCompensation = 55;
 short const imgPaddingFromLeft = 5;
-
-static void *didEnterEditingMode = &didEnterEditingMode;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -35,20 +34,12 @@ static void *didEnterEditingMode = &didEnterEditingMode;
     return self;
 }
 
-- (void)awakeFromNib
-{
-    [super awakeFromNib];
-    //add observer
-    [self addObserver:self forKeyPath:@"editing" options:NSKeyValueObservingOptionNew context:didEnterEditingMode];
-
-}
-
 - (BOOL)shouldReloadCellImages
 {
     //cell images get blurry when going from small to big size
     BOOL retVal = NO;
     if(lastPrefSizeUsed < [AppEnvironmentConstants preferredSizeSetting]
-       && abs(lastPrefSizeUsed - [AppEnvironmentConstants preferredSizeSetting]) >=2)
+       && abs(lastPrefSizeUsed - [AppEnvironmentConstants preferredSizeSetting]) >= 2)
         retVal = YES;
     lastPrefSizeUsed = [AppEnvironmentConstants preferredSizeSetting];
     return retVal;
@@ -56,6 +47,7 @@ static void *didEnterEditingMode = &didEnterEditingMode;
 
 - (void)layoutSubviews
 {
+    //the order of all of these calls matters a lot here. careful editing this.
     [super layoutSubviews];
     [self.contentView layoutIfNeeded];
     
@@ -65,7 +57,6 @@ static void *didEnterEditingMode = &didEnterEditingMode;
                                       imgPaddingFromLeft/2,
                                       cellHeight - imgPaddingFromLeft,
                                       cellHeight - imgPaddingFromLeft);
-    
     self.imageView.contentMode = UIViewContentModeScaleAspectFit;
     
     [self setLabelsFramesBasedOnEditingMode];
@@ -91,17 +82,29 @@ static void *didEnterEditingMode = &didEnterEditingMode;
                                                           withMinimumSize:suggestedFontSize - 10];
     [self fixiOS7PlusSeperatorBug];
     
-    if([self shouldReloadCellImages]){
-        /*
-        if(self.albumArtFileName){
+    if([self shouldReloadCellImages])
+    {
+        if(self.anAlbumArtClass)
+        {
             //try to load a new copy of the image on disk.
-            UIImage *originalImage = self.imageView.image;
-            self.imageView.image = nil;
-            self.imageView.image = [AlbumArtUtilities albumArtFileNameToUiImage:self.albumArtFileName];
-            if(self.imageView.image == nil)
-                self.imageView.image = originalImage;
+            UIImage *newImage;
+            if([self.anAlbumArtClass isMemberOfClass:[SongAlbumArt class]])
+            {
+                SongAlbumArt *albumArt = (SongAlbumArt *)self.anAlbumArtClass;
+                newImage = [albumArt imageFromImageData];
+            }
+            else if([self.anAlbumArtClass isMemberOfClass:[AlbumAlbumArt class]])
+            {
+                CGSize cellImgSize = self.imageView.frame.size;
+                AlbumAlbumArt *albumArt = (AlbumAlbumArt *)self.anAlbumArtClass;
+                newImage = [albumArt imageWithSize:cellImgSize];
+            }
+            if(newImage){
+                self.imageView.image = nil;
+                self.imageView.image = newImage;
+            } else
+                newImage = nil;
         }
-         */
     }
 }
 
@@ -109,45 +112,22 @@ static void *didEnterEditingMode = &didEnterEditingMode;
 {
     //it should match the padding (created in the method above), so the line starts exactly where
     //the album art starts
-    return UIEdgeInsetsMake(0, imgPaddingFromLeft, 0, 0);
-}
-
-#pragma mark - Key value observation
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context
-{
-    if(context == didEnterEditingMode)
-        [self setLabelsFramesBasedOnEditingMode];
+    int ios7PlusEditingInsetVal = 43;
+    if(self.editing)
+        return UIEdgeInsetsMake(0, ios7PlusEditingInsetVal, 0, 0);
     else
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+        return UIEdgeInsetsMake(0, imgPaddingFromLeft, 0, 0);
 }
 
 - (void)prepareForReuse
 {
-    //self.albumArtFileName = nil;
+    self.anAlbumArtClass = nil;
     [super prepareForReuse];
 }
 
 - (void)dealloc
 {
-    //self.albumArtFileName = nil;
-    [self removeObservers];
-}
-
-#pragma mark - utilities
-- (void)removeObservers
-{
-    @try{
-        while(true){
-            [self removeObserver:self forKeyPath:@"editing" context:didEnterEditingMode];
-        }
-    }
-    //do nothing, obviously it wasn't attached because an exception was thrown
-    @catch(id anException){}
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    self.anAlbumArtClass = nil;
 }
 
 - (void)setLabelsFramesBasedOnEditingMode

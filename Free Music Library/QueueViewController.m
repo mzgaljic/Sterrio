@@ -142,10 +142,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     Song *song = [self songForIndexPath:indexPath];
     
     //init cell fields
-    cell.textLabel.attributedText = [SongTableViewFormatter formatSongLabelUsingSong:song];
-    if(! [SongTableViewFormatter songNameIsBold])
-        cell.textLabel.font = [UIFont systemFontOfSize:[SongTableViewFormatter nonBoldSongLabelFontSize]];
-    [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
+    cell.textLabel.text = song.songName;
+    cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringForSong:song];
     
     if(indexPath.row == 0)
         cell.textLabel.textColor = localAppTintColor;
@@ -283,7 +281,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [SongTableViewFormatter preferredSongCellHeight];
+    return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -484,5 +482,60 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         [SongPlayerCoordinator setScreenShottingVideoPlayerAllowed:YES];
     }];
 }
+
+#pragma mark - Othe stuff
+//copy and pasted from AllSongsDataSource.m
+- (NSAttributedString *)generateDetailLabelAttrStringForSong:(Song *)aSong
+{
+    NSString *artistString = aSong.artist.artistName;
+    NSString *albumString = aSong.album.albumName;
+    if(artistString != nil && albumString != nil){
+        NSMutableString *newArtistString = [NSMutableString stringWithString:artistString];
+        [newArtistString appendString:@" "];
+        
+        NSMutableString *entireString = [NSMutableString stringWithString:newArtistString];
+        [entireString appendString:albumString];
+        
+        NSArray *components = @[newArtistString, albumString];
+        //NSRange untouchedRange = [entireString rangeOfString:[components objectAtIndex:0]];
+        NSRange grayRange = [entireString rangeOfString:[components objectAtIndex:1]];
+        
+        NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
+        
+        [attrString beginEditing];
+        [attrString addAttribute: NSForegroundColorAttributeName
+                           value:[UIColor grayColor]
+                           range:grayRange];
+        [attrString endEditing];
+        return attrString;
+        
+    } else if(artistString == nil && albumString == nil)
+        return nil;
+    
+    else if(artistString == nil && albumString != nil){
+        NSMutableString *entireString = [NSMutableString stringWithString:albumString];
+        
+        NSArray *components = @[albumString];
+        NSRange grayRange = [entireString rangeOfString:[components objectAtIndex:0]];
+        
+        NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
+        
+        [attrString beginEditing];
+        [attrString addAttribute: NSForegroundColorAttributeName
+                           value:[UIColor grayColor]
+                           range:grayRange];
+        [attrString endEditing];
+        return attrString;
+        
+    } else if(artistString != nil && albumString == nil){
+        
+        NSMutableString *entireString = [NSMutableString stringWithString:artistString];
+        NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
+        return attrString;
+        
+    } else  //case should never happen
+        return nil;
+}
+
 
 @end

@@ -13,7 +13,6 @@
 #import "AlbumArtUtilities.h"
 #import "Song.h"
 #import "Song+Utilities.h"
-#import "SongTableViewFormatter.h"
 #import "PreferredFontSizeUtility.h"
 #import "UIImage+colorImages.h"
 #import "UIColor+ColorComparison.h"

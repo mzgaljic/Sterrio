@@ -59,30 +59,13 @@ static BOOL PRODUCTION_MODE;
         //leaving editing mode now
         [self setEditing:NO animated:YES];
         [self.tableView setEditing:NO animated:YES];
-        
-        if(self.leftBarButtonItems.count > 0){
-            UIBarButtonItem *leftMostItem = self.leftBarButtonItems[0];
-            [self makeBarButtonItemNormal:leftMostItem];
-        }
     }
     else
     {
         //entering editing mode now
         [self setEditing:YES animated:YES];
         [self.tableView setEditing:YES animated:YES];
-
-        if(self.leftBarButtonItems.count > 0){
-            UIBarButtonItem *leftMostItem = self.leftBarButtonItems[0];
-            [self makeBarButtonItemGrey:leftMostItem];
-        }
     }
-}
-
-- (UIBarButtonItem *)makeBarButtonItemGrey:(UIBarButtonItem *)barButton
-{
-    barButton.style = UIBarButtonItemStylePlain;
-    barButton.enabled = false;
-    return barButton;
 }
 
 - (UIBarButtonItem *)makeBarButtonItemNormal:(UIBarButtonItem *)barButton
@@ -271,46 +254,6 @@ static BOOL PRODUCTION_MODE;
 {
     [self setNeedsStatusBarAppearanceUpdate];
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-}
-
-#pragma mark - Helper
-- (PlaybackContext *)contextForSpecificAlbum:(Album *)anAlbum
-{
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY album.album_id == %@", anAlbum.album_id];
-    
-    NSSortDescriptor *sortDescriptor;
-    if([AppEnvironmentConstants smartAlphabeticalSort])
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
-    else
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
-    request.sortDescriptors = @[sortDescriptor];
-    return [[PlaybackContext alloc] initWithFetchRequest:[request copy]
-                                         prettyQueueName:@""
-                                               contextId:self.playbackContextUniqueId];
-}
-
-#pragma mark - Counting Albums in core data
-- (int)numberOfAlbumsInCoreDataModel
-{
-    //count how many instances there are of the Artist entity in core data
-    NSManagedObjectContext *context = [CoreDataManager context];
-    int count = 0;
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Album" inManagedObjectContext:context];
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    [fetchRequest setEntity:entity];
-    [fetchRequest setIncludesPropertyValues:NO];
-    [fetchRequest setIncludesSubentities:NO];
-    NSError *error = nil;
-    NSUInteger tempCount = [context countForFetchRequest: fetchRequest error: &error];
-    if(error == nil){
-        count = (int)tempCount;
-    }
-    return count;
 }
 
 #pragma mark - fetching and sorting

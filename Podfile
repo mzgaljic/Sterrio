@@ -49,5 +49,3 @@ pod 'SSBouncyButton'
 #Bolts framework (used for very convenient async tasks)
 pod 'Bolts'
 
-#bug reporting tool
-#pod 'Instabug'

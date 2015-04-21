@@ -43,25 +43,25 @@
         return [AlbumArtUtilities getImageWithoutLazyLoadingUsingNSData:self.image];
 }
 
-//collage code...only produces a collage image if there are 4 songs with valid album art.
+//collage code...only produces a collage image if there are 4 songs with valid and distinct album art.
 //otherwise a singe image is returned if there is between [1, 3] images to choose from.
 //if no images exist to chose from, nil is returned.
 - (UIImage *)collageImageAtSize:(CGSize)size
 {
     NSArray *albumSongs = [self.associatedAlbum.albumSongs allObjects];
-    NSArray *albumSongsWithArt = [self removeSongsWithoutArtGivenSongArray:albumSongs];
-    if(albumSongs.count == 0 || albumSongsWithArt.count == 0)
+    NSArray *albumSongsWithUniqueArt = [self removeSongsWithoutUniqueArtGivenSongArray:albumSongs];
+    if(albumSongs.count == 0 || albumSongsWithUniqueArt.count == 0)
         return nil;
     
-    if(albumSongsWithArt.count >= 1 && albumSongsWithArt.count < 4)
+    if(albumSongsWithUniqueArt.count >= 1 && albumSongsWithUniqueArt.count < 4)
     {
         //not enough pics to make a collage, just return first songs art in array.
-        Song *firstSong = albumSongsWithArt[0];
+        Song *firstSong = albumSongsWithUniqueArt[0];
         return [firstSong.albumArt imageFromImageData];
     }
 
     NSIndexSet *randomIndexes = [self generateIndexSetWithMinIndexInclusive:0
-                                                          maxIndexInclusive:(int)albumSongsWithArt.count-1
+                                                          maxIndexInclusive:(int)albumSongsWithUniqueArt.count-1
                                                               maxIndexCount:4];
     NSArray *randomSongs = [self generateArrayFromArray:albumSongs usingIndexSet:randomIndexes];
 
@@ -185,13 +185,28 @@
     return array;
 }
 
-- (NSArray *)removeSongsWithoutArtGivenSongArray:(NSArray *)arrayOfSongs
+- (NSArray *)removeSongsWithoutUniqueArtGivenSongArray:(NSArray *)arrayOfSongs
 {
     NSMutableArray *returnArray = [NSMutableArray array];
     for(Song *someSong in arrayOfSongs)
     {
         if(someSong.albumArt){
-            [returnArray addObject:someSong];
+            //song has valid album art! Now lets check if its (most likely) the exact same image
+            //as another songs album art already in the array. If so, ignore it as its logically
+            //(not physically) the same image.
+            
+            NSUInteger dataLength1 = someSong.albumArt.image.length;
+            BOOL verySimilarMatch = NO;
+            for(Song *aSong in returnArray)
+            {
+                NSUInteger dataLength2 = aSong.albumArt.image.length;
+                if(dataLength1 == dataLength2){
+                    verySimilarMatch = YES;
+                    break;
+                }
+            }
+            if(! verySimilarMatch)
+                [returnArray addObject:someSong];
         }
     }
     return returnArray;

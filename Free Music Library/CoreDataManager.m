@@ -61,11 +61,13 @@ static NSString *MODEL_NAME = @"Model 1.0";
 
 + (NSManagedObjectContext *)context
 {
+    NSAssert([NSThread isMainThread], @"This method is not in the main thread");
     return [[CoreDataManager sharedInstance] managedObjectContext];
 }
 
 + (NSManagedObjectContext *)backgroundThreadContext
 {
+    NSAssert(![NSThread isMainThread], @"This method is main thread");
     return [[CoreDataManager sharedInstance] backgroundThreadManagedObjectContext];
 }
 

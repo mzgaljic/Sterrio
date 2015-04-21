@@ -122,6 +122,8 @@ static BOOL abortAsyncArtUpdate = NO;
 #pragma mark - responding to current connection state
 - (void)connectionStateChanged
 {
+#warning disabled for now.
+    return;
     if([reachability isConnectedToInternet])
     {
         if([reachability isConnectedToWifi])

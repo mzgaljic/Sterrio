@@ -9,8 +9,28 @@
 #import "Album+Utilities.h"
 
 @implementation Album (Utilities)
-static void *albumSongsChanged = &albumSongsChanged;
+NSString * const ALBUM_SONGS_KEY = @"albumSongs";
 
+- (void)setAlbumSongs:(NSSet *)albumSongs
+{
+    if(albumSongs.count == 0){
+        [Album deleteAlbumWithDelay:self];
+    }
+    [self willChangeValueForKey:ALBUM_SONGS_KEY];
+    [self setPrimitiveValue:albumSongs forKey:ALBUM_SONGS_KEY];
+    [self didChangeValueForKey:ALBUM_SONGS_KEY];
+}
+
++ (void)deleteAlbumWithDelay:(Album *)album
+{
+    double delayInSeconds = 1;
+    __weak Album *anAlbum = album;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        //code to be executed on the main queue after delay
+        [[CoreDataManager context] deleteObject:anAlbum];
+    });
+}
 
 + (Album *)createNewAlbumWithName:(NSString *)name usingSong:(Song *)newSong inManagedContext:(NSManagedObjectContext *)context
 {

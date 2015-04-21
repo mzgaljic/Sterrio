@@ -56,30 +56,13 @@ static BOOL haveCheckedCoreDataInit = NO;
         //leaving editing mode now
         [self setEditing:NO animated:YES];
         [self.tableView setEditing:NO animated:YES];
-        
-        if(self.leftBarButtonItems.count > 0){
-            UIBarButtonItem *leftMostItem = self.leftBarButtonItems[0];
-            [self makeBarButtonItemNormal:leftMostItem];
-        }
     }
     else
     {
         //entering editing mode now
         [self setEditing:YES animated:YES];
         [self.tableView setEditing:YES animated:YES];
-
-        if(self.leftBarButtonItems.count > 0){
-            UIBarButtonItem *leftMostItem = self.leftBarButtonItems[0];
-            [self makeBarButtonItemGrey:leftMostItem];
-        }
     }
-}
-
-- (UIBarButtonItem *)makeBarButtonItemGrey:(UIBarButtonItem *)barButton
-{
-    barButton.style = UIBarButtonItemStylePlain;
-    barButton.enabled = false;
-    return barButton;
 }
 
 - (UIBarButtonItem *)makeBarButtonItemNormal:(UIBarButtonItem *)barButton
@@ -279,6 +262,8 @@ static BOOL haveCheckedCoreDataInit = NO;
 {
     if([notification.name isEqualToString:@"SongEditDone"]){
         self.indexOfEditingSong = -1;
+        //refetches all objects again (needed so they dont go "out of context")
+        [self.tableView reloadData];
     }
 }
 

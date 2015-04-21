@@ -10,6 +10,8 @@
 
 @class Album;
 @protocol ActionableAlbumDataSourceDelegate <NSObject>
+@optional
 - (void)performEditSegueWithAlbum:(Album *)albumToBeEdited;
 - (void)performAlbumDetailVCSegueWithAlbum:(Album *)anAlbum;
+- (void)userDidSelectAlbumFromSinglePicker:(Album *)chosenAlbum;
 @end

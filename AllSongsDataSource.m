@@ -9,7 +9,6 @@
 #import "AllSongsDataSource.h"
 #import "StackController.h"
 #import "MZTableViewCell.h"
-#import "SongTableViewFormatter.h"
 #import "AlbumArtUtilities.h"
 #import "MusicPlaybackController.h"
 #import "AlbumAlbumArt+Utilities.h"
@@ -132,7 +131,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     cell.textLabel.text = song.songName;
     
     if(![reuseID isEqualToString:cellReuseIdDetailLabelNull])
-        [SongTableViewFormatter formatSongDetailLabelUsingSong:song andCell:&cell];
+        cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringForSong:song];
     else
         cell.detailTextLabel.text = nil;
     
@@ -172,6 +171,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                              OBJC_ASSOCIATION_RETAIN);
     
     __weak Song *weakSong = song;
+    cell.anAlbumArtClass = song.albumArt;
     
     // Queue a block that obtains/creates the image and then loads it into the cell.
     // The code block will be run asynchronously in a last-in-first-out queue, so that when
@@ -533,24 +533,16 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     request.returnsObjectsAsFaults = NO;
     [request setFetchBatchSize:50];
     NSSortDescriptor *sortDescriptor;
-    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
-                                                   ascending:YES
-                                                    selector:@selector(localizedStandardCompare:)];
+    if([AppEnvironmentConstants smartAlphabeticalSort])
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
+                                                       ascending:YES
+                                                        selector:@selector(localizedStandardCompare:)];
+    else
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
+                                                       ascending:YES
+                                                        selector:@selector(localizedStandardCompare:)];
     request.sortDescriptors = @[sortDescriptor];
-    
-    NSMutableString *searchWithWildcards = [NSMutableString stringWithFormat:@"*%@*", query];
-    if (searchWithWildcards.length > 3){
-        for (int i = 2; i < query.length * 2; i += 2)
-            [searchWithWildcards insertString:@"*" atIndex:i];
-    }
-    
-    //matches against exact string ANYWHERE within the song name
-    NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"songName contains[cd] %@",  query];
-    
-    //matches partial string with song name as long as sequence of letters is correct.
-    //see: http://stackoverflow.com/questions/15091155/nspredicate-match-any-characters
-    NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"songName LIKE[cd] %@",  searchWithWildcards];
-    request.predicate = [NSCompoundPredicate orPredicateWithSubpredicates:@[predicate1, predicate2]];
+    request.predicate = [self generateCompoundedPredicateGivenQuery:query];
     return request;
 }
 
@@ -569,6 +561,44 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     return [self numObjectsInTable];
 }
 
+- (NSPredicate *)generateCompoundedPredicateGivenQuery:(NSString *)query
+{
+    NSMutableString *searchWithWildcards = [NSMutableString stringWithFormat:@"*%@*", query];
+    if (searchWithWildcards.length > 3){
+        for (int i = 2; i < query.length * 2; i += 2)
+            [searchWithWildcards insertString:@"*" atIndex:i];
+    }
+    
+    //matches against exact string ANYWHERE within the song name
+    NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"songName contains[cd] %@",  query];
+    
+    //matches partial string with song name as long as sequence of letters is correct.
+    //see: http://stackoverflow.com/questions/15091155/nspredicate-match-any-characters
+    NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"songName LIKE[cd] %@",  searchWithWildcards];
+    
+    //matches against exact string ANYWHERE within the songs Album name
+    NSPredicate *predicate3 = [NSPredicate predicateWithFormat:@"self.album.albumName contains[cd] %@",  query];
+    
+    //matches partial string with songs album name as long as sequence of letters is correct.
+    //(see link few lines above)
+    NSPredicate *predicate4 = [NSPredicate predicateWithFormat:@"self.album.albumName LIKE[cd] %@",  searchWithWildcards];
+    
+    //matches against exact string ANYWHERE within the songs artist name
+    NSPredicate *predicate5 = [NSPredicate predicateWithFormat:@"self.artist.artistName contains[cd] %@",  query];
+    
+    //matches partial string with songs artist name as long as sequence of letters is correct.
+    //(see link few lines above)
+    NSPredicate *predicate6 = [NSPredicate predicateWithFormat:@"self.artist.artistName LIKE[cd] %@",  searchWithWildcards];
+    
+    
+    return [NSCompoundPredicate orPredicateWithSubpredicates:@[predicate1,
+                                                               predicate2,
+                                                               predicate3,
+                                                               predicate4,
+                                                               predicate5,
+                                                               predicate6]];
+}
+
 #pragma mark - Miscellaneous
 - (NSUInteger)numObjectsInTable
 {
@@ -576,6 +606,58 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     NSString *totalObjCountPathNum = @"@sum.numberOfObjects";
     NSNumber *totalObjCount = [self.fetchedResultsController.sections valueForKeyPath:totalObjCountPathNum];
     return [totalObjCount integerValue];
+}
+
+- (NSAttributedString *)generateDetailLabelAttrStringForSong:(Song *)aSong
+{
+    NSString *artistString = aSong.artist.artistName;
+    NSString *albumString = aSong.album.albumName;
+    if(artistString != nil && albumString != nil){
+        NSMutableString *newArtistString = [NSMutableString stringWithString:artistString];
+        [newArtistString appendString:@" "];
+        
+        NSMutableString *entireString = [NSMutableString stringWithString:newArtistString];
+        [entireString appendString:albumString];
+        
+        NSArray *components = @[newArtistString, albumString];
+        //NSRange untouchedRange = [entireString rangeOfString:[components objectAtIndex:0]];
+        NSRange grayRange = [entireString rangeOfString:[components objectAtIndex:1]];
+        
+        NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
+        
+        [attrString beginEditing];
+        [attrString addAttribute: NSForegroundColorAttributeName
+                           value:[UIColor grayColor]
+                           range:grayRange];
+        [attrString endEditing];
+        return attrString;
+        
+    } else if(artistString == nil && albumString == nil)
+        return nil;
+    
+    else if(artistString == nil && albumString != nil){
+        NSMutableString *entireString = [NSMutableString stringWithString:albumString];
+        
+        NSArray *components = @[albumString];
+        NSRange grayRange = [entireString rangeOfString:[components objectAtIndex:0]];
+        
+        NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
+        
+        [attrString beginEditing];
+        [attrString addAttribute: NSForegroundColorAttributeName
+                           value:[UIColor grayColor]
+                           range:grayRange];
+        [attrString endEditing];
+        return attrString;
+        
+    } else if(artistString != nil && albumString == nil){
+        
+        NSMutableString *entireString = [NSMutableString stringWithString:artistString];
+        NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
+        return attrString;
+        
+    } else  //case should never happen
+        return nil;
 }
 
 @end

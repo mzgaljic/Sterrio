@@ -15,6 +15,7 @@
 @interface MZCoreDataModelDeletionService : NSObject
 
 + (void)prepareSongForDeletion:(Song *)songToDelete;
++ (void)prepareAlbumForDeletion:(Album *)anAlbum;
 
 //mainly exposed for song edits in the song editor VC.
 + (void)removeSongFromItsAlbum:(Song *)aSong;

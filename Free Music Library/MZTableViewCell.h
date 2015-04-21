@@ -13,6 +13,8 @@
 
 @interface MZTableViewCell : MGSwipeTableCell
 
+@property (nonatomic, strong) id anAlbumArtClass;
+
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString *)reuseIdentifier;
 

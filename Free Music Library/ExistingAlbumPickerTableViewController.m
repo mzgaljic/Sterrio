@@ -7,256 +7,157 @@
 //
 
 #import "ExistingAlbumPickerTableViewController.h"
-
-#import "StackController.h"
 #import "CoreDataManager.h"
 #import "AppEnvironmentConstants.h"
-#import "AlbumArtUtilities.h"
 #import "Album.h"
-#import "AlbumTableViewFormatter.h"
 #import "UIImage+colorImages.h"
 #import "MySearchBar.h"
-#import "MGSwipeTableCell.h"
-#import "MZTableViewCell.h"
-#import <FXImageView/UIImage+FX.h>
+#import "AllAlbumsDataSource.h"
+#import "MRProgressOverlayView.h"
 
 @interface ExistingAlbumPickerTableViewController ()
+{
+    CGRect originalTableViewFrame;
+    Album *usersCurrentAlbum;
+}
 @property (nonatomic, strong) MySearchBar* searchBar;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-@property (nonatomic, strong) Album *usersCurrentAlbum;
+@property (nonatomic, assign) id <ExistingEntityPickerDelegate> delegate;
+@property AllAlbumsDataSource *tableViewDataSourceAndDelegate;
 @end
 
 @implementation ExistingAlbumPickerTableViewController
 
-//using custom init here
 - (id)initWithCurrentAlbum:(Album *)anAlbum
+existingEntityPickerDelegate:(id <ExistingEntityPickerDelegate>)delegate
 {
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     ExistingAlbumPickerTableViewController* vc = [sb instantiateViewControllerWithIdentifier:@"browseExistingAlbumsVC"];
     self = vc;
     if (self) {
-        //custom variables init here
-        _usersCurrentAlbum = anAlbum;
+        usersCurrentAlbum = anAlbum;
+        self.delegate = delegate;
     }
     return self;
 }
 
+- (void)establishTableViewDataSourceUsingSelectedAlbum:(Album *)album
+{
+    short srcType = ALBUM_DATA_SRC_TYPE_Single_Album_Picker;
+    self.tableViewDataSourceAndDelegate = [[AllAlbumsDataSource alloc] initWithAlbumDataSourceType:srcType
+                                                                                     selectedAlbum:album searchBarDataSourceDelegate:self];
+    self.tableViewDataSourceAndDelegate.fetchedResultsController = self.fetchedResultsController;
+    self.tableViewDataSourceAndDelegate.tableView = self.tableView;
+    self.tableViewDataSourceAndDelegate.playbackContext = self.playbackContext;
+    self.tableViewDataSourceAndDelegate.cellReuseId = @"existingAlbumCell";
+    self.tableViewDataSourceAndDelegate.emptyTableUserMessage = @"No Albums";
+    self.tableViewDataSourceAndDelegate.actionableAlbumDelegate = self;
+    self.tableView.dataSource = self.tableViewDataSourceAndDelegate;
+    self.tableView.delegate = self.tableViewDataSourceAndDelegate;
+    self.tableDataSource = self.tableViewDataSourceAndDelegate;
+}
+
+
 #pragma mark - View Controller life cycle
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.searchBar = [self.tableViewDataSourceAndDelegate setUpSearchBar];
+    [super setSearchBar:self.searchBar];
+    self.title = @"All Albums";
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    self.emptyTableUserMessage = @"No Albums";
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
-    self.navigationController.navigationController.title = @"All Albums";
-    
+    originalTableViewFrame = CGRectNull;
+    self.playbackContextUniqueId = NSStringFromClass([self class]);
     [self setTableForCoreDataView:self.tableView];
+    [self initFetchResultsController];
     self.extendedLayoutIncludesOpaqueBars = YES;
-    self.cellReuseId = @"existingAlbumCell";
-    self.searchFetchedResultsController = nil;
-    [self setFetchedResultsControllerAndSortStyle];
-    stackController = [[StackController alloc] init];
+    
+    [self establishTableViewDataSourceUsingSelectedAlbum:usersCurrentAlbum];
     self.tableView.allowsSelectionDuringEditing = YES;
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
-
-}
-
--(void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    [self setUpSearchBar];
 }
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    self.delegate = nil;
 }
 
-#pragma mark - UISearchBar
-- (void)setUpSearchBar
+#pragma mark - SearchBarDataSourceDelegate implementation
+- (NSString *)placeholderTextForSearchBar
 {
-    //albums tab is never the first one on screen. no need to animate it
-    if([self numberOfAlbumsInCoreDataModel] > 0){
-        //create search bar, add to viewController
-        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Music"];
-        _searchBar.delegate = self;
-        self.tableView.tableHeaderView = _searchBar;
-    }
-    [super setSearchBar:self.searchBar];
+    return @"Search My Albums";
 }
 
-- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
+- (void)searchBarIsBecomingActive
 {
-    self.searchFetchedResultsController = nil;
-    [self setFetchedResultsControllerAndSortStyle];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+    if(CGRectIsNull(originalTableViewFrame))
+        originalTableViewFrame = self.tableView.frame;
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         self.view.backgroundColor = [UIColor defaultAppColorScheme];
+                         int statusBarHeight = [AppEnvironmentConstants statusBarHeight];
+                         self.tableView.frame = CGRectMake(0,
+                                                           statusBarHeight,
+                                                           self.view.frame.size.width,
+                                                           self.view.frame.size.height);
+                     }
+                     completion:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysVisible
+                                                        object:[NSNumber numberWithBool:YES]];
 }
 
-//User tapped the search box
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+const float searchBecomingInactiveAnimationDuration = 0.3;
+- (void)searchBarIsBecomingInactive
 {
-    self.searchFetchedResultsController = nil;
-    self.fetchedResultsController = nil;
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
     
-    //show the cancel button
-    [_searchBar setShowsCancelButton:YES animated:YES];
+    [UIView animateWithDuration:searchBecomingInactiveAnimationDuration
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         self.view.backgroundColor = [UIColor clearColor];
+                         CGRect viewFrame = self.view.frame;
+                         self.tableView.frame = CGRectMake(originalTableViewFrame.origin.x,
+                                                           originalTableViewFrame.origin.y,
+                                                           viewFrame.size.width,
+                                                           viewFrame.size.height);
+                     }
+                     completion:^(BOOL finished) {
+                         originalTableViewFrame = CGRectNull;
+                     }];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysVisible
+                                                        object:[NSNumber numberWithBool:NO]];
 }
 
-//user tapped "Search"
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+#pragma mark - ActionableAlbumDataSourceDelegate implementation
+- (void)userDidSelectAlbumFromSinglePicker:(Album *)chosenAlbum
 {
-    //search results already appear as the user types. Just hide the keyboard...
-    [_searchBar resignFirstResponder];
-}
-
-//User tapped "Cancel"
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
-{
-    [self setFetchedResultsControllerAndSortStyle];
+    [self.delegate existingAlbumHasBeenChosen:chosenAlbum];
     
-    //dismiss search bar and hide cancel button
-    [_searchBar setShowsCancelButton:NO animated:YES];
-    [_searchBar resignFirstResponder];
-}
-
-//User typing as we speak, fetch latest results to populate results as they type
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
-{
-#warning implementation incomplete
-    if(searchText.length == 0)
-    {
-        self.displaySearchResults = NO;
+    if(self.searchBar.isFirstResponder){
+        [self.searchBar resignFirstResponder];
+        [self searchBarIsBecomingInactive];
+        [self popAnimatedWithDelay];
     }
     else
-    {
-        self.displaySearchResults = YES;
-        //now search through each song to find the query we need
-        /**
-         for (Song* someSong in _allSongsInLibrary)  //iterate through all songs
-         {
-         NSRange nameRange = [someSong.songName rangeOfString:searchText options:NSCaseInsensitiveSearch];
-         if(nameRange.location != NSNotFound)
-         {
-         [_searchResults addObject:someSong];
-         }
-         //would maybe like to filter by BEST result? This only captures results...
-         }
-         */
-    }
+        [self.navigationController popViewControllerAnimated:YES];
 }
 
-
-#pragma mark - Table view data source
-static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)popAnimatedWithDelay
 {
-    Album *album;
-    if(self.displaySearchResults)
-        album = [self.searchFetchedResultsController objectAtIndexPath:indexPath];
-    else
-        album = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    
-    MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
-                                                             forIndexPath:indexPath];
-    if (!cell)
-        cell = [[MZTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                      reuseIdentifier:self.cellReuseId];
-    else
-    {
-        // If an existing cell is being reused, reset the image to the default until it is
-        // populated. Without this code, previous images are displayed against the new people
-        // during rapid scrolling.
-        cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
-    }
-    
-    
-    cell.textLabel.attributedText = [AlbumTableViewFormatter formatAlbumLabelUsingAlbum:album];
-    if(! [AlbumTableViewFormatter albumNameIsBold])
-        cell.textLabel.font = [UIFont systemFontOfSize:[AlbumTableViewFormatter nonBoldAlbumLabelFontSize]];
-    [AlbumTableViewFormatter formatAlbumDetailLabelUsingAlbum:album andCell:&cell];
-    
-    BOOL isCurrentlySelectedAlbum = [_usersCurrentAlbum.album_id isEqualToString:album.album_id];
-    
-    if(isCurrentlySelectedAlbum){
-        UIColor *appThemeSuperLight = [[[[[UIColor defaultAppColorScheme] lighterColor] lighterColor] lighterColor] lighterColor];
-        cell.backgroundColor = appThemeSuperLight;
-        [cell setUserInteractionEnabled:NO];
-        cell.textLabel.textColor = [UIColor whiteColor];
-        cell.detailTextLabel.textColor = [UIColor whiteColor];
-    } else{
-        cell.backgroundColor = [UIColor clearColor];
-        [cell setUserInteractionEnabled:YES];
-        cell.textLabel.textColor = [UIColor blackColor];
-        cell.detailTextLabel.textColor = [UIColor blackColor];
-    }
-    
-    // Store a reference to the current cell that will enable the image to be associated with the correct
-    // cell, when the image is subsequently loaded asynchronously.
-    objc_setAssociatedObject(cell,
-                             &songIndexPathAssociationKey,
-                             indexPath,
-                             OBJC_ASSOCIATION_RETAIN);
-    
-    // Queue a block that obtains/creates the image and then loads it into the cell.
-    // The code block will be run asynchronously in a last-in-first-out queue, so that when
-    // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
-    [stackController addBlock:^{
-#warning code left out here for setting art. all this stuff is junk anyway. should reuse the custom datasources.
-        
-        // The block will be processed on a background Grand Central Dispatch queue.
-        // Therefore, ensure that this code that updates the UI will run on the main queue.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            NSIndexPath *cellIndexPath = (NSIndexPath *)objc_getAssociatedObject(cell, &songIndexPathAssociationKey);
-            if ([indexPath isEqual:cellIndexPath]) {
-                // Only set cell image if the cell currently being displayed is the one that actually required this image.
-                // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
-                
-                UIImage *albumArt;
-                __weak UIImage *cellImg = albumArt;
-                //calculate how much one length varies from the other.
-                int diff = abs(albumArt.size.width - albumArt.size.height);
-                if(diff > 10){
-                    //image is not a perfect (or close to perfect) square. Compensate for this...
-                    cellImg = [albumArt imageScaledToFitSize:cell.imageView.frame.size];
-                }
-                [UIView transitionWithView:cell.imageView
-                                  duration:MZCellImageViewFadeDuration
-                                   options:UIViewAnimationOptionTransitionCrossDissolve
-                                animations:^{
-                                    cell.imageView.image = cellImg;
-                                } completion:nil];
-            }
-        });
-    }];
-    return cell;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return [AlbumTableViewFormatter preferredAlbumCellHeight];
-}
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return NO;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    Album *chosenAlbum;
-    if(self.displaySearchResults)
-        chosenAlbum = [self.searchFetchedResultsController objectAtIndexPath:indexPath];
-    else
-        chosenAlbum = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    //notifies MasterEditingSongTableViewController.m about the chosen album.
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"existing album chosen" object:chosenAlbum];
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
-- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section {
-    id <NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController.sections objectAtIndex:section];
-    return sectionInfo.numberOfObjects;
+    double delayInSeconds = 0.35;
+    __weak ExistingAlbumPickerTableViewController *weakself = self;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [weakself.navigationController popViewControllerAnimated:YES];
+    });
 }
 
 #pragma mark - Rotation status bar methods
@@ -286,7 +187,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 }
 
 #pragma mark - fetching and sorting
-- (void)setFetchedResultsControllerAndSortStyle
+- (void)initFetchResultsController
 {
     self.fetchedResultsController = nil;
     NSManagedObjectContext *context = [CoreDataManager context];
@@ -304,12 +205,17 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                                         selector:@selector(localizedStandardCompare:)];
     
     request.sortDescriptors = @[sortDescriptor];
-
+    if(self.playbackContext == nil){
+        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]
+                                                             prettyQueueName:@""
+                                                                   contextId:self.playbackContextUniqueId];
+    }
     //fetchedResultsController is from custom super class
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
                                                                         managedObjectContext:context
                                                                           sectionNameKeyPath:nil
                                                                                    cacheName:nil];
 }
+
 
 @end

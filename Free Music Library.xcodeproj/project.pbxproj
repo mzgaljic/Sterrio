@@ -47,7 +47,6 @@
 		873CF45C1A45435E00716B52 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 873CF45B1A45435E00716B52 /* QuartzCore.framework */; };
 		873E14621A49ED0A008A385D /* SongPlayerViewDisplayUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 873E14611A49ED0A008A385D /* SongPlayerViewDisplayUtility.m */; };
 		873EEA871A4BBA210092A6DF /* YouTubeVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EEA861A4BBA210092A6DF /* YouTubeVideo.m */; };
-		8740723F19798129004C5C57 /* SongTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8740723E19798129004C5C57 /* SongTableViewFormatter.m */; };
 		87408EAB1AE4748600267C3A /* SongAlbumArt+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 87408EAA1AE4748600267C3A /* SongAlbumArt+Utilities.m */; };
 		87408EAE1AE474E200267C3A /* AlbumAlbumArt+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 87408EAD1AE474E200267C3A /* AlbumAlbumArt+Utilities.m */; };
 		87408EC31AE4789B00267C3A /* Song.m in Sources */ = {isa = PBXBuildFile; fileRef = 87408EC21AE4789B00267C3A /* Song.m */; };
@@ -133,7 +132,6 @@
 		87A04CA31ACCAB96007C9245 /* TRADEMARKS_ubuntu.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A04C9C1ACCAB96007C9245 /* TRADEMARKS_ubuntu.txt */; };
 		87A04CAA1ACCDDCE007C9245 /* IBActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A04CA81ACCDDCE007C9245 /* IBActionSheet.m */; };
 		87A04CAB1ACCDDCE007C9245 /* LICENSE_IBActionSheet.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A04CA91ACCDDCE007C9245 /* LICENSE_IBActionSheet.txt */; };
-		87A0FD8A197DCEDF008FBBF7 /* AlbumTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FD89197DCEDF008FBBF7 /* AlbumTableViewFormatter.m */; };
 		87A0FD91197DD594008FBBF7 /* PreferredFontSizeUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FD90197DD594008FBBF7 /* PreferredFontSizeUtility.m */; };
 		87A0FDD2197DFA2C008FBBF7 /* ArtistTableViewFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A0FDD1197DFA2C008FBBF7 /* ArtistTableViewFormatter.m */; };
 		87A120921ABA259F00250B2C /* JNExpandableTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A120901ABA259F00250B2C /* JNExpandableTableView.m */; };
@@ -297,8 +295,6 @@
 		873CF45B1A45435E00716B52 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		873E14611A49ED0A008A385D /* SongPlayerViewDisplayUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SongPlayerViewDisplayUtility.m; sourceTree = "<group>"; };
 		873EEA861A4BBA210092A6DF /* YouTubeVideo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YouTubeVideo.m; sourceTree = "<group>"; };
-		8740723D19798129004C5C57 /* SongTableViewFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SongTableViewFormatter.h; sourceTree = "<group>"; };
-		8740723E19798129004C5C57 /* SongTableViewFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SongTableViewFormatter.m; sourceTree = "<group>"; };
 		87408EA91AE4748600267C3A /* SongAlbumArt+Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SongAlbumArt+Utilities.h"; sourceTree = "<group>"; };
 		87408EAA1AE4748600267C3A /* SongAlbumArt+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SongAlbumArt+Utilities.m"; sourceTree = "<group>"; };
 		87408EAC1AE474E200267C3A /* AlbumAlbumArt+Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AlbumAlbumArt+Utilities.h"; sourceTree = "<group>"; };
@@ -426,6 +422,7 @@
 		877C4BAC199FE4E700CE86BC /* Playlist+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Playlist+Utilities.m"; sourceTree = "<group>"; };
 		8780134D199C854E004727A0 /* ExistingArtistPickerTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExistingArtistPickerTableViewController.h; path = "Free Music Library/ExistingArtistPickerTableViewController.h"; sourceTree = "<group>"; };
 		8780134E199C854E004727A0 /* ExistingArtistPickerTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ExistingArtistPickerTableViewController.m; path = "Free Music Library/ExistingArtistPickerTableViewController.m"; sourceTree = "<group>"; };
+		878696B71AE5ED55008D00E3 /* ExistingEntityPickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExistingEntityPickerDelegate.h; sourceTree = "<group>"; };
 		8787AE5C1AB4EEFD00492BFA /* PreliminaryNowPlaying.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreliminaryNowPlaying.h; sourceTree = "<group>"; };
 		8787AE5D1AB4EEFD00492BFA /* PreliminaryNowPlaying.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreliminaryNowPlaying.m; sourceTree = "<group>"; };
 		878ACD62192D48EF005938F5 /* MasterSongsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterSongsTableViewController.h; sourceTree = "<group>"; };
@@ -453,8 +450,6 @@
 		87A04CA71ACCDDCE007C9245 /* IBActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IBActionSheet.h; sourceTree = "<group>"; };
 		87A04CA81ACCDDCE007C9245 /* IBActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IBActionSheet.m; sourceTree = "<group>"; };
 		87A04CA91ACCDDCE007C9245 /* LICENSE_IBActionSheet.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE_IBActionSheet.txt; sourceTree = "<group>"; };
-		87A0FD88197DCEDF008FBBF7 /* AlbumTableViewFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumTableViewFormatter.h; sourceTree = "<group>"; };
-		87A0FD89197DCEDF008FBBF7 /* AlbumTableViewFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumTableViewFormatter.m; sourceTree = "<group>"; };
 		87A0FD8F197DD594008FBBF7 /* PreferredFontSizeUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferredFontSizeUtility.h; sourceTree = "<group>"; };
 		87A0FD90197DD594008FBBF7 /* PreferredFontSizeUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferredFontSizeUtility.m; sourceTree = "<group>"; };
 		87A0FDD0197DFA2C008FBBF7 /* ArtistTableViewFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArtistTableViewFormatter.h; sourceTree = "<group>"; };
@@ -814,8 +809,6 @@
 		8740724019798130004C5C57 /* GUI (VC) consistent style helpers */ = {
 			isa = PBXGroup;
 			children = (
-				87A0FD93197DD932008FBBF7 /* Song Formatter */,
-				87A0FD94197DD93A008FBBF7 /* Album Formatter */,
 				87A0FDD3197DFA34008FBBF7 /* Artist Formatter */,
 				87911300197EF91200DFC2DB /* Playlist Formatter */,
 				87A0FD8F197DD594008FBBF7 /* PreferredFontSizeUtility.h */,
@@ -1286,24 +1279,6 @@
 			path = IBActionSheet;
 			sourceTree = "<group>";
 		};
-		87A0FD93197DD932008FBBF7 /* Song Formatter */ = {
-			isa = PBXGroup;
-			children = (
-				8740723D19798129004C5C57 /* SongTableViewFormatter.h */,
-				8740723E19798129004C5C57 /* SongTableViewFormatter.m */,
-			);
-			name = "Song Formatter";
-			sourceTree = "<group>";
-		};
-		87A0FD94197DD93A008FBBF7 /* Album Formatter */ = {
-			isa = PBXGroup;
-			children = (
-				87A0FD88197DCEDF008FBBF7 /* AlbumTableViewFormatter.h */,
-				87A0FD89197DCEDF008FBBF7 /* AlbumTableViewFormatter.m */,
-			);
-			name = "Album Formatter";
-			sourceTree = "<group>";
-		};
 		87A0FDD3197DFA34008FBBF7 /* Artist Formatter */ = {
 			isa = PBXGroup;
 			children = (
@@ -1463,6 +1438,7 @@
 				8780134E199C854E004727A0 /* ExistingArtistPickerTableViewController.m */,
 				87A453DD199C7096004D1319 /* ExistingAlbumPickerTableViewController.h */,
 				87A453DE199C7096004D1319 /* ExistingAlbumPickerTableViewController.m */,
+				878696B71AE5ED55008D00E3 /* ExistingEntityPickerDelegate.h */,
 				87E980BC1A759D3100B428F0 /* Custom Song editor table */,
 			);
 			name = "Song Editor/Creator";
@@ -1860,7 +1836,6 @@
 				874C535C19831825000382FA /* NSString+WhiteSpace_Utility.m in Sources */,
 				879094111AB78E5E006FDA68 /* VideoPlayerWrapper.m in Sources */,
 				873E14621A49ED0A008A385D /* SongPlayerViewDisplayUtility.m in Sources */,
-				8740723F19798129004C5C57 /* SongTableViewFormatter.m in Sources */,
 				87E980BF1A759DD900B428F0 /* MasterSongEditorViewController.m in Sources */,
 				874DA0881ABA11DD003D69D6 /* MRActivityIndicatorView.m in Sources */,
 				875B3820197ACBC0008B4409 /* SettingsTableViewController.m in Sources */,
@@ -1893,7 +1868,6 @@
 				879112FF197EF90E00DFC2DB /* PlaylistTableViewFormatter.m in Sources */,
 				879AB34119F225F300FD6582 /* SongPlayerViewController.m in Sources */,
 				87D47D8C19340F8B0057D49B /* AlbumItemViewController.m in Sources */,
-				87A0FD8A197DCEDF008FBBF7 /* AlbumTableViewFormatter.m in Sources */,
 				87F050631AE0BBD200BB0B2F /* UIImage+ImageEffects.m in Sources */,
 				87D3CD201AA823EF00B7D5B6 /* QueueViewController.m in Sources */,
 				87F686AC1AC9F48800EFF1E0 /* DistancePickerView.m in Sources */,
@@ -2088,10 +2062,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/Instabug",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Free Music Library/Free Music Library-Prefix.pch";
 				INFOPLIST_FILE = "Free Music Library/Free Music Library-Info.plist";
@@ -2113,10 +2084,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/Instabug",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Free Music Library/Free Music Library-Prefix.pch";
 				INFOPLIST_FILE = "Free Music Library/Free Music Library-Info.plist";

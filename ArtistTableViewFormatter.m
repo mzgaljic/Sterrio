@@ -42,17 +42,16 @@
 + (void)formatArtistDetailLabelUsingArtist:(Artist *)anArtistInstance andCell:(UITableViewCell **)aCell
 {
     Artist *artist = anArtistInstance;
-    int songsInAlbumsCount = 0;
-    
     //count all the songs that are associated with albums for this artist
-    NSSet *artistAlbums = artist.albums;
-    NSSet *albumSongs;
-    for(Album *anAlbum in artistAlbums) {
-        albumSongs = anAlbum.albumSongs;
-        for(int i = 0; i < albumSongs.count; i++){
-            songsInAlbumsCount++;
-        }
+    NSMutableSet *allAlbumSongsFromArtist = [[NSMutableSet alloc] initWithCapacity:6];
+    for(Album *artistAlbum in artist.albums)
+    {
+        NSSet *albumSongs = artistAlbum.albumSongs;
+        NSSet *tempNewSet = [allAlbumSongsFromArtist setByAddingObjectsFromSet:albumSongs];
+        allAlbumSongsFromArtist = [NSMutableSet setWithSet:tempNewSet];
     }
+    NSSet *albumSongs = artist.standAloneSongs;
+    NSSet *uniqueSongsByThisArtist = [allAlbumSongsFromArtist setByAddingObjectsFromSet:albumSongs];
     
     NSString *albumPart, *songPart;
     if((int)artist.albums.count == 1)
@@ -60,11 +59,11 @@
     else
         albumPart = [NSString stringWithFormat:@"%d Albums", (int)artist.albums.count];
     
-    if((int)artist.standAloneSongs.count + songsInAlbumsCount == 1)
+    NSUInteger totalSongCount = uniqueSongsByThisArtist.count;
+    if(totalSongCount == 1)
         songPart = @"1 Song ";
     else
-        songPart = [NSString stringWithFormat:@"%d Songs", (int)artist.standAloneSongs.count
-                                                                            + songsInAlbumsCount];
+        songPart = [NSString stringWithFormat:@"%d Songs", (int)totalSongCount];
     
     NSMutableString *finalDetailLabel = [NSMutableString stringWithString:albumPart];
     [finalDetailLabel appendString:@" "];

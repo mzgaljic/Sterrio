@@ -350,6 +350,22 @@ static void *navBarHiddenChange = &navBarHiddenChange;
         searchBar = nil;
         tableView.tableHeaderView = nil;
     }
+    
+    NSArray *visibleCells = [tableView visibleCells];
+    if(visibleCells.count > 0)
+    {
+        UITableViewCell *aCell = visibleCells[0];
+        UIFont *font = aCell.textLabel.font;
+        if(([font.fontName isEqualToString:[AppEnvironmentConstants boldFontName]]
+           && ![AppEnvironmentConstants boldNames])
+           ||
+           ([font.fontName isEqualToString:[AppEnvironmentConstants regularFontName]]
+            && [AppEnvironmentConstants boldNames]))
+        {
+            //we inadvertantly just detected a previous change in settings. Reload table.
+            [tableView reloadData];
+        }
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated

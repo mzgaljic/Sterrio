@@ -348,6 +348,8 @@ short const dummyTabIndex = 2;
     
     if(hide)
     {
+        if([AppEnvironmentConstants isTabBarHidden])
+            return;
         [AppEnvironmentConstants setTabBarHidden:YES];
         lastVisibleTabBarOrientation = currentInterfaceOrientation;
         CGRect hiddenFrame = CGRectMake(visibleRect.origin.x,
@@ -371,6 +373,8 @@ short const dummyTabIndex = 2;
     }
     else
     {
+        if(! [AppEnvironmentConstants isTabBarHidden])
+            return;
         [AppEnvironmentConstants setTabBarHidden:NO];
         //checking if orientations have changed (meaningfully anyway...as far as needing to redraw the tab bar)
         if(! (UIInterfaceOrientationIsPortrait(lastVisibleTabBarOrientation)

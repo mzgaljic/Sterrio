@@ -7,6 +7,8 @@
 //
 
 #import "MZCoreDataModelDeletionService.h"
+#import "AlbumAlbumArt.h"
+#import "SongAlbumArt.h"
 
 @implementation MZCoreDataModelDeletionService
 
@@ -17,36 +19,58 @@
     
     //now do the same with the songs artist
     [MZCoreDataModelDeletionService removeSongFromItsArtist:songToDelete];
+    [[CoreDataManager context] deleteObject:songToDelete.albumArt];
     songToDelete.albumArt = nil;
 }
 
-+ (void)deleteArtistInManagedObjectContextWithoutSave:(Artist *)artistToDelete
++ (void)prepareAlbumForDeletion:(Album *)anAlbum
 {
-    NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Artist"
-                                                  inManagedObjectContext:[CoreDataManager context]];
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:entityDesc];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"artist_id == %@", artistToDelete.artist_id];
-    [request setPredicate:predicate];
-    
-    NSError *error;
-    NSArray *matchingData = [[CoreDataManager context] executeFetchRequest:request error:&error];
-    if(matchingData.count == 1)
-        [[CoreDataManager context] deleteObject:matchingData[0]];
+    //remove album from its artist if applicable (and delete artist if needed)
+    [self removeAlbumFromItsArtist:anAlbum];
+    [[CoreDataManager context] deleteObject:anAlbum.albumArt];
+    anAlbum.albumArt = nil;
 }
 
 + (void)removeSongFromItsAlbum:(Song *)aSong
 {
     Album *songAlbum = aSong.album;
+    //if song has an artist, move the song into the standalone songs NSSet before deleting the album.
+    if(aSong.artist)
+    {
+        NSMutableSet *mutableSet = [NSMutableSet setWithSet:aSong.artist.standAloneSongs];
+        [mutableSet addObject:aSong];
+        aSong.artist.standAloneSongs = mutableSet;
+    }
+    
     if(songAlbum)
     {
-        if(songAlbum.albumSongs.count == 1)
-            aSong.album = nil;
+        if(songAlbum.albumSongs.count == 1){
+            [[CoreDataManager context] deleteObject:songAlbum];
+        }
         else
         {
             NSMutableSet *mutableSet = [NSMutableSet setWithSet:songAlbum.albumSongs];
             [mutableSet removeObject:aSong];
             songAlbum.albumSongs = mutableSet;
+            songAlbum.albumArt.isDirty = @YES;
+        }
+        
+        aSong.album = nil;
+    }
+}
+
++ (void)removeAlbumFromItsArtist:(Album *)album
+{
+    Artist *artist = album.artist;
+    if(artist)
+    {
+        NSMutableSet *mutableSet = [NSMutableSet setWithSet:artist.albums];
+        [mutableSet removeObject:album];
+        artist.albums = mutableSet;
+        
+        NSUInteger standAloneSongCount = artist.standAloneSongs.count;
+        if(artist.albums.count == 0 && standAloneSongCount == 0){
+            [[CoreDataManager context] deleteObject:artist];
         }
     }
 }
@@ -61,8 +85,16 @@
         for(Album *anAlbum in songArtist.albums)
             numArtistSongs += anAlbum.albumSongs.count;
         
-        if(numArtistSongs == 1)
-            [MZCoreDataModelDeletionService deleteArtistInManagedObjectContextWithoutSave:songArtist];
+        if(numArtistSongs == 1){
+            
+            for(Album *artistAlbum in songArtist.albums)
+            {
+                [self removeAlbumFromItsArtist:artistAlbum];
+                artistAlbum.artist = nil;
+            }
+            
+            [[CoreDataManager context] deleteObject:songArtist];
+        }
         else
         {
             NSMutableSet *mutableSet = [NSMutableSet setWithSet:songArtist.standAloneSongs];
@@ -87,6 +119,8 @@
                 }
             }
         }
+        
+        aSong.artist = nil;
     }
 }
 

@@ -7,6 +7,7 @@
 //
 
 #import "MySearchBar.h"
+#import "PreferredFontSizeUtility.h"
 
 @interface MySearchBar ()
 {
@@ -93,7 +94,7 @@
 
 - (void)setFontSizeBasedOnUserSettings
 {
-    float fontSize = [SongTableViewFormatter nonBoldSongLabelFontSize];
+    float fontSize = [PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize];
     if(fontSize < 18)
         fontSize = 18;
     //font size

@@ -8,18 +8,17 @@
 
 #import <UIKit/UIKit.h>
 #import "CoreDataCustomTableViewController.h"
+#import "SearchBarDataSourceDelegate.h"
+#import "ActionableAlbumDataSourceDelegate.h"
+#import "ExistingEntityPickerDelegate.h"
 
-@class StackController;
 @class Album;
 @interface ExistingAlbumPickerTableViewController : CoreDataCustomTableViewController
-                                                    <UISearchBarDelegate,
-                                                    UITableViewDataSource,
-                                                    UITableViewDelegate>
-{
-    StackController *stackController;
-}
+                                                            <SearchBarDataSourceDelegate,
+                                                            ActionableAlbumDataSourceDelegate>
 
-- (id)initWithCurrentAlbum:(Album *)anAlbum;
+- (id)initWithCurrentAlbum:(Album *)anAlbum
+existingEntityPickerDelegate:(id <ExistingEntityPickerDelegate>)delegate;
 
 
 @end
