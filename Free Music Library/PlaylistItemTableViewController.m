@@ -27,6 +27,7 @@
 
 - (void) dealloc
 {
+    [super prepareFetchedResultsControllerForDealloc];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     _playlist = nil;
     _parentVcPlaybackContext = nil;
@@ -451,9 +452,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 #pragma mark - Rotation status bar methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    [self prefersStatusBarHidden];
     [self setNeedsStatusBarAppearanceUpdate];
-    
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 

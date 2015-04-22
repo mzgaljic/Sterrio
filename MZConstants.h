@@ -25,7 +25,7 @@ extern NSString * const MZAppWasBackgrounded;
 extern NSString * const MZNewTimeObserverCanBeAdded;
 
 extern NSString * const MZPlayerToggledOnScreenStatus;
-extern NSString * const MZMainScreenVCStatusBarAlwaysVisible;
+extern NSString * const MZMainScreenVCStatusBarAlwaysInvisible;
 
 extern NSString * const MZFileNameOfLqAlbumArtObjs;
 extern NSString * const MZNewSongLoading;

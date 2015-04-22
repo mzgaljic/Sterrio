@@ -54,7 +54,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    BOOL showUserTouchesOnScreen = YES;
+    BOOL showUserTouchesOnScreen = NO;
     if(showUserTouchesOnScreen)
         self.window = [self windowShowingTouches];
     else

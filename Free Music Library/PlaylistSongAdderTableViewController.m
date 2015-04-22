@@ -19,7 +19,6 @@
 @interface PlaylistSongAdderTableViewController()
 {
     CGRect originalTableViewFrame;
-    BOOL alwaysKeepStatusBarVisible;
 }
 @property (nonatomic, strong) MySearchBar *searchBar;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -50,7 +49,6 @@
 
 - (void)searchBarIsBecomingActive
 {
-    alwaysKeepStatusBarVisible = YES;
     [self.navigationController setNavigationBarHidden:YES animated:YES];
     if(CGRectIsNull(originalTableViewFrame))
         originalTableViewFrame = self.tableView.frame;
@@ -58,26 +56,23 @@
                           delay:0
                         options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionCurveEaseOut
                      animations:^{
-                         self.view.backgroundColor = [UIColor defaultAppColorScheme];
-                         int statusBarHeight = [AppEnvironmentConstants statusBarHeight];
                          self.tableView.frame = CGRectMake(0,
-                                                           statusBarHeight,
+                                                           0,
                                                            self.view.frame.size.width,
                                                            self.view.frame.size.height);
                      }
                      completion:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysInvisible
+                                                        object:[NSNumber numberWithBool:YES]];
 }
 
 - (void)searchBarIsBecomingInactive
 {
-    alwaysKeepStatusBarVisible = NO;
     [self.navigationController setNavigationBarHidden:NO animated:YES];
-    
     [UIView animateWithDuration:0.3
                           delay:0
                         options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionCurveEaseOut
                      animations:^{
-                         self.view.backgroundColor = [UIColor clearColor];
                          CGRect viewFrame = self.view.frame;
                          self.tableView.frame = CGRectMake(originalTableViewFrame.origin.x,
                                                            originalTableViewFrame.origin.y,
@@ -87,6 +82,8 @@
                      completion:^(BOOL finished) {
                          originalTableViewFrame = CGRectNull;
                      }];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysInvisible
+                                                        object:[NSNumber numberWithBool:NO]];
 }
 
 
@@ -107,9 +104,10 @@
 #pragma mark - View Controller life cycle
 - (void)viewWillAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
+    //order of calls matters here...
     self.searchBar = [self.tableViewDataSourceAndDelegate setUpSearchBar];
     [super setSearchBar:self.searchBar];
+    [super viewWillAppear:animated];
     
     switch ([_receiverPlaylist.status shortValue])
     {
@@ -152,6 +150,7 @@
 
 - (void)dealloc
 {
+    [super prepareFetchedResultsControllerForDealloc];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([self class]));
 }
@@ -223,42 +222,18 @@
 #pragma mark - Rotation status bar methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    [self prefersStatusBarHidden];
     [self setNeedsStatusBarAppearanceUpdate];
-    
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
 - (BOOL)prefersStatusBarHidden
 {
-    if(alwaysKeepStatusBarVisible)
-        return NO;
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+    if(_tableViewDataSourceAndDelegate.displaySearchResults)
         return YES;
-    }
-    else{
-        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
-    }
-}
-
-#pragma mark - Counting Songs in core data
-- (int)numberOfSongsInCoreDataModel
-{
-    //count how many instances there are of the Song entity in core data
-    NSManagedObjectContext *context = [CoreDataManager context];
-    int count = 0;
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:context];
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    [fetchRequest setEntity:entity];
-    [fetchRequest setIncludesPropertyValues:NO];
-    [fetchRequest setIncludesSubentities:NO];
-    NSError *error = nil;
-    NSUInteger tempCount = [context countForFetchRequest: fetchRequest error: &error];
-    if(error == nil){
-        count = (int)tempCount;
-    }
-    return count;
+    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))
+        return YES;
+    else
+        return NO;
 }
 
 #pragma mark - fetching and sorting

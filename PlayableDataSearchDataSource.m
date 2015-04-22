@@ -85,12 +85,13 @@
     
     //show the cancel button
     [searchBar setShowsCancelButton:YES animated:YES];
-    [self.modelDataSourceSearchBarDelegate searchBarIsBecomingActive];
-    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:[NSNumber numberWithBool:YES]];
     
     PlayableBaseDataSource *playableBaseDataSource = (PlayableBaseDataSource *)self.playableDataSearchDataSourceDelegate;
     BOOL oldDisplayResultsVal = playableBaseDataSource.displaySearchResults;
     [self.playableDataSearchDataSourceDelegate searchResultsShouldBeDisplayed:YES];
+    
+    [self.modelDataSourceSearchBarDelegate searchBarIsBecomingActive];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:[NSNumber numberWithBool:YES]];
     
     if(! oldDisplayResultsVal){
         //user is now transitioning into the "search" mode

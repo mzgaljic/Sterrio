@@ -73,8 +73,10 @@
                                        labelWidths,
                                        labelHeight);
     
-    self.videoTitle.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    self.videoChannel.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
+    float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+    UIFont *font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:fontSize];
+    self.videoTitle.font = font;
+    self.videoChannel.font = font;
 }
 
 @end

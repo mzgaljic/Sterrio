@@ -7,15 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "AppEnvironmentConstants.h"
-#import "Album.h"
-#import "Artist+Utilities.h"
-#import "ArtistTableViewFormatter.h"
-#import "SDWebImageManager.h"
-#import "MyTableViewController.h"
+#import "CoreDataCustomTableViewController.h"
+#import "SearchBarDataSourceDelegate.h"
+#import "ActionableArtistDataSourceDelegate.h"
+#import "ExistingEntityPickerDelegate.h"
 
-@interface ExistingArtistPickerTableViewController : MyTableViewController
+@class Artist;
+@interface ExistingArtistPickerTableViewController : CoreDataCustomTableViewController
+                                                    <SearchBarDataSourceDelegate,
+                                                    ActionableArtistDataSourceDelegate>
 
-- (id)initWithCurrentArtist:(Artist *)anArtist;
+- (id)initWithCurrentArtist:(Artist *)anArtist
+existingEntityPickerDelegate:(id <ExistingEntityPickerDelegate>)delegate;
 
 @end

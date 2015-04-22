@@ -20,21 +20,51 @@
 
 @implementation PlayableBaseDataSource
 
+- (instancetype)init
+{
+    if(self = [super init]){
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(nowPlayingSongsHasChanged:)
+                                                     name:MZNewSongLoading
+                                                   object:nil];
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+//override for functionality.
+- (void)nowPlayingSongsHasChanged:(NSNotification *)notification
+{
+    if ([[notification name] isEqualToString:MZNewSongLoading]){
+        if([NSThread isMainThread]){
+            [self reflectNowPlayingChangesInTableview:notification];
+        } else{
+            [self performSelectorOnMainThread:@selector(reflectNowPlayingChangesInTableview:)
+                                   withObject:notification
+                                waitUntilDone:NO];
+        }
+    }
+}
+
+//override for functionality.
+- (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification {}
+
+//override for functionality.
+- (void)clearSearchResultsDataSource {}
+
+//override for functionality.
+- (MySearchBar *)setUpSearchBar { return nil; }
+
+//override for functionality.
+- (NSIndexPath *)indexPathInSearchTableForObject:(id)someObject { return nil; }
+
 - (UIColor *)colorForNowPlayingItem
 {
     return [[UIColor defaultAppColorScheme] lighterColor];
-}
-
-//override for actual functionality.
-- (MySearchBar *)setUpSearchBar
-{
-    return nil;
-}
-
-//override for real functionality in subclasses.
-- (NSIndexPath *)indexPathInSearchTableForObject:(id)someObject
-{
-    return nil;
 }
 
 #pragma mark - Boring utility methods for subclasses

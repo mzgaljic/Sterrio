@@ -7,6 +7,7 @@
 //
 
 #import "QueueViewController.h"
+#import "MZTableViewCell.h"
 #import "SongAlbumArt+Utilities.h"
 
 @interface QueueViewController ()
@@ -24,6 +25,8 @@
     NSArray *upNextSongs;
     
     BOOL skippingToTappedSong;
+    UIView *cellBackgroundBlurView;
+    UIView *sectionHeaderBackgroundBlurView;
 }
 @property (nonatomic, strong) UITableView *tableView;
 @end
@@ -80,6 +83,8 @@ short const SECTION_EMPTY = -1;
 {
     self.tableView.delegate = nil;
     self.tableView = nil;
+    cellBackgroundBlurView = nil;
+    sectionHeaderBackgroundBlurView = nil;
     mainQueueContext = nil;
     mainQueueSongsComingUp = nil;
     upNextPlaybackContexts = nil;
@@ -119,24 +124,27 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *cellIdentifier = @"SongQueueItemCell";
-    MZQueueSongCell *cell = (MZQueueSongCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    MZTableViewCell *cell = (MZTableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell)
-        cell = [[MZQueueSongCell alloc] init];
+        cell = [[MZTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                      reuseIdentifier:cellIdentifier];
     else
     {
         // If an existing cell is being reused, reset the image to the default until it is populated.
         // Without this code, previous images are displayed against the new people during rapid scrolling.
         cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
     }
-    
+    cell.displayQueueSongsMode = YES;
     cell.contentView.backgroundColor = [UIColor clearColor];
     cell.backgroundColor = [UIColor clearColor];
     
     //make the selection style blurred
-    UIVisualEffectView *blurEffectView;
-    blurEffectView = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleLight]];
-    blurEffectView.frame = cell.contentView.bounds;
-    [cell setSelectedBackgroundView:blurEffectView];
+    if(cellBackgroundBlurView == nil){
+        UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+        cellBackgroundBlurView = [[UIVisualEffectView alloc] initWithEffect:effect];
+        cellBackgroundBlurView.frame = cell.contentView.bounds;
+    }
+    [cell setSelectedBackgroundView:cellBackgroundBlurView];
 
     // Set up other aspects of the cell content.
     Song *song = [self songForIndexPath:indexPath];
@@ -150,7 +158,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     else
         cell.textLabel.textColor = [UIColor whiteColor];
     
-    cell.isQueuedSong = [self isUpNextSongPresentAtIndexPath:indexPath];
+    cell.isRepresentingAQueuedSong = [self isUpNextSongPresentAtIndexPath:indexPath];
     
     // Store a reference to the current cell that will enable the image to be associated with the correct
     // cell, when the image is subsequently loaded asynchronously.
@@ -225,15 +233,16 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                             size:headerFontSize];
     
     //making background clear, and then placing a blur view across the entire header (execpt the uilabel)
-    UIVisualEffectView *blurEffectView;
-    view.tintColor = [UIColor clearColor];
-    blurEffectView = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleDark]];
-    blurEffectView.frame = view.bounds;
-    blurEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    [view addSubview:blurEffectView];
-    
+    if(sectionHeaderBackgroundBlurView == nil){
+        view.tintColor = [UIColor clearColor];
+        UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+        sectionHeaderBackgroundBlurView = [[UIVisualEffectView alloc] initWithEffect:effect];
+        sectionHeaderBackgroundBlurView.frame = view.bounds;
+        sectionHeaderBackgroundBlurView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    }
+    [view addSubview:sectionHeaderBackgroundBlurView];
     [view bringSubviewToFront:header.textLabel];
-    [view sendSubviewToBack:blurEffectView];
+    [view sendSubviewToBack:sectionHeaderBackgroundBlurView];
 }
 
 //setting footer header background (using footer view to pad between sections in this case)

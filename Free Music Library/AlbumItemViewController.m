@@ -31,8 +31,8 @@ const int ALBUM_HEADER_HEIGHT = 120;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    //this works better than a unique random id since this class can be dealloced and re-alloced
-    //later. Id must stay the same across all allocations.  :)
+    //apending album id here because we must differentiate between queing up the entire album,
+    //and queing up a specific album song
     NSMutableString *uniqueID = [NSMutableString string];
     [uniqueID appendString:NSStringFromClass([self class])];
     [uniqueID appendString:self.album.album_id];
@@ -61,6 +61,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
 
 - (void)dealloc
 {
+    [super prepareFetchedResultsControllerForDealloc];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([self class]));
 }

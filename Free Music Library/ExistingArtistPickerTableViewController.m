@@ -7,138 +7,201 @@
 //
 
 #import "ExistingArtistPickerTableViewController.h"
-#import <SDCAlertView.h>
+#import "CoreDataManager.h"
+#import "AppEnvironmentConstants.h"
+#import "Artist.h"
+#import "MySearchBar.h"
+#import "AllArtistsDataSource.h"
+
 @interface ExistingArtistPickerTableViewController ()
-@property(nonatomic, strong) NSMutableArray *allArtists;
-@property (nonatomic, strong) Artist *usersCurrentArtist;
+{
+    CGRect originalTableViewFrame;
+    Artist *usersCurrentArtist;
+}
+@property (nonatomic, strong) MySearchBar* searchBar;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (nonatomic, assign) id <ExistingEntityPickerDelegate> delegate;
+@property AllArtistsDataSource *tableViewDataSourceAndDelegate;
 @end
 
 @implementation ExistingArtistPickerTableViewController
-static BOOL PRODUCTION_MODE;
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
 
 - (id)initWithCurrentArtist:(Artist *)anArtist
+existingEntityPickerDelegate:(id <ExistingEntityPickerDelegate>)delegate
 {
-    UIStoryboard*  sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     ExistingArtistPickerTableViewController* vc = [sb instantiateViewControllerWithIdentifier:@"browseExistingArtistsVC"];
     self = vc;
     if (self) {
-        //custom variables init here
-        _usersCurrentArtist = anArtist;
+        usersCurrentArtist = anArtist;
+        self.delegate = delegate;
     }
     return self;
 }
 
-- (void)setProductionModeValue
+- (void)establishTableViewDataSourceUsingSelectedArtist:(Artist *)artist
 {
-    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
+    short srcType = ARTIST_DATA_SRC_TYPE_Single_Artist_Picker;
+    AllArtistsDataSource *src = [[AllArtistsDataSource alloc] initWithArtistDataSourceType:srcType
+                                                                            selectedArtist:artist searchBarDataSourceDelegate:self];
+    self.tableViewDataSourceAndDelegate = src;
+    self.tableViewDataSourceAndDelegate.fetchedResultsController = self.fetchedResultsController;
+    self.tableViewDataSourceAndDelegate.tableView = self.tableView;
+    self.tableViewDataSourceAndDelegate.playbackContext = self.playbackContext;
+    self.tableViewDataSourceAndDelegate.cellReuseId = @"existingArtistItemPickerCell";
+    self.tableViewDataSourceAndDelegate.emptyTableUserMessage = @"No Artists";
+    self.tableViewDataSourceAndDelegate.actionableArtistDelegate = self;
+    self.tableView.dataSource = self.tableViewDataSourceAndDelegate;
+    self.tableView.delegate = self.tableViewDataSourceAndDelegate;
+    self.tableDataSource = self.tableViewDataSourceAndDelegate;
+}
+
+#pragma mark - View Controller life cycle
+- (void)viewWillAppear:(BOOL)animated
+{
+    //order of calls matters here...
+    self.searchBar = [self.tableViewDataSourceAndDelegate setUpSearchBar];
+    [super setSearchBar:self.searchBar];
+    [super viewWillAppear:animated];
+    self.title = @"All Artists";
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    self.navigationController.navigationController.title = @"Existing Artists";
-    [self setProductionModeValue];
+    originalTableViewFrame = CGRectNull;
+    self.playbackContextUniqueId = NSStringFromClass([self class]);
+    [self setTableForCoreDataView:self.tableView];
+    [self initFetchResultsController];
+    self.extendedLayoutIncludesOpaqueBars = YES;
+    [self establishTableViewDataSourceUsingSelectedArtist:usersCurrentArtist];
 }
 
-/*
-- (void)viewWillAppear:(BOOL)animated
+- (void)dealloc
 {
-    [super viewWillAppear:animated];
-    
-    //init tableView model
-    //_allArtists = [NSMutableArray arrayWithArray:[Artist loadAll]];
-    [self.tableView reloadData];
-}
-*/
-
-#pragma mark - Table view data source
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
+    [super prepareFetchedResultsControllerForDealloc];
+    self.delegate = nil;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+#pragma mark - SearchBarDataSourceDelegate implementation
+- (NSString *)placeholderTextForSearchBar
 {
-    return self.allArtists.count;
+    return @"Search My Artists";
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)searchBarIsBecomingActive
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"existingArtistItemPickerCell" forIndexPath:indexPath];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+    if(CGRectIsNull(originalTableViewFrame))
+        originalTableViewFrame = self.tableView.frame;
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         self.tableView.frame = CGRectMake(0,
+                                                           0,
+                                                           self.view.frame.size.width,
+                                                           self.view.frame.size.height);
+                     }
+                     completion:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysInvisible
+                                                        object:[NSNumber numberWithBool:YES]];
+}
+
+const float searchBecomingInactiveAnimationDuration = 0.3;
+- (void)searchBarIsBecomingInactive
+{
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
     
-    // Configure the cell...
-    Artist *artist = [self.allArtists objectAtIndex: indexPath.row];  //get artist object at this index
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         CGRect viewFrame = self.view.frame;
+                         self.tableView.frame = CGRectMake(originalTableViewFrame.origin.x,
+                                                           originalTableViewFrame.origin.y,
+                                                           viewFrame.size.width,
+                                                           viewFrame.size.height);
+                     }
+                     completion:^(BOOL finished) {
+                         originalTableViewFrame = CGRectNull;
+                     }];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysInvisible
+                                                        object:[NSNumber numberWithBool:NO]];
+}
+
+#pragma mark - ActionableAlbumDataSourceDelegate implementation
+- (void)userDidSelectArtistFromSinglePicker:(Artist *)chosenArtist
+{
+    [self.delegate existingArtistHasBeenChosen:chosenArtist];
     
-    if([Artist isArtist:artist equalToArtist:_usersCurrentArtist]){
-        //disable this cell
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.userInteractionEnabled = NO;
-        cell.textLabel.textColor = [UIColor defaultAppColorScheme];
-        cell.detailTextLabel.textColor = [UIColor defaultAppColorScheme];
-    } else{
-        cell.selectionStyle = UITableViewCellSelectionStyleDefault;
-        cell.textLabel.textColor = [UIColor blackColor];
-        cell.detailTextLabel.textColor = [UIColor blackColor];
-        cell.userInteractionEnabled = YES;
-        cell.textLabel.enabled = YES;
-        cell.detailTextLabel.enabled = YES;
+    if(self.searchBar.isFirstResponder){
+        [self.searchBar resignFirstResponder];
+        [self searchBarIsBecomingInactive];
+        [self popAnimatedWithDelay];
     }
-    
-    // init cell fields
-    cell.textLabel.attributedText = [ArtistTableViewFormatter formatArtistLabelUsingArtist:artist];
-    if(! [ArtistTableViewFormatter artistNameIsBold])
-        cell.textLabel.font = [UIFont systemFontOfSize:[ArtistTableViewFormatter nonBoldArtistLabelFontSize]];
-    [ArtistTableViewFormatter formatArtistDetailLabelUsingArtist:artist andCell:&cell];
-    
-    return cell;
+    else
+        [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)popAnimatedWithDelay
 {
-    //could also selectively choose which rows may be deleted here.
-    return YES;
+    double delayInSeconds = 0.35;
+    __weak ExistingArtistPickerTableViewController *weakself = self;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [weakself.navigationController popViewControllerAnimated:YES];
+    });
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    Artist *chosenArtist = self.allArtists[indexPath.row];
-    //notifies MasterEditingSongTableViewController.m about the chosen artist.
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"existing artist chosen" object:chosenArtist];
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return [ArtistTableViewFormatter preferredArtistCellHeight];
-}
-
-#pragma mark - Rotation status bar methods
+#pragma mark - Rotation and status bar methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
-        [self prefersStatusBarHidden];
-        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }
+    [self setNeedsStatusBarAppearanceUpdate];
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
 - (BOOL)prefersStatusBarHidden
 {
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+    if(_tableViewDataSourceAndDelegate.displaySearchResults)
         return YES;
-    }
+    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))
+        return YES;
     else
-        return NO;  //returned when in portrait, or when app is first launching (UIInterfaceOrientationUnknown)
+        return NO;
 }
+
+#pragma mark - fetching and sorting
+- (void)initFetchResultsController
+{
+    self.fetchedResultsController = nil;
+    NSManagedObjectContext *context = [CoreDataManager context];
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Artist"];
+    request.predicate = nil;  //means i want all of the artists
+    
+    NSSortDescriptor *sortDescriptor;
+    if([AppEnvironmentConstants smartAlphabeticalSort])
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortArtistName"
+                                                       ascending:YES
+                                                        selector:@selector(localizedStandardCompare:)];
+    else
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"artistName"
+                                                       ascending:YES
+                                                        selector:@selector(localizedStandardCompare:)];
+    
+    request.sortDescriptors = @[sortDescriptor];
+    if(self.playbackContext == nil){
+        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]
+                                                             prettyQueueName:@""
+                                                                   contextId:self.playbackContextUniqueId];
+    }
+    //fetchedResultsController is from custom super class
+    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+                                                                        managedObjectContext:context
+                                                                          sectionNameKeyPath:nil
+                                                                                   cacheName:nil];
+}
+
+
 
 @end

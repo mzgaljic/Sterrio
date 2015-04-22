@@ -22,8 +22,6 @@ typedef enum{
     ContentInsetStateCompensatingForPlayer
 } ContentInsetState;
 
-static void *navBarHiddenChange = &navBarHiddenChange;
-
 @interface CoreDataCustomTableViewController ()
 {
     UITableView *tableView;  //this is the subviews tableview (gets set on the fly)
@@ -321,6 +319,7 @@ static void *navBarHiddenChange = &navBarHiddenChange;
 {
     if (self.beganUpdates)
         [tableView endUpdates];
+    self.beganUpdates = NO;
 }
 
 #pragma mark - overriden methods for default behavior across tableviews
@@ -392,10 +391,6 @@ static void *navBarHiddenChange = &navBarHiddenChange;
                                                  name:MZUserChangedFontSize
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(nowPlayingSongsHasChanged:)
-                                                 name:MZNewSongLoading
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(playerOnScreenStateChanged)
                                                  name:MZPlayerToggledOnScreenStatus
                                                object:nil];
@@ -406,6 +401,21 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     self.edgesForExtendedLayout = UIRectEdgeNone;
     lastKnownTableViewVerticalContentOffset = 0;
     self.automaticallyAdjustsScrollViewInsets = YES;
+}
+
+- (void)prepareFetchedResultsControllerForDealloc
+{
+    self.fetchedResultsController = nil;
+    self.searchFetchedResultsController = nil;
+    self.fetchedResultsController.delegate = nil;
+    self.searchFetchedResultsController.delegate = nil;
+    searchBar = nil;
+    tableView = nil;
+    self.cellReuseId = nil;
+    self.playbackContextUniqueId = nil;
+    self.emptyTableUserMessage = nil;
+    self.playbackContext = nil;
+    self.tableDataSource = nil;
 }
 
 - (void)dealloc
@@ -436,53 +446,6 @@ static void *navBarHiddenChange = &navBarHiddenChange;
     }
 }
 
-- (void)nowPlayingSongsHasChanged:(NSNotification *)notification
-{
-    if ([[notification name] isEqualToString:MZNewSongLoading]){
-        if([NSThread isMainThread]){
-            [self reflectNowPlayingChangesInTableview:notification];
-        } else{
-            [self performSelectorOnMainThread:@selector(reflectNowPlayingChangesInTableview:)
-                                   withObject:notification
-                                waitUntilDone:NO];
-        }
-    }
-}
-
-- (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification
-{
-    if(!self.isViewLoaded && !self.view.window){
-        //view controller is not on screen, dont need to update cells on the fly...
-        return;
-    }
-    
-    Song *songToReplace = (Song *)[notification object];
-    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
-    Song *newSong = nowPlaying.nowPlaying;
-    NSIndexPath *oldPath, *newPath;
-    if(self.playbackContext == nil)
-        return;
-    
-     //tries to obtain the path to the changed songs if possible.
-    if(self.tableDataSource.displaySearchResults){
-        oldPath = [self.tableDataSource indexPathInSearchTableForObject:songToReplace];
-        newPath = [self.tableDataSource indexPathInSearchTableForObject:newSong];
-    } else{
-        oldPath = [self.fetchedResultsController indexPathForObject:songToReplace];
-        newPath = [self.fetchedResultsController indexPathForObject:newSong];
-    }
-    
-    if(oldPath || newPath){
-        [tableView beginUpdates];
-        if(oldPath)
-            [tableView reloadRowsAtIndexPaths:@[oldPath]
-                             withRowAnimation:UITableViewRowAnimationFade];
-        if(newPath != nil && newPath != oldPath)
-            [tableView reloadRowsAtIndexPaths:@[newPath]
-                             withRowAnimation:UITableViewRowAnimationFade];
-        [tableView endUpdates];
-    }
-}
 
 - (UIColor *)colorForNowPlayingItem
 {

@@ -383,6 +383,37 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                             size:headerFontSize];
 }
 
+#pragma mark - efficiently updating individual cells as needed
+- (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification
+{
+    if(self.playbackContext == nil)
+        return;
+    Song *oldSong = (Song *)[notification object];
+    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
+    Song *newSong = nowPlaying.nowPlaying;
+    NSIndexPath *oldPath, *newPath;
+    
+    //tries to obtain the path to the changed songs if possible.
+    if(self.displaySearchResults){
+        oldPath = [self indexPathInSearchTableForObject:oldSong];
+        newPath = [self indexPathInSearchTableForObject:newSong];
+    } else{
+        oldPath = [self.fetchedResultsController indexPathForObject:oldSong];
+        newPath = [self.fetchedResultsController indexPathForObject:newSong];
+    }
+    
+    if(oldPath || newPath){
+        [self.tableView beginUpdates];
+        if(oldPath)
+            [self.tableView reloadRowsAtIndexPaths:@[oldPath]
+                                  withRowAnimation:UITableViewRowAnimationFade];
+        if(newPath != nil && newPath != oldPath)
+            [self.tableView reloadRowsAtIndexPaths:@[newPath]
+                                  withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView endUpdates];
+    }
+}
+
 #pragma mark - MGSwipeTableCell delegates
 - (BOOL)swipeTableCell:(MGSwipeTableCell*)cell canSwipe:(MGSwipeDirection)direction
 {

@@ -60,36 +60,6 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     }
 }
 
-- (Song *)songObjectGivenSongId:(NSString *)songId
-{
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Song"];
-    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"song_id == %@", songId];
-    //descriptor doesnt really matter here
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
-                                                                     ascending:YES];
-    fetchRequest.sortDescriptors = @[sortDescriptor];
-    NSArray *results = [[CoreDataManager context] executeFetchRequest:fetchRequest error:nil];
-    if(results.count == 1)
-        return results[0];
-    else
-        return nil;
-}
-
-- (Album *)albumObjectGivenAlbumId:(NSString *)albumId
-{
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Album"];
-    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"album_id == %@", albumId];
-    //descriptor doesnt really matter here
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"albumName"
-                                                                     ascending:YES];
-    fetchRequest.sortDescriptors = @[sortDescriptor];
-    NSArray *results = [[CoreDataManager context] executeFetchRequest:fetchRequest error:nil];
-    if(results.count == 1)
-        return results[0];
-    else
-        return nil;
-}
-
 - (void)dealloc
 {
     [AppEnvironmentConstants setUserIsEditingSongOrAlbumOrArtist: NO];
@@ -550,22 +520,28 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     if(artistName.length == 0)  //was all whitespace, or user gave us an empty string
         return;
     
-    if(_songIAmEditing.artist){
+    Artist *newArtist = [Artist createNewArtistWithName:artistName
+                                       inManagedContext:[CoreDataManager context]];
+    
+    if(_songIAmEditing.artist)
+    {
         [MZCoreDataModelDeletionService removeSongFromItsArtist:_songIAmEditing];
     }
     
-    Artist *newArtist;
-    if(_songIAmEditing.album){  //song had album
-        if(! _songIAmEditing.album.artist){  //album does NOT have an artist
-            newArtist = [Artist createNewArtistWithName:artistName usingAlbum:_songIAmEditing.album inManagedContext:[CoreDataManager context]];
-        } else{  //album already has artist, remove this song from the album.
+    if(_songIAmEditing.album)
+    {
+        if(_songIAmEditing.album.artist)
+        {
+            //user picked a NEW artist, but songs album is still the same.
+            //remove song from album...
             [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];
         }
+        else
+            _songIAmEditing.album.artist = newArtist;
     }
-    else
-        newArtist = [Artist createNewArtistWithName:artistName inManagedContext:[CoreDataManager context]];
     
     _songIAmEditing.artist = newArtist;
+    
     
     __weak MZSongModifierTableView *weakself = self;
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, updateCellWithAnimationFadeDelay * NSEC_PER_SEC);
@@ -573,7 +549,9 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         
         [weakself beginUpdates];
         [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]]
-                    withRowAnimation:UITableViewRowAnimationFade];
+                        withRowAnimation:UITableViewRowAnimationFade];
+        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
+                        withRowAnimation:UITableViewRowAnimationFade];
         [weakself endUpdates];
         [weakself reloadData];
     });
@@ -591,13 +569,16 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     
     Album *newAlbum = [Album createNewAlbumWithName:albumName usingSong:_songIAmEditing
                                    inManagedContext:[CoreDataManager context]];
+    
     if(_songIAmEditing.album)
     {
         [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];
     }
+    
     _songIAmEditing.album = newAlbum;
-    if(_songIAmEditing.artist){
-        newAlbum.artist = _songIAmEditing.artist;
+    if(_songIAmEditing.artist)
+    {
+        _songIAmEditing.album.artist = _songIAmEditing.artist;
     }
     
     __weak MZSongModifierTableView *weakself = self;
@@ -651,25 +632,40 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     });
 }
 
-- (void)existingArtistHasBeenChosen:(NSNotification *)notification
+- (void)existingArtistHasBeenChosen:(Artist *)artist
 {
-    if([notification.name isEqualToString:@"existing artist chosen"]){
-        if(_songIAmEditing.artist){
+    if(_songIAmEditing.artist)
+    {
+        if(! [_songIAmEditing.artist.artist_id isEqualToString:artist.artist_id])
             [MZCoreDataModelDeletionService removeSongFromItsArtist:_songIAmEditing];
-        }
-        _songIAmEditing.artist = (Artist *)notification.object;
-
-        __weak MZSongModifierTableView *weakself = self;
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, updateCellWithAnimationFadeDelay * NSEC_PER_SEC);
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            
-            [weakself beginUpdates];
-            [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]]
-                        withRowAnimation:UITableViewRowAnimationFade];
-            [weakself endUpdates];
-            [weakself reloadData];
-        });
     }
+    
+    if(_songIAmEditing.album)
+    {
+        if(_songIAmEditing.album.artist)
+        {
+            //user picked a NEW artist, but songs album is still the same.
+            //remove song from album...
+            [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];
+        }
+        else
+            _songIAmEditing.album.artist = artist;
+    }
+
+    _songIAmEditing.artist = artist;
+    
+    __weak MZSongModifierTableView *weakself = self;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, updateCellWithAnimationFadeDelay * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        
+        [weakself beginUpdates];
+        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]]
+                        withRowAnimation:UITableViewRowAnimationFade];
+        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
+                        withRowAnimation:UITableViewRowAnimationFade];
+        [weakself endUpdates];
+        [weakself reloadData];
+    });
 }
 
 #pragma mark - UIActionSheet methods
@@ -681,15 +677,23 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             case 0:
             {
                 if(! _songIAmEditing.artist){  //add song to an existing artist
-                    ExistingArtistPickerTableViewController *vc = [[ExistingArtistPickerTableViewController alloc]
-                                                                   initWithCurrentArtist:_songIAmEditing.artist];
+                    ExistingArtistPickerTableViewController *vc;
+                    Artist *artist = _songIAmEditing.artist;
+                    vc = [[ExistingArtistPickerTableViewController alloc] initWithCurrentArtist:artist
+                                                                   existingEntityPickerDelegate:self];
                     [self.VC.navigationController pushViewController:vc animated:YES];
                 } else if(_songIAmEditing.artist){  //remove from current artist
-                    [MZCoreDataModelDeletionService removeSongFromItsArtist:_songIAmEditing];
+                    //order of these two calls matters!
                     [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];
+                    [MZCoreDataModelDeletionService removeSongFromItsArtist:_songIAmEditing];
                     _songIAmEditing.artist = nil;
                     _songIAmEditing.album = nil;
-                    [self reloadData];
+                    NSIndexPath *path1 = [NSIndexPath indexPathForRow:1 inSection:0];
+                    NSIndexPath *path2 = [NSIndexPath indexPathForRow:2 inSection:0];
+                    [self beginUpdates];
+                    [self reloadRowsAtIndexPaths:@[path1, path2]
+                                withRowAnimation:UITableViewRowAnimationFade];
+                    [self endUpdates];
                 }
             }
                 break;
@@ -708,8 +712,11 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     [self.VC.navigationController pushViewController:vc animated:YES];
                     
                 } else if(_songIAmEditing.artist){//choose different artist
-                    ExistingArtistPickerTableViewController *vc = [[ExistingArtistPickerTableViewController alloc]
-                                                                   initWithCurrentArtist:_songIAmEditing.artist];
+                    ExistingArtistPickerTableViewController *vc;
+                    Artist *artist = _songIAmEditing.artist;
+                    vc = [[ExistingArtistPickerTableViewController alloc] initWithCurrentArtist:artist
+                                                                   existingEntityPickerDelegate:self];
+
                     [self.VC.navigationController pushViewController:vc animated:YES];
                 }
                 break;
@@ -729,7 +736,6 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                                     notificationNameToPost:@"DoneEditingArtistField"
                                                fullScreen:fullscreen];
                     [self.VC.navigationController pushViewController:vc animated:YES];
-                    
                 } else
                     break;
             }
@@ -743,7 +749,12 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 if(_songIAmEditing.album){  //remove song from album (and reset some data)
                     [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];
                     _songIAmEditing.album = nil;
-                    [self reloadData];
+                    NSIndexPath *path1 = [NSIndexPath indexPathForRow:1 inSection:0];
+                    NSIndexPath *path2 = [NSIndexPath indexPathForRow:2 inSection:0];
+                    [self beginUpdates];
+                    [self reloadRowsAtIndexPaths:@[path1, path2]
+                                withRowAnimation:UITableViewRowAnimationFade];
+                    [self endUpdates];
                 } else{ //choose existing album
                     
                     ExistingAlbumPickerTableViewController *vc;
@@ -795,7 +806,12 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     //remove song from album
                     [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];
                     _songIAmEditing.album = nil;
-                    [self reloadData];
+                    NSIndexPath *path1 = [NSIndexPath indexPathForRow:1 inSection:0];
+                    NSIndexPath *path2 = [NSIndexPath indexPathForRow:2 inSection:0];
+                    [self beginUpdates];
+                    [self reloadRowsAtIndexPaths:@[path1, path2]
+                                withRowAnimation:UITableViewRowAnimationFade];
+                    [self endUpdates];
                 }
                 break;
             default:

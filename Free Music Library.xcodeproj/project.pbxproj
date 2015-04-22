@@ -61,7 +61,6 @@
 		87408ED21AE4789D00267C3A /* Artist.m in Sources */ = {isa = PBXBuildFile; fileRef = 87408ED11AE4789D00267C3A /* Artist.m */; };
 		87440EE81A9EC07300C4DDB8 /* OperationQueuesSingeton.m in Sources */ = {isa = PBXBuildFile; fileRef = 87440EE71A9EC07300C4DDB8 /* OperationQueuesSingeton.m */; };
 		87449AF419971A58009F01EA /* AppDelegateSetupHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 87449AF319971A58009F01EA /* AppDelegateSetupHelper.m */; };
-		874698D01AC3D481003CEE2D /* MZQueueSongCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 874698CF1AC3D481003CEE2D /* MZQueueSongCell.m */; };
 		87480DAB192C1FBD005CC0A4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DAA192C1FBD005CC0A4 /* CoreGraphics.framework */; };
 		87480DAD192C1FBD005CC0A4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87480DAC192C1FBD005CC0A4 /* UIKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		87480DB3192C1FBD005CC0A4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 87480DB1192C1FBD005CC0A4 /* InfoPlist.strings */; };
@@ -325,8 +324,6 @@
 		87440EE71A9EC07300C4DDB8 /* OperationQueuesSingeton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OperationQueuesSingeton.m; sourceTree = "<group>"; };
 		87449AF219971A58009F01EA /* AppDelegateSetupHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegateSetupHelper.h; sourceTree = "<group>"; };
 		87449AF319971A58009F01EA /* AppDelegateSetupHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegateSetupHelper.m; sourceTree = "<group>"; };
-		874698CE1AC3D481003CEE2D /* MZQueueSongCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZQueueSongCell.h; sourceTree = "<group>"; };
-		874698CF1AC3D481003CEE2D /* MZQueueSongCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZQueueSongCell.m; sourceTree = "<group>"; };
 		87480DA5192C1FBD005CC0A4 /* Free Music Library.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Free Music Library.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		87480DA8192C1FBD005CC0A4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		87480DAA192C1FBD005CC0A4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -1596,8 +1593,6 @@
 				876335261A8496D000A229C4 /* MZTableViewCell.m */,
 				87FCD02A19A5BC0B00C600D3 /* CustomYoutubeTableViewCell.h */,
 				87FCD02B19A5BC0B00C600D3 /* CustomYoutubeTableViewCell.m */,
-				874698CE1AC3D481003CEE2D /* MZQueueSongCell.h */,
-				874698CF1AC3D481003CEE2D /* MZQueueSongCell.m */,
 			);
 			name = "Custom cells";
 			sourceTree = "<group>";
@@ -1950,7 +1945,6 @@
 				87408EC91AE4789C00267C3A /* AlbumAlbumArt.m in Sources */,
 				87FA136F1A99559100A1902F /* FetchVideoInfoOperation.m in Sources */,
 				879AB33D19F1D2E100FD6582 /* PlaybackQueue.m in Sources */,
-				874698D01AC3D481003CEE2D /* MZQueueSongCell.m in Sources */,
 				874DA0951ABA11DD003D69D6 /* MRWeakProxy.m in Sources */,
 				87D37438199AA99700D3B70B /* UIColor+ColorComparison.m in Sources */,
 				87BA3A5D1AA9467300A3ACA3 /* PlaybackContext.m in Sources */,

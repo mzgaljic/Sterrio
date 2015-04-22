@@ -219,12 +219,6 @@ static short numberTimesViewHasBeenShown = 0;
             [self preDealloc];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [self.tableView didReceiveMemoryWarning];
-    [super didReceiveMemoryWarning];
-}
-
 - (void)checkCurrentPlaybackState
 {
     if(videoPlayerViewController){

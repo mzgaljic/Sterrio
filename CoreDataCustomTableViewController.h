@@ -42,4 +42,6 @@
 - (void)setSearchBar:(MySearchBar *)searchBar;
 - (UIColor *)colorForNowPlayingItem;
 
+- (void)prepareFetchedResultsControllerForDealloc;
+
 @end

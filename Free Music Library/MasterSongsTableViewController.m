@@ -90,10 +90,10 @@ static BOOL haveCheckedCoreDataInit = NO;
 #pragma mark - View Controller life cycle
 - (void)viewWillAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
+    //order of calls matters here...
     self.searchBar = [self.tableViewDataSourceAndDelegate setUpSearchBar];
-    
     [super setSearchBar:self.searchBar];
+    [super viewWillAppear:animated];
 }
 
 - (void)viewDidLoad
@@ -188,6 +188,7 @@ static BOOL haveCheckedCoreDataInit = NO;
 
 - (void)dealloc
 {
+    [super prepareFetchedResultsControllerForDealloc];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -206,15 +207,13 @@ static BOOL haveCheckedCoreDataInit = NO;
                           delay:0
                         options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionCurveEaseOut
                      animations:^{
-                         self.view.backgroundColor = [UIColor defaultAppColorScheme];
-                         int statusBarHeight = [AppEnvironmentConstants statusBarHeight];
                          self.tableView.frame = CGRectMake(0,
-                                                           statusBarHeight,
+                                                           0,
                                                            self.view.frame.size.width,
                                                            self.view.frame.size.height);
                      }
                      completion:nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysVisible
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysInvisible
                                                         object:[NSNumber numberWithBool:YES]];
 }
 
@@ -226,7 +225,6 @@ static BOOL haveCheckedCoreDataInit = NO;
                           delay:0
                         options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionCurveEaseOut
                      animations:^{
-                         self.view.backgroundColor = [UIColor clearColor];
                          CGRect viewFrame = self.view.frame;
                          self.tableView.frame = CGRectMake(originalTableViewFrame.origin.x,
                                                            originalTableViewFrame.origin.y,
@@ -236,7 +234,7 @@ static BOOL haveCheckedCoreDataInit = NO;
                      completion:^(BOOL finished) {
                          originalTableViewFrame = CGRectNull;
                      }];
-    [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysVisible
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysInvisible
                                                          object:[NSNumber numberWithBool:NO]];
 }
 
@@ -284,7 +282,6 @@ static BOOL haveCheckedCoreDataInit = NO;
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [self setNeedsStatusBarAppearanceUpdate];
-
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 

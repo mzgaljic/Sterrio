@@ -10,10 +10,8 @@
 #import "CoreDataManager.h"
 #import "AppEnvironmentConstants.h"
 #import "Album.h"
-#import "UIImage+colorImages.h"
 #import "MySearchBar.h"
 #import "AllAlbumsDataSource.h"
-#import "MRProgressOverlayView.h"
 
 @interface ExistingAlbumPickerTableViewController ()
 {
@@ -61,9 +59,10 @@ existingEntityPickerDelegate:(id <ExistingEntityPickerDelegate>)delegate
 #pragma mark - View Controller life cycle
 - (void)viewWillAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
+    //order of calls matters here...
     self.searchBar = [self.tableViewDataSourceAndDelegate setUpSearchBar];
     [super setSearchBar:self.searchBar];
+    [super viewWillAppear:animated];
     self.title = @"All Albums";
 }
 
@@ -83,6 +82,7 @@ existingEntityPickerDelegate:(id <ExistingEntityPickerDelegate>)delegate
 
 - (void)dealloc
 {
+    [super prepareFetchedResultsControllerForDealloc];
     self.delegate = nil;
 }
 
@@ -101,15 +101,13 @@ existingEntityPickerDelegate:(id <ExistingEntityPickerDelegate>)delegate
                           delay:0
                         options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionCurveEaseOut
                      animations:^{
-                         self.view.backgroundColor = [UIColor defaultAppColorScheme];
-                         int statusBarHeight = [AppEnvironmentConstants statusBarHeight];
                          self.tableView.frame = CGRectMake(0,
-                                                           statusBarHeight,
+                                                           0,
                                                            self.view.frame.size.width,
                                                            self.view.frame.size.height);
                      }
                      completion:nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysVisible
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysInvisible
                                                         object:[NSNumber numberWithBool:YES]];
 }
 
@@ -118,11 +116,10 @@ const float searchBecomingInactiveAnimationDuration = 0.3;
 {
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     
-    [UIView animateWithDuration:searchBecomingInactiveAnimationDuration
+    [UIView animateWithDuration:0.3
                           delay:0
                         options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionCurveEaseOut
                      animations:^{
-                         self.view.backgroundColor = [UIColor clearColor];
                          CGRect viewFrame = self.view.frame;
                          self.tableView.frame = CGRectMake(originalTableViewFrame.origin.x,
                                                            originalTableViewFrame.origin.y,
@@ -132,7 +129,7 @@ const float searchBecomingInactiveAnimationDuration = 0.3;
                      completion:^(BOOL finished) {
                          originalTableViewFrame = CGRectNull;
                      }];
-    [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysVisible
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysInvisible
                                                         object:[NSNumber numberWithBool:NO]];
 }
 
@@ -160,30 +157,21 @@ const float searchBecomingInactiveAnimationDuration = 0.3;
     });
 }
 
-#pragma mark - Rotation status bar methods
+#pragma mark - Rotation and status bar methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [self setNeedsStatusBarAppearanceUpdate];
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
-#pragma mark - Counting Albums in core data
-- (int)numberOfAlbumsInCoreDataModel
+- (BOOL)prefersStatusBarHidden
 {
-    //count how many instances there are of the Artist entity in core data
-    NSManagedObjectContext *context = [CoreDataManager context];
-    int count = 0;
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Album" inManagedObjectContext:context];
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    [fetchRequest setEntity:entity];
-    [fetchRequest setIncludesPropertyValues:NO];
-    [fetchRequest setIncludesSubentities:NO];
-    NSError *error = nil;
-    NSUInteger tempCount = [context countForFetchRequest: fetchRequest error: &error];
-    if(error == nil){
-        count = (int)tempCount;
-    }
-    return count;
+    if(_tableViewDataSourceAndDelegate.displaySearchResults)
+        return YES;
+    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))
+        return YES;
+    else
+        return NO;
 }
 
 #pragma mark - fetching and sorting

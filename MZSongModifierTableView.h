@@ -47,7 +47,6 @@
 - (void)preDealloc;
 - (void)viewWillAppear:(BOOL)animated;
 - (void)viewDidAppear:(BOOL)animated;
-- (void)didReceiveMemoryWarning;
 
 - (void)provideDefaultAlbumArt:(UIImage *)image;
 

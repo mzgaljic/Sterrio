@@ -89,12 +89,6 @@ static int timesVCHasAppeared = 0;
     self.tableView = nil;
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [self.tableView didReceiveMemoryWarning];
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark - Nav bar code
 - (void)setUpNavBarButtons
 {

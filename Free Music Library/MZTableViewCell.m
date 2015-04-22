@@ -19,12 +19,14 @@
 @interface MZTableViewCell ()
 {
     short lastPrefSizeUsed;
+    UILabel *coloredDotLabel;  //only used in the playbackQueueVc
 }
 @end
 @implementation MZTableViewCell
 short const textLabelsPaddingFromImgView = 10;
 short const editingModeChevronWidthCompensation = 55;
 short const imgPaddingFromLeft = 5;
+short const dotLabelPadding = 20;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -36,12 +38,15 @@ short const imgPaddingFromLeft = 5;
 
 - (BOOL)shouldReloadCellImages
 {
+    if(self.optOutOfImageView || self.displayQueueSongsMode)
+        return NO;
+    
     //cell images get blurry when going from small to big size
     BOOL retVal = NO;
-    if(lastPrefSizeUsed < [AppEnvironmentConstants preferredSizeSetting]
-       && abs(lastPrefSizeUsed - [AppEnvironmentConstants preferredSizeSetting]) >= 2)
+    if(lastPrefSizeUsed != [AppEnvironmentConstants preferredSizeSetting]){
         retVal = YES;
-    lastPrefSizeUsed = [AppEnvironmentConstants preferredSizeSetting];
+        lastPrefSizeUsed = [AppEnvironmentConstants preferredSizeSetting];
+    }
     return retVal;
 }
 
@@ -52,12 +57,31 @@ short const imgPaddingFromLeft = 5;
     [self.contentView layoutIfNeeded];
     
     // Makes imageView get placed in the corner
-    int cellHeight = self.frame.size.height;
-    self.imageView.frame = CGRectMake(imgPaddingFromLeft,
-                                      imgPaddingFromLeft/2,
-                                      cellHeight - imgPaddingFromLeft,
-                                      cellHeight - imgPaddingFromLeft);
-    self.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    if(! self.optOutOfImageView){
+        int xOrigin;
+        if(self.displayQueueSongsMode)
+            xOrigin = imgPaddingFromLeft + dotLabelPadding;
+        else
+            xOrigin = imgPaddingFromLeft;
+
+        int cellHeight = self.frame.size.height;
+        self.imageView.frame = CGRectMake(xOrigin,
+                                          imgPaddingFromLeft/2,
+                                          cellHeight - imgPaddingFromLeft,
+                                          cellHeight - imgPaddingFromLeft);
+        self.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        
+        if(self.isRepresentingAQueuedSong){
+            CGRect frame = self.contentView.frame;
+            coloredDotLabel = [[UILabel alloc] initWithFrame:CGRectMake(4,
+                                                                        frame.size.height/2 - 10,
+                                                                        20, 20)];
+            coloredDotLabel.text = @"•";
+            coloredDotLabel.textColor = [UIColor defaultAppColorScheme];
+            coloredDotLabel.font = [UIFont systemFontOfSize:40];
+            [self.contentView addSubview:coloredDotLabel];
+        }
+    }
     
     [self setLabelsFramesBasedOnEditingMode];
     UIFont *textLabelFont;
@@ -75,7 +99,6 @@ short const imgPaddingFromLeft = 5;
                                   withMinimumSize:suggestedFontSize - 10];
     
     self.textLabel.font = textLabelFont;
-    
     CGSize detailTextSize = self.detailTextLabel.frame.size;
     self.detailTextLabel.font = [MZTableViewCell findAdaptiveFontWithName:regularFontName
                                                            forUILabelSize:detailTextSize
@@ -110,6 +133,9 @@ short const imgPaddingFromLeft = 5;
 
 - (UIEdgeInsets)layoutMargins
 {
+    if(self.displayQueueSongsMode || self.optOutOfImageView)
+        return UIEdgeInsetsZero;
+    
     //it should match the padding (created in the method above), so the line starts exactly where
     //the album art starts
     int ios7PlusEditingInsetVal = 43;
@@ -122,6 +148,10 @@ short const imgPaddingFromLeft = 5;
 - (void)prepareForReuse
 {
     self.anAlbumArtClass = nil;
+    self.optOutOfImageView = NO;
+    self.displayQueueSongsMode = NO;
+    self.isRepresentingAQueuedSong = NO;
+    [coloredDotLabel removeFromSuperview];
     [super prepareForReuse];
 }
 
@@ -145,10 +175,16 @@ short const imgPaddingFromLeft = 5;
 {
     int xOrigin, yOrigin, width, height;
     
-    xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
-    width = self.frame.size.width - xOrigin;
-    height = self.frame.size.height * 0.35;
+    if(self.optOutOfImageView){
+        xOrigin = textLabelsPaddingFromImgView;
+        width = self.frame.size.width - xOrigin;
+    } else{
+        int imgViewWidth = self.imageView.frame.size.width;
+        xOrigin = self.imageView.frame.origin.x + imgViewWidth + textLabelsPaddingFromImgView;
+        width = self.frame.size.width - xOrigin;
+    }
     
+    height = self.frame.size.height * 0.35;
     if(self.detailTextLabel.text == nil)
         //there is not detail label, just center this one.
         yOrigin = (self.frame.size.height/2) - (height/2);
@@ -162,10 +198,14 @@ short const imgPaddingFromLeft = 5;
 {
     int xOrigin, yOrigin, width, height;
     
-    xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
+    if(self.optOutOfImageView){
+        xOrigin = textLabelsPaddingFromImgView;
+    } else{
+        int imgViewWidth = self.imageView.frame.size.width;
+        xOrigin = self.imageView.frame.origin.x + imgViewWidth + textLabelsPaddingFromImgView;
+    }
     width = self.frame.size.width - xOrigin - editingModeChevronWidthCompensation;
     height = self.frame.size.height * 0.35;
-    
     if(self.detailTextLabel.text == nil)
         //there is not detail label, just center this one.
         yOrigin = (self.frame.size.height/2) - (height/2);
@@ -177,7 +217,13 @@ short const imgPaddingFromLeft = 5;
 
 - (CGRect)detailTextLabelFrameWithoutEditingMode
 {
-    int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
+    int xOrigin;
+    if(self.optOutOfImageView){
+        xOrigin = textLabelsPaddingFromImgView;
+    } else{
+        int imgViewWidth = self.imageView.frame.size.width;
+        xOrigin = self.imageView.frame.origin.x + imgViewWidth + textLabelsPaddingFromImgView;
+    }
     int width = self.frame.size.width - xOrigin;
     int yOrigin = self.frame.size.height * .53;  //should be 53% from top
     int height = self.frame.size.height * 0.35;
@@ -189,9 +235,15 @@ short const imgPaddingFromLeft = 5;
 
 - (CGRect)detailTextLabelFrameInEditingMode
 {
-    int xOrigin = self.imageView.frame.origin.x + self.imageView.frame.size.width + textLabelsPaddingFromImgView;
-    int yOrigin = self.frame.size.height * .53;  //should be 53% from top
+    int xOrigin;
+    if(self.optOutOfImageView){
+        xOrigin = textLabelsPaddingFromImgView;
+    } else{
+        int imgViewWidth = self.imageView.frame.size.width;
+        xOrigin = self.imageView.frame.origin.x + imgViewWidth + textLabelsPaddingFromImgView;
+    }
     int width = self.frame.size.width - xOrigin - editingModeChevronWidthCompensation;
+    int yOrigin = self.frame.size.height * .53;  //should be 53% from top
     int height = self.frame.size.height * 0.35;
 
     return CGRectMake(xOrigin,

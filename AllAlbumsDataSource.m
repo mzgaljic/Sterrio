@@ -174,10 +174,20 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         //check if a song in this album is the now playing song
         BOOL albumHasNowPlaying = NO;
         NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+        
+        NSMutableString *albumDetailContextId = [NSMutableString string];
+        [albumDetailContextId appendString:NSStringFromClass([AlbumItemViewController class])];
+        [albumDetailContextId appendString:album.album_id];
+        
+        PlaybackContext *albumDetailContext = [[PlaybackContext alloc] initWithFetchRequest:nil
+                                                                            prettyQueueName:@"" contextId:albumDetailContextId];
         for(Song *albumSong in album.albumSongs)
         {
-            //using general album context here becasue the albumItemVC uses its parents playback context
-            if([nowPlayingObj isEqualToSong:albumSong compareWithContext:self.playbackContext])
+            //need to check both the general album context and the albumDetailVC context.
+            //...since an entire album or just a specific album can be queued up.
+            if([nowPlayingObj isEqualToSong:albumSong compareWithContext:self.playbackContext]
+               ||
+               [nowPlayingObj isEqualToSong:albumSong compareWithContext:albumDetailContext])
             {
                 albumHasNowPlaying = YES;
                 break;
@@ -385,6 +395,41 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
                                             size:headerFontSize];
 }
 
+#pragma mark - efficiently updating individual cells as needed
+- (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification
+{
+    if(self.playbackContext == nil)
+        return;
+    Song *oldsong = (Song *)[notification object];
+    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
+    Song *newSong = nowPlaying.nowPlaying;
+    
+    Album *oldAlbum = oldsong.album;
+    Album *newAlbum = newSong.album;
+    NSIndexPath *oldPath, *newPath;
+    
+    //tries to obtain the path to the changed albums if possible.
+    if(self.displaySearchResults){
+        oldPath = [self indexPathInSearchTableForObject:oldAlbum];
+        newPath = [self indexPathInSearchTableForObject:newAlbum];
+    } else{
+        oldPath = [self.fetchedResultsController indexPathForObject:oldAlbum];
+        newPath = [self.fetchedResultsController indexPathForObject:newAlbum];
+    }
+    
+    if(oldPath || newPath){
+        [self.tableView beginUpdates];
+        if(oldPath)
+            [self.tableView reloadRowsAtIndexPaths:@[oldPath]
+                             withRowAnimation:UITableViewRowAnimationFade];
+        if(newPath != nil && newPath != oldPath)
+            [self.tableView reloadRowsAtIndexPaths:@[newPath]
+                             withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView endUpdates];
+    }
+}
+
+
 #pragma mark - MGSwipeTableCell delegates
 - (BOOL)swipeTableCell:(MGSwipeTableCell*)cell canSwipe:(MGSwipeDirection)direction
 {
@@ -402,11 +447,15 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     swipeSettings.transition = MGSwipeTransitionBorder;
     expansionSettings.buttonIndex = 0;
     UIColor *initialExpansionColor = [AppEnvironmentConstants expandingCellGestureInitialColor];
+    NSIndexPath *cellPath = [self.tableView indexPathForCell:cell];
+    __weak NSIndexPath *weakPath = cellPath;
+    __weak UITableView *weaktable = self.tableView;
+    __weak AllAlbumsDataSource *weakSelf = self;
     
     if(direction == MGSwipeDirectionLeftToRight){
         //queue
-        Album *album = [self.fetchedResultsController
-                        objectAtIndexPath:[self.tableView indexPathForCell:cell]];
+        
+        Album *album = [self.fetchedResultsController objectAtIndexPath:cellPath];
         
         expansionSettings.fillOnTrigger = NO;
         expansionSettings.threshold = 1;
@@ -415,7 +464,6 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         swipeSettings.transition = MGSwipeTransitionClipCenter;
         swipeSettings.threshold = 9999;
         
-        __weak AllAlbumsDataSource *weakself = self;
         __weak Album *weakAlbum = album;
         __weak MGSwipeTableCell *weakCell = cell;
         return @[[MGSwipeButton buttonWithTitle:@"Queue"
@@ -425,8 +473,18 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
                                            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
                                            NSLog(@"Queing up: %@", weakAlbum.albumName);
                                            
-                                           PlaybackContext *context = [weakself contextForSpecificAlbum:weakAlbum];
-                                           [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
+                                           PlaybackContext *context = [weakSelf contextForSpecificAlbum:weakAlbum];
+                                           NSArray *cnxt = @[context];
+                                           [MusicPlaybackController queueUpNextSongsWithContexts:cnxt];
+                                           NSInteger fadeAnimation = UITableViewRowAnimationFade;
+                                           //must refresh queued album since the album itself wont
+                                           //turn to the now playing color...the song will. album cell
+                                           //needs to be reloaded for it to detect that one of its songs
+                                           //is the now playing one.
+                                           [weaktable beginUpdates];
+                                           [weaktable reloadRowsAtIndexPaths:@[weakPath]
+                                                            withRowAnimation:fadeAnimation];
+                                           [weaktable endUpdates];
                                            [weakCell refreshContentView];
                                            return YES;
                                        }]];
@@ -436,17 +494,14 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
         swipeSettings.transition = MGSwipeTransitionBorder;
         
-        __weak AllAlbumsDataSource *weakSelf = self;
         MGSwipeButton *delete = [MGSwipeButton buttonWithTitle:@"Delete"
                                                backgroundColor:expansionSettings.expansionColor
                                                        padding:15
                                                       callback:^BOOL(MGSwipeTableCell *sender)
                                  {
-                                     NSIndexPath *indexPath;
-                                     indexPath= [weakSelf.tableView indexPathForCell:sender];
                                      [weakSelf tableView:weakSelf.tableView
                                       commitEditingStyle:UITableViewCellEditingStyleDelete
-                                       forRowAtIndexPath:indexPath];
+                                       forRowAtIndexPath:weakPath];
                                      return NO; //don't autohide to improve delete animation
                                  }];
         return @[delete];

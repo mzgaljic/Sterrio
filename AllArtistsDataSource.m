@@ -133,14 +133,24 @@
         cell = [[MZTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                       reuseIdentifier:self.cellReuseId];
     
+    cell.optOutOfImageView = YES;
+    
     if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Default)
     {
-        //check if artist is now playing context, if so make cell changes here...
+        UIColor *appTheme = [[UIColor defaultAppColorScheme] lighterColor];
+        short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
+        MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
+                                                                                   color:appTheme];
         
+        cell.editingAccessoryView = coloredDisclosureIndicator;
+        cell.accessoryView = coloredDisclosureIndicator;
+        
+        //check if artist is now playing context, if so make cell changes here...
     }
     else if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Single_Artist_Picker)
     {
-        BOOL isCurrentlySelectedArtist = [self.selectedArtist.artistName isEqualToString:artist.artist_id];
+        BOOL isCurrentlySelectedArtist = [Artist isArtist:self.selectedArtist
+                                            equalToArtist:artist];
         
         if(isCurrentlySelectedArtist){
             UIColor *appThemeSuperLight = [[[[[UIColor defaultAppColorScheme] lighterColor] lighterColor] lighterColor] lighterColor];
@@ -155,18 +165,9 @@
             cell.detailTextLabel.textColor = [UIColor blackColor];
         }
     }
-
-    UIColor *appTheme = [[UIColor defaultAppColorScheme] lighterColor];
-    short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
-    MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
-                                                                               color:appTheme];
-    
-    cell.editingAccessoryView = coloredDisclosureIndicator;
-    cell.accessoryView = coloredDisclosureIndicator;
-    cell.textLabel.attributedText = [ArtistTableViewFormatter formatArtistLabelUsingArtist:artist];
+    cell.textLabel.text = artist.artistName;
     cell.detailTextLabel.text = [self stringForArtistDetailLabelGivenArtist:artist];
     cell.delegate = self;
-    
     #warning NOT setting artist textlabel color based on whether or not a song from this artist is playing (in same context)!
     return cell;
 }
@@ -299,6 +300,41 @@
     header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                             size:headerFontSize];
 }
+
+#pragma mark - efficiently updating individual cells as needed
+- (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification
+{
+    if(self.playbackContext == nil)
+        return;
+    Song *oldsong = (Song *)[notification object];
+    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
+    Song *newSong = nowPlaying.nowPlaying;
+    
+    Artist *oldArtist = oldsong.artist;
+    Artist *newArtist = newSong.artist;
+    NSIndexPath *oldPath, *newPath;
+    
+    //tries to obtain the path to the changed artists if possible.
+    if(self.displaySearchResults){
+        oldPath = [self indexPathInSearchTableForObject:oldArtist];
+        newPath = [self indexPathInSearchTableForObject:newArtist];
+    } else{
+        oldPath = [self.fetchedResultsController indexPathForObject:oldArtist];
+        newPath = [self.fetchedResultsController indexPathForObject:newArtist];
+    }
+    
+    if(oldPath || newPath){
+        [self.tableView beginUpdates];
+        if(oldPath)
+            [self.tableView reloadRowsAtIndexPaths:@[oldPath]
+                                  withRowAnimation:UITableViewRowAnimationFade];
+        if(newPath != nil && newPath != oldPath)
+            [self.tableView reloadRowsAtIndexPaths:@[newPath]
+                                  withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView endUpdates];
+    }
+}
+
 
 #pragma mark - MGSwipeTableCell delegates
 - (BOOL)swipeTableCell:(MGSwipeTableCell*)cell canSwipe:(MGSwipeDirection)direction

@@ -17,7 +17,7 @@ short const dummyTabIndex = 2;
     //'replaceNavControllerOnScreenWithNavController'
     NSUInteger numTimesViewHasAppeared;
     
-    BOOL alwaysKeepStatusBarVisible;
+    BOOL alwaysKeepStatusBarInvisible;
     BOOL tabBarAnimationInProgress;
     BOOL changingTabs;
     UIInterfaceOrientation lastVisibleTabBarOrientation;
@@ -71,7 +71,7 @@ short const dummyTabIndex = 2;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(portraitStatusBarStateChanging:)
-                                                 name:MZMainScreenVCStatusBarAlwaysVisible
+                                                 name:MZMainScreenVCStatusBarAlwaysInvisible
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(hideTabBarAnimated:)
@@ -86,7 +86,7 @@ short const dummyTabIndex = 2;
 
 - (void)portraitStatusBarStateChanging:(NSNotification *)notification
 {
-    alwaysKeepStatusBarVisible = [(NSNumber *)notification.object boolValue];
+    alwaysKeepStatusBarInvisible = [(NSNumber *)notification.object boolValue];
     [UIView animateWithDuration:0.35 animations:^{
         [self setNeedsStatusBarAppearanceUpdate];
     }];
@@ -411,8 +411,8 @@ short const dummyTabIndex = 2;
 #pragma nav bar helper
 - (BOOL)prefersStatusBarHidden
 {
-    if(alwaysKeepStatusBarVisible)
-        return NO;
+    if(alwaysKeepStatusBarInvisible)
+        return YES;
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication]statusBarOrientation];
     if(orientation == UIInterfaceOrientationLandscapeLeft
        || orientation == UIInterfaceOrientationLandscapeRight){
