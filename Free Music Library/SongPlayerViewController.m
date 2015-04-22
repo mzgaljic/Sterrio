@@ -180,7 +180,6 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
     [[SongPlayerCoordinator sharedInstance] begingExpandingVideoPlayer];
     
     UIBarButtonItem *share = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
@@ -199,15 +198,14 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
                                                                action:@selector(dismissVCButtonTapped)];
     self.navigationItem.leftBarButtonItem = downBtn;
     
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     BOOL positionedSliderAlready = NO;
-    if(orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown){
+    if(UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)){
         [self positionMusicButtonsOnScreenAndSetThemUp];
         [self positionPlaybackSliderOnScreen];
         positionedSliderAlready = YES;
     }
     
-    [self checkDeviceOrientation];
+    [self checkInterfaceOrientation];
     if(! positionedSliderAlready)
         [self positionPlaybackSliderOnScreen];
     
@@ -216,14 +214,13 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     
     //check if at least 1 second of video has loaded. If so, we should consider the video as
-    //playing back, or at least trying to. We can then set up the slider and totalDuration label.
+    //playing back, or at least trying to. We can then enable or disable the slider accordingly.
     BOOL playbackUnderway = NO;
     NSArray * timeRanges = player.currentItem.loadedTimeRanges;
     if (timeRanges && [timeRanges count]){
         CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
         NSUInteger secondsBuffed = CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration));
         if(secondsBuffed > 0){
-            [self playbackOfVideoHasBegunRespectPlayPauseState];
             playbackUnderway = YES;
         }
     }
@@ -234,20 +231,21 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     }
     
      //make sure slider hint view is at the same height as the nav bar...only in portrait
-    if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
+    if(UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation))
         [self setupSliderHintView];
     UIColor *niceGrey = [[UIColor alloc] initWithRed:106.0/255
                                                green:114.0/255
                                                 blue:121.0/255
                                                alpha:1];
     _artistAndAlbumLabel.textColor = niceGrey;
-    
     [self setNeedsStatusBarAppearanceUpdate];
     
     if([MusicPlaybackController avplayerTimeObserver] == nil){
         [self restoreTimeObserver];
         firstTimeUpdatingSliderSinceShowingPlayer = YES;
     }
+    
+    [self displayTotalSliderAndLabelDuration];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -321,6 +319,8 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
                 [self configureSongAndArtistAlbumLabelFramesAnimated:NO onRotation:NO];
         }
     }
+    
+    [self displayTotalSliderAndLabelDuration];
 }
 
 - (void)setupSliderHintView
@@ -335,7 +335,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     self.sliderHintView.frame = newFrame;
 }
 
-- (void)checkDeviceOrientation
+- (void)checkInterfaceOrientation
 {
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if(orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown)
@@ -345,7 +345,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 
 - (BOOL)prefersStatusBarHidden
 {
-    if(lastKnownOrientation == UIInterfaceOrientationLandscapeLeft || lastKnownOrientation == UIInterfaceOrientationLandscapeRight){
+    if(UIInterfaceOrientationIsLandscape(lastKnownOrientation)){
         [self.navigationController setNavigationBarHidden:YES];
         [[UIApplication sharedApplication] setStatusBarHidden:YES];
         return YES;
@@ -366,7 +366,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
         deferTimeLabelAdjustmentUntilPortrait = NO;
         [self accomodateInterfaceBasedOnDurationLabelSize:self.totalDurationLabel];
     }
-    if(fromInterfaceOrientation != UIInterfaceOrientationPortrait)
+    if(! UIInterfaceOrientationIsPortrait(fromInterfaceOrientation))
         [self setupSliderHintView];
     
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
@@ -375,7 +375,8 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     [playerView newAirplayInUseMsgCenter:newCenter];
 }
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                duration:(NSTimeInterval)duration
 {
     short cancelButtonIndex = 2;
     [popup dismissWithClickedButtonIndex:cancelButtonIndex animated:NO];
@@ -383,20 +384,16 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     //and run the appropriate cancel code simply when the screen rotates. sadly...
     [VideoPlayerWrapper temporarilyDisableUpdatingPlayerView:NO];
     
-    if(lastKnownOrientation == UIInterfaceOrientationLandscapeLeft
-       && toInterfaceOrientation == UIInterfaceOrientationLandscapeRight)
-        return;  //we dont need to do anything, video player should still remain full screen.
-    if(lastKnownOrientation == UIInterfaceOrientationLandscapeRight
-       && toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft)
-        return;  //same reason as first if
-    if(lastKnownOrientation == toInterfaceOrientation)
-        return;
+    if(UIInterfaceOrientationIsLandscape(lastKnownOrientation)
+       && UIInterfaceOrientationIsLandscape(toInterfaceOrientation))
+        return; //we dont need to do anything, video player should still remain full screen.
+    
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     CGFloat screenWidth = screenRect.size.width;
     CGFloat screenHeight = screenRect.size.height;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     
-    if(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight || toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft){
+    if(UIInterfaceOrientationIsLandscape(toInterfaceOrientation)){
         CGRect newFrame = CGRectMake(0, 0, ceil(screenHeight +1), screenWidth);
         [[SongPlayerCoordinator sharedInstance] recordCurrentPlayerViewFrame:newFrame];
         [playerView setFrame:newFrame];  //make frame full screen
@@ -420,7 +417,8 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
         float videoFrameHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:widthOfScreenRoationIndependant];
         float playerFrameYTempValue = roundf(((heightOfScreenRotationIndependant / 2.0) /1.5));
         int playerYValue = nearestEvenInt((int)playerFrameYTempValue);
-        CGRect newFrame = CGRectMake(0,   playerYValue,
+        CGRect newFrame = CGRectMake(0,
+                                     playerYValue,
                                      widthOfScreenRoationIndependant,
                                      videoFrameHeight);
         [[SongPlayerCoordinator sharedInstance] recordCurrentPlayerViewFrame:newFrame];
@@ -719,8 +717,6 @@ static int accomodateInterfaceLabelsCounter = 0;
         [playButton setImage:playImg forState:UIControlStateNormal];
     }
     
-    [self displayTotalSliderAndLabelDuration];
-    
     NSUInteger test = CMTimeGetSeconds(player.currentItem.currentTime);
     if(player.currentItem)
         [_playbackSlider setValue:test animated:NO];
@@ -745,8 +741,6 @@ static int accomodateInterfaceLabelsCounter = 0;
     [playButton setImage:pauseImg forState:UIControlStateNormal];
     [MusicPlaybackController explicitlyPausePlayback:NO];
     [MusicPlaybackController resumePlayback];
-    
-    [self displayTotalSliderAndLabelDuration];
 }
 
 #pragma mark - Initializing & Registering Buttons
@@ -957,25 +951,9 @@ static int accomodateInterfaceLabelsCounter = 0;
     _songNameLabel.text = [MusicPlaybackController nowPlayingSong].songName;
     _artistAndAlbumLabel.text = [self generateArtistAndAlbumString];
     
-    //this const factor will provide a duration "feel" similar to the
-    //duration "8" on an iphone 6 width. This const factor will help us
-    //generate a duration value that gives the same feel on other devices
-    //with a different screen size.
-    float constantFactor = 1/119.0f;
-    
-    //durations also need to take into account the length of the strings they will
-    //be displaying.
-    float duration1 = constantFactor * phoneWidth;
-    for(int i = 0; i < _songNameLabel.text.length; i++){
-        duration1 += 0.13;
-    }
-    float duration2 = constantFactor * phoneWidth;
-    for(int i = 0; i < _artistAndAlbumLabel.text.length; i++){
-        duration2 += 0.13;
-    }
-    
-    _songNameLabel.scrollDuration = duration1;
-    _artistAndAlbumLabel.scrollDuration = duration2;
+    float labelScrollRate = phoneWidth / 25.0;
+    _songNameLabel.rate = labelScrollRate;
+    _artistAndAlbumLabel.rate = labelScrollRate;
     _songNameLabel.fadeLength = 6.0f;
     _artistAndAlbumLabel.fadeLength = 6.0f;
     UIFont *font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
@@ -1084,22 +1062,21 @@ static int accomodateInterfaceLabelsCounter = 0;
 {
     NSString *nameOfFontForTimeLabels = [AppEnvironmentConstants regularFontName];
     short timeLabelFontSize = _currentTimeLabel.font.pointSize;
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))
         return;
     
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     CGFloat screenHeight = screenRect.size.height;
     CGFloat screenWidth = screenRect.size.width;
     
-    int labelWidth = 43;  //hardcoded because i counted how wide it needs to be to fit our text (67 for including hours)
+    //hardcoded because i counted how wide it needs to be to fit our text (67 for including hours)
+    int labelWidth = 43;
     int labelHeight = 21;
     int padding = 10;
     
     //setup current time label
     int labelXValue = screenWidth * 0.02f;
     int yValue = screenHeight * 0.74f;
-    [_currentTimeLabel removeFromSuperview];
     [_currentTimeLabel setFrame:CGRectMake(labelXValue, yValue, labelWidth, labelHeight)];
     _currentTimeLabel.font = [UIFont fontWithName:nameOfFontForTimeLabels
                                              size:timeLabelFontSize];
@@ -1111,7 +1088,6 @@ static int accomodateInterfaceLabelsCounter = 0;
     //widthValue = self.playbackSlider.frame.size.width; //taken from autolayout
     int sliderWidth = screenWidth - ((labelXValue + labelWidth + padding) * 2);
     int sliderHeight = labelHeight;
-    [_playbackSlider removeFromSuperview];
     [_playbackSlider setFrame:CGRectMake(xValue, yValue +2, sliderWidth, sliderHeight)];
     _playbackSlider.transform = CGAffineTransformMakeScale(0.82, 0.82);  //make knob smaller
     [self.view addSubview:_playbackSlider];
@@ -1140,7 +1116,6 @@ static int accomodateInterfaceLabelsCounter = 0;
     //setup total duration label
     labelXValue = xValue + sliderWidth + padding;
     yValue = yValue;
-    [_totalDurationLabel removeFromSuperview];
     [_totalDurationLabel setFrame:CGRectMake(labelXValue, yValue, labelWidth, labelHeight)];
     _totalDurationLabel.font = [UIFont fontWithName:nameOfFontForTimeLabels
                                                size:timeLabelFontSize];
@@ -1519,12 +1494,10 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
 
 - (void)dismissVCButtonTapped
 {
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     [[SongPlayerCoordinator sharedInstance] beginShrinkingVideoPlayer];
     [self preDealloc];
-    if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
-
 
 #pragma mark - Key value observing stuff
 - (void)setupKeyvalueObservers

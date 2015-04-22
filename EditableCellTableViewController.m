@@ -38,8 +38,7 @@
 
 - (void)viewDidLoad
 {
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))
         [self setLandscapeTableViewContentValues];
     else
         [self setPortraitTableViewContentValues];

@@ -154,8 +154,9 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
 
 - (void)beginShrinkingVideoPlayer
 {
-    if(isVideoPlayerExpanded == NO)
+    if(isVideoPlayerExpanded == NO){
         return;
+    }
     
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     if(appDelegate.playerSnapshot){
@@ -171,7 +172,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
     __weak SongPlayerCoordinator *weakSelf = self;
     BOOL needLandscapeFrame = YES;
-    if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
+    if(UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation))
         needLandscapeFrame = NO;
     
     [UIView animateWithDuration:0.56f
@@ -189,9 +190,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
                          MRProgressOverlayView *view = (MRProgressOverlayView *)[MRProgressOverlayView overlayForView:weakPlayerView];
                          if([MusicPlaybackController isSpinnerForWifiNeededOnScreen])
                              view.titleLabelText = @"WiFi";
-                         
                          [view manualLayoutSubviews];
-                         
                          CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
                                                       fromCoordinateSpace:weakPlayerView.superview];
                          [weakPlayerView newAirplayInUseMsgCenter:newCenter];
@@ -228,7 +227,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     }
     
     BOOL needLandscapeFrame = YES;
-    if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait)
+    if(UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation))
         needLandscapeFrame = NO;
     
     if(needLandscapeFrame)
@@ -265,8 +264,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
         }
         
         PlayerView *videoPlayer = [MusicPlaybackController obtainRawPlayerView];
-        UIInterfaceOrientation orientation = (UIInterfaceOrientation)[UIDevice currentDevice].orientation;
-        if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+        if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)){
             //landscape rotation...
             currentPlayerFrame = [self smallPlayerFrameInLandscape];
         }
@@ -296,8 +294,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
     __weak SongPlayerCoordinator *weakSelf = self;
     
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)){
         //landscape rotation...
         [UIView animateWithDuration:0.6f animations:^{
             currentPlayerFrame = [weakSelf smallPlayerFrameInLandscape];
@@ -338,8 +335,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
     __weak SongPlayerCoordinator *weakSelf = self;
     
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)){
         //landscape rotation...
         [UIView animateWithDuration:0.6f animations:^{
             currentPlayerFrame = [self smallPlayerFrameInLandscape];
@@ -548,10 +544,7 @@ static BOOL wasInPlayStateBeforeGUIDisabled = NO;
     //I always calculate the width of the player based on the width of the screen
     //when in portrait mode.
     int width;
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    
-    if(orientation == UIInterfaceOrientationLandscapeLeft
-       || orientation == UIInterfaceOrientationLandscapeRight){
+    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)){
         width = [UIScreen mainScreen].bounds.size.height/2.8 - MZSmallPlayerVideoFramePadding;
     } else{
         width = [UIScreen mainScreen].bounds.size.width/2.8 - MZSmallPlayerVideoFramePadding;

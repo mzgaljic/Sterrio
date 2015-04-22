@@ -19,6 +19,10 @@
 		871A0B031980835D00BACD31 /* UIColor+LighterAndDarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 871A0B021980835D00BACD31 /* UIColor+LighterAndDarker.m */; };
 		871C2BF01A97CAA0007A1DE5 /* NowPlayingSong.m in Sources */ = {isa = PBXBuildFile; fileRef = 871C2BEF1A97CAA0007A1DE5 /* NowPlayingSong.m */; };
 		871FA7711A8D8A9A0045196C /* UIView+ScreenshotView.m in Sources */ = {isa = PBXBuildFile; fileRef = 871FA7701A8D8A9A0045196C /* UIView+ScreenshotView.m */; };
+		872075CC1AE76E8B0081E491 /* MGSwipeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 872075C91AE76E8B0081E491 /* MGSwipeButton.m */; };
+		872075CD1AE76E8B0081E491 /* MGSwipeTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 872075CB1AE76E8B0081E491 /* MGSwipeTableCell.m */; };
+		872075D11AE770840081E491 /* GSTouchesShowingWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 872075D01AE770840081E491 /* GSTouchesShowingWindow.m */; };
+		872075D41AE770A50081E491 /* LICENSE gstouches.txt in Resources */ = {isa = PBXBuildFile; fileRef = 872075D31AE770A50081E491 /* LICENSE gstouches.txt */; };
 		87220CF81ACF03450047F7F4 /* AFDropdownNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 87220CF61ACF03450047F7F4 /* AFDropdownNotification.m */; };
 		87220CF91ACF03450047F7F4 /* LICENSE_afdropdown.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87220CF71ACF03450047F7F4 /* LICENSE_afdropdown.txt */; };
 		8725B1B81A6C938700E58C3E /* UIWindow+VisibleVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 8725B1B71A6C938700E58C3E /* UIWindow+VisibleVC.m */; };
@@ -96,8 +100,6 @@
 		875B3820197ACBC0008B4409 /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B381F197ACBC0008B4409 /* SettingsTableViewController.m */; };
 		875B3826197AFF29008B4409 /* NSString+smartSort.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B3825197AFF29008B4409 /* NSString+smartSort.m */; };
 		876037461AE5F693004FA831 /* AllArtistsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 876037451AE5F693004FA831 /* AllArtistsDataSource.m */; };
-		8762104D1AB65CB800CCBDA9 /* MGSwipeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8762104A1AB65CB800CCBDA9 /* MGSwipeButton.m */; };
-		8762104E1AB65CB800CCBDA9 /* MGSwipeTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8762104C1AB65CB800CCBDA9 /* MGSwipeTableCell.m */; };
 		8763351B1A84052600A229C4 /* MainScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8763351A1A84052600A229C4 /* MainScreenViewController.m */; };
 		876335241A847B9D00A229C4 /* CoreDataCustomTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 876335231A847B9D00A229C4 /* CoreDataCustomTableViewController.m */; };
 		876335271A8496D000A229C4 /* MZTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 876335261A8496D000A229C4 /* MZTableViewCell.m */; };
@@ -239,6 +241,13 @@
 		871C2BEF1A97CAA0007A1DE5 /* NowPlayingSong.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NowPlayingSong.m; path = "Free Music Library/NowPlayingSong.m"; sourceTree = "<group>"; };
 		871FA76F1A8D8A9A0045196C /* UIView+ScreenshotView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+ScreenshotView.h"; sourceTree = "<group>"; };
 		871FA7701A8D8A9A0045196C /* UIView+ScreenshotView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+ScreenshotView.m"; sourceTree = "<group>"; };
+		872075C81AE76E8B0081E491 /* MGSwipeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeButton.h; sourceTree = "<group>"; };
+		872075C91AE76E8B0081E491 /* MGSwipeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeButton.m; sourceTree = "<group>"; };
+		872075CA1AE76E8B0081E491 /* MGSwipeTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeTableCell.h; sourceTree = "<group>"; };
+		872075CB1AE76E8B0081E491 /* MGSwipeTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeTableCell.m; sourceTree = "<group>"; };
+		872075CF1AE770840081E491 /* GSTouchesShowingWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSTouchesShowingWindow.h; sourceTree = "<group>"; };
+		872075D01AE770840081E491 /* GSTouchesShowingWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSTouchesShowingWindow.m; sourceTree = "<group>"; };
+		872075D31AE770A50081E491 /* LICENSE gstouches.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "LICENSE gstouches.txt"; sourceTree = "<group>"; };
 		87220CF51ACF03450047F7F4 /* AFDropdownNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFDropdownNotification.h; sourceTree = "<group>"; };
 		87220CF61ACF03450047F7F4 /* AFDropdownNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFDropdownNotification.m; sourceTree = "<group>"; };
 		87220CF71ACF03450047F7F4 /* LICENSE_afdropdown.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE_afdropdown.txt; sourceTree = "<group>"; };
@@ -395,10 +404,6 @@
 		876037441AE5F693004FA831 /* AllArtistsDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllArtistsDataSource.h; sourceTree = "<group>"; };
 		876037451AE5F693004FA831 /* AllArtistsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AllArtistsDataSource.m; sourceTree = "<group>"; };
 		876037471AE5FEDB004FA831 /* ActionableArtistDataSourceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionableArtistDataSourceDelegate.h; sourceTree = "<group>"; };
-		876210491AB65CB800CCBDA9 /* MGSwipeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeButton.h; sourceTree = "<group>"; };
-		8762104A1AB65CB800CCBDA9 /* MGSwipeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeButton.m; sourceTree = "<group>"; };
-		8762104B1AB65CB800CCBDA9 /* MGSwipeTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeTableCell.h; sourceTree = "<group>"; };
-		8762104C1AB65CB800CCBDA9 /* MGSwipeTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeTableCell.m; sourceTree = "<group>"; };
 		876335191A84052600A229C4 /* MainScreenViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainScreenViewController.h; sourceTree = "<group>"; };
 		8763351A1A84052600A229C4 /* MainScreenViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainScreenViewController.m; sourceTree = "<group>"; };
 		876335221A847B9D00A229C4 /* CoreDataCustomTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataCustomTableViewController.h; sourceTree = "<group>"; };
@@ -669,6 +674,27 @@
 				870EDAE5197F4EAD001901B9 /* EditableCellTableViewController.m */,
 			);
 			name = "Editing a string";
+			sourceTree = "<group>";
+		};
+		872075CE1AE76E910081E491 /* MGSwipeTableCell */ = {
+			isa = PBXGroup;
+			children = (
+				872075C81AE76E8B0081E491 /* MGSwipeButton.h */,
+				872075C91AE76E8B0081E491 /* MGSwipeButton.m */,
+				872075CA1AE76E8B0081E491 /* MGSwipeTableCell.h */,
+				872075CB1AE76E8B0081E491 /* MGSwipeTableCell.m */,
+			);
+			name = MGSwipeTableCell;
+			sourceTree = "<group>";
+		};
+		872075D21AE770880081E491 /* GSTouches */ = {
+			isa = PBXGroup;
+			children = (
+				872075D31AE770A50081E491 /* LICENSE gstouches.txt */,
+				872075CF1AE770840081E491 /* GSTouchesShowingWindow.h */,
+				872075D01AE770840081E491 /* GSTouchesShowingWindow.m */,
+			);
+			name = GSTouches;
 			sourceTree = "<group>";
 		};
 		87220CF41ACF03450047F7F4 /* AFDropdownNotification */ = {
@@ -1075,17 +1101,6 @@
 			name = Artists;
 			sourceTree = "<group>";
 		};
-		876210481AB65CB800CCBDA9 /* MGSwipeTableCell */ = {
-			isa = PBXGroup;
-			children = (
-				876210491AB65CB800CCBDA9 /* MGSwipeButton.h */,
-				8762104A1AB65CB800CCBDA9 /* MGSwipeButton.m */,
-				8762104B1AB65CB800CCBDA9 /* MGSwipeTableCell.h */,
-				8762104C1AB65CB800CCBDA9 /* MGSwipeTableCell.m */,
-			);
-			path = MGSwipeTableCell;
-			sourceTree = "<group>";
-		};
 		877C4B85199FB44E00CE86BC /* ViewController utility stuff */ = {
 			isa = PBXGroup;
 			children = (
@@ -1316,6 +1331,8 @@
 		87A453A0199C0825004D1319 /* Imported Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				872075D21AE770880081E491 /* GSTouches */,
+				872075CE1AE76E910081E491 /* MGSwipeTableCell */,
 				8738E4C51AE1EE0D00BA915F /* ASValueTrackingSlider */,
 				87F050641AE0BBD700BB0B2F /* AFBlurSegue */,
 				87220CF41ACF03450047F7F4 /* AFDropdownNotification */,
@@ -1323,7 +1340,6 @@
 				87F686931AC9F48800EFF1E0 /* SkyWinder ActionSheetPicker */,
 				87A1208E1ABA259F00250B2C /* JNExpandableTableView */,
 				874DA05E1ABA11DD003D69D6 /* MRProgress */,
-				876210481AB65CB800CCBDA9 /* MGSwipeTableCell */,
 				87C0BD5519C564CA00EB7D91 /* AutoScrollLabel */,
 				87A453A1199C0891004D1319 /* ELCImagePickerController */,
 			);
@@ -1719,6 +1735,7 @@
 				87A453D3199C0891004D1319 /* Overlay@2x.png in Resources */,
 				87A04C9D1ACCAB96007C9245 /* CONTRIBUTING_ubuntu.txt in Resources */,
 				87A04C931ACCAA1C007C9245 /* Ubuntu-Italic.ttf in Resources */,
+				872075D41AE770A50081E491 /* LICENSE gstouches.txt in Resources */,
 				87A04CA01ACCAB96007C9245 /* LICENCE-FAQ_ubuntu.txt in Resources */,
 				87F050621AE0BBD200BB0B2F /* LICENSE blurSegue.txt in Resources */,
 				87A120931ABA259F00250B2C /* LICENSE1.txt in Resources */,
@@ -1857,13 +1874,13 @@
 				875B3820197ACBC0008B4409 /* SettingsTableViewController.m in Sources */,
 				874C535F19844201000382FA /* NSObject+ObjectUUID.m in Sources */,
 				87FD38D71990A89200C8D5C3 /* UIImage+ColoringExistingImage.m in Sources */,
+				872075CD1AE76E8B0081E491 /* MGSwipeTableCell.m in Sources */,
 				87FA13761A998AFA00A1902F /* ReachabilitySingleton.m in Sources */,
 				876335241A847B9D00A229C4 /* CoreDataCustomTableViewController.m in Sources */,
 				870CF9D21AE2117E00E4A97A /* LQAlbumArtBackgroundUpdater.m in Sources */,
 				87334418198E0332002B9E18 /* UIColor+SystemTintColor.m in Sources */,
 				877C4BAD199FE4E700CE86BC /* Playlist+Utilities.m in Sources */,
 				87BA3A601AA9652200A3ACA3 /* MZPlaybackQueue.m in Sources */,
-				8762104D1AB65CB800CCBDA9 /* MGSwipeButton.m in Sources */,
 				87F686AB1AC9F48800EFF1E0 /* ActionSheetStringPicker.m in Sources */,
 				87270035199E820700D71204 /* LevenshteinDistanceItem.m in Sources */,
 				871A0B031980835D00BACD31 /* UIColor+LighterAndDarker.m in Sources */,
@@ -1878,6 +1895,7 @@
 				874DA08D1ABA11DD003D69D6 /* MRProgressView.m in Sources */,
 				8772517519888F1A00A2156B /* YouTubeVideoSearchService.m in Sources */,
 				87270038199EB90500D71204 /* StackController.m in Sources */,
+				872075CC1AE76E8B0081E491 /* MGSwipeButton.m in Sources */,
 				87A453CE199C0891004D1319 /* ELCOverlayImageView.m in Sources */,
 				874DA08A1ABA11DD003D69D6 /* MRIconView.m in Sources */,
 				87F686A71AC9F48800EFF1E0 /* ActionSheetCustomPicker.m in Sources */,
@@ -1914,7 +1932,6 @@
 				8787AE5E1AB4EEFD00492BFA /* PreliminaryNowPlaying.m in Sources */,
 				87C0BD5819C564CA00EB7D91 /* AutoScrollLabel.m in Sources */,
 				87A453D7199C0891004D1319 /* EYLargePhotoManager.m in Sources */,
-				8762104E1AB65CB800CCBDA9 /* MGSwipeTableCell.m in Sources */,
 				87CB302F1A4A070C004E5158 /* SongPlayerNavController.m in Sources */,
 				87D47DA519345D8E0057D49B /* ArtistItemAlbumViewController.m in Sources */,
 				87480DB5192C1FBD005CC0A4 /* main.m in Sources */,
@@ -1946,6 +1963,7 @@
 				87362B03194E9CDF004DB544 /* Stack.m in Sources */,
 				87A453D6199C0891004D1319 /* EYLargePhoto.m in Sources */,
 				87D47D8D19340F8B0057D49B /* MasterAlbumsTableViewController.m in Sources */,
+				872075D11AE770840081E491 /* GSTouchesShowingWindow.m in Sources */,
 				87F050611AE0BBD200BB0B2F /* AFBlurSegue.m in Sources */,
 				87408EC31AE4789B00267C3A /* Song.m in Sources */,
 				87394BE31965FFE100E750B1 /* Queue.m in Sources */,

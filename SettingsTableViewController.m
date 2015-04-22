@@ -60,9 +60,8 @@ static const int CELL_STREAM_PICKER_TAG = 107;
     _attachmentUIImages = [NSMutableArray array];
     
     //remove extra padding placed between first cell and navigation bar
-    if ([[UIDevice currentDevice].systemVersion floatValue] >= 7){
+    if([AppEnvironmentConstants isUserOniOS8OrAbove])
         self.tableView.contentInset = UIEdgeInsetsMake(TOP_INSET_OF_TABLE, 0, 0, 0);
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated

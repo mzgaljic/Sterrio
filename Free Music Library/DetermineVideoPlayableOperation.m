@@ -45,7 +45,13 @@
         MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
         PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
         [player dismissAllSpinners];
-        [playerView userKilledPlayer];
+#warning rework the error code here.
+        //ideally i should just not show any alert like i do above. just have a banner
+        //come up under the VC when the internet connection state changes. it will
+        //be obvious to user.
+        //bad code to kill the player here. if the user taps another song before the player
+        //kill code completes, an EXEC_BAD_ACCESS occures.
+        //[playerView userKilledPlayer];
         return;
     }
     if ([self isCancelled]){

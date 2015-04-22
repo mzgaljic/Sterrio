@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "GSTouchesShowingWindow.h"
 #import "PreloadedCoreDataModelUtility.h"
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
@@ -42,9 +43,22 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 }
 
+- (GSTouchesShowingWindow *)windowShowingTouches
+{
+    static GSTouchesShowingWindow *window = nil;
+    if (!window) {
+        window = [[GSTouchesShowingWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    }
+    return window;
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    BOOL showUserTouchesOnScreen = YES;
+    if(showUserTouchesOnScreen)
+        self.window = [self windowShowingTouches];
+    else
+        self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     [ReachabilitySingleton sharedInstance];  //init reachability class
     [LQAlbumArtBackgroundUpdater beginWaitingForEfficientMomentsToUpdateAlbumArt];

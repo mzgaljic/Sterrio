@@ -138,32 +138,33 @@ short const dummyTabIndex = 2;
 {
     if(self.currentNavController == newNavController)
         return;
-    changingTabs = YES;
+    
     BOOL oldNavBarHidden = self.currentNavController.navigationBarHidden;
+    [newNavController setNavigationBarHidden:oldNavBarHidden animated:NO];
+    changingTabs = YES;
+    
     //VC lifecycle methods not being called, i fix that here...
     NSUInteger index = [self.navControllers indexOfObjectIdenticalTo:self.currentNavController];
     UIViewController *oldVc;
     if(index != NSNotFound)
         oldVc = self.viewControllers[index];
     [oldVc viewWillDisappear:YES];
-    
+    [oldVc.navigationController.view removeFromSuperview];
+    [oldVc viewDidDisappear:YES];
+    [oldVc.navigationController removeFromParentViewController];
     
     //containing the nav controller within a container
     CGRect desiredVcFrame = CGRectMake(0,
                                        0,
                                        self.view.frame.size.width,
-                                       //self.view.frame.size.height - MZTabBarHeight);
                                        self.view.frame.size.height);
     [self addChildViewController:newNavController];
     newNavController.view.frame = desiredVcFrame;
     
-    [oldVc viewDidDisappear:YES];
-    
     index = [self.navControllers indexOfObjectIdenticalTo:newNavController];
     UIViewController *newVc = self.viewControllers[index];
-    [newVc viewWillAppear:YES];
-    [newNavController setNavigationBarHidden:oldNavBarHidden animated:NO];
     
+    [newVc viewWillAppear:YES];
     [self.view addSubview:newNavController.view];
     //make sure tab bar is not covered by the new nav controllers view
     [self.view insertSubview:self.tabBarView aboveSubview:self.view];

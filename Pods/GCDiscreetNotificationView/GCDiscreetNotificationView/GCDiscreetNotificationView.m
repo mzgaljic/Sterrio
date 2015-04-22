@@ -84,7 +84,6 @@ NSString* const GCDiscreetNotificationViewActivityKey = @"activity";
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideAnimated) object:nil];
     
     self.view = nil;
-    
     [label release];
     label = nil;
     
