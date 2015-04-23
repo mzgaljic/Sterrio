@@ -186,6 +186,8 @@
                      }];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysInvisible
                                                         object:@NO];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated
+                                                        object:@NO];
 }
 
 #pragma mark - ActionableArtistDataSourceDelegate implementation

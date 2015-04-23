@@ -91,7 +91,7 @@
     [self.playableDataSearchDataSourceDelegate searchResultsShouldBeDisplayed:YES];
     
     [self.modelDataSourceSearchBarDelegate searchBarIsBecomingActive];
-    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:[NSNumber numberWithBool:YES]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@YES];
     
     if(! oldDisplayResultsVal){
         //user is now transitioning into the "search" mode

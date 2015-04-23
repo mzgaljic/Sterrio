@@ -205,7 +205,9 @@
                          originalTableViewFrame = CGRectNull;
                      }];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysInvisible
-                                                        object:[NSNumber numberWithBool:NO]];
+                                                        object:@NO];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated
+                                                        object:@NO];
 }
 
 #pragma mark - ActionableAlbumDataSourceDelegate implementation

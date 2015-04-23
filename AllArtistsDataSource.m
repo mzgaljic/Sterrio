@@ -214,18 +214,34 @@
         [[CoreDataManager context] deleteObject:artist];
         [[CoreDataManager sharedInstance] saveContext];
         
-        if([self numObjectsInTable] == 0){ //dont need search bar anymore
-            self.tableView.tableHeaderView = nil;
+        //this class is responsible for animating this cell since the fetchedResultsController
+        //isnt active when displaying search results.
+        if(self.displaySearchResults)
+        {
+            BOOL lastRow =(self.searchResults.count == 1);
+            [self.tableView beginUpdates];
+            
+            if(lastRow)
+                [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section]
+                              withRowAnimation:UITableViewRowAnimationMiddle];
+            else
+                //just delete this row in the section
+                [self.tableView deleteRowsAtIndexPaths:@[indexPath]
+                                      withRowAnimation:UITableViewRowAnimationMiddle];
+            
+            [self.searchResults removeObjectAtIndex:indexPath.row];
+            [self.tableView endUpdates];
         }
         
-        if(self.displaySearchResults){
-            //this class is responsible for animating this cell since the fetchedResultsController
-            //isnt active when displaying search results.
-            [self.tableView beginUpdates];
-            [self.searchResults removeObjectAtIndex:indexPath.row];
-            [self.tableView deleteRowsAtIndexPaths:@[indexPath]
-                                  withRowAnimation:UITableViewRowAnimationMiddle];
-            [self.tableView endUpdates];
+        if([self numObjectsInTable] == 0){ //dont need search bar anymore
+            if(self.displaySearchResults){
+                MySearchBar *searchbar = (MySearchBar *)self.tableView.tableHeaderView;
+                [searchbar resignFirstResponder];
+                self.displaySearchResults = NO;
+                [self.searchBarDataSourceDelegate searchBarIsBecomingInactive];
+            }
+            self.tableView.tableHeaderView = nil;
+            [self.tableView reloadData];
         }
     }
 }
