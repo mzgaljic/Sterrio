@@ -33,7 +33,6 @@ NSString * const MZNewSongLoading = @"AVPlayer will try to load a new song now";
 NSString * const MZAVPlayerStallStateChanged = @"AVPlayer stalls changed";
 
 NSString * const MZInitAudioSession = @"Init the audio session if it isnt already setup";
-NSString * const MZExpandPlayerViewWithAnimationDuration = @"A duration will be passed";
 
 NSString * const MZKeyNumLikes = @"numLikes";
 NSString * const MZKeyNumDislikes = @"numDislikes";
@@ -55,8 +54,7 @@ short const MZSkipToSongBeginningIfBackBtnTappedBoundary = 3;
 
 //Tab bar
 short const MZTabBarHeight = 50;
-NSString * const MZHideTabBarAnimated = @"BOOL passed in notification indicates whether or not tab bar will hide.";
-
+NSString * const MZHideTabBarAnimated = @"Pass @YES in notif to hide tab bar";
 
 
 

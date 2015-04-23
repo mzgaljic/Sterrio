@@ -14,11 +14,14 @@
 #import "SongAlbumArt+Utilities.h"
 
 @interface PlaylistItemTableViewController()
+{
+    int numTimesViewWillAppearCalledSinceVcLoad;
+}
 @property (nonatomic, assign) int lastTableViewModelCount;
 @property (nonatomic, strong) UITextField *txtField;
 @property (nonatomic, assign) BOOL currentlyEditingPlaylistName;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-
+@property (nonatomic, strong) SSBouncyButton *centerButton;
 @end
 
 @implementation PlaylistItemTableViewController
@@ -27,8 +30,10 @@
 
 - (void) dealloc
 {
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@NO];
     [super prepareFetchedResultsControllerForDealloc];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    stackController = nil;
     _playlist = nil;
     _parentVcPlaybackContext = nil;
     _txtField = nil;
@@ -37,6 +42,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    numTimesViewWillAppearCalledSinceVcLoad = 0;
     //this works better than a unique random id since this class can be dealloced and re-alloced
     //later. Id must stay the same across all allocations.  :)
     NSMutableString *uniqueID = [NSMutableString string];
@@ -58,9 +64,14 @@
     
     stackController = [[StackController alloc] init];
     self.tableView.allowsSelectionDuringEditing = YES;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(nowPlayingSongsHasChanged:)
+                                                 name:MZNewSongLoading
+                                               object:nil];
 }
 
--(void)viewWillAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     _lastTableViewModelCount = (int)_playlist.playlistSongs.count;
@@ -74,8 +85,9 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    //need to check because when user presses back button, tab bar isnt always hidden
-    [self prefersStatusBarHidden];
+    if(numTimesViewWillAppearCalledSinceVcLoad == 0)
+        [self presentCenterButtonAnimated];
+    numTimesViewWillAppearCalledSinceVcLoad++;
 }
 
 - (void)setUpNavBarItems
@@ -84,6 +96,40 @@
     editButton.action = @selector(editTapped:);
     NSArray *rightBarButtonItems = @[editButton];
     self.navigationItem.rightBarButtonItems = rightBarButtonItems;  //place both buttons on the nav bar
+}
+
+- (void)presentCenterButtonAnimated
+{
+    UINavigationController *parentNav = (UINavigationController *)self.parentViewController;
+    MainScreenViewController *mainVc = (MainScreenViewController *)parentNav.parentViewController;
+    UIImage *img = mainVc.centerButtonImg;
+    img = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme] :img];
+    self.centerButton = [[SSBouncyButton alloc] initAsImage];
+    [self.centerButton setImage:img forState:UIControlStateNormal];
+    [self.centerButton setHitTestEdgeInsets:UIEdgeInsetsMake(-10, -10, -10, -10)];
+    [self.centerButton addTarget:self
+                          action:@selector(tabBarAddButtonWithDelay)
+                forControlEvents:UIControlEventTouchUpInside];
+    int btnDiameter = img.size.width;
+    CGRect beginFrame = CGRectMake(self.view.frame.size.width/2 - btnDiameter/2,
+                                   self.view.frame.size.height,
+                                   btnDiameter,
+                                   btnDiameter);
+    CGRect endFrame = CGRectMake(beginFrame.origin.x,
+                                 beginFrame.origin.y - MZTabBarHeight,
+                                 btnDiameter,
+                                 btnDiameter);
+    self.centerButton.frame = beginFrame;
+    [self.view addSubview:self.centerButton];
+    [UIView animateWithDuration:0.5
+                          delay:0.1
+         usingSpringWithDamping:0.65
+          initialSpringVelocity:0.8
+                        options:UIViewAnimationOptionAllowUserInteraction
+                     animations:^{
+                         self.centerButton.frame = endFrame;
+                     }
+                     completion:nil];
 }
 
 #pragma mark - Table View Data Source
@@ -291,6 +337,45 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     return nil;
 }
 
+#pragma mark - efficiently updating individual cells as needed
+- (void)nowPlayingSongsHasChanged:(NSNotification *)notification
+{
+    if ([[notification name] isEqualToString:MZNewSongLoading]){
+        if([NSThread isMainThread]){
+            [self reflectNowPlayingChangesInTableview:notification];
+        } else{
+            [self performSelectorOnMainThread:@selector(reflectNowPlayingChangesInTableview:)
+                                   withObject:notification
+                                waitUntilDone:NO];
+        }
+    }
+}
+
+- (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification
+{
+    if(self.playbackContext == nil)
+        return;
+    Song *oldSong = (Song *)[notification object];
+    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
+    Song *newSong = nowPlaying.nowPlaying;
+    NSIndexPath *oldPath, *newPath;
+    
+    //tries to obtain the path to the changed songs if possible.
+    oldPath = [self.fetchedResultsController indexPathForObject:oldSong];
+    newPath = [self.fetchedResultsController indexPathForObject:newSong];
+    
+    if(oldPath || newPath){
+        [self.tableView beginUpdates];
+        if(oldPath)
+            [self.tableView reloadRowsAtIndexPaths:@[oldPath]
+                                  withRowAnimation:UITableViewRowAnimationFade];
+        if(newPath != nil && newPath != oldPath)
+            [self.tableView reloadRowsAtIndexPaths:@[newPath]
+                                  withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView endUpdates];
+    }
+}
+
 #pragma mark - Button actions
 - (void)editTapped:(id)sender
 {
@@ -335,9 +420,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     [self setNeedsStatusBarAppearanceUpdate];
 }
 
-- (void)addButtonPressed
+- (void)tabBarAddButtonWithDelay
 {
-
+    [self performSelector:@selector(tabBarAddButtonPressed) withObject:nil afterDelay:0.2];
 }
 
 - (void)tabBarAddButtonPressed
@@ -348,6 +433,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     PlaylistSongAdderTableViewController *vc = [[PlaylistSongAdderTableViewController alloc] initWithPlaylist:_playlist];
     UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:vc];
     [self presentViewController:navVC animated:YES completion:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@YES];
 }
 
 - (void)songPickerWasDismissed:(NSNotification *)someNSNotification
@@ -458,13 +544,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (BOOL)prefersStatusBarHidden
 {
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight){
+    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))
         return YES;
-    }
-    else{
+    else
         return NO;
-    }
 }
 
 #pragma mark - Counting Songs in core data

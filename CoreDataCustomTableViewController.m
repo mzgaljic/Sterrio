@@ -257,6 +257,9 @@ typedef enum{
 #pragma mark - NSFetchedResultsControllerDelegate
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
 {
+    if(self.tableDataSource.displaySearchResults)
+        return;
+    
     [tableView beginUpdates];
     self.beganUpdates = YES;
 }
@@ -266,14 +269,17 @@ typedef enum{
            atIndex:(NSUInteger)sectionIndex
      forChangeType:(NSFetchedResultsChangeType)type
 {
+    if(self.tableDataSource.displaySearchResults)
+        return;
+    
     switch(type)
     {
         case NSFetchedResultsChangeInsert:
-            [tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationNone];
+            [tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationMiddle];
             break;
             
         case NSFetchedResultsChangeDelete:
-            [tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationNone];
+            [tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationLeft];
             break;
             //I added the next 2 cases in myself. xcode was complaining.
         case NSFetchedResultsChangeMove:
@@ -289,21 +295,24 @@ typedef enum{
      forChangeType:(NSFetchedResultsChangeType)type
       newIndexPath:(NSIndexPath *)newIndexPath
 {
+    if(self.tableDataSource.displaySearchResults)
+        return;
+    
     switch(type)
     {
         case NSFetchedResultsChangeInsert:
             [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
-                                  withRowAnimation:UITableViewRowAnimationNone];
+                                  withRowAnimation:UITableViewRowAnimationMiddle];
             break;
             
         case NSFetchedResultsChangeDelete:
             [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-                                  withRowAnimation:UITableViewRowAnimationNone];
+                                  withRowAnimation:UITableViewRowAnimationMiddle];
             break;
             
         case NSFetchedResultsChangeUpdate:
             [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-                                  withRowAnimation:UITableViewRowAnimationNone];
+                                  withRowAnimation:UITableViewRowAnimationFade];
             break;
             
         case NSFetchedResultsChangeMove:
@@ -317,6 +326,9 @@ typedef enum{
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
+    if(self.tableDataSource.displaySearchResults)
+        return;
+    
     if (self.beganUpdates)
         [tableView endUpdates];
     self.beganUpdates = NO;

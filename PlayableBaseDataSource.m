@@ -62,6 +62,12 @@
 //override for functionality.
 - (NSIndexPath *)indexPathInSearchTableForObject:(id)someObject { return nil; }
 
+
+- (void)searchResultsShouldBeDisplayed:(BOOL)displaySearchResults
+{
+    _displaySearchResults = displaySearchResults;
+}
+
 - (UIColor *)colorForNowPlayingItem
 {
     return [[UIColor defaultAppColorScheme] lighterColor];

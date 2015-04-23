@@ -7,10 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <objc/runtime.h>
-#import "StackController.h"
 #import "AppEnvironmentConstants.h"
-#import "AlbumArtUtilities.h"
 #import "AlbumItemViewController.h"
 #import "Album.h"
 #import "UIImage+colorImages.h"
@@ -19,9 +16,6 @@
 #import "MusicPlaybackController.h"
 #import <SDCAlertView.h>
 #import "MainScreenViewControllerDelegate.h"
-#import <FXImageView/UIImage+FX.h>
-#import <MSCellAccessory.h>
-
 
 #import "SearchBarDataSourceDelegate.h"
 #import "PlayableBaseDataSource.h"
@@ -30,6 +24,5 @@
 @interface MasterAlbumsTableViewController : CoreDataCustomTableViewController
                                                                 <SearchBarDataSourceDelegate,
                                                                 ActionableAlbumDataSourceDelegate,
-                                                                MainScreenViewControllerDelegate,
-                                                                MGSwipeTableCellDelegate>
+                                                                MainScreenViewControllerDelegate>
 @end

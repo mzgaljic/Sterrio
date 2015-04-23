@@ -24,61 +24,82 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 
 + (void)resumePlayback
 {
-    if([NSThread mainThread]){
-        [player play];
-    } else{
-        dispatch_async(dispatch_get_main_queue(), ^(void){
-            //Run UI Updates
-            [MusicPlaybackController resumePlayback];
-        });
-    }
+    dispatch_async(dispatch_get_main_queue(), ^(void){
+        //Run UI Updates
+        [MusicPlaybackController internalResumePlayaback];
+    });
+}
+
++ (void)internalResumePlayaback
+{
+    [player play];
 }
 
 /** Playback will be paused immediately */
 + (void)pausePlayback
 {
-    if([NSThread mainThread]){
-        [player pause];
-    } else{
-        dispatch_async(dispatch_get_main_queue(), ^(void){
-            //Run UI Updates
-            [MusicPlaybackController pausePlayback];
-        });
-    }
+    dispatch_async(dispatch_get_main_queue(), ^(void){
+        //Run UI Updates
+        [MusicPlaybackController internalPausePlayback];
+    });
+}
+
++ (void)internalPausePlayback
+{
+    [player pause];
 }
 
 /** Stop playback of current song/track, and begin playback of the next track */
 + (void)skipToNextTrack
 {
-    if([NSThread mainThread]){
-        
-        NSString *playerVcNotifString = @"PlaybackStartedNotification";
-        if([AppEnvironmentConstants playbackRepeatType] == PLABACK_REPEAT_MODE_Song){
-            [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
-            [MusicPlaybackController resumePlayback];
-            [[NSNotificationCenter defaultCenter] postNotificationName:playerVcNotifString
-                                                                object:nil];
-            return;
-        }
-        
-        if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more songs in queue
-            [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
-            Song *skippedSong = [MusicPlaybackController nowPlayingSong];
-            MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-            [player allowSongDidFinishNotificationToProceed:YES];
-            Song *nextSong = [playbackQueue skipForward];
-            [VideoPlayerWrapper startPlaybackOfSong:nextSong goingForward:YES oldSong:skippedSong];
-        } else{
-            //last song in queue reached
-            if([AppEnvironmentConstants playbackRepeatType] == PLABACK_REPEAT_MODE_All)
-                [MusicPlaybackController repeatEntireMainQueue];
-        }
-    } else{
-        dispatch_async(dispatch_get_main_queue(), ^(void){
-            //Run UI Updates
-            [MusicPlaybackController skipToNextTrack];
-        });
+    dispatch_async(dispatch_get_main_queue(), ^(void){
+        //Run UI Updates
+        [MusicPlaybackController internalSkipToNextTrack];
+    });
+}
+
++ (void)internalSkipToNextTrack
+{
+    NSString *playerVcNotifString = @"PlaybackStartedNotification";
+    if([AppEnvironmentConstants playbackRepeatType] == PLABACK_REPEAT_MODE_Song){
+        [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
+        [MusicPlaybackController resumePlayback];
+        [[NSNotificationCenter defaultCenter] postNotificationName:playerVcNotifString
+                                                            object:nil];
+        return;
     }
+    
+    if([MusicPlaybackController numMoreSongsInQueue] > 0){  //more songs in queue
+        [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
+        Song *skippedSong = [MusicPlaybackController nowPlayingSong];
+        MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+        [player allowSongDidFinishNotificationToProceed:YES];
+        Song *nextSong = [playbackQueue skipForward];
+        [VideoPlayerWrapper startPlaybackOfSong:nextSong goingForward:YES oldSong:skippedSong];
+    } else{
+        //last song in queue reached
+        if([AppEnvironmentConstants playbackRepeatType] == PLABACK_REPEAT_MODE_All)
+            [MusicPlaybackController repeatEntireMainQueue];
+    }
+}
+
+//used primarily when killing the player (to override the repeat mode settings)
++ (void)forcefullySkipToNextTrack
+{
+    dispatch_async(dispatch_get_main_queue(), ^(void){
+        //Run UI Updates
+        [MusicPlaybackController internalForcefullySkipToNextTrack];
+    });
+}
+
++ (void)internalForcefullySkipToNextTrack
+{
+    [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
+    Song *skippedSong = [MusicPlaybackController nowPlayingSong];
+    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    [player allowSongDidFinishNotificationToProceed:YES];
+    Song *nextSong = [playbackQueue skipForward];
+    [VideoPlayerWrapper startPlaybackOfSong:nextSong goingForward:YES oldSong:skippedSong];
 }
 
 /* Used to jump ahead or back in a video to an exact point. The player playback state
@@ -110,27 +131,27 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 /** Stop playback of current song/track, and begin playback of previous track */
 + (void)returnToPreviousTrack
 {
-    if([NSThread mainThread]){
-        if(! [MusicPlaybackController shouldSeekToStartOnBackPress]){
-            [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
-            Song *oldNowPlaying = [MusicPlaybackController nowPlayingSong];
-            Song *previousSong = [playbackQueue skipToPrevious];
-            [VideoPlayerWrapper startPlaybackOfSong:previousSong
-                                       goingForward:NO
-                                            oldSong:oldNowPlaying];
-        } else{
-            [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
-            [MusicPlaybackController resumePlayback];
-            [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged
-                                                                object:nil];
-            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlaying];
-        }
-        
+    dispatch_async(dispatch_get_main_queue(), ^(void){
+        //Run UI Updates
+        [MusicPlaybackController internalReturnToPreviousTrack];
+    });
+}
+
++ (void)internalReturnToPreviousTrack
+{
+    if(! [MusicPlaybackController shouldSeekToStartOnBackPress]){
+        [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
+        Song *oldNowPlaying = [MusicPlaybackController nowPlayingSong];
+        Song *previousSong = [playbackQueue skipToPrevious];
+        [VideoPlayerWrapper startPlaybackOfSong:previousSong
+                                   goingForward:NO
+                                        oldSong:oldNowPlaying];
     } else{
-        dispatch_async(dispatch_get_main_queue(), ^(void){
-            //Run UI Updates
-            [MusicPlaybackController returnToPreviousTrack];
-        });
+        [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
+        [MusicPlaybackController resumePlayback];
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged
+                                                            object:nil];
+        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlaying];
     }
 }
 
@@ -152,16 +173,30 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 
 + (void)songAboutToBeDeleted:(Song *)song deletionContext:(PlaybackContext *)aContext;
 {
-    if([nowPlayingObject isEqualToSong:song compareWithContext:aContext])
-        [MusicPlaybackController skipToNextTrack];
+    if([nowPlayingObject isEqualToSong:song compareWithContext:aContext]){
+        MZPlaybackQueue *queue = [MZPlaybackQueue sharedInstance];
+        if([queue numMoreSongsInMainQueue] + [queue numMoreSongsInUpNext] == 0){
+            PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+            [playerView userKilledPlayer];
+        }
+        else
+            [MusicPlaybackController forcefullySkipToNextTrack];
+    }
 }
 
 + (void)groupOfSongsAboutToBeDeleted:(NSArray *)songs deletionContext:(PlaybackContext *)context;
 {
     
-    for(Song *someSong in songs){
+    for(Song *someSong in songs)
+    {
         if([nowPlayingObject isEqualToSong:someSong compareWithContext:context]){
-            [MusicPlaybackController skipToNextTrack];
+            MZPlaybackQueue *queue = [MZPlaybackQueue sharedInstance];
+            if([queue numMoreSongsInMainQueue] + [queue numMoreSongsInUpNext] == 0){
+                PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+                [playerView userKilledPlayer];
+            }
+            else
+                [MusicPlaybackController forcefullySkipToNextTrack];
             return;
         }
     }

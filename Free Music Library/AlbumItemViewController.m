@@ -51,12 +51,22 @@ const int ALBUM_HEADER_HEIGHT = 120;
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
     self.navBar.title = nil;
     [self generateAlbumSectionHeaderView];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(nowPlayingSongsHasChanged:)
+                                                 name:MZNewSongLoading
+                                               object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@NO];
     [super viewDidDisappear:animated];
-    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:[NSNumber numberWithBool:NO]];
 }
 
 - (void)dealloc
@@ -131,42 +141,19 @@ const int ALBUM_HEADER_HEIGHT = 120;
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
-        
         //obtain object for the deleted song
         Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        Album *songsAlbum = song.album;
+        
         [MusicPlaybackController songAboutToBeDeleted:song deletionContext:self.playbackContext];
         [MZCoreDataModelDeletionService prepareSongForDeletion:song];
         
-        NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:[CoreDataManager context]];
-        NSFetchRequest *request = [[NSFetchRequest alloc] init];
-        [request setEntity:entityDesc];
-        
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"song_id == %@", song.song_id];
-        [request setPredicate:predicate];
-        
-        NSError *error;
-        NSArray *matchingData = [[CoreDataManager context] executeFetchRequest:request error:&error];
-        if(matchingData.count == 1)
-            [[CoreDataManager context] deleteObject:matchingData[0]];
+        [[CoreDataManager context] deleteObject:song];
         [[CoreDataManager sharedInstance] saveContext];
         
-        /*
-        //this is for deleting the song from this album. not useful here.
-        Song *deletedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
-        [MusicPlaybackController songAboutToBeDeleted:deletedSong
-                                      deletionContext:self.playbackContext];
-        
-        NSMutableSet *mutableSet = [NSMutableSet setWithSet:self.album.albumSongs];
-        [mutableSet removeObject:deletedSong];
-        self.album.albumSongs = mutableSet;
-        [[CoreDataManager sharedInstance] saveContext];
-         */
-        
-        [self generateAlbumSectionHeaderView];
-        [self.tableView beginUpdates];
-        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section]
-                      withRowAnimation:UITableViewRowAnimationAutomatic];
-        [self.tableView endUpdates];
+        if(songsAlbum == nil || songsAlbum.albumSongs.count == 0){
+            [self.navigationController popViewControllerAnimated:YES];
+        }
     }
 }
 
@@ -257,6 +244,44 @@ const int ALBUM_HEADER_HEIGHT = 120;
     return nil;
 }
 
+#pragma mark - efficiently updating individual cells as needed
+- (void)nowPlayingSongsHasChanged:(NSNotification *)notification
+{
+    if ([[notification name] isEqualToString:MZNewSongLoading]){
+        if([NSThread isMainThread]){
+            [self reflectNowPlayingChangesInTableview:notification];
+        } else{
+            [self performSelectorOnMainThread:@selector(reflectNowPlayingChangesInTableview:)
+                                   withObject:notification
+                                waitUntilDone:NO];
+        }
+    }
+}
+
+- (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification
+{
+    if(self.playbackContext == nil)
+        return;
+    Song *oldSong = (Song *)[notification object];
+    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
+    Song *newSong = nowPlaying.nowPlaying;
+    NSIndexPath *oldPath, *newPath;
+    
+    //tries to obtain the path to the changed songs if possible.
+    oldPath = [self.fetchedResultsController indexPathForObject:oldSong];
+    newPath = [self.fetchedResultsController indexPathForObject:newSong];
+    
+    if(oldPath || newPath){
+        [self.tableView beginUpdates];
+        if(oldPath)
+            [self.tableView reloadRowsAtIndexPaths:@[oldPath]
+                                  withRowAnimation:UITableViewRowAnimationFade];
+        if(newPath != nil && newPath != oldPath)
+            [self.tableView reloadRowsAtIndexPaths:@[newPath]
+                                  withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView endUpdates];
+    }
+}
 
 #pragma mark - Helpers
 - (NSString *)convertSecondsToPrintableNSStringWithSeconds:(NSUInteger)value

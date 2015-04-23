@@ -7,26 +7,21 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <MSCellAccessory.h>
 #import "Playlist+Utilities.h"
 #import "PlaylistItemTableViewController.h"  //tableview controller that shows the songs in the playlist
 #import "PlaylistSongAdderTableViewController.h"  //song picker
-#import "AppEnvironmentConstants.h"
-#import "PlayListTableViewFormatter.h"
 #import "NSString+WhiteSpace_Utility.h"
-#import "SDWebImageManager.h"
 #import "MusicPlaybackController.h"
 #import "PlaylistSongAdderTableViewController.h"
 #import "UINavigationController+CustomPushAnimation.h"
 #import "CoreDataCustomTableViewController.h"
 #import "MainScreenViewControllerDelegate.h"
+#import "ActionablePlaylistDataSourceDelegate.h"
 
 @interface MasterPlaylistTableViewController :CoreDataCustomTableViewController
-                                                            <UISearchBarDelegate,
-                                                            UITableViewDataSource,
-                                                            UITableViewDelegate,
+                                                            <SearchBarDataSourceDelegate,
+                                                            ActionablePlaylistDataSourceDelegate,
                                                             MainScreenViewControllerDelegate,
                                                             UITextFieldDelegate,
-                                                            MGSwipeTableCellDelegate,
                                                             SDCAlertViewDelegate>
 @end

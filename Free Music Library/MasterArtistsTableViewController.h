@@ -19,7 +19,6 @@
 @interface MasterArtistsTableViewController : CoreDataCustomTableViewController
                                                             <SearchBarDataSourceDelegate,
                                                             ActionableArtistDataSourceDelegate,
-                                                            MainScreenViewControllerDelegate,
-                                                            MGSwipeTableCellDelegate>
+                                                            MainScreenViewControllerDelegate>
 
 @end

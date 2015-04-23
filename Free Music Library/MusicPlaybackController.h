@@ -42,6 +42,11 @@
 /** Stop playback of current song/track, and begin playback of the next track */
 + (void)skipToNextTrack;
 
+/**Used primarily when killing the player (to override the repeat mode settings).
+ IMPORTANT: use of this method requires that one checks if there are more songs in the
+            queue prior to invoking this method.*/
++ (void)forcefullySkipToNextTrack;
+
 /* Used to jump ahead or back in a video to an exact point. The player playback state
  (playing or paused) remains unaffected. */
 + (void)seekToVideoSecond:(NSNumber *)second;

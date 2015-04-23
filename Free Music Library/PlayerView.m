@@ -79,7 +79,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 }
 
 - (void)removeLayerFromPlayer
-{    
+{
     AVPlayerLayer *playerLayer = (AVPlayerLayer *)[self layer];
     if([playerLayer player] != nil)
         [playerLayer setPlayer:nil];
@@ -113,18 +113,36 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 #pragma mark - Responding to getures
 - (void)userSwipedUp
 {
+    screenshotOfPlayer = nil;
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    if(appDelegate.playerSnapshot){
+        [appDelegate.playerSnapshot removeFromSuperview];
+        appDelegate.playerSnapshot = nil;
+    }
     userDidSwipeUp = YES;
     [self segueToPlayerViewControllerIfAppropriate];
 }
 
 - (void)userSwipedDown
 {
+    screenshotOfPlayer = nil;
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    if(appDelegate.playerSnapshot){
+        [appDelegate.playerSnapshot removeFromSuperview];
+        appDelegate.playerSnapshot = nil;
+    }
     userDidSwipeDown = YES;
     [self popPlayerViewControllerIfAppropriate];
 }
 
 - (void)userTappedPlayer
 {
+    screenshotOfPlayer = nil;
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    if(appDelegate.playerSnapshot){
+        [appDelegate.playerSnapshot removeFromSuperview];
+        appDelegate.playerSnapshot = nil;
+    }
     userDidTap = YES;
     [self segueToPlayerViewControllerIfAppropriate];
 }
@@ -146,7 +164,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
     [SongPlayerCoordinator playerWasKilled:YES];
     [[NowPlayingSong sharedInstance] setNewNowPlayingSong:nil context:nil];
-
+    
     //reset player state to defaults
     [MusicPlaybackController explicitlyPausePlayback:NO];
     [SongPlayerCoordinator placePlayerInDisabledState:NO];
@@ -167,7 +185,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
             airplayMsgView = [[UIImageView alloc] initWithImage:airplayImg];
             airplayMsgView.userInteractionEnabled = NO;
             [self addSubview:airplayMsgView];
-        
+            
             airplayMsgView.center = [self convertPoint:self.center fromView:self.superview];
             [self bringSubviewToFront:airplayMsgView];
             [CATransaction flush];  //force immdiate redraw
@@ -192,6 +210,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 //used to help the touchesMoved method below get the swipe length
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    screenshotOfPlayer = nil;
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     if(appDelegate.playerSnapshot){
         [appDelegate.playerSnapshot removeFromSuperview];
@@ -315,9 +334,11 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 - (void)movePlayerBackToOriginalLocation
 {
     __weak PlayerView *weakSelf = self;
-    [UIView animateWithDuration:0.3
+    [UIView animateWithDuration:0.85
                           delay:0
-                        options:UIViewAnimationOptionCurveEaseIn
+         usingSpringWithDamping:0.8
+          initialSpringVelocity:0.56
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
                          if(lastOrientation == UIInterfaceOrientationPortrait ||
                             lastOrientation == UIInterfaceOrientationPortraitUpsideDown){
@@ -333,8 +354,10 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     __weak PlayerView *weakSelf = self;
     int screenWidth = [UIScreen mainScreen].bounds.size.width;
     int width = weakSelf.frame.size.width;
-    [UIView animateWithDuration:0.65
+    [UIView animateWithDuration:0.8
                           delay:0
+         usingSpringWithDamping:1
+          initialSpringVelocity:0.5
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^{
                          weakSelf.alpha = 0;

@@ -25,7 +25,6 @@ short const dummyTabIndex = 2;
 @property (nonatomic, strong) UIView *tabBarView;  //contains the tab bar and center button - the whole visual thing.
 @property (nonatomic, strong) UITabBar *tabBar;  //this tab bar is containing within a tab bar view
 @property (nonatomic, strong) SSBouncyButton *centerButton;
-@property (nonatomic, strong) UIImage *centerButtonImg;
 @property (nonatomic, strong) NSArray *navControllers;
 @property (nonatomic, strong) NSArray *viewControllers;
 @property (nonatomic, strong) NSArray *tabBarUnselectedImageNames;
@@ -332,7 +331,6 @@ short const dummyTabIndex = 2;
 
 - (void)hideTabBarAnimated:(NSNotification *)notification
 {
-    tabBarAnimationInProgress = YES;
     NSNumber *boolAsNum = [notification object];
     BOOL hide = [boolAsNum boolValue];
     CGRect visibleRect;
@@ -342,15 +340,13 @@ short const dummyTabIndex = 2;
     else
         visibleRect = [self landscapeTabBarViewFrame];
     
-    float duration = 0.8;
+    float duration = 0.56;
     float delay = 0;
     float springDamping = 0.80;
     float initialVelocity = 0.5;
     
     if(hide)
     {
-        if([AppEnvironmentConstants isTabBarHidden])
-            return;
         [AppEnvironmentConstants setTabBarHidden:YES];
         lastVisibleTabBarOrientation = currentInterfaceOrientation;
         CGRect hiddenFrame = CGRectMake(visibleRect.origin.x,
@@ -374,8 +370,6 @@ short const dummyTabIndex = 2;
     }
     else
     {
-        if(! [AppEnvironmentConstants isTabBarHidden])
-            return;
         [AppEnvironmentConstants setTabBarHidden:NO];
         //checking if orientations have changed (meaningfully anyway...as far as needing to redraw the tab bar)
         if(! (UIInterfaceOrientationIsPortrait(lastVisibleTabBarOrientation)
@@ -413,11 +407,8 @@ short const dummyTabIndex = 2;
 {
     if(alwaysKeepStatusBarInvisible)
         return YES;
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication]statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeLeft
-       || orientation == UIInterfaceOrientationLandscapeRight){
+    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))
         return YES;
-    }
     else{
         BOOL isNavBarHidden = self.currentNavController.navigationBar.frame.origin.y < 0;
         if(isNavBarHidden)
@@ -448,8 +439,7 @@ short const dummyTabIndex = 2;
 
 - (void)ensureTabBarRotatesSmoothlyToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 {
-    if(toInterfaceOrientation == UIInterfaceOrientationPortrait
-       || toInterfaceOrientation == UIInterfaceOrientationPortraitUpsideDown){
+    if(UIInterfaceOrientationIsPortrait(toInterfaceOrientation)){
         [UIView animateWithDuration:0.3
                               delay:0
                             options:UIViewAnimationOptionAllowAnimatedContent

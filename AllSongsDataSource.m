@@ -22,7 +22,7 @@
 @property (nonatomic, assign, readwrite) SONG_DATA_SRC_TYPE dataSourceType;
 @property (nonatomic, strong) NSMutableArray *selectedSongIds;
 @property (nonatomic, strong) NSOrderedSet *existingPlaylistSongs;
-@property (nonatomic, strong) NSArray *searchResults;
+@property (nonatomic, strong) NSMutableArray *searchResults;
 @end
 @implementation AllSongsDataSource
 
@@ -60,6 +60,7 @@
     self.editableSongDelegate = nil;
     self.playlistSongAdderDelegate = nil;
     self.searchBarDataSourceDelegate = nil;
+    stackController = nil;
     
     self.selectedSongIds = nil;
     self.existingPlaylistSongs = nil;
@@ -82,7 +83,7 @@
 #pragma mark - Overriding functionality
 - (void)clearSearchResultsDataSource
 {
-    self.searchResults = [NSArray array];
+    [self.searchResults removeAllObjects];
 }
 
 - (NSIndexPath *)indexPathInSearchTableForObject:(id)someObject
@@ -257,6 +258,16 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         
         if([self numObjectsInTable] == 0){ //dont need search bar anymore
             self.tableView.tableHeaderView = nil;
+        }
+        
+        if(self.displaySearchResults){
+            //this class is responsible for animating this cell since the fetchedResultsController
+            //isnt active when displaying search results.
+            [self.tableView beginUpdates];
+            [self.searchResults removeObjectAtIndex:indexPath.row];
+            [self.tableView deleteRowsAtIndexPaths:@[indexPath]
+                                  withRowAnimation:UITableViewRowAnimationMiddle];
+            [self.tableView endUpdates];
         }
     }
 }
@@ -579,7 +590,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (void)searchResultsFromUsersQuery:(NSArray *)modelObjects
 {
-    self.searchResults = modelObjects;
+    self.searchResults = [NSMutableArray arrayWithArray:modelObjects];
 }
 
 - (NSUInteger)playableDataSourceEntireModelCount

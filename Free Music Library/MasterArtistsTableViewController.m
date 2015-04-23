@@ -63,13 +63,6 @@
     }
 }
 
-- (UIBarButtonItem *)makeBarButtonItemNormal:(UIBarButtonItem *)barButton
-{
-    barButton.style = UIBarButtonItemStylePlain;
-    barButton.enabled = true;
-    return barButton;
-}
-
 - (void)establishTableViewDataSource
 {
     self.tableViewDataSourceAndDelegate = [[AllArtistsDataSource alloc] initWithArtistDataSourceType:ARTIST_DATA_SRC_TYPE_Default
@@ -96,6 +89,13 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    if(didForcefullyCloseSearchBarBeforeSegue){
+        //done to temporarily disable accidentaly touches during animation....
+        //such as tapping the tab bar and crashing the app lol.
+        UIView *window = [UIApplication sharedApplication].keyWindow;
+        window.userInteractionEnabled = NO;
+    }
+    
     [super viewDidAppear:animated];
     if(didForcefullyCloseSearchBarBeforeSegue){
         [self.tableViewDataSourceAndDelegate searchResultsShouldBeDisplayed:YES];
@@ -109,6 +109,8 @@
             [weakself.searchBar becomeFirstResponder];
             didForcefullyCloseSearchBarBeforeSegue = NO;
             lastQueryBeforeForceClosingSearchBar = nil;
+            UIView *window = [UIApplication sharedApplication].keyWindow;
+            window.userInteractionEnabled = YES;
         });
     }
 }

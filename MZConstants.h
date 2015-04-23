@@ -32,7 +32,6 @@ extern NSString * const MZNewSongLoading;
 extern NSString * const MZAVPlayerStallStateChanged;
 
 extern NSString * const MZInitAudioSession;
-extern NSString * const MZExpandPlayerViewWithAnimationDuration;
 
 extern NSString * const MZKeyNumLikes;
 extern NSString * const MZKeyNumDislikes;

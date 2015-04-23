@@ -109,6 +109,7 @@
 		8772517519888F1A00A2156B /* YouTubeVideoSearchService.m in Sources */ = {isa = PBXBuildFile; fileRef = 8772517419888F1A00A2156B /* YouTubeVideoSearchService.m */; };
 		8777AF2D1A8ECE000053BB21 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8777AF2B1A8ECE000053BB21 /* Crashlytics.framework */; };
 		8777AF2E1A8ECE000053BB21 /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8777AF2C1A8ECE000053BB21 /* Fabric.framework */; };
+		877A9AF91AE892A900C7D4C9 /* AllPlaylistsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 877A9AF81AE892A900C7D4C9 /* AllPlaylistsDataSource.m */; };
 		877C4BA3199FCCE000CE86BC /* Song+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 877C4BA2199FCCE000CE86BC /* Song+Utilities.m */; };
 		877C4BA7199FE4B800CE86BC /* Album+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 877C4BA6199FE4B800CE86BC /* Album+Utilities.m */; };
 		877C4BAA199FE4CF00CE86BC /* Artist+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 877C4BA9199FE4CF00CE86BC /* Artist+Utilities.m */; };
@@ -417,6 +418,9 @@
 		8772517419888F1A00A2156B /* YouTubeVideoSearchService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YouTubeVideoSearchService.m; sourceTree = "<group>"; };
 		8777AF2B1A8ECE000053BB21 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		8777AF2C1A8ECE000053BB21 /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
+		877A9AF61AE891FD00C7D4C9 /* ActionablePlaylistDataSourceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionablePlaylistDataSourceDelegate.h; sourceTree = "<group>"; };
+		877A9AF71AE892A900C7D4C9 /* AllPlaylistsDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllPlaylistsDataSource.h; sourceTree = "<group>"; };
+		877A9AF81AE892A900C7D4C9 /* AllPlaylistsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AllPlaylistsDataSource.m; sourceTree = "<group>"; };
 		877C4B84199FB2C200CE86BC /* Model 1.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 1.0.xcdatamodel"; sourceTree = "<group>"; };
 		877C4BA1199FCCE000CE86BC /* Song+Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Song+Utilities.h"; sourceTree = "<group>"; };
 		877C4BA2199FCCE000CE86BC /* Song+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Song+Utilities.m"; sourceTree = "<group>"; };
@@ -1060,6 +1064,7 @@
 				875696131AC4F39800ACF04E /* PlayableBaseDataSource.m */,
 				87585DB11ADEFD340053EAA9 /* KnownEnums.h */,
 				87585DB01ADEFD140053EAA9 /* Protocols */,
+				877A9AFA1AE892AF00C7D4C9 /* Playlists */,
 				876037431AE5F670004FA831 /* Artists */,
 				871917361ADF7CBD00FFC791 /* Albums */,
 				8756960B1AC4E99400ACF04E /* Songs */,
@@ -1085,6 +1090,7 @@
 				87585DAE1ADEFBDE0053EAA9 /* EditableSongDataSourceDelegate.h */,
 				871917371ADF7EFB00FFC791 /* ActionableAlbumDataSourceDelegate.h */,
 				876037471AE5FEDB004FA831 /* ActionableArtistDataSourceDelegate.h */,
+				877A9AF61AE891FD00C7D4C9 /* ActionablePlaylistDataSourceDelegate.h */,
 			);
 			name = Protocols;
 			sourceTree = "<group>";
@@ -1096,6 +1102,15 @@
 				876037451AE5F693004FA831 /* AllArtistsDataSource.m */,
 			);
 			name = Artists;
+			sourceTree = "<group>";
+		};
+		877A9AFA1AE892AF00C7D4C9 /* Playlists */ = {
+			isa = PBXGroup;
+			children = (
+				877A9AF71AE892A900C7D4C9 /* AllPlaylistsDataSource.h */,
+				877A9AF81AE892A900C7D4C9 /* AllPlaylistsDataSource.m */,
+			);
+			name = Playlists;
 			sourceTree = "<group>";
 		};
 		877C4B85199FB44E00CE86BC /* ViewController utility stuff */ = {
@@ -1941,6 +1956,7 @@
 				876335271A8496D000A229C4 /* MZTableViewCell.m in Sources */,
 				877C4BAA199FE4CF00CE86BC /* Artist+Utilities.m in Sources */,
 				871917351ADF7CAB00FFC791 /* AllAlbumsDataSource.m in Sources */,
+				877A9AF91AE892A900C7D4C9 /* AllPlaylistsDataSource.m in Sources */,
 				8703444F19A1A2D4002E5077 /* CoreDataManager.m in Sources */,
 				87408EC91AE4789C00267C3A /* AlbumAlbumArt.m in Sources */,
 				87FA136F1A99559100A1902F /* FetchVideoInfoOperation.m in Sources */,

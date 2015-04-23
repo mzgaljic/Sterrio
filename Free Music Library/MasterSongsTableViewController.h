@@ -29,6 +29,5 @@
 @interface MasterSongsTableViewController : CoreDataCustomTableViewController
                                                             <SearchBarDataSourceDelegate,
                                                             EditableSongDataSourceDelegate,
-                                                            MainScreenViewControllerDelegate,
-                                                            MGSwipeTableCellDelegate>
+                                                            MainScreenViewControllerDelegate>
 @end

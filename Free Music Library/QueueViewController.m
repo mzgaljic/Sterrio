@@ -89,6 +89,7 @@ short const SECTION_EMPTY = -1;
     mainQueueSongsComingUp = nil;
     upNextPlaybackContexts = nil;
     upNextSongs = nil;
+    stackController = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([self class]));
 }

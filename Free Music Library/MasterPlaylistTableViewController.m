@@ -7,10 +7,13 @@
 //
 
 #import "MasterPlaylistTableViewController.h"
-#import "MGSwipeTableCell.h"
-#import "MGSwipeButton.h"
+#import "AllPlaylistsDataSource.h"
+#import "PlayableBaseDataSource.h"
 
 @interface MasterPlaylistTableViewController ()
+{
+    CGRect originalTableViewFrame;
+}
 @property(nonatomic, strong) SDCAlertView *createPlaylistAlert;
 @property (nonatomic, strong) MySearchBar* searchBar;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -19,6 +22,8 @@
 @property (nonatomic, strong) NSArray *rightBarButtonItems;
 @property (nonatomic, strong) NSArray *leftBarButtonItems;
 @property (nonatomic, strong) UIBarButtonItem *editButton;
+
+@property AllPlaylistsDataSource *tableViewDataSourceAndDelegate;
 @end
 
 @implementation MasterPlaylistTableViewController
@@ -60,127 +65,74 @@
     }
 }
 
-- (UIBarButtonItem *)makeBarButtonItemNormal:(UIBarButtonItem *)barButton
+- (void)establishTableViewDataSource
 {
-    barButton.style = UIBarButtonItemStylePlain;
-    barButton.enabled = true;
-    return barButton;
+    short srcType = PLAYLIST_DATA_SRC_TYPE_Default;
+    AllPlaylistsDataSource *delegate;
+    delegate = [[AllPlaylistsDataSource alloc] initWithPlaylisttDataSourceType:srcType
+                                                   searchBarDataSourceDelegate:self];
+    self.tableViewDataSourceAndDelegate = delegate;
+    self.tableViewDataSourceAndDelegate.fetchedResultsController = self.fetchedResultsController;
+    self.tableViewDataSourceAndDelegate.tableView = self.tableView;
+    self.tableViewDataSourceAndDelegate.playbackContext = self.playbackContext;
+    self.tableViewDataSourceAndDelegate.cellReuseId = @"PlaylistItemCell";
+    self.tableViewDataSourceAndDelegate.emptyTableUserMessage = @"No Playlists";
+    self.tableViewDataSourceAndDelegate.actionablePlaylistDelegate = self;
+    self.tableView.dataSource = self.tableViewDataSourceAndDelegate;
+    self.tableView.delegate = self.tableViewDataSourceAndDelegate;
+    self.tableDataSource = self.tableViewDataSourceAndDelegate;
 }
 
-#pragma mark - UISearchBar
-- (void)setUpSearchBar
-{
-    //playlists tab is never the first one on screen. no need to animate it
-    if([self numberOfPlaylistsInCoreDataModel] > 0){
-        //create search bar, add to viewController
-        _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0) placeholderText:@"Search My Music"];
-        _searchBar.delegate = self;
-        self.tableView.tableHeaderView = _searchBar;
-    }
-    [super setSearchBar:self.searchBar];
-}
-
-- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
-{
-    self.searchFetchedResultsController = nil;
-    [self setFetchedResultsControllerAndSortStyle];
-}
-
-//User tapped the search box
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
-{
-    self.searchFetchedResultsController = nil;
-    self.fetchedResultsController = nil;
-    
-    //show the cancel button
-    [_searchBar setShowsCancelButton:YES animated:YES];
-}
-
-//user tapped "Search"
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
-{
-    //search results already appear as the user types. Just hide the keyboard...
-    [_searchBar resignFirstResponder];
-}
-
-//User tapped "Cancel"
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
-{
-    [self setFetchedResultsControllerAndSortStyle];
-    
-    //dismiss search bar and hide cancel button
-    [_searchBar setShowsCancelButton:NO animated:YES];
-    [_searchBar resignFirstResponder];
-}
-
-//User typing as we speak, fetch latest results to populate results as they type
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
-{
-    #warning implementation incomplete
-    
-    if(searchText.length == 0)
-    {
-        self.displaySearchResults = NO;
-    }
-    else
-    {
-        self.displaySearchResults = YES;
-        
-        /*
-         self.fetchedResultsController = nil;
-         NSManagedObjectContext *context = [CoreDataManager context];
-         NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-         
-         if([AppEnvironmentConstants smartAlphabeticalSort])
-         request.predicate = [NSPredicate predicateWithFormat:@"smartSortSongName == %@", searchText];
-         else
-         request.predicate = [NSPredicate predicateWithFormat:@"songName == %@", searchText];
-         
-         //fetchedResultsController is from custom super class
-         self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
-         managedObjectContext:context
-         sectionNameKeyPath:nil
-         cacheName:nil];
-         */
-        //now search through each song to find the query we need
-        /**
-         for (Song* someSong in _allSongsInLibrary)  //iterate through all songs
-         {
-         NSRange nameRange = [someSong.songName rangeOfString:searchText options:NSCaseInsensitiveSearch];
-         if(nameRange.location != NSNotFound)
-         {
-         [_searchResults addObject:someSong];
-         }
-         //would maybe like to filter by BEST result? This only captures results...
-         }
-         */
-    }
-}
 
 #pragma mark - View Controller life cycle
 - (void)viewWillAppear:(BOOL)animated
 {
+    //order of calls matters here...
+    self.searchBar = [self.tableViewDataSourceAndDelegate setUpSearchBar];
+    [super setSearchBar:self.searchBar];
     [super viewWillAppear:animated];
-    [self setUpSearchBar];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    if(didForcefullyCloseSearchBarBeforeSegue){
+        //done to temporarily disable accidentaly touches during animation....
+        //such as tapping the tab bar and crashing the app lol.
+        UIView *window = [UIApplication sharedApplication].keyWindow;
+        window.userInteractionEnabled = NO;
+    }
+    
+    [super viewDidAppear:animated];
+    if(didForcefullyCloseSearchBarBeforeSegue){
+        [self.tableViewDataSourceAndDelegate searchResultsShouldBeDisplayed:YES];
+        self.searchBar.text = lastQueryBeforeForceClosingSearchBar;
+        [self searchBarIsBecomingActive];
+        
+        double delayInSeconds = 0.3;
+        __weak MasterPlaylistTableViewController *weakself = self;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [weakself.searchBar becomeFirstResponder];
+            didForcefullyCloseSearchBarBeforeSegue = NO;
+            lastQueryBeforeForceClosingSearchBar = nil;
+            UIView *window = [UIApplication sharedApplication].keyWindow;
+            window.userInteractionEnabled = YES;
+        });
+    }
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    //this works better than a unique random id since this class can be dealloced and re-alloced
-    //later. Id must stay the same across all allocations.  :)
+    originalTableViewFrame = CGRectNull;
     self.playbackContextUniqueId = NSStringFromClass([self class]);
-    self.emptyTableUserMessage = @"No Playlists";
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
     self.navigationItem.rightBarButtonItems = [self rightBarButtonItemsForNavigationBar];
     self.navigationItem.leftBarButtonItems = [self leftBarButtonItemsForNavigationBar];
     [self setTableForCoreDataView:self.tableView];
-    self.cellReuseId = @"PlaylistItemCell";
+    [self initFetchResultsController];
+    self.extendedLayoutIncludesOpaqueBars = YES;
     
-    self.searchFetchedResultsController = nil;
-    [self setFetchedResultsControllerAndSortStyle];
-
+    [self establishTableViewDataSource];
     self.tableView.allowsSelectionDuringEditing = YES;
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
 }
@@ -191,173 +143,85 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark - Table View Data Source
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+#pragma mark - SearchBarDataSourceDelegate implementation
+- (NSString *)placeholderTextForSearchBar
 {
-    Playlist *playlist;
-    if(self.displaySearchResults)
-        playlist = [self.searchFetchedResultsController objectAtIndexPath:indexPath];
-    else
-        playlist = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    
-    MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
-                                                             forIndexPath:indexPath];
-    cell.textLabel.attributedText = [PlaylistTableViewFormatter formatPlaylistLabelUsingPlaylist:playlist];
-    PlaybackContext *playlistsContext = [self contextForPlaylist:playlist];
-    NowPlayingSong *nowPlayingSongObj = [NowPlayingSong sharedInstance];
-    BOOL currentSongFromPlaylist = ([playlist.playlistSongs containsObject:nowPlayingSongObj.nowPlaying] &&
-                                    [nowPlayingSongObj.context isEqualToContext:playlistsContext]);
-    if(currentSongFromPlaylist)
-        cell.textLabel.textColor = [super colorForNowPlayingItem];
-    else
-        cell.textLabel.textColor = [UIColor blackColor];
-    
-    cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[UIColor defaultAppColorScheme] lighterColor]];
-    if(! [PlaylistTableViewFormatter playlistNameIsBold])
-        cell.textLabel.font = [UIFont systemFontOfSize:[PlaylistTableViewFormatter nonBoldPlaylistLabelFontSize]];
-    //playlist doesnt have detail label  :)
-    
-    cell.delegate = self;
-    return cell;
+    return @"Search My Playlists";
 }
 
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)searchBarIsBecomingActive
 {
-    if(self.displaySearchResults)
-        return NO;
-    else
-        return YES;
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+    if(CGRectIsNull(originalTableViewFrame))
+        originalTableViewFrame = self.tableView.frame;
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         self.tableView.frame = CGRectMake(0,
+                                                           0,
+                                                           self.view.frame.size.width,
+                                                           self.view.frame.size.height);
+                     }
+                     completion:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysInvisible
+                                                        object:@YES];
 }
 
-//editing the tableView items
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)searchBarIsBecomingInactive
 {
-    if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
-        Playlist *playlist = [self.fetchedResultsController objectAtIndexPath:indexPath];
-        
-        [MusicPlaybackController groupOfSongsAboutToBeDeleted:[playlist.playlistSongs array]
-                                              deletionContext:self.playbackContext];
-        
-        //delete the playlist and save changes
-        NSEntityDescription *entityDesc = [NSEntityDescription entityForName:@"Playlist" inManagedObjectContext:[CoreDataManager context]];
-        NSFetchRequest *request = [[NSFetchRequest alloc] init];
-        [request setEntity:entityDesc];
-        
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"playlist_id == %@", playlist.playlist_id];
-        [request setPredicate:predicate];
-        
-        NSError *error;
-        NSArray *matchingData = [[CoreDataManager context] executeFetchRequest:request error:&error];
-        if(matchingData.count == 1)
-            [[CoreDataManager context] deleteObject:matchingData[0]];
-        [[CoreDataManager sharedInstance] saveContext];
-        
-        if([self numberOfPlaylistsInCoreDataModel] == 0){ //dont need search bar anymore
-            _searchBar = nil;
-            self.tableView.tableHeaderView = nil;
-        }
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         CGRect viewFrame = self.view.frame;
+                         self.tableView.frame = CGRectMake(originalTableViewFrame.origin.x,
+                                                           originalTableViewFrame.origin.y,
+                                                           viewFrame.size.width,
+                                                           viewFrame.size.height);
+                     }
+                     completion:^(BOOL finished) {
+                         originalTableViewFrame = CGRectNull;
+                     }];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysInvisible
+                                                        object:@NO];
+}
+
+#pragma mark - ActionableArtistDataSourceDelegate implementation
+static BOOL didForcefullyCloseSearchBarBeforeSegue = NO;
+static NSString *lastQueryBeforeForceClosingSearchBar;
+
+- (void)performEditSegueWithArtist:(Artist *)artistToBeEdited
+{
+    
+}
+- (void)performPlaylistDetailVCSegueWithPlaylist:(Playlist *)aPlaylist
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@YES];
+    if(self.searchBar.isFirstResponder){
+        lastQueryBeforeForceClosingSearchBar = self.searchBar.text;
+        [self.searchBar resignFirstResponder];
+        [self searchBarIsBecomingInactive];
+        [self popAndSegueWithDelayUsingPlaylist:aPlaylist];
     }
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    //dont want playlists to be selectable when in edit mode.
-    if(self.editing)
-        return;
-    Playlist *selectedPlaylist;
-    if(self.displaySearchResults)
-        selectedPlaylist = [self.searchFetchedResultsController objectAtIndexPath:indexPath];
     else
-        selectedPlaylist = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    
-    //now segue to push view where user can view the tapped playlist
-    [self performSegueWithIdentifier:@"playlistItemSegue" sender:selectedPlaylist];
+        [self performSegueWithIdentifier:@"playlistItemSegue" sender:aPlaylist];
 }
 
-- (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)popAndSegueWithDelayUsingPlaylist:(Playlist *)aPlaylist
 {
-    if (self.tableView.editing)
-    {
-        return UITableViewCellEditingStyleDelete;
-    }
-    return UITableViewCellEditingStyleNone;
-}
-
-- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section {
-    id <NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController.sections objectAtIndex:section];
-    return sectionInfo.numberOfObjects;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return [PlaylistTableViewFormatter preferredPlaylistCellHeight];
-}
-
-#pragma mark - MGSwipeTableCell delegates
-- (BOOL)swipeTableCell:(MGSwipeTableCell*)cell canSwipe:(MGSwipeDirection)direction
-{
-    return [self tableView:self.tableView
-     canEditRowAtIndexPath:[self.tableView indexPathForCell:cell]];
-}
-
-- (NSArray*)swipeTableCell:(MGSwipeTableCell*)cell
-  swipeButtonsForDirection:(MGSwipeDirection)direction
-             swipeSettings:(MGSwipeSettings*)swipeSettings
-         expansionSettings:(MGSwipeExpansionSettings*)expansionSettings
-{
-    swipeSettings.transition = MGSwipeTransitionBorder;
-    expansionSettings.buttonIndex = 0;
-    UIColor *initialExpansionColor = [AppEnvironmentConstants expandingCellGestureInitialColor];
-    
-    if(direction == MGSwipeDirectionLeftToRight){
-        //queue
-        Playlist *playlist = [self.fetchedResultsController
-                        objectAtIndexPath:[self.tableView indexPathForCell:cell]];
-        
-        expansionSettings.fillOnTrigger = NO;
-        expansionSettings.threshold = 1;
-        expansionSettings.expansionLayout = MGSwipeExpansionLayoutCenter;
-        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureQueueItemColor];
-        swipeSettings.transition = MGSwipeTransitionClipCenter;
-        swipeSettings.threshold = 9999;
-        
-        __weak MasterPlaylistTableViewController *weakself = self;
-        __weak Playlist *weakPlaylist = playlist;
-        __weak MGSwipeTableCell *weakCell = cell;
-        return @[[MGSwipeButton buttonWithTitle:@"Queue"
-                                backgroundColor:initialExpansionColor
-                                        padding:15
-                                       callback:^BOOL(MGSwipeTableCell *sender) {
-                                           [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
-                                           NSLog(@"Queing up: %@", weakPlaylist.playlistName);
-                                           PlaybackContext *context = [weakself contextForPlaylist:weakPlaylist];
-                                           [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
-                                           [weakCell refreshContentView];
-                                           return YES;
-                                       }]];
-    } else if(direction == MGSwipeDirectionRightToLeft){
-        expansionSettings.fillOnTrigger = YES;
-        expansionSettings.threshold = 2.7;
-        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
-        swipeSettings.transition = MGSwipeTransitionBorder;
-        
-        __weak MasterPlaylistTableViewController *weakSelf = self;
-        MGSwipeButton *delete = [MGSwipeButton buttonWithTitle:@"Delete"
-                                               backgroundColor:expansionSettings.expansionColor
-                                                       padding:15
-                                                      callback:^BOOL(MGSwipeTableCell *sender)
-                                 {
-                                     NSIndexPath *indexPath;
-                                     indexPath= [weakSelf.tableView indexPathForCell:sender];
-                                     [weakSelf tableView:weakSelf.tableView
-                                      commitEditingStyle:UITableViewCellEditingStyleDelete
-                                       forRowAtIndexPath:indexPath];
-                                     return NO; //don't autohide to improve delete animation
-                                 }];
-        return @[delete];
-    }
-    return nil;
+    double delayInSeconds = 0.25;
+    __weak MasterPlaylistTableViewController *weakself = self;
+    __weak Playlist *weakPlaylist = aPlaylist;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [weakself.navigationController popViewControllerAnimated:YES];
+        [weakself performSegueWithIdentifier:@"playlistItemSegue" sender:weakPlaylist];
+        didForcefullyCloseSearchBarBeforeSegue = YES;
+        [weakself.tableViewDataSourceAndDelegate clearSearchResultsDataSource];
+        [weakself.tableViewDataSourceAndDelegate searchResultsShouldBeDisplayed:NO];
+    });
 }
 
 #pragma mark - segue
@@ -463,44 +327,8 @@
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
-#pragma mark - Helpers
-- (PlaybackContext *)contextForPlaylist:(Playlist *)aPlaylist
-{
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY playlistIAmIn.playlist_id == %@", aPlaylist.playlist_id];
-    
-    //picked playlistIAmIn because its a useless value...need that so the results of the
-    //nsorderedset dont get re-ordered
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistIAmIn"
-                                                                     ascending:YES];
-    request.sortDescriptors = @[sortDescriptor];
-    NSString *playlistQueueDescription = [NSString stringWithFormat:@"\"%@\" Playlist", aPlaylist.playlistName];
-    return [[PlaybackContext alloc] initWithFetchRequest:[request copy]
-                                         prettyQueueName:playlistQueueDescription
-                                               contextId:self.playbackContextUniqueId];
-}
-
-#pragma mark - Counting Playlists in core data
-- (int)numberOfPlaylistsInCoreDataModel
-{
-    //count how many instances there are of the Song entity in core data
-    NSManagedObjectContext *context = [CoreDataManager context];
-    int count = 0;
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Playlist" inManagedObjectContext:context];
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    [fetchRequest setEntity:entity];
-    [fetchRequest setIncludesPropertyValues:NO];
-    [fetchRequest setIncludesSubentities:NO];
-    NSError *error = nil;
-    NSUInteger tempCount = [context countForFetchRequest: fetchRequest error: &error];
-    if(error == nil){
-        count = (int)tempCount;
-    }
-    return count;
-}
-
 #pragma mark - fetching and sorting
-- (void)setFetchedResultsControllerAndSortStyle
+- (void)initFetchResultsController
 {
     self.fetchedResultsController = nil;
     NSManagedObjectContext *context = [CoreDataManager context];

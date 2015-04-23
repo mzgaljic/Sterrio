@@ -1,30 +1,28 @@
 //
-//  AllArtistsDataSource.m
+//  AllPlaylistsDataSource.m
 //  Free Music Library
 //
-//  Created by Mark Zgaljic on 4/20/15.
+//  Created by Mark Zgaljic on 4/22/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
-#import "AllArtistsDataSource.h"
+#import "AllPlaylistsDataSource.h"
 #import "StackController.h"
 #import "MZTableViewCell.h"
 #import "MusicPlaybackController.h"
 
-@interface AllArtistsDataSource ()
+@interface AllPlaylistsDataSource ()
 {
     NSString *cellReuseIdDetailLabelNull;
     PlayableDataSearchDataSource *playableSearchBarDataSourceDelegate;
 }
-@property (nonatomic, assign, readwrite) ARTIST_DATA_SRC_TYPE dataSourceType;
+@property (nonatomic, assign, readwrite) PLAYLIST_DATA_SRC_TYPE dataSourceType;
 @property (nonatomic, strong) NSMutableArray *searchResults;
-@property (nonatomic, strong) Artist *selectedArtist;  //for artist picker VC's
 
 //@property (nonatomic, strong) NSMutableArray *selectedSongIds;
 //@property (nonatomic, strong) NSOrderedSet *existingPlaylistSongs;
-
 @end
-@implementation AllArtistsDataSource
+@implementation AllPlaylistsDataSource
 
 - (void)setCellReuseId:(NSString *)cellReuseId
 {
@@ -46,10 +44,10 @@
     _tableView = tableView;
     
     if(! playableSearchBarDataSourceDelegate)
-        playableSearchBarDataSourceDelegate = [[PlayableDataSearchDataSource alloc] initWithTableView:self.tableView
-                                                                 playableDataSearchDataSourceDelegate:self
-                                                                          searchBarDataSourceDelegate:self];
+        playableSearchBarDataSourceDelegate = [[PlayableDataSearchDataSource alloc] initWithTableView:self.tableView playableDataSearchDataSourceDelegate:self
+                                                    searchBarDataSourceDelegate:self];
 }
+
 
 #pragma mark - LifeCycle
 - (void)dealloc
@@ -59,7 +57,7 @@
     self.tableView = nil;
     self.playbackContext = nil;
     self.cellReuseId = nil;
-    self.actionableArtistDelegate = nil;
+    self.actionablePlaylistDelegate = nil;
     //self.playlistSongAdderDelegate = nil;
     self.searchBarDataSourceDelegate = nil;
     stackController = nil;
@@ -69,8 +67,8 @@
     NSLog(@"%@ dealloced!", NSStringFromClass([self class]));
 }
 
-- (instancetype)initWithArtistDataSourceType:(ARTIST_DATA_SRC_TYPE)type
-                searchBarDataSourceDelegate:(id<SearchBarDataSourceDelegate>)delegate;
+- (instancetype)initWithPlaylisttDataSourceType:(PLAYLIST_DATA_SRC_TYPE)type
+                    searchBarDataSourceDelegate:(id<SearchBarDataSourceDelegate>)delegate
 {
     if(self = [super init]){
         stackController = [[StackController alloc] init];
@@ -82,32 +80,18 @@
     return self;
 }
 
-- (instancetype)initWithArtistDataSourceType:(ARTIST_DATA_SRC_TYPE)type
-                             selectedArtist:(Artist *)anArtist
-                searchBarDataSourceDelegate:(id<SearchBarDataSourceDelegate>)delegate
-{
-    if(self = [super init]){
-        self.selectedArtist = anArtist;
-        stackController = [[StackController alloc] init];
-        self.dataSourceType = type;
-        self.searchBarDataSourceDelegate = delegate;
-    }
-    return self;
-}
-
-
 #pragma mark - Overriding functionality
 - (void)clearSearchResultsDataSource
 {
-    [self.searchResults removeAllObjects];
+    self.searchResults = [NSArray array];
 }
 
 - (NSIndexPath *)indexPathInSearchTableForObject:(id)someObject
 {
-    if([someObject isMemberOfClass:[Artist class]])
+    if([someObject isMemberOfClass:[Playlist class]])
     {
-        Artist *someArtist = (Artist *)someObject;
-        NSUInteger albumIndex = [self.searchResults indexOfObject:someArtist];
+        Playlist *somePlaylist = (Playlist *)someObject;
+        NSUInteger albumIndex = [self.searchResults indexOfObject:somePlaylist];
         if(albumIndex == NSNotFound)
             return nil;
         else{
@@ -121,11 +105,11 @@
 #pragma mark - UITableViewDataSource
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    Artist *artist;
+    Playlist *playlist;
     if(self.displaySearchResults)
-        artist = [self.searchResults objectAtIndex:indexPath.row];
+        playlist = [self.searchResults objectAtIndex:indexPath.row];
     else
-        artist = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        playlist = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     MZTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
                                                             forIndexPath:indexPath];
@@ -134,41 +118,44 @@
                                       reuseIdentifier:self.cellReuseId];
     
     cell.optOutOfImageView = YES;
+    cell.textLabel.text = playlist.playlistName;
     
-    if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Default)
+    if(self.dataSourceType == PLAYLIST_DATA_SRC_TYPE_Default)
     {
-        UIColor *appTheme = [[UIColor defaultAppColorScheme] lighterColor];
-        short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
-        MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
-                                                                                   color:appTheme];
+        //check if a song in this playlist is the now playing song
+        BOOL playlistHasNowPlaying = NO;
+        NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
         
-        cell.editingAccessoryView = coloredDisclosureIndicator;
-        cell.accessoryView = coloredDisclosureIndicator;
+        NSMutableString *playlistDetailContextId = [NSMutableString string];
+        [playlistDetailContextId appendString:NSStringFromClass([PlaylistItemTableViewController class])];
+        [playlistDetailContextId appendString:playlist.playlist_id];
         
-        //check if artist is now playing context, if so make cell changes here...
-    }
-    else if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Single_Artist_Picker)
-    {
-        BOOL isCurrentlySelectedArtist = [Artist isArtist:self.selectedArtist
-                                            equalToArtist:artist];
-        
-        if(isCurrentlySelectedArtist){
-            UIColor *appThemeSuperLight = [[[[[UIColor defaultAppColorScheme] lighterColor] lighterColor] lighterColor] lighterColor];
-            cell.backgroundColor = appThemeSuperLight;
-            [cell setUserInteractionEnabled:NO];
-            cell.textLabel.textColor = [UIColor whiteColor];
-            cell.detailTextLabel.textColor = [UIColor whiteColor];
-        } else{
-            cell.backgroundColor = [UIColor clearColor];
-            [cell setUserInteractionEnabled:YES];
-            cell.textLabel.textColor = [UIColor blackColor];
-            cell.detailTextLabel.textColor = [UIColor blackColor];
+        PlaybackContext *playlistDetailContext = [[PlaybackContext alloc] initWithFetchRequest:nil
+                                                                            prettyQueueName:@""
+                                                                                  contextId:playlistDetailContextId];
+        for(Song *playlistSong in playlist.playlistSongs)
+        {
+            //need to check both the general playlist context and the playlistDetailVC context.
+            //...since an entire playlist or just a specific playlist can be queued up.
+            if([nowPlayingObj isEqualToSong:playlistSong compareWithContext:self.playbackContext]
+               ||
+               [nowPlayingObj isEqualToSong:playlistSong compareWithContext:playlistDetailContext])
+            {
+                playlistHasNowPlaying = YES;
+                break;
+            }
         }
+
+        if(playlistHasNowPlaying)
+            cell.textLabel.textColor = [super colorForNowPlayingItem];
+        else
+            cell.textLabel.textColor = [UIColor blackColor];
+        cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
+                                                          color:[[UIColor defaultAppColorScheme] lighterColor]];
+
     }
-    cell.textLabel.text = artist.artistName;
-    cell.detailTextLabel.text = [self stringForArtistDetailLabelGivenArtist:artist];
+    
     cell.delegate = self;
-    #warning NOT setting artist textlabel color based on whether or not a song from this artist is playing (in same context)!
     return cell;
 }
 
@@ -177,9 +164,7 @@
     if(self.displaySearchResults)
         return NO;
     
-    if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Single_Artist_Picker)
-        return NO;
-    else if (self.dataSourceType == ARTIST_DATA_SRC_TYPE_Default)
+    if (self.dataSourceType == PLAYLIST_DATA_SRC_TYPE_Default)
         return YES;
     else
         return YES;
@@ -193,25 +178,12 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
-        Artist *artist = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        Playlist *playlist = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
-        //remove songs from queue
-        for(Song *aSong in artist.standAloneSongs)
-        {
-            [MusicPlaybackController songAboutToBeDeleted:aSong
-                                          deletionContext:self.playbackContext];
-            aSong.albumArt = nil;
-        }
-        for(Album *anAlbum in artist.albums)
-        {
-            for(Song *aSong in anAlbum.albumSongs)
-                [MusicPlaybackController songAboutToBeDeleted:aSong
+        [MusicPlaybackController groupOfSongsAboutToBeDeleted:[playlist.playlistSongs array]
                                               deletionContext:self.playbackContext];
-            anAlbum.albumArt = nil;
-        }
         
-        //delete the artist and save changes
-        [[CoreDataManager context] deleteObject:artist];
+        [[CoreDataManager context] deleteObject:playlist];
         [[CoreDataManager sharedInstance] saveContext];
         
         if([self numObjectsInTable] == 0){ //dont need search bar anymore
@@ -234,22 +206,15 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    Artist *tappedArtist;
+    Playlist *selectedPlaylist;
     if(self.displaySearchResults)
-        tappedArtist = [self.searchResults objectAtIndex:indexPath.row];
+        selectedPlaylist = [self.searchResults objectAtIndex:indexPath.row];
     else
-        tappedArtist = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        selectedPlaylist = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
-    if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Default)
+    if(self.dataSourceType == PLAYLIST_DATA_SRC_TYPE_Default)
     {
-        if(tableView.editing)
-            [self.actionableArtistDelegate performEditSegueWithArtist:tappedArtist];
-        else
-            [self.actionableArtistDelegate performArtistDetailVCSegueWithArtist:tappedArtist];
-    }
-    else if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Single_Artist_Picker)
-    {
-        [self.actionableArtistDelegate userDidSelectArtistFromSinglePicker:tappedArtist];
+        [self.actionablePlaylistDelegate performPlaylistDetailVCSegueWithPlaylist:selectedPlaylist];
     }
 }
 
@@ -300,7 +265,9 @@
     }
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view
+       forSection:(NSInteger)section
+{
     UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
     int headerFontSize;
     if([AppEnvironmentConstants preferredSizeSetting] < 5)
@@ -320,6 +287,8 @@
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
     Song *newSong = nowPlaying.nowPlaying;
     
+    NSArray *visibleCells = [self.tableView visibleCells];
+#warning method completely broken for now.
     Artist *oldArtist = oldsong.artist;
     Artist *newArtist = newSong.artist;
     NSIndexPath *oldPath, *newPath;
@@ -345,11 +314,10 @@
     }
 }
 
-
 #pragma mark - MGSwipeTableCell delegates
 - (BOOL)swipeTableCell:(MGSwipeTableCell*)cell canSwipe:(MGSwipeDirection)direction
 {
-    if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Default)
+    if(self.dataSourceType == PLAYLIST_DATA_SRC_TYPE_Default)
         return YES;
     else
         return NO;
@@ -363,12 +331,12 @@
     swipeSettings.transition = MGSwipeTransitionBorder;
     expansionSettings.buttonIndex = 0;
     UIColor *initialExpansionColor = [AppEnvironmentConstants expandingCellGestureInitialColor];
-    __weak AllArtistsDataSource *weakSelf = self;
+    __weak AllPlaylistsDataSource *weakSelf = self;
     
     if(direction == MGSwipeDirectionLeftToRight){
         //queue
-        Artist *artist = [self.fetchedResultsController
-                          objectAtIndexPath:[self.tableView indexPathForCell:cell]];
+        Playlist *playlist = [self.fetchedResultsController
+                              objectAtIndexPath:[self.tableView indexPathForCell:cell]];
         
         expansionSettings.fillOnTrigger = NO;
         expansionSettings.threshold = 1;
@@ -377,16 +345,15 @@
         swipeSettings.transition = MGSwipeTransitionClipCenter;
         swipeSettings.threshold = 9999;
         
-        __weak Artist *weakArtist = artist;
+        __weak Playlist *weakPlaylist = playlist;
         __weak MGSwipeTableCell *weakCell = cell;
         return @[[MGSwipeButton buttonWithTitle:@"Queue"
                                 backgroundColor:initialExpansionColor
                                         padding:15
                                        callback:^BOOL(MGSwipeTableCell *sender) {
                                            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
-                                           NSLog(@"Queing up: %@", weakArtist.artistName);
-                                           
-                                           PlaybackContext *context = [weakSelf contextForSpecificArtist:weakArtist];
+                                           NSLog(@"Queing up: %@", weakPlaylist.playlistName);
+                                           PlaybackContext *context = [weakSelf contextForPlaylist:weakPlaylist];
                                            [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];
                                            return YES;
@@ -414,22 +381,21 @@
     return nil;
 }
 
-- (PlaybackContext *)contextForSpecificArtist:(Artist *)anArtist
+
+
+- (PlaybackContext *)contextForPlaylist:(Playlist *)aPlaylist
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY artist.artist_id == %@", anArtist.artist_id];
-    NSSortDescriptor *sortDescriptor;
-    if([AppEnvironmentConstants smartAlphabeticalSort])
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
-    else
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
+    request.predicate = [NSPredicate predicateWithFormat:@"ANY playlistIAmIn.playlist_id == %@", aPlaylist.playlist_id];
+    
+    //picked playlistIAmIn because its a useless value...need that so the results of the
+    //nsorderedset dont get re-ordered
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistIAmIn"
+                                                                     ascending:YES];
     request.sortDescriptors = @[sortDescriptor];
+    NSString *playlistQueueDescription = [NSString stringWithFormat:@"\"%@\" Playlist", aPlaylist.playlistName];
     return [[PlaybackContext alloc] initWithFetchRequest:[request copy]
-                                         prettyQueueName:@""
+                                         prettyQueueName:playlistQueueDescription
                                                contextId:self.playbackContext.contextId];
 }
 
@@ -454,11 +420,6 @@
  }
  */
 
-- (MySearchBar *)setUpSearchBar
-{
-    return [playableSearchBarDataSourceDelegate setUpSearchBar];
-}
-
 #pragma mark - SearchBarDataSourceDelegate implementation
 - (NSString *)placeholderTextForSearchBar
 {
@@ -475,22 +436,20 @@
     [self.searchBarDataSourceDelegate searchBarIsBecomingInactive];
 }
 
+- (MySearchBar *)setUpSearchBar
+{
+    return [playableSearchBarDataSourceDelegate setUpSearchBar];
+}
+
 #pragma mark - PlayableDataSearchDataSourceDelegate implementation
 - (NSFetchRequest *)fetchRequestForSearchBarQuery:(NSString *)query
 {
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Artist"];
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Playlist"];
     request.returnsObjectsAsFaults = NO;
     [request setFetchBatchSize:50];
-    NSSortDescriptor *sortDescriptor;
-    if([AppEnvironmentConstants smartAlphabeticalSort])
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortArtistName"
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistName"
                                                        ascending:YES
                                                         selector:@selector(localizedStandardCompare:)];
-    else
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"artistName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
-    
     request.sortDescriptors = @[sortDescriptor];
     
     NSMutableString *searchWithWildcards = [NSMutableString stringWithFormat:@"*%@*", query];
@@ -500,11 +459,11 @@
     }
     
     //matches against exact string ANYWHERE within the album name
-    NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"artistName contains[cd] %@",  query];
+    NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"playlistName contains[cd] %@",  query];
     
     //matches partial string with song name as long as sequence of letters is correct.
     //see: http://stackoverflow.com/questions/15091155/nspredicate-match-any-characters
-    NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"artistName LIKE[cd] %@",  searchWithWildcards];
+    NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"playlistName LIKE[cd] %@",  searchWithWildcards];
     
     request.predicate = [NSCompoundPredicate orPredicateWithSubpredicates:@[predicate1,predicate2]];
     return request;
@@ -526,39 +485,7 @@
     return [self numObjectsInTable];
 }
 
-
 #pragma mark - Other Helpers
-- (NSString *)stringForArtistDetailLabelGivenArtist:(Artist *)artist
-{
-    //count all the songs that are associated with albums for this artist
-    NSMutableSet *allAlbumSongsFromArtist = [[NSMutableSet alloc] initWithCapacity:6];
-    for(Album *artistAlbum in artist.albums)
-    {
-        NSSet *albumSongs = artistAlbum.albumSongs;
-        NSSet *tempNewSet = [allAlbumSongsFromArtist setByAddingObjectsFromSet:albumSongs];
-        allAlbumSongsFromArtist = [NSMutableSet setWithSet:tempNewSet];
-    }
-    NSSet *albumSongs = artist.standAloneSongs;
-    NSSet *uniqueSongsByThisArtist = [allAlbumSongsFromArtist setByAddingObjectsFromSet:albumSongs];
-    
-    NSString *albumPart, *songPart;
-    if((int)artist.albums.count == 1)
-        albumPart = @"1 Album";
-    else
-        albumPart = [NSString stringWithFormat:@"%d Albums", (int)artist.albums.count];
-    
-    NSUInteger totalSongCount = uniqueSongsByThisArtist.count;
-    if(totalSongCount == 1)
-        songPart = @"1 Song ";
-    else
-        songPart = [NSString stringWithFormat:@"%d Songs", (int)totalSongCount];
-    
-    NSMutableString *finalDetailLabel = [NSMutableString stringWithString:albumPart];
-    [finalDetailLabel appendString:@" "];
-    [finalDetailLabel appendString:songPart];
-    return finalDetailLabel;
-}
-
 - (NSUInteger)numObjectsInTable
 {
     if(self.displaySearchResults)
@@ -571,6 +498,4 @@
         return [totalObjCount integerValue];
     }
 }
-
-
 @end

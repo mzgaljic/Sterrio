@@ -47,7 +47,9 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 {
     static GSTouchesShowingWindow *window = nil;
     if (!window) {
-        window = [[GSTouchesShowingWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        self.window = [GSTouchesShowingWindow alloc];
+        [self.window makeKeyAndVisible];
+        self.window.frame = [[UIScreen mainScreen] bounds];
     }
     return window;
 }
@@ -57,8 +59,11 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     BOOL showUserTouchesOnScreen = NO;
     if(showUserTouchesOnScreen)
         self.window = [self windowShowingTouches];
-    else
-        self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    else{
+        self.window = [UIWindow new];
+        [self.window makeKeyAndVisible];
+        self.window.frame = [[UIScreen mainScreen] bounds];
+    }
     
     [ReachabilitySingleton sharedInstance];  //init reachability class
     [LQAlbumArtBackgroundUpdater beginWaitingForEfficientMomentsToUpdateAlbumArt];

@@ -42,6 +42,8 @@ static BOOL updatingPlayerViewDisabled = NO;
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     allowSongDidFinishToExecute = player.allowSongDidFinishToExecute;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    if(! [SongPlayerCoordinator isVideoPlayerExpanded])
+        [playerView touchesCancelled:nil withEvent:nil];
     [playerView removeLayerFromPlayer];
     
     if([MusicPlaybackController avplayerTimeObserver] != nil)
@@ -97,7 +99,7 @@ static BOOL updatingPlayerViewDisabled = NO;
     
     [UIView animateWithDuration:0.20
                           delay:0
-                        options:UIViewAnimationOptionAllowUserInteraction
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowAnimatedContent
                      animations:^{
                          if(playerIndex != NSNotFound)
                              [appWindow insertSubview:playerView atIndex:playerIndex];

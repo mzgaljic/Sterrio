@@ -18,6 +18,7 @@
 #import "MusicPlaybackController.h"
 #import <FXImageView/UIImage+FX.h>
 
+@class StackController;
 @interface PlaylistItemTableViewController : CoreDataCustomTableViewController
                                                             <UISearchBarDelegate,
                                                             UITableViewDataSource,

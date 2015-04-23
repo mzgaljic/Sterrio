@@ -19,7 +19,9 @@
     
     //now do the same with the songs artist
     [MZCoreDataModelDeletionService removeSongFromItsArtist:songToDelete];
-    [[CoreDataManager context] deleteObject:songToDelete.albumArt];
+    SongAlbumArt *songArt = songToDelete.albumArt;
+    if(songArt)
+        [[CoreDataManager context] deleteObject:songArt];
     songToDelete.albumArt = nil;
 }
 
@@ -27,7 +29,9 @@
 {
     //remove album from its artist if applicable (and delete artist if needed)
     [self removeAlbumFromItsArtist:anAlbum];
-    [[CoreDataManager context] deleteObject:anAlbum.albumArt];
+    AlbumAlbumArt *albumArt = anAlbum.albumArt;
+    if(albumArt)
+        [[CoreDataManager context] deleteObject:albumArt];
     anAlbum.albumArt = nil;
 }
 
@@ -45,6 +49,7 @@
     if(songAlbum)
     {
         if(songAlbum.albumSongs.count == 1){
+            [MZCoreDataModelDeletionService prepareAlbumForDeletion:songAlbum];
             [[CoreDataManager context] deleteObject:songAlbum];
         }
         else
