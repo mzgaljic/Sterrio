@@ -310,15 +310,14 @@
         return;
     
     NSIndexPath *oldPath, *newPath;
-    NSArray *visibleCells = [self.tableView visibleCells];
-    for(UITableViewCell *aVisibeCell in visibleCells)
+    NSArray *indexes = [self.tableView indexPathsForVisibleRows];
+    for(NSIndexPath *anIndexPath in indexes)
     {
         Playlist *aPlaylist;
-        NSIndexPath *indexPath = [self.tableView indexPathForCell:aVisibeCell];
         if(self.displaySearchResults)
-            aPlaylist = [self.searchResults objectAtIndex:indexPath.row];
+            aPlaylist = [self.searchResults objectAtIndex:anIndexPath.row];
         else
-            aPlaylist = [self.fetchedResultsController objectAtIndexPath:indexPath];
+            aPlaylist = [self.fetchedResultsController objectAtIndexPath:anIndexPath];
         
         PlaybackContext *playlistDetailContext = [self playlistDetailContextForPlaylist:aPlaylist];
         

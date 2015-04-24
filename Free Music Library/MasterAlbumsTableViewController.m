@@ -93,15 +93,13 @@
     [super viewWillAppear:animated];
     
     //if any albums in the table have a dirty image, reload those cells only!
-    NSArray *visibleCells = [self.tableView visibleCells];
-    
+    NSArray *visibleIndexes = [self.tableView indexPathsForVisibleRows];
     NSMutableArray *indexPathsInNeedOfReload = [NSMutableArray array];
-    for(UITableViewCell *aVisibleCell in visibleCells)
+    for(NSIndexPath *anIndexPath in visibleIndexes)
     {
-        NSIndexPath *path = [self.tableView indexPathForCell:aVisibleCell];
-        Album *anAlbum = [self.tableViewDataSourceAndDelegate albumAtIndexPath:path];
+        Album *anAlbum = [self.tableViewDataSourceAndDelegate albumAtIndexPath:anIndexPath];
         if([anAlbum.albumArt.isDirty isEqualToNumber:@YES])
-            [indexPathsInNeedOfReload addObject:path];
+            [indexPathsInNeedOfReload addObject:anIndexPath];
     }
     if(indexPathsInNeedOfReload.count > 0){
         [self.tableView beginUpdates];

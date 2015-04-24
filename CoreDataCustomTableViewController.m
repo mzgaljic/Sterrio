@@ -362,10 +362,12 @@ typedef enum{
         tableView.tableHeaderView = nil;
     }
     
-    NSArray *visibleCells = [tableView visibleCells];
-    if(visibleCells.count > 0)
+    //this will only take effect for the MainScreen VC's that show the settings button.
+    //otherwise this code would break, but thats ok since it will only work under good conditions  :)
+    NSArray *indexes = [tableView indexPathsForVisibleRows];
+    if(indexes.count > 0)
     {
-        UITableViewCell *aCell = visibleCells[0];
+        UITableViewCell *aCell = [tableView cellForRowAtIndexPath:indexes[0]];
         UIFont *font = aCell.textLabel.font;
         if(([font.fontName isEqualToString:[AppEnvironmentConstants boldFontName]]
            && ![AppEnvironmentConstants boldNames])
