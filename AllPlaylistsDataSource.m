@@ -328,13 +328,14 @@
         BOOL newSongPartOfThisPlaylist = [[playlistsNewSongIsIn valueForKey:@"playlist_id"]
                                           containsObject:aPlaylist.playlist_id];
         
+        BOOL canBreakLoop = NO;
         if(oldSongPartOfThisPlaylist)
         {
             if([playlistDetailContext isEqualToContext:oldSongPlaybackContext])
             {
                 //old song was playing in this EXACT playlist, out of all the playlists its a part of.
                 oldPath = indexPath;
-                break;
+                canBreakLoop = YES;
             }
         }
         if(newSongPartOfThisPlaylist)
@@ -343,9 +344,11 @@
             {
                 //new song is playing in this EXACT playlist, out of all the playlists its a part of.
                 newPath = indexPath;
-                break;
+                canBreakLoop = YES;
             }
         }
+        if(canBreakLoop)
+            break;
     }
     
     if(oldPath || newPath){
