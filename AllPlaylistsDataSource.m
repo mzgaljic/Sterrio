@@ -334,6 +334,7 @@
             {
                 //old song was playing in this EXACT playlist, out of all the playlists its a part of.
                 oldPath = indexPath;
+                break;
             }
         }
         if(newSongPartOfThisPlaylist)
@@ -342,6 +343,7 @@
             {
                 //new song is playing in this EXACT playlist, out of all the playlists its a part of.
                 newPath = indexPath;
+                break;
             }
         }
     }
@@ -351,7 +353,7 @@
         if(oldPath)
             [self.tableView reloadRowsAtIndexPaths:@[oldPath]
                                   withRowAnimation:UITableViewRowAnimationFade];
-        if(newPath != nil && ![newPath isEqual:newPath])
+        if(newPath && ![newPath isEqual:newPath])
             [self.tableView reloadRowsAtIndexPaths:@[newPath]
                                   withRowAnimation:UITableViewRowAnimationFade];
         [self.tableView endUpdates];
