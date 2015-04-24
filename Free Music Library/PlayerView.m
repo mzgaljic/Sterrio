@@ -43,7 +43,8 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
         layer.masksToBounds = YES;
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(orientationNeedsToChanged)
-                                                     name:UIDeviceOrientationDidChangeNotification object:nil];
+                                                     name:UIDeviceOrientationDidChangeNotification
+                                                   object:nil];
         
         lastOrientation = [UIApplication sharedApplication].statusBarOrientation;
         self.multipleTouchEnabled = NO;

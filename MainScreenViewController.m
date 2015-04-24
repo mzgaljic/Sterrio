@@ -203,7 +203,7 @@ short const dummyTabIndex = 2;
         self.tabBar = [[UITabBar alloc] init];
         self.tabBar.delegate = self;
         
-        if ([AppEnvironmentConstants isUserOniOS8OrAbove])
+        if([AppEnvironmentConstants isUserOniOS8OrAbove])
         {
             UIVisualEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
             visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
@@ -220,12 +220,19 @@ short const dummyTabIndex = 2;
         [self.centerButton addTarget:self action:@selector(centerButtonTapped) forControlEvents:UIControlEventTouchUpInside];
     }
     
-    if(orientation == UIInterfaceOrientationLandscapeLeft
-       || orientation == UIInterfaceOrientationLandscapeRight){
+    if(UIInterfaceOrientationIsLandscape(orientation))
         self.tabBarView.frame = [self landscapeTabBarViewFrame];
-    } else{
+    else
         self.tabBarView.frame = [self portraitTabBarViewFrame];
+    
+    if([AppEnvironmentConstants isTabBarHidden]){
+        self.tabBarView.frame = CGRectMake(self.tabBarView.frame.origin.x,
+                                           self.tabBarView.frame.origin.y + MZTabBarHeight,
+                                           self.tabBarView.frame.size.width,
+                                           self.tabBarView.frame.size.height);
     }
+    
+    
     self.tabBar.frame = CGRectMake(0, 0, self.tabBarView.frame.size.width, self.tabBarView.frame.size.height);
     self.centerButton.frame = [self centerBtnFrameGivenTabBarViewFrame:self.tabBarView.frame
                                                           centerBtnImg:self.centerButtonImg];
@@ -347,6 +354,8 @@ short const dummyTabIndex = 2;
     
     if(hide)
     {
+        if([AppEnvironmentConstants isTabBarHidden])
+            return;
         [AppEnvironmentConstants setTabBarHidden:YES];
         lastVisibleTabBarOrientation = currentInterfaceOrientation;
         CGRect hiddenFrame = CGRectMake(visibleRect.origin.x,
@@ -360,16 +369,17 @@ short const dummyTabIndex = 2;
                             options:UIViewAnimationOptionBeginFromCurrentState
                          animations:^{
                              [self.tabBarView setFrame:hiddenFrame];
-                             self.tabBarView.alpha = 1;
                          }
                          completion:^(BOOL finished) {
-                             [self.tabBarView removeFromSuperview];
+                             self.tabBarView.hidden = YES;
                              [AppEnvironmentConstants setTabBarHidden:YES];
                              tabBarAnimationInProgress = NO;
                          }];
     }
     else
     {
+        if(! [AppEnvironmentConstants isTabBarHidden])
+            return;
         [AppEnvironmentConstants setTabBarHidden:NO];
         //checking if orientations have changed (meaningfully anyway...as far as needing to redraw the tab bar)
         if(! (UIInterfaceOrientationIsPortrait(lastVisibleTabBarOrientation)
@@ -392,11 +402,10 @@ short const dummyTabIndex = 2;
                             options:UIViewAnimationOptionBeginFromCurrentState
                          animations:^{
                              [self.tabBarView setFrame:visibleRect];
-                             self.tabBarView.alpha = 1;
+                             self.tabBarView.hidden = NO;
                          }
                          completion:^(BOOL finished) {
                              [AppEnvironmentConstants setTabBarHidden:NO];
-                             [self.view addSubview:self.tabBarView];
                              tabBarAnimationInProgress = NO;
                          }];
     }

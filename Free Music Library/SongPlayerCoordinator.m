@@ -165,26 +165,18 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     }
     
     if(! wasTabBarHiddenBeforePlayerExpansion)
-        [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:[NSNumber numberWithBool:NO]];
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@NO];
     
     wasTabBarHiddenBeforePlayerExpansion = NO;
     
     __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
-    __weak SongPlayerCoordinator *weakSelf = self;
-    BOOL needLandscapeFrame = YES;
-    if(UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation))
-        needLandscapeFrame = NO;
-    
+    currentPlayerFrame = [self smallPlayerFrameBasedOnCurrentOrientation];
     [UIView animateWithDuration:0.56f
                           delay:0
          usingSpringWithDamping:0.80f
           initialSpringVelocity:0.2f
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^{
-                         if(needLandscapeFrame)
-                             currentPlayerFrame = [weakSelf smallPlayerFrameInLandscape];
-                         else
-                             currentPlayerFrame = [weakSelf smallPlayerFrameInPortrait];
                          weakPlayerView.frame = currentPlayerFrame;
                          
                          MRProgressOverlayView *view = (MRProgressOverlayView *)[MRProgressOverlayView overlayForView:weakPlayerView];
@@ -210,14 +202,11 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
-    playerView.alpha = 0;
-    
-    if(playerView != nil)
-        [playerView removeFromSuperview];
     
     if(playerView == nil){
         //player not even on screen yet
         playerView = [[PlayerView alloc] init];
+        playerView.alpha = 0;
         MyAVPlayer *player = [[MyAVPlayer alloc] init];
         [playerView setPlayer:player];  //attaches AVPlayer to AVPlayerLayer
         playerView.alpha = 0;
@@ -226,14 +215,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
         [playerView setBackgroundColor:[UIColor blackColor]];
     }
     
-    BOOL needLandscapeFrame = YES;
-    if(UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation))
-        needLandscapeFrame = NO;
-    
-    if(needLandscapeFrame)
-        currentPlayerFrame = [self smallPlayerFrameInLandscape];
-    else
-        currentPlayerFrame = [self smallPlayerFrameInPortrait];
+    currentPlayerFrame = [self smallPlayerFrameBasedOnCurrentOrientation];
     playerView.frame = currentPlayerFrame;
     [appWindow addSubview:playerView];
     [AppEnvironmentConstants recordIndexOfPlayerView:[[appWindow subviews] indexOfObject:playerView]];
@@ -251,11 +233,18 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
                      }];
 }
 
+static UIInterfaceOrientation orientationOnLastRotate;
 - (void)shrunkenVideoPlayerNeedsToBeRotated
 {
-    if(! UIDeviceOrientationIsValidInterfaceOrientation([UIDevice currentDevice].orientation))
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    if(! UIDeviceOrientationIsValidInterfaceOrientation(deviceOrientation))
         return;
-    if([SongPlayerCoordinator isPlayerOnScreen]){
+    if([SongPlayerCoordinator isPlayerOnScreen])
+    {
+        UIInterfaceOrientation interfaceOrientation = [SongPlayerCoordinator convertDeviceOrientationToInferfaceOrientation:deviceOrientation];
+        if(orientationOnLastRotate == interfaceOrientation)
+            return;
+        orientationOnLastRotate = interfaceOrientation;
         
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         if(appDelegate.playerSnapshot){
@@ -264,20 +253,28 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
         }
         
         PlayerView *videoPlayer = [MusicPlaybackController obtainRawPlayerView];
-        if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)){
-            //landscape rotation...
-            currentPlayerFrame = [self smallPlayerFrameInLandscape];
-        }
-        else{
-            //portrait rotation...
-            currentPlayerFrame = [self smallPlayerFrameInPortrait];
-        }
-        [videoPlayer setFrame:currentPlayerFrame];
-        [videoPlayer shrunkenFrameHasChanged];
+        currentPlayerFrame = [self smallPlayerFrameBasedOnCurrentOrientation];
         
-        CGPoint newCenter = [videoPlayer convertPoint:videoPlayer.center
-                                     fromCoordinateSpace:videoPlayer.superview];
-        [videoPlayer newAirplayInUseMsgCenter:newCenter];
+        int padding = MZSmallPlayerVideoFramePadding;
+        CGRect tempBeginFrame = CGRectMake(currentPlayerFrame.origin.x + SMALL_VIDEO_WIDTH + padding,
+                                           currentPlayerFrame.origin.y,
+                                           currentPlayerFrame.size.width,
+                                           currentPlayerFrame.size.height);
+        [videoPlayer setFrame:tempBeginFrame];
+        
+        [UIView animateWithDuration:1
+                              delay:0
+             usingSpringWithDamping:0.7
+              initialSpringVelocity:0.8
+                            options:UIViewAnimationOptionAllowUserInteraction
+                         animations:^{
+                             videoPlayer.frame = currentPlayerFrame;
+                             [videoPlayer shrunkenFrameHasChanged];
+                             
+                             CGPoint newCenter = [videoPlayer convertPoint:videoPlayer.center
+                                                       fromCoordinateSpace:videoPlayer.superview];
+                             [videoPlayer newAirplayInUseMsgCenter:newCenter];
+                         } completion:nil];
     }
 }
 
@@ -290,37 +287,19 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     if(![SongPlayerCoordinator isPlayerOnScreen])
         return;
     
-    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
-    __weak SongPlayerCoordinator *weakSelf = self;
+    currentPlayerFrame = [self smallPlayerFrameBasedOnCurrentOrientation];
     
-    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)){
-        //landscape rotation...
-        [UIView animateWithDuration:0.6f animations:^{
-            currentPlayerFrame = [weakSelf smallPlayerFrameInLandscape];
-            weakPlayerView.frame = currentPlayerFrame;
-            [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
-            
-            CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
-                                         fromCoordinateSpace:weakPlayerView.superview];
-            [weakPlayerView newAirplayInUseMsgCenter:newCenter];
-        } completion:^(BOOL finished) {
-            [weakPlayerView shrunkenFrameHasChanged];
-        }];
-    } else{
-        //portrait
-        [UIView animateWithDuration:0.6f animations:^{
-            currentPlayerFrame = [weakSelf smallPlayerFrameInPortrait];
-            playerView.frame = currentPlayerFrame;
-            [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
-            
-            CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
-                                         fromCoordinateSpace:weakPlayerView.superview];
-            [weakPlayerView newAirplayInUseMsgCenter:newCenter];
-        } completion:^(BOOL finished) {
-            [weakPlayerView shrunkenFrameHasChanged];
-        }];
-    }
+    [UIView animateWithDuration:0.6f animations:^{
+        weakPlayerView.frame = currentPlayerFrame;
+        [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
+        
+        CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
+                                     fromCoordinateSpace:weakPlayerView.superview];
+        [weakPlayerView newAirplayInUseMsgCenter:newCenter];
+    } completion:^(BOOL finished) {
+        [weakPlayerView shrunkenFrameHasChanged];
+    }];
 }
 
 - (void)shrunkenVideoPlayerCanIgnoreToolbar
@@ -333,54 +312,55 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
         return;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
-    __weak SongPlayerCoordinator *weakSelf = self;
+    currentPlayerFrame = [self smallPlayerFrameBasedOnCurrentOrientation];
     
-    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)){
-        //landscape rotation...
-        [UIView animateWithDuration:0.6f animations:^{
-            currentPlayerFrame = [self smallPlayerFrameInLandscape];
-            playerView.frame = currentPlayerFrame;
-            [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
-            
-            CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
-                                         fromCoordinateSpace:weakPlayerView.superview];
-            [weakPlayerView newAirplayInUseMsgCenter:newCenter];
-        } completion:^(BOOL finished) {
-            [weakPlayerView shrunkenFrameHasChanged];
-        }];
-    } else{
-        //portrait
-        [UIView animateWithDuration:0.6f animations:^{
-            currentPlayerFrame = [weakSelf smallPlayerFrameInPortrait];
-            playerView.frame = currentPlayerFrame;
-            [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
-            
-            CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
-                                         fromCoordinateSpace:weakPlayerView.superview];
-            [weakPlayerView newAirplayInUseMsgCenter:newCenter];
-        } completion:^(BOOL finished) {
-            [weakPlayerView shrunkenFrameHasChanged];
-        }];
-    }
+    [UIView animateWithDuration:0.6f animations:^{
+        playerView.frame = currentPlayerFrame;
+        [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
+        
+        CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
+                                     fromCoordinateSpace:weakPlayerView.superview];
+        [weakPlayerView newAirplayInUseMsgCenter:newCenter];
+    } completion:^(BOOL finished) {
+        [weakPlayerView shrunkenFrameHasChanged];
+    }];
+}
+
+- (CGRect)smallPlayerFrameBasedOnCurrentOrientation
+{
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    UIInterfaceOrientation interfaceOrientation = [SongPlayerCoordinator convertDeviceOrientationToInferfaceOrientation:deviceOrientation];
+    
+    //need to manually check instead of using convenience methods UIInterfaceOrientationIsLandscape...etc.
+    //this is because it checks based on the current INTERFACE orientation, not device orientation...
+    //and the interface orientation changes with a delay after the device orientation.
+    if(interfaceOrientation == UIInterfaceOrientationPortrait
+       || interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown)
+        return [self smallPlayerFrameInPortrait];
+    else
+        return [self smallPlayerFrameInLandscape];
 }
 
 - (CGRect)smallPlayerFrameInPortrait
 {
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
     short toolbarHeight = 44;
     int width, height, x, y;
     
-    //set frame based on what kind of VC we are over at the moment
+    CGPoint screenSize = [SongPlayerCoordinator widthAndHeightOfScreen];
+    int screenWidth = screenSize.x;
+    int screenHeight = screenSize.y;
+    
+    //set frame based on what kind of mode the VC wants the player in.
     if(canIgnoreToolbar){
         width = SMALL_VIDEO_WIDTH;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
-        x = window.frame.size.width - width - MZSmallPlayerVideoFramePadding;
-        y = window.frame.size.height - height - MZSmallPlayerVideoFramePadding - MZTabBarHeight;
+        x = screenWidth - width - MZSmallPlayerVideoFramePadding;
+        y = screenHeight - height - MZSmallPlayerVideoFramePadding - MZTabBarHeight;
     } else{
         width = SMALL_VIDEO_WIDTH - amountToShrinkSmallPlayerWhenRespectingToolbar;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
-        x = window.frame.size.width - width - MZSmallPlayerVideoFramePadding;
-        y = window.frame.size.height - toolbarHeight - height - MZSmallPlayerVideoFramePadding;
+        x = screenWidth - width - MZSmallPlayerVideoFramePadding;
+        y = screenHeight - toolbarHeight - height - MZSmallPlayerVideoFramePadding;
     }
 
     return CGRectMake(x, y, width, height);
@@ -388,21 +368,24 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
 
 - (CGRect)smallPlayerFrameInLandscape
 {
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
     short toolbarHeight = 34;
     int width, height, x, y;
+    
+    CGPoint screenSize = [SongPlayerCoordinator widthAndHeightOfScreen];
+    int screenWidth = screenSize.x;
+    int screenHeight = screenSize.y;
     
     //set frame based on what kind of VC we are over at the moment
     if(canIgnoreToolbar){
         width = SMALL_VIDEO_WIDTH;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
-        x = window.frame.size.width - width - MZSmallPlayerVideoFramePadding;
-        y = window.frame.size.height - height - MZSmallPlayerVideoFramePadding - MZTabBarHeight;
+        x = screenWidth - width - MZSmallPlayerVideoFramePadding;
+        y = screenHeight - height - MZSmallPlayerVideoFramePadding - MZTabBarHeight;
     } else{
         width = SMALL_VIDEO_WIDTH - amountToShrinkSmallPlayerWhenRespectingToolbar;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
-        x = window.frame.size.width - width - MZSmallPlayerVideoFramePadding;
-        y = window.frame.size.height - toolbarHeight - height - MZSmallPlayerVideoFramePadding;
+        x = screenWidth - width - MZSmallPlayerVideoFramePadding;
+        y = screenHeight - toolbarHeight - height - MZSmallPlayerVideoFramePadding;
     }
     
     return CGRectMake(x, y, width, height);
@@ -419,22 +402,39 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
 
 + (CGPoint)widthAndHeightOfScreen
 {
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    UIInterfaceOrientation interfaceOrientation = [SongPlayerCoordinator convertDeviceOrientationToInferfaceOrientation:deviceOrientation];
+    
+    
     UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;
-    float widthOfScreenRoationIndependant;
-    float heightOfScreenRotationIndependant;
+    float widthOfScreen;
+    float heightOfScreen;
     float  a = [appWindow bounds].size.height;
     float b = [appWindow bounds].size.width;
-    if(a < b)
+    if(a > b)
     {
-        heightOfScreenRotationIndependant = b;
-        widthOfScreenRoationIndependant = a;
+        if(interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown
+           || interfaceOrientation == UIInterfaceOrientationPortrait){
+            heightOfScreen = a;
+            widthOfScreen = b;
+        } else{
+            widthOfScreen = a;
+            heightOfScreen = b;
+        }
     }
     else
     {
-        widthOfScreenRoationIndependant = b;
-        heightOfScreenRotationIndependant = a;
+        if(interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown
+           || interfaceOrientation == UIInterfaceOrientationPortrait){
+            heightOfScreen = b;
+            widthOfScreen = a;
+        } else{
+            widthOfScreen = b;
+            heightOfScreen = a;
+        }
     }
-    return CGPointMake(widthOfScreenRoationIndependant, heightOfScreenRotationIndependant);
+    
+    return CGPointMake(widthOfScreen, heightOfScreen);
 }
 
 - (void)temporarilyDisablePlayer
@@ -566,6 +566,32 @@ static BOOL wasInPlayStateBeforeGUIDisabled = NO;
     playerIsOnScreen = onScreen;
     [[NSNotificationCenter defaultCenter] postNotificationName:MZPlayerToggledOnScreenStatus
                                                         object:nil];
+}
+
+//should ONLY be used when you know for sure that the device orientation corresponds to a valid inteface orienation.
++ (UIInterfaceOrientation)convertDeviceOrientationToInferfaceOrientation:(UIDeviceOrientation)orientation
+{
+    switch (orientation)
+    {
+        case UIDeviceOrientationLandscapeLeft:
+            return UIInterfaceOrientationLandscapeLeft;
+            
+        case UIDeviceOrientationLandscapeRight:
+            return UIInterfaceOrientationLandscapeRight;
+            
+        case UIDeviceOrientationPortrait:
+            return UIInterfaceOrientationPortrait;
+            
+        case UIDeviceOrientationPortraitUpsideDown:
+            return UIInterfaceOrientationPortraitUpsideDown;
+            
+        default:
+        {
+            //device orientation is unknown. as a fallback, return actual interface orientation
+            //of the apps window.
+            return [UIApplication sharedApplication].statusBarOrientation;
+        }
+    }
 }
 
 @end
