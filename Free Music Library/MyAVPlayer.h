@@ -26,7 +26,10 @@
 @property (nonatomic, assign, readonly) BOOL allowSongDidFinishToExecute;
 @property (nonatomic, assign, readonly) NSUInteger secondsLoaded;
 
-- (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)yes oldSong:(Song *)oldSong;
+- (void)startPlaybackOfSong:(Song *)aSong
+               goingForward:(BOOL)forward
+                    oldSong:(Song *)oldSong
+                 oldContext:(PlaybackContext *)oldContext;
 
 - (void)showSpinnerForInternetConnectionIssueIfAppropriate;
 - (void)showSpinnerForBasicLoading;

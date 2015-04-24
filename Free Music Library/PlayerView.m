@@ -8,6 +8,7 @@
 
 #import "PlayerView.h"
 #import "SongPlayerViewController.h"
+#import "PreviousPlaybackContext.h"
 
 
 @interface PlayerView ()
@@ -155,9 +156,12 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     }
     userDidSwipePlayerOffScreenManually = NO;
     Song *songWeAreKilling = [MusicPlaybackController nowPlayingSong];
+    PlaybackContext *oldContext = [NowPlayingSong sharedInstance].context;
+    [PreviousPlaybackContext setPreviousPlaybackContext:oldContext];
+    
     //done because the method reacting to the MZNewSongLoading notification needs to know
     //what the context was. hence keeping the context the same temporarily...
-    [[NowPlayingSong sharedInstance] setNewNowPlayingSong:nil context:[NowPlayingSong sharedInstance].context];
+    [[NowPlayingSong sharedInstance] setNewNowPlayingSong:nil context:oldContext];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
                                                         object:songWeAreKilling];
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];

@@ -120,39 +120,47 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
 //current queue. This does not clear the "up next" section.
 - (void)setMainQueueWithNewNowPlayingSong:(Song *)aSong inContext:(PlaybackContext *)aContext
 {
+    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+    PlaybackContext *oldContext = [nowPlayingObj context];
     [mainQueue setMainQueueWithNewNowPlayingSong:aSong inContext:aContext];
-    [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:NO];
-    [[NowPlayingSong sharedInstance] setNewNowPlayingSong:aSong context:aContext];
+    [nowPlayingObj setPlayingBackFromPlayNextSongs:NO];
+    [nowPlayingObj setNewNowPlayingSong:aSong context:aContext];
     
     //start playback in minimzed state
     [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
     [VideoPlayerWrapper startPlaybackOfSong:aSong
                                goingForward:YES
-                                    oldSong:nil];
+                                    oldSong:nil
+                                 oldContext:oldContext];
     [self printQueueContents];
 }
 
 - (void)addSongsToPlayingNextWithContexts:(NSArray *)contexts
 {
     if(! [SongPlayerCoordinator isPlayerOnScreen]){
+        NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+        PlaybackContext *oldContext = [nowPlayingObj context];
+        
         //no songs currently playing, set defaults...
         [upNextQueue addSongsToUpNextWithContexts:contexts];
         PreliminaryNowPlaying *newSong = [upNextQueue obtainAndRemoveNextSong];
         
-        [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:YES];
-        [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newSong.aNewSong
-                                                      context:newSong.aNewContext];
+        [nowPlayingObj setPlayingBackFromPlayNextSongs:YES];
+        [nowPlayingObj setNewNowPlayingSong:newSong.aNewSong
+                                    context:newSong.aNewContext];
         //start playback in minimzed state
         [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
         [VideoPlayerWrapper startPlaybackOfSong:newSong.aNewSong
                                    goingForward:YES
-                                        oldSong:nil];
+                                        oldSong:nil
+                                     oldContext:oldContext];
         [self printQueueContents];
         return;
     } else{
         //songs were already played, player on screen. is playback of queue finished?
         if([mainQueue numMoreSongsInMainQueue] == 0
-           && [upNextQueue numMoreUpNextSongsCount] == 0){
+           && [upNextQueue numMoreUpNextSongsCount] == 0)
+        {
             //no more songs in queue! is the current song completely finished playing?
             //if so, we can start playback of the new up next songs right now!
             
@@ -167,12 +175,16 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
                 [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
                 [upNextQueue addSongsToUpNextWithContexts:contexts];
                 PreliminaryNowPlaying *newSong = [upNextQueue obtainAndRemoveNextSong];
-                [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:YES];
-                [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newSong.aNewSong
+                
+                NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+                PlaybackContext *oldContext = [nowPlayingObj context];
+                [nowPlayingObj setPlayingBackFromPlayNextSongs:YES];
+                [nowPlayingObj setNewNowPlayingSong:newSong.aNewSong
                                                               context:newSong.aNewContext];
                 [VideoPlayerWrapper startPlaybackOfSong:newSong.aNewSong
                                            goingForward:YES
-                                                oldSong:nowPlayingSong];
+                                                oldSong:nowPlayingSong
+                                             oldContext:oldContext];
                 [self printQueueContents];
                 return;
             }

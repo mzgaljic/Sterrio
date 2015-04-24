@@ -35,7 +35,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     stackController = nil;
     _playlist = nil;
-    _parentVcPlaybackContext = nil;
     _txtField = nil;
 }
 
@@ -158,10 +157,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
     BOOL songIsNowPlaying = [nowPlayingObj isEqualToSong:song
                                                         compareWithContext:self.playbackContext];
-    if(! songIsNowPlaying){
-        songIsNowPlaying = [nowPlayingObj isEqualToSong:song
-                                     compareWithContext:self.parentVcPlaybackContext];
-    }
     
     if(songIsNowPlaying)
         cell.textLabel.textColor = [super colorForNowPlayingItem];

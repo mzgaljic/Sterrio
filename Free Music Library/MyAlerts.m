@@ -52,9 +52,11 @@ static AFDropdownNotification *notification;
             [notification listenEventsWithBlock:^(AFDropdownNotificationEvent event) {
                 switch (event) {
                     case AFDropdownNotificationEventTopButton:
+                        /*
                         [VideoPlayerWrapper startPlaybackOfSong:[NowPlayingSong sharedInstance].nowPlaying
                                                    goingForward:YES
                                                         oldSong:nil];
+                         */
                         break;
                     default:
                         break;
@@ -77,9 +79,11 @@ static AFDropdownNotification *notification;
             [notification listenEventsWithBlock:^(AFDropdownNotificationEvent event) {
                 switch (event) {
                     case AFDropdownNotificationEventTopButton:
+                        /*
                         [VideoPlayerWrapper startPlaybackOfSong:[NowPlayingSong sharedInstance].nowPlaying
                                                    goingForward:YES
                                                         oldSong:nil];
+                         */
                         break;
                     default:
                         break;

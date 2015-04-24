@@ -74,7 +74,7 @@
     self.tableViewDataSourceAndDelegate = delegate;
     self.tableViewDataSourceAndDelegate.fetchedResultsController = self.fetchedResultsController;
     self.tableViewDataSourceAndDelegate.tableView = self.tableView;
-    self.tableViewDataSourceAndDelegate.playbackContext = self.playbackContext;
+    self.tableViewDataSourceAndDelegate.playbackContext = nil;
     self.tableViewDataSourceAndDelegate.cellReuseId = @"PlaylistItemCell";
     self.tableViewDataSourceAndDelegate.emptyTableUserMessage = @"No Playlists";
     self.tableViewDataSourceAndDelegate.actionablePlaylistDelegate = self;
@@ -125,7 +125,6 @@
 {
     [super viewDidLoad];
     originalTableViewFrame = CGRectNull;
-    self.playbackContextUniqueId = NSStringFromClass([self class]);
     self.navigationItem.rightBarButtonItems = [self rightBarButtonItemsForNavigationBar];
     self.navigationItem.leftBarButtonItems = [self leftBarButtonItemsForNavigationBar];
     [self setTableForCoreDataView:self.tableView];
@@ -231,7 +230,6 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
 {
     if([[segue identifier] isEqualToString: @"playlistItemSegue"]){
         [[segue destinationViewController] setPlaylist:(Playlist *)sender];
-        [[segue destinationViewController] setParentVcPlaybackContext:self.playbackContext];
     }
 }
 
@@ -342,11 +340,6 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
                                                                       selector:@selector(localizedStandardCompare:)];
     
     request.sortDescriptors = @[sortDescriptor];
-    if(self.playbackContext == nil){
-        self.playbackContext = [[PlaybackContext alloc] initWithFetchRequest:[request copy]
-                                                             prettyQueueName:@""
-                                                                   contextId:self.playbackContextUniqueId];
-    }
     //fetchedResultsController is from custom super class
     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
                                                                         managedObjectContext:context

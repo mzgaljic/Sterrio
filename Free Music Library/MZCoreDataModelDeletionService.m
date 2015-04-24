@@ -105,6 +105,7 @@
                 artistAlbum.artist = nil;
             }
             
+            
             [[CoreDataManager context] deleteObject:songArtist];
         }
         else

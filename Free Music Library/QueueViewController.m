@@ -421,6 +421,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         return;
     
     if(mainQueueSongsComingUp.count + upNextSongs.count > 0){
+#warning would be more efficient to manually delete the relevant objects within these data sources.
         mainQueueSongsComingUp = [queue tableViewOptimizedArrayOfMainQueueSongsComingUp];
         upNextSongs = [queue tableViewOptimizedArrayOfUpNextSongs];
         upNextPlaybackContexts = [queue tableViewOptimizedArrayOfUpNextSongContexts];

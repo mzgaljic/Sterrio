@@ -433,12 +433,20 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     NSString *newName = (NSString *)notification.object;
     newName = [newName removeIrrelevantWhitespace];
     
+    BOOL songHadNameBeforeUpdate = (_songIAmEditing.songName);
     if([_songIAmEditing.songName isEqualToString:newName])
         return;
     if(newName.length == 0){  //was all whitespace, or user gave us an empty string
         if(_creatingANewSong){
             _songIAmEditing.songName = nil;
             _songIAmEditing.smartSortSongName = nil;
+        }
+        if([self isRowPresentInTableView:0 withSection:1]){
+            //delete the add to lib section if song name is non-existant.
+            [self beginUpdates];
+            [self deleteSections:[NSIndexSet indexSetWithIndex:1]
+                withRowAnimation:UITableViewRowAnimationBottom];
+            [self endUpdates];
         }
         [self performSelector:@selector(reloadSongNameCell) withObject:nil afterDelay:0.5];
         return;
@@ -461,26 +469,15 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         if(_creatingANewSong){
             if(! [weakself isRowPresentInTableView:0 withSection:1]){
                 [weakself insertSections:[NSIndexSet indexSetWithIndex:1]
-                    withRowAnimation:UITableViewRowAnimationNone];
+                    withRowAnimation:UITableViewRowAnimationBottom];
             }
         }
         [weakself endUpdates];
-        [weakself reloadData];
-    });
-    
-    //add "add to lib" cell in section 2 and scroll to it
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.35 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        if(weakself && _creatingANewSong){
-            [weakself beginUpdates];
-            if(_creatingANewSong){
-                if(! [weakself isRowPresentInTableView:0 withSection:1]){
-                    [weakself insertSections:[NSIndexSet indexSetWithIndex:1]
-                            withRowAnimation:UITableViewRowAnimationBottom];
-                }
-            }
-            [weakself endUpdates];
-            [weakself scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
-                            atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        
+        //if the new add to lib section was added to the table, scroll to it.
+        if(! songHadNameBeforeUpdate && [weakself isRowPresentInTableView:0 withSection:1]){
+            CGPoint bottomOffset = CGPointMake(0, self.contentSize.height - self.bounds.size.height + self.contentInset.bottom + [AppEnvironmentConstants navBarHeight]);
+            [self setContentOffset:bottomOffset animated:YES];
         }
     });
 }

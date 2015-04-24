@@ -17,6 +17,7 @@
 {
     CGRect originalTableViewFrame;
     Album *usersCurrentAlbum;
+    float searchBecomingInactiveAnimationDuration;
 }
 @property (nonatomic, strong) MySearchBar* searchBar;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -33,6 +34,7 @@ existingEntityPickerDelegate:(id <ExistingEntityPickerDelegate>)delegate
     ExistingAlbumPickerTableViewController* vc = [sb instantiateViewControllerWithIdentifier:@"browseExistingAlbumsVC"];
     self = vc;
     if (self) {
+        searchBecomingInactiveAnimationDuration = 0.3;
         usersCurrentAlbum = anAlbum;
         self.delegate = delegate;
     }
@@ -111,7 +113,6 @@ existingEntityPickerDelegate:(id <ExistingEntityPickerDelegate>)delegate
                                                         object:[NSNumber numberWithBool:YES]];
 }
 
-const float searchBecomingInactiveAnimationDuration = 0.3;
 - (void)searchBarIsBecomingInactive
 {
     [self.navigationController setNavigationBarHidden:NO animated:YES];

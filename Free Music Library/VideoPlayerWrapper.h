@@ -16,7 +16,11 @@
 
 @interface VideoPlayerWrapper : NSObject
 
-+ (void)startPlaybackOfSong:(Song *)aSong goingForward:(BOOL)yes oldSong:(Song *)oldSong;
++ (void)startPlaybackOfSong:(Song *)aSong
+               goingForward:(BOOL)forward
+                    oldSong:(Song *)oldSong
+                 oldContext:(PlaybackContext *)oldContext;
+
 + (void)beginPlaybackWithPlayerItem:(AVPlayerItem *)item;
 + (void)setupAvPlayerViewAgain;
 + (void)temporarilyDisableUpdatingPlayerView:(BOOL)disable;

@@ -10,6 +10,7 @@
 #import "StackController.h"
 #import "MZTableViewCell.h"
 #import "MusicPlaybackController.h"
+#import "PreviousPlaybackContext.h"
 
 @interface AllPlaylistsDataSource ()
 {
@@ -125,14 +126,8 @@
         //check if a song in this playlist is the now playing song
         BOOL playlistHasNowPlaying = NO;
         NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+        PlaybackContext *playlistDetailContext = [self playlistDetailContextForPlaylist:playlist];
         
-        NSMutableString *playlistDetailContextId = [NSMutableString string];
-        [playlistDetailContextId appendString:NSStringFromClass([PlaylistItemTableViewController class])];
-        [playlistDetailContextId appendString:playlist.playlist_id];
-        
-        PlaybackContext *playlistDetailContext = [[PlaybackContext alloc] initWithFetchRequest:nil
-                                                                            prettyQueueName:@""
-                                                                                  contextId:playlistDetailContextId];
         for(Song *playlistSong in playlist.playlistSongs)
         {
             //need to check both the general playlist context and the playlistDetailVC context.
@@ -297,25 +292,58 @@
 #pragma mark - efficiently updating individual cells as needed
 - (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification
 {
-    if(self.playbackContext == nil)
-        return;
+    //VC's using the AllPlaylistsDataSource do NOT have a playback context. instead they
+    //use the context of the specific playlist they initiate.
+    
     Song *oldsong = (Song *)[notification object];
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
     Song *newSong = nowPlaying.nowPlaying;
+    PlaybackContext *oldSongPlaybackContext = [PreviousPlaybackContext contextBeforeNewSongBeganLoading];
+    PlaybackContext *newSongPlaybackContext = nowPlaying.context;
     
-    NSArray *visibleCells = [self.tableView visibleCells];
-#warning method completely broken for now.
-    Artist *oldArtist = oldsong.artist;
-    Artist *newArtist = newSong.artist;
+    NSSet *playlistsOldSongIsIn = oldsong.playlistIAmIn;
+    NSSet *playlistsNewSongIsIn = newSong.playlistIAmIn;
+    
+    //nothing to possibly update
+    if(playlistsOldSongIsIn.count == 0
+       && playlistsNewSongIsIn.count == 0)
+        return;
+    
     NSIndexPath *oldPath, *newPath;
-    
-    //tries to obtain the path to the changed artists if possible.
-    if(self.displaySearchResults){
-        oldPath = [self indexPathInSearchTableForObject:oldArtist];
-        newPath = [self indexPathInSearchTableForObject:newArtist];
-    } else{
-        oldPath = [self.fetchedResultsController indexPathForObject:oldArtist];
-        newPath = [self.fetchedResultsController indexPathForObject:newArtist];
+    NSArray *visibleCells = [self.tableView visibleCells];
+    for(UITableViewCell *aVisibeCell in visibleCells)
+    {
+        Playlist *aPlaylist;
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:aVisibeCell];
+        if(self.displaySearchResults)
+            aPlaylist = [self.searchResults objectAtIndex:indexPath.row];
+        else
+            aPlaylist = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        
+        PlaybackContext *playlistDetailContext = [self playlistDetailContextForPlaylist:aPlaylist];
+        
+        //check if this playlist is in the old songs playlists (compare by playlist_id)
+        BOOL oldSongPartOfThisPlaylist = [[playlistsOldSongIsIn valueForKey:@"playlist_id"]
+                                          containsObject:aPlaylist.playlist_id];
+        BOOL newSongPartOfThisPlaylist = [[playlistsNewSongIsIn valueForKey:@"playlist_id"]
+                                          containsObject:aPlaylist.playlist_id];
+        
+        if(oldSongPartOfThisPlaylist)
+        {
+            if([playlistDetailContext isEqualToContext:oldSongPlaybackContext])
+            {
+                //old song was playing in this EXACT playlist, out of all the playlists its a part of.
+                oldPath = indexPath;
+            }
+        }
+        if(newSongPartOfThisPlaylist)
+        {
+            if([playlistDetailContext isEqualToContext:newSongPlaybackContext])
+            {
+                //new song is playing in this EXACT playlist, out of all the playlists its a part of.
+                newPath = indexPath;
+            }
+        }
     }
     
     if(oldPath || newPath){
@@ -323,7 +351,7 @@
         if(oldPath)
             [self.tableView reloadRowsAtIndexPaths:@[oldPath]
                                   withRowAnimation:UITableViewRowAnimationFade];
-        if(newPath != nil && newPath != oldPath)
+        if(newPath != nil && ![newPath isEqual:newPath])
             [self.tableView reloadRowsAtIndexPaths:@[newPath]
                                   withRowAnimation:UITableViewRowAnimationFade];
         [self.tableView endUpdates];
@@ -410,9 +438,25 @@
                                                                      ascending:YES];
     request.sortDescriptors = @[sortDescriptor];
     NSString *playlistQueueDescription = [NSString stringWithFormat:@"\"%@\" Playlist", aPlaylist.playlistName];
+    
+    NSMutableString *uniquePlaylistContextID = [NSMutableString string];
+    [uniquePlaylistContextID appendString:NSStringFromClass([PlaylistItemTableViewController class])];
+    [uniquePlaylistContextID appendString:aPlaylist.playlist_id];
     return [[PlaybackContext alloc] initWithFetchRequest:[request copy]
                                          prettyQueueName:playlistQueueDescription
-                                               contextId:self.playbackContext.contextId];
+                                               contextId:uniquePlaylistContextID];
+}
+
+- (PlaybackContext *)playlistDetailContextForPlaylist:(Playlist *)aPlaylist
+{
+    NSMutableString *playlistDetailContextId = [NSMutableString string];
+    [playlistDetailContextId appendString:NSStringFromClass([PlaylistItemTableViewController class])];
+    [playlistDetailContextId appendString:aPlaylist.playlist_id];
+    
+    PlaybackContext *playlistDetailContext = [[PlaybackContext alloc] initWithFetchRequest:nil
+                                                                           prettyQueueName:@""
+                                                                                 contextId:playlistDetailContextId];
+    return playlistDetailContext;
 }
 
 /*
