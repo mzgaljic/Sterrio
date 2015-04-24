@@ -474,10 +474,23 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         }
         [weakself endUpdates];
         
-        //if the new add to lib section was added to the table, scroll to it.
-        if(! songHadNameBeforeUpdate && [weakself isRowPresentInTableView:0 withSection:1]){
-            CGPoint bottomOffset = CGPointMake(0, self.contentSize.height - self.bounds.size.height + self.contentInset.bottom + [AppEnvironmentConstants navBarHeight]);
-            [self setContentOffset:bottomOffset animated:YES];
+        //if the new add to lib section was added to the table, scroll to it (if not visible)
+        if(! songHadNameBeforeUpdate && [weakself isRowPresentInTableView:0 withSection:1])
+        {
+            NSArray *indexes = [self indexPathsForVisibleRows];
+            BOOL addToLibButtonVisible = NO;
+            if(indexes){
+                for(NSIndexPath *anIndexPath in indexes){
+                    if(anIndexPath.row == 0 && anIndexPath.section == 1){
+                        addToLibButtonVisible = YES;
+                        break;
+                    }
+                }
+            }
+            if(! addToLibButtonVisible){
+                CGPoint bottomOffset = CGPointMake(0, self.contentSize.height - self.bounds.size.height + self.contentInset.bottom + [AppEnvironmentConstants navBarHeight]);
+                [self setContentOffset:bottomOffset animated:YES];
+            }
         }
     });
 }
