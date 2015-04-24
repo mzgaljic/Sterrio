@@ -399,9 +399,7 @@
                                 backgroundColor:initialExpansionColor
                                         padding:15
                                        callback:^BOOL(MGSwipeTableCell *sender) {
-                                           [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
-                                           NSLog(@"Queing up: %@", weakArtist.artistName);
-                                           
+                                           [MZPlaybackQueue presentQueuedHUD];
                                            PlaybackContext *context = [weakSelf contextForSpecificArtist:weakArtist];
                                            [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];

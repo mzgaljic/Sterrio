@@ -497,21 +497,10 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
                                 backgroundColor:initialExpansionColor
                                         padding:15
                                        callback:^BOOL(MGSwipeTableCell *sender) {
-                                           [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
-                                           NSLog(@"Queing up: %@", weakAlbum.albumName);
-                                           
+                                           [MZPlaybackQueue presentQueuedHUD];
                                            PlaybackContext *context = [weakSelf contextForSpecificAlbum:weakAlbum];
                                            NSArray *cnxt = @[context];
                                            [MusicPlaybackController queueUpNextSongsWithContexts:cnxt];
-                                           NSInteger fadeAnimation = UITableViewRowAnimationFade;
-                                           //must refresh queued album since the album itself wont
-                                           //turn to the now playing color...the song will. album cell
-                                           //needs to be reloaded for it to detect that one of its songs
-                                           //is the now playing one.
-                                           [weaktable beginUpdates];
-                                           [weaktable reloadRowsAtIndexPaths:@[weakPath]
-                                                            withRowAnimation:fadeAnimation];
-                                           [weaktable endUpdates];
                                            [weakCell refreshContentView];
                                            return YES;
                                        }]];

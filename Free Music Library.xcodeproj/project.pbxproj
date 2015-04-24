@@ -13,6 +13,9 @@
 		870CF9CF1AE20BCB00E4A97A /* LQAlbumArtItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 870CF9CE1AE20BCB00E4A97A /* LQAlbumArtItem.m */; };
 		870CF9D21AE2117E00E4A97A /* LQAlbumArtBackgroundUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = 870CF9D11AE2117E00E4A97A /* LQAlbumArtBackgroundUpdater.m */; };
 		870D49E71A6324F2004496A9 /* MZConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 870D49E61A6324F2004496A9 /* MZConstants.m */; };
+		870E3B261AEA12EE00A822A7 /* LICENSE progressHUD.txt in Resources */ = {isa = PBXBuildFile; fileRef = 870E3B231AEA12EE00A822A7 /* LICENSE progressHUD.txt */; };
+		870E3B271AEA12EE00A822A7 /* ProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 870E3B251AEA12EE00A822A7 /* ProgressHUD.m */; };
+		870E3B2A1AEA145B00A822A7 /* ProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 870E3B291AEA145B00A822A7 /* ProgressHUD.bundle */; };
 		870EDAE6197F4EAD001901B9 /* EditableCellTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 870EDAE5197F4EAD001901B9 /* EditableCellTableViewController.m */; };
 		8715AC4D19846AB900A51165 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8715AC4C19846AB900A51165 /* MessageUI.framework */; };
 		871917351ADF7CAB00FFC791 /* AllAlbumsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 871917341ADF7CAB00FFC791 /* AllAlbumsDataSource.m */; };
@@ -230,6 +233,10 @@
 		870D49E41A62E685004496A9 /* YouTubeVideoDetailLookupDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YouTubeVideoDetailLookupDelegate.h; sourceTree = "<group>"; };
 		870D49E51A6324F2004496A9 /* MZConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZConstants.h; sourceTree = "<group>"; };
 		870D49E61A6324F2004496A9 /* MZConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZConstants.m; sourceTree = "<group>"; };
+		870E3B231AEA12EE00A822A7 /* LICENSE progressHUD.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "LICENSE progressHUD.txt"; sourceTree = "<group>"; };
+		870E3B241AEA12EE00A822A7 /* ProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProgressHUD.h; sourceTree = "<group>"; };
+		870E3B251AEA12EE00A822A7 /* ProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProgressHUD.m; sourceTree = "<group>"; };
+		870E3B291AEA145B00A822A7 /* ProgressHUD.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = ProgressHUD.bundle; sourceTree = "<group>"; };
 		870EDAE4197F4EAD001901B9 /* EditableCellTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditableCellTableViewController.h; sourceTree = "<group>"; };
 		870EDAE5197F4EAD001901B9 /* EditableCellTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditableCellTableViewController.m; sourceTree = "<group>"; };
 		8715AC4C19846AB900A51165 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
@@ -652,6 +659,17 @@
 				876335231A847B9D00A229C4 /* CoreDataCustomTableViewController.m */,
 			);
 			name = "Core Data tableview integration";
+			sourceTree = "<group>";
+		};
+		870E3B281AEA12F300A822A7 /* ProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				870E3B291AEA145B00A822A7 /* ProgressHUD.bundle */,
+				870E3B231AEA12EE00A822A7 /* LICENSE progressHUD.txt */,
+				870E3B241AEA12EE00A822A7 /* ProgressHUD.h */,
+				870E3B251AEA12EE00A822A7 /* ProgressHUD.m */,
+			);
+			name = ProgressHUD;
 			sourceTree = "<group>";
 		};
 		870EDAE7197F4EB0001901B9 /* Editing Field View */ = {
@@ -1346,6 +1364,7 @@
 		87A453A0199C0825004D1319 /* Imported Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				870E3B281AEA12F300A822A7 /* ProgressHUD */,
 				872075D21AE770880081E491 /* GSTouches */,
 				872075CE1AE76E910081E491 /* MGSwipeTableCell */,
 				8738E4C51AE1EE0D00BA915F /* ASValueTrackingSlider */,
@@ -1756,6 +1775,7 @@
 				87A120931ABA259F00250B2C /* LICENSE1.txt in Resources */,
 				87A04C9F1ACCAB96007C9245 /* FONTLOG_ubuntu.txt in Resources */,
 				87DD2A2B1A74B5F60014E115 /* Main.storyboard in Resources */,
+				870E3B2A1AEA145B00A822A7 /* ProgressHUD.bundle in Resources */,
 				87480DC4192C1FBD005CC0A4 /* Images.xcassets in Resources */,
 				87A04CA11ACCAB96007C9245 /* LICENCE_ubuntu.txt in Resources */,
 				87A04C911ACCA823007C9245 /* Ubuntu-Bold.ttf in Resources */,
@@ -1775,6 +1795,7 @@
 				872EA4DE1A54CAAB00F8EE9D /* iOSDeviceModelMapping.plist in Resources */,
 				874DA08F1ABA11DD003D69D6 /* README.txt in Resources */,
 				87D16D621931B7EE00DB6A34 /* Podfile in Resources */,
+				870E3B261AEA12EE00A822A7 /* LICENSE progressHUD.txt in Resources */,
 				8738E4CD1AE1EE0D00BA915F /* LICENSE asvalue tracking slider.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1851,6 +1872,7 @@
 				874814591AC23D1B00F447C1 /* MZAlbumSectionHeader.m in Sources */,
 				87E5FF3F1A6F42AD00A09652 /* MZSongModifierTableView.m in Sources */,
 				8763351B1A84052600A229C4 /* MainScreenViewController.m in Sources */,
+				870E3B271AEA12EE00A822A7 /* ProgressHUD.m in Sources */,
 				876037461AE5F693004FA831 /* AllArtistsDataSource.m in Sources */,
 				871C2BF01A97CAA0007A1DE5 /* NowPlayingSong.m in Sources */,
 				87A453D8199C0891004D1319 /* UIImage+EYFixOrientation.m in Sources */,

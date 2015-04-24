@@ -212,9 +212,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
                                 backgroundColor:initialExpansionColor
                                         padding:15
                                        callback:^BOOL(MGSwipeTableCell *sender) {
-                                           [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
-                                           NSLog(@"Queing up: %@", aSong.songName);
-                                           
+                                           [MZPlaybackQueue presentQueuedHUD];
                                            PlaybackContext *context = [weakself contextForSpecificSong:weakSong];
                                            [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];

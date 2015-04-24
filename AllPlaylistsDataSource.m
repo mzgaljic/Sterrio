@@ -333,7 +333,7 @@
             if([playlistDetailContext isEqualToContext:oldSongPlaybackContext])
             {
                 //old song was playing in this EXACT playlist, out of all the playlists its a part of.
-                oldPath = indexPath;
+                oldPath = anIndexPath;
                 canBreakLoop = YES;
             }
         }
@@ -342,7 +342,7 @@
             if([playlistDetailContext isEqualToContext:newSongPlaybackContext])
             {
                 //new song is playing in this EXACT playlist, out of all the playlists its a part of.
-                newPath = indexPath;
+                newPath = anIndexPath;
                 canBreakLoop = YES;
             }
         }
@@ -399,8 +399,7 @@
                                 backgroundColor:initialExpansionColor
                                         padding:15
                                        callback:^BOOL(MGSwipeTableCell *sender) {
-                                           [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
-                                           NSLog(@"Queing up: %@", weakPlaylist.playlistName);
+                                           [MZPlaybackQueue presentQueuedHUD];
                                            PlaybackContext *context = [weakSelf contextForPlaylist:weakPlaylist];
                                            [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];
@@ -451,6 +450,7 @@
                                                contextId:uniquePlaylistContextID];
 }
 
+//caution, changing this method means i HAVE TO update the same logic in the playlist detail VC.
 - (PlaybackContext *)playlistDetailContextForPlaylist:(Playlist *)aPlaylist
 {
     NSMutableString *playlistDetailContextId = [NSMutableString string];

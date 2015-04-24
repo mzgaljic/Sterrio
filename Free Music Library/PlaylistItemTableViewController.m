@@ -42,12 +42,13 @@
 {
     [super viewDidLoad];
     numTimesViewWillAppearCalledSinceVcLoad = 0;
-    //this works better than a unique random id since this class can be dealloced and re-alloced
-    //later. Id must stay the same across all allocations.  :)
+
+    //caution, updating this uniqueID logic means i MUST update the same logic in AllPlaylistsDataSource.
     NSMutableString *uniqueID = [NSMutableString string];
     [uniqueID appendString:NSStringFromClass([self class])];
     [uniqueID appendString:self.playlist.playlist_id];
     self.playbackContextUniqueId = uniqueID;
+    
     self.emptyTableUserMessage = @"Playlist Empty";
     [self setUpNavBarItems];
     self.navBar = self.navigationItem;
@@ -300,8 +301,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                 backgroundColor:initialExpansionColor
                                         padding:15
                                        callback:^BOOL(MGSwipeTableCell *sender) {
-                                           [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
-                                           NSLog(@"Queing up: %@", weakSong.songName);
+                                           [MZPlaybackQueue presentQueuedHUD];
                                            PlaybackContext *context = [weakself contextForPlaylistSong:weakSong];
                                            [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];

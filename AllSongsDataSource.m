@@ -478,9 +478,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                 backgroundColor:initialExpansionColor
                                         padding:15
                                        callback:^BOOL(MGSwipeTableCell *sender) {
-                                           [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongQueued];
-                                           
-                                           NSLog(@"Queing up: %@", weakSong.songName);
+                                           [MZPlaybackQueue presentQueuedHUD];
                                            PlaybackContext *context = [weakself contextForSpecificSong:weakSong];
                                            [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];

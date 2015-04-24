@@ -7,6 +7,7 @@
 //
 
 #import "MZPlaybackQueue.h"
+#import "ProgressHUD.h"
 
 @interface MZPlaybackQueue ()
 {
@@ -29,6 +30,11 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
         sharedInstance = [[[self class] alloc] init];
     });
     return sharedInstance;
+}
+
++ (void)presentQueuedHUD
+{
+    [ProgressHUD showSuccess:@"Queued" Interaction:YES];
 }
 
 - (instancetype)init
