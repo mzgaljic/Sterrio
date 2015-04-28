@@ -461,11 +461,6 @@ typedef enum{
 }
 
 
-- (UIColor *)colorForNowPlayingItem
-{
-    return [[UIColor defaultAppColorScheme] lighterColor];
-}
-
 - (void)compensateTableViewInsetForPlayer
 {
     UIEdgeInsets currentInsets = tableView.contentInset;

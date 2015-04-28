@@ -111,4 +111,6 @@ typedef enum{
 + (UIColor *)expandingCellGestureQueueItemColor;
 + (UIColor *)expandingCellGestureDeleteItemColor;
 
++ (UIColor *)nowPlayingItemColor;
+
 @end

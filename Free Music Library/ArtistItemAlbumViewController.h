@@ -7,14 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Artist.h"
-#import "SDWebImageManager.h"
 #import "MyViewController.h"
+#import "MGSwipeTableCell.h"
 
+@class Artist;
 @interface ArtistItemAlbumViewController : MyViewController
+                                                    <UITableViewDataSource,
+                                                    UITableViewDelegate,
+                                                    MGSwipeTableCellDelegate>
 
 @property (strong, nonatomic) Artist *artist;
-//GUI vars
-@property (weak, nonatomic) IBOutlet UINavigationItem *navBar;
+@property (strong, nonatomic) UIViewController *parentVc;
+@property (strong, nonatomic) PlaybackContext *parentVcPlaybackContext;
 
 @end

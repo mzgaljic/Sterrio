@@ -97,6 +97,10 @@
 		87501580198C3D5300382945 /* YoutubeResultsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8750157F198C3D5300382945 /* YoutubeResultsTableViewController.m */; };
 		8756960E1AC4E9BE00ACF04E /* AllSongsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 8756960D1AC4E9BE00ACF04E /* AllSongsDataSource.m */; };
 		875696141AC4F39800ACF04E /* PlayableBaseDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 875696131AC4F39800ACF04E /* PlayableBaseDataSource.m */; };
+		8757117D1AEE9AD50077F8C3 /* AlbumDetailDisplayHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8757117C1AEE9AD50077F8C3 /* AlbumDetailDisplayHelper.m */; };
+		875711841AEE9DFD0077F8C3 /* CCColorCube.m in Sources */ = {isa = PBXBuildFile; fileRef = 875711801AEE9DFD0077F8C3 /* CCColorCube.m */; };
+		875711851AEE9DFD0077F8C3 /* CCLocalMaximum.m in Sources */ = {isa = PBXBuildFile; fileRef = 875711821AEE9DFD0077F8C3 /* CCLocalMaximum.m */; };
+		875711861AEE9DFD0077F8C3 /* LICENSE color cube.txt in Resources */ = {isa = PBXBuildFile; fileRef = 875711831AEE9DFD0077F8C3 /* LICENSE color cube.txt */; };
 		87585DA01ADED8DF0053EAA9 /* MZActivityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87585D9F1ADED8DF0053EAA9 /* MZActivityViewController.m */; };
 		875984A5195D764700015243 /* PlaylistItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875984A4195D764700015243 /* PlaylistItemTableViewController.m */; };
 		875B3820197ACBC0008B4409 /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875B381F197ACBC0008B4409 /* SettingsTableViewController.m */; };
@@ -395,6 +399,13 @@
 		8756960D1AC4E9BE00ACF04E /* AllSongsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AllSongsDataSource.m; sourceTree = "<group>"; };
 		875696121AC4F39800ACF04E /* PlayableBaseDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayableBaseDataSource.h; sourceTree = "<group>"; };
 		875696131AC4F39800ACF04E /* PlayableBaseDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayableBaseDataSource.m; sourceTree = "<group>"; };
+		8757117B1AEE9AD50077F8C3 /* AlbumDetailDisplayHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumDetailDisplayHelper.h; sourceTree = "<group>"; };
+		8757117C1AEE9AD50077F8C3 /* AlbumDetailDisplayHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumDetailDisplayHelper.m; sourceTree = "<group>"; };
+		8757117F1AEE9DFD0077F8C3 /* CCColorCube.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCColorCube.h; sourceTree = "<group>"; };
+		875711801AEE9DFD0077F8C3 /* CCColorCube.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCColorCube.m; sourceTree = "<group>"; };
+		875711811AEE9DFD0077F8C3 /* CCLocalMaximum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLocalMaximum.h; sourceTree = "<group>"; };
+		875711821AEE9DFD0077F8C3 /* CCLocalMaximum.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCLocalMaximum.m; sourceTree = "<group>"; };
+		875711831AEE9DFD0077F8C3 /* LICENSE color cube.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "LICENSE color cube.txt"; sourceTree = "<group>"; };
 		87585D9E1ADED8DF0053EAA9 /* MZActivityViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MZActivityViewController.h; path = "Free Music Library/MZActivityViewController.h"; sourceTree = "<group>"; };
 		87585D9F1ADED8DF0053EAA9 /* MZActivityViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MZActivityViewController.m; path = "Free Music Library/MZActivityViewController.m"; sourceTree = "<group>"; };
 		87585DAD1ADEFA610053EAA9 /* SearchBarDataSourceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchBarDataSourceDelegate.h; sourceTree = "<group>"; };
@@ -1103,6 +1114,18 @@
 			name = Songs;
 			sourceTree = "<group>";
 		};
+		8757117E1AEE9DFD0077F8C3 /* ColorCube */ = {
+			isa = PBXGroup;
+			children = (
+				8757117F1AEE9DFD0077F8C3 /* CCColorCube.h */,
+				875711801AEE9DFD0077F8C3 /* CCColorCube.m */,
+				875711811AEE9DFD0077F8C3 /* CCLocalMaximum.h */,
+				875711821AEE9DFD0077F8C3 /* CCLocalMaximum.m */,
+				875711831AEE9DFD0077F8C3 /* LICENSE color cube.txt */,
+			);
+			path = ColorCube;
+			sourceTree = "<group>";
+		};
 		87585DB01ADEFD140053EAA9 /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
@@ -1226,6 +1249,8 @@
 				87D47D8B19340F8B0057D49B /* MasterAlbumsTableViewController.m */,
 				87D47D8819340F8B0057D49B /* AlbumItemViewController.h */,
 				87D47D8919340F8B0057D49B /* AlbumItemViewController.m */,
+				8757117B1AEE9AD50077F8C3 /* AlbumDetailDisplayHelper.h */,
+				8757117C1AEE9AD50077F8C3 /* AlbumDetailDisplayHelper.m */,
 			);
 			name = "Albums tab";
 			path = "Free Music Library";
@@ -1364,6 +1389,7 @@
 		87A453A0199C0825004D1319 /* Imported Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				8757117E1AEE9DFD0077F8C3 /* ColorCube */,
 				870E3B281AEA12F300A822A7 /* ProgressHUD */,
 				872075D21AE770880081E491 /* GSTouches */,
 				872075CE1AE76E910081E491 /* MGSwipeTableCell */,
@@ -1781,6 +1807,7 @@
 				87A04C911ACCA823007C9245 /* Ubuntu-Bold.ttf in Resources */,
 				87A04C9E1ACCAB96007C9245 /* copyright_ubuntu.txt in Resources */,
 				87220CF91ACF03450047F7F4 /* LICENSE_afdropdown.txt in Resources */,
+				875711861AEE9DFD0077F8C3 /* LICENSE color cube.txt in Resources */,
 				87A453D9199C0891004D1319 /* README_multi image picker.txt in Resources */,
 				87BD42A319CD1A4C005ED8CD /* Free Music Library.entitlements in Resources */,
 				87A04CA21ACCAB96007C9245 /* README_ubuntu.txt in Resources */,
@@ -1924,6 +1951,7 @@
 				87480DB9192C1FBD005CC0A4 /* AppDelegate.m in Sources */,
 				87A453CA199C0891004D1319 /* ELCAssetCell.m in Sources */,
 				875696141AC4F39800ACF04E /* PlayableBaseDataSource.m in Sources */,
+				8757117D1AEE9AD50077F8C3 /* AlbumDetailDisplayHelper.m in Sources */,
 				874DA0861ABA11DD003D69D6 /* MRBlurView.m in Sources */,
 				87A41FEB19F0D9C800C037D9 /* MyAVPlayer.m in Sources */,
 				87A453CB199C0891004D1319 /* ELCAssetTablePicker.m in Sources */,
@@ -1959,6 +1987,7 @@
 				87FA13721A99601400A1902F /* DetermineVideoPlayableOperation.m in Sources */,
 				87408EC61AE4789C00267C3A /* SongAlbumArt.m in Sources */,
 				87FB3A6C1A5A4682006F3163 /* YouTubeSongAdderViewController.m in Sources */,
+				875711841AEE9DFD0077F8C3 /* CCColorCube.m in Sources */,
 				87A04CAA1ACCDDCE007C9245 /* IBActionSheet.m in Sources */,
 				87220CF81ACF03450047F7F4 /* AFDropdownNotification.m in Sources */,
 				87ECAFC81AAEB21F00C527B9 /* MZPrivateMainPlaybackQueue.m in Sources */,
@@ -1969,6 +1998,7 @@
 				87A0FD91197DD594008FBBF7 /* PreferredFontSizeUtility.m in Sources */,
 				8787AE5E1AB4EEFD00492BFA /* PreliminaryNowPlaying.m in Sources */,
 				87C0BD5819C564CA00EB7D91 /* AutoScrollLabel.m in Sources */,
+				875711851AEE9DFD0077F8C3 /* CCLocalMaximum.m in Sources */,
 				87A453D7199C0891004D1319 /* EYLargePhotoManager.m in Sources */,
 				87CB302F1A4A070C004E5158 /* SongPlayerNavController.m in Sources */,
 				87D47DA519345D8E0057D49B /* ArtistItemAlbumViewController.m in Sources */,

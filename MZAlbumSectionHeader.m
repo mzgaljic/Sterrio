@@ -8,6 +8,7 @@
 
 #import "MZAlbumSectionHeader.h"
 #import "AlbumAlbumArt+Utilities.h"
+#import "ColorCube/CCColorCube.h"
 
 @interface MZAlbumSectionHeader ()
 {
@@ -49,6 +50,14 @@ const float SEPERATOR_HEIGHT = 0.5;
     UIImage *albumArt;
     if(anAlbum){
         albumArt = [anAlbum.albumArt imageWithSize:CGSizeMake(artSize, artSize)];
+    }
+    
+    //background color of view (under blurred base view)
+    UIView *gradientView = [self gradientBackgroundBasedOnAlbumArtImage:albumArt];
+    if(gradientView)
+    {
+        //[self addSubview:gradientView];
+        [self insertSubview:gradientView belowSubview:blurredBaseView];
     }
     
     
@@ -173,5 +182,50 @@ const float SEPERATOR_HEIGHT = 0.5;
     return [NSString stringWithFormat:@"%lu", (unsigned long)totalMinutes];
 }
 
+#pragma mark - color utility
+- (UIView *)gradientBackgroundBasedOnAlbumArtImage:(UIImage *)image
+{
+    CCColorCube *colorCube = [[CCColorCube alloc] init];
+    NSArray *imgColors = [colorCube extractColorsFromImage:image
+                                                     flags:CCOnlyDistinctColors
+                                                avoidColor:[UIColor grayColor]];
+    
+    //now try to generate a gradient in code
+    if(imgColors.count >= 2)
+    {
+        UIView *gradientView = [[UIView alloc] initWithFrame:self.bounds];
+        
+        UIColor *color1 = imgColors[0];
+        UIColor *color2 = imgColors[2];
+
+        CAGradientLayer *maskLayer = [CAGradientLayer layer];
+        maskLayer.opacity = 0.8;
+        maskLayer.colors = @[(id)color1.CGColor, (id)color2.CGColor];
+        
+        //Hoizontal - commenting these two lines will make the gradient veritcal
+        maskLayer.startPoint = CGPointMake(0.0, 0.5);
+        maskLayer.endPoint = CGPointMake(1.0, 0.5);
+        
+        NSNumber *gradTopStart = [NSNumber numberWithFloat:0.0];
+        NSNumber *gradTopEnd = [NSNumber numberWithFloat:1];
+        NSNumber *gradBottomStart = [NSNumber numberWithFloat:0];
+        NSNumber *gradBottomEnd = [NSNumber numberWithFloat:1.0];
+        maskLayer.locations = @[gradTopStart, gradTopEnd, gradBottomStart, gradBottomEnd];
+        
+        maskLayer.bounds = self.bounds;
+        maskLayer.anchorPoint = CGPointZero;
+        [gradientView.layer addSublayer:maskLayer];
+        
+        return gradientView;
+    }
+    else if(imgColors.count == 1)
+    {
+        UIView *view = [[UIView alloc] initWithFrame:self.bounds];
+        view.backgroundColor = imgColors[0];
+        return view;
+    }
+    else
+        return nil;
+}
 
 @end

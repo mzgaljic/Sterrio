@@ -158,6 +158,25 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [[UITextField appearance] setTintColor:[UIColor darkGrayColor]];
 }
 
+- (void)printUIColorRGBValuesForColor:(UIColor *)aColor
+{
+    UIColor *uicolor = aColor;
+    CGColorRef color = [uicolor CGColor];
+    
+    int numComponents = (int)CGColorGetNumberOfComponents(color);
+    
+    CGFloat red, green, blue, alpha;
+    if (numComponents == 4)
+    {
+        const CGFloat *components = CGColorGetComponents(color);
+        red = components[0];
+        green = components[1];
+        blue = components[2];
+        alpha = components[3];
+    }
+    NSLog(@"R: %f\nG:%f\nB:%f\nAlpha:%f", red, green, blue, alpha);
+}
+
 - (void)setupMainVC
 {
     MainScreenViewController *mainVC;

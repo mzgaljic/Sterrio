@@ -545,15 +545,14 @@
 - (NSString *)stringForArtistDetailLabelGivenArtist:(Artist *)artist
 {
     //count all the songs that are associated with albums for this artist
-    NSMutableSet *allAlbumSongsFromArtist = [[NSMutableSet alloc] initWithCapacity:6];
+    NSMutableSet *allAlbumSongsFromArtist = [[NSMutableSet alloc] initWithCapacity:15];
     for(Album *artistAlbum in artist.albums)
     {
         NSSet *albumSongs = artistAlbum.albumSongs;
-        NSSet *tempNewSet = [allAlbumSongsFromArtist setByAddingObjectsFromSet:albumSongs];
-        allAlbumSongsFromArtist = [NSMutableSet setWithSet:tempNewSet];
+        [allAlbumSongsFromArtist addObjectsFromArray:[albumSongs allObjects]];
     }
-    NSSet *albumSongs = artist.standAloneSongs;
-    NSSet *uniqueSongsByThisArtist = [allAlbumSongsFromArtist setByAddingObjectsFromSet:albumSongs];
+    NSSet *standAloneSongs = artist.standAloneSongs;
+    NSSet *uniqueSongsByThisArtist = [allAlbumSongsFromArtist setByAddingObjectsFromSet:standAloneSongs];
     
     NSString *albumPart, *songPart;
     if((int)artist.albums.count == 1)

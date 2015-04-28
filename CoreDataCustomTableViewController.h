@@ -40,7 +40,6 @@
 
 //nice additions that allow code re-use for tableviews displaying songs
 - (void)setSearchBar:(MySearchBar *)searchBar;
-- (UIColor *)colorForNowPlayingItem;
 
 - (void)prepareFetchedResultsControllerForDealloc;
 

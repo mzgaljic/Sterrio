@@ -345,4 +345,9 @@ static NSLock *playbackTimerLock;
     return Rgb2UIColor(255, 39, 39);
 }
 
++ (UIColor *)nowPlayingItemColor
+{
+    return [[UIColor defaultAppColorScheme] lighterColor];
+}
+
 @end

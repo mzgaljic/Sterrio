@@ -160,7 +160,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                                         compareWithContext:self.playbackContext];
     
     if(songIsNowPlaying)
-        cell.textLabel.textColor = [super colorForNowPlayingItem];
+        cell.textLabel.textColor = [AppEnvironmentConstants nowPlayingItemColor];
     else
         cell.textLabel.textColor = [UIColor blackColor];
     

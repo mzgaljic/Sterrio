@@ -14,14 +14,13 @@
 #import "Album.h"
 #import "Song.h"
 #import "MZAlbumSectionHeader.h"
-#import "MZTableViewCell.h"
 #import "MusicPlaybackController.h"
 #import "MGSwipeTableCell.h"
 #import "MGSwipeButton.h"
+#import "AlbumDetailDisplayHelper.h"
 
 @interface AlbumItemViewController ()
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-@property (nonatomic, strong) UIView *albumHeader;
 @end
 
 @implementation AlbumItemViewController
@@ -58,11 +57,6 @@ const int ALBUM_HEADER_HEIGHT = 120;
                                                object:nil];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-}
-
 - (void)viewDidDisappear:(BOOL)animated
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@NO];
@@ -89,7 +83,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
 {
     if(section == 0){
         if(self.album.albumSongs.count > 0)
-            return self.albumHeader;
+            return [self generateAlbumSectionHeaderView];
         else
             return nil;
     } else
@@ -104,7 +98,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
                                                              forIndexPath:indexPath];
     
     if (!cell)
-        cell = [[MZTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+        cell = [[MGSwipeTableCell alloc] initWithStyle:UITableViewCellStyleValue1
                                       reuseIdentifier:self.cellReuseId];
     cell.textLabel.text = aSong.songName;
     
@@ -113,7 +107,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
                                           size:fontSize];
     
     NSUInteger duration = [aSong.duration integerValue];
-    cell.detailTextLabel.text = [self convertSecondsToPrintableNSStringWithSeconds:duration];
+    cell.detailTextLabel.text = [AlbumDetailDisplayHelper convertSecondsToPrintableNSStringWithSeconds:duration];
     cell.detailTextLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                                 size:fontSize];
     
@@ -125,7 +119,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
                                  compareWithContext:self.parentVcPlaybackContext];
     }
     if(isNowPlaying)
-        cell.textLabel.textColor = [super colorForNowPlayingItem];
+        cell.textLabel.textColor = [AppEnvironmentConstants nowPlayingItemColor];
     else
         cell.textLabel.textColor = [UIColor blackColor];
     
@@ -282,31 +276,6 @@ const int ALBUM_HEADER_HEIGHT = 120;
 }
 
 #pragma mark - Helpers
-- (NSString *)convertSecondsToPrintableNSStringWithSeconds:(NSUInteger)value
-{
-    NSString *secondsToStringReturn;
-    
-    NSUInteger totalSeconds = value;
-    int seconds = (int)(totalSeconds % MZSecondsInAMinute);
-    NSUInteger totalMinutes = totalSeconds / MZSecondsInAMinute;
-    int minutes = (int)(totalMinutes % MZMinutesInAnHour);
-    int hours = (int)(totalMinutes / MZMinutesInAnHour);
-    
-    if(minutes < 10 && hours == 0)  //we can shorten the text
-        secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
-    
-    else if(hours > 0)
-    {
-        if(hours <= 9)
-            secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d:%02d",hours,minutes,seconds];
-        else
-            secondsToStringReturn = [NSString stringWithFormat:@"%02d:%02d:%02d",hours,minutes, seconds];
-    }
-    else
-        secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
-    return secondsToStringReturn;
-}
-
 - (PlaybackContext *)contextForSpecificSong:(Song *)aSong
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
@@ -321,13 +290,15 @@ const int ALBUM_HEADER_HEIGHT = 120;
                                                contextId:self.playbackContextUniqueId];
 }
 
-- (void)generateAlbumSectionHeaderView
+- (UIView *)generateAlbumSectionHeaderView
 {
     if(self.album){
         CGRect albumHeaderFrame = CGRectMake(0, 0, self.view.frame.size.width, ALBUM_HEADER_HEIGHT);
-        self.albumHeader = [[MZAlbumSectionHeader alloc] initWithFrame:albumHeaderFrame
-                                                                 album:self.album];
+        return [[MZAlbumSectionHeader alloc] initWithFrame:albumHeaderFrame
+                                                     album:self.album];
     }
+    else
+        return nil;
 }
 
 #pragma mark - fetching and sorting
@@ -339,9 +310,17 @@ const int ALBUM_HEADER_HEIGHT = 120;
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
     NSPredicate *albumPredicate = [NSPredicate predicateWithFormat:@"album.album_id == %@", self.album.album_id];
     request.predicate = albumPredicate;
-    //descriptor doesnt really matter here
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
-                                                                     ascending:YES];
+
+    NSSortDescriptor *sortDescriptor;
+    if([AppEnvironmentConstants smartAlphabeticalSort])
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
+                                                       ascending:YES
+                                                        selector:@selector(localizedStandardCompare:)];
+    else
+        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
+                                                       ascending:YES
+                                                        selector:@selector(localizedStandardCompare:)];
+    
     request.sortDescriptors = @[sortDescriptor];
     if(self.playbackContext == nil){
         NSString *queueName = [NSString stringWithFormat:@"\"%@\" Album", self.album.albumName];

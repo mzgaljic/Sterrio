@@ -9,6 +9,7 @@
 #import "MasterArtistsTableViewController.h"
 #import "AllArtistsDataSource.h"
 #import "PlayableBaseDataSource.h"
+#import "ArtistItemAlbumViewController.h"
 
 @interface MasterArtistsTableViewController ()
 {
@@ -225,20 +226,11 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if([[segue identifier] isEqualToString: @"artistItemSegue"]){
-        [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:[NSNumber numberWithBool:YES]];
-        
-        //other junk...
-        SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:@"Unfinished"
-                                                          message:@"This action is coming soon."
-                                                         delegate:nil
-                                                cancelButtonTitle:@"OK"
-                                                otherButtonTitles: nil];
-        alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        alert.normalButtonFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        alert.buttonTextColor = [UIColor defaultAppColorScheme];
-        [alert show];
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated
+                                                            object:@YES];
+        [[segue destinationViewController] setArtist:(Artist *)sender];
+        [[segue destinationViewController] setParentVc:self];
+        [[segue destinationViewController] setParentVcPlaybackContext:self.playbackContext];
     }
 }
 
