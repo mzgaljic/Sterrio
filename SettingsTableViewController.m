@@ -615,12 +615,8 @@ static int tempIcloudSwitchCount = 0;
 #pragma mark - Rotation status bar methods
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-        // only iOS 7 methods, check http://stackoverflow.com/questions/18525778/status-bar-still-showing
-        [self prefersStatusBarHidden];
-        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-    }
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self setNeedsStatusBarAppearanceUpdate];
     [self performSelector:@selector(rotateActionSheet) withObject:nil afterDelay:0.1];
 }
 

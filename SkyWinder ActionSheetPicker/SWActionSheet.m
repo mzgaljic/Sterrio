@@ -3,6 +3,7 @@
 //
 
 #import "SWActionSheet.h"
+#import "AppDelegate.h"
 
 static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction;
 
@@ -33,10 +34,18 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
     UIView *_bgView;
 }
 
+- (void)destroyWindoWDelayed
+{
+    [self destroyWindow];
+    [self removeFromSuperview];
+}
+
 - (void)dismissWithClickedButtonIndex:(int)i animated:(BOOL)animated
 {
     CGPoint fadeOutToPoint = CGPointMake(view.center.x,
             self.center.y + CGRectGetHeight(view.frame));
+    
+    [self performSelector:@selector(destroyWindoWDelayed) withObject:nil afterDelay:0.1];
     // Window of app
     //UIWindow *appWindow = [UIApplication sharedApplication].windows.firstObject;
     // Actions
@@ -47,8 +56,7 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
     void (^completion)(BOOL) = ^(BOOL finished) {
     //    if (![appWindow isKeyWindow])
     //        [appWindow makeKeyAndVisible];
-        [self destroyWindow];
-        [self removeFromSuperview];
+
     };
     // Do actions animated or not
     if (animated) {

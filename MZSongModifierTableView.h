@@ -29,8 +29,7 @@
 #import "ExistingEntityPickerDelegate.h"
 
 //This class breaks so much MVC it's not even funny. it's like a sin...but it works lol
-@interface MZSongModifierTableView : UITableView <UIActionSheetDelegate,
-                                                UINavigationControllerDelegate,
+@interface MZSongModifierTableView : UITableView <UINavigationControllerDelegate,
                                                 UIImagePickerControllerDelegate,
                                                 UITableViewDelegate,
                                                 UITableViewDataSource,
@@ -51,6 +50,8 @@
 - (void)provideDefaultAlbumArt:(UIImage *)image;
 
 - (void)canShowAddToLibraryButton;
+
+- (void)interfaceIsAboutToRotate;
 
 //optional but very important methods
 - (void)cancelEditing;

@@ -555,6 +555,7 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self.tableView interfaceIsAboutToRotate];
 }
 
 - (BOOL)prefersStatusBarHidden

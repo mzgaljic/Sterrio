@@ -116,6 +116,12 @@ static int timesVCHasAppeared = 0;
     [self.tableView cancelEditing];
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self.tableView interfaceIsAboutToRotate];
+}
+
 #pragma mark - Custom song tableview editor delegate stuff
 - (void)pushThisVC:(UIViewController *)vc
 {

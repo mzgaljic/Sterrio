@@ -684,9 +684,9 @@
     if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
         
         
-        [UIView animateWithDuration:0.6f
+        [UIView animateWithDuration:0.55f
                               delay:0.0f
-                            options:UIViewAnimationOptionCurveEaseOut
+                            options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
                          animations:^() {
                              self.transparentView.alpha = 0.4f;
                              self.center = CGPointMake(x, (height - 20) - CGRectGetHeight(self.frame) / 2.0);
@@ -696,11 +696,11 @@
                          }];
     } else {
         
-        [UIView animateWithDuration:0.6f
+        [UIView animateWithDuration:0.55f
                               delay:0
-             usingSpringWithDamping:0.85f
+             usingSpringWithDamping:0.88f
               initialSpringVelocity:1.0f
-                            options:UIViewAnimationOptionCurveLinear
+                            options:UIViewAnimationOptionCurveLinear | UIViewAnimationOptionAllowUserInteraction
                          animations:^{
                              self.transparentView.alpha = 0.4f;
                              self.center = CGPointMake(x, height - CGRectGetHeight(self.frame) / 2.0);

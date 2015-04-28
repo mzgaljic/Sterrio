@@ -7,6 +7,7 @@
 //
 
 #import "EditableCellTableViewController.h"
+#import "PreferredFontSizeUtility.h"
 
 
 @interface EditableCellTableViewController ()
@@ -18,6 +19,7 @@
 
 @implementation EditableCellTableViewController
 
+short const fontSizeIncrease = 4;
 //using custom init here
 - (id)initWithEditingString:(NSString *)aString
      notificationNameToPost:(NSString *)notifName
@@ -78,7 +80,8 @@
     else{
         txtField.text = [txtField.text stringByAppendingString:_stringUserIsEditing];
     }
-    txtField.font = [UIFont systemFontOfSize:20.0];
+    txtField.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                    size:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize] + fontSizeIncrease];
     txtField.returnKeyType = UIReturnKeyDone;
     txtField.clearButtonMode = UITextFieldViewModeWhileEditing;
     [txtField becomeFirstResponder];
@@ -92,7 +95,9 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 50.0;
+    UIFont *sampleFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                         size:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize] + fontSizeIncrease];
+    return sampleFont.pointSize + 20;
 }
 
 #pragma mark - UITextField methods

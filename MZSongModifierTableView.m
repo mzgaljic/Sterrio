@@ -9,12 +9,14 @@
 #import "MZSongModifierTableView.h"
 #import "AlbumAlbumArt+Utilities.h"
 #import "SongAlbumArt+Utilities.h"
+#import "IBActionSheet.h"
 
 @interface MZSongModifierTableView ()
 {
     BOOL canShowAddtoLibButton;
     BOOL userReplacedDefaultYoutubeArt;
     UIActivityIndicatorView *spinner;
+    IBActionSheet *popup;
 }
 @property (nonatomic, strong) UIImage *currentAlbumArt;
 @property (nonatomic, strong) UIImage *currentSmallAlbumArt;
@@ -72,6 +74,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     self.VC = nil;
     self.songIAmEditing = nil;
     self.theDelegate = nil;
+    popup = nil;
 }
 
 - (void)setCurrentAlbumArt:(UIImage *)newArt
@@ -331,59 +334,132 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             }
             case 1:  //editing artist
             {
-                UIActionSheet *popup;
+                __weak MZSongModifierTableView *weakself = self;
+                
                 if(! _songIAmEditing.artist){
-                    popup = [[UIActionSheet alloc] initWithTitle:@"Artist" delegate:self cancelButtonTitle:@"Cancel"
-                                          destructiveButtonTitle:nil otherButtonTitles:@"Choose Artist", @"New Artist", nil];
-                } else if(_songIAmEditing.artist){
-                    popup = [[UIActionSheet alloc] initWithTitle:@"Artist" delegate:self cancelButtonTitle:@"Cancel"
-                                          destructiveButtonTitle:@"Remove From Artist" otherButtonTitles:@"Choose Different Artist", @"New Artist", nil];
+                    popup = [[IBActionSheet alloc] initWithTitle:@"Artist"
+                                                        callback:^(IBActionSheet *actionSheet, NSInteger buttonIndex){
+                                                            [weakself handleActionClickWithButtonIndex:buttonIndex];
+                                                        } cancelButtonTitle:@"Cancel"
+                                          destructiveButtonTitle:nil
+                                               otherButtonTitles:@"Choose Artist", @"New Artist", nil];
+                }
+                else if(_songIAmEditing.artist){
+                    popup = [[IBActionSheet alloc] initWithTitle:@"Artist"
+                                                        callback:^(IBActionSheet *actionSheet, NSInteger buttonIndex){
+                                                            [weakself handleActionClickWithButtonIndex:buttonIndex];
+                                                        } cancelButtonTitle:@"Cancel"
+                                          destructiveButtonTitle:@"Remove From Artist"
+                                               otherButtonTitles:@"Choose Different Artist", @"New Artist", nil];
                 }
                 
+                for(UIButton *aButton in popup.buttons){
+                    NSString *regularFont = [AppEnvironmentConstants regularFontName];
+                    aButton.titleLabel.font = [UIFont fontWithName:regularFont
+                                                              size:20];
+                }
+                [popup setButtonTextColor:[UIColor defaultAppColorScheme]];
+                [popup setTitleTextColor:[UIColor darkGrayColor]];
+                
+                BOOL hasDestructiveButton = (_songIAmEditing.artist);
+                if(hasDestructiveButton)
+                    [popup setButtonTextColor:[UIColor redColor]
+                             forButtonAtIndex:0];
+                
+                [popup setCancelButtonFont:[UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                                           size:20]];
+                [popup setTitleFont:[UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18]];
+                [popup showInView:[UIApplication sharedApplication].keyWindow];
+                
                 popup.tag = 1;
-                [popup showInView:self.VC.view];
                 _lastTappedRow = 1;
                 break;
             }
             case 2:  //editing album
             {
+                __weak MZSongModifierTableView *weakself = self;
+                
                 if(_songIAmEditing.album){
-                    UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:@"Album" delegate:self cancelButtonTitle:@"Cancel"
-                                                         destructiveButtonTitle:@"Remove Song From Album"
-                                                              otherButtonTitles:@"Choose Different Album", @"New Album", nil];
-                    popup.tag = 2;
-                    [popup showInView:self.VC.view];
-                    
+                    popup = [[IBActionSheet alloc] initWithTitle:@"Album"
+                                                        callback:^(IBActionSheet *actionSheet, NSInteger buttonIndex){
+                                                            [weakself handleActionClickWithButtonIndex:buttonIndex];
+                                                        } cancelButtonTitle:@"Cancel"
+                                          destructiveButtonTitle:@"Remove Song From Album"
+                                               otherButtonTitles:@"Choose Different Album", @"New Album", nil];
                 } else{
                     //album picker
-                    
-                    UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:@"Album" delegate:self cancelButtonTitle:@"Cancel"
-                                                         destructiveButtonTitle:nil
-                                                              otherButtonTitles:@"Choose Album", @"New Album", nil];
-                    popup.tag = 2;
-                    [popup showInView:self.VC.view];
+                    popup = [[IBActionSheet alloc] initWithTitle:@"Album"
+                                                        callback:^(IBActionSheet *actionSheet, NSInteger buttonIndex){
+                                                            [weakself handleActionClickWithButtonIndex:buttonIndex];
+                                                        } cancelButtonTitle:@"Cancel"
+                                          destructiveButtonTitle:nil
+                                               otherButtonTitles:@"Choose Album", @"New Album", nil];
                 }
+                
+                for(UIButton *aButton in popup.buttons){
+                    NSString *regularFont = [AppEnvironmentConstants regularFontName];
+                    aButton.titleLabel.font = [UIFont fontWithName:regularFont
+                                                              size:20];
+                }
+                [popup setButtonTextColor:[UIColor defaultAppColorScheme]];
+                
+                BOOL hasDestructiveButton = (_songIAmEditing.album);
+                if(hasDestructiveButton)
+                    [popup setButtonTextColor:[UIColor redColor]
+                             forButtonAtIndex:0];
+                
+                [popup setTitleTextColor:[UIColor darkGrayColor]];
+                [popup setCancelButtonFont:[UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                                           size:20]];
+                [popup setTitleFont:[UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18]];
+                [popup showInView:[UIApplication sharedApplication].keyWindow];
+                
+                popup.tag = 2;
                 _lastTappedRow = 2;
                 break;
             }
             case 3:  //editing album art
             {
+                __weak MZSongModifierTableView *weakself = self;
+                
                 if(_currentAlbumArt)  //song already contains album art
                 {  //ask to remove art or add new art (photo or safari)
-                    UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:@"Album Art" delegate:self cancelButtonTitle:@"Cancel"
-                                                         destructiveButtonTitle:@"Remove Art"
-                                                              otherButtonTitles:@"Choose Different Photo", @"Search for Art", nil];
-                    popup.tag = 3;
-                    [popup showInView:[self.VC view]];
+                    popup = [[IBActionSheet alloc] initWithTitle:@"Album Art"
+                                                        callback:^(IBActionSheet *actionSheet, NSInteger buttonIndex){
+                                                            [weakself handleActionClickWithButtonIndex:buttonIndex];
+                                                        } cancelButtonTitle:@"Cancel"
+                                          destructiveButtonTitle:@"Remove Art"
+                                               otherButtonTitles:@"Choose Different Photo", @"Search for Art", nil];
                 }
                 else
                 {   //album art not picked yet, dont show option to remove album art
-                    UIActionSheet *popup = [[UIActionSheet alloc] initWithTitle:@"Album Art" delegate:self cancelButtonTitle:@"Cancel"
-                                                         destructiveButtonTitle:nil
-                                                              otherButtonTitles:@"Choose Photo", @"Search for Art", nil];
-                    popup.tag = 3;
-                    [popup showInView:[self.VC view]];
+                    popup = [[IBActionSheet alloc] initWithTitle:@"Album Art"
+                                                        callback:^(IBActionSheet *actionSheet, NSInteger buttonIndex){
+                                                            [weakself handleActionClickWithButtonIndex:buttonIndex];
+                                                        } cancelButtonTitle:@"Cancel"
+                                          destructiveButtonTitle:nil
+                                               otherButtonTitles:@"Choose Photo", @"Search for Art", nil];
                 }
+                
+                for(UIButton *aButton in popup.buttons){
+                    NSString *regularFont = [AppEnvironmentConstants regularFontName];
+                    aButton.titleLabel.font = [UIFont fontWithName:regularFont
+                                                              size:20];
+                }
+                [popup setButtonTextColor:[UIColor defaultAppColorScheme]];
+                
+                BOOL hasDestructiveButton = (_currentAlbumArt);
+                if(hasDestructiveButton)
+                    [popup setButtonTextColor:[UIColor redColor]
+                             forButtonAtIndex:0];
+                
+                [popup setTitleTextColor:[UIColor darkGrayColor]];
+                [popup setCancelButtonFont:[UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                                           size:20]];
+                [popup setTitleFont:[UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18]];
+                [popup showInView:[UIApplication sharedApplication].keyWindow];
+                
+                popup.tag = 3;
                 _lastTappedRow = 3;
                 break;
             }
@@ -678,8 +754,8 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     });
 }
 
-#pragma mark - UIActionSheet methods
-- (void)actionSheet:(UIActionSheet *)popup clickedButtonAtIndex:(NSInteger)buttonIndex
+#pragma mark - IBActionSheet button tap handling
+- (void)handleActionClickWithButtonIndex:(NSInteger) buttonIndex
 {
     if(popup.tag == 1){  //artist action sheet
         switch (buttonIndex)
@@ -718,7 +794,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     else
                         fullscreen = NO;
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
-                        notificationNameToPost:@"DoneEditingArtistField" fullScreen:fullscreen];
+                                                                                                  notificationNameToPost:@"DoneEditingArtistField" fullScreen:fullscreen];
                     [self.VC.navigationController pushViewController:vc animated:YES];
                     
                 } else if(_songIAmEditing.artist){//choose different artist
@@ -726,7 +802,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     Artist *artist = _songIAmEditing.artist;
                     vc = [[ExistingArtistPickerTableViewController alloc] initWithCurrentArtist:artist
                                                                    existingEntityPickerDelegate:self];
-
+                    
                     [self.VC.navigationController pushViewController:vc animated:YES];
                 }
                 break;
@@ -743,8 +819,8 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                         fullscreen = NO;
                     
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
-                                    notificationNameToPost:@"DoneEditingArtistField"
-                                               fullScreen:fullscreen];
+                                                                                                  notificationNameToPost:@"DoneEditingArtistField"
+                                                                                                              fullScreen:fullscreen];
                     [self.VC.navigationController pushViewController:vc animated:YES];
                 } else
                     break;
@@ -805,12 +881,12 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                         fullscreen = NO;
                     else
                         fullscreen = NO;
-
+                    
                     EditableCellTableViewController *vc;
                     vc = [[EditableCellTableViewController alloc]
-                                   initWithEditingString:nil
-                                   notificationNameToPost:@"DoneEditingAlbumField"
-                                     fullScreen:fullscreen];
+                          initWithEditingString:nil
+                          notificationNameToPost:@"DoneEditingAlbumField"
+                          fullScreen:fullscreen];
                     [self.VC.navigationController pushViewController:vc animated:YES];
                 } else{
                     //remove song from album
@@ -862,6 +938,17 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 break;
         }
     }
+}
+
+- (void)rotateActionSheet
+{
+    [UIView animateWithDuration:0.2
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent
+                     animations:^{
+                         [popup rotateToCurrentOrientation];
+                     }
+                     completion:nil];
 }
 
 #pragma mark - Album Art Methods
@@ -947,6 +1034,11 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
     [self.VC dismissViewControllerAnimated:YES completion:nil];
     [self preDealloc];
+}
+
+- (void)interfaceIsAboutToRotate
+{
+    [self performSelector:@selector(rotateActionSheet) withObject:nil afterDelay:0.1];
 }
 
 @end
