@@ -90,13 +90,13 @@
     BOOL oldDisplayResultsVal = playableBaseDataSource.displaySearchResults;
     [self.playableDataSearchDataSourceDelegate searchResultsShouldBeDisplayed:YES];
     
-    [self.modelDataSourceSearchBarDelegate searchBarIsBecomingActive];
-    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@YES];
-    
     if(! oldDisplayResultsVal){
         //user is now transitioning into the "search" mode
         [self.tableView reloadData];
     }
+    
+    [self.modelDataSourceSearchBarDelegate searchBarIsBecomingActive];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@YES];
     
     [self animateTableEmtpyLabelUp:YES];
     

@@ -26,4 +26,7 @@
 {
     StackController *stackController;
 }
+
+- (void)preDealloc;
+
 @end

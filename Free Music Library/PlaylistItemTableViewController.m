@@ -122,8 +122,8 @@
     self.centerButton.frame = beginFrame;
     [self.view addSubview:self.centerButton];
     [UIView animateWithDuration:0.5
-                          delay:0.1
-         usingSpringWithDamping:0.65
+                          delay:0
+         usingSpringWithDamping:0.55
           initialSpringVelocity:0.8
                         options:UIViewAnimationOptionAllowUserInteraction
                      animations:^{

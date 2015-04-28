@@ -210,7 +210,6 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
             else
                 albumAtSection = self.artistAlbums[indexPath.section];
             
-            //albumAtSection.albumSongs
             NSArray *albumSongs = [self albumSongsInAlphabeticalOrderGivenAlbum:albumAtSection];
             aSong = albumSongs[indexPath.row];
             
@@ -246,8 +245,21 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
     Song *selectedSong;
-#warning need to make sure if this context works here. should context be just for album? just standalone songs?
+    if(indexPath.section == 0 && self.artistsStandAloneSongs.count > 0)
+        selectedSong = self.artistsStandAloneSongs[indexPath.row];
+    else{
+        Album *albumAtSection;
+        if(self.artistsStandAloneSongs.count == 0)
+            albumAtSection = self.artistAlbums[indexPath.section];
+        else
+            albumAtSection = self.artistAlbums[indexPath.section -1];
+        
+        NSArray *albumSongs = [self albumSongsInAlphabeticalOrderGivenAlbum:albumAtSection];
+        selectedSong = albumSongs[indexPath.row];
+    }
+    
     [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext];
 }
 
@@ -385,6 +397,34 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
     }
 }
 
+- (NSIndexPath *)indexPathForSong:(Song *)aSong
+{
+    if(self.artistsStandAloneSongs.count > 0)
+    {
+        NSUInteger index = [self.artistsStandAloneSongs indexOfObjectIdenticalTo:aSong];
+        if(index != NSNotFound)
+            return [NSIndexPath indexPathForRow:index inSection:0];
+    }
+    if(self.artistAlbums.count > 0)
+    {
+        Album *anAlbum;
+        for(int i = 0; i < self.artistAlbums.count; i++)
+        {
+            anAlbum = self.artistAlbums[i];
+            NSArray *albumSongs = [self albumSongsInAlphabeticalOrderGivenAlbum:anAlbum];
+            NSUInteger index = [albumSongs indexOfObjectIdenticalTo:aSong];
+            if(index != NSNotFound)
+            {
+                if(self.artistsStandAloneSongs.count > 0)
+                    return [NSIndexPath indexPathForRow:index inSection:i +1];
+                else
+                    return [NSIndexPath indexPathForRow:index inSection:i];
+            }
+        }
+    }
+    return nil;
+}
+
 - (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification
 {
     if(self.playbackContext == nil)
@@ -395,8 +435,8 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
     NSIndexPath *oldPath, *newPath;
     
     //tries to obtain the path to the changed songs if possible.
-    oldPath;// = [self.fetchedResultsController indexPathForObject:oldSong];
-    newPath;// = [self.fetchedResultsController indexPathForObject:newSong];
+    oldPath = [self indexPathForSong:oldSong];
+    newPath = [self indexPathForSong:newSong];
     
     if(oldPath || newPath){
         [self.tableView beginUpdates];
@@ -465,9 +505,14 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
     [self fetchAndSetArtistAlbums];
     
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    NSPredicate *allArtistSongsPredicate = [NSPredicate predicateWithFormat:@"artist.artist_id == %@",
+    NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"self.artist.artist_id == %@",
                                self.artist.artist_id];
+    NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"self.album.artist.artist_id == %@",
+                               self.artist.artist_id];
+    NSArray *predicates = @[predicate1, predicate2];
+    NSPredicate *allArtistSongsPredicate = [NSCompoundPredicate orPredicateWithSubpredicates:predicates];
     request.predicate = allArtistSongsPredicate;
+    
     NSSortDescriptor *sortDescriptor;
     if([AppEnvironmentConstants smartAlphabeticalSort])
         sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"

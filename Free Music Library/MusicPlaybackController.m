@@ -256,7 +256,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     if([nowPlayingObject isFromPlayNextSongs]){
         NSUInteger numMoreSongs = [playbackQueue numMoreSongsInUpNext];
         if(numMoreSongs == 0)
-            return @"Last Queued Song";
+            return @"";
         else if(numMoreSongs == 1)
             return @"1 Song Queued";
         else

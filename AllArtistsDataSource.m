@@ -10,6 +10,7 @@
 #import "StackController.h"
 #import "MZTableViewCell.h"
 #import "MusicPlaybackController.h"
+#import "ArtistItemAlbumViewController.h"
 
 @interface AllArtistsDataSource ()
 {
@@ -146,6 +147,30 @@
         cell.accessoryView = coloredDisclosureIndicator;
         
         //check if artist is now playing context, if so make cell changes here...
+        BOOL artistHasNowPlaying = NO;
+        NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+        
+        NSMutableString *artistDetailContextId = [NSMutableString string];
+        [artistDetailContextId appendString:NSStringFromClass([ArtistItemAlbumViewController class])];
+        [artistDetailContextId appendString:artist.artist_id];
+        
+        PlaybackContext *artistDetailContext = [[PlaybackContext alloc] initWithFetchRequest:nil
+                                                                            prettyQueueName:@""
+                                                                                   contextId:artistDetailContextId];
+        
+        if(
+           ([nowPlayingObj.context isEqualToContext:self.playbackContext]
+           ||
+           [nowPlayingObj.context isEqualToContext:artistDetailContext])
+           && nowPlayingObj.nowPlaying != nil)
+        {
+            artistHasNowPlaying = YES;
+        }
+        
+        if(artistHasNowPlaying)
+            cell.textLabel.textColor = [AppEnvironmentConstants nowPlayingItemColor];
+        else
+            cell.textLabel.textColor = [UIColor blackColor];
     }
     else if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Single_Artist_Picker)
     {

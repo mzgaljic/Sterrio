@@ -347,10 +347,12 @@ short const dummyTabIndex = 2;
     else
         visibleRect = [self landscapeTabBarViewFrame];
     
-    float duration = 0.56;
+    float hideDuration = 0.5;
+    float showDuration = 0.35;
     float delay = 0;
     float springDamping = 0.80;
-    float initialVelocity = 0.5;
+    float initialHideVelocity = 0.65;
+    float initialShowVelocity = 0.9;
     
     if(hide)
     {
@@ -362,10 +364,10 @@ short const dummyTabIndex = 2;
                                         visibleRect.origin.y + MZTabBarHeight,
                                         visibleRect.size.width,
                                         visibleRect.size.height);
-        [UIView animateWithDuration:duration
+        [UIView animateWithDuration:hideDuration
                               delay:delay
              usingSpringWithDamping:springDamping
-              initialSpringVelocity:initialVelocity
+              initialSpringVelocity:initialHideVelocity
                             options:UIViewAnimationOptionBeginFromCurrentState
                          animations:^{
                              [self.tabBarView setFrame:hiddenFrame];
@@ -395,10 +397,10 @@ short const dummyTabIndex = 2;
                                                  self.tabBarView.frame.size.height)];
         }
              
-        [UIView animateWithDuration:duration
+        [UIView animateWithDuration:showDuration
                               delay:delay
              usingSpringWithDamping:springDamping + 0.1
-              initialSpringVelocity:initialVelocity
+              initialSpringVelocity:initialShowVelocity
                             options:UIViewAnimationOptionBeginFromCurrentState
                          animations:^{
                              [self.tabBarView setFrame:visibleRect];

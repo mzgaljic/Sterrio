@@ -79,6 +79,11 @@ short const SECTION_EMPTY = -1;
     self.tableView.dataSource = self;
 }
 
+- (void)preDealloc
+{
+    //implemented to avoid crash (another class assumes this class exists lol.)
+}
+
 - (void)dealloc
 {
     self.tableView.delegate = nil;
@@ -115,7 +120,7 @@ short const SECTION_EMPTY = -1;
                                                                 target:self
                                                                 action:@selector(dismissQueueTapped)];
     
-    UINavigationItem *navigItem = [[UINavigationItem alloc] initWithTitle:@"Coming up"];
+    UINavigationItem *navigItem = [[UINavigationItem alloc] initWithTitle:@"Playback Queue"];
     navigItem.leftBarButtonItem = closeBtn;
     navBar.items = @[navigItem];
 }

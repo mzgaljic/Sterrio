@@ -214,7 +214,7 @@ static BOOL haveCheckedCoreDataInit = NO;
                      }
                      completion:nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysInvisible
-                                                        object:[NSNumber numberWithBool:YES]];
+                                                        object:@YES];
 }
 
 - (void)searchBarIsBecomingInactive
