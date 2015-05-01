@@ -23,7 +23,7 @@ static const short APP_LAUNCHED_FIRST_TIME = 0;
 + (void)setAppSettingsAppLaunchedFirstTime:(BOOL)firstTime;
 + (void)logGlobalAppTintColor;
 
-+ (void)reduceEncryptionStrengthOnRelevantDirs;
+//+ (void)reduceEncryptionStrengthOnRelevantDirs;
 + (void)setupDiskAndMemoryWebCache;
 + (BOOL)appLaunchedFirstTime;
 

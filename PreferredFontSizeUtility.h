@@ -12,11 +12,7 @@
 @interface PreferredFontSizeUtility : NSObject
 
 + (float)actualLabelFontSizeFromCurrentPreferredSize;
-+ (float)hypotheticalLabelFontSizeForPreferredSize:(int)aSize;
++ (float)hypotheticalLabelFontSizeForPreferredSize:(int)aSongCellHeight;
 + (float)actualDetailLabelFontSizeFromCurrentPreferredSize;
-
-+ (float)actualCellHeightFromCurrentPreferredSize;
-+ (float)hypotheticalCellHeightForPreferredSize:(int)aSize;
-+ (CGSize)actualAlbumArtSizeFromCurrentPreferredSize;
 
 @end

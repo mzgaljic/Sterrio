@@ -202,19 +202,6 @@ typedef enum{
     }
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
-    UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
-    if([header respondsToSelector:@selector(textLabel)]){
-        int headerFontSize;
-        if([AppEnvironmentConstants preferredSizeSetting] < 5)
-            headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-        else
-            headerFontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:5];
-        header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                                                size:headerFontSize];
-    }
-}
-
 #pragma  mark - TableView helpers
 - (UIView *)friendlyTableEmptyUserMessageWithText:(NSString *)text
 {
@@ -361,24 +348,6 @@ typedef enum{
         searchBar = nil;
         tableView.tableHeaderView = nil;
     }
-    
-    //this will only take effect for the MainScreen VC's that show the settings button.
-    //otherwise this code would break, but thats ok since it will only work under good conditions  :)
-    NSArray *indexes = [tableView indexPathsForVisibleRows];
-    if(indexes.count > 0)
-    {
-        UITableViewCell *aCell = [tableView cellForRowAtIndexPath:indexes[0]];
-        UIFont *font = aCell.textLabel.font;
-        if(([font.fontName isEqualToString:[AppEnvironmentConstants boldFontName]]
-           && ![AppEnvironmentConstants boldNames])
-           ||
-           ([font.fontName isEqualToString:[AppEnvironmentConstants regularFontName]]
-            && [AppEnvironmentConstants boldNames]))
-        {
-            //we inadvertantly just detected a previous change in settings. Reload table.
-            [tableView reloadData];
-        }
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -399,10 +368,6 @@ typedef enum{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(settingsPossiblyChanged)
                                                  name:MZUserFinishedWithReviewingSettings
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(fontSizeChanged)
-                                                 name:MZUserChangedFontSize
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(playerOnScreenStateChanged)
@@ -440,14 +405,8 @@ typedef enum{
 //only called if a more specific notification wasnt fired (such as font size update)
 - (void)settingsPossiblyChanged
 {
-#warning should only use this when font size is changed (and nothing else). optimize!
     [tableView beginUpdates];
     [tableView endUpdates];
-}
-
-- (void)fontSizeChanged
-{
-    
 }
 
 - (void)hideSearchBarByDefaultIfApplicable

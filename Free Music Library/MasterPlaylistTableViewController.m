@@ -231,6 +231,10 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
     if([[segue identifier] isEqualToString: @"playlistItemSegue"]){
         [[segue destinationViewController] setPlaylist:(Playlist *)sender];
     }
+    else if([[segue identifier] isEqualToString:@"playlistSongPickerSegue"]){
+        UINavigationController *navController = [segue destinationViewController];
+        [navController.childViewControllers[0] setReceiverPlaylist:(Playlist *)sender];
+    }
 }
 
 - (void)displayCreatePlaylistAlert
@@ -272,9 +276,7 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
                 return;
             
             Playlist *myNewPlaylist = [Playlist createNewPlaylistWithName:playlistName inManagedContext:[CoreDataManager context]];
-            PlaylistSongAdderTableViewController *vc = [[PlaylistSongAdderTableViewController alloc] initWithPlaylist:myNewPlaylist];
-            UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:vc];
-            [self presentViewController:navVC animated:YES completion:nil];
+            [self performSegueWithIdentifier:@"playlistSongPickerSegue" sender:myNewPlaylist];
         }
         else  //canceled
             return;
@@ -303,13 +305,12 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
     
     //create the playlist
     Playlist *myNewPlaylist = [Playlist createNewPlaylistWithName:playlistName inManagedContext:[CoreDataManager context]];
-    PlaylistSongAdderTableViewController *vc = [[PlaylistSongAdderTableViewController alloc] initWithPlaylist:myNewPlaylist];
     
     [alertTextField resignFirstResponder];  //dismiss keyboard.
     [_createPlaylistAlert dismissWithClickedButtonIndex:50 animated:YES];  //dismisses alertView, skip clickedButtonAtIndex method
     
     //now segue to modal view where user can pick songs for this playlist
-    [self.navigationController pushViewController:vc animated:YES];
+    [self performSegueWithIdentifier:@"playlistSongPickerSegue" sender:myNewPlaylist];
     
     return YES;
 }

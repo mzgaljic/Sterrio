@@ -244,6 +244,11 @@ static UIInterfaceOrientation orientationOnLastRotate;
         UIInterfaceOrientation interfaceOrientation = [SongPlayerCoordinator convertDeviceOrientationToInferfaceOrientation:deviceOrientation];
         if(orientationOnLastRotate == interfaceOrientation)
             return;
+        
+        //dont mess with playerview in this orientation. we dont support it anyway.
+        if(interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown)
+            return;
+        
         orientationOnLastRotate = interfaceOrientation;
         
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];

@@ -167,7 +167,8 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
+    //text only cells, reduce height a bit
+    return [AppEnvironmentConstants preferredSongCellHeight];
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -280,11 +281,7 @@
        forSection:(NSInteger)section
 {
     UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
-    int headerFontSize;
-    if([AppEnvironmentConstants preferredSizeSetting] < 5)
-        headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-    else
-        headerFontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:5];
+    int headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
     header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                             size:headerFontSize];
 }

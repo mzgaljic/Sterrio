@@ -76,6 +76,10 @@ short const dummyTabIndex = 2;
                                              selector:@selector(hideTabBarAnimated:)
                                                  name:MZHideTabBarAnimated
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(appThemePossiblyChanged)
+                                                 name:@"app theme color has possibly changed"
+                                               object:nil];
 }
 
 - (UIStatusBarStyle) preferredStatusBarStyle
@@ -411,6 +415,73 @@ short const dummyTabIndex = 2;
                              tabBarAnimationInProgress = NO;
                          }];
     }
+}
+
+- (void)appThemePossiblyChanged
+{
+    [self forceTabBarToRedrawFromScratch];
+}
+
+- (void)forceTabBarToRedrawFromScratch
+{
+    [[UITabBar appearance] setTintColor:[[UIColor defaultAppColorScheme] lighterColor]];
+    
+    UIVisualEffectView *visualEffectView;
+    [self.centerButton removeFromSuperview];
+    [self.tabBar removeFromSuperview];
+    [self.tabBarView removeFromSuperview];
+    
+    self.tabBarView = [[UIView alloc] init];
+    self.tabBar = [[UITabBar alloc] init];
+    self.tabBar.delegate = self;
+    
+    if([AppEnvironmentConstants isUserOniOS8OrAbove])
+    {
+        UIVisualEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+        visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+        visualEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        [self.tabBarView addSubview:visualEffectView];
+        [self.tabBar setBackgroundImage:[UIImage new]];
+    }
+    
+    self.centerButtonImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+                                                          :[UIImage imageNamed:CENTER_BTN_IMG_NAME]];
+    self.centerButton = [[SSBouncyButton alloc] initAsImage];
+    [self.centerButton setImage:self.centerButtonImg forState:UIControlStateNormal];
+    [self.centerButton setHitTestEdgeInsets:UIEdgeInsetsMake(-10, -10, -10, -10)];
+    [self.centerButton addTarget:self action:@selector(centerButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+    
+    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))
+        self.tabBarView.frame = [self landscapeTabBarViewFrame];
+    else
+        self.tabBarView.frame = [self portraitTabBarViewFrame];
+    
+    if([AppEnvironmentConstants isTabBarHidden]){
+        self.tabBarView.frame = CGRectMake(self.tabBarView.frame.origin.x,
+                                           self.tabBarView.frame.origin.y + MZTabBarHeight,
+                                           self.tabBarView.frame.size.width,
+                                           self.tabBarView.frame.size.height);
+    }
+    
+    
+    self.tabBar.frame = CGRectMake(0, 0, self.tabBarView.frame.size.width, self.tabBarView.frame.size.height);
+    self.centerButton.frame = [self centerBtnFrameGivenTabBarViewFrame:self.tabBarView.frame
+                                                          centerBtnImg:self.centerButtonImg];
+    if(visualEffectView){
+        visualEffectView.frame = self.tabBarView.bounds;
+    }
+    [self.tabBarView addSubview:self.tabBar];
+    [self.tabBarView addSubview:self.centerButton];
+    [self.tabBarView setMultipleTouchEnabled:NO];
+    
+    if(! [AppEnvironmentConstants isTabBarHidden]){
+        lastVisibleTabBarOrientation = [UIApplication sharedApplication].statusBarOrientation;
+        if(! self.tabBarView.superview)
+            [self.view addSubview:self.tabBarView];
+        self.tabBarView.alpha = 1;
+    }
+    
+    [self setTabBarItems];
 }
 
 #pragma nav bar helper

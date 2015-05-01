@@ -314,7 +314,7 @@
         [pickerLabel setMinimumScaleFactor:0.5];
         [pickerLabel setAdjustsFontSizeToFitWidth:YES];
         [pickerLabel setBackgroundColor:[UIColor clearColor]];
-        [pickerLabel setFont:[UIFont systemFontOfSize:20]];
+        [pickerLabel setFont:[UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:20]];
     }
 
     NSString *text;

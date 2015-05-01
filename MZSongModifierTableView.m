@@ -105,7 +105,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 
 - (CGSize)albumArtSizeGivenPrefSizeSetting
 {
-    int heightOfAlbumArtCell = [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize] *2;
+    int heightOfAlbumArtCell = [AppEnvironmentConstants preferredSongCellHeight] * 2;
     if(heightOfAlbumArtCell > MAX_ALBUM_ART_CELL_HEIGHT)
         heightOfAlbumArtCell = MAX_ALBUM_ART_CELL_HEIGHT;
     return  CGSizeMake(heightOfAlbumArtCell - 4, heightOfAlbumArtCell - 4);
@@ -220,8 +220,8 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             return nil;
         
         int fontSize;
-        if([AppEnvironmentConstants preferredSizeSetting] < 5
-           && [AppEnvironmentConstants preferredSizeSetting] > 1)
+        if([AppEnvironmentConstants preferredSongCellHeight] < 90
+           && [AppEnvironmentConstants preferredSongCellHeight] > 70)
             fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
         else
             fontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:4];
@@ -295,13 +295,16 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     int prefCellHeight;
-    int prefSizeSetting = [AppEnvironmentConstants preferredSizeSetting];
-    if(prefSizeSetting >= 3 && prefSizeSetting < 6)
-        prefCellHeight = [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
-    else if(prefSizeSetting < 3)
-        prefCellHeight = [PreferredFontSizeUtility hypotheticalCellHeightForPreferredSize:3];
+    int prefSizeSetting = [AppEnvironmentConstants preferredSongCellHeight];
+    if(prefSizeSetting >= [AppEnvironmentConstants minimumSongCellHeight] + 30
+       && prefSizeSetting < [AppEnvironmentConstants maximumSongCellHeight])
+    {
+        prefCellHeight = [AppEnvironmentConstants preferredSongCellHeight];
+    }
+    else if(prefSizeSetting < [AppEnvironmentConstants minimumSongCellHeight] + 30)
+        prefCellHeight = [AppEnvironmentConstants minimumSongCellHeight] + 30;
     else
-        prefCellHeight = [PreferredFontSizeUtility hypotheticalCellHeightForPreferredSize:5];
+        prefCellHeight = [AppEnvironmentConstants maximumSongCellHeight] - 10;
     
     if(indexPath.row == 3)  //album art cell
         return prefCellHeight * 2;

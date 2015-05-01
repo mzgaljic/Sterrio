@@ -236,7 +236,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
+    return [AppEnvironmentConstants preferredSongCellHeight];
 }
 
 //editing the tableView items
@@ -401,11 +401,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section
 {
     UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
-    int headerFontSize;
-    if([AppEnvironmentConstants preferredSizeSetting] < 5)
-        headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-    else
-        headerFontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:5];
+    int headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
     header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                             size:headerFontSize];
 }
@@ -584,14 +580,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     request.returnsObjectsAsFaults = NO;
     [request setFetchBatchSize:50];
     NSSortDescriptor *sortDescriptor;
-    if([AppEnvironmentConstants smartAlphabeticalSort])
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
-    else
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
+    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
+                                                   ascending:YES
+                                                    selector:@selector(localizedStandardCompare:)];
     request.sortDescriptors = @[sortDescriptor];
     request.predicate = [self generateCompoundedPredicateGivenQuery:query];
     return request;

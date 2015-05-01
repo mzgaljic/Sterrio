@@ -18,7 +18,7 @@
 
 @interface MZTableViewCell ()
 {
-    short lastPrefSizeUsed;
+    int lastSongCellHeight;
     UILabel *coloredDotLabel;  //only used in the playbackQueueVc
 }
 @end
@@ -31,7 +31,7 @@ short const dotLabelPadding = 20;
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     if(self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]){
-        lastPrefSizeUsed = [AppEnvironmentConstants preferredSizeSetting];
+        lastSongCellHeight = [AppEnvironmentConstants preferredSongCellHeight];
     }
     return self;
 }
@@ -43,9 +43,9 @@ short const dotLabelPadding = 20;
     
     //cell images get blurry when going from small to big size
     BOOL retVal = NO;
-    if(lastPrefSizeUsed != [AppEnvironmentConstants preferredSizeSetting]){
+    if(lastSongCellHeight != [AppEnvironmentConstants preferredSongCellHeight]){
         retVal = YES;
-        lastPrefSizeUsed = [AppEnvironmentConstants preferredSizeSetting];
+        lastSongCellHeight = [AppEnvironmentConstants preferredSongCellHeight];
     }
     return retVal;
 }
@@ -87,22 +87,16 @@ short const dotLabelPadding = 20;
     UIFont *textLabelFont;
     NSString *regularFontName = [AppEnvironmentConstants regularFontName];
     NSString *boldFontName = [AppEnvironmentConstants boldFontName];
-    int suggestedFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
     
-    if([AppEnvironmentConstants boldNames])
-        textLabelFont = [MZTableViewCell findAdaptiveFontWithName:boldFontName
-                                   forUILabelSize:self.textLabel.frame.size
-                                  withMinimumSize:suggestedFontSize - 10];
-    else
-        textLabelFont = [MZTableViewCell findAdaptiveFontWithName:regularFontName
-                                   forUILabelSize:self.textLabel.frame.size
-                                  withMinimumSize:suggestedFontSize - 10];
+    textLabelFont = [MZTableViewCell findAdaptiveFontWithName:boldFontName
+                                               forUILabelSize:self.textLabel.frame.size
+                                              withMinimumSize:16];
     
     self.textLabel.font = textLabelFont;
     CGSize detailTextSize = self.detailTextLabel.frame.size;
     self.detailTextLabel.font = [MZTableViewCell findAdaptiveFontWithName:regularFontName
                                                            forUILabelSize:detailTextSize
-                                                          withMinimumSize:suggestedFontSize - 10];
+                                                          withMinimumSize:16];
     [self fixiOS7PlusSeperatorBug];
     
     if([self shouldReloadCellImages])
@@ -184,7 +178,7 @@ short const dotLabelPadding = 20;
         width = self.frame.size.width - xOrigin;
     }
     
-    height = self.frame.size.height * 0.35;
+    height = self.frame.size.height * [MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
     if(self.detailTextLabel.text == nil)
         //there is not detail label, just center this one.
         yOrigin = (self.frame.size.height/2) - (height/2);
@@ -205,7 +199,7 @@ short const dotLabelPadding = 20;
         xOrigin = self.imageView.frame.origin.x + imgViewWidth + textLabelsPaddingFromImgView;
     }
     width = self.frame.size.width - xOrigin - editingModeChevronWidthCompensation;
-    height = self.frame.size.height * 0.35;
+    height = self.frame.size.height * [MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
     if(self.detailTextLabel.text == nil)
         //there is not detail label, just center this one.
         yOrigin = (self.frame.size.height/2) - (height/2);
@@ -226,7 +220,7 @@ short const dotLabelPadding = 20;
     }
     int width = self.frame.size.width - xOrigin;
     int yOrigin = self.frame.size.height * .53;  //should be 53% from top
-    int height = self.frame.size.height * 0.35;
+    int height = self.frame.size.height *[MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
     return CGRectMake(xOrigin,
                       yOrigin,
                       width,
@@ -244,7 +238,7 @@ short const dotLabelPadding = 20;
     }
     int width = self.frame.size.width - xOrigin - editingModeChevronWidthCompensation;
     int yOrigin = self.frame.size.height * .53;  //should be 53% from top
-    int height = self.frame.size.height * 0.35;
+    int height = self.frame.size.height *[MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
 
     return CGRectMake(xOrigin,
                       yOrigin,
@@ -297,6 +291,12 @@ short const dotLabelPadding = 20;
     }
     
     return [UIFont fontWithName:fontName size:mid];
+}
+
+
++ (float)percentTextLabelIsDecreasedFromTotalCellHeight
+{
+    return 0.35;
 }
 
 @end

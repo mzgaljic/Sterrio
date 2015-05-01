@@ -212,7 +212,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
+    return [AppEnvironmentConstants preferredSongCellHeight];
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -343,11 +343,7 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
     UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
-    int headerFontSize;
-    if([AppEnvironmentConstants preferredSizeSetting] < 5)
-        headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-    else
-        headerFontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:5];
+    int headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
     header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                             size:headerFontSize];
 }
@@ -458,14 +454,9 @@
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
     request.predicate = [NSPredicate predicateWithFormat:@"ANY artist.artist_id == %@", anArtist.artist_id];
     NSSortDescriptor *sortDescriptor;
-    if([AppEnvironmentConstants smartAlphabeticalSort])
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
-    else
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
+    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
+                                                   ascending:YES
+                                                    selector:@selector(localizedStandardCompare:)];
     request.sortDescriptors = @[sortDescriptor];
     return [[PlaybackContext alloc] initWithFetchRequest:[request copy]
                                          prettyQueueName:@""
@@ -521,14 +512,9 @@
     request.returnsObjectsAsFaults = NO;
     [request setFetchBatchSize:50];
     NSSortDescriptor *sortDescriptor;
-    if([AppEnvironmentConstants smartAlphabeticalSort])
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortArtistName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
-    else
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"artistName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
+    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortArtistName"
+                                                   ascending:YES
+                                                    selector:@selector(localizedStandardCompare:)];
     
     request.sortDescriptors = @[sortDescriptor];
     

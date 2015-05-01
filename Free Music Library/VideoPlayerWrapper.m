@@ -47,7 +47,6 @@ static BOOL updatingPlayerViewDisabled = NO;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     if(! [SongPlayerCoordinator isVideoPlayerExpanded])
         [playerView touchesCancelled:nil withEvent:nil];
-    [playerView removeLayerFromPlayer];
     
     if([MusicPlaybackController avplayerTimeObserver] != nil)
         [player removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
@@ -60,6 +59,7 @@ static BOOL updatingPlayerViewDisabled = NO;
     [MusicPlaybackController setRawAVPlayer:newPlayer];
     [MusicPlaybackController setAVPlayerTimeObserver:nil];
     
+    [playerView removeLayerFromPlayer];
     [playerView reattachLayerToPlayer];
     [VideoPlayerWrapper newPlayerItemAddedCleanup];
     [VideoPlayerWrapper setupAvPlayerViewAgain];
@@ -100,14 +100,8 @@ static BOOL updatingPlayerViewDisabled = NO;
         //blocks "implicit" animation that can lock up the playerview (so it loses touch responsiveness)
         [CATransaction flush];
     
-    [UIView animateWithDuration:0.20
-                          delay:0
-                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowAnimatedContent
-                     animations:^{
-                         if(playerIndex != NSNotFound)
-                             [appWindow insertSubview:playerView atIndex:playerIndex];
-                     }
-                     completion:nil];
+    if(playerIndex != NSNotFound)
+        [appWindow insertSubview:playerView atIndex:playerIndex];
 }
 
 + (void)temporarilyDisableUpdatingPlayerView:(BOOL)disable

@@ -8,6 +8,6 @@
 
 #import "MyTableViewController.h"
 
-@interface WifiPlaybackQualityPicker : MyTableViewController
+@interface WifiPlaybackTableViewController : MyTableViewController
 
 @end

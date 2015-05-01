@@ -61,8 +61,7 @@
     if([self.playableDataSearchDataSourceDelegate playableDataSourceEntireModelCount] > 0){
         //create search bar, add to viewController
         NSString *text = [self.modelDataSourceSearchBarDelegate placeholderTextForSearchBar];
-        searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0)
-                                       placeholderText:text];
+        searchBar = [[MySearchBar alloc] initWithPlaceholderText:text];
         searchBar.delegate = self;
         self.tableView.tableHeaderView = searchBar;
     }

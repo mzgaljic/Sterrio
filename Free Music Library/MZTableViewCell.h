@@ -21,4 +21,6 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString *)reuseIdentifier;
 
++ (float)percentTextLabelIsDecreasedFromTotalCellHeight;
+
 @end

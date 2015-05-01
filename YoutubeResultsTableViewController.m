@@ -389,8 +389,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)setUpSearchBar
 {
     //create search bar, add to viewController
-    _searchBar = [[MySearchBar alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, 0)
-                                    placeholderText:@"Search YouTube"];
+    _searchBar = [[MySearchBar alloc] initWithPlaceholderText:@"Search YouTube"];
     _searchBar.delegate = self;
     self.tableView.tableHeaderView = _searchBar;
 }
@@ -579,14 +578,15 @@ static BOOL userClearedTextField = NO;
                 label.text = No_More_Results_To_Display_Msg;
                 label.textColor = [UIColor blackColor];
             }
-                
-            int minLabelFontSize = 3;
-            if([AppEnvironmentConstants preferredSizeSetting] >= minLabelFontSize)
+            
+            int middle = ([AppEnvironmentConstants maximumSongCellHeight] + [AppEnvironmentConstants minimumSongCellHeight])/ 2.0;
+            
+            if([AppEnvironmentConstants preferredSongCellHeight] >= middle)
                 label.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                              size:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
             else
                 label.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                              size:[PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:minLabelFontSize]];
+                              size:[PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:middle]];
             CGSize maximumLabelSize = CGSizeMake(label.frame.size.width, CGFLOAT_MAX);
             CGSize requiredSize = [label sizeThatFits:maximumLabelSize];
             CGRect labelFrame = label.frame;
@@ -611,17 +611,13 @@ static BOOL userClearedTextField = NO;
             [loadingMoreResultsSpinner startAnimating];
             return view;
         } else{
-            //just show that more results are below is user scrolls
+            //just show that more results are below if user scrolls
             UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, defaultFooterHeight)];
             label.text = @"···";
             label.textColor = [UIColor defaultAppColorScheme];
-            int minLabelFontSize = 5;
-            if([AppEnvironmentConstants preferredSizeSetting] >= minLabelFontSize)
-                label.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                                         size:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-            else
-                label.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                            size:[PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:minLabelFontSize]];
+            label.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                            size:[PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:[AppEnvironmentConstants maximumSongCellHeight] -15]];
+            
             CGSize maximumLabelSize = CGSizeMake(label.frame.size.width, CGFLOAT_MAX);
             CGSize requiredSize = [label sizeThatFits:maximumLabelSize];
             CGRect labelFrame = label.frame;
@@ -720,9 +716,19 @@ static BOOL userClearedTextField = NO;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    float autoCompleteCellHeight = 45;
-    if(! self.displaySearchResults)
-        return autoCompleteCellHeight;
+    if(! self.displaySearchResults){
+        //make this dynamic
+        float maxCellHeight = [UIScreen mainScreen].bounds.size.height * 0.10;
+        
+        int minHeight = [AppEnvironmentConstants minimumSongCellHeight];
+        int height = [AppEnvironmentConstants preferredSongCellHeight] * 0.75;
+        if(height < minHeight)
+            height = minHeight;
+        if(height > maxCellHeight)
+            height = maxCellHeight;
+        
+        return height;
+    }
     else{
         if(indexPath.section == 0){
             float widthOfScreenRoationIndependant;
@@ -738,7 +744,7 @@ static BOOL userClearedTextField = NO;
             return height + 8;
         }
         else
-            return autoCompleteCellHeight;  //just returning something since i have to
+            return 45;  //just returning something since i have to
     }
 }
 
@@ -771,11 +777,7 @@ static BOOL userClearedTextField = NO;
 
 - (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
     UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
-    int headerFontSize;
-    if([AppEnvironmentConstants preferredSizeSetting] < 5)
-        headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-    else
-        headerFontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:5];
+    int headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
     header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                             size:headerFontSize];
 }

@@ -8,12 +8,12 @@
 #define APP_ALREADY_LAUNCHED_KEY @"AppLaunchedAlready"
 #define LAST_INSTALLED_BUILD @"lastInstalledBuild"
 #define LAST_WhatsNewMsg @"lastSavedWhatsNewMsg"  //prevents displaying a msg twice by accident
+
 //settings keys
-#define PREFERRED_SIZE_KEY @"preferredSizeValue"
+#define PREFERRED_SONG_CELL_HEIGHT_KEY @"preferredSongCellHeight"
 #define PREFERRED_WIFI_VALUE_KEY @"preferredWifiStreamValue"
 #define PREFERRED_CELL_VALUE_KEY @"preferredCellularStreamValue"
-#define BOLD_NAME @"boldName"
-#define SMART_SORT @"smartAlphabeticalSort"
+#define APP_THEME_COLOR_VALUE_KEY @"appThemeColorValue"
 #define ICLOUD_SYNC @"icloudSettingsSync"
 
 #import <Foundation/Foundation.h>
@@ -61,6 +61,7 @@ typedef enum{
 + (BOOL)isTabBarHidden;
 + (void)setTabBarHidden:(BOOL)hidden;
 
+//possibly useful stuff to use to avoid merging ensemble during editing.
 + (BOOL)isUserEditingSongOrAlbumOrArtist;
 + (void)setUserIsEditingSongOrAlbumOrArtist:(BOOL)aValue;
 
@@ -85,22 +86,22 @@ typedef enum{
 + (NSString *)boldItalicFontName;
 
 //app settings
-+ (short)preferredSizeSetting;
-+ (void)setPreferredSizeSetting:(short)numUpToFive;
++ (int)preferredSongCellHeight;
++ (void)setPreferredSongCellHeight:(int)cellHeight;
++ (int)minimumSongCellHeight;
++ (int)maximumSongCellHeight;
++ (int)defaultSongCellHeight;
 
 + (short)preferredWifiStreamSetting;
 + (short)preferredCellularStreamSetting;
 + (void)setPreferredWifiStreamSetting:(short)resolutionValue;
 + (void)setPreferredCellularStreamSetting:(short)resolutionValue;
 
-+ (BOOL)boldNames;
-+ (void)setBoldNames:(BOOL)yesOrNo;
++ (BOOL)icloudSyncEnabled;
++ (void)set_iCloudSyncEnabled:(BOOL)enabled;
 
-+ (BOOL)smartAlphabeticalSort;
-+ (void)setSmartAlphabeticalSort:(BOOL)yesOrNo;
-
-+ (BOOL)icloudSettingsSync;
-+ (void)set_iCloudSettingsSync:(BOOL)yesOrNo;
++ (void)setAppTheme:(UIColor *)appTheme;
++ (UIColor *)defaultAppThemeBeforeUserPickedTheme;
 
 + (int)navBarHeight;
 + (void)setNavBarHeight:(int)height;

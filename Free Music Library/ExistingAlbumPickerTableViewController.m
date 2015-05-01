@@ -184,14 +184,9 @@ existingEntityPickerDelegate:(id <ExistingEntityPickerDelegate>)delegate
     request.predicate = nil;  //means i want all of the albums
     
     NSSortDescriptor *sortDescriptor;
-    if([AppEnvironmentConstants smartAlphabeticalSort])
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortAlbumName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
-    else
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"albumName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
+    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortAlbumName"
+                                                   ascending:YES
+                                                    selector:@selector(localizedStandardCompare:)];
     
     request.sortDescriptors = @[sortDescriptor];
     if(self.playbackContext == nil){

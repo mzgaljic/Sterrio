@@ -7,196 +7,90 @@
 //
 
 #import "PreferredFontSizeUtility.h"
+#import "MZTableViewCell.h"
 
 @implementation PreferredFontSizeUtility
 
 + (float)actualLabelFontSizeFromCurrentPreferredSize
 {
-    if([AppEnvironmentConstants boldNames]){
-        switch ([AppEnvironmentConstants preferredSizeSetting])
-        {
-            case 1:
-                return 14.0;
-                
-            case 2:
-                return 15.0;
-                
-            case 3:  //default app setting when app launched for the first time.
-                return 16.0;
-                
-            case 4:
-                return 19.0;
-                
-            case 5:
-                return 24.0;
-                
-            case 6:
-                return 30.0;
-            default:
-                return 16.0;
-        }
-    } else{
-        switch ([AppEnvironmentConstants preferredSizeSetting])
-        {
-            case 1:
-                return 15.0;
-                
-            case 2:
-                return 17.0;
-                
-            case 3:  //default app setting when app launched for the first time.
-                return 19.0;
-                
-            case 4:
-                return 20.0;
-                
-            case 5:
-                return 26.0;
-                
-            case 6:
-                return 31.0;
-            default:
-                return 19.0;
-        }
-    }
+    int prefSongCellHeight = [AppEnvironmentConstants preferredSongCellHeight];
+    
+    int fakeButRealisticWidth = [UIScreen mainScreen].bounds.size.width * 0.85;
+    int height = prefSongCellHeight * [MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
+    CGSize labelSize = CGSizeMake(fakeButRealisticWidth, height);
+    
+    NSString *fontName = [AppEnvironmentConstants boldFontName];
+    UIFont *font = [PreferredFontSizeUtility findAdaptiveFontWithName:fontName
+                                                       forUILabelSize:labelSize
+                                                      withMinimumSize:16];
+    return font.pointSize;
 }
 
 + (float)hypotheticalLabelFontSizeForPreferredSize:(int)aSize
 {
-    if([AppEnvironmentConstants boldNames]){
-        switch (aSize)
-        {
-            case 1:
-                return 14.0;
-                
-            case 2:
-                return 15.0;
-                
-            case 3:  //default app setting when app launched for the first time.
-                return 16.0;
-                
-            case 4:
-                return 19.0;
-                
-            case 5:
-                return 24.0;
-                
-            case 6:
-                return 30.0;
-            default:
-                return 16.0;
-        }
-    } else{
-        switch (aSize)
-        {
-            case 1:
-                return 15.0;
-                
-            case 2:
-                return 17.0;
-                
-            case 3:  //default app setting when app launched for the first time.
-                return 19.0;
-                
-            case 4:
-                return 20.0;
-                
-            case 5:
-                return 26.0;
-                
-            case 6:
-                return 31.0;
-            default:
-                return 19.0;
-        }
-    }
+    int prefSongCellHeight = aSize;
+    int fakeButRealisticWidth = [UIScreen mainScreen].bounds.size.width * 0.85;
+    int height = prefSongCellHeight * [MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
+    CGSize labelSize = CGSizeMake(fakeButRealisticWidth, height);
+    
+    NSString *fontName = [AppEnvironmentConstants regularFontName];
+    UIFont *font = [PreferredFontSizeUtility findAdaptiveFontWithName:fontName
+                                                       forUILabelSize:labelSize
+                                                      withMinimumSize:16];
+    return font.pointSize;
 }
 
 + (float)actualDetailLabelFontSizeFromCurrentPreferredSize
 {
-    switch ([AppEnvironmentConstants preferredSizeSetting])
-    {
-        case 1:
-            return 13.0;
-            
-        case 2:
-            return 14.0;
-            
-        case 3:  //default app setting when app launched for the first time.
-            return 16.0;
-            
-        case 4:
-            return 18.0;
-            
-        case 5:
-            return 20.0;
-            
-        case 6:
-            return 23.0;
-        default:
-            return 15.0;
-    }
+    int prefSongCellHeight = [AppEnvironmentConstants preferredSongCellHeight];
+    
+    int fakeButRealisticWidth = [UIScreen mainScreen].bounds.size.width * 0.85;
+    int height = prefSongCellHeight * [MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
+    CGSize labelSize = CGSizeMake(fakeButRealisticWidth, height);
+    
+    NSString *fontName = [AppEnvironmentConstants regularFontName];
+    UIFont *font = [PreferredFontSizeUtility findAdaptiveFontWithName:fontName
+                                                       forUILabelSize:labelSize
+                                                      withMinimumSize:16];
+    return font.pointSize;
 }
 
-+ (float)actualCellHeightFromCurrentPreferredSize
++ (UIFont *)findAdaptiveFontWithName:(NSString *)fontName
+                      forUILabelSize:(CGSize)labelSize
+                     withMinimumSize:(NSInteger)minSize
 {
-    int prefSize = [AppEnvironmentConstants preferredSizeSetting];
-    return [PreferredFontSizeUtility hypotheticalCellHeightForPreferredSize:prefSize];
-}
-
-+ (float)hypotheticalCellHeightForPreferredSize:(int)aSize
-{
-    switch (aSize)
-    {
-        case 1:
-            return 45.0;
+    UIFont *tempFont = nil;
+    NSString *testString = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    
+    NSInteger tempMin = minSize;
+    NSInteger tempMax = 256;
+    NSInteger mid = 0;
+    NSInteger difference = 0;
+    
+    while (tempMin <= tempMax) {
+        @autoreleasepool {
+            mid = tempMin + (tempMax - tempMin) / 2;
+            tempFont = [UIFont fontWithName:fontName size:mid];
+            difference = labelSize.height - [testString sizeWithFont:tempFont].height;
             
-        case 2:
-            return 50.0;
+            if (mid == tempMin || mid == tempMax) {
+                if (difference < 0) {
+                    return [UIFont fontWithName:fontName size:(mid - 1)];
+                }
+                return [UIFont fontWithName:fontName size:mid];
+            }
             
-        case 3:  //default app setting when app launched for the first time.
-            return 65.0;
-            
-        case 4:
-            return 80.0;
-            
-        case 5:
-            return 95.0;
-            
-        case 6:
-            return 120.0;
-            
-        default:
-            return 65.0;
+            if (difference < 0) {
+                tempMax = mid - 1;
+            } else if (difference > 0) {
+                tempMin = mid + 1;
+            } else {
+                return [UIFont fontWithName:fontName size:mid];
+            }
+        }
     }
-}
-
-+ (CGSize)actualAlbumArtSizeFromCurrentPreferredSize
-{
-    switch ([AppEnvironmentConstants preferredSizeSetting])
-    {
-        case 1:
-            return CGSizeMake(40, 40);
-            
-        case 2:
-            return CGSizeMake(40, 40);
-            
-        case 3:  //default app setting when app launched for the first time.
-            return CGSizeMake(55, 55);
-            
-        case 4:
-            return CGSizeMake(70, 70);
-            
-        case 5:
-            return CGSizeMake(70, 70);
-            
-            
-        case 6:
-            return CGSizeMake(70, 70);
-            
-        default:
-            return CGSizeMake(55, 55);
-    }
+    
+    return [UIFont fontWithName:fontName size:mid];
 }
 
 @end

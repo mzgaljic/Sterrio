@@ -8,7 +8,6 @@
 
 #import "AlbumItemViewController.h"
 
-#import "ArtistTableViewFormatter.h"
 #import "MZCoreDataModelDeletionService.h"
 #import "AlbumArtUtilities.h"
 #import "Album.h"
@@ -161,7 +160,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //artist cells have a similar size to what is desired here (text only cells)
-    return [ArtistTableViewFormatter preferredArtistCellHeight];
+    return [AppEnvironmentConstants preferredSongCellHeight];
 }
 
 - (NSInteger)tableView:(UITableView *)table
@@ -312,14 +311,9 @@ const int ALBUM_HEADER_HEIGHT = 120;
     request.predicate = albumPredicate;
 
     NSSortDescriptor *sortDescriptor;
-    if([AppEnvironmentConstants smartAlphabeticalSort])
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
-    else
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
+    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
+                                                   ascending:YES
+                                                    selector:@selector(localizedStandardCompare:)];
     
     request.sortDescriptors = @[sortDescriptor];
     if(self.playbackContext == nil){

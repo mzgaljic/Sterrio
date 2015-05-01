@@ -296,14 +296,9 @@ static BOOL haveCheckedCoreDataInit = NO;
     request.predicate = nil;  //means i want all of the songs
     
     NSSortDescriptor *sortDescriptor;
-    if([AppEnvironmentConstants smartAlphabeticalSort])
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
-    else
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
+    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
+                                                   ascending:YES
+                                                    selector:@selector(localizedStandardCompare:)];
     
     request.sortDescriptors = @[sortDescriptor];
     if(self.playbackContext == nil){

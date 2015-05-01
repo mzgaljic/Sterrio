@@ -231,10 +231,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     [header.textLabel setTextColor:[UIColor whiteColor]];
     header.textLabel.backgroundColor = [UIColor clearColor];
     int headerFontSize;
-    if([AppEnvironmentConstants preferredSizeSetting] < 5)
+    if([AppEnvironmentConstants preferredSongCellHeight]
+         < [AppEnvironmentConstants maximumSongCellHeight] - 18)
         headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
     else
-        headerFontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:5];
+        headerFontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:[AppEnvironmentConstants maximumSongCellHeight] - 18];
     header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                             size:headerFontSize];
     
@@ -296,7 +297,12 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
+    int minHeight = [AppEnvironmentConstants minimumSongCellHeight];
+    int height = [AppEnvironmentConstants preferredSongCellHeight] * 0.80;
+    if(height < minHeight)
+        height = minHeight;
+    
+    return height;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

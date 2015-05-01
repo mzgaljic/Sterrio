@@ -72,17 +72,8 @@ static const int CELL_STREAM_PICKER_TAG = 107;
 
 - (NSString *)convertFontSizeToString
 {
-    short x = [AppEnvironmentConstants preferredSizeSetting];
-    switch (x)
-    {
-        case 1:     return @"1";
-        case 2:     return @"2";
-        case 3:     return @"3";
-        case 4:     return @"4";
-        case 5:     return @"5";
-        case 6:     return @"6";
-        default:    return @"Error has occured";
-    }
+
+    return @"broken";
 }
 
 #pragma mark - Table view data source
@@ -115,11 +106,11 @@ static const int CELL_STREAM_PICKER_TAG = 107;
             returnMe = @"The preferred video streaming quality for each connection type.";
             break;
         case 2:
-            if([AppEnvironmentConstants boldNames])
+            if(1)
                 returnMe = @"Music titles (ie: Song and Artist names) are bolded.";
             break;
         case 3:
-            if([AppEnvironmentConstants smartAlphabeticalSort])
+            if(1)
                 returnMe = @"Ignore the following when displaying my music in alphabetical order:\nA \nAn \nThe";
             else
                 returnMe = @"Display my music in regular alphabetical order.";
@@ -155,7 +146,8 @@ static const int CELL_STREAM_PICKER_TAG = 107;
                 cell.textLabel.text = @"Sync Settings Via iCloud";
                 //setup toggle switch
                 _syncSettingViaIcloudSwitch = [[UISwitch alloc] init];
-                [_syncSettingViaIcloudSwitch setOn:[AppEnvironmentConstants icloudSettingsSync] animated:NO];
+                [_syncSettingViaIcloudSwitch setOn:[AppEnvironmentConstants icloudSyncEnabled]
+                                          animated:NO];
                 cell.accessoryView = [[UIView alloc] initWithFrame:_syncSettingViaIcloudSwitch.frame];
                 [cell.accessoryView addSubview:_syncSettingViaIcloudSwitch];
                 
@@ -199,7 +191,7 @@ static const int CELL_STREAM_PICKER_TAG = 107;
                 cell.textLabel.text = @"Bold Names";
                 //setup toggle switch
                 _boldSongSwitch = [[UISwitch alloc] init];
-                [_boldSongSwitch setOn:[AppEnvironmentConstants boldNames] animated:NO];
+                [_boldSongSwitch setOn:!_boldSongSwitch.on animated:NO];
                 cell.accessoryView = [[UIView alloc] initWithFrame:_boldSongSwitch.frame];
                 [cell.accessoryView addSubview:_boldSongSwitch];
                 
@@ -218,7 +210,7 @@ static const int CELL_STREAM_PICKER_TAG = 107;
                 cell.textLabel.text = @"Smart Alphabetical Sort";
                 //setup toggle switch
                 _smartSortSwitch = [[UISwitch alloc] init];
-                [_smartSortSwitch setOn:[AppEnvironmentConstants smartAlphabeticalSort] animated:NO];
+                [_smartSortSwitch setOn:!_smartSortSwitch.on animated:NO];
                 cell.accessoryView = [[UIView alloc] initWithFrame:_smartSortSwitch.frame];
                 [cell.accessoryView addSubview:_smartSortSwitch];
                 cell.detailTextLabel.text = @" ";
@@ -293,30 +285,11 @@ static const int CELL_STREAM_PICKER_TAG = 107;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
-    UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
-    int headerFontSize;
-    int prefSize = [AppEnvironmentConstants preferredSizeSetting];
-    if(prefSize < 5 && prefSize > 2)
-        headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-    else
-        headerFontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:4];
-    header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
-                                            size:headerFontSize];
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayFooterView:(UIView *)view forSection:(NSInteger)section
 {
-    UITableViewHeaderFooterView *footer = (UITableViewHeaderFooterView *)view;
 
-    int footerFontSize;
-    int prefSize = [AppEnvironmentConstants preferredSizeSetting];
-    if(prefSize < 4 && prefSize > 2)
-        footerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-    else
-        footerFontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:3];
-    
-    footer.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                                            size:footerFontSize];
 }
 
 #pragma mark - Handling action sheet
@@ -400,7 +373,7 @@ NSArray *CellStreamOptions;
         case FONT_SIZE_PICKER_TAG:
             picker = [picker initWithFrame:CGRectMake(0, 0, 260, 400)];
             fontOptions = @[@"1",@"2",@"3 (default)",@"4",@"5",@"6"];
-            row = ([AppEnvironmentConstants preferredSizeSetting] -1);
+            row = (3);
             
             _lastSelectedFontSize = row + 1;
             break;
@@ -451,7 +424,7 @@ NSArray *CellStreamOptions;
         switch (_lastTappedPickerCell)
         {
             case FONT_SIZE_PICKER_TAG:
-                [AppEnvironmentConstants setPreferredSizeSetting:_lastSelectedFontSize];
+                ;
                 break;
             case WIFI_STREAM_PICKER_TAG:
                 if(_lastSelectedWifiQuality != 0)  //if 0, then no value was actually picked.
@@ -532,7 +505,7 @@ static BOOL userChangedFontSize = NO;
     switch (_lastTappedPickerCell)
     {
         case FONT_SIZE_PICKER_TAG:
-            if([AppEnvironmentConstants boldNames])
+            if(1)
                 textView.attributedText = [self boldAttributedStringWithString:[fontOptions objectAtIndex:row]
                                                                 withFontSize:[PreferredFontSizeUtility
                                    hypotheticalLabelFontSizeForPreferredSize:(int)row+1] + 1.0];
@@ -547,10 +520,12 @@ static BOOL userChangedFontSize = NO;
             break;
         case CELL_STREAM_PICKER_TAG:
             textView.text = [CellStreamOptions objectAtIndex:row];
+            /*
             if([AppEnvironmentConstants preferredSizeSetting] >= 4)
                 textView.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
             else
                 textView.font = [UIFont systemFontOfSize:[PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:4]];
+             */
             break;
         default: textView.text = @"An error has occured. :(";
     }
@@ -578,7 +553,7 @@ static int tempIcloudSwitchCount = 0;
 - (IBAction)icloudSyncSwitchToggled:(id)sender
 {
     //update settings
-    [AppEnvironmentConstants set_iCloudSettingsSync:_syncSettingViaIcloudSwitch.on];
+    [AppEnvironmentConstants set_iCloudSyncEnabled:_syncSettingViaIcloudSwitch.on];
     [self.tableView reloadData];
     
     if(tempIcloudSwitchCount == 0){
@@ -600,14 +575,14 @@ static int tempIcloudSwitchCount = 0;
 - (IBAction)boldSongsSwitchToggled:(id)sender
 {
     //update settings
-    [AppEnvironmentConstants setBoldNames:_boldSongSwitch.on];
+    //[AppEnvironmentConstants setBoldNames:_boldSongSwitch.on];
     [self.tableView reloadData];
 }
 
 - (IBAction)smartSortSwitchToggled:(id)sender
 {
     //update settings
-    [AppEnvironmentConstants setSmartAlphabeticalSort:_smartSortSwitch.on];
+    //[AppEnvironmentConstants setSmartAlphabeticalSort:_smartSortSwitch.on];
     [self.tableView reloadData];
 }
 

@@ -221,7 +221,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [PreferredFontSizeUtility actualCellHeightFromCurrentPreferredSize];
+    return [AppEnvironmentConstants preferredSongCellHeight];
 }
 
 //editing the tableView items
@@ -477,10 +477,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     _txtField.layer.cornerRadius = 5.0;
     [_txtField setBorderStyle:UITextBorderStyleRoundedRect];
     _txtField.text = _playlist.playlistName;
-    if([AppEnvironmentConstants boldNames])
-        _txtField.font = [UIFont boldSystemFontOfSize:20];
-    else
-        _txtField.font = [UIFont systemFontOfSize:20];
+    _txtField.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:20];
     _txtField.returnKeyType = UIReturnKeyDone;
     _txtField.clearButtonMode = UITextFieldViewModeWhileEditing;
     

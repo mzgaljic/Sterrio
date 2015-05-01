@@ -9,7 +9,6 @@
 #import "ArtistItemAlbumViewController.h"
 
 #import "MZCoreDataModelDeletionService.h"
-#import "ArtistTableViewFormatter.h"
 #import "AlbumArtUtilities.h"
 #import "Album.h"
 #import "Song.h"
@@ -265,8 +264,8 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //artist cells have a similar size to what is desired here (text only cells)
-    return [ArtistTableViewFormatter preferredArtistCellHeight];
+    //these are text only cells, reduce size a bit
+    return [AppEnvironmentConstants preferredSongCellHeight] / 2.0;
 }
 
 
@@ -469,14 +468,9 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
 - (NSArray *)albumSongsInAlphabeticalOrderGivenAlbum:(Album *)anAlbum
 {
     NSSortDescriptor *sortDescriptor;
-    if([AppEnvironmentConstants smartAlphabeticalSort])
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
-    else
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
+    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
+                                                   ascending:YES
+                                                    selector:@selector(localizedStandardCompare:)];
     
     NSMutableArray *sortMe = [NSMutableArray arrayWithArray:[anAlbum.albumSongs allObjects]];
     [sortMe sortUsingDescriptors:@[sortDescriptor]];
@@ -514,14 +508,10 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
     request.predicate = allArtistSongsPredicate;
     
     NSSortDescriptor *sortDescriptor;
-    if([AppEnvironmentConstants smartAlphabeticalSort])
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
-                                                        ascending:YES
-                                                         selector:@selector(localizedStandardCompare:)];
-    else
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
-                                                        ascending:YES
-                                                         selector:@selector(localizedStandardCompare:)];
+    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
+                                                   ascending:YES
+                                                    selector:@selector(localizedStandardCompare:)];
+    
     request.sortDescriptors = @[sortDescriptor];
     
     if(self.playbackContext == nil){
@@ -547,14 +537,10 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
     request.predicate = finalPredicate;
     
     NSSortDescriptor *sortDescriptor;
-    if([AppEnvironmentConstants smartAlphabeticalSort])
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
-    else
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
+    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
+                                                   ascending:YES
+                                                    selector:@selector(localizedStandardCompare:)];
+
     request.sortDescriptors = @[sortDescriptor];
     //[request setFetchBatchSize:40];
     
@@ -570,14 +556,10 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
     request.predicate = predicate;
     
     NSSortDescriptor *sortDescriptor;
-    if([AppEnvironmentConstants smartAlphabeticalSort])
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortAlbumName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
-    else
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"albumName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
+    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortAlbumName"
+                                                   ascending:YES
+                                                    selector:@selector(localizedStandardCompare:)];
+
     request.sortDescriptors = @[sortDescriptor];
     //[request setFetchBatchSize:10];
     

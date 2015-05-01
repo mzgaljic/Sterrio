@@ -11,7 +11,8 @@
 #import "UIColor+LighterAndDarker.h"
 
 @interface MySearchBar : UISearchBar
-- (id)initWithFrame:(CGRect)frame placeholderText:(NSString *)text;
+
+- (id)initWithPlaceholderText:(NSString *)text;
 
 - (void)updateFontSizeIfNecessary;
 

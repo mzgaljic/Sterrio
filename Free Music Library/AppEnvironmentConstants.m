@@ -12,7 +12,7 @@
 #import <CoreTelephony/CTCallCenter.h>
 #import <CoreTelephony/CTCall.h>
 
-#define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
+#define Rgb2UIColor(r, g, b, a)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:(a)]
 
 @implementation AppEnvironmentConstants
 
@@ -31,12 +31,10 @@ static PLABACK_REPEAT_MODE repeatType;
 
 static PREVIEW_PLAYBACK_STATE currentPreviewPlayerState = PREVIEW_PLAYBACK_STATE_Uninitialized;
 
-static short preferredSizeValue;
+static int preferredSongCellHeight;
 static short preferredWifiStreamValue;
 static short preferredCellularStreamValue;
-static BOOL boldName;
-static BOOL smartAlphabeticalSort;
-static BOOL icloudSettingsSync;
+static BOOL icloudSyncEnabled;
 
 static BOOL tabBarIsHidden = NO;
 
@@ -234,22 +232,25 @@ static NSLock *playbackTimerLock;
 }
 
 //app settings
-+ (short)preferredSizeSetting
++ (int)preferredSongCellHeight
 {
-    return preferredSizeValue;
+    return preferredSongCellHeight;
 }
-
-//integer between [1,6]
-+ (void)setPreferredSizeSetting:(short)numUpToSix
++ (void)setPreferredSongCellHeight:(int)cellHeight
 {
-    [[NSUserDefaults standardUserDefaults] setInteger:numUpToSix forKey:PREFERRED_SIZE_KEY];
-    if(numUpToSix <= 6 && numUpToSix > 0)
-        preferredSizeValue = numUpToSix;
-    else{
-        NSLog(@"Font Size setting has become corrupt, setting default value.");
-        preferredSizeValue = 3;
-        return;
-    }
+    preferredSongCellHeight = cellHeight;
+}
++ (int)minimumSongCellHeight
+{
+    return 49;
+}
++ (int)maximumSongCellHeight
+{
+    return 115;
+}
++ (int)defaultSongCellHeight
+{
+    return 60;
 }
 
 + (short)preferredWifiStreamSetting
@@ -264,47 +265,42 @@ static NSLock *playbackTimerLock;
 
 + (void)setPreferredWifiStreamSetting:(short)resolutionValue
 {
-    [[NSUserDefaults standardUserDefaults] setInteger:resolutionValue forKey:PREFERRED_WIFI_VALUE_KEY];
     preferredWifiStreamValue = resolutionValue;
 }
 
 + (void)setPreferredCellularStreamSetting:(short)resolutionValue
 {
-    [[NSUserDefaults standardUserDefaults] setInteger:resolutionValue forKey:PREFERRED_CELL_VALUE_KEY];
     preferredCellularStreamValue = resolutionValue;
 }
 
-+ (BOOL)boldNames
++ (BOOL)icloudSyncEnabled
 {
-    return boldName;
+    return icloudSyncEnabled;
 }
 
-+ (void)setBoldNames:(BOOL)yesOrNo
++ (void)set_iCloudSyncEnabled:(BOOL)enabled
 {
-    [[NSUserDefaults standardUserDefaults] setBool:yesOrNo forKey:BOLD_NAME];
-    boldName = yesOrNo;
+    icloudSyncEnabled = enabled;
 }
 
-+ (BOOL)smartAlphabeticalSort
++ (void)setAppTheme:(UIColor *)appThemeColor
 {
-    return smartAlphabeticalSort;
+    const CGFloat* components = CGColorGetComponents(appThemeColor.CGColor);
+    NSNumber *red = [NSNumber numberWithFloat:components[0]];
+    NSNumber *green = [NSNumber numberWithFloat:components[1]];
+    NSNumber *blue = [NSNumber numberWithFloat:components[2]];
+    NSNumber *alpha = [NSNumber numberWithFloat:components[3]];
+    
+    NSArray *defaultColorRepresentation = @[red, green, blue, alpha];
+    [[NSUserDefaults standardUserDefaults] setObject:defaultColorRepresentation
+                                              forKey:APP_THEME_COLOR_VALUE_KEY];
+    
+    [UIColor defaultAppColorScheme:appThemeColor];
 }
 
-+ (void)setSmartAlphabeticalSort:(BOOL)yesOrNo
++ (UIColor *)defaultAppThemeBeforeUserPickedTheme
 {
-    [[NSUserDefaults standardUserDefaults] setBool:yesOrNo forKey:SMART_SORT];
-    smartAlphabeticalSort = yesOrNo;
-}
-
-+ (BOOL)icloudSettingsSync
-{
-    return icloudSettingsSync;
-}
-
-+ (void)set_iCloudSettingsSync:(BOOL)yesOrNo
-{
-    [[NSUserDefaults standardUserDefaults] setBool:yesOrNo forKey:ICLOUD_SYNC];
-    icloudSettingsSync = yesOrNo;
+    return Rgb2UIColor(240, 110, 50, 1);
 }
 
 + (int)navBarHeight
@@ -337,12 +333,12 @@ static NSLock *playbackTimerLock;
 
 + (UIColor *)expandingCellGestureQueueItemColor
 {
-    return Rgb2UIColor(114, 218, 58);
+    return Rgb2UIColor(114, 218, 58, 1);
 }
 
 + (UIColor *)expandingCellGestureDeleteItemColor
 {
-    return Rgb2UIColor(255, 39, 39);
+    return Rgb2UIColor(255, 39, 39, 1);
 }
 
 + (UIColor *)nowPlayingItemColor

@@ -7,37 +7,36 @@
 //
 
 #import "MySearchBar.h"
+#import "UIImage+colorImages.h"
 #import "PreferredFontSizeUtility.h"
 
 @interface MySearchBar ()
 {
     UIColor *textColor;
+    int searchBarHeight;
 }
 @end
 @implementation MySearchBar
 
-- (id)initWithFrame:(CGRect)frame
+- (id)initWithPlaceholderText:(NSString *)text
 {
-    if(self = [super initWithFrame:frame]){
-        textColor = [[UIColor defaultAppColorScheme] lighterColor];
-        self.placeholder = @"Search";
-        self.keyboardType = UIKeyboardTypeASCIICapable;
-        [self sizeToFit];
-        
-        [self customizeSearchBar];
-    }
-    return self;
-}
-
-- (id)initWithFrame:(CGRect)frame placeholderText:(NSString *)text
-{
+    int searchBarWidth = [UIScreen mainScreen].bounds.size.width;
+    searchBarHeight = [self searchBarHeightBasedOnUsersPrefSize];
+    CGRect frame = CGRectMake(0,
+                              0,
+                              searchBarWidth,
+                              searchBarHeight);
     if(self = [super initWithFrame:frame]){
         textColor = [[UIColor defaultAppColorScheme] lighterColor];
         self.placeholder = text;
         self.keyboardType = UIKeyboardTypeASCIICapable;
-        [self sizeToFit];
-        
+
         [self customizeSearchBar];
+        
+        [self setSearchFieldBackgroundImage:[UIImage imageWithColor:[UIColor whiteColor]
+                                                              width:searchBarWidth
+                                                             height:searchBarHeight - 5]
+                                   forState:UIControlStateNormal];
     }
     return self;
 }
@@ -51,41 +50,6 @@
 - (void)customizeSearchBar
 {
     [self setFontSizeBasedOnUserSettings];
-    int prefSize = [AppEnvironmentConstants preferredSizeSetting];
-    short height;
-    switch (prefSize) {
-        case 1:
-            height = 28;
-            break;
-        case 2:
-            height = 28;
-            break;
-        case 3:
-            height = 28;
-            break;
-        case 4:
-            height = 28;
-            break;
-        case 5:
-            height = 30;
-            break;
-        case 6:
-            height = 42;
-            break;
-        default:
-            height = 28;
-            break;
-    }
-    //textfield background color, size of white fill, etc.
-    
-    CGSize size = CGSizeMake(30, height);
-    UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
-    [[UIBezierPath bezierPathWithRoundedRect:CGRectMake(0,0,30,height) cornerRadius:3.0] addClip];
-    [[UIColor whiteColor] setFill];
-    UIRectFill(CGRectMake(0, 0, size.width, size.height));
-    UIImage *prettyGreyBackgroundImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    [self setSearchFieldBackgroundImage:prettyGreyBackgroundImage forState:UIControlStateNormal];
     
     //blinking cursor color
     self.tintColor = [UIColor darkGrayColor];
@@ -94,17 +58,33 @@
 
 - (void)setFontSizeBasedOnUserSettings
 {
-    float fontSize = [PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize];
-    if(fontSize < 18)
-        fontSize = 18;
-    //font size
-    UIFont *font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:fontSize];
+    float fontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:searchBarHeight];
+    fontSize = fontSize * 1.45;
+    UIFont *font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                   size:fontSize];
     NSDictionary *dict = @{
                            NSFontAttributeName: font,
                            NSForegroundColorAttributeName : textColor
                            };
     [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil]
      setDefaultTextAttributes:dict];
+}
+
+- (float)searchBarHeightBasedOnUsersPrefSize
+{
+    int minSearchBarHeight = [AppEnvironmentConstants minimumSongCellHeight] - 10;
+    int maxSearchBarHeight = [AppEnvironmentConstants maximumSongCellHeight] - 30;
+    
+    float height = [AppEnvironmentConstants preferredSongCellHeight];
+    int smallHeightReduction = height * 0.4;
+    float newSearchBarHeight = height - smallHeightReduction;
+    
+    if(newSearchBarHeight < minSearchBarHeight)
+        newSearchBarHeight = minSearchBarHeight;
+    if(newSearchBarHeight > maxSearchBarHeight)
+        newSearchBarHeight = maxSearchBarHeight;
+    
+    return newSearchBarHeight;
 }
 
 @end

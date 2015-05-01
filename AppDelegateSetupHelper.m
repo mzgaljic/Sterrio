@@ -8,6 +8,9 @@
 
 #import "AppDelegateSetupHelper.h"
 
+#define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
+
+
 @implementation AppDelegateSetupHelper
 static BOOL PRODUCTION_MODE;
 
@@ -20,46 +23,48 @@ static BOOL PRODUCTION_MODE;
 {
     if(firstTime){
         //these are the default settings
-        short sizeSetting = 3;
-        BOOL boldNames = YES;
+        int prefSongCellHeight = [AppEnvironmentConstants defaultSongCellHeight];
         short prefWifiStreamQuality = 720;
         short prefCellStreamQuality = 360;
-        BOOL smartSort = YES;
         BOOL icloudSync = NO;
-        [AppEnvironmentConstants setPreferredSizeSetting:sizeSetting];
-        [AppEnvironmentConstants setBoldNames:boldNames];
+        
+        //these setters will set ram values AND NSUserDefaults values on disk as well.
+        [AppEnvironmentConstants setPreferredSongCellHeight:prefSongCellHeight];
         [AppEnvironmentConstants setPreferredWifiStreamSetting:prefWifiStreamQuality];
         [AppEnvironmentConstants setPreferredCellularStreamSetting:prefCellStreamQuality];
-        [AppEnvironmentConstants setSmartAlphabeticalSort:smartSort];
-        [AppEnvironmentConstants set_iCloudSettingsSync:icloudSync];
+        [AppEnvironmentConstants set_iCloudSyncEnabled:icloudSync];
         
-        [[NSUserDefaults standardUserDefaults] setInteger:sizeSetting
-                                                   forKey:PREFERRED_SIZE_KEY];
-        [[NSUserDefaults standardUserDefaults] setBool:boldNames
-                                                forKey:BOLD_NAME];
-        [[NSUserDefaults standardUserDefaults] setInteger:prefWifiStreamQuality
-                                                   forKey:PREFERRED_WIFI_VALUE_KEY];
-        [[NSUserDefaults standardUserDefaults] setInteger:prefCellStreamQuality
-                                                   forKey:PREFERRED_CELL_VALUE_KEY];
-        [[NSUserDefaults standardUserDefaults] setBool:smartSort
-                                                forKey:SMART_SORT];
-        [[NSUserDefaults standardUserDefaults] setBool:icloudSync
-                                                forKey:ICLOUD_SYNC];
+        //I manually put App color in NSUserDefaults
+        UIColor *color = [AppEnvironmentConstants defaultAppThemeBeforeUserPickedTheme];
+        const CGFloat* components = CGColorGetComponents(color.CGColor);
+        NSNumber *red = [NSNumber numberWithDouble:components[0]];
+        NSNumber *green = [NSNumber numberWithDouble:components[1]];
+        NSNumber *blue = [NSNumber numberWithDouble:components[2]];
+        NSNumber *alpha = [NSNumber numberWithDouble:components[3]];
+        NSArray *defaultColorRepresentation = @[red, green, blue, alpha];
+        [[NSUserDefaults standardUserDefaults] setObject:defaultColorRepresentation
+                                                  forKey:APP_THEME_COLOR_VALUE_KEY];
+        [UIColor defaultAppColorScheme:color];
+        
         [[NSUserDefaults standardUserDefaults] synchronize];
     } else{
         //load users last settings from disk before setting these values.
-        [AppEnvironmentConstants setPreferredSizeSetting:
-                        [[NSUserDefaults standardUserDefaults] integerForKey:PREFERRED_SIZE_KEY]];
-        [AppEnvironmentConstants setBoldNames:
-                        [[NSUserDefaults standardUserDefaults] boolForKey:BOLD_NAME]];
+        [AppEnvironmentConstants setPreferredSongCellHeight:(int)
+                        [[NSUserDefaults standardUserDefaults] integerForKey:PREFERRED_SONG_CELL_HEIGHT_KEY]];
         [AppEnvironmentConstants setPreferredWifiStreamSetting:
                         [[NSUserDefaults standardUserDefaults] integerForKey:PREFERRED_WIFI_VALUE_KEY]];
         [AppEnvironmentConstants setPreferredCellularStreamSetting:
                         [[NSUserDefaults standardUserDefaults] integerForKey:PREFERRED_CELL_VALUE_KEY]];
-        [AppEnvironmentConstants setSmartAlphabeticalSort:
-                        [[NSUserDefaults standardUserDefaults] boolForKey:SMART_SORT]];
-        [AppEnvironmentConstants set_iCloudSettingsSync:
+        [AppEnvironmentConstants set_iCloudSyncEnabled:
                         [[NSUserDefaults standardUserDefaults] boolForKey:ICLOUD_SYNC]];
+        
+        //I manually retrieve App color from NSUserDefaults
+        NSArray *defaultColorRep2 = [[NSUserDefaults standardUserDefaults] objectForKey:APP_THEME_COLOR_VALUE_KEY];
+        UIColor *usersChosenDefaultColor = [UIColor colorWithRed:[defaultColorRep2[0] doubleValue]
+                                                           green:[defaultColorRep2[1] doubleValue]
+                                                            blue:[defaultColorRep2[2] doubleValue]
+                                                           alpha:[defaultColorRep2[3] doubleValue]];
+        [UIColor defaultAppColorScheme:usersChosenDefaultColor];
     }
 }
 

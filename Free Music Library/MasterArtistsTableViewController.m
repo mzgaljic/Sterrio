@@ -299,14 +299,9 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
     request.predicate = nil;  //means i want all of the artists
     
     NSSortDescriptor *sortDescriptor;
-    if([AppEnvironmentConstants smartAlphabeticalSort])
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortArtistName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
-    else
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"artistName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
+    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortArtistName"
+                                                   ascending:YES
+                                                    selector:@selector(localizedStandardCompare:)];
     
     request.sortDescriptors = @[sortDescriptor];
     if(self.playbackContext == nil){

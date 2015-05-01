@@ -537,29 +537,6 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     }
 }
 
-//helper method for songArrayGivenSong: album: artist: playlist: method.
-+ (NSArray *)arrayOfAllSongsInSongTab
-{
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSManagedObjectContext *context = [CoreDataManager context];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Song"
-                                              inManagedObjectContext:context];
-    [fetchRequest setEntity:entity];
-    NSSortDescriptor *sortDescriptor;
-    if([AppEnvironmentConstants smartAlphabeticalSort])
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
-    else
-        sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
-                                                       ascending:YES
-                                                        selector:@selector(localizedStandardCompare:)];
-    [fetchRequest setSortDescriptors:@[sortDescriptor]];
-    NSError *error = nil;
-    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
-    return fetchedObjects;
-}
-
 #pragma mark - loading spinner status
 + (void)simpleSpinnerOnScreen:(BOOL)onScreen
 {

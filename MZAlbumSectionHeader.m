@@ -13,6 +13,8 @@
 @interface MZAlbumSectionHeader ()
 {
     UIView *blurredBaseView;
+    UIView *gradientView;
+    Album *album;
 }
 @end
 @implementation MZAlbumSectionHeader
@@ -37,9 +39,37 @@ const float SEPERATOR_HEIGHT = 0.5;
         [self addSubview:blurredBaseView];
         
         [self composeViewElementsUsingAlbum:anAlbum];
-        anAlbum = nil;
+        album = anAlbum;
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(orientationChanged)
+                                                     name:UIDeviceOrientationDidChangeNotification
+                                                   object:nil];
     }
     return self;
+}
+
+- (void)dealloc
+{
+    album = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)orientationChanged
+{
+    //manually rotate the subviews (or in this case redraw them since the gradient shouldnt be stretched).
+    [gradientView removeFromSuperview];
+    [blurredBaseView removeFromSuperview];
+    
+    UIVisualEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+    UIVisualEffectView *blurredView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+    blurredView.frame = CGRectMake(0,
+                                   0,
+                                   self.frame.size.width,
+                                   self.frame.size.height - SEPERATOR_HEIGHT);
+    blurredView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    blurredBaseView = blurredView;
+    [self addSubview:blurredBaseView];
+    [self composeViewElementsUsingAlbum:album];
 }
 
 - (void)composeViewElementsUsingAlbum:(Album *)anAlbum
@@ -53,10 +83,9 @@ const float SEPERATOR_HEIGHT = 0.5;
     }
     
     //background color of view (under blurred base view)
-    UIView *gradientView = [self gradientBackgroundBasedOnAlbumArtImage:albumArt];
+    gradientView = [self gradientBackgroundBasedOnAlbumArtImage:albumArt];
     if(gradientView)
     {
-        //[self addSubview:gradientView];
         [self insertSubview:gradientView belowSubview:blurredBaseView];
     }
     

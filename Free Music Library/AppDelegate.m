@@ -75,12 +75,12 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [self setGlobalFontsAndColors];
     
     BOOL appLaunchedFirstTime = [AppDelegateSetupHelper appLaunchedFirstTime];
-    [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime: appLaunchedFirstTime];
+    [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime:appLaunchedFirstTime];
     
     if(appLaunchedFirstTime){
         //do stuff that you'd want to see the first time you launch!
         [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
-        [AppDelegateSetupHelper reduceEncryptionStrengthOnRelevantDirs];
+        //[AppDelegateSetupHelper reduceEncryptionStrengthOnRelevantDirs];
     }
     
     [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY
@@ -107,17 +107,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     self.window.tintColor = [UIColor whiteColor];
     //vibrant orange
     [UIColor defaultAppColorScheme:Rgb2UIColor(240, 110, 50)];
-    
-    //emerald green
-    //[UIColor defaultAppColorScheme:[Rgb2UIColor(74, 153, 118) darkerColor]];
-    //bright pink
-    //[UIColor defaultAppColorScheme:[Rgb2UIColor(233, 91, 152) lighterColor]];
-    //regular blue
-    //[UIColor defaultAppColorScheme:Rgb2UIColor(57, 104, 190)];
-    //purple
-    //[UIColor defaultAppColorScheme:Rgb2UIColor(111, 91, 164)];
-    //yellow
-    //[UIColor defaultAppColorScheme:Rgb2UIColor(254, 200, 45)];
     
     //cancel button color of all uisearchbars
     [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]

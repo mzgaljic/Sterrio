@@ -45,7 +45,7 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
     CGPoint fadeOutToPoint = CGPointMake(view.center.x,
             self.center.y + CGRectGetHeight(view.frame));
     
-    [self performSelector:@selector(destroyWindoWDelayed) withObject:nil afterDelay:0.1];
+    [self performSelector:@selector(destroyWindoWDelayed) withObject:nil afterDelay:0.3];
     // Window of app
     //UIWindow *appWindow = [UIApplication sharedApplication].windows.firstObject;
     // Actions
@@ -97,7 +97,7 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
     {
         return SWActionSheetWindow = ({
             UIWindow *window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-            window.windowLevel        = UIWindowLevelStatusBar;
+            window.windowLevel        = UIWindowLevelAlert;
             window.backgroundColor    = [UIColor clearColor];
             window.rootViewController = [SWActionSheetVC new];
             window;
@@ -143,6 +143,7 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
 {
     // Make sheet window visible and active
     UIWindow *sheetWindow = [self window];
+    sheetWindow.tintColor = [UIColor defaultAppColorScheme];
     if (![sheetWindow isKeyWindow])
         [sheetWindow makeKeyAndVisible];
     sheetWindow.hidden = NO;
