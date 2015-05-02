@@ -57,12 +57,7 @@ int const RESET_DEFUALT_SECTION_NUM = 1;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    int minHeight = [AppEnvironmentConstants minimumSongCellHeight];
-    int height = [AppEnvironmentConstants preferredSongCellHeight] * 0.75;
-    if(height < minHeight)
-        height = minHeight;
-    
-    return height;
+    return [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section

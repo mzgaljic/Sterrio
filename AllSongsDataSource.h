@@ -32,6 +32,7 @@
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) PlaybackContext *playbackContext;
 @property (nonatomic, strong) NSString *cellReuseId;
+@property (nonatomic, assign, readonly) SONG_DATA_SRC_TYPE readOnlyDataSourceType;
 @property (nonatomic, assign) id <EditableSongDataSourceDelegate> editableSongDelegate;
 @property (nonatomic, assign) id <PlaylistSongAdderDataSourceDelegate> playlistSongAdderDelegate;
 

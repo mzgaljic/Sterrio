@@ -61,12 +61,7 @@ NSString * const MUSIC_LIBRARY_SECTION_HEADER_TITLE = @"Library";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    int minHeight = [AppEnvironmentConstants minimumSongCellHeight];
-    int height = [AppEnvironmentConstants preferredSongCellHeight] * 0.70;
-    if(height < minHeight)
-        height = minHeight;
-    
-    return height;
+    return [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -231,6 +226,7 @@ NSString * const MUSIC_LIBRARY_SECTION_HEADER_TITLE = @"Library";
             float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
             cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                                   size:fontSize];
+            cell.textLabel.textColor = [UIColor defaultAppColorScheme];
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.detailTextLabel.text = nil;
             cell.imageView.image = nil;

@@ -67,6 +67,7 @@
     
     //self.selectedSongIds = nil;
     //self.existingPlaylistSongs = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"%@ dealloced!", NSStringFromClass([self class]));
 }
 
@@ -79,6 +80,8 @@
         self.searchBarDataSourceDelegate = delegate;
         //if(type == SONG_DATA_SRC_TYPE_Playlist_MultiSelect)
         //    self.selectedSongIds = [NSMutableArray array];
+        
+        [self setupAppThemeColorObserver];
     }
     return self;
 }
@@ -92,8 +95,18 @@
         stackController = [[StackController alloc] init];
         self.dataSourceType = type;
         self.searchBarDataSourceDelegate = delegate;
+        
+        [self setupAppThemeColorObserver];
     }
     return self;
+}
+
+- (void)setupAppThemeColorObserver
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateCellsDueToAppThemeChange)
+                                                 name:@"app theme color has possibly changed"
+                                               object:nil];
 }
 
 
@@ -581,6 +594,16 @@
     [finalDetailLabel appendString:@" "];
     [finalDetailLabel appendString:songPart];
     return finalDetailLabel;
+}
+
+- (void)updateCellsDueToAppThemeChange
+{
+    NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
+    if(visiblePaths.count > 0){
+        [self.tableView beginUpdates];
+        [self.tableView reloadRowsAtIndexPaths:visiblePaths withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView endUpdates];
+    }
 }
 
 - (NSUInteger)numObjectsInTable

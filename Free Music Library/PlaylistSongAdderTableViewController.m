@@ -180,6 +180,14 @@
     Playlist *replacementPlaylist;
     if([title isEqualToString:Done_String]){
         
+        if([_receiverPlaylist.status isEqualToNumber:[NSNumber numberWithShort:PLAYLIST_STATUS_Normal_Playlist]])
+        {
+            //user finished adding songs to the playlist. this playlist already existed in the library,
+            //so user is going to return to the playlist detail VC. make sure tab bar is hidden.
+            [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated
+                                                                object:@YES];
+        }
+        
         NSArray *newSongsArray = [self.tableViewDataSourceAndDelegate minimallyFaultedArrayOfSelectedPlaylistSongs];
         NSArray *oldSongsArray = [_receiverPlaylist.playlistSongs array];
         NSMutableArray *finalArray = [NSMutableArray arrayWithCapacity:newSongsArray.count + oldSongsArray.count];
@@ -194,12 +202,14 @@
         [[CoreDataManager context] deleteObject:_receiverPlaylist];
         [[CoreDataManager sharedInstance] saveContext];
         replacementPlaylist.playlist_id = originalPlaylistId;
-
+    
     } else if([title isEqualToString:AddLater_String]){
         //leave playlist empty and "pop" this modal view off the screen
         _receiverPlaylist.status = [NSNumber numberWithShort:PLAYLIST_STATUS_Created_But_Empty];
     }
+
     [[CoreDataManager sharedInstance] saveContext];  //save in core data
+    
     [self dismissViewControllerAnimated:YES completion:nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"song picker dismissed" object:replacementPlaylist];
 }
@@ -208,12 +218,20 @@
 - (IBAction)leftBarButtonTapped:(id)sender
 {
     NSString *title = self.leftBarButton.title;
-    if([title isEqualToString:Cancel_String] && [_receiverPlaylist.status shortValue] == PLAYLIST_STATUS_In_Creation){
+    if([title isEqualToString:Cancel_String] &&
+       [_receiverPlaylist.status shortValue] == PLAYLIST_STATUS_In_Creation){
         //cancel the creation of the playlist and "pop" this modal view off the screen.
         [[CoreDataManager context] deleteObject:_receiverPlaylist];
         [[CoreDataManager sharedInstance] saveContext];  //save in core data
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated
+                                                            object:@NO];
+    } else{
+        //user cancelled adding additional songs to his/her playlist. should hide tab bar
+        //since the user will end up back in playlist detail VC.
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated
+                                                            object:@YES];
     }
-    //else we dont need to do anything
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"song picker dismissed" object:nil];
     [self dismissViewControllerAnimated:YES completion:nil];

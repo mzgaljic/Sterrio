@@ -169,12 +169,13 @@ const float SEPERATOR_HEIGHT = 0.5;
     NSRange boldRange1 = NSMakeRange(0, lengthOfSongIntAsString);
     NSRange boldRange2 = [detailText rangeOfString:totalDurationString];
     
+    NSString *fontName = [AppEnvironmentConstants boldFontName];
     [string beginEditing];
     [string addAttribute:NSFontAttributeName
-                   value:[UIFont boldSystemFontOfSize:DETAIL_LABEL_FONT_SIZE]
+                   value:[UIFont fontWithName:fontName size:DETAIL_LABEL_FONT_SIZE]
                    range:boldRange1];
     [string addAttribute:NSFontAttributeName
-                   value:[UIFont boldSystemFontOfSize:DETAIL_LABEL_FONT_SIZE]
+                   value:[UIFont fontWithName:fontName size:DETAIL_LABEL_FONT_SIZE]
                    range:boldRange2];
     [string endEditing];
     return string;

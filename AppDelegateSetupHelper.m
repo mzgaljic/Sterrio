@@ -7,21 +7,23 @@
 //
 
 #import "AppDelegateSetupHelper.h"
+#import "AppDelegate.h"
+#import "Song.h"
+#import "Album.h"
+#import "Playlist.h"
+#import "Artist.h"
+#import "UIDevice+DeviceName.h"
+#import "SDWebImageManager.h"
+#import "UIColor+LighterAndDarker.h"
 
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 
 @implementation AppDelegateSetupHelper
-static BOOL PRODUCTION_MODE;
 
-+ (void)setProductionModeValue
++ (void)loadUsersSettingsFromNSUserDefaults
 {
-    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
-}
-
-+ (void)setAppSettingsAppLaunchedFirstTime:(BOOL)firstTime
-{
-    if(firstTime){
+    if([AppDelegateSetupHelper appLaunchedFirstTime]){
         //these are the default settings
         int prefSongCellHeight = [AppEnvironmentConstants defaultSongCellHeight];
         short prefWifiStreamQuality = 720;
@@ -68,7 +70,53 @@ static BOOL PRODUCTION_MODE;
     }
 }
 
-/*The Album Art dir must have an encryption level of
++ (void)setGlobalFontsAndColorsForAppGUIComponents
+{
+    //set global default "AppColorScheme"
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    appDelegate.window.tintColor = [UIColor whiteColor];
+    
+    //cancel button color of all uisearchbars
+    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             [[UIColor defaultAppColorScheme] lighterColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
+    
+    //tab bar font
+    UIFont *tabBarFont = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                         size:10];
+    [[UITabBarItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:tabBarFont, NSFontAttributeName, nil] forState:UIControlStateNormal];
+    
+    UIFont *barButtonFonts = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:17];
+    NSDictionary *barButtonAttributes = @{
+                                          NSForegroundColorAttributeName : [UIColor defaultWindowTintColor],
+                                          NSFontAttributeName : barButtonFonts
+                                          };
+    
+    //toolbar button colors
+    [[UIBarButtonItem appearanceWhenContainedIn:[UIToolbar class], nil]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             [[UIColor defaultAppColorScheme] lighterColor],
+                             NSForegroundColorAttributeName,
+                             barButtonFonts, NSFontAttributeName, nil] forState:UIControlStateNormal];
+    
+    //nav bar attributes
+    UIFont *navBarFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:20];
+    NSDictionary *navBarTitleAttributes = @{
+                                            NSForegroundColorAttributeName : [UIColor defaultWindowTintColor],
+                                            NSFontAttributeName : navBarFont
+                                            };
+    [[UINavigationBar appearance] setTitleTextAttributes:navBarTitleAttributes];
+    [[UIBarButtonItem appearance] setTitleTextAttributes:barButtonAttributes
+                                                forState:UIControlStateNormal];
+    //search bar cancel button font
+    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTitleTextAttributes:@{NSFontAttributeName:barButtonFonts} forState:UIControlStateNormal];
+    
+    //particulary useful for alert views.
+    [[UITextField appearance] setTintColor:[UIColor darkGrayColor]];
+}
+
+/*
+ The Album Art dir must have an encryption level of
  NSFileProtectionCompleteUntilFirstUserAuthentication, otherwise the images for the lockscreen
  will not be able to load. */
 + (void)reduceEncryptionStrengthOnRelevantDirs

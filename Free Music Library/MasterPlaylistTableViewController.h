@@ -22,6 +22,5 @@
                                                             <SearchBarDataSourceDelegate,
                                                             ActionablePlaylistDataSourceDelegate,
                                                             MainScreenViewControllerDelegate,
-                                                            UITextFieldDelegate,
-                                                            SDCAlertViewDelegate>
+                                                            UITextFieldDelegate>
 @end

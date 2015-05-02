@@ -8,6 +8,7 @@
 
 #import "AppEnvironmentConstants.h"
 #import "UIColor+LighterAndDarker.h"
+#import "AppDelegateSetupHelper.h"
 
 #import <CoreTelephony/CTCallCenter.h>
 #import <CoreTelephony/CTCall.h>
@@ -296,6 +297,7 @@ static NSLock *playbackTimerLock;
                                               forKey:APP_THEME_COLOR_VALUE_KEY];
     
     [UIColor defaultAppColorScheme:appThemeColor];
+    [AppDelegateSetupHelper setGlobalFontsAndColorsForAppGUIComponents];
 }
 
 + (UIColor *)defaultAppThemeBeforeUserPickedTheme

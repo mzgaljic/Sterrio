@@ -64,6 +64,7 @@
     
     self.selectedSongIds = nil;
     self.existingPlaylistSongs = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"%@ dealloced!", NSStringFromClass([self class]));
 }
 
@@ -76,8 +77,19 @@
         self.searchBarDataSourceDelegate = delegate;
         if(type == SONG_DATA_SRC_TYPE_Playlist_MultiSelect)
             self.selectedSongIds = [NSMutableArray array];
+        
+        _readOnlyDataSourceType = type;
+        [self setupAppThemeColorObserver];
     }
     return self;
+}
+
+- (void)setupAppThemeColorObserver
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateCellsDueToAppThemeChange)
+                                                 name:@"app theme color has possibly changed"
+                                               object:nil];
 }
 
 #pragma mark - Overriding functionality
@@ -642,6 +654,21 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 }
 
 #pragma mark - Miscellaneous
+- (void)updateCellsDueToAppThemeChange
+{
+    if(self.tableView.editing)
+    {
+        //cell only has chevrons to update when the table is in editing mode...
+        
+        NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
+        if(visiblePaths.count > 0){
+            [self.tableView beginUpdates];
+            [self.tableView reloadRowsAtIndexPaths:visiblePaths withRowAnimation:UITableViewRowAnimationFade];
+            [self.tableView endUpdates];
+        }
+    }
+}
+
 - (NSUInteger)numObjectsInTable
 {
     if(self.displaySearchResults)

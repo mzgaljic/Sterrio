@@ -15,8 +15,8 @@
 {
     int prefSongCellHeight = [AppEnvironmentConstants preferredSongCellHeight];
     
-    int fakeButRealisticWidth = [UIScreen mainScreen].bounds.size.width * 0.85;
-    int height = prefSongCellHeight * [MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
+    float fakeButRealisticWidth = [UIScreen mainScreen].bounds.size.width * 0.85;
+    float height = prefSongCellHeight * [MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
     CGSize labelSize = CGSizeMake(fakeButRealisticWidth, height);
     
     NSString *fontName = [AppEnvironmentConstants boldFontName];
@@ -29,8 +29,8 @@
 + (float)hypotheticalLabelFontSizeForPreferredSize:(int)aSize
 {
     int prefSongCellHeight = aSize;
-    int fakeButRealisticWidth = [UIScreen mainScreen].bounds.size.width * 0.85;
-    int height = prefSongCellHeight * [MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
+    float fakeButRealisticWidth = [UIScreen mainScreen].bounds.size.width * 0.85;
+    float height = prefSongCellHeight * [MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
     CGSize labelSize = CGSizeMake(fakeButRealisticWidth, height);
     
     NSString *fontName = [AppEnvironmentConstants regularFontName];
@@ -44,8 +44,8 @@
 {
     int prefSongCellHeight = [AppEnvironmentConstants preferredSongCellHeight];
     
-    int fakeButRealisticWidth = [UIScreen mainScreen].bounds.size.width * 0.85;
-    int height = prefSongCellHeight * [MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
+    float fakeButRealisticWidth = [UIScreen mainScreen].bounds.size.width * 0.85;
+    float height = prefSongCellHeight * [MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
     CGSize labelSize = CGSizeMake(fakeButRealisticWidth, height);
     
     NSString *fontName = [AppEnvironmentConstants regularFontName];
@@ -53,6 +53,15 @@
                                                        forUILabelSize:labelSize
                                                       withMinimumSize:16];
     return font.pointSize;
+}
+
++ (float)recommendedRowHeightForCellWithSingleLabel
+{
+    float minHeight = [AppEnvironmentConstants minimumSongCellHeight];
+    float height = [AppEnvironmentConstants preferredSongCellHeight] * 0.78;
+    if(height < minHeight)
+        height = minHeight;
+    return height;
 }
 
 + (UIFont *)findAdaptiveFontWithName:(NSString *)fontName

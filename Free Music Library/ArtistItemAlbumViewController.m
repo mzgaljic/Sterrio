@@ -264,8 +264,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //these are text only cells, reduce size a bit
-    return [AppEnvironmentConstants preferredSongCellHeight] / 2.0;
+    return [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel];
 }
 
 

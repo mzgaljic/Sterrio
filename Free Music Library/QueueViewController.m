@@ -297,12 +297,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    int minHeight = [AppEnvironmentConstants minimumSongCellHeight];
-    int height = [AppEnvironmentConstants preferredSongCellHeight] * 0.80;
-    if(height < minHeight)
-        height = minHeight;
-    
-    return height;
+    float height = [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel];
+    return height * 1.2;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

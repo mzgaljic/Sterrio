@@ -219,13 +219,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         }else
             return nil;
         
-        int fontSize;
-        if([AppEnvironmentConstants preferredSongCellHeight] < 90
-           && [AppEnvironmentConstants preferredSongCellHeight] > 70)
-            fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-        else
-            fontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:4];
-        
+        int fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
         cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                               size:fontSize];
         cell.detailTextLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
@@ -255,8 +249,9 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             }
             
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
-            cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                                                  size:17.0f];
+            int fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+            cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                                  size:fontSize];
         }
     }
     
@@ -294,22 +289,12 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    int prefCellHeight;
-    int prefSizeSetting = [AppEnvironmentConstants preferredSongCellHeight];
-    if(prefSizeSetting >= [AppEnvironmentConstants minimumSongCellHeight] + 30
-       && prefSizeSetting < [AppEnvironmentConstants maximumSongCellHeight])
-    {
-        prefCellHeight = [AppEnvironmentConstants preferredSongCellHeight];
-    }
-    else if(prefSizeSetting < [AppEnvironmentConstants minimumSongCellHeight] + 30)
-        prefCellHeight = [AppEnvironmentConstants minimumSongCellHeight] + 30;
-    else
-        prefCellHeight = [AppEnvironmentConstants maximumSongCellHeight] - 10;
+    int height = [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel];
     
     if(indexPath.row == 3)  //album art cell
-        return prefCellHeight * 2;
+        return height * 2;
     else
-        return prefCellHeight * .7;
+        return height;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -1023,7 +1008,8 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 {
     //now reset any context deletions, insertions, blah blah...
     [[CoreDataManager context] rollback];
-    [[CoreDataManager context] reset];
+    //CONTEXT RESET IS VERY VERY BAD! dont use...this destorys the current playback queue somehow!
+    //simple rollback is sufficient.
 
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
     [self.VC dismissViewControllerAnimated:YES completion:nil];

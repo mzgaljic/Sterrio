@@ -1,1 +1,0 @@
-../../../SDCAlertView/SDCAlertView/Source/UIView+Parallax.h

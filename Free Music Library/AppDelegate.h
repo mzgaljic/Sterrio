@@ -18,7 +18,6 @@
 #import "Playlist.h"
 #import "AlbumArtUtilities.h"
 #import "AppEnvironmentConstants.h"
-#import "UIColor+LighterAndDarker.h"
 #import "MusicPlaybackController.h"
 #import "OperationQueuesSingeton.h"
 #import "LQAlbumArtBackgroundUpdater.h"

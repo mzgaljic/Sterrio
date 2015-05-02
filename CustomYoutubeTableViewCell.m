@@ -29,6 +29,8 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
+    [self.contentView layoutIfNeeded];
+    
     [self adjustViewsForOrientation];
 }
 
@@ -59,24 +61,51 @@
     //same size in both orientations
     self.videoThumbnail.frame = CGRectMake(2, 4, oneThirdDisplayWidth, height);
     
-    short labelPadding = 10;
-    int labelOriginX = self.videoThumbnail.frame.origin.x + self.videoThumbnail.frame.size.width + labelPadding;
-    int labelWidths = (self.frame.size.width - (self.videoThumbnail.frame.size.width)) - labelPadding;
-    int labelHeight = 34.0f;
-    
-    self.videoTitle.frame = CGRectMake(labelOriginX,
-                                       self.videoTitle.frame.origin.y,
-                                       labelWidths,
-                                       labelHeight);
-    self.videoChannel.frame = CGRectMake(labelOriginX,
-                                       self.videoChannel.frame.origin.y,
-                                       labelWidths,
-                                       labelHeight);
+    self.videoTitle.frame = [self videoTitleFrame];
+    self.videoChannel.frame = [self videoChannelFrame];
     
     float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-    UIFont *font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:fontSize];
+    int minFontSize = 18;
+    if(fontSize < minFontSize)
+        fontSize = minFontSize;
+    
+    UIFont *font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                   size:fontSize];
     self.videoTitle.font = font;
     self.videoChannel.font = font;
+}
+
+- (CGRect)videoTitleFrame
+{
+    int textLabelsPaddingFromImgView = 4;
+    int xOrigin, yOrigin, width, height;
+    int imgViewWidth = self.videoThumbnail.frame.size.width;
+    xOrigin = self.videoThumbnail.frame.origin.x + imgViewWidth + textLabelsPaddingFromImgView;
+    width = self.frame.size.width - xOrigin;
+    
+    height = self.frame.size.height * [self percentTextLabelIsDecreasedFromTotalCellHeight];
+    yOrigin = self.frame.size.height * .12;  //should be 12% down from top
+    
+    return CGRectMake(xOrigin, yOrigin, width, height);
+}
+
+- (CGRect)videoChannelFrame
+{
+    int textLabelsPaddingFromImgView = 6;
+    int imgViewWidth = self.videoThumbnail.frame.size.width;
+    int xOrigin = self.videoThumbnail.frame.origin.x + imgViewWidth + textLabelsPaddingFromImgView;
+    int width = self.frame.size.width - xOrigin;
+    int yOrigin = self.frame.size.height * .53;  //should be 53% from top
+    int height = self.frame.size.height * [self percentTextLabelIsDecreasedFromTotalCellHeight];
+    return CGRectMake(xOrigin,
+                      yOrigin,
+                      width,
+                      height);
+}
+
+- (float)percentTextLabelIsDecreasedFromTotalCellHeight
+{
+    return 0.38;
 }
 
 @end

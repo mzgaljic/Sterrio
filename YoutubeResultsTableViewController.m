@@ -13,7 +13,7 @@
 #import "UIColor+LighterAndDarker.h"
 #import "MRProgress.h"
 #import "AlbumArtUtilities.h"
-#import "SDCAlertView.h"
+#import "SDCAlertController.h"
 #import "PreferredFontSizeUtility.h"
 #import "YouTubeSongAdderViewController.h"
 #import "CustomYoutubeTableViewCell.h"
@@ -48,7 +48,7 @@
 
 @implementation YoutubeResultsTableViewController
 static BOOL PRODUCTION_MODE;
-static const float MINIMUM_DURATION_OF_LOADING_POPUP = 1.0;
+static const float MINIMUM_DURATION_OF_LOADING_POPUP = 0.3f;
 static NSString *Network_Error_Loading_More_Results_Msg = @"Network error";
 static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
@@ -211,11 +211,9 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     [_searchResults addObjectsFromArray:youTubeVideoObjects];
     youTubeVideoObjects = nil;
     
-    [MRProgressOverlayView dismissOverlayForView:_viewOnTopOfTable animated:YES];
     if(_searchResults.count == 0){  //special case
         //display alert saying no results found
         
-        [MRProgressOverlayView dismissOverlayForView:_viewOnTopOfTable animated:YES];
         [self launchAlertViewWithDialogTitle:@"No Search Results Found" andMessage:nil];
         [_searchBar setText:@""];
     }else
@@ -279,6 +277,13 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 
 - (void)ytVideoAutoCompleteResultsDidDownload:(NSArray *)arrayOfNSStrings
 {
+    //since we're not using an NSOperationQueue or something sophisticated like that,
+    //its possible that this response could come in AFTER the user already pressed the search
+    //button and displayed search results in his table. if thats the case, we simply ignore this.
+    if(self.displaySearchResults){
+        return;
+    }
+    
     //only going to use 5 of the 10 results returned. 10 is too much (searchSuggestions array is already empty-emptied in search bar text did change)
     int searchSuggestionsCountBefore = (int)self.searchSuggestions.count;
     [self.searchSuggestions removeAllObjects];
@@ -338,10 +343,13 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         return;
     }
 
-    [MRProgressOverlayView dismissOverlayForView:_viewOnTopOfTable animated:YES];
+    [self showLoadingIndicatorInCenterOfTable:NO];
+    
     [self launchAlertViewWithDialogTitle:@"Network Problem" andMessage:@"Cannot establish connection with YouTube."];
+    
     self.searchInitiatedAlready = NO;
     self.waitingOnYoutubeResults = NO;
+    
 }
 
 - (void)networkErrorHasOccuredFetchingMorePages
@@ -362,27 +370,26 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 #pragma mark - AlertView
 - (void)launchAlertViewWithDialogTitle:(NSString *)title andMessage:(NSString *)message
 {
-    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:title
-                                                      message:message
-                                                     delegate:self
-                                            cancelButtonTitle:@"OK"
-                                            otherButtonTitles:nil];
+    SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
+                                                                    message:message
+                                                             preferredStyle:SDCAlertControllerStyleAlert];
+    SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK"
+                                                         style:SDCAlertActionStyleRecommended
+                                                       handler:nil];
+    [alert addAction:okAction];
+    alert.view.tintColor = [UIColor defaultAppColorScheme];
+    [self slightlyDelayPresentationOfAlertController:alert];
     
-    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
-    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.buttonTextColor = [UIColor defaultAppColorScheme];
-    [alert show];
+    [self showLoadingIndicatorInCenterOfTable:NO];
+    self.displaySearchResults = NO;
+    [self.tableView reloadData];
 }
 
-- (void)alertView:(SDCAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+- (void)slightlyDelayPresentationOfAlertController:(SDCAlertController *)alert
 {
-    if(buttonIndex == 0){
-        [self showLoadingIndicatorInCenterOfTable:NO];
-        self.displaySearchResults = NO;
-    
-        [self.tableView reloadData];
-    }
+    [alert performSelector:@selector(presentWithCompletion:)
+                withObject:nil
+                afterDelay:0.2];
 }
 
 #pragma mark - UISearchBar
@@ -719,11 +726,7 @@ static BOOL userClearedTextField = NO;
     if(! self.displaySearchResults){
         //make this dynamic
         float maxCellHeight = [UIScreen mainScreen].bounds.size.height * 0.10;
-        
-        int minHeight = [AppEnvironmentConstants minimumSongCellHeight];
-        int height = [AppEnvironmentConstants preferredSongCellHeight] * 0.75;
-        if(height < minHeight)
-            height = minHeight;
+        int height = [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel];
         if(height > maxCellHeight)
             height = maxCellHeight;
         

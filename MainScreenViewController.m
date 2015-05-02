@@ -431,6 +431,8 @@ short const dummyTabIndex = 2;
     [self.tabBar removeFromSuperview];
     [self.tabBarView removeFromSuperview];
     
+    UITabBarItem *currentTabBarItem = self.tabBar.selectedItem;
+    NSUInteger currentTabBarItemIndex = [self.tabBarItems indexOfObjectIdenticalTo:currentTabBarItem];
     self.tabBarView = [[UIView alloc] init];
     self.tabBar = [[UITabBar alloc] init];
     self.tabBar.delegate = self;
@@ -482,6 +484,8 @@ short const dummyTabIndex = 2;
     }
     
     [self setTabBarItems];
+    //restore selected tab bar item.
+    [self.tabBar setSelectedItem:self.tabBarItems[currentTabBarItemIndex]];
 }
 
 #pragma nav bar helper

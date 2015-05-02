@@ -251,18 +251,7 @@ static AFDropdownNotification *notification;
 
 + (void)launchAlertViewWithDialogUsingTitle:(NSString *)title andMessage:(NSString *)msg
 {
-    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:title
-                                                      message:msg
-                                                     delegate:self
-                                            cancelButtonTitle:@"OK"
-                                              avoidDuplicates:YES];
-    
-    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
-    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.normalButtonFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
-    alert.buttonTextColor = [UIColor defaultAppColorScheme];
-    [alert show];
+
 }
 
 

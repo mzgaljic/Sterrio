@@ -7,6 +7,7 @@
 //
 
 #import "CoreDataErrorViewController.h"
+#import "SDCAlertView.h"
 
 @interface CoreDataErrorViewController ()
 {

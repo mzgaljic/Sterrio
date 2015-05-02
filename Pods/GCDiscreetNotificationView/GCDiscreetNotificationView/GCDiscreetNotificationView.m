@@ -20,6 +20,11 @@ NSString* const GCDiscreetNotificationViewTextKey = @"text";
 NSString* const GCDiscreetNotificationViewActivityKey = @"activity";
 
 @interface GCDiscreetNotificationView ()
+{
+    NSString *boldFontSetByProgrammer;
+}
+@end
+@interface GCDiscreetNotificationView ()
 
 @property (nonatomic, readonly) CGPoint showingCenter;
 @property (nonatomic, readonly) CGPoint hidingCenter;
@@ -78,6 +83,11 @@ NSString* const GCDiscreetNotificationViewActivityKey = @"activity";
         self.animating = NO;
     }
     return self;
+}
+
+- (void)setBoldTextFontName:(NSString *)fontName
+{
+    boldFontSetByProgrammer = fontName;
 }
 
 - (void)dealloc {
@@ -271,7 +281,7 @@ NSString* const GCDiscreetNotificationViewActivityKey = @"activity";
     if (label == nil) {
         label = [[UILabel alloc] init];
         
-        label.font = [UIFont boldSystemFontOfSize:15.0];
+        label.font = [UIFont fontWithName:boldFontSetByProgrammer size:15];
         label.textColor = [UIColor whiteColor];
         label.shadowColor = [UIColor blackColor];
         label.shadowOffset = CGSizeMake(0, 1);

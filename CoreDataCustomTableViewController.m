@@ -217,7 +217,8 @@ typedef enum{
     //multi lines strings ARE possible, this is just a weird api detail
     label.numberOfLines = 0;
     label.textAlignment = NSTextAlignmentCenter;
-    label.font = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+    int fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+    label.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName] size:fontSize];
     [label sizeToFit];
     return label;
 }

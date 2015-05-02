@@ -65,6 +65,7 @@
     
     //self.selectedSongIds = nil;
     //self.existingPlaylistSongs = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"%@ dealloced!", NSStringFromClass([self class]));
 }
 
@@ -77,8 +78,18 @@
         self.searchBarDataSourceDelegate = delegate;
         //if(type == SONG_DATA_SRC_TYPE_Playlist_MultiSelect)
         //    self.selectedSongIds = [NSMutableArray array];
+        
+        [self setupAppThemeColorObserver];
     }
     return self;
+}
+
+- (void)setupAppThemeColorObserver
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateCellsDueToAppThemeChange)
+                                                 name:@"app theme color has possibly changed"
+                                               object:nil];
 }
 
 #pragma mark - Overriding functionality
@@ -167,8 +178,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //text only cells, reduce height a bit
-    return [AppEnvironmentConstants preferredSongCellHeight];
+    return [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel];
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -547,6 +557,16 @@
 }
 
 #pragma mark - Other Helpers
+- (void)updateCellsDueToAppThemeChange
+{
+    NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
+    if(visiblePaths.count > 0){
+        [self.tableView beginUpdates];
+        [self.tableView reloadRowsAtIndexPaths:visiblePaths withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView endUpdates];
+    }
+}
+
 - (NSUInteger)numObjectsInTable
 {
     if(self.displaySearchResults)

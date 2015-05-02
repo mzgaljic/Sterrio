@@ -14,6 +14,7 @@
 #import "MySearchBar.h"
 #import "PlayableBaseDataSource.h"
 #import "playableDataSearchDataSourceDelegate.h"
+#import "AllSongsDataSource.h"
 
 @interface PlayableDataSearchDataSource ()
 {
@@ -123,7 +124,8 @@
     searchBar.text = @"";
     [searchBar resignFirstResponder];
     [self.modelDataSourceSearchBarDelegate searchBarIsBecomingInactive];
-    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:[NSNumber numberWithBool:NO]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated
+                                                        object:@NO];
     
     [self removeEmptyTableUserMessage];
     [self.tableView reloadData];

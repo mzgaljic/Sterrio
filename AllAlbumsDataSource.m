@@ -67,6 +67,7 @@
     
     //self.selectedSongIds = nil;
     //self.existingPlaylistSongs = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"%@ dealloced!", NSStringFromClass([self class]));
 }
 
@@ -79,6 +80,7 @@
         self.searchBarDataSourceDelegate = delegate;
         //if(type == SONG_DATA_SRC_TYPE_Playlist_MultiSelect)
         //    self.selectedSongIds = [NSMutableArray array];
+        [self setupAppThemeColorObserver];
     }
     return self;
 }
@@ -92,8 +94,18 @@
         stackController = [[StackController alloc] init];
         self.dataSourceType = type;
         self.searchBarDataSourceDelegate = delegate;
+        
+        [self setupAppThemeColorObserver];
     }
     return self;
+}
+
+- (void)setupAppThemeColorObserver
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateCellsDueToAppThemeChange)
+                                                 name:@"app theme color has possibly changed"
+                                               object:nil];
 }
 
 #pragma mark - Overriding functionality
@@ -167,10 +179,10 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         //Set up other aspects of the cell content.
         short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
         UIColor *appTheme = [[UIColor defaultAppColorScheme] lighterColor];
-        MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
-                                                                                   color:appTheme];
-        cell.editingAccessoryView = coloredDisclosureIndicator;
-        cell.accessoryView = coloredDisclosureIndicator;
+        MSCellAccessory *chevron = [MSCellAccessory accessoryWithType:flatIndicator
+                                                                color:appTheme];
+        cell.editingAccessoryView = chevron;
+        cell.accessoryView = chevron;
         
         //check if a song in this album is the now playing song
         BOOL albumHasNowPlaying = NO;
@@ -472,7 +484,6 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     UIColor *initialExpansionColor = [AppEnvironmentConstants expandingCellGestureInitialColor];
     NSIndexPath *cellPath = [self.tableView indexPathForCell:cell];
     __weak NSIndexPath *weakPath = cellPath;
-    __weak UITableView *weaktable = self.tableView;
     __weak AllAlbumsDataSource *weakSelf = self;
     
     if(direction == MGSwipeDirectionLeftToRight){
@@ -638,6 +649,16 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
 }
 
 #pragma mark - Miscellaneous
+- (void)updateCellsDueToAppThemeChange
+{
+    NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
+    if(visiblePaths.count > 0){
+        [self.tableView beginUpdates];
+        [self.tableView reloadRowsAtIndexPaths:visiblePaths withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView endUpdates];
+    }
+}
+
 - (NSUInteger)numObjectsInTable
 {
     if(self.displaySearchResults)

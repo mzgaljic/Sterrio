@@ -66,13 +66,9 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    int minHeight = [AppEnvironmentConstants minimumSongCellHeight];
-    int height = [AppEnvironmentConstants preferredSongCellHeight] * 0.75;
-    if(height < minHeight)
-        height = minHeight;
-    
-    currentRowHeights = height;
-    return height;
+    int rowHeight = [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel];
+    currentRowHeights = rowHeight;
+    return rowHeight;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
@@ -253,11 +249,11 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
     
     tableColorNames = @[
                         @"Vibrant Orange",
-                        @"Emerald Green",
+                        @"Forest Green",
                         @"Bubblegum Pink",
-                        @"Blue",
+                        @"Mighty Blue",
                         @"Purple",
-                        @"Yellow"
+                        @"Dandelion Yellow"
                         ];
     
     actualColors = @[

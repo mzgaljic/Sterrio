@@ -9,12 +9,13 @@
 #import "MasterPlaylistTableViewController.h"
 #import "AllPlaylistsDataSource.h"
 #import "PlayableBaseDataSource.h"
+#import "SDCAlertController.h"
 
 @interface MasterPlaylistTableViewController ()
 {
     CGRect originalTableViewFrame;
 }
-@property(nonatomic, strong) SDCAlertView *createPlaylistAlert;
+@property(nonatomic, strong) SDCAlertController *createPlaylistAlert;
 @property (nonatomic, strong) MySearchBar* searchBar;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
@@ -239,25 +240,68 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
 
 - (void)displayCreatePlaylistAlert
 {
-    _createPlaylistAlert = [[SDCAlertView alloc] init];
-    _createPlaylistAlert.alertViewStyle = SDCAlertViewStylePlainTextInput;
-    _createPlaylistAlert.title = @"New Playlist";
-    [_createPlaylistAlert textFieldAtIndex:0].placeholder = @"Name me";
-    int fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-    UIFont *normalFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:fontSize];
-    _createPlaylistAlert.textFieldFont = normalFont;
-    _createPlaylistAlert.normalButtonFont = normalFont;
-    _createPlaylistAlert.titleLabelFont = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
-                                                          size:fontSize];
-    _createPlaylistAlert.suggestedButtonFont = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
-                                                               size:fontSize];
-    _createPlaylistAlert.delegate = self;  //delgate of entire alertView
-    [_createPlaylistAlert addButtonWithTitle:@"Cancel"];
-    [_createPlaylistAlert addButtonWithTitle:@"Create"];
-    [_createPlaylistAlert textFieldAtIndex:0].delegate = self;  //delegate for the textField
-    [_createPlaylistAlert textFieldAtIndex:0].returnKeyType = UIReturnKeyDone;
-    _createPlaylistAlert.buttonTextColor = [UIColor defaultAppColorScheme];
-    [_createPlaylistAlert show];
+    __weak MasterPlaylistTableViewController *weakself = self;
+    _createPlaylistAlert = [SDCAlertController alertControllerWithTitle:@"New Playlist"
+                                                                message:nil
+                                                         preferredStyle:SDCAlertControllerStyleAlert];
+    
+    [_createPlaylistAlert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        int fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+        int minFontSize = 17;
+        if(fontSize < minFontSize)
+            fontSize = minFontSize;
+        UIFont *myFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:fontSize];
+        textField.font = myFont;
+        textField.placeholder = @"Name me";
+        textField.returnKeyType = UIReturnKeyDone;
+        textField.delegate = weakself;  //delegate for the textField
+        [textField addTarget:weakself
+                      action:@selector(alertTextFieldTextHasChanged:)
+            forControlEvents:UIControlEventEditingChanged];
+    }];
+    [_createPlaylistAlert addAction:[SDCAlertAction actionWithTitle:@"Cancel"
+                                                              style:SDCAlertActionStyleDefault
+                                                            handler:^(SDCAlertAction *action) {
+                                                                //dont do anything
+                                                                currentAlertTextFieldText = @"";
+                                                                return;
+                                                            }]];
+    SDCAlertAction *createAction = [SDCAlertAction actionWithTitle:@"Create"
+                                                             style:SDCAlertActionStyleRecommended
+                                                           handler:^(SDCAlertAction *action) {
+                                                               [weakself handleCreateAlertButtonActionWithPlaylistName:currentAlertTextFieldText];
+                                                               currentAlertTextFieldText = @"";
+                                                           }];
+    createAction.enabled = NO;
+    [_createPlaylistAlert addAction:createAction];
+    _createPlaylistAlert.view.tintColor = [UIColor defaultAppColorScheme];
+    [_createPlaylistAlert presentWithCompletion:nil];
+}
+
+static NSString *currentAlertTextFieldText;
+- (void)alertTextFieldTextHasChanged:(UITextField *)sender
+{
+    if (_createPlaylistAlert)
+    {
+        currentAlertTextFieldText = sender.text;
+        
+        NSString *tempString = [currentAlertTextFieldText copy];
+        tempString = [tempString removeIrrelevantWhitespace];
+        BOOL enableCreateButton = (tempString.length != 0);
+        UIAlertAction *createAction = _createPlaylistAlert.actions.lastObject;
+        createAction.enabled = enableCreateButton;
+    }
+}
+
+- (void)handleCreateAlertButtonActionWithPlaylistName:(NSString *)playlistName
+{
+    playlistName = [playlistName removeIrrelevantWhitespace];
+    
+    if(playlistName.length == 0)  //was all whitespace, or user gave us an empty string
+        return;
+    
+    Playlist *myNewPlaylist = [Playlist createNewPlaylistWithName:playlistName inManagedContext:[CoreDataManager context]];
+    [self performSegueWithIdentifier:@"playlistSongPickerSegue" sender:myNewPlaylist];
 }
 
 - (void)tabBarAddButtonPressed
@@ -265,52 +309,13 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
     [self displayCreatePlaylistAlert];
 }
 
-- (void)alertView:(SDCAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if(alertView == _createPlaylistAlert){
-        if(buttonIndex == 1){
-            NSString *playlistName = [alertView textFieldAtIndex:0].text;
-            playlistName = [playlistName removeIrrelevantWhitespace];
-            
-            if(playlistName.length == 0)  //was all whitespace, or user gave us an empty string
-                return;
-            
-            Playlist *myNewPlaylist = [Playlist createNewPlaylistWithName:playlistName inManagedContext:[CoreDataManager context]];
-            [self performSegueWithIdentifier:@"playlistSongPickerSegue" sender:myNewPlaylist];
-        }
-        else  //canceled
-            return;
-    }
-}
-
 - (BOOL)textFieldShouldReturn:(UITextField *)alertTextField
 {
-    NSString *playlistName = alertTextField.text;
-    if(playlistName.length == 0){
-        [alertTextField resignFirstResponder];  //dismiss keyboard.
-        [_createPlaylistAlert dismissWithClickedButtonIndex:0 animated:YES];  //dismisses alertView
-        return NO;
-    }
-    int numSpaces = 0;
-    for(int i = 0; i < playlistName.length; i++){
-        if([playlistName characterAtIndex:i] == ' ')
-            numSpaces++;
-    }
-    if(numSpaces == playlistName.length){
-        //playlist can't be all whitespace.
-        [alertTextField resignFirstResponder];  //dismiss keyboard.
-        [_createPlaylistAlert dismissWithClickedButtonIndex:0 animated:YES];  //dismisses alertView
-        return NO;
-    }
-    
-    //create the playlist
-    Playlist *myNewPlaylist = [Playlist createNewPlaylistWithName:playlistName inManagedContext:[CoreDataManager context]];
-    
-    [alertTextField resignFirstResponder];  //dismiss keyboard.
-    [_createPlaylistAlert dismissWithClickedButtonIndex:50 animated:YES];  //dismisses alertView, skip clickedButtonAtIndex method
-    
-    //now segue to modal view where user can pick songs for this playlist
-    [self performSegueWithIdentifier:@"playlistSongPickerSegue" sender:myNewPlaylist];
+    __weak MasterPlaylistTableViewController *weakself = self;
+    [_createPlaylistAlert dismissWithCompletion:^{
+        [weakself handleCreateAlertButtonActionWithPlaylistName:alertTextField.text];
+        currentAlertTextFieldText = @"";
+    }];
     
     return YES;
 }

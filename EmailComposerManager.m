@@ -8,7 +8,7 @@
 
 #import "EmailComposerManager.h"
 #import "PreferredFontSizeUtility.h"
-#import <SDCAlertView.h>
+#import "SDCAlertController.h"
 #import "UIDevice+DeviceName.h"
 #import "MRProgress.h"
 
@@ -160,29 +160,35 @@
             break;
     }
     
-    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:alertTitle
-                                             message:alertMessage
-                                            delegate:self
-                                   cancelButtonTitle:@"OK"
-                                   otherButtonTitles: nil];
-    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.buttonTextColor = [UIColor defaultAppColorScheme];
+    //this alert is self-dismissing
+    float secondsUntilAutoDismiss = 2.3;
+    SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:alertTitle
+                                                                    message:alertMessage
+                                                             preferredStyle:SDCAlertControllerStyleAlert];
+    alert.view.tintColor = [UIColor defaultAppColorScheme];
+    __block SDCAlertController *blockAlert = alert;
     
     if(self.attachedImage){
         //dismiss BOTH photo picker and mail composer.
         
         [controller.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:^{
             if(showEmailAlertView)
-                [alert show];
+                [blockAlert presentWithCompletion:^{
+                    [blockAlert performSelector:@selector(dismissWithCompletion:)
+                                     withObject:nil
+                                     afterDelay:secondsUntilAutoDismiss];
+                }];
         }];
     }
     else
         //just dismiss the mail composer, photo picker wasnt used.
         [controller dismissViewControllerAnimated:YES completion:^{
             if(showEmailAlertView)
-                [alert show];
+                [blockAlert presentWithCompletion:^{
+                    [blockAlert performSelector:@selector(dismissWithCompletion:)
+                                     withObject:nil
+                                     afterDelay:secondsUntilAutoDismiss];
+                }];
         }];
 }
 
@@ -251,7 +257,7 @@
 
 #pragma mark - Photo Picker Delegate stuff
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
-{
+{    
     UIImage *img = [info objectForKey:UIImagePickerControllerOriginalImage];
     if(img != nil){
         self.attachedImage = img;

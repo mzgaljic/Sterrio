@@ -8,22 +8,17 @@
 
 #import <Foundation/Foundation.h>
 #import "AppEnvironmentConstants.h"
-#import "Song.h"
-#import "Album.h"
-#import "Playlist.h"
-#import "Artist.h"
-#import "UIDevice+DeviceName.h"
-#import "SDWebImageManager.h"
 
 static const short APP_LAUNCHED_ALREADY = 1;
 static const short APP_LAUNCHED_FIRST_TIME = 0;
 
 @interface AppDelegateSetupHelper : NSObject
 
-+ (void)setAppSettingsAppLaunchedFirstTime:(BOOL)firstTime;
++ (void)loadUsersSettingsFromNSUserDefaults;
++ (void)setGlobalFontsAndColorsForAppGUIComponents;
 + (void)logGlobalAppTintColor;
 
-//+ (void)reduceEncryptionStrengthOnRelevantDirs;
++ (void)reduceEncryptionStrengthOnRelevantDirs __attribute__((deprecated));
 + (void)setupDiskAndMemoryWebCache;
 + (BOOL)appLaunchedFirstTime;
 

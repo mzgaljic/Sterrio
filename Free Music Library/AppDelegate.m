@@ -72,23 +72,21 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [AppDelegateSetupHelper setupDiskAndMemoryWebCache];
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     
-    [self setGlobalFontsAndColors];
-    
     BOOL appLaunchedFirstTime = [AppDelegateSetupHelper appLaunchedFirstTime];
-    [AppDelegateSetupHelper setAppSettingsAppLaunchedFirstTime:appLaunchedFirstTime];
+    [AppDelegateSetupHelper loadUsersSettingsFromNSUserDefaults];
     
     if(appLaunchedFirstTime){
         //do stuff that you'd want to see the first time you launch!
         [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
-        //[AppDelegateSetupHelper reduceEncryptionStrengthOnRelevantDirs];
     }
+    
     
     [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY
                                                forKey:APP_ALREADY_LAUNCHED_KEY];
     
-    [self setupMainVC];
-    
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    [AppDelegateSetupHelper setGlobalFontsAndColorsForAppGUIComponents];
+    [self setupMainVC];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(startupBackgroundTask)
@@ -99,52 +97,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
                                                  name:MZInitAudioSession
                                                object:nil];
     return YES;
-}
-
-- (void)setGlobalFontsAndColors
-{
-    //set global default "AppColorScheme"
-    self.window.tintColor = [UIColor whiteColor];
-    //vibrant orange
-    [UIColor defaultAppColorScheme:Rgb2UIColor(240, 110, 50)];
-    
-    //cancel button color of all uisearchbars
-    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
-     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             [[UIColor defaultAppColorScheme] lighterColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
-    
-    //tab bar font
-    UIFont *tabBarFont = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
-                                         size:10];
-    [[UITabBarItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:tabBarFont, NSFontAttributeName, nil] forState:UIControlStateNormal];
-    
-    UIFont *barButtonFonts = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:17];
-    NSDictionary *barButtonAttributes = @{
-                                        NSForegroundColorAttributeName : [UIColor defaultWindowTintColor],
-                                        NSFontAttributeName : barButtonFonts
-                                            };
-    
-    //toolbar button colors
-    [[UIBarButtonItem appearanceWhenContainedIn:[UIToolbar class], nil]
-     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             [[UIColor defaultAppColorScheme] lighterColor],
-                             NSForegroundColorAttributeName,
-                             barButtonFonts, NSFontAttributeName, nil] forState:UIControlStateNormal];
-    
-    //nav bar attributes
-    UIFont *navBarFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:20];
-    NSDictionary *navBarTitleAttributes = @{
-                                       NSForegroundColorAttributeName : [UIColor defaultWindowTintColor],
-                                       NSFontAttributeName : navBarFont
-                                       };
-    [[UINavigationBar appearance] setTitleTextAttributes:navBarTitleAttributes];
-    [[UIBarButtonItem appearance] setTitleTextAttributes:barButtonAttributes
-                                                forState:UIControlStateNormal];
-    //search bar cancel button font
-    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTitleTextAttributes:@{NSFontAttributeName:barButtonFonts} forState:UIControlStateNormal];
-    
-    //particulary useful for alert views.
-    [[UITextField appearance] setTintColor:[UIColor darkGrayColor]];
 }
 
 - (void)printUIColorRGBValuesForColor:(UIColor *)aColor

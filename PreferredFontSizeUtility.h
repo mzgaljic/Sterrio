@@ -15,4 +15,6 @@
 + (float)hypotheticalLabelFontSizeForPreferredSize:(int)aSongCellHeight;
 + (float)actualDetailLabelFontSizeFromCurrentPreferredSize;
 
++ (float)recommendedRowHeightForCellWithSingleLabel;
+
 @end

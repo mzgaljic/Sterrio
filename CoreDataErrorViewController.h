@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <MessageUI/MessageUI.h>
 #import "UIDevice+DeviceName.h"
-#import <SDCAlertView.h>
+#import "SDCAlertController.h"
 #import "PreferredFontSizeUtility.h"
 #import "CoreDataManager.h"
 

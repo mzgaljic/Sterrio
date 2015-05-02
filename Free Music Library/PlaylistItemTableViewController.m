@@ -100,6 +100,12 @@
 
 - (void)presentCenterButtonAnimated
 {
+    if(dismissingCenterBtnInProgress){
+        [self.centerButton removeFromSuperview];
+        self.centerButton = nil;
+        dismissingCenterBtnInProgress = NO;
+    }
+    
     UINavigationController *parentNav = (UINavigationController *)self.parentViewController;
     MainScreenViewController *mainVc = (MainScreenViewController *)parentNav.parentViewController;
     UIImage *img = mainVc.centerButtonImg;
@@ -120,6 +126,9 @@
                                  btnDiameter,
                                  btnDiameter);
     self.centerButton.frame = beginFrame;
+    [self.centerButton setBackgroundColor:[UIColor whiteColor]];
+    float cornerRadius = self.centerButton.frame.size.height / 2;
+    [self.centerButton.layer setCornerRadius:cornerRadius];
     [self.view addSubview:self.centerButton];
     [UIView animateWithDuration:0.5
                           delay:0
@@ -130,6 +139,29 @@
                          self.centerButton.frame = endFrame;
                      }
                      completion:nil];
+}
+
+static BOOL dismissingCenterBtnInProgress = NO;
+- (void)dismissCenterButtonAnimated
+{
+    CGRect currentRect = self.centerButton.frame;
+    CGRect moveOffScreen = CGRectMake(currentRect.origin.x,
+                                      currentRect.origin.y + MZTabBarHeight,
+                                      currentRect.size.width,
+                                      currentRect.size.height);
+    dismissingCenterBtnInProgress = YES;
+    [UIView animateWithDuration:0.5
+                          delay:0
+         usingSpringWithDamping:0.8
+          initialSpringVelocity:1
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         self.centerButton.frame = moveOffScreen;
+                     } completion:^(BOOL finished) {
+                         [self.centerButton removeFromSuperview];
+                         self.centerButton = nil;
+                         dismissingCenterBtnInProgress = NO;
+                     }];
 }
 
 #pragma mark - Table View Data Source
@@ -376,7 +408,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     if(self.tableView.editing)
     {
-        [self.navBar setRightBarButtonItems:_originalRightBarButtonItems animated:YES];
+        [self.navBar setRightBarButtonItems:_originalRightBarButtonItems animated:NO];
         [self.navBar setLeftBarButtonItems:_originalLeftBarButtonItems animated:YES];
         
         _originalLeftBarButtonItems = nil;
@@ -400,6 +432,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             [blockSelf setFetchedResultsControllerAndSortStyle];
             [blockSelf.tableView reloadData];
         });
+        
+        [self presentCenterButtonAnimated];
     }
     else
     {
@@ -409,8 +443,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             [self setUpUITextField];
             [self.tableView setEditing:YES animated:YES];
             [self setEditing:self.tableView.editing animated:YES];
-        } completion:^(BOOL finished) {
-        }];
+        } completion:nil];
+        
+        [self dismissCenterButtonAnimated];
     }
     [self setNeedsStatusBarAppearanceUpdate];
 }
@@ -470,7 +505,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     //purposely using huge width...making sure its always as big as possible on screen.
     _txtField = [[UITextField alloc] initWithFrame :CGRectMake(15, 100, self.view.frame.size.width - (65), 27)];
     
-    [_txtField addTarget:self action:@selector(userTappedUITextField) forControlEvents:UIControlEventEditingDidBegin];
+    [_txtField addTarget:self
+                  action:@selector(userTappedUITextField)
+        forControlEvents:UIControlEventEditingDidBegin];
     
     _txtField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     _txtField.autoresizesSubviews = YES;
@@ -528,10 +565,61 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 
 #pragma mark - Rotation status bar methods
+static BOOL hidingCenterBtnAnimationComplete = YES;
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
+    hidingCenterBtnAnimationComplete = NO;
+    [UIView animateWithDuration:0.3
+                          delay:0
+         usingSpringWithDamping:1
+          initialSpringVelocity:1
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         self.centerButton.alpha = 0;
+                         [self.centerButton removeFromSuperview];
+                     } completion:^(BOOL finished) {
+                         hidingCenterBtnAnimationComplete = YES;
+                     }];
+    
     [self setNeedsStatusBarAppearanceUpdate];
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [self adjustCenterBtnFrameAfterRotation];
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+}
+
+- (void)adjustCenterBtnFrameAfterRotation
+{
+    int btnDiameter = self.centerButton.frame.size.height;
+    int viewWidth = self.view.frame.size.width;
+    int viewHeight = self.view.frame.size.height;
+    CGRect oldFrame = CGRectMake((viewWidth/2) - (btnDiameter/2),
+                                viewHeight,
+                                btnDiameter,
+                                btnDiameter);
+    CGRect newFrame = CGRectMake((viewWidth/2) - (btnDiameter/2),
+                                 viewHeight - MZTabBarHeight,
+                                 btnDiameter,
+                                 btnDiameter);
+    self.centerButton.frame = oldFrame;
+    
+    [UIView animateWithDuration:0.35
+                          delay:0
+         usingSpringWithDamping:0.55
+          initialSpringVelocity:0.3
+                        options:UIViewAnimationOptionAllowUserInteraction
+                     animations:^{
+                         if(! hidingCenterBtnAnimationComplete){
+                             [self.centerButton removeFromSuperview];
+                         }
+                         [self.view addSubview:self.centerButton];
+                         self.centerButton.alpha = 1;
+                         self.centerButton.frame = newFrame;
+                     }
+                     completion:nil];
 }
 
 - (BOOL)prefersStatusBarHidden

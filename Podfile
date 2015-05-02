@@ -1,6 +1,3 @@
-#UIAlertView clone, that allows for custom subviews...and larger fonts.
-pod 'SDCAlertView'
-
 #youtube id video url extractor
 pod 'XCDYouTubeKit'
 
@@ -40,12 +37,5 @@ pod 'Reachability'
 #needed for MRProgressView...dont ask lol.
 pod "AFNetworking"
 
-#used to create a "semi modal" segue/popup
-pod 'KNSemiModalViewController', '~> 0.3'
-
 #SSBouncyButton - a fancy animated text button with 2 states
 pod 'SSBouncyButton'
-
-#Bolts framework (used for very convenient async tasks)
-pod 'Bolts'
-

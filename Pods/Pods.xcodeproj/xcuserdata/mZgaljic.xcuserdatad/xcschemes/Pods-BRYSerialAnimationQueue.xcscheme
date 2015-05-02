@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0539216B07E46726044794A9"
+               BlueprintIdentifier = "47A456066ACBAC0CE551C40C"
                BuildableName = "libPods-BRYSerialAnimationQueue.a"
                BlueprintName = "Pods-BRYSerialAnimationQueue"
                ReferencedContainer = "container:Pods.xcodeproj">

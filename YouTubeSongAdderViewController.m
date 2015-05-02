@@ -8,7 +8,7 @@
 
 #import "YouTubeSongAdderViewController.h"
 #import "YouTubeVideoSearchService.h"
-
+#import "SDCAlertController.h"
 
 @interface YouTubeSongAdderViewController ()
 {
@@ -654,17 +654,15 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
 #pragma mark - AlertView
 - (void)launchAlertViewWithDialogTitle:(NSString *)title andMessage:(NSString *)message
 {
-    SDCAlertView *alert = [[SDCAlertView alloc] initWithTitle:title
-                                                      message:message
-                                                     delegate:self
-                                            cancelButtonTitle:@"OK"
-                                            otherButtonTitles:nil];
-    
-    alert.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
-    alert.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    alert.buttonTextColor = [UIColor defaultAppColorScheme];
-    [alert show];
+    SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
+                                                                    message:message
+                                                             preferredStyle:SDCAlertControllerStyleAlert];
+    SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK"
+                                                         style:SDCAlertActionStyleRecommended
+                                                       handler:nil];
+    [alert addAction:okAction];
+    alert.view.tintColor = [UIColor defaultAppColorScheme];
+    [alert presentWithCompletion:nil];
 }
 
 @end
