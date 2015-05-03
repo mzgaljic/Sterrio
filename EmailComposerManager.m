@@ -165,7 +165,6 @@
     SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:alertTitle
                                                                     message:alertMessage
                                                              preferredStyle:SDCAlertControllerStyleAlert];
-    alert.view.tintColor = [UIColor defaultAppColorScheme];
     __block SDCAlertController *blockAlert = alert;
     
     if(self.attachedImage){

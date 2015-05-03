@@ -231,7 +231,7 @@ static BOOL abortAsyncArtUpdate = NO;
     
     //save the array to disk (in case all of the tasks couldn't complete)
     [NSKeyedArchiver archiveRootObject:setOfLqAlbumArtItems toFile:archivePath];
-    NSLog(@"Updated %i LQ ALbum Art", counter);
+    NSLog(@"Updated %i LQ ALbum Art", (int)itemsToDelete.count);
 }
 
 - (NSArray *)highQualityThumbnailUrlsForYoutubeVideoId:(NSString *)videoId

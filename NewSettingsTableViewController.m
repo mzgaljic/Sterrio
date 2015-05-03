@@ -12,6 +12,7 @@
 #import "UIImage+colorImages.h"
 #import "PreferredFontSizeUtility.h"
 #import "IBActionSheet.h"
+#import "SDCAlertController.h"
 #import "EmailComposerManager.h"
 
 @interface NewSettingsTableViewController ()
@@ -40,12 +41,37 @@ NSString * const MUSIC_LIBRARY_SECTION_HEADER_TITLE = @"Library";
 
 #pragma mark - lifecycle
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(icloudSwitchMustBeTurnedOff)
+                                                 name:MZTurningOnIcloudFailed
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(icloudSwitchMustBeTurnedOn)
+                                                 name:MZTurningOffIcloudFailed
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(icloudSwitchMustBeTurnedOn)
+                                                 name:MZTurningOnIcloudSuccess
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(icloudSwitchMustBeTurnedOff)
+                                                 name:MZTurningOffIcloudSuccess
+                                               object:nil];
+}
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     [self.tableView reloadData];
     
     mailComposer = nil;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Table view data source
@@ -92,14 +118,20 @@ NSString * const MUSIC_LIBRARY_SECTION_HEADER_TITLE = @"Library";
         {
             cell.textLabel.text = @"iCloud Sync";
             cell.detailTextLabel.text = nil;
-            icloudSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+            if(icloudSwitch == nil){
+                icloudSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+                [icloudSwitch setOn:[AppEnvironmentConstants icloudSyncEnabled] animated:NO];
+                
+                [icloudSwitch addTarget:self
+                                 action:@selector(icloudSwitchToggled)
+                       forControlEvents:UIControlEventValueChanged];
+                
+                if([AppEnvironmentConstants isIcloudSwitchWaitingForActionToFinish])
+                    icloudSwitch.enabled = NO;
+            }
+            
             [icloudSwitch setOnTintColor:[[UIColor defaultAppColorScheme] lighterColor]];
             cell.accessoryView = icloudSwitch;
-            [icloudSwitch setOn:[AppEnvironmentConstants icloudSyncEnabled] animated:NO];
-            [icloudSwitch addTarget:self
-                             action:@selector(icloudSwitchToggled)
-                   forControlEvents:UIControlEventValueChanged];
-            
             UIImage *cloudImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
                                                                :[UIImage imageNamed:@"cloud"]];
             cell.imageView.image = cloudImg;
@@ -354,7 +386,63 @@ NSString * const MUSIC_LIBRARY_SECTION_HEADER_TITLE = @"Library";
 #pragma mark - Helpers
 - (void)icloudSwitchToggled
 {
-    [AppEnvironmentConstants set_iCloudSyncEnabled:icloudSwitch.isOn];
+    __block BOOL switchNowInOnState = icloudSwitch.isOn;
+    __block UISwitch *blockSwitch = icloudSwitch;
+    if(switchNowInOnState)
+    {
+        //this check is needed because sliding the switch back and forth before leaving it in
+        //its final state can casue some unexpected corner cases.
+        if(! [AppEnvironmentConstants icloudSyncEnabled]){
+            icloudSwitch.enabled = NO;
+        }
+        
+        [AppEnvironmentConstants set_iCloudSyncEnabled:switchNowInOnState];
+    }
+    else
+    {
+        //this check is needed because sliding the switch back and forth before leaving it in
+        //its final state can casue some unexpected corner cases.
+        if([AppEnvironmentConstants icloudSyncEnabled]){
+            icloudSwitch.enabled = NO;
+        }
+        
+        NSString *title = @"iCloud";
+        NSString *deviceName = [[UIDevice currentDevice] name];
+        NSString *message = [NSString stringWithFormat:@"This device (%@) is about to stop syncing with iCloud. Exisisting data in iCloud will not be affected.", deviceName];
+        SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
+                                                                        message:message
+                                                                 preferredStyle:SDCAlertControllerStyleAlert];
+        SDCAlertAction *stopSync = [SDCAlertAction actionWithTitle:@"Stop Syncing"
+                                                             style:SDCAlertActionStyleDestructive
+                                                           handler:^(SDCAlertAction *action) {
+                                                               [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+                                                                   [AppEnvironmentConstants set_iCloudSyncEnabled:switchNowInOnState];
+                                                               }];
+                                                           }];
+        SDCAlertAction *cancel = [SDCAlertAction actionWithTitle:@"Cancel"
+                                                           style:SDCAlertActionStyleRecommended
+                                                         handler:^(SDCAlertAction *action) {
+                                                             [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+                                                                 [blockSwitch setOn:YES animated:YES];
+                                                                 blockSwitch.enabled = YES;
+                                                             }];
+                                                         }];
+        [alert addAction:cancel];
+        [alert addAction:stopSync];
+        [alert presentWithCompletion:nil];
+    }
+}
+
+- (void)icloudSwitchMustBeTurnedOff
+{
+    icloudSwitch.enabled = YES;
+    [icloudSwitch setOn:NO animated:YES];
+}
+
+- (void)icloudSwitchMustBeTurnedOn
+{
+    icloudSwitch.enabled = YES;
+    [icloudSwitch setOn:YES animated:YES];
 }
 
 - (IBActionSheet *)actionSheetForBugFound

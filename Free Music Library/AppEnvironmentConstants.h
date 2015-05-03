@@ -97,6 +97,7 @@ typedef enum{
 + (void)setPreferredWifiStreamSetting:(short)resolutionValue;
 + (void)setPreferredCellularStreamSetting:(short)resolutionValue;
 
++ (BOOL)isIcloudSwitchWaitingForActionToFinish;
 + (BOOL)icloudSyncEnabled;
 + (void)set_iCloudSyncEnabled:(BOOL)enabled;
 

@@ -4,16 +4,15 @@
 //  The contents of this file are implicitly included at the beginning of every source file.
 //
 
-#import <Availability.h>  //An Apple class
+#import <Ensembles/Ensembles.h>
+
 #import <CSNotificationView.h>  //notification banners/alerts
 #import "MyAlerts.h"  //my custom class for displaying alerts from anywhere
 
 //helps to segue to video player view from anywhere,
 //determine aspect ratio for player based on width, etc.
 #import "SongPlayerViewDisplayUtility.h"
-
 #import "NowPlayingSong.h"
-
 #import "MZConstants.h"
 #import "UIColor+SystemTintColor.h"
 

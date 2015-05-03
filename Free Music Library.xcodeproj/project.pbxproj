@@ -88,6 +88,7 @@
 		87408ECC1AE4789C00267C3A /* Playlist.m in Sources */ = {isa = PBXBuildFile; fileRef = 87408ECB1AE4789C00267C3A /* Playlist.m */; };
 		87408ECF1AE4789D00267C3A /* Album.m in Sources */ = {isa = PBXBuildFile; fileRef = 87408ECE1AE4789D00267C3A /* Album.m */; };
 		87408ED21AE4789D00267C3A /* Artist.m in Sources */ = {isa = PBXBuildFile; fileRef = 87408ED11AE4789D00267C3A /* Artist.m */; };
+		8741B4DD1AF536B100AF2BBC /* EnsembleDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8741B4DC1AF536B100AF2BBC /* EnsembleDelegate.m */; };
 		8741C7CB1AF1767A00D39AB6 /* WifiPlaybackTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8741C7CA1AF1767A00D39AB6 /* WifiPlaybackTableViewController.m */; };
 		8741C7CE1AF1D92600D39AB6 /* AppThemeTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8741C7CD1AF1D92600D39AB6 /* AppThemeTableViewController.m */; };
 		87440EE81A9EC07300C4DDB8 /* OperationQueuesSingeton.m in Sources */ = {isa = PBXBuildFile; fileRef = 87440EE71A9EC07300C4DDB8 /* OperationQueuesSingeton.m */; };
@@ -396,6 +397,8 @@
 		87408ECE1AE4789D00267C3A /* Album.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Album.m; sourceTree = "<group>"; };
 		87408ED01AE4789D00267C3A /* Artist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Artist.h; sourceTree = "<group>"; };
 		87408ED11AE4789D00267C3A /* Artist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Artist.m; sourceTree = "<group>"; };
+		8741B4DB1AF536B100AF2BBC /* EnsembleDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EnsembleDelegate.h; path = "Free Music Library/EnsembleDelegate.h"; sourceTree = "<group>"; };
+		8741B4DC1AF536B100AF2BBC /* EnsembleDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EnsembleDelegate.m; path = "Free Music Library/EnsembleDelegate.m"; sourceTree = "<group>"; };
 		8741C7C91AF1767A00D39AB6 /* WifiPlaybackTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WifiPlaybackTableViewController.h; sourceTree = "<group>"; };
 		8741C7CA1AF1767A00D39AB6 /* WifiPlaybackTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WifiPlaybackTableViewController.m; sourceTree = "<group>"; };
 		8741C7CC1AF1D92600D39AB6 /* AppThemeTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppThemeTableViewController.h; sourceTree = "<group>"; };
@@ -960,6 +963,15 @@
 				8738E4CA1AE1EE0D00BA915F /* LICENSE asvalue tracking slider.txt */,
 			);
 			path = ASValueTrackingSlider;
+			sourceTree = "<group>";
+		};
+		8741B4DE1AF536F900AF2BBC /* Core Data Stuff */ = {
+			isa = PBXGroup;
+			children = (
+				8741B4DB1AF536B100AF2BBC /* EnsembleDelegate.h */,
+				8741B4DC1AF536B100AF2BBC /* EnsembleDelegate.m */,
+			);
+			name = "Core Data Stuff";
 			sourceTree = "<group>";
 		};
 		8744E9DB1AA7F07500CC6140 /* Viewing the playback queue */ = {
@@ -1635,6 +1647,7 @@
 		87FA13731A998AD400A1902F /* Singletons */ = {
 			isa = PBXGroup;
 			children = (
+				8741B4DE1AF536F900AF2BBC /* Core Data Stuff */,
 				871C2BEE1A97CAA0007A1DE5 /* NowPlayingSong.h */,
 				871C2BEF1A97CAA0007A1DE5 /* NowPlayingSong.m */,
 				87F575831AE9EB3800537471 /* PreviousPlaybackContext.h */,
@@ -1892,6 +1905,7 @@
 			files = (
 				871238251AF4673E00DEEDC4 /* SDCAlertViewBackgroundView.m in Sources */,
 				8756960E1AC4E9BE00ACF04E /* AllSongsDataSource.m in Sources */,
+				8741B4DD1AF536B100AF2BBC /* EnsembleDelegate.m in Sources */,
 				877C4BA7199FE4B800CE86BC /* Album+Utilities.m in Sources */,
 				8780134F199C854E004727A0 /* ExistingArtistPickerTableViewController.m in Sources */,
 				8712383B1AF4692F00DEEDC4 /* RBBAnimation.m in Sources */,

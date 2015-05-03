@@ -42,6 +42,12 @@ extern NSString * const MZUserCanTransitionToMainInterface;
 extern NSString * const MZUserFinishedWithReviewingSettings;
 extern NSString * const MZUserChangedFontSize;
 
+//icloud
+extern NSString * const MZTurningOnIcloudFailed;
+extern NSString * const MZTurningOffIcloudSuccess;
+extern NSString * const MZTurningOffIcloudFailed;
+extern NSString * const MZTurningOnIcloudSuccess;
+
 extern short const MZMinutesInAnHour;
 extern short const MZSecondsInAMinute;
 extern short const MZLongestCellularPlayableDuration;

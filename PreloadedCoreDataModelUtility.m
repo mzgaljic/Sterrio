@@ -52,6 +52,7 @@ static NSInteger const SONG7_DURATION = 137;
 + (void)createCoreDataSampleMusicData
 {
     BOOL importHugeDataSetForTesting = NO;
+    BOOL importSmallSampleDataSetOnInitialLaunch = NO;
     
     NSManagedObjectContext *context = [CoreDataManager context];
     if(importHugeDataSetForTesting){
@@ -89,6 +90,9 @@ static NSInteger const SONG7_DURATION = 137;
         [[CoreDataManager sharedInstance] saveContext];
     }
     else{
+        if(! importSmallSampleDataSetOnInitialLaunch)
+            return;
+        
         [PreloadedCoreDataModelUtility createSongWithName:SONG1_NAME
                                              byArtistName:ARTIST1_NAME
                                          partOfAlbumNamed:ALBUM1_NAME

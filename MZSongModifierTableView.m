@@ -463,13 +463,11 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 }
                 
                 //save song into library
-                BOOL saved = YES;
                 NSError *error;
                 [self.theDelegate performCleanupBeforeSongIsSaved:_songIAmEditing];
                 
                 if ([[CoreDataManager context] save:&error] == NO) {
                     //save failed
-                    saved = NO;
                     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveHasFailed];
                 }
                 else
@@ -479,6 +477,16 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                         [LQAlbumArtBackgroundUpdater downloadHqAlbumArtWhenConvenientForSongId:_songIAmEditing.song_id];
                         [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
                     }
+                    
+                    //now lets go the extra mile and try to merge here.
+                    CDEPersistentStoreEnsemble *ensemble = [[CoreDataManager sharedInstance] ensembleForMainContext];
+                    [ensemble mergeWithCompletion:^(NSError *error) {
+                        if(error){
+                            NSLog(@"Saved, but couldnt merge.");
+                        } else{
+                            NSLog(@"Just Merged after save.");
+                        }
+                    }];
                 }
                 
             }  //end 'creatingNewSong'

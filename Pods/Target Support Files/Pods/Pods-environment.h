@@ -60,6 +60,18 @@
 #define COCOAPODS_VERSION_MINOR_CSNotificationView 5
 #define COCOAPODS_VERSION_PATCH_CSNotificationView 4
 
+// Ensembles
+#define COCOAPODS_POD_AVAILABLE_Ensembles
+#define COCOAPODS_VERSION_MAJOR_Ensembles 1
+#define COCOAPODS_VERSION_MINOR_Ensembles 3
+#define COCOAPODS_VERSION_PATCH_Ensembles 2
+
+// Ensembles/Core
+#define COCOAPODS_POD_AVAILABLE_Ensembles_Core
+#define COCOAPODS_VERSION_MAJOR_Ensembles_Core 1
+#define COCOAPODS_VERSION_MINOR_Ensembles_Core 3
+#define COCOAPODS_VERSION_PATCH_Ensembles_Core 2
+
 // FXImageView
 #define COCOAPODS_POD_AVAILABLE_FXImageView
 #define COCOAPODS_VERSION_MAJOR_FXImageView 1

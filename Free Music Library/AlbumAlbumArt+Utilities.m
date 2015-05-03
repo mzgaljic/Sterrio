@@ -154,7 +154,8 @@
         NSNumber *height = (NSNumber *)CFDictionaryGetValue(imageProperties, kCGImagePropertyPixelHeight);
         pixelSize = CGSizeMake([width intValue], [height intValue]);
         CFRelease(imageProperties);
-    }
+    } else
+        pixelSize = CGSizeMake(0, 0);
     CFRelease(imageSource);
     float scale = [UIScreen mainScreen].scale;
     CGSize pointSize = CGSizeMake(pixelSize.width/scale, pixelSize.height/scale);

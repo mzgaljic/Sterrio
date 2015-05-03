@@ -132,7 +132,7 @@
 	if (action.style & SDCAlertActionStyleDestructive) {
 		return [UIColor redColor];
 	} else {
-		return [[[UIView alloc] init] tintColor];
+		return [UIColor defaultAppColorScheme];
 	}
 }
 
@@ -141,6 +141,10 @@
     int minFontSize = 17;
     if(fontSize < minFontSize)
         fontSize = minFontSize;
+    
+    int maxFontSize = 22;
+    if(fontSize > maxFontSize)
+        fontSize = maxFontSize;
     
     UIFont *myFont;
 	if (action.style & SDCAlertActionStyleRecommended) {

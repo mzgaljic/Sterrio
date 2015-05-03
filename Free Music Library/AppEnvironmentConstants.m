@@ -9,6 +9,8 @@
 #import "AppEnvironmentConstants.h"
 #import "UIColor+LighterAndDarker.h"
 #import "AppDelegateSetupHelper.h"
+#import "CoreDataManager.h"
+#import "SDCAlertController.h"
 
 #import <CoreTelephony/CTCallCenter.h>
 #import <CoreTelephony/CTCall.h>
@@ -24,6 +26,8 @@ static BOOL isFirstTimeAppLaunched = NO;
 static BOOL whatsNewMsgIsNew = NO;
 static BOOL USER_EDITING_MEDIA = YES;
 static BOOL userIsPreviewingAVideo = NO;
+
+static BOOL isIcloudSwitchWaitingForActionToComplete = NO;
 
 static BOOL playbackTimerActive = NO;
 static NSInteger activePlaybackTimerThreadNum;
@@ -279,9 +283,154 @@ static NSLock *playbackTimerLock;
     return icloudSyncEnabled;
 }
 
++ (BOOL)isIcloudSwitchWaitingForActionToFinish
+{
+    return isIcloudSwitchWaitingForActionToComplete;
+}
+
+static int icloudEnabledCounter = 0;
 + (void)set_iCloudSyncEnabled:(BOOL)enabled
 {
+    icloudEnabledCounter++;
+    if(icloudEnabledCounter != 1){
+        //the icloud switch is disabled from touches (in interface) until the action
+        //succeeds or fails.
+        isIcloudSwitchWaitingForActionToComplete = YES;
+    }
+
+    if(enabled)
+        [AppEnvironmentConstants tryToLeechMainContextEnsemble];
+    else
+        [AppEnvironmentConstants tryToDeleechMainContextEnsemble];
+    
     icloudSyncEnabled = enabled;
+}
+
++ (void)tryToDeleechMainContextEnsemble
+{
+    CDEPersistentStoreEnsemble *ensemble =[[CoreDataManager sharedInstance] ensembleForMainContext];
+    if(! ensemble.isLeeched)
+        return;
+    
+    [ensemble deleechPersistentStoreWithCompletion:^(NSError *error) {
+        if(error)
+        {
+            //could not de-leech
+            NSString *message = @"A problem occured disabling iCloud sync.";
+            SDCAlertController *alert = [SDCAlertController alertControllerWithTitle:@"iCloud"
+                                                                             message:message
+                                                                      preferredStyle:SDCAlertControllerStyleAlert];
+            SDCAlertAction *ok = [SDCAlertAction actionWithTitle:@"OK"
+                                                           style:SDCAlertActionStyleDefault
+                                                         handler:^(SDCAlertAction *action) {
+                                                             [AppEnvironmentConstants notifyThatIcloudSyncFailedToDisable];
+                                                         }];
+            SDCAlertAction *tryAgain = [SDCAlertAction actionWithTitle:@"Try Again"
+                                                                 style:SDCAlertActionStyleRecommended
+                                                               handler:^(SDCAlertAction *action) {
+                                                                   [AppEnvironmentConstants tryToDeleechMainContextEnsemble];
+                                                               }];
+            [alert addAction:ok];
+            [alert addAction:tryAgain];
+            [alert performSelectorOnMainThread:@selector(presentWithCompletion:)
+                                    withObject:nil
+                                 waitUntilDone:NO];
+            
+            NSLog(@"De-leeched ensemble failed.");
+        }
+        else
+        {
+            [AppEnvironmentConstants notifyThatIcloudSyncSuccessfullyDisabled];
+            NSLog(@"De-leeched ensemble successfuly");
+        }
+        
+        isIcloudSwitchWaitingForActionToComplete = NO;
+    }];
+}
+
++ (void)tryToLeechMainContextEnsemble
+{
+    CDEPersistentStoreEnsemble *ensemble = [[CoreDataManager sharedInstance] ensembleForMainContext];
+    if(ensemble.isLeeched)
+        return;
+    
+    [ensemble leechPersistentStoreWithCompletion:^(NSError *error) {
+        if(error)
+        {
+            //could not leech
+            NSString *message = @"A problem occured enabling iCloud sync.";
+            SDCAlertController *alert = [SDCAlertController alertControllerWithTitle:@"iCloud"
+                                                                             message:message
+                                                                      preferredStyle:SDCAlertControllerStyleAlert];
+            SDCAlertAction *ok = [SDCAlertAction actionWithTitle:@"OK"
+                                                           style:SDCAlertActionStyleDefault
+                                                         handler:^(SDCAlertAction *action) {
+                                                             [AppEnvironmentConstants notifyThatIcloudSyncFailedToEnable];
+                                                         }];
+            SDCAlertAction *tryAgain = [SDCAlertAction actionWithTitle:@"Try Again"
+                                                                 style:SDCAlertActionStyleRecommended
+                                                               handler:^(SDCAlertAction *action) {
+                                                                   [AppEnvironmentConstants tryToLeechMainContextEnsemble];
+                                                               }];
+            [alert addAction:ok];
+            [alert addAction:tryAgain];
+            [alert performSelectorOnMainThread:@selector(presentWithCompletion:)
+                                    withObject:nil
+                                 waitUntilDone:NO];
+            
+            NSLog(@"Leeching ensemble failed.");
+        }
+        else
+        {
+            [AppEnvironmentConstants notifyThatIcloudSyncSuccessfullyEnabled];
+            NSLog(@"Leeched ensemble successfuly");
+            
+            //now lets go the extra mile and try to merge here.
+            CDEPersistentStoreEnsemble *ensemble = [[CoreDataManager sharedInstance] ensembleForMainContext];
+            [ensemble mergeWithCompletion:^(NSError *error) {
+                if(error){
+                    NSLog(@"Leeched successfully, but couldnt merge.");
+                } else{
+                    NSLog(@"Just merged successfully.");
+                }
+            }];
+        }
+        
+        isIcloudSwitchWaitingForActionToComplete = NO;
+    }];
+}
+
+#pragma mark - Notifying user interface about success or failure of icloud operations.
++ (void)notifyThatIcloudSyncFailedToEnable
+{
+    icloudSyncEnabled = NO;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZTurningOnIcloudFailed object:nil];
+    }];
+}
+
++ (void)notifyThatIcloudSyncFailedToDisable
+{
+    icloudSyncEnabled = YES;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZTurningOffIcloudFailed object:nil];
+    }];
+}
+
++ (void)notifyThatIcloudSyncSuccessfullyEnabled
+{
+    icloudSyncEnabled = YES;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZTurningOnIcloudSuccess object:nil];
+    }];
+}
+
++ (void)notifyThatIcloudSyncSuccessfullyDisabled
+{
+    icloudSyncEnabled = NO;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZTurningOffIcloudSuccess object:nil];
+    }];
 }
 
 + (void)setAppTheme:(UIColor *)appThemeColor

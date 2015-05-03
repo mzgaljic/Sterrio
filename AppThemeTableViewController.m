@@ -213,7 +213,8 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
     
     [operationQueue cancelAllOperations];
     __weak AppThemeTableViewController *weakself = self;
-    NSOperation *newOperation = [NSBlockOperation blockOperationWithBlock:^{
+    NSOperation *newOperation = nil;
+    newOperation = [NSBlockOperation blockOperationWithBlock:^{
         [weakself animateNavigationBarFromColor:oldColor
                                         toColor:newColor
                                        duration:0.5

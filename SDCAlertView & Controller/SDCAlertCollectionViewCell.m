@@ -58,7 +58,8 @@
 #pragma mark - User Interface
 
 - (void)tintColorDidChange {
-	self.textLabel.textColor = self.tintColor;
+    //disabled since it interfered with the destructive button text color!
+	//self.textLabel.textColor = self.tintColor;
 }
 
 - (void)updateWithAction:(SDCAlertAction *)action visualStyle:(id<SDCAlertControllerVisualStyle>)visualStyle {

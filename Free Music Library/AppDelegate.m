@@ -15,8 +15,10 @@
 {
     AVAudioSession *audioSession;
     UIBackgroundTaskIdentifier task;
+    UIBackgroundTaskIdentifier mergeEnsembleTask;
     
     BOOL backgroundTaskIsRunning;
+    BOOL ensembleBackgroundMergeIsRunning;
 }
 @end
 
@@ -96,26 +98,9 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
                                              selector:@selector(initAudioSession)
                                                  name:MZInitAudioSession
                                                object:nil];
+    
+    [[UIApplication sharedApplication]setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     return YES;
-}
-
-- (void)printUIColorRGBValuesForColor:(UIColor *)aColor
-{
-    UIColor *uicolor = aColor;
-    CGColorRef color = [uicolor CGColor];
-    
-    int numComponents = (int)CGColorGetNumberOfComponents(color);
-    
-    CGFloat red, green, blue, alpha;
-    if (numComponents == 4)
-    {
-        const CGFloat *components = CGColorGetComponents(color);
-        red = components[0];
-        green = components[1];
-        blue = components[2];
-        alpha = components[3];
-    }
-    NSLog(@"R: %f\nG:%f\nB:%f\nAlpha:%f", red, green, blue, alpha);
 }
 
 - (void)setupMainVC
@@ -179,7 +164,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 - (void)removePlayerSnapshot
 {
-    if(_playerSnapshot != nil){
+    if(_playerSnapshot.superview){
         if(! playerViewFadingBackOnScreen
            && [UIApplication sharedApplication].applicationState == UIApplicationStateActive){
             NSLog(@"removed old snapshot");
@@ -189,11 +174,37 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     }
 }
 
+//background fetch when app is inactive
+-(void)application:(UIApplication*)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    if(! [AppEnvironmentConstants icloudSyncEnabled]){
+        completionHandler(UIBackgroundFetchResultNoData);
+        return;
+    }
+    
+    CDEPersistentStoreEnsemble *ensemble = [[CoreDataManager sharedInstance] ensembleForMainContext];
+    if(! ensemble.isLeeched
+       || [AppEnvironmentConstants isUserEditingSongOrAlbumOrArtist])
+    {
+        completionHandler(UIBackgroundFetchResultNoData);
+        return;
+    }
+    
+    __weak CDEPersistentStoreEnsemble *weakEnsemble = ensemble;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"Ensembles is downloading new files (if any). Will merge on app launch.");
+        CDEICloudFileSystem *cloudFileSystem = (id)weakEnsemble.cloudFileSystem;
+        completionHandler(cloudFileSystem.bytesRemainingToDownload > 0 ?
+                          UIBackgroundFetchResultNewData : UIBackgroundFetchResultNoData);
+    });
+}
+
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     [self removePlayerFromPlayerLayer];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZAppWasBackgrounded object:nil];
     [self startupBackgroundTask];
+    [self attemptEnsembleMergeInBackgroundTaskIfAppropriate];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -203,12 +214,18 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [MusicPlaybackController resetNumberOfLongVideosSkippedOnCellularConnection];
     
     [self reattachPlayerToPlayerLayer];
+    
+    if(! ensembleBackgroundMergeIsRunning){
+        [self attemptEnsembleMergeInBackgroundTaskIfAppropriate];
+    }
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
 {
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
     [[SDImageCache sharedImageCache] clearMemory];
+    
+    [_playerSnapshot removeFromSuperview];
     _playerSnapshot = nil;
 }
 
@@ -272,9 +289,9 @@ static BOOL playerViewFadingBackOnScreen = NO;
 #pragma mark - AVAudio Player delegate stuff
 - (void)remoteControlReceivedWithEvent:(UIEvent *)event {
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    BOOL userCurrentlyOnCall = [AppEnvironmentConstants isUserCurrentlyOnCall];
     switch (event.subtype)
     {
-            BOOL userCurrentlyOnCall = [AppEnvironmentConstants isUserCurrentlyOnCall];
         case UIEventSubtypeRemoteControlTogglePlayPause:
             if([AppEnvironmentConstants isUserPreviewingAVideo])
                 [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerTogglePlayPause object:nil];
@@ -387,7 +404,7 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
             // • Update user interface
             // • AVAudioSessionInterruptionOptionShouldResume option
             if (interruptionOption.unsignedIntegerValue == AVAudioSessionInterruptionOptionShouldResume
-                && [AppEnvironmentConstants isUserCurrentlyOnCall])
+                && ![AppEnvironmentConstants isUserCurrentlyOnCall])
             {
                 // Here you should continue playback.
                 [MusicPlaybackController resumePlayback];
@@ -421,6 +438,45 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
 {
     PlayerView *view = [MusicPlaybackController obtainRawPlayerView];
     [view reattachLayerToPlayer];
+}
+
+- (void)attemptEnsembleMergeInBackgroundTaskIfAppropriate
+{
+    if(! [AppEnvironmentConstants icloudSyncEnabled])
+        return;
+    
+    CDEPersistentStoreEnsemble *ensemble = [[CoreDataManager sharedInstance] ensembleForMainContext];
+    if(! ensemble.isLeeched
+       || [AppEnvironmentConstants isUserEditingSongOrAlbumOrArtist])
+    {
+        return;
+    }
+    
+    mergeEnsembleTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:NULL];
+    ensembleBackgroundMergeIsRunning = YES;
+    
+    __weak CDEPersistentStoreEnsemble *weakEnsemble = ensemble;
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        NSManagedObjectContext *managedObjectContext = [CoreDataManager context];
+        
+        [managedObjectContext performBlock:^{
+            if (managedObjectContext.hasChanges) {
+                [managedObjectContext save:NULL];
+            }
+            
+            [weakEnsemble mergeWithCompletion:^(NSError *error) {
+                if(error){
+                   NSLog(@"Ensemble failed to merge in background.");
+                }
+                else{
+                    NSLog(@"Ensemble merged in background.");
+                }
+                
+                [[UIApplication sharedApplication] endBackgroundTask:mergeEnsembleTask];
+                ensembleBackgroundMergeIsRunning = NO;
+            }];
+        }];
+    });
 }
 
 - (void)startupBackgroundTask

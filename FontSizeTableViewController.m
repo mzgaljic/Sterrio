@@ -193,7 +193,7 @@ short const PREVIEW_SONG_SECTION_NUM = 1;
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
                                                    ascending:YES
                                                     selector:@selector(localizedStandardCompare:)];
-    
+    request.sortDescriptors = @[sortDescriptor];
     NSArray *songs = [context executeFetchRequest:request error:nil];
     if(songs.count > 0)
         return songs[0];

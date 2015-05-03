@@ -1,12 +1,16 @@
 #import "CoreDataManager.h"
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
+#import "EnsembleDelegate.h"
 
 //static instance for singleton implementation
 static CoreDataManager __strong *manager = nil;
 
 //Private instance methods/properties
 @interface CoreDataManager ()
+
+//Contains a strong reference to the delegate singleton.
+@property (nonatomic, strong) EnsembleDelegate *ensembleDelegate;
 
 // Returns the managed object context for the application.
 // If the context doesn't already exist, it is created and 
@@ -27,18 +31,25 @@ static CoreDataManager __strong *manager = nil;
 @property (readonly,strong,nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
 // Returns the URL to the application's core data sql directory.
-- (NSURL *)applicationSQLDirectory;
++ (NSURL *)applicationSQLDirectory;
 @end
 
 
 @implementation CoreDataManager
 static NSString *SQL_FILE_NAME = @"Muzic.sqlite";
-static NSString *MODEL_NAME = @"Model 1.0";
+static NSString *MODEL_NAME = @"Model";
 @synthesize managedObjectContext = __managedObjectContext;
 @synthesize backgroundManagedObjectContext = __backgroundManagedObjectContext;
 @synthesize backgroundManagedObjectModel = __backgroundManagedObjectModel;
 @synthesize managedObjectModel = __managedObjectModel;
 @synthesize persistentStoreCoordinator = __persistentStoreCoordinator;
+
+//------Ensemble Vars------
+static CDEICloudFileSystem *iCloudFileSystem;
+static CDEPersistentStoreEnsemble *ensemble;
+NSString * const ICLOUD_CONTAINER_ID = @"iCloud.com.MarkZgaljic.Free-Music-Library";
+NSString * const MAIN_STORE_ENSEMBLE_ID = @"MainStore";
+//---End of Ensemble Vars---
 
 //DataAccessLayer singleton instance shared across application
 + (id)sharedInstance
@@ -51,6 +62,7 @@ static NSString *MODEL_NAME = @"Model 1.0";
     return manager;
 }
 
+/*
 + (void)disposeInstance
 {
     @synchronized(self)
@@ -58,17 +70,126 @@ static NSString *MODEL_NAME = @"Model 1.0";
         manager = nil;
     }
 }
+ */
 
 + (NSManagedObjectContext *)context
+{    
+    CoreDataManager *singleton = [CoreDataManager sharedInstance];
+    BOOL coreDataStackIsBeingInitialized = (singleton.isMainThreadContextInitializedYet == NO);
+    
+    NSManagedObjectContext *context = [singleton managedObjectContext];
+    
+    if(coreDataStackIsBeingInitialized){
+        // Setup Ensemble
+        
+        iCloudFileSystem = [[CDEICloudFileSystem alloc]
+                           initWithUbiquityContainerIdentifier:ICLOUD_CONTAINER_ID];
+        
+        NSURL *storeURL = [[CoreDataManager applicationSQLDirectory] URLByAppendingPathComponent:SQL_FILE_NAME];
+        NSURL *modelURL = [[NSBundle mainBundle] URLForResource:MODEL_NAME withExtension:@"momd"];
+
+        ensemble = [[CDEPersistentStoreEnsemble alloc] initWithEnsembleIdentifier:MAIN_STORE_ENSEMBLE_ID
+                                                               persistentStoreURL:storeURL
+                                                            managedObjectModelURL:modelURL
+                                                                  cloudFileSystem:iCloudFileSystem];
+        singleton.ensembleDelegate = [EnsembleDelegate sharedInstance];
+        ensemble.delegate = singleton.ensembleDelegate;
+        
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+            [CoreDataManager performRelevantActionWithCoreDataInit];
+        }];
+    }
+    
+    return context;
+}
+
++ (void)performRelevantActionWithCoreDataInit
 {
-    NSAssert([NSThread isMainThread], @"This method is not in the main thread");
-    return [[CoreDataManager sharedInstance] managedObjectContext];
+    if (! ensemble.isLeeched && [AppEnvironmentConstants icloudSyncEnabled])
+    {
+        __block CDEPersistentStoreEnsemble *blockEnsemble = ensemble;
+        [ensemble leechPersistentStoreWithCompletion:^(NSError *error)
+         {
+             if (error){
+                 NSLog(@"Could not leech to ensemble: %@", error);
+             }
+             else
+             {
+                 NSLog(@"Ensemble leeched.");
+                 [blockEnsemble mergeWithCompletion:^(NSError *error)
+                  {
+                      if(error){
+                          NSLog(@"Merge failed");
+                      } else{
+                          NSLog(@"Merged.");
+                      }
+                  }];
+             }
+         }];
+    }
+    else if(ensemble.isLeeched && [AppEnvironmentConstants icloudSyncEnabled]){
+        [ensemble mergeWithCompletion:^(NSError *error) {
+            if(error){
+                NSLog(@"Merging failed.");
+            } else{
+                NSLog(@"Merged successfully.");
+            }
+        }];
+    }
 }
 
 + (NSManagedObjectContext *)backgroundThreadContext
 {
-    NSAssert(![NSThread isMainThread], @"This method is main thread");
     return [[CoreDataManager sharedInstance] backgroundThreadManagedObjectContext];
+}
+
+- (BOOL)isMainThreadContextInitializedYet
+{
+    return (__managedObjectContext == nil) ? NO : YES;
+}
+
+- (void)mergeEnsembleChangesIfAppropriate
+{
+    if([AppEnvironmentConstants icloudSyncEnabled])
+    {
+        if(ensemble.isLeeched)
+        {
+            [ensemble mergeWithCompletion:^(NSError *error)
+             {
+                 if(error){
+                     NSLog(@"Merge failed");
+                 } else{
+                     NSLog(@"Merged successfully.");
+                 }
+             }];
+        }
+        else
+        {
+            __block CDEPersistentStoreEnsemble *blockEnsemble = ensemble;
+            [ensemble leechPersistentStoreWithCompletion:^(NSError *error)
+             {
+                 if (error){
+                     NSLog(@"Could not leech to ensemble: %@", error);
+                 }
+                 else
+                 {
+                     [blockEnsemble mergeWithCompletion:^(NSError *error)
+                      {
+                          if(error){
+                              NSLog(@"Ensemble failed to merge.");
+                          } else{
+                              NSLog(@"Ensemble merged.");
+                          }
+                      }];
+                 }
+             }];
+        }
+    }
+}
+
+- (CDEPersistentStoreEnsemble *)ensembleForMainContext
+{
+    return ensemble;
 }
 
 //Saves the Data Model onto the DB
@@ -83,7 +204,16 @@ static NSString *MODEL_NAME = @"Model 1.0";
             //Need to come up with a better error management here.
             NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
             abort();
-        } 
+        } else{
+            //save succeeded. now lets go the extra mile and try to merge here.
+            [ensemble mergeWithCompletion:^(NSError *error) {
+                if(error){
+                    NSLog(@"Saved, but failed to merge.");
+                } else{
+                    NSLog(@"Saved and Merged.");
+                }
+            }];
+        }
     }
 }
 
@@ -100,6 +230,7 @@ static NSString *MODEL_NAME = @"Model 1.0";
     {
         __managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
         [__managedObjectContext setPersistentStoreCoordinator:coordinator];
+        [__managedObjectContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
         
         NSUndoManager *undoManager = [[NSUndoManager alloc] init];
         [__managedObjectContext setUndoManager:undoManager];
@@ -132,9 +263,12 @@ static NSString *MODEL_NAME = @"Model 1.0";
     if (__managedObjectModel != nil) 
         return __managedObjectModel;
 
-    //NSURL *modelURL = [[NSBundle mainBundle] URLForResource:MODEL_NAME withExtension:@"momd"];
-   // NSString *modelPath = [[NSBundle mainBundle] pathForResource:MODEL_NAME ofType:@"momd"];
-    __managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
+    //use this is problems occur with url.
+    //__managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
+    
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:MODEL_NAME withExtension:@"momd"];
+    __managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+    
     return __managedObjectModel;
 }
 
@@ -150,7 +284,7 @@ static NSString *MODEL_NAME = @"Model 1.0";
                                         NSInferMappingModelAutomaticallyOption:@YES,
                         NSFileProtectionKey:NSFileProtectionCompleteUntilFirstUserAuthentication
                                         };
-    NSURL *storeURL = [[self applicationSQLDirectory] URLByAppendingPathComponent:SQL_FILE_NAME];
+    NSURL *storeURL = [[CoreDataManager applicationSQLDirectory] URLByAppendingPathComponent:SQL_FILE_NAME];
     NSError *error = nil;
     
     // try to initialize persistent store coordinator with options defined below
@@ -172,7 +306,7 @@ static NSString *MODEL_NAME = @"Model 1.0";
 }
 
 // Returns the URL to the application's Library directory (original method returned documents dir)
-- (NSURL *)applicationSQLDirectory
++ (NSURL *)applicationSQLDirectory
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
@@ -193,6 +327,8 @@ static NSString *MODEL_NAME = @"Model 1.0";
 
 - (NSManagedObjectContext *)deleteOldStoreAndMakeNewOne
 {
+#warning if icloud enabled, deeleech here, and then re-leech once store is recreated.
+    
     //delete the old sqlite DB file
     NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString *coreDataFolder = [libPath stringByAppendingPathComponent:@"Core Data"];

@@ -37,7 +37,7 @@
 
 - (void)coreDataInitFail
 {
-    NSString *msg = @"It seems the database can no longer be read. It is likely there was a problem with a recent update, or the database became corrupted. Your music can't be loaded in the Apps current state. \n\nSorry about that.";
+    NSString *msg = @"It seems the database can no longer be read. It is likely there was a problem with a recent update, or the database has been corrupted. Your music can't be loaded in the Apps current state. \n\nSorry about that.";
     _alertView = [[SDCAlertView alloc] initWithTitle:@"Database Problem"
                                              message:msg
                                             delegate:self
@@ -64,12 +64,12 @@
         }
         else if(buttonIndex == 1)
         {
-            NSString *msg = @"Proceeding will erase ALL music within this App, and a new library will be created. \n\nThis is premanent.";
+            NSString *msg = @"Proceeding will erase ALL music on this device, and a new library will be created. \n\nThis is premanent.\n\nNote: If iCloud is enabled (and you have data saved in iCloud), your music will eventually be restored.";
             _alertView = [[SDCAlertView alloc] initWithTitle:@"CAUTION"
                                                      message:msg
                                                     delegate:self
                                            cancelButtonTitle:@"Quit the app"
-                                           otherButtonTitles: @"Delete my music", nil];
+                                           otherButtonTitles: @"Delete Local Music", nil];
             _alertView.titleLabelFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
             _alertView.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
             _alertView.normalButtonFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
@@ -123,7 +123,7 @@
         _alertView.tag = coreDataDBRecreatedAttemptAlertTag;
         [_alertView show];
     } else{
-        NSString *msg = @"Something went wrong recreating your library. There is a larger issue with your app, consider reinstalling it.";
+        NSString *msg = @"There was an issue recreating your library. There is a larger issue with your app, consider reinstalling it.";
         _alertView = [[SDCAlertView alloc] initWithTitle:@"Failure"
                                                  message:msg
                                                 delegate:self
@@ -163,23 +163,26 @@
 }
 
 // Displays an email composition interface inside the application. Populates all the Mail fields.
--(void)displayComposerModalView
+- (void)displayComposerModalView
 {
-    MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
+    MFMailComposeViewController *composer = [[MFMailComposeViewController alloc] init];
     
-    picker.navigationBar.tintColor = [UIColor standardIOS7PlusTintColor];
-    picker.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor defaultAppColorScheme]};
+    //tint of buttons
+    [composer.navigationBar setTintColor:[UIColor blackColor]];
     
-    picker.mailComposeDelegate = self;
+    //title color
+    composer.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor defaultAppColorScheme]};
+    
+    composer.mailComposeDelegate = self;
     NSString *emailSubject = @"CoreData DB init issue";
-    [picker setSubject:emailSubject];
+    [composer setSubject:emailSubject];
 
     // Set up recipients
-    [picker setToRecipients:@[MZEmailBugReport]];
-    [picker setMessageBody:[self buildEmailBodyString] isHTML:NO];
-    [self presentViewController:picker animated:YES completion: nil];
-    if(picker)
-        picker = nil;
+    [composer setToRecipients:@[MZEmailBugReport]];
+    [composer setMessageBody:[self buildEmailBodyString] isHTML:NO];
+    [self presentViewController:composer animated:YES completion: nil];
+    if(composer)
+        composer = nil;
 }
 
 - (NSString *)buildEmailBodyString
@@ -188,7 +191,7 @@
     NSString *buildNum = [UIDevice appBuildString];
     NSString *iosVersion = [[UIDevice currentDevice] systemVersion];
     NSString *deviceName = [UIDevice deviceName];
-    NSString *body = @"Please provide as much information as possible...\n\n\n\n\ntime&date\nApp Version: appVersion# (build build#)\niOS Version: iosVersion#\nDevice: deviceName#\n";
+    NSString *body = @"Please provide as much information as possible...\n\n\nIt's OK to get in touch with me if something is unclear: (Y/N)\n\n~Device/App Info~\ntime&date\nApp Version: appVersion# (build build#)\niOS Version: iosVersion#\nDevice: deviceName#\n";
     
     body = [body stringByReplacingOccurrencesOfString:@"time&date"
                                            withString:[self buildCurrentEstTimeString]];
@@ -228,7 +231,7 @@
         case MFMailComposeResultSaved:
             break;
         case MFMailComposeResultSent:
-            alertMessage = @"Your email is now being sent.You may or may not receive a response to your email.\nThank You!";
+            alertMessage = @"Your email is now being sent.\nSorry for the inconvenience!";
             break;
         case MFMailComposeResultFailed:
             alertMessage = @"Failed to send email.";

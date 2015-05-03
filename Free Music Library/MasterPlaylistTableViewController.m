@@ -274,7 +274,6 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
                                                            }];
     createAction.enabled = NO;
     [_createPlaylistAlert addAction:createAction];
-    _createPlaylistAlert.view.tintColor = [UIColor defaultAppColorScheme];
     [_createPlaylistAlert presentWithCompletion:nil];
 }
 

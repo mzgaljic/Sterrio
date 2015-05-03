@@ -377,7 +377,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
                                                          style:SDCAlertActionStyleRecommended
                                                        handler:nil];
     [alert addAction:okAction];
-    alert.view.tintColor = [UIColor defaultAppColorScheme];
     [self slightlyDelayPresentationOfAlertController:alert];
     
     [self showLoadingIndicatorInCenterOfTable:NO];
