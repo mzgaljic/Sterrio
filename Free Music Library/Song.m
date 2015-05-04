@@ -2,14 +2,14 @@
 //  Song.m
 //  Free Music Library
 //
-//  Created by Mark Zgaljic on 4/19/15.
+//  Created by Mark Zgaljic on 5/3/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
 #import "Song.h"
 #import "Album.h"
 #import "Artist.h"
-#import "Playlist.h"
+#import "PlaylistItem.h"
 #import "SongAlbumArt.h"
 
 
@@ -17,12 +17,12 @@
 
 @dynamic duration;
 @dynamic smartSortSongName;
-@dynamic song_id;
+@dynamic uniqueId;
 @dynamic songName;
 @dynamic youtube_id;
 @dynamic album;
-@dynamic artist;
-@dynamic playlistIAmIn;
 @dynamic albumArt;
+@dynamic artist;
+@dynamic playlistItems;
 
 @end

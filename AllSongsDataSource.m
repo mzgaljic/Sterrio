@@ -32,13 +32,6 @@
     cellReuseIdDetailLabelNull = [NSString stringWithFormat:@"%@_nilDetail", cellReuseId];
 }
 
-- (NSOrderedSet *)existingPlaylistSongs
-{
-    if(_existingPlaylistSongs == nil && _playlistSongAdderDelegate != nil)
-        _existingPlaylistSongs = [_playlistSongAdderDelegate existingPlaylistSongs];
-    return _existingPlaylistSongs;
-}
-
 - (void)setTableView:(UITableView *)tableView
 {
     _tableView = tableView;
@@ -174,7 +167,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             cell.detailTextLabel.enabled = YES;
             [cell setSelectionStyle:UITableViewCellSelectionStyleDefault];
             
-            if([_selectedSongIds containsObject:song.song_id])
+            if([_selectedSongIds containsObject:song.uniqueId])
                 [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
             else
                 [cell setAccessoryType:UITableViewCellAccessoryNone];
@@ -195,10 +188,25 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     // The code block will be run asynchronously in a last-in-first-out queue, so that when
     // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
     [stackController addBlock:^{
-        UIImage *albumArt;
+        __block UIImage *albumArt;
         if(weakSong){
-            if(weakSong.albumArt){
-                albumArt = [weakSong.albumArt imageFromImageData];
+            NSString *artObjId = weakSong.albumArt.uniqueId;
+            if(artObjId){
+                
+                //this is a background queue. fetch the object (image blob) using background context!
+                NSManagedObjectContext *context = [CoreDataManager stackControllerThreadContext];
+                NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"SongAlbumArt"];
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", artObjId];
+                request.predicate = predicate;
+                
+                [context performBlockAndWait:^{
+                    NSArray *result = [context executeFetchRequest:request error:nil];
+                    if(result.count == 1)
+                        albumArt = [result[0] imageFromImageData];
+                }];
+                
+                if(albumArt == nil)
+                    return;  //no art loaded lol.
             }
         }
         
@@ -340,24 +348,20 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         if([selectedCell accessoryType] == UITableViewCellAccessoryNone) //selected row
         {
             [selectedCell setAccessoryType:UITableViewCellAccessoryCheckmark];
-            [_selectedSongIds addObject:selectedSong.song_id];
+            [_selectedSongIds addObject:selectedSong.uniqueId];
             
             [self.playlistSongAdderDelegate setSuccessNavBarButtonStringValue:Done_String];
         }
         else
         {  //deselected row
             [selectedCell setAccessoryType:UITableViewCellAccessoryNone];
-            [_selectedSongIds removeObject:selectedSong.song_id];
-            PLAYLIST_STATUS status = [self.playlistSongAdderDelegate currentPlaylistStatus];
+            [_selectedSongIds removeObject:selectedSong.uniqueId];
             
-            if(_selectedSongIds.count == 0 && status == PLAYLIST_STATUS_In_Creation)
-                //only happens when playlist created from scratch
+            BOOL isUserCreatingNewPlaylist = [self.playlistSongAdderDelegate isUserCreatingPlaylistFromScratch];
+            
+            if(_selectedSongIds.count == 0 && isUserCreatingNewPlaylist)
                 [self.playlistSongAdderDelegate setSuccessNavBarButtonStringValue:AddLater_String];
-            
-            else if(_selectedSongIds.count == 0 && status == PLAYLIST_STATUS_Created_But_Empty)
-                [self.playlistSongAdderDelegate setSuccessNavBarButtonStringValue:@""];
-            
-            else if(_selectedSongIds.count == 0 && status == PLAYLIST_STATUS_Normal_Playlist)
+            else
                 [self.playlistSongAdderDelegate setSuccessNavBarButtonStringValue:@""];
         }
     }
@@ -519,7 +523,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (PlaybackContext *)contextForSpecificSong:(Song *)aSong
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"song_id == %@", aSong.song_id];
+    request.predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", aSong.uniqueId];
     //descriptor doesnt really matter here
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
                                                                      ascending:YES];
@@ -533,7 +537,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (Song *)songObjectGivenSongId:(NSString *)songId
 {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Song"];
-    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"song_id == %@", songId];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", songId];
     //descriptor doesnt really matter here
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
                                                                      ascending:YES];

@@ -251,8 +251,9 @@ static BOOL abortAsyncArtUpdate = NO;
     if(songId == nil)
         return nil;
     
+#warning this code should use performBlock: to ensure the calls are made on the contexts queue.
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Song"];
-    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"song_id == %@", songId];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", songId];
     //descriptor doesnt really matter here
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
                                                                      ascending:YES];

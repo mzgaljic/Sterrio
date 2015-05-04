@@ -12,41 +12,60 @@
 #import "MZTableViewCell.h"
 #import "AlbumAlbumArt+Utilities.h"
 #import "SongAlbumArt+Utilities.h"
+#import "PlaylistItem.h"
+#import "Song+Utilities.h"
 
 @interface PlaylistItemTableViewController()
 {
+    UILabel *tableViewEmptyMsgLabel;
     int numTimesViewWillAppearCalledSinceVcLoad;
 }
-@property (nonatomic, assign) int lastTableViewModelCount;
+
 @property (nonatomic, strong) UITextField *txtField;
-@property (nonatomic, assign) BOOL currentlyEditingPlaylistName;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) SSBouncyButton *centerButton;
+
+@property (nonatomic, strong) NSString *playbackContextUniqueId;
+@property (nonatomic, strong) NSString *emptyTableUserMessage;
+@property (nonatomic, strong) NSString *cellReuseId;
+@property (nonatomic, strong) PlaybackContext *playbackContext;
+
+@property (nonatomic, assign) BOOL currentlyEditingPlaylistName;
 @end
 
 @implementation PlaylistItemTableViewController
 @synthesize playlist = _playlist, txtField = _txtField;
 
 
-- (void) dealloc
+- (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@NO];
-    [super prepareFetchedResultsControllerForDealloc];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     stackController = nil;
+    self.playbackContext = nil;
+    self.emptyTableUserMessage = nil;
+    self.playbackContextUniqueId = nil;
+    self.centerButton = nil;
+    self.txtField = nil;
     _playlist = nil;
     _txtField = nil;
+    
+    
+    if(self.presentedViewController == nil){
+        //in case user leaves VC without explicitly leaving editing mode in the table.
+        [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:NO];
+    }
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     numTimesViewWillAppearCalledSinceVcLoad = 0;
-
+    
     //caution, updating this uniqueID logic means i MUST update the same logic in AllPlaylistsDataSource.
     NSMutableString *uniqueID = [NSMutableString string];
     [uniqueID appendString:NSStringFromClass([self class])];
-    [uniqueID appendString:self.playlist.playlist_id];
+    [uniqueID appendString:self.playlist.uniqueId];
     self.playbackContextUniqueId = uniqueID;
     
     self.emptyTableUserMessage = @"Playlist Empty";
@@ -56,25 +75,23 @@
     
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    [self setTableForCoreDataView:self.tableView];
     self.cellReuseId = @"playlistSongItemCell";
     
-    self.searchFetchedResultsController = nil;
-    [self setFetchedResultsControllerAndSortStyle];
-    
     stackController = [[StackController alloc] init];
-    self.tableView.allowsSelectionDuringEditing = YES;
+    self.tableView.allowsSelectionDuringEditing = NO;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(nowPlayingSongsHasChanged:)
                                                  name:MZNewSongLoading
                                                object:nil];
+    
+    [self initPlaybackContext];
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    _lastTableViewModelCount = (int)_playlist.playlistSongs.count;
     
     //set song/album details for currently selected song
     NSString *navBarTitle = _playlist.playlistName;
@@ -168,7 +185,7 @@ static BOOL dismissingCenterBtnInProgress = NO;
 static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    Song *song = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    Song *song = [self songForIndexPath:indexPath];
     
     MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
                                                              forIndexPath:indexPath];
@@ -209,9 +226,26 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     // The code block will be run asynchronously in a last-in-first-out queue, so that when
     // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
     [stackController addBlock:^{
-        UIImage *albumArt;
-        if(weakSong.albumArt){
-            albumArt = [weakSong.albumArt imageFromImageData];
+        __block UIImage *albumArt;
+        if(weakSong){
+            NSString *artObjId = weakSong.albumArt.uniqueId;
+            if(artObjId){
+                
+                //this is a background queue. fetch the object (image blob) using background context!
+                NSManagedObjectContext *context = [CoreDataManager stackControllerThreadContext];
+                NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"SongAlbumArt"];
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", artObjId];
+                request.predicate = predicate;
+                
+                [context performBlockAndWait:^{
+                    NSArray *result = [context executeFetchRequest:request error:nil];
+                    if(result.count == 1)
+                        albumArt = [result[0] imageFromImageData];
+                }];
+                
+                if(albumArt == nil)
+                    return;  //no art loaded lol.
+            }
         }
 
         // The block will be processed on a background Grand Central Dispatch queue.
@@ -238,17 +272,14 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             }
         });
     }];
+    
     cell.delegate = self;
     return cell;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //could also selectively choose which rows may be deleted here.
-    if(_lastTableViewModelCount == 0)
-        return NO;
-    else
-        return YES;
+    return YES;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -260,19 +291,44 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
-        [MusicPlaybackController songAboutToBeDeleted:[_playlist.playlistSongs objectAtIndex:indexPath.row] deletionContext:self.playbackContext];
+        Song *songToRemove = [self songForIndexPath:indexPath];
+        [MusicPlaybackController songAboutToBeDeleted:songToRemove deletionContext:self.playbackContext];
         
-        //remove song from playlist only (not song from library in general)
-        NSMutableOrderedSet *set = [NSMutableOrderedSet orderedSetWithOrderedSet:_playlist.playlistSongs];
-        [set removeObjectAtIndex:indexPath.row];
-        _playlist.playlistSongs = set;
+    
+        NSMutableSet *set = [NSMutableSet setWithSet:_playlist.playlistItems];
+        __block PlaylistItem *songsPlaylistItem;
+        NSNumber *songIndex = [NSNumber numberWithShort:indexPath.row];
+        
+        [set enumerateObjectsUsingBlock:^(PlaylistItem *item, BOOL *stop) {
+            //find the playlistItem corresponding to the EXACT song we are removing (taking
+            //multiple instances of the same song into account here).
+            
+            if([item.index isEqualToNumber:songIndex] && [item.song isEqualToSong:songToRemove]){
+                songsPlaylistItem = item;
+                *stop = YES;
+            }
+        }];
+        
+        [set removeObject:songsPlaylistItem];
+        _playlist.playlistItems = set;
         [[CoreDataManager sharedInstance] saveContext];
     }
 }
 
-- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section {
-    id <NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController.sections objectAtIndex:section];
-    return sectionInfo.numberOfObjects;
+- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section
+{
+    return _playlist.playlistItems.count;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    if(self.playlist.playlistItems.count == 0){
+        NSString *text = self.emptyTableUserMessage;
+        [self displayEmptyTableUserMessageWithText:text];
+    } else
+        [self removeEmptyTableUserMessage];
+    
+    return 1;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
@@ -282,20 +338,47 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
 {
-    NSMutableOrderedSet *set = [NSMutableOrderedSet orderedSetWithOrderedSet:_playlist.playlistSongs];
-    [set moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:fromIndexPath.row] toIndex:toIndexPath.row];
-    _playlist.playlistSongs = set;
+    NSMutableSet *set = [NSMutableSet setWithSet:_playlist.playlistItems];
+    Song *songBeingMoved = [self songForIndexPath:fromIndexPath];
+    
+    NSNumber *songIndex = [NSNumber numberWithShort:fromIndexPath.row];
+    __block PlaylistItem *songsPlaylistItem;
+    
+    [set enumerateObjectsUsingBlock:^(PlaylistItem *item, BOOL *stop) {
+        //find the playlistItem corresponding to the EXACT song we are moving (taking
+        //multiple instances of the same song into account here).
+        
+        if([item.index isEqualToNumber:songIndex] && [item.song isEqualToSong:songBeingMoved]){
+            songsPlaylistItem = item;
+            *stop = YES;
+        }
+    }];
+    
+    songsPlaylistItem.index = [NSNumber numberWithShort:toIndexPath.row];
+    _playlist.playlistItems = set;
     [[CoreDataManager sharedInstance] saveContext];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    if(self.editing)
-        return;
     
-    Song *selectedSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    Song *selectedSong = [self songForIndexPath:indexPath];
     [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext];
+}
+
+#pragma mark - Table Helpers
+- (Song *)songForIndexPath:(NSIndexPath *)indexPath
+{
+    NSSet *playlistItems = _playlist.playlistItems;
+    NSPredicate *extractItemAtThisIndex;
+    extractItemAtThisIndex = [NSPredicate predicateWithFormat:@"index == %i", indexPath.row];
+    NSSet *setWithPlaylistItem = [playlistItems filteredSetUsingPredicate:extractItemAtThisIndex];
+#warning fix this assert
+    //NSAssert(setWithPlaylistItem.count == 1, @"Fatal Error: Multiple PlaylistItems contain the same index within playlist: %@", _playlist.playlistName);
+    
+    PlaylistItem *myItem = [setWithPlaylistItem anyObject];
+    return myItem.song;
 }
 
 #pragma mark - MGSwipeTableCell delegates
@@ -316,8 +399,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     if(direction == MGSwipeDirectionLeftToRight){
         //queue
-        Song *song = [self.fetchedResultsController
-                        objectAtIndexPath:[self.tableView indexPathForCell:cell]];
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+        Song *song = [self songForIndexPath:indexPath];
         
         expansionSettings.fillOnTrigger = NO;
         expansionSettings.threshold = 1;
@@ -380,13 +463,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification
 {
-    if(self.playbackContext == nil)
-        return;
     Song *oldSong = (Song *)[notification object];
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
     Song *newSong = nowPlaying.nowPlaying;
     NSIndexPath *oldPath, *newPath;
     
+    //broken
+    /*
     //tries to obtain the path to the changed songs if possible.
     oldPath = [self.fetchedResultsController indexPathForObject:oldSong];
     newPath = [self.fetchedResultsController indexPathForObject:newSong];
@@ -401,6 +484,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                   withRowAnimation:UITableViewRowAnimationFade];
         [self.tableView endUpdates];
     }
+     */
 }
 
 #pragma mark - Button actions
@@ -419,26 +503,25 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         [self.navigationItem setHidesBackButton:NO animated:YES];
         _currentlyEditingPlaylistName = NO;
         
-        [UIView animateWithDuration:1 animations:^{
+        [UIView animateWithDuration:0.7 animations:^{
             self.navBar.titleView = nil;
             self.navBar.title = _playlist.playlistName;
         }];
         
-        //needed to avoid weird things happening after editing and re-ordering cell.
-        float delaySeconds = 0.3;
-        __block PlaylistItemTableViewController *blockSelf = self;
-        dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, delaySeconds * NSEC_PER_SEC);
-        dispatch_after(delayTime, dispatch_get_main_queue(), ^(void){
-            [blockSelf setFetchedResultsControllerAndSortStyle];
-            [blockSelf.tableView reloadData];
-        });
+        [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:NO];
+        
+        //needed to make sure the interface appears ok after re-ordering, etc.
+        //[self.tableView reloadData];
         
         [self presentCenterButtonAnimated];
     }
     else
     {
+        //things can get VERY screwy if merges occur while user is re-ordering their playlists songs.
+        [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:YES];
+        
         _currentlyEditingPlaylistName = YES;
-        [UIView animateWithDuration:1 animations:^{
+        [UIView animateWithDuration:0.7 animations:^{
             //allows for renaming the playlist
             [self setUpUITextField];
             [self.tableView setEditing:YES animated:YES];
@@ -460,7 +543,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     //start listening for notifications (so we know when the modal song picker dissapears)
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(songPickerWasDismissed:) name:@"song picker dismissed" object:nil];
     
-    PlaylistSongAdderTableViewController *vc = [[PlaylistSongAdderTableViewController alloc] initWithPlaylist:_playlist];
+    PlaylistSongAdderTableViewController *vc = [PlaylistSongAdderTableViewController alloc];
+    vc = [vc initWithPlaylistsUniqueId:_playlist.uniqueId playlistName:_playlist.playlistName];
+    
     UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:vc];
     [self presentViewController:navVC animated:YES completion:nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@YES];
@@ -469,11 +554,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)songPickerWasDismissed:(NSNotification *)someNSNotification
 {
     if([someNSNotification.name isEqualToString:@"song picker dismissed"]){
-        if(someNSNotification.object != nil)  //songs added to playlist, created a new one to replace the old one. need to update our VC model.
-        {
-            _playlist = (Playlist *) someNSNotification.object;
-            [self setFetchedResultsControllerAndSortStyle];
-        }
+        //MIGHT need to manually re-fetch the playlist due to new changes, but unlikely.
+#warning might need to add implementation.
     }
 }
 
@@ -639,8 +721,7 @@ static BOOL hidingCenterBtnAnimationComplete = YES;
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:context];
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:entity];
-    [fetchRequest setIncludesPropertyValues:NO];
-    [fetchRequest setIncludesSubentities:NO];
+    [fetchRequest setIncludesPropertyValues:YES];
     NSError *error = nil;
     NSUInteger tempCount = [context countForFetchRequest: fetchRequest error: &error];
     if(error == nil){
@@ -649,15 +730,14 @@ static BOOL hidingCenterBtnAnimationComplete = YES;
     return count;
 }
 
-#pragma mark - Helper
+#pragma mark - Helpers
 - (PlaybackContext *)contextForPlaylistSong:(Song *)aSong
 {
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    NSPredicate *playlistSongsPredicate = [NSPredicate predicateWithFormat:@"ANY playlistIAmIn.playlist_id == %@", _playlist.playlist_id];
-    NSPredicate *desiredSongInPlaylist = [NSPredicate predicateWithFormat:@"ANY song_id == %@", aSong.song_id];
-    request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[playlistSongsPredicate, desiredSongInPlaylist]];
-    //descriptor doesnt really matter here
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistIAmIn"
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"PlaylistItem"];
+    NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"ANY playlist.uniqueId == %@", _playlist.uniqueId];
+    NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"ANY song.uniqueId == %@", aSong.uniqueId];
+    request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"index"
                                                                      ascending:YES];
     request.sortDescriptors = @[sortDescriptor];
     return [[PlaybackContext alloc] initWithFetchRequest:[request copy]
@@ -665,19 +745,65 @@ static BOOL hidingCenterBtnAnimationComplete = YES;
                                                contextId:self.playbackContextUniqueId];
 }
 
-#pragma mark - fetching and sorting
-- (void)setFetchedResultsControllerAndSortStyle
+- (void)displayEmptyTableUserMessageWithText:(NSString *)text
 {
-    self.fetchedResultsController = nil;
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY playlistIAmIn.playlist_id == %@", _playlist.playlist_id];
+    UILabel *aLabel = (UILabel *)[self friendlyTableUserMessageWithText:text];
+    self.tableView.backgroundView = [[UIView alloc] initWithFrame:self.view.bounds];
     
+    //code assumes there is no search feature in this VC.
+    CGPoint newLabelCenter = self.tableView.backgroundView.center;
     
-    //picked playlistIAmIn because its a useless value...need that so the results of the
-    //nsorderedset dont get re-ordered
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistIAmIn"
+    aLabel.center = newLabelCenter;
+    aLabel.alpha = 0.3;
+    [self.tableView.backgroundView addSubview:aLabel];
+    [UIView animateWithDuration:0.4 animations:^{
+        aLabel.alpha = 1;
+    }];
+    
+}
+
+- (UIView *)friendlyTableUserMessageWithText:(NSString *)text
+{
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    if(tableViewEmptyMsgLabel){
+        [tableViewEmptyMsgLabel removeFromSuperview];
+        tableViewEmptyMsgLabel = nil;
+    }
+    tableViewEmptyMsgLabel = [[UILabel alloc] initWithFrame:CGRectMake(0,
+                                                                       0,
+                                                                       self.tableView.bounds.size.width,
+                                                                       self.tableView.bounds.size.height)];
+    if(text == nil)
+        text = @"";
+    tableViewEmptyMsgLabel.text = text;
+    tableViewEmptyMsgLabel.textColor = [UIColor darkGrayColor];
+    //multi lines strings ARE possible, this is just a weird api detail
+    tableViewEmptyMsgLabel.numberOfLines = 0;
+    tableViewEmptyMsgLabel.textAlignment = NSTextAlignmentCenter;
+    int fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+    tableViewEmptyMsgLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                                  size:fontSize];
+    [tableViewEmptyMsgLabel sizeToFit];
+    return tableViewEmptyMsgLabel;
+}
+
+- (void)removeEmptyTableUserMessage
+{
+    [tableViewEmptyMsgLabel removeFromSuperview];
+    self.tableView.backgroundView = nil;
+    tableViewEmptyMsgLabel = nil;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+}
+
+
+#pragma mark - Playback Context
+- (void)initPlaybackContext
+{
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"PlaylistItem"];
+    request.predicate = [NSPredicate predicateWithFormat:@"ANY playlist.uniqueId == %@", _playlist.uniqueId];
+    
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"index"
                                                                      ascending:YES];
-    
     request.sortDescriptors = @[sortDescriptor];
     if(self.playbackContext == nil){
         NSString *queueName = [NSString stringWithFormat:@"\"%@\" Playlist",_playlist.playlistName];
@@ -685,11 +811,6 @@ static BOOL hidingCenterBtnAnimationComplete = YES;
                                                              prettyQueueName:queueName
                                                                    contextId:self.playbackContextUniqueId];
     }
-    //fetchedResultsController is from custom super class
-    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
-                                                                        managedObjectContext:[CoreDataManager context]
-                                                                          sectionNameKeyPath:nil
-                                                                                   cacheName:nil];
 }
 
 //copy pasted from AllSongsDataSource

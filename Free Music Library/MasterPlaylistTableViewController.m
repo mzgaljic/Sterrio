@@ -187,7 +187,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:MZMainScreenVCStatusBarAlwaysInvisible
                                                         object:@NO];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated
-                                                        object:@NO];
+                                                        object:@YES];
 }
 
 #pragma mark - ActionableArtistDataSourceDelegate implementation
@@ -231,10 +231,6 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
 {
     if([[segue identifier] isEqualToString: @"playlistItemSegue"]){
         [[segue destinationViewController] setPlaylist:(Playlist *)sender];
-    }
-    else if([[segue identifier] isEqualToString:@"playlistSongPickerSegue"]){
-        UINavigationController *navController = [segue destinationViewController];
-        [navController.childViewControllers[0] setReceiverPlaylist:(Playlist *)sender];
     }
 }
 
@@ -299,8 +295,11 @@ static NSString *currentAlertTextFieldText;
     if(playlistName.length == 0)  //was all whitespace, or user gave us an empty string
         return;
     
-    Playlist *myNewPlaylist = [Playlist createNewPlaylistWithName:playlistName inManagedContext:[CoreDataManager context]];
-    [self performSegueWithIdentifier:@"playlistSongPickerSegue" sender:myNewPlaylist];
+    PlaylistSongAdderTableViewController *vc = [PlaylistSongAdderTableViewController alloc];
+    vc = [vc initWithPlaylistsUniqueId:nil playlistName:playlistName];
+    
+    UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:vc];
+    [self presentViewController:navVC animated:YES completion:nil];
 }
 
 - (void)tabBarAddButtonPressed
@@ -340,9 +339,8 @@ static NSString *currentAlertTextFieldText;
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Playlist"];
     request.predicate = nil;  //means i want all of the playlists
     
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistName"
-                                                                     ascending:YES
-                                                                      selector:@selector(localizedStandardCompare:)];
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"creationDate"
+                                                                     ascending:YES];
     
     request.sortDescriptors = @[sortDescriptor];
     //fetchedResultsController is from custom super class

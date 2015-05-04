@@ -320,14 +320,14 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
         [self.tableView endUpdates];
     }
     else{
-        //number of rows is the same, just fade in the new results
+        //number of rows is the same, dont use any animation (so text doesnt flash like crazy).
         NSMutableArray *allPaths = [NSMutableArray array];
         for(int i = 0; i < upperBound; i++){
             [allPaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
         }
         
         [self.tableView beginUpdates];
-        [self.tableView reloadRowsAtIndexPaths:allPaths withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView reloadRowsAtIndexPaths:allPaths withRowAnimation:UITableViewRowAnimationNone];
         [self.tableView endUpdates];
     }
 }

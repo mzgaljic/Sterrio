@@ -480,8 +480,9 @@
                     </navigationItem>
                     <connections>
                         <segue destination="DYj-rf-40g" kind="push" identifier="changeFontSizeSegue" id="qSz-K3-PoG"/>
-                        <segue destination="d96-dZ-c7p" kind="push" identifier="pickWifiStreamQualitySegue" id="2Sw-O3-K7B"/>
+                        <segue destination="d96-dZ-c7p" kind="push" identifier="pickStreamQualitySegue" id="2Sw-O3-K7B"/>
                         <segue destination="CqI-9K-kYe" kind="push" identifier="pick new app theme segue" id="eau-Nz-dtr"/>
+                        <segue destination="vE2-Lu-mud" kind="push" identifier="advancedSettingsSegue" id="LcH-Ut-7ib"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dA5-hL-3Qm" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -523,18 +524,18 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0kL-5K-pgb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2881" y="2740"/>
+            <point key="canvasLocation" x="2721" y="2296"/>
         </scene>
-        <!--Wifi Playback Table View Controller-->
+        <!--Stream Quality Picker Table View Controller-->
         <scene sceneID="E5s-Np-mmB">
             <objects>
-                <tableViewController id="d96-dZ-c7p" customClass="WifiPlaybackTableViewController" sceneMemberID="viewController">
+                <tableViewController id="d96-dZ-c7p" customClass="StreamQualityPickerTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="OzR-QZ-AcF">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="checkmark" indentationWidth="10" reuseIdentifier="wifi quality item cell" textLabel="qAi-Zs-ZzT" style="IBUITableViewCellStyleDefault" id="Wh8-gS-LQ6">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="checkmark" indentationWidth="10" reuseIdentifier="stream quality item cell" textLabel="qAi-Zs-ZzT" style="IBUITableViewCellStyleDefault" id="Wh8-gS-LQ6">
                                 <rect key="frame" x="0.0" y="114" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Wh8-gS-LQ6" id="mdE-76-Fkj">
@@ -560,7 +561,36 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FMw-dR-NOz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2527" y="3428"/>
+            <point key="canvasLocation" x="3005" y="2996"/>
+        </scene>
+        <!--Advanced Options Table View Controller-->
+        <scene sceneID="3hc-hZ-0yr">
+            <objects>
+                <tableViewController id="vE2-Lu-mud" customClass="AdvancedOptionsTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="1Ja-pQ-uC1">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="advancedSettingRightDetailCell" id="ObS-Yd-eFk">
+                                <rect key="frame" x="0.0" y="114" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ObS-Yd-eFk" id="6zB-n6-ugG">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="vE2-Lu-mud" id="OsA-pf-Ba7"/>
+                            <outlet property="delegate" destination="vE2-Lu-mud" id="fAm-6u-D3e"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="izl-yu-F4g"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="a44-1E-gGL" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1907" y="3309"/>
         </scene>
         <!--Font Size Table View Controller-->
         <scene sceneID="XsI-Jm-kHZ">
@@ -612,7 +642,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KSW-Ro-sSW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2064" y="3515"/>
+            <point key="canvasLocation" x="2560" y="3371"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="jv0-lc-Ngx">

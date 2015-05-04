@@ -62,8 +62,8 @@ typedef enum{
 + (void)setTabBarHidden:(BOOL)hidden;
 
 //possibly useful stuff to use to avoid merging ensemble during editing.
-+ (BOOL)isUserEditingSongOrAlbumOrArtist;
-+ (void)setUserIsEditingSongOrAlbumOrArtist:(BOOL)aValue;
++ (BOOL)isABadTimeToMergeEnsemble;
++ (void)setIsBadTimeToMergeEnsemble:(BOOL)aValue;
 
 + (BOOL)isUserPreviewingAVideo;
 + (void)setUserIsPreviewingAVideo:(BOOL)aValue;
@@ -85,7 +85,7 @@ typedef enum{
 + (NSString *)italicFontName;
 + (NSString *)boldItalicFontName;
 
-//app settings
+//----app settings---
 + (int)preferredSongCellHeight;
 + (void)setPreferredSongCellHeight:(int)cellHeight;
 + (int)minimumSongCellHeight;
@@ -101,7 +101,14 @@ typedef enum{
 + (BOOL)icloudSyncEnabled;
 + (void)set_iCloudSyncEnabled:(BOOL)enabled;
 
++ (void)setShouldOnlyAirplayAudio:(BOOL)airplayAudio;
++ (BOOL)shouldOnlyAirplayAudio;
+
 + (void)setAppTheme:(UIColor *)appTheme;
+//-----End of app settings------
+
+
+//Other stuff
 + (UIColor *)defaultAppThemeBeforeUserPickedTheme;
 
 + (int)navBarHeight;

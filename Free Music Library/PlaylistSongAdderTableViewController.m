@@ -9,34 +9,48 @@
 #import "PlaylistSongAdderTableViewController.h"
 
 #import "Song.h"
+#import "PlaylistItem+Utilities.h"
 #import "Playlist+Utilities.h"
 #import "AppEnvironmentConstants.h"
 #import "MasterSongsTableViewController.h"
-#import "SDWebImageManager.h"
-#import <SDWebImage/UIImageView+WebCache.h>
 #import "AllSongsDataSource.h"
 
 @interface PlaylistSongAdderTableViewController()
 {
     CGRect originalTableViewFrame;
+    BOOL isUserCreatingNewPlaylist;
+    short numSongsInPlaylistBeforeEditing;
 }
 @property (nonatomic, strong) MySearchBar *searchBar;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property AllSongsDataSource *tableViewDataSourceAndDelegate;
+@property (nonatomic, strong) Playlist *playlist;
 @end
 
 @implementation PlaylistSongAdderTableViewController
 
-
-- (id)initWithPlaylist:(Playlist *)aPlaylist
+- (instancetype)initWithPlaylistsUniqueId:(NSString *)uniqueId playlistName:(NSString *)name;
 {
     UIStoryboard*  sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     PlaylistSongAdderTableViewController* vc = [sb instantiateViewControllerWithIdentifier:@"playlistSongAdderView"];
     self = vc;
     if (self) {
+        [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:YES];
+        
         //custom variables init here
-        [self setReceiverPlaylistWithFetchUsingPlaylistID:aPlaylist.playlist_id];;
+        self.playlist = [self fetchPlaylistWithUniqueId:uniqueId];
+        
+        if(self.playlist == nil){
+            self.playlist = [Playlist createNewPlaylistWithName:name
+                                               inManagedContext:[CoreDataManager context]];
+            isUserCreatingNewPlaylist = YES;
+            numSongsInPlaylistBeforeEditing = 0;
+        }
+        else{
+            isUserCreatingNewPlaylist = NO;
+            numSongsInPlaylistBeforeEditing = self.playlist.playlistItems.count;
+        }
     }
     return self;
 }
@@ -109,22 +123,6 @@
     [super setSearchBar:self.searchBar];
     [super viewWillAppear:animated];
     
-    switch ([_receiverPlaylist.status shortValue])
-    {
-        case PLAYLIST_STATUS_In_Creation:  //creating new playlist
-        {
-            self.rightBarButton.title = AddLater_String;
-            break;
-        }
-        case PLAYLIST_STATUS_Normal_Playlist:  //adding songs to existing playlist
-        case PLAYLIST_STATUS_Created_But_Empty:  //possibly adding songs to existing playlist
-            self.rightBarButton.title = @"";
-            break;
-            
-        default:
-            break;
-    }
-    
     //needed to make UITableViewCellAccessoryCheckmark the nav bar color!
     self.tableView.tintColor = [UIColor defaultAppColorScheme];
     [self.rightBarButton setStyle:UIBarButtonItemStyleDone];
@@ -151,6 +149,10 @@
 - (void)dealloc
 {
     [super prepareFetchedResultsControllerForDealloc];
+    self.playlist = nil;
+    self.searchBar = nil;
+    self.tableViewDataSourceAndDelegate = nil;
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([self class]));
 }
@@ -161,26 +163,20 @@
     self.rightBarButton.title = newValue;
 }
 
-- (PLAYLIST_STATUS)currentPlaylistStatus
+- (BOOL)isUserCreatingPlaylistFromScratch
 {
-    return [_receiverPlaylist.status shortValue];
-}
-
-- (NSOrderedSet *)existingPlaylistSongs
-{
-    return _receiverPlaylist.playlistSongs;
+    return isUserCreatingNewPlaylist;
 }
 
 #pragma mark - User button actions
 - (IBAction)rightBarButtonTapped:(id)sender
 {
-    [self setReceiverPlaylistWithFetchUsingPlaylistID:_receiverPlaylist.playlist_id];
+    NSArray *newSongsArray = [self.tableViewDataSourceAndDelegate minimallyFaultedArrayOfSelectedPlaylistSongs];
     
-    NSString *title = self.rightBarButton.title;
-    Playlist *replacementPlaylist;
-    if([title isEqualToString:Done_String]){
+    //songs must have been added
+    if(newSongsArray.count > 0){
         
-        if([_receiverPlaylist.status isEqualToNumber:[NSNumber numberWithShort:PLAYLIST_STATUS_Normal_Playlist]])
+        if(! isUserCreatingNewPlaylist)
         {
             //user finished adding songs to the playlist. this playlist already existed in the library,
             //so user is going to return to the playlist detail VC. make sure tab bar is hidden.
@@ -188,51 +184,58 @@
                                                                 object:@YES];
         }
         
-        NSArray *newSongsArray = [self.tableViewDataSourceAndDelegate minimallyFaultedArrayOfSelectedPlaylistSongs];
-        NSArray *oldSongsArray = [_receiverPlaylist.playlistSongs array];
-        NSMutableArray *finalArray = [NSMutableArray arrayWithCapacity:newSongsArray.count + oldSongsArray.count];
-        [finalArray addObjectsFromArray:oldSongsArray];
-        [finalArray addObjectsFromArray:newSongsArray];
-        NSString *originalPlaylistId = _receiverPlaylist.playlist_id;
+        NSMutableSet *set = [NSMutableSet setWithSet:self.playlist.playlistItems];
+        //[set addObjectsFromArray:newSongsArray];
+
+        __block PlaylistItem *aNewItem;
+        __weak Playlist *weakPlaylist = self.playlist;
+        __weak NSManagedObjectContext *weakContext = [CoreDataManager context];
         
-        //not all songs are saved as a set. hence i dont need to worry about duplicated (nor is it possible to save duplicates)
-        replacementPlaylist = [Playlist createNewPlaylistWithName:_receiverPlaylist.playlistName
-                                                                 usingSongs:finalArray inManagedContext:[CoreDataManager context]];
-        replacementPlaylist.status = [NSNumber numberWithShort:PLAYLIST_STATUS_Normal_Playlist];
-        [[CoreDataManager context] deleteObject:_receiverPlaylist];
-        [[CoreDataManager sharedInstance] saveContext];
-        replacementPlaylist.playlist_id = originalPlaylistId;
+        //index at the end of the playlist (if imagined conceptually as an array)
+        __block short nextEmptyIndexInPlaylist = set.count;
+        
+        [newSongsArray enumerateObjectsUsingBlock:^(Song *aSong, NSUInteger idx, BOOL *stop) {
+            
+            aNewItem = [PlaylistItem createNewPlaylistItemWithCorrespondingPlaylist:weakPlaylist
+                                                                               song:aSong
+                                                                    indexInPlaylist:nextEmptyIndexInPlaylist
+                                                                   inManagedContext:weakContext];
+            nextEmptyIndexInPlaylist++;
+            [set addObject:aNewItem];
+        }];
+        
+        self.playlist.playlistItems = set;
     
-    } else if([title isEqualToString:AddLater_String]){
-        //leave playlist empty and "pop" this modal view off the screen
-        _receiverPlaylist.status = [NSNumber numberWithShort:PLAYLIST_STATUS_Created_But_Empty];
+    } else{
+        //user hasnt added any songs, they want to add songs later. No action necessary.
     }
 
-    [[CoreDataManager sharedInstance] saveContext];  //save in core data
+    [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:NO];
+    [[CoreDataManager sharedInstance] saveContext];  //commit changes
     
     [self dismissViewControllerAnimated:YES completion:nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"song picker dismissed" object:replacementPlaylist];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"song picker dismissed" object:nil];
 }
 
              
 - (IBAction)leftBarButtonTapped:(id)sender
 {
-    NSString *title = self.leftBarButton.title;
-    if([title isEqualToString:Cancel_String] &&
-       [_receiverPlaylist.status shortValue] == PLAYLIST_STATUS_In_Creation){
-        //cancel the creation of the playlist and "pop" this modal view off the screen.
-        [[CoreDataManager context] deleteObject:_receiverPlaylist];
-        [[CoreDataManager sharedInstance] saveContext];  //save in core data
-        
+    self.tableViewDataSourceAndDelegate = nil;
+    
+    //user cancelled playlist creation
+    if(self.playlist.playlistItems.count == 0 && isUserCreatingNewPlaylist){
+        [[CoreDataManager context] rollback];
         [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated
                                                             object:@NO];
     } else{
+        self.playlist = nil;
         //user cancelled adding additional songs to his/her playlist. should hide tab bar
         //since the user will end up back in playlist detail VC.
         [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated
                                                             object:@YES];
     }
     
+    [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:NO];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"song picker dismissed" object:nil];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -276,22 +279,17 @@
                                                                                    cacheName:nil];
 }
 
-- (void)setReceiverPlaylistWithFetchUsingPlaylistID:(NSString *)playlistID
+#pragma mark - Helpers
+- (Playlist *)fetchPlaylistWithUniqueId:(NSString *)uniqueId
 {
-    //fetch for playlist (avoids some stupid context problem)
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Playlist"];
-    request.predicate = [NSPredicate predicateWithFormat:@"playlist_id = %@",
-                         playlistID];
-    NSError *error;
-    NSArray *matches = [[CoreDataManager context] executeFetchRequest:request error:&error];
-    if(matches){
-        if([matches count] == 1){
-            _receiverPlaylist = [matches firstObject];
-        } else if([matches count] > 1){
-            //dismiss right away and try to avoid a crash.
-            [self.navigationController popViewControllerAnimated:YES];
-        }
-    }
+    NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Playlist"];
+    request.predicate = [NSPredicate predicateWithFormat:@"self.uniqueId == %@", uniqueId];
+    
+    NSArray *results = [[CoreDataManager context] executeFetchRequest:request error:nil];
+    int count = (int)results.count;
+    NSAssert(count == 1 || count == 0, @"Two playlists exist in core data with unique id: %@", uniqueId);
+    
+    return (count == 1) ? results[0] : nil;
 }
 
 @end

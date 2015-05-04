@@ -11,6 +11,7 @@
 #import "MZTableViewCell.h"
 #import "MusicPlaybackController.h"
 #import "PreviousPlaybackContext.h"
+#import "PlaylistItem.h"
 
 @interface AllPlaylistsDataSource ()
 {
@@ -135,11 +136,20 @@
     if(self.dataSourceType == PLAYLIST_DATA_SRC_TYPE_Default)
     {
         //check if a song in this playlist is the now playing song
+        //we dont care if there are duplicates of a song, as long as the song is
+        //within the playlist someplace, this check (in code) can be vague...
+        
         BOOL playlistHasNowPlaying = NO;
         NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
         PlaybackContext *playlistDetailContext = [self playlistDetailContextForPlaylist:playlist];
         
-        for(Song *playlistSong in playlist.playlistSongs)
+        NSSet *items = playlist.playlistItems;
+        NSMutableArray *playlistSongs = [NSMutableArray array];
+        [items enumerateObjectsUsingBlock:^(PlaylistItem *item, BOOL *stop) {
+            [playlistSongs addObject:item.song];
+        }];
+        
+        for(Song *playlistSong in playlistSongs)
         {
             //need to check both the general playlist context and the playlistDetailVC context.
             //...since an entire playlist or just a specific playlist can be queued up.
@@ -186,7 +196,13 @@
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
         Playlist *playlist = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
-        [MusicPlaybackController groupOfSongsAboutToBeDeleted:[playlist.playlistSongs array]
+        NSSet *items = playlist.playlistItems;
+        NSMutableArray *songsBeingDeleted = [NSMutableArray array];
+        [items enumerateObjectsUsingBlock:^(PlaylistItem *item, BOOL *stop) {
+            [songsBeingDeleted addObject:item.song];
+        }];
+    
+        [MusicPlaybackController groupOfSongsAboutToBeDeleted:songsBeingDeleted
                                               deletionContext:self.playbackContext];
         
         [[CoreDataManager context] deleteObject:playlist];
@@ -308,8 +324,9 @@
     PlaybackContext *oldSongPlaybackContext = [PreviousPlaybackContext contextBeforeNewSongBeganLoading];
     PlaybackContext *newSongPlaybackContext = nowPlaying.context;
     
-    NSSet *playlistsOldSongIsIn = oldsong.playlistIAmIn;
-    NSSet *playlistsNewSongIsIn = newSong.playlistIAmIn;
+#warning broken.
+    NSSet *playlistsOldSongIsIn;// = oldsong.playlistsIAmIn;
+    NSSet *playlistsNewSongIsIn;// = newSong.playlistsIAmIn;
     
     //nothing to possibly update
     if(playlistsOldSongIsIn.count == 0
@@ -329,10 +346,10 @@
         PlaybackContext *playlistDetailContext = [self playlistDetailContextForPlaylist:aPlaylist];
         
         //check if this playlist is in the old songs playlists (compare by playlist_id)
-        BOOL oldSongPartOfThisPlaylist = [[playlistsOldSongIsIn valueForKey:@"playlist_id"]
-                                          containsObject:aPlaylist.playlist_id];
-        BOOL newSongPartOfThisPlaylist = [[playlistsNewSongIsIn valueForKey:@"playlist_id"]
-                                          containsObject:aPlaylist.playlist_id];
+        BOOL oldSongPartOfThisPlaylist = [[playlistsOldSongIsIn valueForKey:@"uniqueId"]
+                                          containsObject:aPlaylist.uniqueId];
+        BOOL newSongPartOfThisPlaylist = [[playlistsNewSongIsIn valueForKey:@"uniqueId"]
+                                          containsObject:aPlaylist.uniqueId];
         
         BOOL canBreakLoop = NO;
         if(oldSongPartOfThisPlaylist)
@@ -440,18 +457,16 @@
 - (PlaybackContext *)contextForPlaylist:(Playlist *)aPlaylist
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY playlistIAmIn.playlist_id == %@", aPlaylist.playlist_id];
+    request.predicate = [NSPredicate predicateWithFormat:@"ANY playlistsIAmIn.uniqueId == %@", aPlaylist.uniqueId];
     
-    //picked playlistIAmIn because its a useless value...need that so the results of the
-    //nsorderedset dont get re-ordered
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistIAmIn"
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"dummySortDescriptorVar"
                                                                      ascending:YES];
     request.sortDescriptors = @[sortDescriptor];
     NSString *playlistQueueDescription = [NSString stringWithFormat:@"\"%@\" Playlist", aPlaylist.playlistName];
     
     NSMutableString *uniquePlaylistContextID = [NSMutableString string];
     [uniquePlaylistContextID appendString:NSStringFromClass([PlaylistItemTableViewController class])];
-    [uniquePlaylistContextID appendString:aPlaylist.playlist_id];
+    [uniquePlaylistContextID appendString:aPlaylist.uniqueId];
     return [[PlaybackContext alloc] initWithFetchRequest:[request copy]
                                          prettyQueueName:playlistQueueDescription
                                                contextId:uniquePlaylistContextID];
@@ -462,7 +477,7 @@
 {
     NSMutableString *playlistDetailContextId = [NSMutableString string];
     [playlistDetailContextId appendString:NSStringFromClass([PlaylistItemTableViewController class])];
-    [playlistDetailContextId appendString:aPlaylist.playlist_id];
+    [playlistDetailContextId appendString:aPlaylist.uniqueId];
     
     PlaybackContext *playlistDetailContext = [[PlaybackContext alloc] initWithFetchRequest:nil
                                                                            prettyQueueName:@""

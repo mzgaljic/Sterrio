@@ -175,7 +175,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 }
 
 //background fetch when app is inactive
--(void)application:(UIApplication*)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+- (void)application:(UIApplication*)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
     if(! [AppEnvironmentConstants icloudSyncEnabled]){
         completionHandler(UIBackgroundFetchResultNoData);
@@ -183,8 +183,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     }
     
     CDEPersistentStoreEnsemble *ensemble = [[CoreDataManager sharedInstance] ensembleForMainContext];
-    if(! ensemble.isLeeched
-       || [AppEnvironmentConstants isUserEditingSongOrAlbumOrArtist])
+    if(! ensemble.isLeeched)
     {
         completionHandler(UIBackgroundFetchResultNoData);
         return;
@@ -192,7 +191,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     
     __weak CDEPersistentStoreEnsemble *weakEnsemble = ensemble;
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSLog(@"Ensembles is downloading new files (if any). Will merge on app launch.");
+        NSLog(@"Ensembles is downloading new files (if any) during background app refresh. Will merge on app launch.");
         CDEICloudFileSystem *cloudFileSystem = (id)weakEnsemble.cloudFileSystem;
         completionHandler(cloudFileSystem.bytesRemainingToDownload > 0 ?
                           UIBackgroundFetchResultNewData : UIBackgroundFetchResultNoData);
@@ -447,7 +446,7 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
     
     CDEPersistentStoreEnsemble *ensemble = [[CoreDataManager sharedInstance] ensembleForMainContext];
     if(! ensemble.isLeeched
-       || [AppEnvironmentConstants isUserEditingSongOrAlbumOrArtist])
+       || [AppEnvironmentConstants isABadTimeToMergeEnsemble])
     {
         return;
     }

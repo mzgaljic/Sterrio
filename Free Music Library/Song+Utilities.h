@@ -43,4 +43,6 @@
 
 + (BOOL)isSong:(Song *)song1 equalToSong:(Song *)song2;
 
+- (BOOL)isEqualToSong:(Song *)aSong;
+
 @end

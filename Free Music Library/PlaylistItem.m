@@ -1,19 +1,21 @@
 //
-//  SongAlbumArt.m
+//  PlaylistItem.m
 //  Free Music Library
 //
 //  Created by Mark Zgaljic on 5/3/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
-#import "SongAlbumArt.h"
+#import "PlaylistItem.h"
+#import "Playlist.h"
 #import "Song.h"
 
 
-@implementation SongAlbumArt
+@implementation PlaylistItem
 
+@dynamic index;
 @dynamic uniqueId;
-@dynamic image;
-@dynamic associatedSong;
+@dynamic song;
+@dynamic playlist;
 
 @end

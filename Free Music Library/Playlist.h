@@ -2,33 +2,28 @@
 //  Playlist.h
 //  Free Music Library
 //
-//  Created by Mark Zgaljic on 4/19/15.
+//  Created by Mark Zgaljic on 5/3/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class Song;
+@class NSManagedObject;
 
 @interface Playlist : NSManagedObject
 
-@property (nonatomic, retain) NSString * playlist_id;
+@property (nonatomic, retain) NSString * uniqueId;
 @property (nonatomic, retain) NSString * playlistName;
-@property (nonatomic, retain) NSNumber * status;
-@property (nonatomic, retain) NSOrderedSet *playlistSongs;
+@property (nonatomic, retain) NSDate * creationDate;
+@property (nonatomic, retain) NSSet *playlistItems;
 @end
 
 @interface Playlist (CoreDataGeneratedAccessors)
 
-- (void)insertObject:(Song *)value inPlaylistSongsAtIndex:(NSUInteger)idx;
-- (void)removeObjectFromPlaylistSongsAtIndex:(NSUInteger)idx;
-- (void)insertPlaylistSongs:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
-- (void)removePlaylistSongsAtIndexes:(NSIndexSet *)indexes;
-- (void)replaceObjectInPlaylistSongsAtIndex:(NSUInteger)idx withObject:(Song *)value;
-- (void)replacePlaylistSongsAtIndexes:(NSIndexSet *)indexes withPlaylistSongs:(NSArray *)values;
-- (void)addPlaylistSongsObject:(Song *)value;
-- (void)removePlaylistSongsObject:(Song *)value;
-- (void)addPlaylistSongs:(NSOrderedSet *)values;
-- (void)removePlaylistSongs:(NSOrderedSet *)values;
+- (void)addPlaylistItemsObject:(NSManagedObject *)value;
+- (void)removePlaylistItemsObject:(NSManagedObject *)value;
+- (void)addPlaylistItems:(NSSet *)values;
+- (void)removePlaylistItems:(NSSet *)values;
+
 @end

@@ -41,7 +41,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
     //and queing up a specific artists song
     NSMutableString *uniqueID = [NSMutableString string];
     [uniqueID appendString:NSStringFromClass([self class])];
-    [uniqueID appendString:self.artist.artist_id];
+    [uniqueID appendString:self.artist.uniqueId];
     playbackContextUUID = uniqueID;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -479,7 +479,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
 - (PlaybackContext *)contextForSpecificSong:(Song *)aSong
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"song_id == %@", aSong.song_id];
+    request.predicate = [NSPredicate predicateWithFormat:@"song_id == %@", aSong.uniqueId];
     //descriptor doesnt really matter here
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
                                                                      ascending:YES];
@@ -499,9 +499,9 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
     
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
     NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"self.artist.artist_id == %@",
-                               self.artist.artist_id];
+                               self.artist.uniqueId];
     NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"self.album.artist.artist_id == %@",
-                               self.artist.artist_id];
+                               self.artist.uniqueId];
     NSArray *predicates = @[predicate1, predicate2];
     NSPredicate *allArtistSongsPredicate = [NSCompoundPredicate orPredicateWithSubpredicates:predicates];
     request.predicate = allArtistSongsPredicate;
@@ -526,7 +526,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
     //fetch and set artists standalone songs (manually fetched to avoid weird duplicate issue)
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
     NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"artist.artist_id == %@",
-                               self.artist.artist_id];
+                               self.artist.uniqueId];
     
     NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"album = $NO_ALBUM"];
     predicate2 = [predicate2 predicateWithSubstitutionVariables:@{@"NO_ALBUM" : [NSNull null]}];
@@ -551,7 +551,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
     //fetch all albums by this artist
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Album"];
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"artist.artist_id == %@",
-                               self.artist.artist_id];
+                               self.artist.uniqueId];
     request.predicate = predicate;
     
     NSSortDescriptor *sortDescriptor;

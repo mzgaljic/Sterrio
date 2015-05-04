@@ -17,6 +17,9 @@
 //I use this ONLY for fetching, have NOT tested insertions concurrently, and probably best i dont.
 + (NSManagedObjectContext *)backgroundThreadContext;
 
+//I use this ONLY for fetching, have NOT tested insertions concurrently, and probably best i dont.
++ (NSManagedObjectContext *)stackControllerThreadContext;
+
 
 - (BOOL)isMainThreadContextInitializedYet;
 - (void)mergeEnsembleChangesIfAppropriate;

@@ -18,7 +18,7 @@ NSString * const IMAGE_PROPERTY_KEY = @"image";
 {
     SongAlbumArt *albumArt = [NSEntityDescription insertNewObjectForEntityForName:@"SongAlbumArt"
                                                        inManagedObjectContext:context];
-    albumArt.albumArt_id = [[NSObject UUID] copy];
+    albumArt.uniqueId = [[NSObject UUID] copy];
     albumArt.image = [AlbumArtUtilities compressedDataFromUIImage:image];
     return albumArt;
 }

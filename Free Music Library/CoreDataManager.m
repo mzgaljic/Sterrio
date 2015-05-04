@@ -16,14 +16,12 @@ static CoreDataManager __strong *manager = nil;
 // If the context doesn't already exist, it is created and 
 // bound to the persistent store coordinator for the application.
 @property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;
-
 @property (readonly, strong, nonatomic) NSManagedObjectContext *backgroundManagedObjectContext;
+@property (readonly, strong, nonatomic) NSManagedObjectContext *stackControllerManagedObjectContext;
 
 // Returns the managed object model for the application.
 // If the model doesn't already exist, it is created from the application's model.
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
-
-@property (readonly, strong, nonatomic) NSManagedObjectModel *backgroundManagedObjectModel;
 
 // Returns the persistent store coordinator for the application.
 // If the coordinator doesn't already exist, it is created and the application's 
@@ -40,7 +38,7 @@ static NSString *SQL_FILE_NAME = @"Muzic.sqlite";
 static NSString *MODEL_NAME = @"Model";
 @synthesize managedObjectContext = __managedObjectContext;
 @synthesize backgroundManagedObjectContext = __backgroundManagedObjectContext;
-@synthesize backgroundManagedObjectModel = __backgroundManagedObjectModel;
+@synthesize stackControllerManagedObjectContext = __stackControllerManagedObjectContext;
 @synthesize managedObjectModel = __managedObjectModel;
 @synthesize persistentStoreCoordinator = __persistentStoreCoordinator;
 
@@ -143,6 +141,11 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"MainStore";
     return [[CoreDataManager sharedInstance] backgroundThreadManagedObjectContext];
 }
 
++ (NSManagedObjectContext *)stackControllerThreadContext
+{
+    return [[CoreDataManager sharedInstance] stackControllerThreadManagedObjectContext];
+}
+
 - (BOOL)isMainThreadContextInitializedYet
 {
     return (__managedObjectContext == nil) ? NO : YES;
@@ -238,6 +241,23 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"MainStore";
     return __managedObjectContext;
 }
 
+- (NSManagedObjectContext *)stackControllerThreadManagedObjectContext
+{
+    if (__stackControllerManagedObjectContext != nil)
+        return __stackControllerManagedObjectContext;
+    
+    NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
+    if (coordinator != nil)
+    {
+        __stackControllerManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        [__stackControllerManagedObjectContext setPersistentStoreCoordinator:coordinator];
+        
+        NSUndoManager *undoManager = [[NSUndoManager alloc] init];
+        [__stackControllerManagedObjectContext setUndoManager:undoManager];
+    }
+    return __stackControllerManagedObjectContext;
+}
+
 - (NSManagedObjectContext *)backgroundThreadManagedObjectContext
 {
     if (__backgroundManagedObjectContext != nil)
@@ -327,8 +347,8 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"MainStore";
 
 - (NSManagedObjectContext *)deleteOldStoreAndMakeNewOne
 {
-#warning if icloud enabled, deeleech here, and then re-leech once store is recreated.
-    
+    BOOL icloudOriginallyActive = [AppEnvironmentConstants icloudSyncEnabled];
+    [AppEnvironmentConstants set_iCloudSyncEnabled:NO];
     //delete the old sqlite DB file
     NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString *coreDataFolder = [libPath stringByAppendingPathComponent:@"Core Data"];
@@ -336,7 +356,10 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"MainStore";
                                                               error:nil];
     if(! success)  //if we didn't delete the old store then clearly the whole operation failed.
         return nil;
-    return [self managedObjectContext];
+    
+    NSManagedObjectContext *newContext = [self managedObjectContext];
+    [AppEnvironmentConstants set_iCloudSyncEnabled:icloudOriginallyActive];
+    return newContext;
 }
 
 

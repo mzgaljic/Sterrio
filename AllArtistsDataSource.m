@@ -165,7 +165,7 @@
         
         NSMutableString *artistDetailContextId = [NSMutableString string];
         [artistDetailContextId appendString:NSStringFromClass([ArtistItemAlbumViewController class])];
-        [artistDetailContextId appendString:artist.artist_id];
+        [artistDetailContextId appendString:artist.uniqueId];
         
         PlaybackContext *artistDetailContext = [[PlaybackContext alloc] initWithFetchRequest:nil
                                                                             prettyQueueName:@""
@@ -465,7 +465,7 @@
 - (PlaybackContext *)contextForSpecificArtist:(Artist *)anArtist
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY artist.artist_id == %@", anArtist.artist_id];
+    request.predicate = [NSPredicate predicateWithFormat:@"ANY artist.artist_id == %@", anArtist.uniqueId];
     NSSortDescriptor *sortDescriptor;
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
                                                    ascending:YES

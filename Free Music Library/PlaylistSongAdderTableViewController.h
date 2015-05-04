@@ -18,9 +18,10 @@
                                                                 <SearchBarDataSourceDelegate,
                                                                 PlaylistSongAdderDataSourceDelegate>
 
-- (id)initWithPlaylist:(Playlist *)aPlaylist;
-
-@property (nonatomic, strong) Playlist *receiverPlaylist;  //the playlist the chosen songs will be a part of
+//will set up a new playlist if it doesnt exist. if user cancels editing new playlist,
+//core data context will be rolled back to remove changes made in this class.
+//if the playlist exists, the changes will be saved once this class is done doing its work.
+- (instancetype)initWithPlaylistsUniqueId:(NSString *)uniqueId playlistName:(NSString *)name;
 
 //gui vars
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *rightBarButton;

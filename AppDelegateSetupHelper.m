@@ -27,7 +27,7 @@
         //these are the default settings
         int prefSongCellHeight = [AppEnvironmentConstants defaultSongCellHeight];
         short prefWifiStreamQuality = 720;
-        short prefCellStreamQuality = 360;
+        short prefCellStreamQuality = 240;
         BOOL icloudSync = NO;
         
         //these setters will set ram values AND NSUserDefaults values on disk as well.

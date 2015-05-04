@@ -14,6 +14,7 @@
 #import "IBActionSheet.h"
 #import "SDCAlertController.h"
 #import "EmailComposerManager.h"
+#import "StreamQualityPickerTableViewController.h"
 
 @interface NewSettingsTableViewController ()
 {
@@ -28,16 +29,11 @@ short const NUM_SECTIONS = 5;
 short const ICLOUD_SYNC_SECTION_NUM = 0;
 short const MUSIC_QUALITY_SECTION_NUM = 1;
 short const APPEARANCE_SECTION_NUM = 2;
-short const MUSIC_LIBRARY_SECTION_NUM = 3;
+short const ADVANCED_SECTION_NUM = 3;
 short const FEEDBACK_SECTION_NUM = 4;
 
 int const FEEDBACK_CELL_ACTION_SHEET_TAG = 100;
 int const BUG_FOUND_ACTION_SHEET_TAG = 101;
-
-NSString * const ICLOUD_SYNC_SECTION_HEADER_TITLE = @"iCloud";
-NSString * const APPEARANCE_SECTION_HEADER_TITLE = @"Appearance";
-NSString * const MUSIC_QUALITY_SECTION_HEADER_TITLE = @"Music Quality";
-NSString * const MUSIC_LIBRARY_SECTION_HEADER_TITLE = @"Library";
 
 #pragma mark - lifecycle
 
@@ -97,7 +93,7 @@ NSString * const MUSIC_LIBRARY_SECTION_HEADER_TITLE = @"Library";
         case ICLOUD_SYNC_SECTION_NUM    :   return 1;
         case MUSIC_QUALITY_SECTION_NUM  :   return 2;
         case APPEARANCE_SECTION_NUM     :   return 2;
-        case MUSIC_LIBRARY_SECTION_NUM  :   return 1;
+        case ADVANCED_SECTION_NUM       :   return 1;
         case FEEDBACK_SECTION_NUM       :   return 1;
             
         default:    return -1;
@@ -219,21 +215,20 @@ NSString * const MUSIC_LIBRARY_SECTION_HEADER_TITLE = @"Library";
         
         cell.selectionStyle = UITableViewCellSelectionStyleDefault;
     }
-    else if(indexPath.section == MUSIC_LIBRARY_SECTION_NUM)
+    else if(indexPath.section == ADVANCED_SECTION_NUM)
     {
         cell = [tableView dequeueReusableCellWithIdentifier:@"settingRightDetailCell"
                                                forIndexPath:indexPath];
-        
         if(indexPath.row == 0)
         {
-            //ignored prefixes when sorting library cell.
+            //advanced settings
             
-            cell.textLabel.text = @"Alphabetical Sorting Rules";
+            cell.textLabel.text = @"Advanced";
             cell.detailTextLabel.text = nil;
-
-            UIImage *sortingImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
-                                                                 :[UIImage imageNamed:@"sorting"]];
-            cell.imageView.image = sortingImg;
+            
+            UIImage *advancedImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+                                                                  :[UIImage imageNamed:@"advanced"]];
+            cell.imageView.image = advancedImg;
             
             short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
             UIColor *appTheme = [UIColor defaultAppColorScheme];
@@ -301,10 +296,27 @@ NSString * const MUSIC_LIBRARY_SECTION_HEADER_TITLE = @"Library";
     }
     else if(indexPath.section == MUSIC_QUALITY_SECTION_NUM)
     {
-        if(indexPath.row == 1)
+        if(indexPath.row == 0)
+        {
+            //cellular stream quality
+            VIDEO_QUALITY_STREAM_TYPE streamType = VIDEO_QUALITY_STREAM_TYPE_Cellular;
+            [self performSegueWithIdentifier:@"pickStreamQualitySegue"
+                                      sender:[NSNumber numberWithShort:streamType]];
+        }
+        else if(indexPath.row == 1)
         {
             //wifi stream quality
-            [self performSegueWithIdentifier:@"pickWifiStreamQualitySegue" sender:nil];
+            VIDEO_QUALITY_STREAM_TYPE streamType = VIDEO_QUALITY_STREAM_TYPE_Wifi;
+            [self performSegueWithIdentifier:@"pickStreamQualitySegue"
+                                      sender:[NSNumber numberWithShort:streamType]];
+        }
+    }
+    else if(indexPath.section == ADVANCED_SECTION_NUM)
+    {
+        if(indexPath.row == 0)
+        {
+            //advanced
+            [self performSegueWithIdentifier:@"advancedSettingsSegue" sender:nil];
         }
     }
     else if(indexPath.section == FEEDBACK_SECTION_NUM)
@@ -314,6 +326,26 @@ NSString * const MUSIC_LIBRARY_SECTION_HEADER_TITLE = @"Library";
             //user Feedback
             feedbackBtnActionSheet = [self actionSheetForFeedbackButton];
             [feedbackBtnActionSheet showInView:[UIApplication sharedApplication].keyWindow];
+        }
+    }
+}
+
+#pragma mark - Segue Helper
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if([segue.identifier isEqualToString:@"pickStreamQualitySegue"])
+    {
+        NSNumber *numObj = (NSNumber *)sender;
+        VIDEO_QUALITY_STREAM_TYPE streamType = [numObj shortValue];
+        
+        [[segue destinationViewController] setStreamType:streamType];
+        
+        if(streamType == VIDEO_QUALITY_STREAM_TYPE_Cellular){
+            [[segue destinationViewController] setStreamQualityOptions:@[@240, @360, @720]];
+            [[segue destinationViewController] setDefaultStreamSetting:240];
+        }else if(streamType == VIDEO_QUALITY_STREAM_TYPE_Wifi){
+            [[segue destinationViewController] setStreamQualityOptions:@[@240, @360, @720]];
+            [[segue destinationViewController] setDefaultStreamSetting:720];
         }
     }
 }
@@ -408,7 +440,7 @@ NSString * const MUSIC_LIBRARY_SECTION_HEADER_TITLE = @"Library";
         
         NSString *title = @"iCloud";
         NSString *deviceName = [[UIDevice currentDevice] name];
-        NSString *message = [NSString stringWithFormat:@"This device (%@) is about to stop syncing with iCloud. Exisisting data in iCloud will not be affected.", deviceName];
+        NSString *message = [NSString stringWithFormat:@"This device (%@) is about to stop syncing with iCloud. \n\nThis action will not affect existing data in iCloud.", deviceName];
         SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
                                                                         message:message
                                                                  preferredStyle:SDCAlertControllerStyleAlert];

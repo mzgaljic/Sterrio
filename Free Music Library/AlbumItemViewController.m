@@ -33,7 +33,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
     //and queing up a specific album song
     NSMutableString *uniqueID = [NSMutableString string];
     [uniqueID appendString:NSStringFromClass([self class])];
-    [uniqueID appendString:self.album.album_id];
+    [uniqueID appendString:self.album.uniqueId];
     self.playbackContextUniqueId = uniqueID;
     self.emptyTableUserMessage = @"Album Empty";
     self.tableView.delegate = self;
@@ -277,7 +277,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
 - (PlaybackContext *)contextForSpecificSong:(Song *)aSong
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"song_id == %@", aSong.song_id];
+    request.predicate = [NSPredicate predicateWithFormat:@"song_id == %@", aSong.uniqueId];
     //descriptor doesnt really matter here
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
                                                                      ascending:YES];
@@ -306,7 +306,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
     NSManagedObjectContext *context = [CoreDataManager context];
 
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    NSPredicate *albumPredicate = [NSPredicate predicateWithFormat:@"album.album_id == %@", self.album.album_id];
+    NSPredicate *albumPredicate = [NSPredicate predicateWithFormat:@"album.album_id == %@", self.album.uniqueId];
     request.predicate = albumPredicate;
 
     NSSortDescriptor *sortDescriptor;

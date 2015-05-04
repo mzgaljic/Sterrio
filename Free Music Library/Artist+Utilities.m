@@ -49,7 +49,7 @@ NSString * const STANDALONE_SONGS_KEY = @"standAloneSongs";
     if(context == nil || name == nil)
         return nil;
     Artist *artist = [NSEntityDescription insertNewObjectForEntityForName:@"Artist" inManagedObjectContext:context];
-    artist.artist_id = [[NSObject UUID] copy];
+    artist.uniqueId = [[NSObject UUID] copy];
     artist.artistName = name;
     artist.smartSortArtistName = [name regularStringToSmartSortString];
     return artist;
@@ -63,7 +63,7 @@ NSString * const STANDALONE_SONGS_KEY = @"standAloneSongs";
     if(context == nil || name == nil)
         return nil;
     Artist *artist = [NSEntityDescription insertNewObjectForEntityForName:@"Artist" inManagedObjectContext:context];
-    artist.artist_id = [[NSObject UUID] copy];
+    artist.uniqueId = [[NSObject UUID] copy];
     artist.artistName = name;
     artist.smartSortArtistName = [name regularStringToSmartSortString];
     if(artist.smartSortArtistName.length == 0)  //edge case,if name itself is something like 'the', dont remove all chars! Keep original name.
@@ -77,7 +77,7 @@ NSString * const STANDALONE_SONGS_KEY = @"standAloneSongs";
 {
     if(artist1 == artist2)
         return YES;
-    if([[artist1 artist_id] isEqualToString:[artist2 artist_id]])
+    if([[artist1 uniqueId] isEqualToString:[artist2 uniqueId]])
         return YES;
     
     return NO;

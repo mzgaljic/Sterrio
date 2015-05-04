@@ -32,7 +32,7 @@
 - (BOOL)isEqualToSong:(Song *)aSong
    compareWithContext:(PlaybackContext *)aContext
 {
-    BOOL sameSongIDs = [self.nowPlaying.song_id isEqualToString:aSong.song_id];
+    BOOL sameSongIDs = [self.nowPlaying.uniqueId isEqualToString:aSong.uniqueId];
     BOOL sameContexts = ([self.context isEqualToContext:aContext]
                          || (self.context == nil && aContext == nil));
     return (sameSongIDs && sameContexts);

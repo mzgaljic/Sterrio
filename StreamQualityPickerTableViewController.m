@@ -1,45 +1,54 @@
 //
-//  WifiPlaybackTableViewController.m
+//  StreamQualityPickerTableViewController.m
 //  Free Music Library
 //
 //  Created by Mark Zgaljic on 4/29/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
-#import "WifiPlaybackTableViewController.h"
+#import "StreamQualityPickerTableViewController.h"
 #import "PreferredFontSizeUtility.h"
 
-@interface WifiPlaybackTableViewController ()
+@interface StreamQualityPickerTableViewController ()
 {
-    NSArray *wifiQualityOptions;
-    short currentWifiQualitySelection;
+    short currentStreamQualitySelection;
 }
 @end
-@implementation WifiPlaybackTableViewController
+@implementation StreamQualityPickerTableViewController
 
-short const defaultWifiQuality = 720;
-int const WIFI_QUALITY_OPTIONS_SECTION_NUM = 0;
+int const STREAM_QUALITY_OPTIONS_SECTION_NUM = 0;
 int const RESET_DEFUALT_SECTION_NUM = 1;
 
 #pragma mark - lifecycle
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = @"Wifi Playback Quality";
-    wifiQualityOptions = @[@240, @360, @720];
-    currentWifiQualitySelection = [AppEnvironmentConstants preferredWifiStreamSetting];
+    if(self.streamType == VIDEO_QUALITY_STREAM_TYPE_Cellular){
+        self.title = @"Cellular Playback Quality";
+        currentStreamQualitySelection = [AppEnvironmentConstants preferredCellularStreamSetting];
+    }
+    else if(self.streamType == VIDEO_QUALITY_STREAM_TYPE_Wifi){
+        self.title = @"Wifi Playback Quality";
+        currentStreamQualitySelection = [AppEnvironmentConstants preferredWifiStreamSetting];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [AppEnvironmentConstants setPreferredWifiStreamSetting:currentWifiQualitySelection];
+    
+    if(self.streamType == VIDEO_QUALITY_STREAM_TYPE_Cellular){
+        [AppEnvironmentConstants setPreferredCellularStreamSetting:currentStreamQualitySelection];
+    }
+    else if(self.streamType == VIDEO_QUALITY_STREAM_TYPE_Wifi){
+        [AppEnvironmentConstants setPreferredWifiStreamSetting:currentStreamQualitySelection];
+    }
 }
 
 #pragma mark - UITableView Data source delegate stuff
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    if(currentWifiQualitySelection != defaultWifiQuality)
+    if(currentStreamQualitySelection != self.defaultStreamSetting)
         return 2;
     else
         return 1;
@@ -47,9 +56,10 @@ int const RESET_DEFUALT_SECTION_NUM = 1;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if(section == WIFI_QUALITY_OPTIONS_SECTION_NUM)
-        return wifiQualityOptions.count;
-    else if(section == RESET_DEFUALT_SECTION_NUM && currentWifiQualitySelection != defaultWifiQuality)
+    if(section == STREAM_QUALITY_OPTIONS_SECTION_NUM)
+        return self.streamQualityOptions.count;
+    else if(section == RESET_DEFUALT_SECTION_NUM
+            && currentStreamQualitySelection != self.defaultStreamSetting)
         return 1;
     else
         return 0;
@@ -62,7 +72,7 @@ int const RESET_DEFUALT_SECTION_NUM = 1;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if(section == WIFI_QUALITY_OPTIONS_SECTION_NUM)
+    if(section == STREAM_QUALITY_OPTIONS_SECTION_NUM)
         return [UIScreen mainScreen].bounds.size.height * 0.06;
     else
         return [UIScreen mainScreen].bounds.size.height * 0.13;
@@ -70,24 +80,27 @@ int const RESET_DEFUALT_SECTION_NUM = 1;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *cellId = @"wifi quality item cell";
+    NSString *cellId = @"stream quality item cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId
                                                             forIndexPath:indexPath];
     
     float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
     
-    if(indexPath.section == WIFI_QUALITY_OPTIONS_SECTION_NUM)
+    if(indexPath.section == STREAM_QUALITY_OPTIONS_SECTION_NUM)
     {
-        NSNumber *obj = wifiQualityOptions[indexPath.row];
+        NSNumber *obj = self.streamQualityOptions[indexPath.row];
         short qualityForRow = [obj shortValue];
         cell.textLabel.text = [NSString stringWithFormat:@"%ip", qualityForRow];
-        cell.textLabel.textAlignment = NSTextAlignmentNatural;
+        cell.textLabel.textAlignment = NSTextAlignmentLeft;
+        cell.detailTextLabel.text = nil;
         
-        if(qualityForRow == currentWifiQualitySelection)
-            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        if(qualityForRow == currentStreamQualitySelection)
+            cell.tintColor = [UIColor defaultAppColorScheme];
         else
-            cell.accessoryType = UITableViewCellAccessoryNone;
-        
+            cell.tintColor = [UIColor clearColor];
+
+        cell.textLabel.textColor = [UIColor blackColor];
         cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                               size:fontSize];
     }
@@ -98,12 +111,11 @@ int const RESET_DEFUALT_SECTION_NUM = 1;
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         cell.detailTextLabel.text = nil;
         cell.accessoryType = UITableViewCellAccessoryNone;
-        
+        cell.tintColor = [UIColor defaultAppColorScheme];
         cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                               size:fontSize];
     }
     
-    cell.tintColor = [UIColor defaultAppColorScheme];
     return cell;
 }
 
@@ -111,19 +123,19 @@ int const RESET_DEFUALT_SECTION_NUM = 1;
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    NSNumber *oldQuality = [NSNumber numberWithShort:currentWifiQualitySelection];
-    int oldRow = (int)[wifiQualityOptions indexOfObject:oldQuality];
+    NSNumber *oldQuality = [NSNumber numberWithShort:currentStreamQualitySelection];
+    int oldRow = (int)[self.streamQualityOptions indexOfObject:oldQuality];
     
-    if(indexPath.section == WIFI_QUALITY_OPTIONS_SECTION_NUM)
+    if(indexPath.section == STREAM_QUALITY_OPTIONS_SECTION_NUM)
     {
-        short wifiQualityBeforeCellTap = currentWifiQualitySelection;
-        NSNumber *obj = wifiQualityOptions[indexPath.row];
-        currentWifiQualitySelection = [obj shortValue];
-        BOOL displayRestoreDefaults = (currentWifiQualitySelection != defaultWifiQuality
+        short streamQualityBeforeCellTap = currentStreamQualitySelection;
+        NSNumber *obj = self.streamQualityOptions[indexPath.row];
+        currentStreamQualitySelection = [obj shortValue];
+        BOOL displayRestoreDefaults = (currentStreamQualitySelection != self.defaultStreamSetting
                                        && [self.tableView numberOfSections] != 2);
         
-        BOOL deleteRestoreDefaults = (currentWifiQualitySelection == defaultWifiQuality
-                                      && wifiQualityBeforeCellTap != currentWifiQualitySelection);
+        BOOL deleteRestoreDefaults = (currentStreamQualitySelection == self.defaultStreamSetting
+                                      && streamQualityBeforeCellTap != currentStreamQualitySelection);
         
         [self.tableView beginUpdates];
         if(displayRestoreDefaults){
@@ -139,7 +151,7 @@ int const RESET_DEFUALT_SECTION_NUM = 1;
         [self.tableView beginUpdates];
         NSArray *paths = @[
                            [NSIndexPath indexPathForRow:oldRow
-                                              inSection:WIFI_QUALITY_OPTIONS_SECTION_NUM],
+                                              inSection:STREAM_QUALITY_OPTIONS_SECTION_NUM],
                            indexPath
                            ];
         //doing this to preserve the nice slide-in animation for the second section.
@@ -153,9 +165,9 @@ int const RESET_DEFUALT_SECTION_NUM = 1;
     }
     else if(indexPath.section == RESET_DEFUALT_SECTION_NUM)
     {
-        currentWifiQualitySelection = defaultWifiQuality;
-        NSNumber *obj = [NSNumber numberWithShort:defaultWifiQuality];
-        int newRow = (int)[wifiQualityOptions indexOfObject:obj];
+        currentStreamQualitySelection = self.defaultStreamSetting;
+        NSNumber *obj = [NSNumber numberWithInt:self.defaultStreamSetting];
+        int newRow = (int)[self.streamQualityOptions indexOfObject:obj];
         
         [self.tableView beginUpdates];
         [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:RESET_DEFUALT_SECTION_NUM]
@@ -165,9 +177,9 @@ int const RESET_DEFUALT_SECTION_NUM = 1;
         [self.tableView beginUpdates];
         NSArray *paths = @[
                            [NSIndexPath indexPathForRow:oldRow
-                                              inSection:WIFI_QUALITY_OPTIONS_SECTION_NUM],
+                                              inSection:STREAM_QUALITY_OPTIONS_SECTION_NUM],
                            [NSIndexPath indexPathForRow:newRow
-                                              inSection:WIFI_QUALITY_OPTIONS_SECTION_NUM]
+                                              inSection:STREAM_QUALITY_OPTIONS_SECTION_NUM]
                            ];
         
         [self.tableView reloadRowsAtIndexPaths:paths

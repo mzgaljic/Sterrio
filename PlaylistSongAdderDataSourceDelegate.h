@@ -11,6 +11,5 @@
 
 @protocol PlaylistSongAdderDataSourceDelegate <NSObject>
 - (void)setSuccessNavBarButtonStringValue:(NSString *)newValue;
-- (PLAYLIST_STATUS)currentPlaylistStatus;
-- (NSOrderedSet *)existingPlaylistSongs;
+- (BOOL)isUserCreatingPlaylistFromScratch;
 @end

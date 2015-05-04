@@ -55,8 +55,7 @@ static BOOL updatingPlayerViewDisabled = NO;
     player = nil;
     
     MyAVPlayer *newPlayer = [[MyAVPlayer  alloc] initWithPlayerItem:item];
-#warning use users pref to decide if audio only external playback mode should be used.
-    newPlayer.allowsExternalPlayback = NO;
+    newPlayer.allowsExternalPlayback = ![AppEnvironmentConstants shouldOnlyAirplayAudio];
     [newPlayer allowSongDidFinishNotificationToProceed:allowSongDidFinishToExecute];
     [MusicPlaybackController setRawAVPlayer:newPlayer];
     [MusicPlaybackController setAVPlayerTimeObserver:nil];

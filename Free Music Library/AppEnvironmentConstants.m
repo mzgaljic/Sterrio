@@ -11,6 +11,7 @@
 #import "AppDelegateSetupHelper.h"
 #import "CoreDataManager.h"
 #import "SDCAlertController.h"
+#import "MusicPlaybackController.h"
 
 #import <CoreTelephony/CTCallCenter.h>
 #import <CoreTelephony/CTCall.h>
@@ -24,28 +25,26 @@ static BOOL shouldShowWhatsNewScreen = NO;
 static BOOL shouldDisplayWelcomeScreen = NO;
 static BOOL isFirstTimeAppLaunched = NO;
 static BOOL whatsNewMsgIsNew = NO;
-static BOOL USER_EDITING_MEDIA = YES;
+static BOOL isBadTimeToMergeEnsemble = NO;
 static BOOL userIsPreviewingAVideo = NO;
-
+static BOOL tabBarIsHidden = NO;
 static BOOL isIcloudSwitchWaitingForActionToComplete = NO;
-
 static BOOL playbackTimerActive = NO;
 static NSInteger activePlaybackTimerThreadNum;
-
 static PLABACK_REPEAT_MODE repeatType;
-
 static PREVIEW_PLAYBACK_STATE currentPreviewPlayerState = PREVIEW_PLAYBACK_STATE_Uninitialized;
-
-static int preferredSongCellHeight;
-static short preferredWifiStreamValue;
-static short preferredCellularStreamValue;
-static BOOL icloudSyncEnabled;
-
-static BOOL tabBarIsHidden = NO;
 
 static int navBarHeight;
 static short statusBarHeight;
 static NSInteger lastPlayerViewIndex = NSNotFound;
+
+//setting vars
+static int preferredSongCellHeight;
+static short preferredWifiStreamValue;
+static short preferredCellularStreamValue;
+static BOOL icloudSyncEnabled;
+static BOOL shouldOnlyAirplayAudio;
+//end of setting vars
 
 
 //runtime configuration
@@ -136,14 +135,13 @@ static NSInteger lastPlayerViewIndex = NSNotFound;
 }
 
 
-+ (BOOL)isUserEditingSongOrAlbumOrArtist
++ (BOOL)isABadTimeToMergeEnsemble
 {
-    return USER_EDITING_MEDIA;
+    return isBadTimeToMergeEnsemble;
 }
-
-+ (void)setUserIsEditingSongOrAlbumOrArtist:(BOOL)aValue
++ (void)setIsBadTimeToMergeEnsemble:(BOOL)aValue
 {
-    USER_EDITING_MEDIA = aValue;
+    isBadTimeToMergeEnsemble = aValue;
 }
 
 + (BOOL)isUserPreviewingAVideo
@@ -278,6 +276,21 @@ static NSLock *playbackTimerLock;
     preferredCellularStreamValue = resolutionValue;
 }
 
++ (void)setShouldOnlyAirplayAudio:(BOOL)airplayAudio
+{
+    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+    shouldOnlyAirplayAudio = airplayAudio;
+    if(shouldOnlyAirplayAudio)
+        player.allowsExternalPlayback = NO;
+    else
+        player.allowsExternalPlayback = YES;
+}
+
++ (BOOL)shouldOnlyAirplayAudio
+{
+    return shouldOnlyAirplayAudio;
+}
+
 + (BOOL)icloudSyncEnabled
 {
     return icloudSyncEnabled;
@@ -309,8 +322,10 @@ static int icloudEnabledCounter = 0;
 + (void)tryToDeleechMainContextEnsemble
 {
     CDEPersistentStoreEnsemble *ensemble =[[CoreDataManager sharedInstance] ensembleForMainContext];
-    if(! ensemble.isLeeched)
+    if(! ensemble.isLeeched){
+        isIcloudSwitchWaitingForActionToComplete = NO;
         return;
+    }
     
     [ensemble deleechPersistentStoreWithCompletion:^(NSError *error) {
         if(error)
@@ -351,8 +366,10 @@ static int icloudEnabledCounter = 0;
 + (void)tryToLeechMainContextEnsemble
 {
     CDEPersistentStoreEnsemble *ensemble = [[CoreDataManager sharedInstance] ensembleForMainContext];
-    if(ensemble.isLeeched)
+    if(ensemble.isLeeched){
+        isIcloudSwitchWaitingForActionToComplete = NO;
         return;
+    }
     
     [ensemble leechPersistentStoreWithCompletion:^(NSError *error) {
         if(error)

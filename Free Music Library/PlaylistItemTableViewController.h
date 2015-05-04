@@ -19,7 +19,7 @@
 #import <FXImageView/UIImage+FX.h>
 
 @class StackController;
-@interface PlaylistItemTableViewController : CoreDataCustomTableViewController
+@interface PlaylistItemTableViewController : MyViewController
                                                             <UISearchBarDelegate,
                                                             UITableViewDataSource,
                                                             UITableViewDelegate,

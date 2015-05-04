@@ -232,7 +232,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     NSUInteger upNextSongCount = [[MZPlaybackQueue sharedInstance] numMoreSongsInUpNext];
     NSUInteger mainQueueSongCount = [[MZPlaybackQueue sharedInstance] numMoreSongsInMainQueue];
     if(upNextSongCount == 0 && mainQueueSongCount == 0){
-        if([[nowPlayingObject nowPlaying].song_id isEqualToString:song.song_id])
+        if([[nowPlayingObject nowPlaying].uniqueId isEqualToString:song.uniqueId])
             return YES;
     }
     return NO;
@@ -242,7 +242,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 + (BOOL)isSongFirstInQueue:(Song *)song
 {
     if([playbackQueue numSongsInEntireMainQueue] == [playbackQueue numMoreSongsInMainQueue]+1){
-        if([[nowPlayingObject nowPlaying].song_id isEqualToString:song.song_id])
+        if([[nowPlayingObject nowPlaying].uniqueId isEqualToString:song.uniqueId])
             return YES;
     }
     return NO;

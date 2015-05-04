@@ -11,20 +11,23 @@
 @implementation Playlist (Utilities)
 
 + (Playlist *)createNewPlaylistWithName:(NSString *)name
-                             usingSongs:(NSArray *)songs
                        inManagedContext:(NSManagedObjectContext *)context
 {
-    if(context == nil || songs == nil)
+    if(context == nil || name == nil)
         return nil;
-    Playlist *newPlaylist = [Playlist createNewPlaylistWithName:name inManagedContext:context];
-    newPlaylist.playlistSongs = [NSOrderedSet orderedSetWithArray:songs];
+    
+    Playlist *newPlaylist = [NSEntityDescription insertNewObjectForEntityForName:@"Playlist" inManagedObjectContext:context];
+    newPlaylist.uniqueId = [[NSObject UUID] copy];
+    newPlaylist.playlistName = name;
+    newPlaylist.creationDate = [NSDate date];
+    
     return newPlaylist;
 }
 
 + (BOOL)arePlaylistsEqual:(NSArray *)arrayOfTwoPlaylistObjects
 {
     if(arrayOfTwoPlaylistObjects.count == 2){
-        if([[arrayOfTwoPlaylistObjects[0] playlist_id] isEqualToString:[arrayOfTwoPlaylistObjects[1] playlist_id]])
+        if([[arrayOfTwoPlaylistObjects[0] uniqueId] isEqualToString:[arrayOfTwoPlaylistObjects[1] uniqueId]])
             return YES;
     }
     return NO;
@@ -34,20 +37,10 @@
 {
     if(playlist1 == playlist2)
         return YES;
-    if([[playlist1 playlist_id] isEqualToString:[playlist2 playlist_id]])
+    if([[playlist1 uniqueId] isEqualToString:[playlist2 uniqueId]])
         return YES;
     
     return NO;
-}
-
-#pragma mark - private implementation
-+ (Playlist *)createNewPlaylistWithName:(NSString *)name inManagedContext:(NSManagedObjectContext *)context
-{
-    Playlist *playlist = [NSEntityDescription insertNewObjectForEntityForName:@"Playlist" inManagedObjectContext:context];
-    playlist.playlist_id = [[NSObject UUID] copy];
-    playlist.playlistName = name;
-    //status is 0 by default
-    return playlist;
 }
 
 @end

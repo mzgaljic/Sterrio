@@ -45,7 +45,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     self.dataSource = self;
     
     [self setProductionModeValue];
-    [AppEnvironmentConstants setUserIsEditingSongOrAlbumOrArtist: YES];
+    [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:YES];
     userReplacedDefaultYoutubeArt = NO;
     
     if(! self.creatingANewSong){
@@ -64,7 +64,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 
 - (void)dealloc
 {
-    [AppEnvironmentConstants setUserIsEditingSongOrAlbumOrArtist: NO];
+    [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:NO];
     //doing this just in case. found a bug once where tab bar was gone after this editor closing.
     [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@NO];
 }
@@ -474,19 +474,24 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 {
                     //save success
                     if(! userReplacedDefaultYoutubeArt){
-                        [LQAlbumArtBackgroundUpdater downloadHqAlbumArtWhenConvenientForSongId:_songIAmEditing.song_id];
+                        [LQAlbumArtBackgroundUpdater downloadHqAlbumArtWhenConvenientForSongId:_songIAmEditing.uniqueId];
                         [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
                     }
                     
+                    [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:NO];
+                    
                     //now lets go the extra mile and try to merge here.
                     CDEPersistentStoreEnsemble *ensemble = [[CoreDataManager sharedInstance] ensembleForMainContext];
-                    [ensemble mergeWithCompletion:^(NSError *error) {
-                        if(error){
-                            NSLog(@"Saved, but couldnt merge.");
-                        } else{
-                            NSLog(@"Just Merged after save.");
-                        }
-                    }];
+                    if(ensemble.isLeeched)
+                    {
+                        [ensemble mergeWithCompletion:^(NSError *error) {
+                            if(error){
+                                NSLog(@"Saved song (editing mode), but couldnt merge.");
+                            } else{
+                                NSLog(@"Just Merged after saving song (editing mode).");
+                            }
+                        }];
+                    }
                 }
                 
             }  //end 'creatingNewSong'
@@ -683,14 +688,14 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 {
     if(_songIAmEditing.album)
     {
-        if(! [_songIAmEditing.album.album_id isEqualToString:album.album_id])
+        if(! [_songIAmEditing.album.uniqueId isEqualToString:album.uniqueId])
             [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];
     }
     
     _songIAmEditing.album = album;
     if(_songIAmEditing.artist)
     {
-        if(! [_songIAmEditing.artist.artist_id isEqualToString:album.artist.artist_id]
+        if(! [_songIAmEditing.artist.uniqueId isEqualToString:album.artist.uniqueId]
            && album.artist != nil)
             [MZCoreDataModelDeletionService removeSongFromItsArtist:_songIAmEditing];
         else
@@ -718,7 +723,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 {
     if(_songIAmEditing.artist)
     {
-        if(! [_songIAmEditing.artist.artist_id isEqualToString:artist.artist_id])
+        if(! [_songIAmEditing.artist.uniqueId isEqualToString:artist.uniqueId])
             [MZCoreDataModelDeletionService removeSongFromItsArtist:_songIAmEditing];
     }
     

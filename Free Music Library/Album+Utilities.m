@@ -54,7 +54,7 @@ NSString * const ARTIST_KEY = @"artist";
     if(context == nil || name == nil)
         return nil;
     Album *album = [NSEntityDescription insertNewObjectForEntityForName:@"Album" inManagedObjectContext:context];
-    album.album_id = [[NSObject UUID] copy];
+    album.uniqueId = [[NSObject UUID] copy];
     album.albumName = name;
     album.smartSortAlbumName = [name regularStringToSmartSortString];
     if(album.smartSortAlbumName.length == 0)  //edge case,if name itself is something like 'the', dont remove all chars! Keep original name.
@@ -76,7 +76,7 @@ NSString * const ARTIST_KEY = @"artist";
 {
     if(album1 == album2)
         return YES;
-    if([[album1 album_id] isEqualToString:[album2 album_id]])
+    if([[album1 uniqueId] isEqualToString:[album2 uniqueId]])
         return YES;
     
     return NO;

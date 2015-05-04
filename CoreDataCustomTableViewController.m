@@ -89,6 +89,10 @@ typedef enum{
 
 - (void)setSearchFetchedResultsController:(NSFetchedResultsController *)newfrc
 {
+    if(newfrc == nil){
+        _searchFetchedResultsController = nil;
+        return;
+    }
     if(tableView == nil && newfrc != nil)
         [self alertUserAboutSetupErrorAndAbort];
     NSFetchedResultsController *oldfrc = _searchFetchedResultsController;
@@ -114,6 +118,10 @@ typedef enum{
 
 - (void)setFetchedResultsController:(NSFetchedResultsController *)newfrc
 {
+    if(newfrc == nil){
+        _fetchedResultsController = nil;
+        return;
+    }
     if(tableView == nil && newfrc != nil)
         [self alertUserAboutSetupErrorAndAbort];
     NSFetchedResultsController *oldfrc = _fetchedResultsController;

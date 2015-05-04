@@ -178,10 +178,26 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     // The code block will be run asynchronously in a last-in-first-out queue, so that when
     // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
     [stackController addBlock:^{
-        
-        UIImage *albumArt;
-        if(weaksong.albumArt){
-            albumArt = [weaksong.albumArt imageFromImageData];
+        __block UIImage *albumArt;
+        if(weaksong){
+            NSString *artObjId = weaksong.albumArt.uniqueId;
+            if(artObjId){
+                
+                //this is a background queue. fetch the object (image blob) using background context!
+                NSManagedObjectContext *context = [CoreDataManager stackControllerThreadContext];
+                NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"SongAlbumArt"];
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", artObjId];
+                request.predicate = predicate;
+                
+                [context performBlockAndWait:^{
+                    NSArray *result = [context executeFetchRequest:request error:nil];
+                    if(result.count == 1)
+                        albumArt = [result[0] imageFromImageData];
+                }];
+                
+                if(albumArt == nil)
+                    return;  //no art loaded lol.
+            }
         }
         
         // The block will be processed on a background Grand Central Dispatch queue.

@@ -76,6 +76,8 @@
 - (NSArray *)persistentStoreEnsemble:(CDEPersistentStoreEnsemble *)ensemble
   globalIdentifiersForManagedObjects:(NSArray *)objects
 {
+    return [objects valueForKeyPath:@"uniqueId"];
+    /*
     NSMutableArray *arrayOfIds = [NSMutableArray array];
     for(NSUInteger i = 0; i < objects.count; i++)
     {
@@ -87,43 +89,28 @@
             [arrayOfIds addObject:[NSNull null]];
     }
     return arrayOfIds;
+     */
+}
+
+- (BOOL)persistentStoreEnsemble:(CDEPersistentStoreEnsemble*)ensemble shouldSaveMergedChangesInManagedObjectContext:(NSManagedObjectContext *)savingContext reparationManagedObjectContext:(NSManagedObjectContext *)reparationContext
+{
+    return ([AppEnvironmentConstants isABadTimeToMergeEnsemble]) ? NO : YES;
 }
 
 - (NSString *)globalIdentifierForObject:(id)someObject
 {
-    //someObject properties should ONLY be accessed. Not modified (this is a background thread)
-    
-    if([someObject isMemberOfClass:[Song class]])
-    {
-        Song *aSong = (Song *)someObject;
-        return aSong.song_id;
-    }
-    else if([someObject isMemberOfClass:[SongAlbumArt class]])
-    {
-        SongAlbumArt *someSongsAlbumArt = (SongAlbumArt *)someObject;
-        return someSongsAlbumArt.albumArt_id;
-    }
-    else if([someObject isMemberOfClass:[Artist class]])
-    {
-        Artist *anArtist = (Artist *)someObject;
-        return anArtist.artist_id;
-    }
-    else if([someObject isMemberOfClass:[Album class]])
-    {
-        Album *anAlbum = (Album *)someObject;
-        return anAlbum.album_id;
-    }
-    else if([someObject isMemberOfClass:[Playlist class]])
-    {
-        Playlist *aPlaylist = (Playlist *)someObject;
-        return aPlaylist.playlist_id;
-    }
-    else if([someObject isMemberOfClass:[AlbumAlbumArt class]])
-    {
-        //dont care, this class only has transient properties, will not be saved to disk.
+    /*
+    if([someObject respondsToSelector:@selector(uniqueId)]){
+        
+    } else
         return nil;
+    //someObject properties should ONLY be accessed. Not modified (this is a background thread)
+    for (NSEntityDescription* entityDescription in [self managedObjectModel]) {
+        if ([[entityDescription propertiesByName] objectForKey:@"someProperty"] != nil) {
+            // objects of this entity support the property you're looking for
+        }
     }
-    
+    */
     return nil;
 }
 

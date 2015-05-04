@@ -1,5 +1,5 @@
 //
-//  SongAlbumArt.h
+//  PlaylistItem.h
 //  Free Music Library
 //
 //  Created by Mark Zgaljic on 5/3/15.
@@ -9,12 +9,13 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class Song;
+@class Playlist, Song;
 
-@interface SongAlbumArt : NSManagedObject
+@interface PlaylistItem : NSManagedObject
 
+@property (nonatomic, retain) NSNumber * index;
 @property (nonatomic, retain) NSString * uniqueId;
-@property (nonatomic, retain) NSData * image;
-@property (nonatomic, retain) Song *associatedSong;
+@property (nonatomic, retain) Song *song;
+@property (nonatomic, retain) Playlist *playlist;
 
 @end

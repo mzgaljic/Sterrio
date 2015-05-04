@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="model1" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7549" systemVersion="14D136" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="iOS 7.0">
     <entity name="Album" representedClassName="Album" syncable="YES">
-        <attribute name="album_id" attributeType="String" syncable="YES"/>
         <attribute name="albumName" optional="YES" attributeType="String" spotlightIndexingEnabled="YES" syncable="YES"/>
         <attribute name="smartSortAlbumName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="uniqueId" attributeType="String" syncable="YES"/>
         <relationship name="albumArt" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="AlbumAlbumArt" inverseName="associatedAlbum" inverseEntity="AlbumAlbumArt" syncable="YES"/>
         <relationship name="albumSongs" toMany="YES" deletionRule="Cascade" destinationEntity="Song" inverseName="album" inverseEntity="Song" syncable="YES"/>
         <relationship name="artist" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Artist" inverseName="albums" inverseEntity="Artist" syncable="YES"/>
@@ -14,40 +14,47 @@
         <relationship name="associatedAlbum" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Album" inverseName="albumArt" inverseEntity="Album" syncable="YES"/>
     </entity>
     <entity name="Artist" representedClassName="Artist" syncable="YES">
-        <attribute name="artist_id" attributeType="String" syncable="YES"/>
         <attribute name="artistName" optional="YES" attributeType="String" spotlightIndexingEnabled="YES" syncable="YES"/>
         <attribute name="smartSortArtistName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="uniqueId" attributeType="String" syncable="YES"/>
         <relationship name="albums" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Album" inverseName="artist" inverseEntity="Album" syncable="YES"/>
         <relationship name="standAloneSongs" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Song" inverseName="artist" inverseEntity="Song" syncable="YES"/>
     </entity>
     <entity name="Playlist" representedClassName="Playlist" syncable="YES">
-        <attribute name="playlist_id" attributeType="String" syncable="YES"/>
+        <attribute name="creationDate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="playlistName" optional="YES" attributeType="String" spotlightIndexingEnabled="YES" syncable="YES"/>
-        <attribute name="status" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
-        <relationship name="playlistSongs" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Song" inverseName="playlistIAmIn" inverseEntity="Song" syncable="YES"/>
+        <attribute name="uniqueId" attributeType="String" syncable="YES"/>
+        <relationship name="playlistItems" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="PlaylistItem" inverseName="playlist" inverseEntity="PlaylistItem" syncable="YES"/>
+    </entity>
+    <entity name="PlaylistItem" representedClassName="PlaylistItem" syncable="YES">
+        <attribute name="index" optional="YES" attributeType="Integer 16" minValueString="0" syncable="YES"/>
+        <attribute name="uniqueId" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="playlist" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Playlist" inverseName="playlistItems" inverseEntity="Playlist" syncable="YES"/>
+        <relationship name="song" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Song" inverseName="playlistItems" inverseEntity="Song" syncable="YES"/>
     </entity>
     <entity name="Song" representedClassName="Song" syncable="YES">
         <attribute name="duration" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="smartSortSongName" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="song_id" attributeType="String" syncable="YES"/>
         <attribute name="songName" optional="YES" attributeType="String" spotlightIndexingEnabled="YES" syncable="YES"/>
-        <attribute name="youtube_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="uniqueId" attributeType="String" syncable="YES"/>
+        <attribute name="youtube_id" optional="YES" attributeType="String" maxValueString="22" syncable="YES"/>
         <relationship name="album" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Album" inverseName="albumSongs" inverseEntity="Album" syncable="YES"/>
         <relationship name="albumArt" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="SongAlbumArt" inverseName="associatedSong" inverseEntity="SongAlbumArt" syncable="YES"/>
         <relationship name="artist" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Artist" inverseName="standAloneSongs" inverseEntity="Artist" syncable="YES"/>
-        <relationship name="playlistIAmIn" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Playlist" inverseName="playlistSongs" inverseEntity="Playlist" syncable="YES"/>
+        <relationship name="playlistItems" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="PlaylistItem" inverseName="song" inverseEntity="PlaylistItem" syncable="YES"/>
     </entity>
     <entity name="SongAlbumArt" representedClassName="SongAlbumArt" syncable="YES">
-        <attribute name="albumArt_id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="image" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="uniqueId" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="associatedSong" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Song" inverseName="albumArt" inverseEntity="Song" syncable="YES"/>
     </entity>
     <elements>
         <element name="Album" positionX="-9657" positionY="-324" width="128" height="133"/>
         <element name="AlbumAlbumArt" positionX="-9938" positionY="-324" width="128" height="88"/>
         <element name="Artist" positionX="-10010" positionY="-46" width="128" height="118"/>
-        <element name="Playlist" positionX="-9722" positionY="99" width="128" height="103"/>
-        <element name="Song" positionX="-9414" positionY="-108" width="126" height="178"/>
+        <element name="Playlist" positionX="-9909" positionY="173" width="128" height="103"/>
+        <element name="Song" positionX="-9459" positionY="-108" width="126" height="178"/>
         <element name="SongAlbumArt" positionX="-9704" positionY="-124" width="128" height="88"/>
+        <element name="PlaylistItem" positionX="-9677" positionY="185" width="128" height="103"/>
     </elements>
 </model>

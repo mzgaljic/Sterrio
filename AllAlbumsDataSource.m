@@ -190,7 +190,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         
         NSMutableString *albumDetailContextId = [NSMutableString string];
         [albumDetailContextId appendString:NSStringFromClass([AlbumItemViewController class])];
-        [albumDetailContextId appendString:album.album_id];
+        [albumDetailContextId appendString:album.uniqueId];
         
         PlaybackContext *albumDetailContext = [[PlaybackContext alloc] initWithFetchRequest:nil
                                                                             prettyQueueName:@"" contextId:albumDetailContextId];
@@ -214,7 +214,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     }
     else if(self.dataSourceType == ALBUM_DATA_SRC_TYPE_Single_Album_Picker)
     {
-        BOOL isCurrentlySelectedAlbum = [self.selectedAlbum.album_id isEqualToString:album.album_id];
+        BOOL isCurrentlySelectedAlbum = [self.selectedAlbum.uniqueId isEqualToString:album.uniqueId];
         
         if(isCurrentlySelectedAlbum){
             UIColor *appThemeSuperLight = [[[[[UIColor defaultAppColorScheme] lighterColor] lighterColor] lighterColor] lighterColor];
@@ -246,9 +246,26 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     // The code block will be run asynchronously in a last-in-first-out queue, so that when
     // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
     [stackController addBlock:^{
-        UIImage *albumArt;
-        if(weakalbum.albumArt){
-            albumArt = [weakalbum.albumArt imageWithSize:cellImgSize];
+        __block UIImage *albumArt;
+        if(weakalbum){
+            NSString *weakAlbumId = weakalbum.uniqueId;
+            
+            //this is a background queue. fetch the object (image blob) using background context!
+            NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Album"];
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", weakAlbumId];
+            request.predicate = predicate;
+            
+            NSManagedObjectContext *context = [CoreDataManager stackControllerThreadContext];
+            [context performBlockAndWait:^{
+                NSArray *result = [context executeFetchRequest:request error:nil];
+                if(result.count == 1){
+                    Album *fetchedAlbum = result[0];
+                    albumArt = [fetchedAlbum.albumArt imageWithSize:cellImgSize];
+                }
+            }];
+            
+            if(albumArt == nil)
+                return;  //no album art loaded lol.
         }
         
         // The block will be processed on a background Grand Central Dispatch queue.
@@ -536,7 +553,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
 - (PlaybackContext *)contextForSpecificAlbum:(Album *)anAlbum
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY album.album_id == %@", anAlbum.album_id];
+    request.predicate = [NSPredicate predicateWithFormat:@"ANY album.album_id == %@", anAlbum.uniqueId];
     
     NSSortDescriptor *sortDescriptor;
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"

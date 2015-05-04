@@ -59,7 +59,7 @@
 + (BOOL)areSongsEqual:(NSArray *)arrayOfTwoSongObjects
 {
     if(arrayOfTwoSongObjects.count == 2){
-        if([[arrayOfTwoSongObjects[0] song_id] isEqualToString:[arrayOfTwoSongObjects[1] song_id]])
+        if([[arrayOfTwoSongObjects[0] uniqueId] isEqualToString:[arrayOfTwoSongObjects[1] uniqueId]])
             return YES;
     }
     return NO;
@@ -69,7 +69,17 @@
 {
     if(song1 == song2)
         return YES;
-    if([[song1 song_id] isEqualToString:[song2 song_id]])
+    if([[song1 uniqueId] isEqualToString:[song2 uniqueId]])
+        return YES;
+    
+    return NO;
+}
+
+- (BOOL)isEqualToSong:(Song *)aSong
+{
+    if(self == aSong)
+        return YES;
+    if([[self uniqueId] isEqualToString:[aSong uniqueId]])
         return YES;
     
     return NO;
@@ -80,7 +90,7 @@
 {
     Song *song = [NSEntityDescription insertNewObjectForEntityForName:@"Song"
                                                inManagedObjectContext:context];
-    song.song_id = [[NSObject UUID] copy];
+    song.uniqueId = [[NSObject UUID] copy];
     song.songName = name;
     song.smartSortSongName = [name regularStringToSmartSortString];
     if(song.smartSortSongName.length == 0)  //edge case...if name itself is just something like 'the', dont remove all characters! Keep original name.
@@ -93,7 +103,7 @@
 {
     Song *song = [NSEntityDescription insertNewObjectForEntityForName:@"Song"
                                                inManagedObjectContext:context];
-    song.song_id = [[NSObject UUID] copy];
+    song.uniqueId = [[NSObject UUID] copy];
     return song;
 }
 
