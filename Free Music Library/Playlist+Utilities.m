@@ -19,7 +19,7 @@
     Playlist *newPlaylist = [NSEntityDescription insertNewObjectForEntityForName:@"Playlist" inManagedObjectContext:context];
     newPlaylist.uniqueId = [[NSObject UUID] copy];
     newPlaylist.playlistName = name;
-    newPlaylist.creationDate = [NSDate date];
+    newPlaylist.creationDate = [[NSDate alloc] init];
     
     return newPlaylist;
 }

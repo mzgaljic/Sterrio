@@ -46,7 +46,7 @@ static NSString *MODEL_NAME = @"Model";
 static CDEICloudFileSystem *iCloudFileSystem;
 static CDEPersistentStoreEnsemble *ensemble;
 NSString * const ICLOUD_CONTAINER_ID = @"iCloud.com.MarkZgaljic.Free-Music-Library";
-NSString * const MAIN_STORE_ENSEMBLE_ID = @"MainStore";
+NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
 //---End of Ensemble Vars---
 
 //DataAccessLayer singleton instance shared across application

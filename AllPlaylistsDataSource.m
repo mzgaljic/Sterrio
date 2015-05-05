@@ -441,7 +441,7 @@
                                                       callback:^BOOL(MGSwipeTableCell *sender)
                                  {
                                      NSIndexPath *indexPath;
-                                     indexPath= [weakSelf.tableView indexPathForCell:sender];
+                                     indexPath = [weakSelf.tableView indexPathForCell:sender];
                                      [weakSelf tableView:weakSelf.tableView
                                       commitEditingStyle:UITableViewCellEditingStyleDelete
                                        forRowAtIndexPath:indexPath];

@@ -193,16 +193,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             NSString *artObjId = weakSong.albumArt.uniqueId;
             if(artObjId){
                 
-                //this is a background queue. fetch the object (image blob) using background context!
+                //this is a background queue. get the object (image blob) on background context!
                 NSManagedObjectContext *context = [CoreDataManager stackControllerThreadContext];
-                NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"SongAlbumArt"];
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", artObjId];
-                request.predicate = predicate;
-                
                 [context performBlockAndWait:^{
-                    NSArray *result = [context executeFetchRequest:request error:nil];
-                    if(result.count == 1)
-                        albumArt = [result[0] imageFromImageData];
+                    albumArt = [weakSong.albumArt imageFromImageData];
                 }];
                 
                 if(albumArt == nil)
@@ -350,7 +344,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             [selectedCell setAccessoryType:UITableViewCellAccessoryCheckmark];
             [_selectedSongIds addObject:selectedSong.uniqueId];
             
-            [self.playlistSongAdderDelegate setSuccessNavBarButtonStringValue:Done_String];
+            [self.playlistSongAdderDelegate setSuccessNavBarButtonStringValue:ADD_String];
         }
         else
         {  //deselected row
@@ -359,8 +353,18 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             
             BOOL isUserCreatingNewPlaylist = [self.playlistSongAdderDelegate isUserCreatingPlaylistFromScratch];
             
-            if(_selectedSongIds.count == 0 && isUserCreatingNewPlaylist)
+            if((_selectedSongIds.count == 0 && isUserCreatingNewPlaylist))
+            {
                 [self.playlistSongAdderDelegate setSuccessNavBarButtonStringValue:AddLater_String];
+            }
+            else if(_selectedSongIds.count > 0 && isUserCreatingNewPlaylist)
+            {
+                [self.playlistSongAdderDelegate setSuccessNavBarButtonStringValue:ADD_String];
+            }
+            else if(_selectedSongIds.count > 0 && !isUserCreatingNewPlaylist)
+            {
+                [self.playlistSongAdderDelegate setSuccessNavBarButtonStringValue:ADD_String];
+            }
             else
                 [self.playlistSongAdderDelegate setSuccessNavBarButtonStringValue:@""];
         }

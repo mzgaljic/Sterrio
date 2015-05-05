@@ -2,27 +2,27 @@
 //  Playlist.h
 //  Free Music Library
 //
-//  Created by Mark Zgaljic on 5/3/15.
+//  Created by Mark Zgaljic on 5/4/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class NSManagedObject;
+@class PlaylistItem;
 
 @interface Playlist : NSManagedObject
 
-@property (nonatomic, retain) NSString * uniqueId;
-@property (nonatomic, retain) NSString * playlistName;
 @property (nonatomic, retain) NSDate * creationDate;
+@property (nonatomic, retain) NSString * playlistName;
+@property (nonatomic, retain) NSString * uniqueId;
 @property (nonatomic, retain) NSSet *playlistItems;
 @end
 
 @interface Playlist (CoreDataGeneratedAccessors)
 
-- (void)addPlaylistItemsObject:(NSManagedObject *)value;
-- (void)removePlaylistItemsObject:(NSManagedObject *)value;
+- (void)addPlaylistItemsObject:(PlaylistItem *)value;
+- (void)removePlaylistItemsObject:(PlaylistItem *)value;
 - (void)addPlaylistItems:(NSSet *)values;
 - (void)removePlaylistItems:(NSSet *)values;
 

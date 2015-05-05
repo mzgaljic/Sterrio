@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
 
+@import CoreFoundation;  //for CFMutableSet
 #import "PlaylistItemTableViewController.h"
 #import "MGSwipeTableCell.h"
 #import "MGSwipeButton.h"
@@ -14,6 +15,7 @@
 #import "SongAlbumArt+Utilities.h"
 #import "PlaylistItem.h"
 #import "Song+Utilities.h"
+#import "PlaylistItem+Utilities.h"
 
 @interface PlaylistItemTableViewController()
 {
@@ -87,6 +89,10 @@
     
     [self initPlaybackContext];
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
+    //plus sign at bottom of screen can cut off the last cell if there are enough songs in the playlist.
+    int buttonOffsetFromBottom = (MZTabBarHeight - self.centerButton.frame.size.height)/2;
+    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, MZTabBarHeight + buttonOffsetFromBottom, 0);
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -231,16 +237,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             NSString *artObjId = weakSong.albumArt.uniqueId;
             if(artObjId){
                 
-                //this is a background queue. fetch the object (image blob) using background context!
+                //this is a background queue. get the object (image blob) on background context!
                 NSManagedObjectContext *context = [CoreDataManager stackControllerThreadContext];
-                NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"SongAlbumArt"];
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", artObjId];
-                request.predicate = predicate;
-                
                 [context performBlockAndWait:^{
-                    NSArray *result = [context executeFetchRequest:request error:nil];
-                    if(result.count == 1)
-                        albumArt = [result[0] imageFromImageData];
+                    albumArt = [weakSong.albumArt imageFromImageData];
                 }];
                 
                 if(albumArt == nil)
@@ -294,24 +294,33 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         Song *songToRemove = [self songForIndexPath:indexPath];
         [MusicPlaybackController songAboutToBeDeleted:songToRemove deletionContext:self.playbackContext];
         
-    
-        NSMutableSet *set = [NSMutableSet setWithSet:_playlist.playlistItems];
-        __block PlaylistItem *songsPlaylistItem;
-        NSNumber *songIndex = [NSNumber numberWithShort:indexPath.row];
+        NSPredicate *extractItemAtThisIndex;
+        extractItemAtThisIndex = [NSPredicate predicateWithFormat:@"index == %i", indexPath.row];
+        NSSet *setWithItem = [_playlist.playlistItems filteredSetUsingPredicate:extractItemAtThisIndex];
         
-        [set enumerateObjectsUsingBlock:^(PlaylistItem *item, BOOL *stop) {
-            //find the playlistItem corresponding to the EXACT song we are removing (taking
-            //multiple instances of the same song into account here).
+        //NOTE: Deleting the playlistItem (and saving context) will trigger code to run that
+        //fixes the index of every playlistItem after the deleted one within this playlist.
+        if(setWithItem.count == 1)
+        {
+            //order of these calls is crucial.
+            NSMutableSet *set = [NSMutableSet setWithSet:_playlist.playlistItems];
+            PlaylistItem *item = [setWithItem anyObject];
+            [[CoreDataManager context] deleteObject:item];
             
-            if([item.index isEqualToNumber:songIndex] && [item.song isEqualToSong:songToRemove]){
-                songsPlaylistItem = item;
-                *stop = YES;
-            }
-        }];
+            [set removeObject:item];
+            _playlist.playlistItems = set;
+            [[CoreDataManager sharedInstance] saveContext];
+        }
         
-        [set removeObject:songsPlaylistItem];
-        _playlist.playlistItems = set;
-        [[CoreDataManager sharedInstance] saveContext];
+        [self.tableView beginUpdates];
+        if(_playlist.playlistItems.count == 0){
+            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0]
+                          withRowAnimation:UITableViewRowAnimationMiddle];
+        } else{
+            [self.tableView deleteRowsAtIndexPaths:@[indexPath]
+                                  withRowAnimation:UITableViewRowAnimationMiddle];
+        }
+        [self.tableView endUpdates];
     }
 }
 
@@ -328,7 +337,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     } else
         [self removeEmptyTableUserMessage];
     
-    return 1;
+    return (_playlist.playlistItems.count > 0) ? 1 : 0;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
@@ -338,24 +347,21 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
 {
-    NSMutableSet *set = [NSMutableSet setWithSet:_playlist.playlistItems];
-    Song *songBeingMoved = [self songForIndexPath:fromIndexPath];
+    if([fromIndexPath isEqual:toIndexPath])
+        return;
     
-    NSNumber *songIndex = [NSNumber numberWithShort:fromIndexPath.row];
-    __block PlaylistItem *songsPlaylistItem;
+    NSPredicate *itemAtOriginPathPredicate, *itemAtDestPathPredicate;
+    itemAtOriginPathPredicate = [NSPredicate predicateWithFormat:@"index == %i", fromIndexPath.row];
+    itemAtDestPathPredicate = [NSPredicate predicateWithFormat:@"index == %i", toIndexPath.row];
     
-    [set enumerateObjectsUsingBlock:^(PlaylistItem *item, BOOL *stop) {
-        //find the playlistItem corresponding to the EXACT song we are moving (taking
-        //multiple instances of the same song into account here).
-        
-        if([item.index isEqualToNumber:songIndex] && [item.song isEqualToSong:songBeingMoved]){
-            songsPlaylistItem = item;
-            *stop = YES;
-        }
-    }];
+    NSSet *set1 = [_playlist.playlistItems filteredSetUsingPredicate:itemAtOriginPathPredicate];
+    NSSet *set2 = [_playlist.playlistItems filteredSetUsingPredicate:itemAtDestPathPredicate];
+    PlaylistItem *item1 = [set1 anyObject];
+    PlaylistItem *item2 = [set2 anyObject];
     
-    songsPlaylistItem.index = [NSNumber numberWithShort:toIndexPath.row];
-    _playlist.playlistItems = set;
+    NSNumber *tempIndex = item1.index;
+    item1.index = item2.index;
+    item2.index = tempIndex;
     [[CoreDataManager sharedInstance] saveContext];
 }
 
@@ -370,14 +376,67 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 #pragma mark - Table Helpers
 - (Song *)songForIndexPath:(NSIndexPath *)indexPath
 {
-    NSSet *playlistItems = _playlist.playlistItems;
     NSPredicate *extractItemAtThisIndex;
     extractItemAtThisIndex = [NSPredicate predicateWithFormat:@"index == %i", indexPath.row];
-    NSSet *setWithPlaylistItem = [playlistItems filteredSetUsingPredicate:extractItemAtThisIndex];
-#warning fix this assert
-    //NSAssert(setWithPlaylistItem.count == 1, @"Fatal Error: Multiple PlaylistItems contain the same index within playlist: %@", _playlist.playlistName);
+    NSSet *setWithPlaylistItem = [_playlist.playlistItems filteredSetUsingPredicate:extractItemAtThisIndex];
     
-    PlaylistItem *myItem = [setWithPlaylistItem anyObject];
+    PlaylistItem *myItem;
+    
+    if(setWithPlaylistItem.count > 1)
+    {
+        //multiple songs claim to be at this index. let the oldest item win.
+        
+        __block PlaylistItem *oldestItem;
+        [setWithPlaylistItem enumerateObjectsUsingBlock:^(PlaylistItem *item, BOOL *stop) {
+            if(oldestItem == nil)
+                oldestItem = item;
+            else
+            {
+                NSDate *date1 = oldestItem.creationDate;
+                NSDate *date2 = item.creationDate;
+                
+                if ([date1 compare:date2] == NSOrderedDescending)
+                {
+                    //date1 is newer than date2
+                    oldestItem = item;  //found an older date
+                }
+                else if ([date1 compare:date2] == NSOrderedAscending)
+                {
+                    //date1 is older than date2
+                    oldestItem = oldestItem;  //no change
+                }
+                else
+                {
+                    //dates are exactly the same
+                    oldestItem = oldestItem;  //lets just arbitrarily keep it the same.
+                }
+            }
+        }];
+        
+        myItem = oldestItem;
+        NSMutableArray *allItems = [NSMutableArray arrayWithArray:[_playlist.playlistItems allObjects]];
+        
+        //increment the remaining items claiming to be at this index...
+        [setWithPlaylistItem enumerateObjectsUsingBlock:^(PlaylistItem *item, BOOL *stop) {
+            if(! [oldestItem isEqualToPlaylistItem:item])
+            {
+                NSUInteger index = [allItems indexOfObjectIdenticalTo:item];
+                if(index != NSNotFound)
+                {
+                    item.index = [NSNumber numberWithShort:[item.index shortValue] + 1];
+                    [allItems replaceObjectAtIndex:index withObject:item];
+                }
+            }
+        }];
+        
+        _playlist.playlistItems = [NSSet setWithArray:allItems];
+        
+        //commit changes
+        [[CoreDataManager sharedInstance] saveContext];
+    }
+    else
+        myItem = [setWithPlaylistItem anyObject];
+
     return myItem.song;
 }
 

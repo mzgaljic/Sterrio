@@ -277,7 +277,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
 - (PlaybackContext *)contextForSpecificSong:(Song *)aSong
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"song_id == %@", aSong.uniqueId];
+    request.predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", aSong.uniqueId];
     //descriptor doesnt really matter here
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
                                                                      ascending:YES];
@@ -306,7 +306,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
     NSManagedObjectContext *context = [CoreDataManager context];
 
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    NSPredicate *albumPredicate = [NSPredicate predicateWithFormat:@"album.album_id == %@", self.album.uniqueId];
+    NSPredicate *albumPredicate = [NSPredicate predicateWithFormat:@"album.uniqueId == %@", self.album.uniqueId];
     request.predicate = albumPredicate;
 
     NSSortDescriptor *sortDescriptor;

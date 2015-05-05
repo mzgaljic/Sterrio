@@ -14,7 +14,7 @@
 
 
 //for playlists
-#define Done_String @"Add"
+#define ADD_String @"Add"
 #define AddLater_String @"Add later"
 #define Cancel_String @"Cancel"
 

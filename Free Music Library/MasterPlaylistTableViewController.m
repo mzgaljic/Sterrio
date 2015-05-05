@@ -340,7 +340,7 @@ static NSString *currentAlertTextFieldText;
     request.predicate = nil;  //means i want all of the playlists
     
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"creationDate"
-                                                                     ascending:YES];
+                                                                     ascending:NO];
     
     request.sortDescriptors = @[sortDescriptor];
     //fetchedResultsController is from custom super class

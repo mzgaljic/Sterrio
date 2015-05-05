@@ -183,16 +183,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             NSString *artObjId = weaksong.albumArt.uniqueId;
             if(artObjId){
                 
-                //this is a background queue. fetch the object (image blob) using background context!
+                //this is a background queue. get the object (image blob) on background context!
                 NSManagedObjectContext *context = [CoreDataManager stackControllerThreadContext];
-                NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"SongAlbumArt"];
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", artObjId];
-                request.predicate = predicate;
-                
                 [context performBlockAndWait:^{
-                    NSArray *result = [context executeFetchRequest:request error:nil];
-                    if(result.count == 1)
-                        albumArt = [result[0] imageFromImageData];
+                    albumArt = [weaksong.albumArt imageFromImageData];
                 }];
                 
                 if(albumArt == nil)

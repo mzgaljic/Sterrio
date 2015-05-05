@@ -56,15 +56,6 @@
     return newSong;
 }
 
-+ (BOOL)areSongsEqual:(NSArray *)arrayOfTwoSongObjects
-{
-    if(arrayOfTwoSongObjects.count == 2){
-        if([[arrayOfTwoSongObjects[0] uniqueId] isEqualToString:[arrayOfTwoSongObjects[1] uniqueId]])
-            return YES;
-    }
-    return NO;
-}
-
 + (BOOL)isSong:(Song *)song1 equalToSong:(Song *)song2
 {
     if(song1 == song2)

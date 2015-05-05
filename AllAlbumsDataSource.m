@@ -248,20 +248,11 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     [stackController addBlock:^{
         __block UIImage *albumArt;
         if(weakalbum){
-            NSString *weakAlbumId = weakalbum.uniqueId;
             
-            //this is a background queue. fetch the object (image blob) using background context!
-            NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Album"];
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", weakAlbumId];
-            request.predicate = predicate;
-            
+            //this is a background queue. get the object (image blob) on background context!
             NSManagedObjectContext *context = [CoreDataManager stackControllerThreadContext];
             [context performBlockAndWait:^{
-                NSArray *result = [context executeFetchRequest:request error:nil];
-                if(result.count == 1){
-                    Album *fetchedAlbum = result[0];
-                    albumArt = [fetchedAlbum.albumArt imageWithSize:cellImgSize];
-                }
+                albumArt = [weakalbum.albumArt imageWithSize:cellImgSize];
             }];
             
             if(albumArt == nil)

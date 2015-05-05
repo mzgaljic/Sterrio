@@ -24,10 +24,8 @@
 - (instancetype)initWithPlaylistsUniqueId:(NSString *)uniqueId playlistName:(NSString *)name;
 
 //gui vars
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *rightBarButton;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *leftBarButton;
 
-- (IBAction)rightBarButtonTapped:(id)sender;
 - (IBAction)leftBarButtonTapped:(id)sender;
 
 @end

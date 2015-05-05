@@ -2,7 +2,7 @@
 //  Song.h
 //  Free Music Library
 //
-//  Created by Mark Zgaljic on 5/3/15.
+//  Created by Mark Zgaljic on 5/4/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
@@ -15,8 +15,8 @@
 
 @property (nonatomic, retain) NSNumber * duration;
 @property (nonatomic, retain) NSString * smartSortSongName;
-@property (nonatomic, retain) NSString * uniqueId;
 @property (nonatomic, retain) NSString * songName;
+@property (nonatomic, retain) NSString * uniqueId;
 @property (nonatomic, retain) NSString * youtube_id;
 @property (nonatomic, retain) Album *album;
 @property (nonatomic, retain) SongAlbumArt *albumArt;

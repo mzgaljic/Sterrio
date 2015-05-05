@@ -15,4 +15,6 @@
                                                  indexInPlaylist:(short)index
                                                 inManagedContext:(NSManagedObjectContext *)context;
 
+- (BOOL)isEqualToPlaylistItem:(PlaylistItem *)item;
+
 @end

@@ -2,7 +2,7 @@
 //  Album.m
 //  Free Music Library
 //
-//  Created by Mark Zgaljic on 5/3/15.
+//  Created by Mark Zgaljic on 5/4/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
@@ -14,9 +14,9 @@
 
 @implementation Album
 
-@dynamic uniqueId;
 @dynamic albumName;
 @dynamic smartSortAlbumName;
+@dynamic uniqueId;
 @dynamic albumArt;
 @dynamic albumSongs;
 @dynamic artist;

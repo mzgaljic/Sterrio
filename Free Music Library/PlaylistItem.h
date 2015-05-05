@@ -2,7 +2,7 @@
 //  PlaylistItem.h
 //  Free Music Library
 //
-//  Created by Mark Zgaljic on 5/3/15.
+//  Created by Mark Zgaljic on 5/4/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
@@ -15,7 +15,8 @@
 
 @property (nonatomic, retain) NSNumber * index;
 @property (nonatomic, retain) NSString * uniqueId;
-@property (nonatomic, retain) Song *song;
+@property (nonatomic, retain) NSDate * creationDate;
 @property (nonatomic, retain) Playlist *playlist;
+@property (nonatomic, retain) Song *song;
 
 @end

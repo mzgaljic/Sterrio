@@ -24,9 +24,10 @@
         <attribute name="creationDate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="playlistName" optional="YES" attributeType="String" spotlightIndexingEnabled="YES" syncable="YES"/>
         <attribute name="uniqueId" attributeType="String" syncable="YES"/>
-        <relationship name="playlistItems" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="PlaylistItem" inverseName="playlist" inverseEntity="PlaylistItem" syncable="YES"/>
+        <relationship name="playlistItems" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PlaylistItem" inverseName="playlist" inverseEntity="PlaylistItem" syncable="YES"/>
     </entity>
     <entity name="PlaylistItem" representedClassName="PlaylistItem" syncable="YES">
+        <attribute name="creationDate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="index" optional="YES" attributeType="Integer 16" minValueString="0" syncable="YES"/>
         <attribute name="uniqueId" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="playlist" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Playlist" inverseName="playlistItems" inverseEntity="Playlist" syncable="YES"/>
@@ -41,7 +42,7 @@
         <relationship name="album" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Album" inverseName="albumSongs" inverseEntity="Album" syncable="YES"/>
         <relationship name="albumArt" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="SongAlbumArt" inverseName="associatedSong" inverseEntity="SongAlbumArt" syncable="YES"/>
         <relationship name="artist" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Artist" inverseName="standAloneSongs" inverseEntity="Artist" syncable="YES"/>
-        <relationship name="playlistItems" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="PlaylistItem" inverseName="song" inverseEntity="PlaylistItem" syncable="YES"/>
+        <relationship name="playlistItems" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PlaylistItem" inverseName="song" inverseEntity="PlaylistItem" syncable="YES"/>
     </entity>
     <entity name="SongAlbumArt" representedClassName="SongAlbumArt" syncable="YES">
         <attribute name="image" optional="YES" attributeType="Binary" syncable="YES"/>
@@ -53,8 +54,8 @@
         <element name="AlbumAlbumArt" positionX="-9938" positionY="-324" width="128" height="88"/>
         <element name="Artist" positionX="-10010" positionY="-46" width="128" height="118"/>
         <element name="Playlist" positionX="-9909" positionY="173" width="128" height="103"/>
+        <element name="PlaylistItem" positionX="-9677" positionY="185" width="128" height="118"/>
         <element name="Song" positionX="-9459" positionY="-108" width="126" height="178"/>
         <element name="SongAlbumArt" positionX="-9704" positionY="-124" width="128" height="88"/>
-        <element name="PlaylistItem" positionX="-9677" positionY="185" width="128" height="103"/>
     </elements>
 </model>

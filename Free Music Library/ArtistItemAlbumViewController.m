@@ -498,9 +498,9 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
     [self fetchAndSetArtistAlbums];
     
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"self.artist.artist_id == %@",
+    NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"self.artist.uniqueId == %@",
                                self.artist.uniqueId];
-    NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"self.album.artist.artist_id == %@",
+    NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"self.album.artist.uniqueId == %@",
                                self.artist.uniqueId];
     NSArray *predicates = @[predicate1, predicate2];
     NSPredicate *allArtistSongsPredicate = [NSCompoundPredicate orPredicateWithSubpredicates:predicates];
@@ -525,7 +525,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
 {
     //fetch and set artists standalone songs (manually fetched to avoid weird duplicate issue)
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"artist.artist_id == %@",
+    NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"artist.uniqueId == %@",
                                self.artist.uniqueId];
     
     NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"album = $NO_ALBUM"];
@@ -550,7 +550,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
 {
     //fetch all albums by this artist
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Album"];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"artist.artist_id == %@",
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"artist.uniqueId == %@",
                                self.artist.uniqueId];
     request.predicate = predicate;
     

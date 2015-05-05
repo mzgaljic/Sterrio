@@ -2,7 +2,7 @@
 //  Album.h
 //  Free Music Library
 //
-//  Created by Mark Zgaljic on 5/3/15.
+//  Created by Mark Zgaljic on 5/4/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
@@ -13,9 +13,9 @@
 
 @interface Album : NSManagedObject
 
-@property (nonatomic, retain) NSString * uniqueId;
 @property (nonatomic, retain) NSString * albumName;
 @property (nonatomic, retain) NSString * smartSortAlbumName;
+@property (nonatomic, retain) NSString * uniqueId;
 @property (nonatomic, retain) AlbumAlbumArt *albumArt;
 @property (nonatomic, retain) NSSet *albumSongs;
 @property (nonatomic, retain) Artist *artist;

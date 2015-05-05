@@ -73,45 +73,29 @@
 }
 
 //METHOD INVOKED ON BACKGROUND THREAD
-- (NSArray *)persistentStoreEnsemble:(CDEPersistentStoreEnsemble *)ensemble
-  globalIdentifiersForManagedObjects:(NSArray *)objects
-{
-    return [objects valueForKeyPath:@"uniqueId"];
-    /*
-    NSMutableArray *arrayOfIds = [NSMutableArray array];
-    for(NSUInteger i = 0; i < objects.count; i++)
-    {
-        NSString *identifierOfObject = [self globalIdentifierForObject:objects[i]];
-        
-        if(identifierOfObject)
-            [arrayOfIds addObject:identifierOfObject];
-        else
-            [arrayOfIds addObject:[NSNull null]];
-    }
-    return arrayOfIds;
-     */
-}
-
 - (BOOL)persistentStoreEnsemble:(CDEPersistentStoreEnsemble*)ensemble shouldSaveMergedChangesInManagedObjectContext:(NSManagedObjectContext *)savingContext reparationManagedObjectContext:(NSManagedObjectContext *)reparationContext
 {
     return ([AppEnvironmentConstants isABadTimeToMergeEnsemble]) ? NO : YES;
 }
 
-- (NSString *)globalIdentifierForObject:(id)someObject
+//METHOD INVOKED ON BACKGROUND THREAD
+- (NSArray *)persistentStoreEnsemble:(CDEPersistentStoreEnsemble *)ensemble
+  globalIdentifiersForManagedObjects:(NSArray *)objects
 {
-    /*
+    NSMutableArray *arrayOfIds = [NSMutableArray array];
+    [objects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        [arrayOfIds addObject:[EnsembleDelegate globalIdentifierForObject:obj]];
+    }];
+    
+    return arrayOfIds;
+}
+
++ (id)globalIdentifierForObject:(id)someObject
+{
     if([someObject respondsToSelector:@selector(uniqueId)]){
-        
+        return [someObject performSelector:@selector(uniqueId)];
     } else
-        return nil;
-    //someObject properties should ONLY be accessed. Not modified (this is a background thread)
-    for (NSEntityDescription* entityDescription in [self managedObjectModel]) {
-        if ([[entityDescription propertiesByName] objectForKey:@"someProperty"] != nil) {
-            // objects of this entity support the property you're looking for
-        }
-    }
-    */
-    return nil;
+        return [NSNull null];
 }
 
 @end

@@ -2,7 +2,7 @@
 //  Artist.h
 //  Free Music Library
 //
-//  Created by Mark Zgaljic on 5/3/15.
+//  Created by Mark Zgaljic on 5/4/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
@@ -13,9 +13,9 @@
 
 @interface Artist : NSManagedObject
 
-@property (nonatomic, retain) NSString * uniqueId;
 @property (nonatomic, retain) NSString * artistName;
 @property (nonatomic, retain) NSString * smartSortArtistName;
+@property (nonatomic, retain) NSString * uniqueId;
 @property (nonatomic, retain) NSSet *albums;
 @property (nonatomic, retain) NSSet *standAloneSongs;
 @end

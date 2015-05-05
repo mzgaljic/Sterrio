@@ -11,6 +11,5 @@
 @interface AlbumDetailDisplayHelper : NSObject
 
 + (NSString *)convertSecondsToPrintableNSStringWithSeconds:(NSUInteger)value;
-+ (UIColor *)averageColorOfImage:(UIImage *)image;
 
 @end

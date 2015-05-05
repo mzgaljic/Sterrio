@@ -125,7 +125,13 @@
     
     //needed to make UITableViewCellAccessoryCheckmark the nav bar color!
     self.tableView.tintColor = [UIColor defaultAppColorScheme];
-    [self.rightBarButton setStyle:UIBarButtonItemStyleDone];
+    if(isUserCreatingNewPlaylist){
+        UIBarButtonItem *btn = [[UIBarButtonItem alloc] initWithTitle:@"Add Later"
+                                                                style:UIBarButtonItemStyleDone
+                                                               target:self
+                                                               action:@selector(rightBarButtonTapped:)];
+        [self.navigationItem setRightBarButtonItem:btn animated:YES];
+    }
 }
 
 - (void)viewDidLoad
@@ -160,7 +166,17 @@
 #pragma mark - PlaylistSongAdderDataSourceDelegate protocol implementation
 - (void)setSuccessNavBarButtonStringValue:(NSString *)newValue
 {
-    self.rightBarButton.title = newValue;
+    if([newValue isEqualToString:@""]){
+        [self.navigationItem setRightBarButtonItem:nil animated:YES];
+    }
+    else if(! [self.navigationItem.rightBarButtonItem.title isEqualToString:newValue])
+    {
+        UIBarButtonItem *btn = [[UIBarButtonItem alloc] initWithTitle:newValue
+                                                                style:UIBarButtonItemStyleDone
+                                                               target:self
+                                                               action:@selector(rightBarButtonTapped:)];
+        [self.navigationItem setRightBarButtonItem:btn animated:YES];
+    }
 }
 
 - (BOOL)isUserCreatingPlaylistFromScratch
