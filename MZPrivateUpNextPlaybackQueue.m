@@ -14,6 +14,8 @@
 //then we can just choose a song after the saved index...if its valid.
 
 #import "MZPrivateUpNextPlaybackQueue.h"
+#import "PlayableItem.h"
+#import "PlaylistItem.h"
 
 @interface MZPrivateUpNextPlaybackQueue ()
 {
@@ -26,13 +28,13 @@
 - (instancetype)init
 {
     if(self = [super init]){
-        playbackContexts = [NSMutableArray arrayWithCapacity:1];
-        fetchRequestIndexes = [NSMutableArray arrayWithCapacity:1];
+        playbackContexts = [NSMutableArray arrayWithCapacity:10];
+        fetchRequestIndexes = [NSMutableArray arrayWithCapacity:10];
     }
     return self;
 }
 
-- (void)addSongsToUpNextWithContexts:(NSArray *)contexts
+- (void)addItemsToUpNextWithContexts:(NSArray *)contexts
 {
     [playbackContexts addObjectsFromArray:contexts];
     NSNumber *index = [NSNumber numberWithInt:0];
@@ -43,11 +45,11 @@
     [fetchRequestIndexes addObjectsFromArray:tempNSNumsArray];
 }
 
-- (NSUInteger)numMoreUpNextSongsCount
+- (NSUInteger)numMoreUpNextItemsCount
 {
-    NSArray *array = [self minimallyFaultedArrayOfUpNextSongsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE];
+    NSArray *array = [self minimallyFaultedArrayOfUpNextItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE];
     if(array.count > 0){
-        if([[NowPlayingSong sharedInstance] isEqualToSong:array[0] compareWithContext:playbackContexts[0]])
+        if([[NowPlayingSong sharedInstance] isEqualToItem:array[0]])
             //array contains now playing, dont include in count!
             return array.count -1;
         else
@@ -56,56 +58,55 @@
         return 0;
 }
 
-- (NSArray *)tableViewOptimizedArrayOfUpNextSongs
+- (NSArray *)tableViewOptimizedArrayOfUpNextItems
 {
     //dont need to insert a fake item in the front to represent now playing like we
     //needed to in the private main queue (implementation detail...)
-    return [self minimallyFaultedArrayOfUpNextSongsWithBatchSize:EXTERNAL_FETCH_BATCH_SIZE];
+    return [self minimallyFaultedArrayOfUpNextItemsWithBatchSize:EXTERNAL_FETCH_BATCH_SIZE];
 }
 
-- (NSArray *)tableViewOptimizedArrayOfUpNextSongContexts
+- (NSArray *)tableViewOptimizedArrayOfUpNextItemsContexts
 {
     //dont need to insert a fake item in the front to represent now playing like we
     //needed to in the private main queue (implementation detail...)
     return [NSMutableArray arrayWithArray:playbackContexts];
 }
 
-- (PreliminaryNowPlaying *)obtainAndRemoveNextSong
+- (PlayableItem *)obtainAndRemoveNextItem
 {
     PlaybackContext *aContext;
     NSFetchRequest *aRequest;
     int numContextsToDelete = 0;
-    Song *desiredSong;
-    PlaybackContext *desiredSongsContext;
-    //iterate until we find a next song
+    PlayableItem *desiredItem;
+    
+    //iterate until we find the next item
     for(NSInteger i = 0; i < playbackContexts.count; i++)
     {
         aContext = playbackContexts[i];
         aRequest = aContext.request;
         [aRequest setFetchBatchSize:INTERNAL_FETCH_BATCH_SIZE];
         
-        NSUInteger songIndex = 0;
+        NSUInteger itemIndex = 0;
         NSArray *array = [[CoreDataManager context] executeFetchRequest:aRequest error:nil];
         
         NSNumber *indexNumObj = [fetchRequestIndexes objectAtIndex:i];
-        songIndex = [indexNumObj integerValue];
-        if(songIndex <= array.count-1 && array.count != 0)
-            desiredSong = [self songInArray:array atIndex:songIndex];
+        itemIndex = [indexNumObj integerValue];
+        if(itemIndex <= array.count-1 && array.count != 0)
+            desiredItem = [self itemAtIndex:itemIndex inArray:&array withContext:aContext];
         else
-            desiredSong = nil;  //index was out of bounds
-        desiredSongsContext = aContext;
+            desiredItem = nil;  //index was out of bounds
         
-        //advance songIndexCount
-        songIndex++;
+        //advance
+        itemIndex++;
         
-        //this context is empty, or we have just pulled the very last song from this context.
-        if(desiredSong == nil || songIndex == array.count)
+        //this context is empty, or we have just pulled the very last item from this context.
+        if(desiredItem == nil || itemIndex == array.count)
         {
             numContextsToDelete++;
         }
         else
         {
-            NSNumber *newIndexObj = [NSNumber numberWithInteger:songIndex];
+            NSNumber *newIndexObj = [NSNumber numberWithInteger:itemIndex];
             [fetchRequestIndexes replaceObjectAtIndex:i withObject:newIndexObj];
             break;
         }
@@ -118,18 +119,16 @@
             [fetchRequestIndexes removeObjectAtIndex:i];
         }
     }
-    PreliminaryNowPlaying *newNowPlaying = [[PreliminaryNowPlaying alloc] init];
-    newNowPlaying.aNewSong = desiredSong;
-    newNowPlaying.aNewContext = desiredSongsContext;
-    return newNowPlaying;
+    
+    return desiredItem;
 }
 
-- (PreliminaryNowPlaying *)peekAtNextSong
+- (PlayableItem *)peekAtNextItem
 {
     PlaybackContext *aContext;
     NSFetchRequest *aRequest;
-    Song *desiredSong;
-    PlaybackContext *desiredSongsContext;
+    PlayableItem *desiredItem;
+    PlaybackContext *desiredItemContext;
     //iterate until we find a next song
     for(int i = 0; i < playbackContexts.count; i++)
     {
@@ -142,18 +141,15 @@
         
         NSNumber *indexNumObj = [fetchRequestIndexes objectAtIndex:i];
         songIndex = [indexNumObj integerValue];
-        desiredSong = [self songInArray:array atIndex:songIndex];
-        desiredSongsContext = aContext;
+        desiredItem = [self itemAtIndex:songIndex inArray:&array withContext:aContext];
+        desiredItemContext = aContext;
     }
-    PreliminaryNowPlaying *newNowPlaying = [[PreliminaryNowPlaying alloc] init];
-    newNowPlaying.aNewSong = desiredSong;
-    newNowPlaying.aNewContext = desiredSongsContext;
-    return newNowPlaying;
+    return desiredItem;
 }
 
 - (void)skipThisManySongsInQueue:(NSUInteger)numSongsToSkip
 {
-    
+    //no implementation yet.
 }
 
 - (void)clearUpNext
@@ -166,14 +162,14 @@
 
 //--------------private helpers--------------
 
-//for getting an array of all up next songs, without putting all songs into memory.
-- (NSMutableArray *)minimallyFaultedArrayOfUpNextSongsWithBatchSize:(int)batchSize
+//for getting an array of all up next items, without putting all items into memory.
+- (NSMutableArray *)minimallyFaultedArrayOfUpNextItemsWithBatchSize:(int)batchSize
 {
     PlaybackContext *aContext;
     NSFetchRequest *aRequest;
-    NSMutableArray *compiledSongs = [NSMutableArray array];
+    NSMutableArray *compiledItems = [NSMutableArray array];
     
-    //iterate until we compile all songs coming up
+    //iterate until we compile all items coming up
     for(int i = 0; i < playbackContexts.count; i++)
     {
         aContext = playbackContexts[i];
@@ -182,51 +178,67 @@
         
         NSUInteger songIndex = 0;
         NSArray *array = [[CoreDataManager context] executeFetchRequest:aRequest error:nil];
-        BOOL isContextRepresentingASingleSong = (array.count == 1);
-        if(isContextRepresentingASingleSong)
+        BOOL isContextRepresentingASingleItem = (array.count == 1);
+        if(isContextRepresentingASingleItem)
         {
-            Song *aSong = [self songInArray:array atIndex:0];
-            if(aSong)
-                [compiledSongs addObject:aSong];
+            PlayableItem *item = [self itemAtIndex:0 inArray:&array withContext:aContext];
+            if(item)
+                [compiledItems addObject:item];
         }
         else
         {
             NSNumber *indexNumObj = [fetchRequestIndexes objectAtIndex:i];
             songIndex = [indexNumObj integerValue];
-            NSArray *songsToAdd = [self songsInArray:array fromThisIndexOnward:songIndex];
-            [compiledSongs addObjectsFromArray:songsToAdd];
+            NSArray *itemsToAdd = [self itemsInArray:&array
+                                 fromThisIndexOnward:songIndex
+                                         withContext:aContext];
+            [compiledItems addObjectsFromArray:itemsToAdd];
         }
     }
     
-    //remove song at first index if its actually the now playing one.
+    //remove item at first index if its actually the now playing one.
     
-    if(compiledSongs.count > 0){
-        Song *firstSong = [compiledSongs objectAtIndex:0];
-        if([[NowPlayingSong sharedInstance] isEqualToSong:firstSong compareWithContext:playbackContexts[0]]){
-            [compiledSongs removeObjectAtIndex:0];
-        }
+    if(compiledItems.count > 0){
+        PlayableItem *firstItem = [compiledItems objectAtIndex:0];
+        if([[NowPlayingSong sharedInstance] isEqualToItem:firstItem])
+            [compiledItems removeObjectAtIndex:0];
     }
     
-    return compiledSongs;
+    return compiledItems;
 }
 
-- (Song *)songInArray:(NSArray *)arrayOfSongs atIndex:(NSUInteger)index
+- (PlayableItem *)itemAtIndex:(NSUInteger)index
+                      inArray:(NSArray **)array
+                  withContext:(PlaybackContext *)context
 {
-    if(arrayOfSongs.count -1 >= index)
+    if((*array).count -1 >= index)
     {
-        return [arrayOfSongs objectAtIndex:index];
+        id obj = [*array objectAtIndex:index];
+        if([obj isMemberOfClass:[PlayableItem class]])
+            return (PlayableItem *)obj;
+        else if([obj isMemberOfClass:[Song class]]){
+            return [[PlayableItem alloc] initWithSong:(Song *)obj
+                                              context:context
+                                      fromUpNextSongs:YES];
+        }
+        else if([obj isMemberOfClass:[PlaylistItem class]])
+            return [[PlayableItem alloc] initWithPlaylistItem:(PlaylistItem *)obj
+                                                      context:context
+                                              fromUpNextSongs:YES];
     }
-    else
-        return nil;
+
+    return nil;
 }
 
 //guranteed to return at least a 0 sized array (as opposed to nil)
-- (NSArray *)songsInArray:(NSArray *)songs fromThisIndexOnward:(NSUInteger)index
+- (NSArray *)itemsInArray:(NSArray **)items
+      fromThisIndexOnward:(NSUInteger)index
+              withContext:(PlaybackContext *)context
 {
     NSMutableArray *array = [NSMutableArray array];
-    if(songs.count -1 >= index){
-        for(int i = (int)index; i  < songs.count; i++){
-            [array addObject:songs[i]];
+    if((*items).count -1 >= index){
+        for(int i = (int)index; i  < (*items).count; i++){
+            [array addObject:[self itemAtIndex:index inArray:items withContext:context]];
         }
     }
     return array;

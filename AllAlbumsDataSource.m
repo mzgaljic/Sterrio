@@ -11,6 +11,7 @@
 #import "MZTableViewCell.h"
 #import "MusicPlaybackController.h"
 #import "AlbumAlbumArt+Utilities.h"
+#import "PlayableItem.h"
 
 @interface AllAlbumsDataSource ()
 {
@@ -198,9 +199,9 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         {
             //need to check both the general album context and the albumDetailVC context.
             //...since an entire album or just a specific album can be queued up.
-            if([nowPlayingObj isEqualToSong:albumSong compareWithContext:self.playbackContext]
+            if([nowPlayingObj.nowPlayingItem isEqualToSong:albumSong withContext:self.playbackContext]
                ||
-               [nowPlayingObj isEqualToSong:albumSong compareWithContext:albumDetailContext])
+               [nowPlayingObj.nowPlayingItem isEqualToSong:albumSong withContext:albumDetailContext])
             {
                 albumHasNowPlaying = YES;
                 break;
@@ -445,7 +446,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         return;
     Song *oldsong = (Song *)[notification object];
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
-    Song *newSong = nowPlaying.nowPlaying;
+    Song *newSong = nowPlaying.nowPlayingItem.songForItem;
     
     Album *oldAlbum = oldsong.album;
     Album *newAlbum = newSong.album;
@@ -622,7 +623,8 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
 
 - (void)searchResultsFromUsersQuery:(NSArray *)modelObjects
 {
-    self.searchResults = [NSMutableArray arrayWithArray:modelObjects];
+    [self.searchResults removeAllObjects];
+    [self.searchResults addObjectsFromArray:modelObjects];
 }
 
 - (NSUInteger)playableDataSourceEntireModelCount

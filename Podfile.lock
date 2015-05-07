@@ -20,7 +20,6 @@ PODS:
   - AFNetworking/UIKit (2.5.3):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - BRYSerialAnimationQueue (1.0.0)
   - CSNotificationView (0.5.4)
   - Ensembles (1.3.2):
     - Ensembles/Core (= 1.3.2)
@@ -34,13 +33,7 @@ PODS:
   - SDWebImage (3.7.2):
     - SDWebImage/Core (= 3.7.2)
   - SDWebImage/Core (3.7.2)
-  - SSBouncyButton (1.0.3):
-    - BRYSerialAnimationQueue (~> 1.0)
-    - UIColor-Hex
-    - UIImage+BetterAdditions (~> 2.0)
   - TBXML (1.5)
-  - UIColor-Hex (0.1.1)
-  - UIImage+BetterAdditions (2.0.0)
   - XCDYouTubeKit (2.1.2)
 
 DEPENDENCIES:
@@ -54,13 +47,11 @@ DEPENDENCIES:
   - MSCellAccessory (~> 1.1)
   - Reachability
   - SDWebImage (~> 3.6)
-  - SSBouncyButton
   - TBXML
   - XCDYouTubeKit
 
 SPEC CHECKSUMS:
   AFNetworking: e1d86c2a96bb5d2e7408da36149806706ee122fe
-  BRYSerialAnimationQueue: 75feef56345338619a6c2111f2a81de28a59c368
   CSNotificationView: 0792f5220163c2befaf1a9716aa3d5a7d6bd4fb1
   Ensembles: 79b89f56e9e21c811e8835d37502de4ae45e82ea
   FXImageView: 7d84722b37f0afea9a64f12fdd4a6c7f9ecc4b16
@@ -70,10 +61,7 @@ SPEC CHECKSUMS:
   MSCellAccessory: 8265f3cd2386c1f372da00232472605ab11426e4
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 71b7cdc1d1721d6a82ed62889030225f2c249e29
-  SSBouncyButton: 8241d68be5cb94612dc12d097ed683b8c2dbbca5
   TBXML: 9f9dadb239f2f2af1dadb87fe43a0ce6e479379a
-  UIColor-Hex: 77e80f383c6b3a63c5e95a9a4a7f4a71976e38a5
-  UIImage+BetterAdditions: 7597a52af66213c88099b0c509be1df642aab860
   XCDYouTubeKit: 4687c62d8c858ecaa5f42192820eabf59bb2b9d3
 
 COCOAPODS: 0.35.0

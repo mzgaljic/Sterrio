@@ -8,6 +8,7 @@
 
 #import "MyAVPlayer.h"
 #import "PreviousPlaybackContext.h"
+#import "PlayableItem.h"
 
 @interface MyAVPlayer ()
 {
@@ -90,7 +91,7 @@ static ReachabilitySingleton *reachability;
         movingForward = forward;
         _playbackStarted = NO;
         [self beginLoadingVideoWithSong:aSong];
-        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
     } else{
         //make sure last song doesnt continue playing...
         [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
@@ -277,7 +278,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
             }
             [SongPlayerCoordinator placePlayerInDisabledState:NO];
             disabledPlayerItem = nil;
-            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlaying];
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
         }
     }
 }
@@ -510,7 +511,8 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
         }
     }else if(context == mCurrentItem){
         if(self.currentItem == nil){
-            if([[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue].operationCount > 0){
+            if([[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue].operationCount > 0
+               && ![SongPlayerCoordinator isPlayerInDisabledState]){
                //we are loading a new song, user might want to see this info on lock screen.
                 [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
             }
@@ -521,6 +523,13 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
             [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
         }
     }else if(context == mPlaybackRate){
+        if([SongPlayerCoordinator isPlayerInDisabledState]){
+            playerWasInDisabledState = YES;
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+        } else if(playerWasInDisabledState){
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+        }
+        
         if([SongPlayerCoordinator isVideoPlayerExpanded]){
             [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged
                                                                 object:nil];
@@ -532,5 +541,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
     } else
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
+
+static BOOL playerWasInDisabledState = NO;
 
 @end

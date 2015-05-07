@@ -29,14 +29,25 @@
         short prefWifiStreamQuality = 720;
         short prefCellStreamQuality = 240;
         BOOL icloudSync = NO;
+        BOOL shouldOnlyAirplayAudio = YES;
         
-        //these setters will set ram values AND NSUserDefaults values on disk as well.
         [AppEnvironmentConstants setPreferredSongCellHeight:prefSongCellHeight];
         [AppEnvironmentConstants setPreferredWifiStreamSetting:prefWifiStreamQuality];
         [AppEnvironmentConstants setPreferredCellularStreamSetting:prefCellStreamQuality];
         [AppEnvironmentConstants set_iCloudSyncEnabled:icloudSync];
+        [AppEnvironmentConstants setShouldOnlyAirplayAudio:shouldOnlyAirplayAudio];
         
-        //I manually put App color in NSUserDefaults
+        [[NSUserDefaults standardUserDefaults] setInteger:prefSongCellHeight
+                                                   forKey:PREFERRED_SONG_CELL_HEIGHT_KEY];
+        [[NSUserDefaults standardUserDefaults] setInteger:prefWifiStreamQuality
+                                                   forKey:PREFERRED_WIFI_VALUE_KEY];
+        [[NSUserDefaults standardUserDefaults] setInteger:prefCellStreamQuality
+                                                   forKey:PREFERRED_CELL_VALUE_KEY];
+        [[NSUserDefaults standardUserDefaults] setBool:icloudSync
+                                                   forKey:ICLOUD_SYNC];
+        [[NSUserDefaults standardUserDefaults] setBool:shouldOnlyAirplayAudio
+                                                forKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY];
+        
         UIColor *color = [AppEnvironmentConstants defaultAppThemeBeforeUserPickedTheme];
         const CGFloat* components = CGColorGetComponents(color.CGColor);
         NSNumber *red = [NSNumber numberWithDouble:components[0]];
@@ -59,6 +70,10 @@
                         [[NSUserDefaults standardUserDefaults] integerForKey:PREFERRED_CELL_VALUE_KEY]];
         [AppEnvironmentConstants set_iCloudSyncEnabled:
                         [[NSUserDefaults standardUserDefaults] boolForKey:ICLOUD_SYNC]];
+        [AppEnvironmentConstants setShouldOnlyAirplayAudio:
+                        [[NSUserDefaults standardUserDefaults] boolForKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY]];
+        [AppEnvironmentConstants setLastSuccessfulSyncDate:
+                        [[NSUserDefaults standardUserDefaults] objectForKey:LAST_SUCCESSFUL_ICLOUD_SYNC_KEY]];
         
         //I manually retrieve App color from NSUserDefaults
         NSArray *defaultColorRep2 = [[NSUserDefaults standardUserDefaults] objectForKey:APP_THEME_COLOR_VALUE_KEY];

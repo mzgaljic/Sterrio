@@ -15,6 +15,8 @@
 #define PREFERRED_CELL_VALUE_KEY @"preferredCellularStreamValue"
 #define APP_THEME_COLOR_VALUE_KEY @"appThemeColorValue"
 #define ICLOUD_SYNC @"icloudSettingsSync"
+#define ONLY_AIRPLAY_AUDIO_VALUE_KEY @"shouldOnlyAirplayAudio"
+#define LAST_SUCCESSFUL_ICLOUD_SYNC_KEY @"last date icloud synced"
 
 #import <Foundation/Foundation.h>
 
@@ -85,6 +87,8 @@ typedef enum{
 + (NSString *)italicFontName;
 + (NSString *)boldItalicFontName;
 
+//---Stuff in NSUserDefaults----
+
 //----app settings---
 + (int)preferredSongCellHeight;
 + (void)setPreferredSongCellHeight:(int)cellHeight;
@@ -106,6 +110,10 @@ typedef enum{
 
 + (void)setAppTheme:(UIColor *)appTheme;
 //-----End of app settings------
+
++ (void)setLastSuccessfulSyncDate:(NSDate *)date;
++ (NSString *)humanReadableLastSyncTime;
+//---End of stuff in NSUserDefaults---
 
 
 //Other stuff

@@ -7,6 +7,7 @@
 //
 
 #import "SongPlayerViewController.h"
+#import "PlayableItem.h"
 typedef enum{
     DurationLabelStateNotSet,
     DurationLabelStateMinutes,
@@ -476,7 +477,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     
     [sliderHint hideAnimated];
     
-    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlaying];
+    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
     [self playerControlsShouldBeUpdated];
     
     if(isPlayerOnExternalDisplayWhileScrubbing)
@@ -1138,7 +1139,7 @@ static int accomodateInterfaceLabelsCounter = 0;
 
 - (void)displayTotalSliderAndLabelDuration
 {
-    NSInteger durationInSeconds = [[MusicPlaybackController nowPlayingSong].duration integerValue];
+    NSInteger durationInSeconds = [[NowPlayingSong sharedInstance].nowPlayingItem.songForItem.duration integerValue];
     if(durationInSeconds <= 0.0f || isnan(durationInSeconds)){
         // Handle error
         if(![[ReachabilitySingleton sharedInstance] isConnectedToInternet])
@@ -1423,7 +1424,7 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
     }
     playButton.enabled = YES;
     [self performSelector:@selector(changePlayButtonImageTo:) withObject:newBtnImage afterDelay:0.3];
-    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlaying];
+    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
 }
 
 - (void)changePlayButtonImageTo:(UIImage *)newBtnImage

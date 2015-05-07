@@ -22,6 +22,7 @@
     IBActionSheet *feedbackBtnActionSheet;
     IBActionSheet *bugFoundActionSheet;
     EmailComposerManager *mailComposer;
+    UITableViewCell *icloudCell;
 }
 @end
 @implementation NewSettingsTableViewController
@@ -67,6 +68,11 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
 
 - (void)dealloc
 {
+    icloudSwitch = nil;
+    icloudCell = nil;
+    mailComposer = nil;
+    bugFoundActionSheet = nil;
+    feedbackBtnActionSheet = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -100,6 +106,40 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
     }
 }
 
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    switch (section)
+    {
+        case ICLOUD_SYNC_SECTION_NUM:
+        {
+            if(! [AppEnvironmentConstants icloudSyncEnabled])
+                return nil;
+            
+            static UIView *footerView;
+            
+            NSString *syncDateString = [AppEnvironmentConstants humanReadableLastSyncTime];
+            NSString *footerText = [NSString stringWithFormat:@"Last Synced %@", syncDateString];
+            float footerWidth = [UIScreen mainScreen].bounds.size.width;
+            float padding = 10.0f; // an arbitrary amount to center the label in the container
+            footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, footerWidth, 44.0f)];
+            footerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+            
+            // create the label centered in the container, then set the appropriate autoresize mask
+            UILabel *footerLabel = [[UILabel alloc] initWithFrame:CGRectMake(padding, 0, footerWidth - 2.0f * padding, 44.0f)];
+            footerLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+            footerLabel.textAlignment = NSTextAlignmentCenter;
+            footerLabel.text = footerText;
+            footerLabel.textColor = [UIColor darkGrayColor];
+            
+            [footerView addSubview:footerLabel];
+            
+            return footerView;
+        }
+            
+        default:    return nil;
+    }
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell;
@@ -109,6 +149,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
     {
         cell = [tableView dequeueReusableCellWithIdentifier:@"settingRightDetailCell"
                                                forIndexPath:indexPath];
+        icloudCell = cell;
         
         if(indexPath.row == 0)
         {
@@ -121,13 +162,22 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
                 [icloudSwitch addTarget:self
                                  action:@selector(icloudSwitchToggled)
                        forControlEvents:UIControlEventValueChanged];
-                
-                if([AppEnvironmentConstants isIcloudSwitchWaitingForActionToFinish])
-                    icloudSwitch.enabled = NO;
             }
             
             [icloudSwitch setOnTintColor:[[UIColor defaultAppColorScheme] lighterColor]];
+            
+            if([AppEnvironmentConstants isIcloudSwitchWaitingForActionToFinish]){
+                icloudCell.userInteractionEnabled = NO;
+                icloudCell.textLabel.enabled = NO;
+                icloudSwitch.enabled = NO;
+            } else{
+                icloudCell.userInteractionEnabled = YES;
+                icloudCell.textLabel.enabled = YES;
+                icloudSwitch.enabled = YES;
+            }
+            
             cell.accessoryView = icloudSwitch;
+            
             UIImage *cloudImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
                                                                :[UIImage imageNamed:@"cloud"]];
             cell.imageView.image = cloudImg;
@@ -415,29 +465,24 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
     }
 }
 
-#pragma mark - Helpers
+#pragma mark - Helper
 - (void)icloudSwitchToggled
 {
     __block BOOL switchNowInOnState = icloudSwitch.isOn;
     __block UISwitch *blockSwitch = icloudSwitch;
+    __weak UITableViewCell *weakCell = icloudCell;
+
+    icloudCell.userInteractionEnabled = NO;
+    icloudCell.textLabel.enabled = NO;
+    blockSwitch.enabled = NO;
+    
+    
     if(switchNowInOnState)
     {
-        //this check is needed because sliding the switch back and forth before leaving it in
-        //its final state can casue some unexpected corner cases.
-        if(! [AppEnvironmentConstants icloudSyncEnabled]){
-            icloudSwitch.enabled = NO;
-        }
-        
         [AppEnvironmentConstants set_iCloudSyncEnabled:switchNowInOnState];
     }
     else
     {
-        //this check is needed because sliding the switch back and forth before leaving it in
-        //its final state can casue some unexpected corner cases.
-        if([AppEnvironmentConstants icloudSyncEnabled]){
-            icloudSwitch.enabled = NO;
-        }
-        
         NSString *title = @"iCloud";
         NSString *deviceName = [[UIDevice currentDevice] name];
         NSString *message = [NSString stringWithFormat:@"This device (%@) is about to stop syncing with iCloud. \n\nThis action will not affect existing data in iCloud.", deviceName];
@@ -448,6 +493,9 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
                                                              style:SDCAlertActionStyleDestructive
                                                            handler:^(SDCAlertAction *action) {
                                                                [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+                                                                   weakCell.userInteractionEnabled = NO;
+                                                                   weakCell.textLabel.enabled = NO;
+                                                                   blockSwitch.enabled = NO;
                                                                    [AppEnvironmentConstants set_iCloudSyncEnabled:switchNowInOnState];
                                                                }];
                                                            }];
@@ -457,6 +505,8 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
                                                              [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
                                                                  [blockSwitch setOn:YES animated:YES];
                                                                  blockSwitch.enabled = YES;
+                                                                 weakCell.textLabel.enabled = YES;
+                                                                 weakCell.userInteractionEnabled = YES;
                                                              }];
                                                          }];
         [alert addAction:cancel];
@@ -468,12 +518,16 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
 - (void)icloudSwitchMustBeTurnedOff
 {
     icloudSwitch.enabled = YES;
+    icloudCell.textLabel.enabled = YES;
+    icloudCell.userInteractionEnabled = YES;
     [icloudSwitch setOn:NO animated:YES];
 }
 
 - (void)icloudSwitchMustBeTurnedOn
 {
     icloudSwitch.enabled = YES;
+    icloudCell.textLabel.enabled = YES;
+    icloudCell.userInteractionEnabled = YES;
     [icloudSwitch setOn:YES animated:YES];
 }
 
@@ -557,6 +611,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
     short prefWifiStreamQuality = [AppEnvironmentConstants preferredWifiStreamSetting];
     short prefCellStreamQuality = [AppEnvironmentConstants preferredCellularStreamSetting];
     int prefSongCellHeight = [AppEnvironmentConstants preferredSongCellHeight];
+    BOOL audioOnlyAirplay = [AppEnvironmentConstants shouldOnlyAirplayAudio];
     
     UIColor *color = [UIColor defaultAppColorScheme];
     const CGFloat* components = CGColorGetComponents(color.CGColor);
@@ -574,6 +629,8 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
                                                forKey:PREFERRED_CELL_VALUE_KEY];
     [[NSUserDefaults standardUserDefaults] setInteger:prefSongCellHeight
                                                forKey:PREFERRED_SONG_CELL_HEIGHT_KEY];
+    [[NSUserDefaults standardUserDefaults] setBool:audioOnlyAirplay
+                                            forKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY];
     [[NSUserDefaults standardUserDefaults] setObject:defaultColorRepresentation
                                               forKey:APP_THEME_COLOR_VALUE_KEY];
     

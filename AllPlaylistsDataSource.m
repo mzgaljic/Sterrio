@@ -12,6 +12,7 @@
 #import "MusicPlaybackController.h"
 #import "PreviousPlaybackContext.h"
 #import "PlaylistItem.h"
+#import "PlayableItem.h"
 
 @interface AllPlaylistsDataSource ()
 {
@@ -139,28 +140,22 @@
         //we dont care if there are duplicates of a song, as long as the song is
         //within the playlist someplace, this check (in code) can be vague...
         
-        BOOL playlistHasNowPlaying = NO;
+        __block BOOL playlistHasNowPlaying = NO;
         NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
         PlaybackContext *playlistDetailContext = [self playlistDetailContextForPlaylist:playlist];
         
         NSSet *items = playlist.playlistItems;
-        NSMutableArray *playlistSongs = [NSMutableArray array];
-        [items enumerateObjectsUsingBlock:^(PlaylistItem *item, BOOL *stop) {
-            [playlistSongs addObject:item.song];
-        }];
         
-        for(Song *playlistSong in playlistSongs)
-        {
-            //need to check both the general playlist context and the playlistDetailVC context.
-            //...since an entire playlist or just a specific playlist can be queued up.
-            if([nowPlayingObj isEqualToSong:playlistSong compareWithContext:self.playbackContext]
+        [items enumerateObjectsUsingBlock:^(PlaylistItem *item, BOOL *stop) {
+            
+            if([nowPlayingObj.nowPlayingItem isEqualToPlaylistItem:item withContext:playlistDetailContext]
                ||
-               [nowPlayingObj isEqualToSong:playlistSong compareWithContext:playlistDetailContext])
+               [nowPlayingObj.nowPlayingItem isEqualToPlaylistItem:item withContext:self.playbackContext])
             {
                 playlistHasNowPlaying = YES;
-                break;
+                *stop = YES;
             }
-        }
+        }];
 
         if(playlistHasNowPlaying)
             cell.textLabel.textColor = [super colorForNowPlayingItem];
@@ -320,9 +315,9 @@
     
     Song *oldsong = (Song *)[notification object];
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
-    Song *newSong = nowPlaying.nowPlaying;
+    Song *newSong = nowPlaying.nowPlayingItem.songForItem;
     PlaybackContext *oldSongPlaybackContext = [PreviousPlaybackContext contextBeforeNewSongBeganLoading];
-    PlaybackContext *newSongPlaybackContext = nowPlaying.context;
+    PlaybackContext *newSongPlaybackContext = nowPlaying.nowPlayingItem.contextForItem;
     
 #warning broken.
     NSSet *playlistsOldSongIsIn;// = oldsong.playlistsIAmIn;
@@ -456,10 +451,10 @@
 
 - (PlaybackContext *)contextForPlaylist:(Playlist *)aPlaylist
 {
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY playlistsIAmIn.uniqueId == %@", aPlaylist.uniqueId];
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"PlaylistItem"];
+    request.predicate = [NSPredicate predicateWithFormat:@"ANY playlist.uniqueId == %@", aPlaylist.uniqueId];
     
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"dummySortDescriptorVar"
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"index"
                                                                      ascending:YES];
     request.sortDescriptors = @[sortDescriptor];
     NSString *playlistQueueDescription = [NSString stringWithFormat:@"\"%@\" Playlist", aPlaylist.playlistName];

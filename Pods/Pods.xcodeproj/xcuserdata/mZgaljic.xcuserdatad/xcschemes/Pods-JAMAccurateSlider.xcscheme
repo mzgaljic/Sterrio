@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D9334066C1560285F539F16A"
+               BlueprintIdentifier = "9A57549321ACBEFB1DAA2F6A"
                BuildableName = "libPods-JAMAccurateSlider.a"
                BlueprintName = "Pods-JAMAccurateSlider"
                ReferencedContainer = "container:Pods.xcodeproj">

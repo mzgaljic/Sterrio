@@ -86,10 +86,10 @@ NSString * const host_Name = @"www.youtube.com";
         else
             weakself.connectionType = Connection_Type_Cellular;
         
-        dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [weakself.notifCenter postNotificationName:MZReachabilityStateChanged
                                                 object:nil];
-        });
+        }];
     };
     reachability.unreachableBlock = ^(Reachability*reach)
     {
@@ -97,10 +97,10 @@ NSString * const host_Name = @"www.youtube.com";
         weakself.connectionState = Connection_State_Disconnected;
         weakself.connectionType = Connection_Type_None;
         
-        dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [weakself.notifCenter postNotificationName:MZReachabilityStateChanged
                                                 object:nil];
-        });
+        }];
     };
 }
 

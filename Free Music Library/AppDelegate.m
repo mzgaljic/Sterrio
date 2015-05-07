@@ -68,11 +68,10 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     }
     
     [ReachabilitySingleton sharedInstance];  //init reachability class
-    [LQAlbumArtBackgroundUpdater beginWaitingForEfficientMomentsToUpdateAlbumArt];
-    [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
+    //[LQAlbumArtBackgroundUpdater beginWaitingForEfficientMomentsToUpdateAlbumArt];
+    //[LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
     
     [AppDelegateSetupHelper setupDiskAndMemoryWebCache];
-    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     
     BOOL appLaunchedFirstTime = [AppDelegateSetupHelper appLaunchedFirstTime];
     [AppDelegateSetupHelper loadUsersSettingsFromNSUserDefaults];
@@ -164,12 +163,19 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 - (void)removePlayerSnapshot
 {
-    if(_playerSnapshot.superview){
-        if(! playerViewFadingBackOnScreen
-           && [UIApplication sharedApplication].applicationState == UIApplicationStateActive){
-            NSLog(@"removed old snapshot");
-            [_playerSnapshot removeFromSuperview];
-            _playerSnapshot = nil;
+    if(! playerViewFadingBackOnScreen
+       && [UIApplication sharedApplication].applicationState == UIApplicationStateActive){
+        NSLog(@"removed old snapshot");
+        [_playerSnapshot removeFromSuperview];
+        _playerSnapshot = nil;
+    } else{
+        //schedule the removal a little bit later (recursively until it can be removed)
+        if(_playerSnapshot == nil)
+            return;
+        if([UIApplication sharedApplication].applicationState == UIApplicationStateActive){
+            [self performSelector:@selector(removePlayerSnapshot)
+                       withObject:nil
+                       afterDelay:0.25];
         }
     }
 }
@@ -468,6 +474,7 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
                    NSLog(@"Ensemble failed to merge in background.");
                 }
                 else{
+                    [AppEnvironmentConstants setLastSuccessfulSyncDate:[[NSDate alloc] init]];
                     NSLog(@"Ensemble merged in background.");
                 }
                 

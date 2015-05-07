@@ -204,7 +204,7 @@ static BOOL abortAsyncArtUpdate = NO;
             
             if(downloadedHqArtSuccessfully)
             {
-                UIImage *hqArt = [[UIImage alloc] initWithData:data];
+                UIImage *hqArt = [UIImage imageWithData:data];
                 //will overwrite the existing file
                 NSData *hqImageData = [AlbumArtUtilities compressedDataFromUIImage:hqArt];
                 itemSong.albumArt.image = hqImageData;

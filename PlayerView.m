@@ -9,6 +9,7 @@
 #import "PlayerView.h"
 #import "SongPlayerViewController.h"
 #import "PreviousPlaybackContext.h"
+#import "PlayableItem.h"
 
 
 @interface PlayerView ()
@@ -156,25 +157,31 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     }
     userDidSwipePlayerOffScreenManually = NO;
     Song *songWeAreKilling = [MusicPlaybackController nowPlayingSong];
-    PlaybackContext *oldContext = [NowPlayingSong sharedInstance].context;
+    PlaybackContext *oldContext = [NowPlayingSong sharedInstance].nowPlayingItem.contextForItem;
     [PreviousPlaybackContext setPreviousPlaybackContext:oldContext];
     
     //done because the method reacting to the MZNewSongLoading notification needs to know
     //what the context was. hence keeping the context the same temporarily...
-    [[NowPlayingSong sharedInstance] setNewNowPlayingSong:nil context:oldContext];
+#warning changed functionality. test to see if anything breaks as a result.
+    //[[NowPlayingSong sharedInstance] setNewNowPlayingSong:nil context:oldContext];
+    
+    //added this line instead of the one above.
+    [PreviousPlaybackContext setPreviousPlaybackContext:oldContext];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
                                                         object:songWeAreKilling];
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     [player dismissAllSpinners];
     [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
     [SongPlayerCoordinator playerWasKilled:YES];
-    [[NowPlayingSong sharedInstance] setNewNowPlayingSong:nil context:nil];
+    [[NowPlayingSong sharedInstance] setNewNowPlayingItem:nil];
     
     //reset player state to defaults
     [MusicPlaybackController explicitlyPausePlayback:NO];
     [SongPlayerCoordinator placePlayerInDisabledState:NO];
     [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
     [[MZPlaybackQueue sharedInstance] clearEntireQueue];
+    
+    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
 }
 
 #pragma mark - Airplay state stuff

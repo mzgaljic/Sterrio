@@ -11,6 +11,7 @@
 #import "MZTableViewCell.h"
 #import "MusicPlaybackController.h"
 #import "ArtistItemAlbumViewController.h"
+#import "PlayableItem.h"
 
 @interface AllArtistsDataSource ()
 {
@@ -170,12 +171,11 @@
         PlaybackContext *artistDetailContext = [[PlaybackContext alloc] initWithFetchRequest:nil
                                                                             prettyQueueName:@""
                                                                                    contextId:artistDetailContextId];
-        
-        if(
-           ([nowPlayingObj.context isEqualToContext:self.playbackContext]
-           ||
-           [nowPlayingObj.context isEqualToContext:artistDetailContext])
-           && nowPlayingObj.nowPlaying != nil)
+        if(nowPlayingObj.nowPlayingItem != nil
+           &&
+           (([nowPlayingObj.nowPlayingItem.contextForItem isEqualToContext:self.playbackContext])
+            ||
+            [nowPlayingObj.nowPlayingItem.contextForItem isEqualToContext:artistDetailContext]))
         {
             artistHasNowPlaying = YES;
         }
@@ -368,7 +368,7 @@
         return;
     Song *oldsong = (Song *)[notification object];
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
-    Song *newSong = nowPlaying.nowPlaying;
+    Song *newSong = nowPlaying.nowPlayingItem.songForItem;
     
     Artist *oldArtist = oldsong.artist;
     Artist *newArtist = newSong.artist;

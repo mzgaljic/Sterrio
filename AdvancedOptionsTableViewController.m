@@ -228,13 +228,10 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
 {
     int footerViewHeight;
     NSString *footerText;
-    if([AppEnvironmentConstants shouldOnlyAirplayAudio]){
+    if([AppEnvironmentConstants shouldOnlyAirplayAudio])
         footerViewHeight = 95;
-        footerText = AIRPLAY_AUDIO_ONLY_ENABLED_FOOTER;
-    }else{
+    else
         footerViewHeight = 80;
-        footerText = AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER;
-    }
 
     int rowHeight = [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel];
     int headerHeight = 30;

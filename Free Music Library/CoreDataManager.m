@@ -103,6 +103,8 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
 
 + (void)performRelevantActionWithCoreDataInit
 {
+    [ensemble processPendingChangesWithCompletion:nil];
+    
     if (! ensemble.isLeeched && [AppEnvironmentConstants icloudSyncEnabled])
     {
         __block CDEPersistentStoreEnsemble *blockEnsemble = ensemble;
@@ -120,6 +122,7 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
                           NSLog(@"Merge failed");
                       } else{
                           NSLog(@"Merged.");
+                          [AppEnvironmentConstants setLastSuccessfulSyncDate:[[NSDate alloc] init]];
                       }
                   }];
              }
@@ -131,6 +134,7 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
                 NSLog(@"Merging failed.");
             } else{
                 NSLog(@"Merged successfully.");
+                [AppEnvironmentConstants setLastSuccessfulSyncDate:[[NSDate alloc] init]];
             }
         }];
     }
@@ -163,6 +167,7 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
                      NSLog(@"Merge failed");
                  } else{
                      NSLog(@"Merged successfully.");
+                     [AppEnvironmentConstants setLastSuccessfulSyncDate:[[NSDate alloc] init]];
                  }
              }];
         }
@@ -182,6 +187,7 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
                               NSLog(@"Ensemble failed to merge.");
                           } else{
                               NSLog(@"Ensemble merged.");
+                              [AppEnvironmentConstants setLastSuccessfulSyncDate:[[NSDate alloc] init]];
                           }
                       }];
                  }
@@ -208,12 +214,15 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
             NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
             abort();
         } else{
+            [ensemble processPendingChangesWithCompletion:nil];
+            
             //save succeeded. now lets go the extra mile and try to merge here.
             [ensemble mergeWithCompletion:^(NSError *error) {
                 if(error){
                     NSLog(@"Saved, but failed to merge.");
                 } else{
                     NSLog(@"Saved and Merged.");
+                    [AppEnvironmentConstants setLastSuccessfulSyncDate:[[NSDate alloc] init]];
                 }
             }];
         }

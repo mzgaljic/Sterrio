@@ -792,7 +792,7 @@ static BOOL userClearedTextField = NO;
                            completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
                                if ( !error )
                                {
-                                   UIImage *image = [[UIImage alloc] initWithData:data];
+                                   UIImage *image = [UIImage imageWithData:data];
                                    completionBlock(YES, image);
                                } else{
                                    completionBlock(NO, nil);

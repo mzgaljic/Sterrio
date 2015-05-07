@@ -7,12 +7,14 @@
 //
 
 #import "MZPrivateMainPlaybackQueue.h"
+#import "PlayableItem.h"
+#import "PlaylistItem.h"
 
 @interface MZPrivateMainPlaybackQueue ()
 {
     PlaybackContext *playbackContext;
     NSUInteger fetchRequestIndex;  //keeping track where we left off within a fetchrequest
-    Song *mostRecentSong;
+    PlayableItem *mostRecentItem;
     BOOL atEndOfQueue;
     BOOL userWentBeyondStartOfQueue;
     BOOL userWentBeyondEndOfQueue;
@@ -22,7 +24,7 @@
 
 - (instancetype)init
 {
-    if([super init]){
+    if(self = [super init]){
         playbackContext = nil;
         fetchRequestIndex = 0;
         atEndOfQueue = NO;
@@ -32,7 +34,7 @@
     return self;
 }
 
-- (NSUInteger)numSongsInEntireMainQueue
+- (NSUInteger)numItemsInEntireMainQueue
 {
     //no fault at all here  :)
     if(playbackContext.request != nil){
@@ -42,44 +44,43 @@
     }
 }
 
-- (NSUInteger)numMoreSongsInMainQueue
+- (NSUInteger)numMoreItemsInMainQueue
 {
-    
-    return [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
+    return [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
                                                 nowPlayingInclusive:YES
                                                  onlyUnplayedTracks:YES].count;
 }
 
-- (void)setMainQueueWithNewNowPlayingSong:(Song *)aSong inContext:(PlaybackContext *)aContext
+- (void)setMainQueueWithNewNowPlayingItem:(PlayableItem *)item
 {
     playbackContext = nil;
-    playbackContext = aContext;
+    playbackContext = item.contextForItem;
     atEndOfQueue = NO;
     userWentBeyondStartOfQueue = NO;
     userWentBeyondEndOfQueue = NO;
     
-    NSArray *songs = [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
+    NSArray *items = [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
                                                           nowPlayingInclusive:YES
                                                            onlyUnplayedTracks:NO];
-    if(songs > 0){
-        NSUInteger index = [songs indexOfObject:aSong];
+    if(items > 0){
+        NSUInteger index = [self indexOfItem:item inArray:&items];
         if(index != NSNotFound){
-            mostRecentSong = songs[index];
+            mostRecentItem = [self itemAtIndex:index inArray:&items];
             fetchRequestIndex = index;
-            if(songs.count > 1)
+            if(items.count > 1)
                 atEndOfQueue = NO;
             else
                 atEndOfQueue = YES;
             return;
         }
     }
-    mostRecentSong = nil;
+    mostRecentItem = nil;
     fetchRequestIndex = 0;
 }
 
-- (NSArray *)tableViewOptimizedArrayOfMainQueueSongsComingUp
+- (NSArray *)tableViewOptimizedArrayOfMainQueuePlayableItemsComingUp
 {
-    return [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:EXTERNAL_FETCH_BATCH_SIZE
+    return [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:EXTERNAL_FETCH_BATCH_SIZE
                                                 nowPlayingInclusive:YES
                                                  onlyUnplayedTracks:YES];
 }
@@ -92,52 +93,50 @@
 - (void)clearMainQueue
 {
     playbackContext = nil;
-    mostRecentSong = nil;
+    mostRecentItem = nil;
     fetchRequestIndex = 0;
     atEndOfQueue = NO;
     userWentBeyondStartOfQueue = NO;
     userWentBeyondEndOfQueue = NO;
 }
 
-- (PreliminaryNowPlaying *)skipToPrevious
+- (PlayableItem *)skipToPrevious
 {
     if(playbackContext == nil)
         return nil;
     else{
-        NSArray *songs = [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
+        if([NowPlayingSong sharedInstance].nowPlayingItem.isFromUpNextSongs){
+            return mostRecentItem;
+        }
+        
+        NSArray *items = [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
                                                               nowPlayingInclusive:YES
                                                                onlyUnplayedTracks:NO];
-        if(songs.count > 0){
-            NSUInteger index = [songs indexOfObject:mostRecentSong];
+        if(items.count > 0){
+            NSUInteger index = [self indexOfItem:mostRecentItem inArray:&items];
             if(index != fetchRequestIndex)
                 fetchRequestIndex = index;
             
             if(fetchRequestIndex == 0){
                 //value is 0 before decrementing
-                if(songs.count == 1)
+                if(items.count == 1)
                     atEndOfQueue = YES;
                 if(userWentBeyondEndOfQueue){
-                    //dont actually decrement the index, just return the last song since the
+                    //dont actually decrement the index, just return the last item since the
                     //user previously skipped "past" the last index in the array.
                     userWentBeyondEndOfQueue = NO;
-                    mostRecentSong = [songs objectAtIndex:index];
-                    PreliminaryNowPlaying *newNowPlaying = [[PreliminaryNowPlaying alloc] init];
-                    newNowPlaying.aNewSong = mostRecentSong;
-                    newNowPlaying.aNewContext = playbackContext;
-                    return newNowPlaying;
+                    mostRecentItem = [self itemAtIndex:index inArray:&items];
+                    return mostRecentItem;
                 }else
                     userWentBeyondStartOfQueue = YES;
                 return nil;  //no songs before index 0.
             }
             if(userWentBeyondEndOfQueue){
-                //dont actually decrement the index, just return the last song since the
+                //dont actually decrement the index, just return the last item since the
                 //user previously skipped "past" the last index in the array.
                 userWentBeyondEndOfQueue = NO;
-                mostRecentSong = [songs objectAtIndex:index];
-                PreliminaryNowPlaying *newNowPlaying = [[PreliminaryNowPlaying alloc] init];
-                newNowPlaying.aNewSong = mostRecentSong;
-                newNowPlaying.aNewContext = playbackContext;
-                return newNowPlaying;
+                mostRecentItem = [self itemAtIndex:index inArray:&items];
+                return mostRecentItem;
             }
             
             
@@ -145,47 +144,41 @@
             //was greater than 0 (avoiding accidentally setting it to a negative value).
             index = --fetchRequestIndex;
             
-            if(fetchRequestIndex == songs.count-1 || fetchRequestIndex > songs.count-1){
+            if(fetchRequestIndex == items.count-1 || fetchRequestIndex > items.count-1){
                 atEndOfQueue = YES;
             } else
                 atEndOfQueue = NO;
             
-            //simply grabbing the next song
-            mostRecentSong = [songs objectAtIndex:index];
-            PreliminaryNowPlaying *newNowPlaying = [[PreliminaryNowPlaying alloc] init];
-            newNowPlaying.aNewSong = mostRecentSong;
-            newNowPlaying.aNewContext = playbackContext;
-            return newNowPlaying;
+            //simply grabbing the previous item
+            mostRecentItem = [self itemAtIndex:index inArray:&items];
+            return mostRecentItem;
         } else{
             return nil;
         }
     }
 }
 
-- (PreliminaryNowPlaying *)skipForward
+- (PlayableItem *)skipForward
 {
     if(playbackContext == nil)
         return nil;
     else{
-        NSArray *songs = [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
+        NSArray *items = [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
                                                               nowPlayingInclusive:YES
                                                                onlyUnplayedTracks:NO];
-        if(songs.count > 0){
-            NSUInteger index = [songs indexOfObject:mostRecentSong];
+        if(items.count > 0){
+            NSUInteger index = [self indexOfItem:mostRecentItem inArray:&items];
             if(index != fetchRequestIndex)
                 fetchRequestIndex = index;
             if(userWentBeyondStartOfQueue){
-                //user is just going to play song at index 0 now, since they previously went
+                //user is just going to play item at index 0 now, since they previously went
                 //"behind" the bounds of index 0.
                 userWentBeyondStartOfQueue = NO;
-                mostRecentSong = [songs objectAtIndex:index];
-                PreliminaryNowPlaying *newNowPlaying = [[PreliminaryNowPlaying alloc] init];
-                newNowPlaying.aNewSong = mostRecentSong;
-                newNowPlaying.aNewContext = playbackContext;
-                return newNowPlaying;
+                mostRecentItem = [self itemAtIndex:index inArray:&items];
+                return mostRecentItem;
             } else if(userWentBeyondEndOfQueue)
                 return nil;
-            else if(fetchRequestIndex == songs.count-1){
+            else if(fetchRequestIndex == items.count-1){
                 //dont let user beyond end of array.
                 userWentBeyondEndOfQueue = YES;
                 return nil;
@@ -193,17 +186,14 @@
             
             index = ++fetchRequestIndex;
             
-            if(fetchRequestIndex > songs.count-1){
+            if(fetchRequestIndex > items.count-1){
                 atEndOfQueue = YES;
-                //no more songs, reached the last one
+                //no more items, reached the last one
                 return nil;
             } else{
-                //simply grabbing the next song
-                mostRecentSong = [songs objectAtIndex:index];
-                PreliminaryNowPlaying *newNowPlaying = [[PreliminaryNowPlaying alloc] init];
-                newNowPlaying.aNewSong = mostRecentSong;
-                newNowPlaying.aNewContext = playbackContext;
-                return newNowPlaying;
+                //simply grabbing the next item
+                mostRecentItem = [self itemAtIndex:index inArray:&items];
+                return mostRecentItem;
             }
         } else{
             return nil;
@@ -211,26 +201,26 @@
     }
 }
 
-- (Song *)skipToBeginningOfQueue
+- (PlayableItem *)skipToBeginningOfQueue
 {
     //fetchRequestIndex
     if(playbackContext == nil)
         return nil;
     else{
-        NSArray *songs = [self minimallyFaultedArrayOfMainQueueSongsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
+        NSArray *items = [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
                                                               nowPlayingInclusive:YES
                                                                onlyUnplayedTracks:NO];
-        if(songs.count > 0){
-            Song *firstSongInMainQueue = [songs objectAtIndex:0];
+        if(items.count > 0){
+            PlayableItem *firstItemInMainQueue = [self itemAtIndex:0 inArray:&items];
             fetchRequestIndex = 0;
-            mostRecentSong = firstSongInMainQueue;
-            if(songs.count == 1)
+            mostRecentItem = firstItemInMainQueue;
+            if(items.count == 1)
                 atEndOfQueue = YES;
             else
                 atEndOfQueue = NO;
             userWentBeyondStartOfQueue = NO;
             userWentBeyondEndOfQueue = NO;
-            return firstSongInMainQueue;
+            return firstItemInMainQueue;
         }
         else{
             return nil;
@@ -241,22 +231,34 @@
 
 //--------------private helpers--------------
 
-//for getting an array of all up next songs, without putting all songs into memory.
-- (NSMutableArray *)minimallyFaultedArrayOfMainQueueSongsWithBatchSize:(int)batchSize
+//for getting an array of all up next items, without putting all items into memory.
+- (NSMutableArray *)minimallyFaultedArrayOfMainQueueItemsWithBatchSize:(int)batchSize
                                             nowPlayingInclusive:(BOOL)inclusive
                                              onlyUnplayedTracks:(BOOL)unplayed
 {
-    NSMutableArray *compiledSongs = [NSMutableArray array];
+    if(userWentBeyondEndOfQueue && unplayed)
+        return [NSMutableArray array];
+    
+    NSMutableArray *compiledItems = [NSMutableArray array];
     NSFetchRequest *request = playbackContext.request;
     if(request == nil)
-        return compiledSongs;
+        return compiledItems;
     [request setFetchBatchSize:INTERNAL_FETCH_BATCH_SIZE];
     NSArray *array = [[CoreDataManager context] executeFetchRequest:request error:nil];
     NSUInteger nowPlayingIndex;
-    if([NowPlayingSong sharedInstance].isFromPlayNextSongs)
-        nowPlayingIndex = [array indexOfObject:mostRecentSong];
-    else
-        nowPlayingIndex = [array indexOfObject:[NowPlayingSong sharedInstance].nowPlaying];
+    if(userWentBeyondStartOfQueue){
+        if(array.count >= 1)
+            nowPlayingIndex = 0;
+        else
+            nowPlayingIndex = NSNotFound;
+    }
+    else{
+        if([NowPlayingSong sharedInstance].nowPlayingItem.isFromUpNextSongs)
+            nowPlayingIndex = [self indexOfItem:mostRecentItem inArray:&array];
+        else
+            nowPlayingIndex = [self indexOfItem:[NowPlayingSong sharedInstance].nowPlayingItem inArray:&array];
+    }
+    
     NSArray *desiredSubArray;
     if(nowPlayingIndex != NSNotFound && unplayed){
         NSRange range;
@@ -264,10 +266,10 @@
             range = NSMakeRange(nowPlayingIndex, array.count-1);
         else{
             if(nowPlayingIndex < array.count-1)
-                //at least 1 more song in array
+                //at least 1 more item in array
                 range = NSMakeRange(nowPlayingIndex+1, array.count-1);
             else
-                //last song reached, no songs to show...return empty array instead of allowing index out of bounds.
+                //last item reached, no items to show...return empty array instead of allowing index out of bounds.
                 return [NSMutableArray array];
         }
         desiredSubArray = [array subarrayWithRange:NSMakeRange(nowPlayingIndex+1, (array.count-1) - nowPlayingIndex)];
@@ -275,8 +277,31 @@
     if((atEndOfQueue && !unplayed) || (desiredSubArray == nil && !unplayed))
         desiredSubArray = array;
     
-    [compiledSongs addObjectsFromArray:desiredSubArray];
-    return compiledSongs;
+    [compiledItems addObjectsFromArray:desiredSubArray];
+    return compiledItems;
+}
+
+- (NSUInteger)indexOfItem:(PlayableItem *)item inArray:(NSArray **)array
+{
+    NSUInteger index = [*array indexOfObject:item.songForItem];
+    if(index == NSNotFound)
+        index = [*array indexOfObject:item.playlistItemForItem];
+    return index;
+}
+
+//this is used to make sure we always work with PlayableItem objects.
+- (PlayableItem *)itemAtIndex:(NSUInteger)index inArray:(NSArray **)array
+{
+    id obj = [*array objectAtIndex:index];
+    if([obj isMemberOfClass:[PlayableItem class]])
+        return (PlayableItem *)obj;
+    else if([obj isMemberOfClass:[Song class]]){
+        return [[PlayableItem alloc] initWithSong:(Song *)obj context:playbackContext fromUpNextSongs:NO];
+    }
+    else if([obj isMemberOfClass:[PlaylistItem class]])
+        return [[PlayableItem alloc] initWithPlaylistItem:(PlaylistItem *)obj context:playbackContext fromUpNextSongs:NO];
+    else
+        return nil;
 }
 
 @end

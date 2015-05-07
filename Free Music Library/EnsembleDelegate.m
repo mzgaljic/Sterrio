@@ -54,6 +54,7 @@
             NSLog(@"Files were just downloaded, but merge failed.");
         } else{
             NSLog(@"Files just downloaded and merged.");
+            [AppEnvironmentConstants setLastSuccessfulSyncDate:[[NSDate alloc] init]];
         }
     }];
 }

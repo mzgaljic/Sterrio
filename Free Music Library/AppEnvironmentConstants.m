@@ -30,6 +30,7 @@ static BOOL userIsPreviewingAVideo = NO;
 static BOOL tabBarIsHidden = NO;
 static BOOL isIcloudSwitchWaitingForActionToComplete = NO;
 static BOOL playbackTimerActive = NO;
+static NSDate *lastSuccessfulSyncDate;
 static NSInteger activePlaybackTimerThreadNum;
 static PLABACK_REPEAT_MODE repeatType;
 static PREVIEW_PLAYBACK_STATE currentPreviewPlayerState = PREVIEW_PLAYBACK_STATE_Uninitialized;
@@ -409,12 +410,72 @@ static int icloudEnabledCounter = 0;
                     NSLog(@"Leeched successfully, but couldnt merge.");
                 } else{
                     NSLog(@"Just merged successfully.");
+                    [AppEnvironmentConstants setLastSuccessfulSyncDate:[[NSDate alloc] init]];
                 }
             }];
         }
         
         isIcloudSwitchWaitingForActionToComplete = NO;
     }];
+}
+
++ (void)setLastSuccessfulSyncDate:(NSDate *)date
+{
+    lastSuccessfulSyncDate = date;
+    [[NSUserDefaults standardUserDefaults] setObject:date forKey:LAST_SUCCESSFUL_ICLOUD_SYNC_KEY];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+//returns a date in a nice user readable format, such as "Yesterday at 1:15 PM".
++ (NSString *)humanReadableLastSyncTime
+{
+    if(lastSuccessfulSyncDate == nil)
+        return nil;
+    
+    //if any of these cases are true, use that instead of the date AND time.
+    NSTimeInterval secs = [[[NSDate alloc] init] timeIntervalSinceDate:lastSuccessfulSyncDate];
+    if(secs < 60){
+        return @"Just Now";
+    } else if(secs < 3600){
+        int minutesAgo = secs/60;
+        if(minutesAgo == 1)
+            return @"a minute ago";
+        else
+            return [NSString stringWithFormat:@"%i minutes ago", minutesAgo];
+    }
+    
+    //otherwise just show date and time in a pretty format.
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+    [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
+    NSLocale *locale = [NSLocale currentLocale];
+    [dateFormatter setLocale:locale];
+    [dateFormatter setDoesRelativeDateFormatting:YES];
+    
+    NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
+    if([self isUserUsingMilitaryTime])
+        [timeFormatter setDateFormat:@"HH:mm"];
+    else
+        [timeFormatter setDateFormat:@"h:mm a"];
+    
+    NSString *prettyDateString = [dateFormatter stringFromDate:lastSuccessfulSyncDate];
+    NSString *timeString = [timeFormatter stringFromDate:lastSuccessfulSyncDate];
+    
+    return [NSString stringWithFormat:@"%@ at %@", prettyDateString, timeString];
+}
+
+//helper for above method
++ (BOOL)isUserUsingMilitaryTime
+{
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setLocale:[NSLocale currentLocale]];
+    [formatter setDateStyle:NSDateFormatterNoStyle];
+    [formatter setTimeStyle:NSDateFormatterShortStyle];
+    NSString *dateString = [formatter stringFromDate:[NSDate date]];
+    NSRange amRange = [dateString rangeOfString:[formatter AMSymbol]];
+    NSRange pmRange = [dateString rangeOfString:[formatter PMSymbol]];
+    BOOL is24h = (amRange.location == NSNotFound && pmRange.location == NSNotFound);
+    return is24h;
 }
 
 #pragma mark - Notifying user interface about success or failure of icloud operations.

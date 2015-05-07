@@ -18,7 +18,7 @@
     MZPlaybackQueue *queue;
     
     //data models
-    NSArray *mainQueueSongsComingUp;
+    NSArray *mainQueueItemsComingUp;
     PlaybackContext *mainQueueContext;
     
     NSArray *upNextPlaybackContexts;
@@ -35,6 +35,7 @@
 short const TABLE_SECTION_FOOTER_HEIGHT = 25;
 short const SECTION_EMPTY = -1;
 
+/*
 #pragma mark - View Controller life cycle
 - (void)viewDidLoad
 {
@@ -564,6 +565,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     } else  //case should never happen
         return nil;
 }
-
+*/
 
 @end

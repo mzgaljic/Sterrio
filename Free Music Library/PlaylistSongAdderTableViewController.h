@@ -26,6 +26,8 @@
 //gui vars
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *leftBarButton;
 
+@property (nonatomic, strong) UIViewController *vcToNotifyAboutRotation;
+
 - (IBAction)leftBarButtonTapped:(id)sender;
 
 @end

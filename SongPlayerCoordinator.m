@@ -265,6 +265,10 @@ static UIInterfaceOrientation orientationOnLastRotate;
                                            currentPlayerFrame.origin.y,
                                            currentPlayerFrame.size.width,
                                            currentPlayerFrame.size.height);
+        
+        [videoPlayer setFrame:currentPlayerFrame];
+        CGPoint newCenter = [videoPlayer convertPoint:videoPlayer.center
+                                  fromCoordinateSpace:videoPlayer.superview];
         [videoPlayer setFrame:tempBeginFrame];
         
         [UIView animateWithDuration:1
@@ -275,9 +279,6 @@ static UIInterfaceOrientation orientationOnLastRotate;
                          animations:^{
                              videoPlayer.frame = currentPlayerFrame;
                              [videoPlayer shrunkenFrameHasChanged];
-                             
-                             CGPoint newCenter = [videoPlayer convertPoint:videoPlayer.center
-                                                       fromCoordinateSpace:videoPlayer.superview];
                              [videoPlayer newAirplayInUseMsgCenter:newCenter];
                          } completion:nil];
     }
@@ -457,8 +458,10 @@ static UIInterfaceOrientation orientationOnLastRotate;
     isPlayerEnabled = YES;
     __weak PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     [UIView animateWithDuration:1.0 animations:^{
-        playerView.alpha = 1.0;
-        playerView.userInteractionEnabled = YES;
+        if(playerView){
+            playerView.alpha = 1.0;
+            playerView.userInteractionEnabled = YES;
+        }
     }];
 }
 

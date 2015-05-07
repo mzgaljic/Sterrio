@@ -17,6 +17,7 @@
 #import "MGSwipeTableCell.h"
 #import "MGSwipeButton.h"
 #import "AlbumDetailDisplayHelper.h"
+#import "PlayableItem.h"
 
 @interface ArtistItemAlbumViewController ()
 {
@@ -165,11 +166,9 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
                                                 size:fontSize];
     
     NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-    BOOL isNowPlaying = [nowPlayingObj isEqualToSong:aSong
-                                  compareWithContext:self.playbackContext];
+    BOOL isNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToSong:aSong withContext:self.playbackContext];
     if(! isNowPlaying){
-        isNowPlaying = [nowPlayingObj isEqualToSong:aSong
-                                 compareWithContext:self.parentVcPlaybackContext];
+        isNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToSong:aSong withContext:self.parentVcPlaybackContext];
     }
     if(isNowPlaying)
         cell.textLabel.textColor = [AppEnvironmentConstants nowPlayingItemColor];
@@ -429,7 +428,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
         return;
     Song *oldSong = (Song *)[notification object];
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
-    Song *newSong = nowPlaying.nowPlaying;
+    Song *newSong = nowPlaying.nowPlayingItem.songForItem;
     NSIndexPath *oldPath, *newPath;
     
     //tries to obtain the path to the changed songs if possible.

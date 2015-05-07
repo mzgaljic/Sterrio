@@ -37,6 +37,7 @@ NSString * const MZInitAudioSession = @"Init the audio session if it isnt alread
 NSString * const MZKeyNumLikes = @"numLikes";
 NSString * const MZKeyNumDislikes = @"numDislikes";
 NSString * const MZKeyVideoDuration = @"videoDuration";
+
 #warning Replace with an official email before making app production ready
 NSString * const MZEmailBugReport = @"marksBetaMusicApp@gmail.com";
 NSString * const MZAddSongToUpNextString = @"Play Next";

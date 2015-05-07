@@ -36,6 +36,7 @@ extern NSString * const MZInitAudioSession;
 extern NSString * const MZKeyNumLikes;
 extern NSString * const MZKeyNumDislikes;
 extern NSString * const MZKeyVideoDuration;
+
 extern NSString * const MZEmailBugReport;
 extern NSString * const MZAddSongToUpNextString;
 extern NSString * const MZUserCanTransitionToMainInterface;

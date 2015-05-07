@@ -12,11 +12,11 @@
 #import "CoreDataManager.h"
 #import "MZPrivateMainPlaybackQueue.h"
 #import "MZPrivateUpNextPlaybackQueue.h"
-#import "PreliminaryNowPlaying.h"
 #import "SongPlayerCoordinator.h"
 #import "VideoPlayerWrapper.h"
 @import CoreData;
 
+@class PlayableItem;
 @interface MZPlaybackQueue : NSObject
 
 //used by private playback queue classes.
@@ -29,37 +29,37 @@ extern short const EXTERNAL_FETCH_BATCH_SIZE;
 + (void)presentQueuedHUD;
 
 #pragma mark - Get info about queue
-- (NSUInteger)numSongsInEntireMainQueue;
-- (NSUInteger)numMoreSongsInMainQueue;
-- (NSUInteger)numMoreSongsInUpNext;
+- (NSUInteger)numItemsInEntireMainQueue;
+- (NSUInteger)numMoreItemsInMainQueue;
+- (NSUInteger)numMoreItemsInUpNext;
 
 #pragma mark - Info for displaying Queue contexts visually
 //These 3 array methods WILL return the now playing song
 //if the now playing song is in that particular queue.
 //up next queue
-- (NSArray *)tableViewOptimizedArrayOfUpNextSongs;
-- (NSArray *)tableViewOptimizedArrayOfUpNextSongContexts;
+- (NSArray *)tableViewOptimizedArrayOfUpNextItems;  //returns either a song or playlistItem.
+- (NSArray *)tableViewOptimizedArrayOfUpNextItemsContexts;  //returns either a song or playlistItem.
 //main queue
-- (NSArray *)tableViewOptimizedArrayOfMainQueueSongsComingUp;
+- (NSArray *)tableViewOptimizedArrayOfMainQueueItemsComingUp;
 - (PlaybackContext *)mainQueuePlaybackContext;
 
 #pragma mark - Performing operations on queue
 - (void)clearEntireQueue;
 - (void)clearUpNext;
-- (void)skipOverThisManyQueueSongsEfficiently:(NSUInteger)numSongsToSkip;
+- (void)skipOverThisManyQueueItemsEfficiently:(NSUInteger)totalItemsWeNeedToSkip;
 
 //should be used when a user moves into a different context and wants to destroy their
 //current queue. This does not clear the "up next" section.
-- (void)setMainQueueWithNewNowPlayingSong:(Song *)aSong inContext:(PlaybackContext *)aContext;
+- (void)setMainQueueWithNewNowPlayingItem:(PlayableItem *)item;
 
-//Will initiate playback if no songs were played yet. or if the other queues are finished.
-- (void)addSongsToPlayingNextWithContexts:(NSArray *)contexts;
+//Will initiate playback if no items were played yet. or if the other queues are finished.
+- (void)addItemsToPlayingNextWithContexts:(NSArray *)contexts;
 
-- (Song *)skipToPrevious;
-- (Song *)skipForward;
+- (PlayableItem *)skipToPrevious;
+- (PlayableItem *)skipForward;
 
 //jumps back to index 0 in the main queue. if shuffle is on, it reshuffles before jumping to index 0.
-- (Song *)skipToBeginningOfQueueReshufflingIfNeeded;
+- (PlayableItem *)skipToBeginningOfQueueReshufflingIfNeeded;
 
 #pragma mark - DEBUG
 - (void)printQueueContents;

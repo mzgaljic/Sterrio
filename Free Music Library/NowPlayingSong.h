@@ -13,19 +13,15 @@
 #import "Playlist.h"
 #import "PlaybackContext.h"
 
+@class PlayableItem;
 @interface NowPlayingSong : NSObject
 
-@property (nonatomic, strong) Song *nowPlaying;
-@property (nonatomic, strong) PlaybackContext *context;
-@property (nonatomic, assign, readonly) BOOL isFromPlayNextSongs;
+@property (nonatomic, strong) PlayableItem *nowPlayingItem;
 
 + (instancetype)sharedInstance;
 
-- (BOOL)isEqualToSong:(Song *)aSong compareWithContext:(PlaybackContext *)context;
+- (BOOL)isEqualToItem:(PlayableItem *)anItem;
 
-- (void)setNewNowPlayingSong:(Song *)newSong
-                     context:(PlaybackContext *)context;
-
-- (void)setPlayingBackFromPlayNextSongs:(BOOL)isTrue;
+- (void)setNewNowPlayingItem:(PlayableItem *)newItem;
 
 @end

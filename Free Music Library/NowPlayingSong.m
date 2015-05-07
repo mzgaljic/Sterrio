@@ -7,6 +7,7 @@
 //
 
 #import "NowPlayingSong.h"
+#import "PlayableItem.h"
 
 @implementation NowPlayingSong
 
@@ -23,31 +24,19 @@
 - (id)init
 {
     if(self = [super init]){
-        self.nowPlaying = nil;
-        self.context = nil;
+        _nowPlayingItem = nil;
     }
     return self;
 }
 
-- (BOOL)isEqualToSong:(Song *)aSong
-   compareWithContext:(PlaybackContext *)aContext
+- (BOOL)isEqualToItem:(PlayableItem *)anItem
 {
-    BOOL sameSongIDs = [self.nowPlaying.uniqueId isEqualToString:aSong.uniqueId];
-    BOOL sameContexts = ([self.context isEqualToContext:aContext]
-                         || (self.context == nil && aContext == nil));
-    return (sameSongIDs && sameContexts);
+    return [_nowPlayingItem isEqualToItem:anItem];
 }
 
-- (void)setNewNowPlayingSong:(Song *)newSong
-                     context:(PlaybackContext *)aContext
+- (void)setNewNowPlayingItem:(PlayableItem *)newItem
 {
-    self.nowPlaying = newSong;
-    self.context = aContext;
-}
-
-- (void)setPlayingBackFromPlayNextSongs:(BOOL)isTrue
-{
-    _isFromPlayNextSongs = isTrue;
+    _nowPlayingItem = newItem;
 }
 
 @end

@@ -16,6 +16,7 @@
 #import "PlaylistItem.h"
 #import "Song+Utilities.h"
 #import "PlaylistItem+Utilities.h"
+#import "PlayableItem.h"
 
 @interface PlaylistItemTableViewController()
 {
@@ -191,7 +192,8 @@ static BOOL dismissingCenterBtnInProgress = NO;
 static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    Song *song = [self songForIndexPath:indexPath];
+    PlaylistItem *item = [self playlistItemForIndexPath:indexPath];
+    Song *song = item.song;
     
     MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
                                                              forIndexPath:indexPath];
@@ -211,8 +213,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringForSong:song];
     
     NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-    BOOL songIsNowPlaying = [nowPlayingObj isEqualToSong:song
-                                                        compareWithContext:self.playbackContext];
+    BOOL songIsNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToPlaylistItem:item withContext:self.playbackContext];
     
     if(songIsNowPlaying)
         cell.textLabel.textColor = [AppEnvironmentConstants nowPlayingItemColor];
@@ -291,26 +292,19 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
-        Song *songToRemove = [self songForIndexPath:indexPath];
-        [MusicPlaybackController songAboutToBeDeleted:songToRemove deletionContext:self.playbackContext];
+        PlaylistItem *item = [self playlistItemForIndexPath:indexPath];
+        [MusicPlaybackController songAboutToBeDeleted:item.song deletionContext:self.playbackContext];
         
-        NSPredicate *extractItemAtThisIndex;
-        extractItemAtThisIndex = [NSPredicate predicateWithFormat:@"index == %i", indexPath.row];
-        NSSet *setWithItem = [_playlist.playlistItems filteredSetUsingPredicate:extractItemAtThisIndex];
         
         //NOTE: Deleting the playlistItem (and saving context) will trigger code to run that
         //fixes the index of every playlistItem after the deleted one within this playlist.
-        if(setWithItem.count == 1)
-        {
-            //order of these calls is crucial.
-            NSMutableSet *set = [NSMutableSet setWithSet:_playlist.playlistItems];
-            PlaylistItem *item = [setWithItem anyObject];
-            [[CoreDataManager context] deleteObject:item];
-            
-            [set removeObject:item];
-            _playlist.playlistItems = set;
-            [[CoreDataManager sharedInstance] saveContext];
-        }
+        //IMPORTANT: order of these calls is crucial.
+        NSMutableSet *set = [NSMutableSet setWithSet:_playlist.playlistItems];
+        [[CoreDataManager context] deleteObject:item];
+        [set removeObject:item];
+        _playlist.playlistItems = set;
+        [[CoreDataManager sharedInstance] saveContext];
+        
         
         [self.tableView beginUpdates];
         if(_playlist.playlistItems.count == 0){
@@ -369,12 +363,12 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     
-    Song *selectedSong = [self songForIndexPath:indexPath];
-    [MusicPlaybackController newQueueWithSong:selectedSong withContext:self.playbackContext];
+    PlaylistItem *item = [self playlistItemForIndexPath:indexPath];
+    [MusicPlaybackController newQueueWithPlaylistItem:item withContext:self.playbackContext];
 }
 
 #pragma mark - Table Helpers
-- (Song *)songForIndexPath:(NSIndexPath *)indexPath
+- (PlaylistItem *)playlistItemForIndexPath:(NSIndexPath *)indexPath
 {
     NSPredicate *extractItemAtThisIndex;
     extractItemAtThisIndex = [NSPredicate predicateWithFormat:@"index == %i", indexPath.row];
@@ -437,7 +431,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     else
         myItem = [setWithPlaylistItem anyObject];
 
-    return myItem.song;
+    return myItem;
 }
 
 #pragma mark - MGSwipeTableCell delegates
@@ -459,7 +453,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     if(direction == MGSwipeDirectionLeftToRight){
         //queue
         NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-        Song *song = [self songForIndexPath:indexPath];
+        PlaylistItem *item = [self playlistItemForIndexPath:indexPath];
+        __weak PlaylistItem *weakItem = item;
         
         expansionSettings.fillOnTrigger = NO;
         expansionSettings.threshold = 1;
@@ -469,14 +464,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         swipeSettings.threshold = 9999;
         
         __weak PlaylistItemTableViewController *weakself = self;
-        __weak Song *weakSong = song;
         __weak MGSwipeTableCell *weakCell = cell;
         return @[[MGSwipeButton buttonWithTitle:@"Queue"
                                 backgroundColor:initialExpansionColor
                                         padding:15
                                        callback:^BOOL(MGSwipeTableCell *sender) {
                                            [MZPlaybackQueue presentQueuedHUD];
-                                           PlaybackContext *context = [weakself contextForPlaylistSong:weakSong];
+                                           PlaybackContext *context = [weakself contextForPlaylistItem:weakItem];
                                            [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];
                                            return YES;
@@ -493,7 +487,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                                        padding:15
                                                       callback:^BOOL(MGSwipeTableCell *sender)
                                  {
-                                     
                                      NSIndexPath *indexPath;
                                      indexPath= [weakSelf.tableView indexPathForCell:sender];
                                      [weakSelf tableView:weakSelf.tableView
@@ -524,7 +517,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     Song *oldSong = (Song *)[notification object];
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
-    Song *newSong = nowPlaying.nowPlaying;
+    Song *newSong = nowPlaying.nowPlayingItem.songForItem;
     NSIndexPath *oldPath, *newPath;
     
     //broken
@@ -599,23 +592,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (void)tabBarAddButtonPressed
 {
-    //start listening for notifications (so we know when the modal song picker dissapears)
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(songPickerWasDismissed:) name:@"song picker dismissed" object:nil];
-    
     PlaylistSongAdderTableViewController *vc = [PlaylistSongAdderTableViewController alloc];
     vc = [vc initWithPlaylistsUniqueId:_playlist.uniqueId playlistName:_playlist.playlistName];
+    [vc setVcToNotifyAboutRotation:self];
     
     UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:vc];
     [self presentViewController:navVC animated:YES completion:nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@YES];
-}
-
-- (void)songPickerWasDismissed:(NSNotification *)someNSNotification
-{
-    if([someNSNotification.name isEqualToString:@"song picker dismissed"]){
-        //MIGHT need to manually re-fetch the playlist due to new changes, but unlikely.
-#warning might need to add implementation.
-    }
 }
 
 #pragma mark - UITextField methods
@@ -790,15 +773,14 @@ static BOOL hidingCenterBtnAnimationComplete = YES;
 }
 
 #pragma mark - Helpers
-- (PlaybackContext *)contextForPlaylistSong:(Song *)aSong
+- (PlaybackContext *)contextForPlaylistItem:(PlaylistItem *)playlistItem
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"PlaylistItem"];
-    NSPredicate *predicate1 = [NSPredicate predicateWithFormat:@"ANY playlist.uniqueId == %@", _playlist.uniqueId];
-    NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"ANY song.uniqueId == %@", aSong.uniqueId];
-    request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate1, predicate2]];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", playlistItem.uniqueId];
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"index"
                                                                      ascending:YES];
     request.sortDescriptors = @[sortDescriptor];
+    request.predicate = predicate;
     return [[PlaybackContext alloc] initWithFetchRequest:[request copy]
                                          prettyQueueName:@""
                                                contextId:self.playbackContextUniqueId];

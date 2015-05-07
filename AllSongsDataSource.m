@@ -13,6 +13,7 @@
 #import "MusicPlaybackController.h"
 #import "AlbumAlbumArt+Utilities.h"
 #import "SongAlbumArt+Utilities.h"
+#import "PlayableItem.h"
 
 @interface AllSongsDataSource ()
 {
@@ -146,7 +147,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     else
         cell.detailTextLabel.text = nil;
     
-    BOOL isNowPlaying = [[NowPlayingSong sharedInstance] isEqualToSong:song compareWithContext:self.playbackContext];
+    BOOL isNowPlaying = [[NowPlayingSong sharedInstance].nowPlayingItem isEqualToSong:song
+                                                                          withContext:self.playbackContext];
     if(isNowPlaying)
         cell.textLabel.textColor = [super colorForNowPlayingItem];
     else
@@ -318,7 +320,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             
             BOOL playerEnabled = [SongPlayerCoordinator isPlayerEnabled];
             BOOL playerOnScreen = [SongPlayerCoordinator isPlayerOnScreen];
-            BOOL nowPlayingAndActive = [[NowPlayingSong sharedInstance] isEqualToSong:selectedSong compareWithContext:self.playbackContext] && playerEnabled && playerOnScreen;
+            BOOL isNowPlaying = [[NowPlayingSong sharedInstance].nowPlayingItem isEqualToSong:selectedSong
+                                                                                  withContext:self.playbackContext];
+            BOOL nowPlayingAndActive = (isNowPlaying && playerEnabled && playerOnScreen);
             
             if(nowPlayingAndActive){
                 UIViewController *visibleVc = [super topViewController];
@@ -418,13 +422,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     }
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section
-{
-    UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
-    int headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-    header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                                            size:headerFontSize];
-}
+
 
 #pragma mark - efficiently updating individual cells as needed
 - (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification
@@ -433,7 +431,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         return;
     Song *oldSong = (Song *)[notification object];
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
-    Song *newSong = nowPlaying.nowPlaying;
+    Song *newSong = nowPlaying.nowPlayingItem.songForItem;
     NSIndexPath *oldPath, *newPath;
     
     //tries to obtain the path to the changed songs if possible.

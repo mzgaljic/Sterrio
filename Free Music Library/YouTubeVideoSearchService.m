@@ -15,6 +15,7 @@
     NSString *nextPageToken; //set and reset when appropriate
     NSString *originalQueryUrl;
     
+    NSString *API_KEY;
     //base strings used to build url request string
     NSString *QUERY_BASE;
     NSString *QUERY_SUGGESTION_BASE;
@@ -22,7 +23,7 @@
     
     //base strings for obtaining specific video information (XML response)
     NSString *VIDEO_INFO_BASE;
-    NSString *VIDEO_INFO_APPENDED_ENDED;
+    NSString *VIDEO_INFO_APPEND_ME;
 }
 @property (nonatomic, assign) id<YouTubeVideoQueryDelegate> queryDelegate;
 @property (nonatomic, assign) id<YouTubeVideoDetailLookupDelegate> vidDurationDelegate;
@@ -64,12 +65,13 @@ const int time_out_interval_seconds = 10;
 - (id)init
 {
     if([super init]){
-        QUERY_BASE = @"https://www.googleapis.com/youtube/v3/search?type=video&part=snippet&maxResults=15&key=AIzaSyBAFK0pOUf4IWdfS94dYk_42dO46ssTUH8&q=";
+        API_KEY = @"AIzaSyBAFK0pOUf4IWdfS94dYk_42dO46ssTUH8";
+        QUERY_BASE = [NSString stringWithFormat:@"https://www.googleapis.com/youtube/v3/search?type=video&part=snippet&maxResults=15&key=%@&q=", API_KEY];
         QUERY_SUGGESTION_BASE = @"http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q=";
         NEXT_PAGE_QUERY_BASE = @"&pageToken=";
         
-        VIDEO_INFO_BASE = @"https://gdata.youtube.com/feeds/api/videos/";
-        VIDEO_INFO_APPENDED_ENDED = @"?v=2";
+        VIDEO_INFO_BASE = @"https://www.googleapis.com/youtube/v3/videos?id=";
+        VIDEO_INFO_APPEND_ME = [NSString stringWithFormat:@"&part=contentDetails&key=%@", API_KEY] ;
     }
     return self;
 }
@@ -90,7 +92,6 @@ const int time_out_interval_seconds = 10;
         
         //this queue object should not be reused. fix all this messy code in an update
         NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-        
         [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
         {
             if (data == nil){
@@ -115,6 +116,7 @@ const int time_out_interval_seconds = 10;
         __weak YouTubeVideo *weakVideo = ytVideo;
         NSMutableString *tempUrl = [NSMutableString stringWithString: VIDEO_INFO_BASE];
         [tempUrl appendString:ytVideo.videoId];
+        [tempUrl appendString:VIDEO_INFO_APPEND_ME];
         NSString *videoInfoUrl = [NSString stringWithString:tempUrl];
         __weak YouTubeVideoSearchService *weakSelf = self;
         
@@ -312,15 +314,43 @@ const int time_out_interval_seconds = 10;
 }
 
 #pragma mark - Parsing XML response for duration
-- (NSDictionary *)parseYouTubeVideoForDetails:(NSData *)XMLdata
+- (NSDictionary *)parseYouTubeVideoForDetails:(NSData *)JSONdata
 {
+    //root dictionary
+    NSDictionary *allDataDict = [NSJSONSerialization JSONObjectWithData:JSONdata
+                                                                options:NSJSONReadingMutableContainers
+                                                                  error:nil];
+    NSArray *itemsArray = [allDataDict objectForKey:@"items"];
+    
+    NSString *durationInISO8601;
+    if(itemsArray.count > 0){
+        NSDictionary *itemAtIndex0 = itemsArray[0];
+        NSDictionary *contentDetails = [itemAtIndex0 objectForKey:@"contentDetails"];
+        durationInISO8601 = [contentDetails objectForKey:@"duration"];
+    }
+    
+    NSDictionary *details;
+    if(durationInISO8601 != nil)
+    {
+        NSUInteger duration = [self durationFromIOS8601FormattedString:durationInISO8601];
+        NSNumber *durationNumObj = [NSNumber numberWithInteger:duration];
+        details = @{
+                    MZKeyVideoDuration    :   durationNumObj
+                    };
+    }
+
+    return details;
+    
+    //-----old XML parsing code-----
+    /*
     NSError *error;
     TBXML *tbxml = [TBXML tbxmlWithXMLData:XMLdata error:&error];
     
     if (error) {
-        //dont care what error is, just return 0 so that the app doesnt crash
+        //dont care what error is, just return so that the app doesnt crash
         return nil;
     } else {
+
         TBXMLElement *root = tbxml.rootXMLElement;
         
         //getting duration
@@ -336,16 +366,48 @@ const int time_out_interval_seconds = 10;
                                               parentElement:root];
         NSString *viewCountText = [TBXML valueOfAttributeNamed:@"viewCount"
                                                    forElement:stats];
-#warning extracted video view count...do something with this lol.
-
-        NSNumber *duration = [NSNumber numberWithInteger:[durationText integerValue]];
-        NSDictionary *details = @{
-                                  MZKeyVideoDuration : duration,
-                                  };
+//#warning extracted video view count...do something with this lol.
         return details;
     }
+     */
 }
 
+//Accepts a string (duration) from the youtube api in ISO 8601 format duration
+- (NSUInteger)durationFromIOS8601FormattedString:(NSString *)string
+{
+    const char *stringToParse = [string UTF8String];
+    int days = 0, hours = 0, minutes = 0, seconds = 0;
+    
+    const char *ptr = stringToParse;
+    while(*ptr)
+    {
+        if(*ptr == 'P' || *ptr == 'T')
+        {
+            ptr++;
+            continue;
+        }
+        
+        int value, charsRead;
+        char type;
+        if(sscanf(ptr, "%d%c%n", &value, &type, &charsRead) != 2)
+            ;  // handle parse error
+        if(type == 'D')
+            days = value;
+        else if(type == 'H')
+            hours = value;
+        else if(type == 'M')
+            minutes = value;
+        else if(type == 'S')
+            seconds = value;
+        else
+            ;  // handle invalid type
+        
+        ptr += charsRead;
+    }
+    
+    NSTimeInterval interval = ((days * 24 + hours) * 60 + minutes) * 60 + seconds;
+    return (NSUInteger)interval;
+}
 
 /*
  possibly useful at some point to test if videos exist anymore:

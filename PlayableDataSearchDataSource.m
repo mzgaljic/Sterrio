@@ -145,23 +145,30 @@
     }
     searchText = [searchText removeIrrelevantWhitespace];
     NSManagedObjectContext *context = [CoreDataManager context];
-    NSFetchRequest *request = [self.playableDataSearchDataSourceDelegate fetchRequestForSearchBarQuery:searchText];
+    __block NSFetchRequest *request = [self.playableDataSearchDataSourceDelegate fetchRequestForSearchBarQuery:searchText];
     
-    if ([AppEnvironmentConstants isUserOniOS8OrAbove])
+#warning fix memory leak if i have time. occurs every time user searches in search bar.
+    BOOL memoryLeakFixed = NO;
+    if ([AppEnvironmentConstants isUserOniOS8OrAbove] && memoryLeakFixed)
     {
         __weak PlayableDataSearchDataSource *weakself = self;
-        NSAsynchronousFetchRequest *asynchronousFetchRequest =
+        __block NSAsynchronousFetchRequest *asynchronousFetchRequest =
         [[NSAsynchronousFetchRequest alloc] initWithFetchRequest:request
                                                  completionBlock:^(NSAsynchronousFetchResult *result) {
                                                      
-                                                     dispatch_async(dispatch_get_main_queue(), ^{
-                                                         if (! result.operationError)
+                                                     NSArray *results = [NSArray arrayWithArray:result.finalResult];
+                                                     BOOL requestWasSuccessfull = !result.operationError;
+                                                     result = nil;
+                                                     __weak NSArray *weakResults = results;
+                                                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                         if (requestWasSuccessfull)
                                                          {
-                                                             [weakself.playableDataSearchDataSourceDelegate searchResultsFromUsersQuery:result.finalResult];
+                                                             [weakself.playableDataSearchDataSourceDelegate searchResultsFromUsersQuery:weakResults];
                                                          }
                                                          [weakself.tableView reloadData];
-                                                     });
+                                                     }];
                                                  }];
+        
         [context executeRequest:asynchronousFetchRequest error:NULL];
     }
     else

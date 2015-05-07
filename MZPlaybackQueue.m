@@ -8,6 +8,8 @@
 
 #import "MZPlaybackQueue.h"
 #import "ProgressHUD.h"
+#import "PlayableItem.h"
+#import "PlaylistItem.h"
 
 @interface MZPlaybackQueue ()
 {
@@ -47,33 +49,33 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
 }
 
 #pragma mark - Get info about queue
-- (NSUInteger)numSongsInEntireMainQueue
+- (NSUInteger)numItemsInEntireMainQueue
 {
-    return [mainQueue numSongsInEntireMainQueue];
+    return [mainQueue numItemsInEntireMainQueue];
 }
 
-- (NSUInteger)numMoreSongsInMainQueue
+- (NSUInteger)numMoreItemsInMainQueue
 {
-    return [mainQueue numMoreSongsInMainQueue];
+    return [mainQueue numMoreItemsInMainQueue];
 }
 
-- (NSUInteger)numMoreSongsInUpNext
+- (NSUInteger)numMoreItemsInUpNext
 {
-    return [upNextQueue numMoreUpNextSongsCount];
+    return [upNextQueue numMoreUpNextItemsCount];
 }
 
 #pragma mark - Info for displaying Queue contexts visually
-- (NSArray *)tableViewOptimizedArrayOfUpNextSongs
+- (NSArray *)tableViewOptimizedArrayOfUpNextItems
 {
-    return [upNextQueue tableViewOptimizedArrayOfUpNextSongs];
+    return [upNextQueue tableViewOptimizedArrayOfUpNextItems];
 }
-- (NSArray *)tableViewOptimizedArrayOfUpNextSongContexts
+- (NSArray *)tableViewOptimizedArrayOfUpNextItemsContexts
 {
-    return [upNextQueue tableViewOptimizedArrayOfUpNextSongContexts];
+    return [upNextQueue tableViewOptimizedArrayOfUpNextItemsContexts];
 }
-- (NSArray *)tableViewOptimizedArrayOfMainQueueSongsComingUp
+- (NSArray *)tableViewOptimizedArrayOfMainQueueItemsComingUp
 {
-    return [mainQueue tableViewOptimizedArrayOfMainQueueSongsComingUp];
+    return [mainQueue tableViewOptimizedArrayOfMainQueuePlayableItemsComingUp];
 }
 - (PlaybackContext *)mainQueuePlaybackContext
 {
@@ -94,29 +96,28 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
     [self printQueueContents];
 }
 
-- (void)skipOverThisManyQueueSongsEfficiently:(NSUInteger)totalSongsWeNeedToSkip
+- (void)skipOverThisManyQueueItemsEfficiently:(NSUInteger)totalItemsWeNeedToSkip
 {
-    NSUInteger numMoreSongsToSkip = totalSongsWeNeedToSkip;
-    NSUInteger numMoreUpNextSongs = [upNextQueue numMoreUpNextSongsCount];
-    if(numMoreUpNextSongs < numMoreSongsToSkip)
+    NSUInteger numMoreItemsToSkip = totalItemsWeNeedToSkip;
+    NSUInteger numMoreUpNextItems = [upNextQueue numMoreUpNextItemsCount];
+    if(numMoreUpNextItems < numMoreItemsToSkip)
     {
-        numMoreSongsToSkip -= numMoreUpNextSongs;
-        //even if we clear the entire upNextSongs queue, we'll still have to skip songs! so lets do it...
+        numMoreItemsToSkip -= numMoreUpNextItems;
+        //even if we clear the entire upNext queue, we'll still have to skip items! so lets do it...
         [upNextQueue clearUpNext];
-        [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:NO];
     }
     else
     {
         //pain in the ass case
-        for(int i = 0; i < numMoreSongsToSkip; i++){
-            [upNextQueue obtainAndRemoveNextSong];
-            numMoreSongsToSkip--;
+        for(int i = 0; i < numMoreItemsToSkip; i++){
+            [upNextQueue obtainAndRemoveNextItem];
+            numMoreItemsToSkip--;
         }
     }
     
-    if(numMoreSongsToSkip > 0)
+    if(numMoreItemsToSkip > 0)
     {
-        for(int i = 0; i < numMoreSongsToSkip; i++){
+        for(int i = 0; i < numMoreItemsToSkip; i++){
             [mainQueue skipForward];
         }
     }
@@ -124,54 +125,52 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
 
 //should be used when a user moves into a different context and wants to destroy their
 //current queue. This does not clear the "up next" section.
-- (void)setMainQueueWithNewNowPlayingSong:(Song *)aSong inContext:(PlaybackContext *)aContext
+- (void)setMainQueueWithNewNowPlayingItem:(PlayableItem *)item
 {
     NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-    PlaybackContext *oldContext = [nowPlayingObj context];
-    [mainQueue setMainQueueWithNewNowPlayingSong:aSong inContext:aContext];
-    [nowPlayingObj setPlayingBackFromPlayNextSongs:NO];
-    [nowPlayingObj setNewNowPlayingSong:aSong context:aContext];
+    PlaybackContext *oldContext = nowPlayingObj.nowPlayingItem.contextForItem;
+    [mainQueue setMainQueueWithNewNowPlayingItem:item];
+    [nowPlayingObj setNewNowPlayingItem:item];
     
     //start playback in minimzed state
     [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
-    [VideoPlayerWrapper startPlaybackOfSong:aSong
+    [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
                                goingForward:YES
                                     oldSong:nil
                                  oldContext:oldContext];
     [self printQueueContents];
 }
 
-- (void)addSongsToPlayingNextWithContexts:(NSArray *)contexts
+- (void)addItemsToPlayingNextWithContexts:(NSArray *)contexts
 {
     if(! [SongPlayerCoordinator isPlayerOnScreen]){
         NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-        PlaybackContext *oldContext = [nowPlayingObj context];
+        PlaybackContext *oldContext = nowPlayingObj.nowPlayingItem.contextForItem;
         
         //no songs currently playing, set defaults...
-        [upNextQueue addSongsToUpNextWithContexts:contexts];
-        PreliminaryNowPlaying *newSong = [upNextQueue obtainAndRemoveNextSong];
+        [upNextQueue addItemsToUpNextWithContexts:contexts];
+        PlayableItem *item = [upNextQueue obtainAndRemoveNextItem];
         
-        [nowPlayingObj setPlayingBackFromPlayNextSongs:YES];
-        [nowPlayingObj setNewNowPlayingSong:newSong.aNewSong
-                                    context:newSong.aNewContext];
+        [nowPlayingObj setNewNowPlayingItem:item];
+        
         //start playback in minimzed state
         [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
-        [VideoPlayerWrapper startPlaybackOfSong:newSong.aNewSong
+        [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
                                    goingForward:YES
                                         oldSong:nil
                                      oldContext:oldContext];
         [self printQueueContents];
         return;
     } else{
-        //songs were already played, player on screen. is playback of queue finished?
-        if([mainQueue numMoreSongsInMainQueue] == 0
-           && [upNextQueue numMoreUpNextSongsCount] == 0)
+        //items were already played, player on screen. is playback of queue finished?
+        if([mainQueue numMoreItemsInMainQueue] == 0
+           && [upNextQueue numMoreUpNextItemsCount] == 0)
         {
-            //no more songs in queue! is the current song completely finished playing?
-            //if so, we can start playback of the new up next songs right now!
+            //no more items in queue! is the current item completely finished playing?
+            //if so, we can start playback of the new up next items right now!
             
             MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-            Song *nowPlayingSong = [NowPlayingSong sharedInstance].nowPlaying;
+            Song *nowPlayingSong = [NowPlayingSong sharedInstance].nowPlayingItem.songForItem;
             NSUInteger elapsedSeconds = ceil(CMTimeGetSeconds(player.currentItem.currentTime));
             
             //comparing if song is either done or VERY VERY VERY close to the end.
@@ -179,15 +178,14 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
                || elapsedSeconds +1 == [nowPlayingSong.duration integerValue]){
                 //we can start playing the new queue
                 [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
-                [upNextQueue addSongsToUpNextWithContexts:contexts];
-                PreliminaryNowPlaying *newSong = [upNextQueue obtainAndRemoveNextSong];
+                [upNextQueue addItemsToUpNextWithContexts:contexts];
+                PlayableItem *item = [upNextQueue obtainAndRemoveNextItem];
                 
                 NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-                PlaybackContext *oldContext = [nowPlayingObj context];
-                [nowPlayingObj setPlayingBackFromPlayNextSongs:YES];
-                [nowPlayingObj setNewNowPlayingSong:newSong.aNewSong
-                                                              context:newSong.aNewContext];
-                [VideoPlayerWrapper startPlaybackOfSong:newSong.aNewSong
+                PlaybackContext *oldContext = nowPlayingObj.nowPlayingItem.contextForItem;
+                [nowPlayingObj setNewNowPlayingItem:item];
+
+                [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
                                            goingForward:YES
                                                 oldSong:nowPlayingSong
                                              oldContext:oldContext];
@@ -195,99 +193,104 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
                 return;
             }
         }
-        //dont mess with the current song...queue not finished. Just insert new songs.
-        [upNextQueue addSongsToUpNextWithContexts:contexts];
+        //dont mess with the current item...queue not finished. Just insert new items.
+        [upNextQueue addItemsToUpNextWithContexts:contexts];
         [self printQueueContents];
     }
 }
 
-- (Song *)skipToPrevious
+- (PlayableItem *)skipToPrevious
 {
-    PreliminaryNowPlaying *newNowPlaying = [mainQueue skipToPrevious];
+    PlayableItem *item = [mainQueue skipToPrevious];
     
+    //code commented out makes NO sense lmfao.
+    /*
     //user cant go backwards
-    if(newNowPlaying.aNewSong == nil){
-        //see if there is a up next queued song
+    if(item.songForItem == nil){
+        //see if there is a up next queued item
         
-        newNowPlaying = [upNextQueue obtainAndRemoveNextSong];
-        BOOL upNextQueueNotEmptyYet = (newNowPlaying.aNewSong != nil);
-        if(upNextQueueNotEmptyYet){
-            [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:YES];
-        } else{
-            //just update this var. Dont skip forward, let user be in control of that.
-            [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:NO];
-        }
-    } else
-        [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:NO];
+        item = [upNextQueue obtainAndRemoveNextItem];
+    }
+     */
     
     [self printQueueContents];
-    [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newNowPlaying.aNewSong
-                                                  context:newNowPlaying.aNewContext];
-    return newNowPlaying.aNewSong;;
+    [[NowPlayingSong sharedInstance] setNewNowPlayingItem:item];
+    
+    return item;
 }
-- (Song *)skipForward
+- (PlayableItem *)skipForward
 {
-    PreliminaryNowPlaying *newNowPlaying = [upNextQueue obtainAndRemoveNextSong];
-    BOOL upNextQueueNotEmptyYet = (newNowPlaying.aNewSong != nil);
-    if(upNextQueueNotEmptyYet){
-        [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:YES];
-    } else{
-        newNowPlaying = [mainQueue skipForward];
-        [[NowPlayingSong sharedInstance] setPlayingBackFromPlayNextSongs:NO];
+    PlayableItem *item = [upNextQueue obtainAndRemoveNextItem];
+    
+    BOOL upNextQueueIsEmpty = (item.songForItem == nil);
+    if(upNextQueueIsEmpty){
+        item = [mainQueue skipForward];
     }
     
-    [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newNowPlaying.aNewSong
-                                                  context:newNowPlaying.aNewContext];
+    [[NowPlayingSong sharedInstance] setNewNowPlayingItem:item];
+    
     [self printQueueContents];
-    return newNowPlaying.aNewSong;
+    return item;
 }
 
 //jumps back to index 0 in the main queue. if shuffle is on, it reshuffles before jumping to index 0.
-- (Song *)skipToBeginningOfQueueReshufflingIfNeeded
+- (PlayableItem *)skipToBeginningOfQueueReshufflingIfNeeded
 {
 #warning incomplete implementation
     //dont take into account shuffle mode here
     
-    Song *newNowPlaying = [mainQueue skipToBeginningOfQueue];
-    PlaybackContext *currentContext = [NowPlayingSong sharedInstance].context;
-    [[NowPlayingSong sharedInstance] setNewNowPlayingSong:newNowPlaying
-                                                  context:currentContext];
-    return newNowPlaying;
+    PlayableItem *item = [mainQueue skipToBeginningOfQueue];
+    [[NowPlayingSong sharedInstance] setNewNowPlayingItem:item];
+    return item;
 }
 
 #pragma mark - DEBUG
 //crashes when queuing up an entire playlist for some reason, dont use it that way!
 - (void)printQueueContents
 {
-    NSArray *upNextSongs = [upNextQueue tableViewOptimizedArrayOfUpNextSongs];
-    NSArray *mainQueueSongs = [mainQueue tableViewOptimizedArrayOfMainQueueSongsComingUp];
+    NSArray *upNextSongs = [upNextQueue tableViewOptimizedArrayOfUpNextItems];
+    NSArray *mainQueueSongs = [mainQueue tableViewOptimizedArrayOfMainQueuePlayableItemsComingUp];
     
     NSMutableString *output = [NSMutableString stringWithString:@"\n\nNow Playing: ["];
-    [output appendFormat:@"%@", [[NowPlayingSong sharedInstance] nowPlaying].songName];
+    [output appendFormat:@"%@", [NowPlayingSong sharedInstance].nowPlayingItem.songForItem.songName];
     [output appendString:@"]\n"];
     
     [output appendString:@"---Queued songs coming up---\n"];
-    //concatenate all Queued upNextSongs
-    Song *aSong = nil;
-    for(int i = 0; i < upNextSongs.count; i++){
-        aSong = upNextSongs[i];
-        if(i == 0)
-            [output appendFormat:@"%@", aSong.songName];
+    
+    //concatenate all Queued upNextItems
+    [upNextSongs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        PlayableItem *item = [self dummyPlayableItemForObject:obj];
+        if(idx == 0)
+            [output appendFormat:@"%@", item.songForItem.songName];
         else
-            [output appendFormat:@",%@", aSong.songName];
-    }
+            [output appendFormat:@",%@", item.songForItem.songName];
+    }];
     
     [output appendString:@"\n---Main queue songs coming up---\n"];
+    
     //concatenate all main queue songs coming up (not yet played)
-    for(int i = 0; i < mainQueueSongs.count; i++){
-        aSong = mainQueueSongs[i];
-        if(i == 0)
-            [output appendFormat:@"%@", aSong.songName];
+    [mainQueueSongs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        PlayableItem *item = [self dummyPlayableItemForObject:obj];
+        if(idx == 0)
+            [output appendFormat:@"%@", item.songForItem.songName];
         else
-            [output appendFormat:@", %@", aSong.songName];
-    }
+            [output appendFormat:@", %@", item.songForItem.songName];
+    }];
+    
     [output appendString:@"\n\n"];
     printf("%s", [output UTF8String]); //print entire queue contents
+}
+
+- (PlayableItem *)dummyPlayableItemForObject:(id)object
+{
+    if([object isMemberOfClass:[Song class]]){
+        return [[PlayableItem alloc] initWithSong:(Song *)object context:nil fromUpNextSongs:NO];
+    }
+    else if([object isMemberOfClass:[PlaylistItem class]])
+        return [[PlayableItem alloc] initWithPlaylistItem:(PlaylistItem *)object context:nil fromUpNextSongs:NO];
+    else
+        return nil;
+
 }
 
 @end

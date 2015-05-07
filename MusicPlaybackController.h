@@ -74,6 +74,10 @@
 #pragma mark + Changing the Queue
 + (void)newQueueWithSong:(Song *)song
              withContext:(PlaybackContext *)context;
+
++ (void)newQueueWithPlaylistItem:(PlaylistItem *)playlistItem
+                     withContext:(PlaybackContext *)aContext;
+
 + (void)queueUpNextSongsWithContexts:(NSArray *)contexts;
 + (void)repeatEntireMainQueue;
 

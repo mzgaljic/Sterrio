@@ -489,6 +489,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                                 NSLog(@"Saved song (editing mode), but couldnt merge.");
                             } else{
                                 NSLog(@"Just Merged after saving song (editing mode).");
+                                [AppEnvironmentConstants setLastSuccessfulSyncDate:[[NSDate alloc] init]];
                             }
                         }];
                     }

@@ -48,12 +48,6 @@
 #define COCOAPODS_VERSION_MINOR_AFNetworking_UIKit 5
 #define COCOAPODS_VERSION_PATCH_AFNetworking_UIKit 3
 
-// BRYSerialAnimationQueue
-#define COCOAPODS_POD_AVAILABLE_BRYSerialAnimationQueue
-#define COCOAPODS_VERSION_MAJOR_BRYSerialAnimationQueue 1
-#define COCOAPODS_VERSION_MINOR_BRYSerialAnimationQueue 0
-#define COCOAPODS_VERSION_PATCH_BRYSerialAnimationQueue 0
-
 // CSNotificationView
 #define COCOAPODS_POD_AVAILABLE_CSNotificationView
 #define COCOAPODS_VERSION_MAJOR_CSNotificationView 0
@@ -120,29 +114,11 @@
 #define COCOAPODS_VERSION_MINOR_SDWebImage_Core 7
 #define COCOAPODS_VERSION_PATCH_SDWebImage_Core 2
 
-// SSBouncyButton
-#define COCOAPODS_POD_AVAILABLE_SSBouncyButton
-#define COCOAPODS_VERSION_MAJOR_SSBouncyButton 1
-#define COCOAPODS_VERSION_MINOR_SSBouncyButton 0
-#define COCOAPODS_VERSION_PATCH_SSBouncyButton 3
-
 // TBXML
 #define COCOAPODS_POD_AVAILABLE_TBXML
 #define COCOAPODS_VERSION_MAJOR_TBXML 1
 #define COCOAPODS_VERSION_MINOR_TBXML 5
 #define COCOAPODS_VERSION_PATCH_TBXML 0
-
-// UIColor-Hex
-#define COCOAPODS_POD_AVAILABLE_UIColor_Hex
-#define COCOAPODS_VERSION_MAJOR_UIColor_Hex 0
-#define COCOAPODS_VERSION_MINOR_UIColor_Hex 1
-#define COCOAPODS_VERSION_PATCH_UIColor_Hex 1
-
-// UIImage+BetterAdditions
-#define COCOAPODS_POD_AVAILABLE_UIImage_BetterAdditions
-#define COCOAPODS_VERSION_MAJOR_UIImage_BetterAdditions 2
-#define COCOAPODS_VERSION_MINOR_UIImage_BetterAdditions 0
-#define COCOAPODS_VERSION_PATCH_UIImage_BetterAdditions 0
 
 // XCDYouTubeKit
 #define COCOAPODS_POD_AVAILABLE_XCDYouTubeKit

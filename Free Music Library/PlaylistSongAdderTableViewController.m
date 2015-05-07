@@ -154,6 +154,7 @@
 
 - (void)dealloc
 {
+    self.vcToNotifyAboutRotation = nil;
     [super prepareFetchedResultsControllerForDealloc];
     self.playlist = nil;
     self.searchBar = nil;
@@ -230,7 +231,6 @@
     [[CoreDataManager sharedInstance] saveContext];  //commit changes
     
     [self dismissViewControllerAnimated:YES completion:nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"song picker dismissed" object:nil];
 }
 
              
@@ -252,7 +252,9 @@
     }
     
     [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:NO];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"song picker dismissed" object:nil];
+    //get exec bad access in landscape sometimes when dismissing if i dont set these to nil.
+    self.tableView.delegate = nil;
+    self.tableView.dataSource = nil;
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -271,6 +273,13 @@
         return YES;
     else
         return NO;
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    if(self.vcToNotifyAboutRotation)
+        [self.vcToNotifyAboutRotation didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 }
 
 #pragma mark - fetching and sorting

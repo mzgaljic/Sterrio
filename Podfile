@@ -39,6 +39,3 @@ pod 'Reachability'
 
 #needed for MRProgressView...dont ask lol.
 pod "AFNetworking"
-
-#SSBouncyButton - a fancy animated text button with 2 states
-pod 'SSBouncyButton'
