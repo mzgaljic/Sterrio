@@ -239,7 +239,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
                              OBJC_ASSOCIATION_RETAIN);
     
     __weak Album *weakalbum = album;
-    cell.anAlbumArtClass = album.albumArt;
+    cell.anAlbumArtClassObjId = album.albumArt.objectID;
     [cell layoutIfNeeded];
     CGSize cellImgSize = cell.imageView.frame.size;
     

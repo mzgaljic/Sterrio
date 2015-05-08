@@ -25,7 +25,8 @@
 @property (assign, nonatomic) BOOL isFullScreenMode;
 @property (retain, nonatomic) NSURL *contentURL;
 @property (retain, nonatomic) AVPlayer *moviePlayer;
-@property (assign, nonatomic) BOOL isPlaying;
+@property (assign, nonatomic, readonly) BOOL isPlaying;
+@property (assign, nonatomic, readonly) BOOL isInStall;
 
 @property (retain, nonatomic) UIButton *playPauseButton;
 @property (retain, nonatomic) UIButton *volumeButton;
@@ -41,11 +42,14 @@
 @property (retain,nonatomic) UIView *playerHudCenter;
 @property (retain,nonatomic) UIView *playerHudBottom;
 
+@property (nonatomic, assign, readonly) NSUInteger elapsedTimeInSec;
 
 - (id)initWithFrame:(CGRect)frame contentURL:(NSURL*)contentURL;
 -(id)initWithFrame:(CGRect)frame playerItem:(AVPlayerItem*)playerItem;
+-(void)setKnownTotalDurationInSec:(NSUInteger)duration;
 -(void)play;
 -(void)pause;
--(void) setupConstraints;
+-(void)setupConstraints;
+- (void)destroyPlayer;
 
 @end

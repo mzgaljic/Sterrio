@@ -1588,7 +1588,7 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
         NSString *youtubeLinkBase = @"www.youtube.com/watch?v=";
         NSMutableString *shareString = [NSMutableString stringWithString:@"\n"];
         [shareString appendString:youtubeLinkBase];
-        [shareString appendString:nowPlayingSong.uniqueId];
+        [shareString appendString:nowPlayingSong.youtube_id];
         
         NSArray *activityItems = [NSArray arrayWithObjects:shareString, nil];
         

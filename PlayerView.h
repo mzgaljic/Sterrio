@@ -30,4 +30,6 @@
 - (void)showAirPlayInUseMsg:(BOOL)show;
 - (void)newAirplayInUseMsgCenter:(CGPoint)newCenter;
 
+
+
 @end

@@ -8,12 +8,21 @@
 
 #import "KSVideoPlayerView.h"
 #import "KeepLayout.h"
+#import "ReachabilitySingleton.h"
 
+@interface KSVideoPlayerView ()
+@property (assign, nonatomic, readwrite) BOOL isPlaying;
+@property (assign, nonatomic, readwrite) BOOL isInStall;
+@end
 @implementation KSVideoPlayerView
 {
     id playbackObserver;
     AVPlayerLayer *playerLayer;
     BOOL viewIsShowing;
+    NSUInteger totalDuration;
+    NSUInteger secondsLoaded;
+    BOOL playbackStarted;
+    BOOL playbackExplicitlyPaused;
 }
 
 -(id)initWithFrame:(CGRect)frame playerItem:(AVPlayerItem*)playerItem
@@ -21,6 +30,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.moviePlayer = [AVPlayer playerWithPlayerItem:playerItem];
+        [self initObservers];
         playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.moviePlayer];
         [playerLayer setFrame:frame];
         [self.moviePlayer seekToTime:kCMTimeZero];
@@ -41,6 +51,7 @@
         
         AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:contentURL];
         self.moviePlayer = [AVPlayer playerWithPlayerItem:playerItem];
+        [self initObservers];
         playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.moviePlayer];
         [playerLayer setFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
         [self.moviePlayer seekToTime:kCMTimeZero];
@@ -64,35 +75,35 @@
 {
     
     // bottom HUD view
-    self.playerHudBottom.keepHorizontalInsets.equal = KeepRequired(0);
-    self.playerHudBottom.keepBottomInset.equal = KeepRequired(0);
+    self.playerHudBottom.keepHorizontalInsets.equal = 0;
+    self.playerHudBottom.keepBottomInset.equal = 0;
     
     // play/pause button
     [self.playPauseButton keepHorizontallyCentered];
     [self.playPauseButton keepVerticallyCentered];
     
     // current time label
-    self.playBackTime.keepLeftInset.equal = KeepRequired(5);
+    self.playBackTime.keepLeftInset.equal = 5;
     [self.playBackTime keepVerticallyCentered];
     
     
     // progress bar
-    self.progressBar.keepLeftOffsetTo(self.playBackTime).equal = KeepRequired(5);
-    self.progressBar.keepBottomInset.equal = KeepRequired(0);
+    self.progressBar.keepLeftOffsetTo(self.playBackTime).equal = 5;
+    self.progressBar.keepBottomInset.equal = 0;
     [self.progressBar keepVerticallyCentered];
     
     // total time label
-    self.playBackTotalTime.keepLeftOffsetTo(self.progressBar).equal = KeepRequired(5);
+    self.playBackTotalTime.keepLeftOffsetTo(self.progressBar).equal = 5;
     [self.playBackTotalTime keepVerticallyCentered];
     
     // zoom button
-    self.zoomButton.keepRightInset.equal = KeepRequired(5);
+    self.zoomButton.keepRightInset.equal = 5;
     [self.zoomButton keepVerticallyCentered];
     
     // airplay button
-    self.airplayButton.keepRightOffsetTo(self.zoomButton).equal = KeepRequired(self.airplayButton.frame.size.width);
-    self.airplayButton.keepLeftOffsetTo(self.playBackTotalTime).equal = KeepRequired(5);
-    self.airplayButton.keepBottomInset.equal = KeepRequired(6);
+    self.airplayButton.keepRightOffsetTo(self.zoomButton).equal = self.airplayButton.frame.size.width;
+    self.airplayButton.keepLeftOffsetTo(self.playBackTotalTime).equal = 7;
+    self.airplayButton.keepBottomInset.equal = 6;
     [self.airplayButton keepVerticallyCentered];
     
 }
@@ -198,6 +209,8 @@
             weakself.progressBar.value = normalizedTime;
         }
         weakself.playBackTime.text = [weakself getStringFromCMTime:weakself.moviePlayer.currentTime];
+        
+        _elapsedTimeInSec = weakself.moviePlayer.currentTime.value;
     }];
     
     [self setupConstraints];
@@ -320,15 +333,15 @@
 
 -(void)play
 {
+    playbackExplicitlyPaused = NO;
     [self.moviePlayer play];
-    self.isPlaying = YES;
     [self.playPauseButton setSelected:YES];
 }
 
 -(void)pause
 {
+    playbackExplicitlyPaused = YES;
     [self.moviePlayer pause];
-    self.isPlaying = NO;
     [self.playPauseButton setSelected:NO];
 }
 
@@ -338,13 +351,105 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
 }
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
+
+-(void)setKnownTotalDurationInSec:(NSUInteger)duration
 {
-    // Drawing code
+    totalDuration = duration;
 }
-*/
+
+- (void)initObservers
+{
+    [self.moviePlayer addObserver:self
+                       forKeyPath:@"currentItem.playbackBufferEmpty"
+                          options:NSKeyValueObservingOptionNew
+                          context:ksPlaybackBufferEmpty];
+    [self.moviePlayer addObserver:self
+                       forKeyPath:@"currentItem.loadedTimeRanges"
+                          options:NSKeyValueObservingOptionNew
+                          context:ksLoadedTimeRanges];
+}
+
+- (void)tearDownObservers
+{
+    [self.moviePlayer removeObserver:self forKeyPath:@"currentItem.playbackBufferEmpty" context:ksPlaybackBufferEmpty];
+    [self.moviePlayer removeObserver:self forKeyPath:@"currentItem.loadedTimeRanges" context:ksLoadedTimeRanges];
+}
+
+static void *ksLoadedTimeRanges = &ksLoadedTimeRanges;
+static void *ksPlaybackBufferEmpty = &ksPlaybackBufferEmpty;
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+    if(context == ksLoadedTimeRanges || context == ksPlaybackBufferEmpty){
+        NSArray *timeRanges = self.moviePlayer.currentItem.loadedTimeRanges;
+        if (timeRanges && [timeRanges count]){
+            CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
+            NSUInteger newSecondsBuff = CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration));
+            if(context == ksPlaybackBufferEmpty){
+                if(newSecondsBuff == secondsLoaded && secondsLoaded != totalDuration && !self.isInStall){
+                    NSLog(@"Preview is in stall");
+                    self.isInStall = YES;
+                    
+                    if(self.moviePlayer.rate > 0){
+                        self.isPlaying = NO;
+                        [self.moviePlayer pause];
+                    }
+                }
+                
+            } else if(context == ksLoadedTimeRanges){
+                NSUInteger currentTime = CMTimeGetSeconds(self.moviePlayer.currentItem.currentTime);
+                CMTimeRange aTimeRange;
+                NSUInteger lowBound;
+                NSUInteger upperBound;
+                BOOL inALoadedRange = NO;
+                for(int i = 0; i < timeRanges.count; i++){
+                    aTimeRange = [timeRanges[i] CMTimeRangeValue];
+                    lowBound = CMTimeGetSeconds(timerange.start);
+                    upperBound = CMTimeGetSeconds(CMTimeAdd(timerange.start, aTimeRange.duration));
+                    if(currentTime >= lowBound && currentTime < upperBound)
+                        inALoadedRange = YES;
+                }
+                
+                if(! inALoadedRange && !self.isInStall){
+                    NSLog(@"Preview is in stall");
+                    self.isInStall = YES;
+                    
+                    if(self.moviePlayer.rate > 0){
+                        self.isPlaying = NO;
+                        [self.moviePlayer pause];
+                    }
+                    
+                } else if(newSecondsBuff > secondsLoaded && self.isInStall && [[ReachabilitySingleton sharedInstance] isConnectedToInternet]){
+                    NSLog(@"Preview has left stall");
+                    self.isInStall = NO;
+                    
+                    if(! playbackExplicitlyPaused){
+                        self.isPlaying = YES;
+                        [self.moviePlayer play];
+                    }
+                }
+                //check if playback began
+                if(newSecondsBuff > secondsLoaded && self.moviePlayer.rate == 1 && !playbackStarted){
+                    playbackStarted = YES;
+                    self.isPlaying = YES;
+                    
+                    self.isInStall = NO;
+                    NSLog(@"Preview playback started");
+                }
+                secondsLoaded = newSecondsBuff;
+            }
+        }
+    }
+}
+
+- (void)destroyPlayer
+{
+    [self tearDownObservers];
+    [self.moviePlayer replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+    self.moviePlayer = nil;
+}
+
 
 @end

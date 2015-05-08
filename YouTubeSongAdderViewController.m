@@ -9,31 +9,28 @@
 #import "YouTubeSongAdderViewController.h"
 #import "YouTubeVideoSearchService.h"
 #import "SDCAlertController.h"
+#import "MZPreviewPlayer.h"
 
 @interface YouTubeSongAdderViewController ()
 {
     YouTubeVideo *ytVideo;
-    MPMoviePlayerController *videoPlayerViewController;
     UIImage *lockScreenImg;
     BOOL enoughSongInformationGiven;
-    BOOL doneTappedInVideo;
-    BOOL pausedBeforePopAttempt;
     BOOL userCreatedHisSong;
     BOOL dontPreDealloc;
-    BOOL playbackBegan;
     NSDictionary *videoDetails;
     
-    BOOL currentlySeeking;
-    
-    NSTimer *timer;  //used to check if the video started playing (spinner, etc)
+    BOOL previewPlaybackBegan;
     
     BOOL musicWasPlayingBeforePreviewBegan;
-    BOOL prevMusicPlaybackStateAlreadySaved;
     __block NSURL *url;
 }
 
+@property (strong, nonatomic) MZPreviewPlayer* player;
 @property (nonatomic, strong) MZSongModifierTableView *tableView;
 @end
+
+static void *mIsPlayerInStall = &mIsPlayerInStall;
 
 @implementation YouTubeSongAdderViewController
 #pragma mark - Custom Initializer
@@ -42,19 +39,13 @@
     if (self = [super init]) {
         if(youtubeVideoObject == nil)
             return nil;
-        
-        #warning WARNING, should post notification to init audio session after playback begins. Do after chaning preview player to AVPlayer.
-        [[NSNotificationCenter defaultCenter] postNotificationName:MZInitAudioSession object:nil];
-
-        
-        
+    
         ytVideo = youtubeVideoObject;
         
         //fire off network request for video duration ASAP
         [[YouTubeVideoSearchService sharedInstance] setVideoDetailLookupDelegate:self];
         [[YouTubeVideoSearchService sharedInstance] fetchDetailsForVideo:ytVideo];
         
-        pausedBeforePopAttempt = YES;
         MZSongModifierTableView *songEditTable;
         lockScreenImg = img;
         songEditTable = [[MZSongModifierTableView alloc] initWithFrame:self.view.frame
@@ -72,11 +63,7 @@
                                                  selector:@selector(playerPlaybackStateChanged:)
                                                      name:playbackStateChangedConst
                                                    object:nil];
-        timer = [NSTimer scheduledTimerWithTimeInterval:1.0
-                                         target:self
-                                       selector:@selector(hasPlaybackStartedTimerCheck)
-                                       userInfo:nil
-                                        repeats:YES];
+
         //provide default album art (making deep copy of album art)
         [self.tableView provideDefaultAlbumArt:lockScreenImg];
     }
@@ -89,10 +76,11 @@
     numberTimesViewHasBeenShown = 0;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    if(videoPlayerViewController){
-        [videoPlayerViewController stop];
-        videoPlayerViewController = nil;
-    }
+    
+#warning make sure player doesnt leak!
+    [self.player destroyPlayer];
+    self.player = nil;
+    
     [[YouTubeVideoSearchService sharedInstance] removeVideoDetailLookupDelegate];
     if(musicWasPlayingBeforePreviewBegan){
         [MusicPlaybackController resumePlayback];
@@ -114,9 +102,9 @@
     self.tableView = nil;
     lockScreenImg = nil;
     url = nil;
-    [timer invalidate];
-    timer = nil;
     [AppEnvironmentConstants setUserIsPreviewingAVideo:NO];
+    
+    [self.player removeObserver:self forKeyPath:@"isInStall" context:mIsPlayerInStall];
 }
 
 - (void)viewDidLoad
@@ -129,10 +117,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAppMovingToBackground)
                                                  name:MZAppWasBackgrounded
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(orientationHasChanged)
-                                                 name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(lockscreenPauseTapped)
@@ -178,14 +162,6 @@ static short numberTimesViewHasBeenShown = 0;
     if(numberTimesViewHasBeenShown == 0)
         [self setPlaceHolderImageForVideoPlayer];  //would do this in viewDidLoad but self.view.frame has incorrect values until viewWillAppear
     
-    if(videoPlayerViewController){
-        [self setUpVideoView];
-        //this sequence avoids a bug when user cancels "swipe to pop" gesture
-        if(pausedBeforePopAttempt){
-            [videoPlayerViewController pause];
-        }
-        [self checkCurrentPlaybackState];
-    }
     if(numberTimesViewHasBeenShown == 0){
         //makes the tableview start below the nav bar, not behind it.
         [self setViewFrameBasedOnOrientation:[UIApplication sharedApplication].statusBarOrientation];
@@ -199,7 +175,6 @@ static short numberTimesViewHasBeenShown = 0;
 {
     [super viewDidAppear:animated];
     [self.tableView viewDidAppear:animated];
-    playerStateBeforeEnteringBackground = videoPlayerViewController.playbackState;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -221,25 +196,15 @@ static short numberTimesViewHasBeenShown = 0;
 
 - (void)checkCurrentPlaybackState
 {
-    if(videoPlayerViewController){
-        if(videoPlayerViewController.playbackState == MPMoviePlaybackStatePaused)
-            pausedBeforePopAttempt = YES;
-        else if(videoPlayerViewController.playbackState == MPMoviePlaybackStatePlaying)
-            pausedBeforePopAttempt = NO;
-        else
-            pausedBeforePopAttempt = YES;
-    }
+    //garbage method
 }
 
 #pragma mark - Loading video
 - (void)loadVideo
 {
-    videoPlayerViewController = [[MPMoviePlayerController alloc] init];
-    
     __weak NSNumber *weakDuration = [videoDetails valueForKey:MZKeyVideoDuration];
     __weak YouTubeVideo *weakVideo = ytVideo;
     __weak YouTubeSongAdderViewController *weakSelf = self;
-    __weak __block MPMoviePlayerController *weakVideoPlayerViewController = videoPlayerViewController;
     __weak SongPlayerCoordinator *weakAvplayerCoordinator = [SongPlayerCoordinator sharedInstance];
     
     Reachability *reachability = [Reachability reachabilityForInternetConnection];
@@ -291,14 +256,7 @@ static short numberTimesViewHasBeenShown = 0;
         }
         
         if(allowedToPlayVideo && video != nil){
-            [weakVideoPlayerViewController setRepeatMode:(MPMovieRepeatModeNone)];
-            [weakVideoPlayerViewController setControlStyle:MPMovieControlStyleEmbedded];
-            [weakVideoPlayerViewController setScalingMode:MPMovieScalingModeAspectFit];
-            [weakVideoPlayerViewController setMovieSourceType:(MPMovieSourceTypeStreaming)];
-            [weakVideoPlayerViewController setContentURL:url];
-            [weakVideoPlayerViewController prepareToPlay];
-            [weakSelf setUpVideoView];
-            [weakVideoPlayerViewController play];
+            [weakSelf setUpVideoViewAndOrPlayerAboutToRotate:NO];
             [weakAvplayerCoordinator temporarilyDisablePlayer];
         }
     }];
@@ -314,12 +272,19 @@ static short numberTimesViewHasBeenShown = 0;
 }
 
 #pragma mark - Video frame and player setup
-- (void)setUpVideoView
+- (void)setUpVideoViewAndOrPlayerAboutToRotate:(BOOL)goingToRotate
 {
     int widthOfScreenRoationIndependant;
     int heightOfScreenRotationIndependant;
     int  a = [[UIScreen mainScreen] bounds].size.height;
     int b = [[UIScreen mainScreen] bounds].size.width;
+    if(goingToRotate){
+        //swap the values since after rotation they will be inverted.
+        int temp = a;
+        a = b;
+        b = temp;
+    }
+    
     if(a < b){
         widthOfScreenRoationIndependant = a;
         heightOfScreenRotationIndependant = b;
@@ -331,9 +296,15 @@ static short numberTimesViewHasBeenShown = 0;
     int frameWidth;
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if(orientation == UIInterfaceOrientationLandscapeRight || orientation == UIInterfaceOrientationLandscapeLeft){
+    BOOL isLandscape;
+    if(goingToRotate){
+        isLandscape = (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown);
+    } else{
+        isLandscape = (orientation == UIInterfaceOrientationLandscapeRight || orientation == UIInterfaceOrientationLandscapeLeft);
+    }
+    if(isLandscape){
         frameWidth = heightOfScreenRotationIndependant;
-        frameHeight = widthOfScreenRoationIndependant * (2/3.0);
+        frameHeight = widthOfScreenRoationIndependant * (5/6.0);
     } else{
         frameWidth = widthOfScreenRoationIndependant;
         frameHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:frameWidth];
@@ -345,14 +316,34 @@ static short numberTimesViewHasBeenShown = 0;
     [videoFrameView setBackgroundColor:[UIColor blackColor]];
     self.tableView.tableHeaderView = rootHeaderView;
 
-    [[videoPlayerViewController view] setFrame:videoFrameView.frame]; // player's frame size must match parent's
-    [rootHeaderView addSubview:videoFrameView];
-    [videoFrameView addSubview: [videoPlayerViewController view]];
-    [videoFrameView bringSubviewToFront:[videoPlayerViewController view]];
+    if(self.player == nil){
+                                                // player's frame size must match parent's
+        self.player = [[MZPreviewPlayer alloc] initWithFrame:videoFrameView.frame
+                                                    videoURL:url];
+        if(videoDetails){
+            NSNumber *duration = [videoDetails objectForKey:MZKeyVideoDuration];
+            [self.player setKnownTotalDurationInSec:[duration integerValue]];
+        }
+        
+        [self.player addObserver:self
+                      forKeyPath:@"isInStall"
+                         options:NSKeyValueObservingOptionNew
+                         context:mIsPlayerInStall];
+        
+        [self.player play];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZInitAudioSession object:nil];
+    } else{
+        self.player.frame = videoFrameView.frame;
+    }
     
-    if(! playbackBegan)
+    [rootHeaderView addSubview:videoFrameView];
+    [videoFrameView addSubview: self.player];
+    [videoFrameView bringSubviewToFront:self.player];
+    
+    if(self.player.isInStall)
         [MRProgressOverlayView showOverlayAddedTo:self.tableView.tableHeaderView
-                                            title:@"Loading preview"
+                                            title:@"Loading Preview"
                                              mode:MRProgressOverlayViewModeIndeterminateSmall
                                          animated:YES];
 }
@@ -395,70 +386,16 @@ static short numberTimesViewHasBeenShown = 0;
 }
 
 #pragma mark - Responding to video player events
-- (void)hasPlaybackStartedTimerCheck
-{
-    //this is called by the timer and done here because if the app goes into the foreground
-    //while the video is loading, the spinner will never go away! This could have easily been
-    //reproduced by simply opening control center
-    if(playbackBegan){
-        [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView
-                                                animated:YES];
-        [self setUpLockScreenInfoAndArt];
-        [timer invalidate];
-    }
-}
 
 - (void)playerPlaybackStateChanged:(NSNotification *)notif
 {
-    if(videoPlayerViewController.playbackState == MPMoviePlaybackStatePlaying && [AppEnvironmentConstants currrentPreviewPlayerState] != PREVIEW_PLAYBACK_STATE_Paused){
-        [AppEnvironmentConstants setUserIsPreviewingAVideo:YES];
-        [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
-        playbackBegan = YES;
-        
-        if(! prevMusicPlaybackStateAlreadySaved){
-            AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
-            if(player){
-                if(player.rate == 1){
-                    [player performSelector:@selector(pause) withObject:nil afterDelay:0.3];
-                    [MusicPlaybackController pausePlayback];
-                    [MusicPlaybackController explicitlyPausePlayback:YES];
-                    musicWasPlayingBeforePreviewBegan = YES;
-                }
-                else
-                    musicWasPlayingBeforePreviewBegan = NO;
-                prevMusicPlaybackStateAlreadySaved = YES;
-            }
-        }
-    } else if(videoPlayerViewController.playbackState == MPMoviePlaybackStatePaused){
-        [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Paused];
-    }
-    if([AppEnvironmentConstants currrentPreviewPlayerState] != PREVIEW_PLAYBACK_STATE_Paused)
-        [videoPlayerViewController pause];
-    
-    if(videoPlayerViewController.playbackState == MPMoviePlaybackStateSeekingForward ||
-       videoPlayerViewController.playbackState == MPMoviePlaybackStateSeekingBackward)
-        currentlySeeking = YES;
-    else if(lockScreenImg != nil)
-        [self setUpLockScreenInfoAndArt];
+    //garbage method.
 }
 
 #pragma mark - Handling all background interaction (playback, lockscreen, etc)
-static MPMoviePlaybackState playerStateBeforeEnteringBackground;
 - (void)handleAppMovingToBackground
 {
-    if(playerStateBeforeEnteringBackground == MPMoviePlaybackStatePlaying){
-        [self performSelector:@selector(forcePlayOfVideoInBackground)
-                   withObject:nil
-                   afterDelay:0.15];
-    }
-    playerStateBeforeEnteringBackground = videoPlayerViewController.playbackState;
-}
-
-- (void)forcePlayOfVideoInBackground
-{
-    if(playerStateBeforeEnteringBackground == MPMoviePlaybackStatePaused)
-        return;
-    [videoPlayerViewController play];
+    //possibly useful
 }
 
 - (void)setUpLockScreenInfoAndArt
@@ -479,7 +416,8 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
         [songInfo setObject:[NSNumber numberWithInteger:duration]
                      forKey:MPMediaItemPropertyPlaybackDuration];
         
-        NSNumber *currentTime = [NSNumber numberWithDouble:[videoPlayerViewController currentPlaybackTime]];
+        NSUInteger elapsedTime = [self.player elapsedTimeInSec];
+        NSNumber *currentTime = [NSNumber numberWithInteger:elapsedTime];
         [songInfo setObject:currentTime forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
     }
@@ -487,26 +425,24 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
 
 - (void)lockscreenPlayTapped
 {
-    [videoPlayerViewController play];
+    //possibly useful
+    
     [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
 }
 
 - (void)lockscreenPauseTapped
 {
-    [videoPlayerViewController pause];
+    //possibly useful
+
+    
     [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Paused];
 }
 
 - (void)lockscreenTogglePlayPause
 {
-    if(videoPlayerViewController.playbackState == MPMoviePlaybackStatePlaying){
-        [videoPlayerViewController pause];
-        [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Paused];
-    } else if(videoPlayerViewController.playbackState == MPMoviePlaybackStatePaused){
-        [videoPlayerViewController play];
-        [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
-    } else
-        return;
+
+    //possibly useful
+    
 }
 
 
@@ -547,15 +483,12 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
 }
 
 #pragma mark - Rotation Stuff
-- (void)orientationHasChanged
-{
-    [self setUpVideoView];
-}
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [self.tableView interfaceIsAboutToRotate];
+    [self setUpVideoViewAndOrPlayerAboutToRotate:YES];
 }
 
 - (BOOL)prefersStatusBarHidden
@@ -649,6 +582,24 @@ static MPMoviePlaybackState playerStateBeforeEnteringBackground;
         if([MusicPlaybackController nowPlayingSong])
             [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     }];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if(context == mIsPlayerInStall){
+        if(self.player.isInStall){
+            [MRProgressOverlayView showOverlayAddedTo:self.tableView.tableHeaderView
+                                                title:@""
+                                                 mode:MRProgressOverlayViewModeIndeterminateSmall
+                                             animated:YES];
+        }
+        else{
+            previewPlaybackBegan = YES;
+            [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
+        }
+    }
+    else
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 #pragma mark - AlertView

@@ -259,7 +259,8 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
     if (coordinator != nil)
     {
         __stackControllerManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        [__stackControllerManagedObjectContext setPersistentStoreCoordinator:coordinator];
+        //should NOT be setting the persistentStoreCoordinator more than once.
+        //[__stackControllerManagedObjectContext setPersistentStoreCoordinator:coordinator];
         
         NSUndoManager *undoManager = [[NSUndoManager alloc] init];
         [__stackControllerManagedObjectContext setUndoManager:undoManager];
@@ -276,7 +277,8 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
     if (coordinator != nil)
     {
         __backgroundManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        [__backgroundManagedObjectContext setPersistentStoreCoordinator:coordinator];
+        //should NOT be setting the persistentStoreCoordinator more than once.
+        //[__backgroundManagedObjectContext setPersistentStoreCoordinator:coordinator];
         
         NSUndoManager *undoManager = [[NSUndoManager alloc] init];
         [__backgroundManagedObjectContext setUndoManager:undoManager];

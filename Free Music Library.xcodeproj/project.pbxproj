@@ -58,6 +58,7 @@
 		87270035199E820700D71204 /* LevenshteinDistanceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 87270034199E820700D71204 /* LevenshteinDistanceItem.m */; };
 		87270038199EB90500D71204 /* StackController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87270037199EB90500D71204 /* StackController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		8727003E199F0C1F00D71204 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8727003D199F0C1F00D71204 /* CoreData.framework */; };
+		87299AB41AFC016300E627A3 /* MZPreviewPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 87299AB31AFC016300E627A3 /* MZPreviewPlayer.m */; };
 		872EA4D61A54A98B00F8EE9D /* MyAlerts.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4D51A54A98B00F8EE9D /* MyAlerts.m */; };
 		872EA4DC1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4DB1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.m */; };
 		872EA4DE1A54CAAB00F8EE9D /* iOSDeviceModelMapping.plist in Resources */ = {isa = PBXBuildFile; fileRef = 872EA4DD1A54CAAB00F8EE9D /* iOSDeviceModelMapping.plist */; };
@@ -351,6 +352,8 @@
 		87270037199EB90500D71204 /* StackController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StackController.m; sourceTree = "<group>"; };
 		8727003D199F0C1F00D71204 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		87270040199F0F5600D71204 /* Model.xcdatamodel */ = {isa = PBXFileReference; explicitFileType = wrapper.xcdatamodeld; path = Model.xcdatamodel; sourceTree = "<group>"; };
+		87299AB21AFC016300E627A3 /* MZPreviewPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPreviewPlayer.h; sourceTree = "<group>"; };
+		87299AB31AFC016300E627A3 /* MZPreviewPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPreviewPlayer.m; sourceTree = "<group>"; };
 		872EA4D41A54A98B00F8EE9D /* MyAlerts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyAlerts.h; sourceTree = "<group>"; };
 		872EA4D51A54A98B00F8EE9D /* MyAlerts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyAlerts.m; sourceTree = "<group>"; };
 		872EA4DA1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SDCAlertView+DuplicateAlertsPreventer.h"; sourceTree = "<group>"; };
@@ -1247,6 +1250,8 @@
 				8750157F198C3D5300382945 /* YoutubeResultsTableViewController.m */,
 				87FB3A6A1A5A4682006F3163 /* YouTubeSongAdderViewController.h */,
 				87FB3A6B1A5A4682006F3163 /* YouTubeSongAdderViewController.m */,
+				87299AB21AFC016300E627A3 /* MZPreviewPlayer.h */,
+				87299AB31AFC016300E627A3 /* MZPreviewPlayer.m */,
 			);
 			name = "Adding Music To Library";
 			sourceTree = "<group>";
@@ -2134,6 +2139,7 @@
 				87C0BD5819C564CA00EB7D91 /* AutoScrollLabel.m in Sources */,
 				8712381D1AF4673E00DEEDC4 /* SDCAlertControllerScrollView.m in Sources */,
 				8786F3DD1AF87F5A0083E95C /* FetchVideoInfoOperation.m in Sources */,
+				87299AB41AFC016300E627A3 /* MZPreviewPlayer.m in Sources */,
 				875711851AEE9DFD0077F8C3 /* CCLocalMaximum.m in Sources */,
 				8786F3C11AF862170083E95C /* Album.m in Sources */,
 				87D47DA519345D8E0057D49B /* ArtistItemAlbumViewController.m in Sources */,

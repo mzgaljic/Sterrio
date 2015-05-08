@@ -15,6 +15,7 @@
 #import "AlbumArtUtilities.h"
 #import "SongAlbumArt+Utilities.h"
 #import "AlbumAlbumArt+Utilities.h"
+#import "CoreDataManager.h"
 
 @interface MZTableViewCell ()
 {
@@ -99,22 +100,41 @@ short const dotLabelPadding = 20;
                                                           withMinimumSize:16];
     [self fixiOS7PlusSeperatorBug];
     
-    if([self shouldReloadCellImages])
+    //if([self shouldReloadCellImages])
+    if(NO)
     {
-        if(self.anAlbumArtClass)
+        if(self.anAlbumArtClassObjId)
         {
-            //try to load a new copy of the image on disk.
-            UIImage *newImage;
-            if([self.anAlbumArtClass isMemberOfClass:[SongAlbumArt class]])
+            //try to load a new copy of the image on disk. Make EVERY core data access
+            //go through main thread context.
+            __block UIImage *newImage;
+            __block id anAlbumArtClassObj;
+            __weak NSManagedObjectID *weakObjId = self.anAlbumArtClassObjId;
+            NSManagedObjectContext *context = [CoreDataManager context];
+            [context performBlockAndWait:^{
+                anAlbumArtClassObj = [context existingObjectWithID:weakObjId error:nil];
+            }];
+            
+            if([anAlbumArtClassObj isMemberOfClass:[SongAlbumArt class]])
             {
-                SongAlbumArt *albumArt = (SongAlbumArt *)self.anAlbumArtClass;
-                newImage = [albumArt imageFromImageData];
+                SongAlbumArt *tempAlbumArt = (SongAlbumArt *)anAlbumArtClassObj;
+                __weak NSManagedObjectID *albumArtObjId = tempAlbumArt.objectID;
+                
+                [context performBlockAndWait:^{
+                    SongAlbumArt *albumArt = (SongAlbumArt *)[context existingObjectWithID:albumArtObjId error:nil];
+                    newImage = [albumArt imageFromImageData];
+                }];
             }
-            else if([self.anAlbumArtClass isMemberOfClass:[AlbumAlbumArt class]])
+            else if([anAlbumArtClassObj isMemberOfClass:[AlbumAlbumArt class]])
             {
                 CGSize cellImgSize = self.imageView.frame.size;
-                AlbumAlbumArt *albumArt = (AlbumAlbumArt *)self.anAlbumArtClass;
-                newImage = [albumArt imageWithSize:cellImgSize];
+                AlbumAlbumArt *tempAlbumArt = (AlbumAlbumArt *)anAlbumArtClassObj;
+                __weak NSManagedObjectID *albumArtObjId = tempAlbumArt.objectID;
+                
+                [context performBlockAndWait:^{
+                    AlbumAlbumArt *albumArt = (AlbumAlbumArt *)[context existingObjectWithID:albumArtObjId error:nil];
+                    newImage = [albumArt imageWithSize:cellImgSize];
+                }];
             }
             if(newImage){
                 self.imageView.image = nil;
@@ -141,7 +161,7 @@ short const dotLabelPadding = 20;
 
 - (void)prepareForReuse
 {
-    self.anAlbumArtClass = nil;
+    self.anAlbumArtClassObjId = nil;
     self.optOutOfImageView = NO;
     self.displayQueueSongsMode = NO;
     self.isRepresentingAQueuedSong = NO;
@@ -151,7 +171,7 @@ short const dotLabelPadding = 20;
 
 - (void)dealloc
 {
-    self.anAlbumArtClass = nil;
+    self.anAlbumArtClassObjId = nil;
 }
 
 - (void)setLabelsFramesBasedOnEditingMode

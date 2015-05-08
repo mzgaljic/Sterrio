@@ -13,7 +13,7 @@
 
 @interface MZTableViewCell : MGSwipeTableCell
 
-@property (nonatomic, strong) id anAlbumArtClass;
+@property (nonatomic, strong) NSManagedObjectID *anAlbumArtClassObjId;
 @property (nonatomic, assign) BOOL optOutOfImageView;
 @property (nonatomic, assign) BOOL displayQueueSongsMode;
 @property (nonatomic, assign) BOOL isRepresentingAQueuedSong;

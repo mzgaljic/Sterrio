@@ -184,7 +184,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                              OBJC_ASSOCIATION_RETAIN);
     
     __weak Song *weakSong = song;
-    cell.anAlbumArtClass = song.albumArt;
+    cell.anAlbumArtClassObjId = song.albumArt.objectID;
     
     // Queue a block that obtains/creates the image and then loads it into the cell.
     // The code block will be run asynchronously in a last-in-first-out queue, so that when

@@ -197,16 +197,49 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
             airplayMsgView = [[UIImageView alloc] initWithImage:airplayImg];
             airplayMsgView.userInteractionEnabled = NO;
             [self addSubview:airplayMsgView];
-            
             airplayMsgView.center = [self convertPoint:self.center fromView:self.superview];
-            [self bringSubviewToFront:airplayMsgView];
-            [CATransaction flush];  //force immdiate redraw
+            CGRect originalImgViewFrame = airplayMsgView.frame;
+            airplayMsgView.frame = CGRectMake(0,
+                                               0,
+                                               airplayMsgView.frame.size.width /6,
+                                               airplayMsgView.frame.size.height /6);
+            airplayMsgView.center = [self convertPoint:self.center fromView:self.superview];
+            [UIView animateWithDuration:0.8
+                                  delay:0
+                 usingSpringWithDamping:0.75
+                  initialSpringVelocity:0.3
+                                options:UIViewAnimationOptionBeginFromCurrentState
+                             animations:^{
+                                 airplayMsgView.frame = originalImgViewFrame;
+                             }
+                             completion:nil];
         }
     } else{
         if(airplayMsgView){
-            [airplayMsgView removeFromSuperview];
-            airplayMsgView = nil;
+            CGRect originalFrame = airplayMsgView.frame;
+            airplayMsgView.frame = CGRectMake(0,
+                                               0,
+                                               airplayMsgView.frame.size.width /4,
+                                               airplayMsgView.frame.size.height /4);
+            airplayMsgView.center = [self convertPoint:self.center fromView:self.superview];
+            CGRect animationFrame = airplayMsgView.frame;
+            airplayMsgView.frame = originalFrame;
+            
             [self reattachLayerToPlayer];
+            [self bringSubviewToFront:airplayMsgView];
+            
+            [UIView animateWithDuration:0.45
+                                  delay:0
+                 usingSpringWithDamping:1
+                  initialSpringVelocity:0.3
+                                options:UIViewAnimationOptionBeginFromCurrentState
+                             animations:^{
+                                 airplayMsgView.frame = animationFrame;
+                             }
+                             completion:^(BOOL finished) {
+                                 [airplayMsgView removeFromSuperview];
+                                 airplayMsgView = nil;
+                             }];
         }
     }
 }
