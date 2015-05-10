@@ -8,7 +8,7 @@
 
 #import "PlayerView.h"
 #import "SongPlayerViewController.h"
-#import "PreviousPlaybackContext.h"
+#import "PreviousNowPlayingInfo.h"
 #import "PlayableItem.h"
 
 
@@ -29,7 +29,6 @@
 @end
 @implementation PlayerView
 
-static UIImageView *screenshotOfPlayer;
 typedef enum {leftDirection, rightDirection} HorizontalDirection;
 
 - (void)shrunkenFrameHasChanged
@@ -95,11 +94,6 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 
 - (void)reattachLayerToPlayer
 {
-    if(screenshotOfPlayer){
-        [screenshotOfPlayer removeFromSuperview];
-        screenshotOfPlayer = nil;
-    }
-    
     AVPlayerLayer *playerLayer = (AVPlayerLayer *)[self layer];
     if([playerLayer player] == nil)
         [playerLayer setPlayer:[MusicPlaybackController obtainRawAVPlayer]];
@@ -116,36 +110,18 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 #pragma mark - Responding to getures
 - (void)userSwipedUp
 {
-    screenshotOfPlayer = nil;
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    if(appDelegate.playerSnapshot){
-        [appDelegate.playerSnapshot removeFromSuperview];
-        appDelegate.playerSnapshot = nil;
-    }
     userDidSwipeUp = YES;
     [self segueToPlayerViewControllerIfAppropriate];
 }
 
 - (void)userSwipedDown
 {
-    screenshotOfPlayer = nil;
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    if(appDelegate.playerSnapshot){
-        [appDelegate.playerSnapshot removeFromSuperview];
-        appDelegate.playerSnapshot = nil;
-    }
     userDidSwipeDown = YES;
     [self popPlayerViewControllerIfAppropriate];
 }
 
 - (void)userTappedPlayer
 {
-    screenshotOfPlayer = nil;
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    if(appDelegate.playerSnapshot){
-        [appDelegate.playerSnapshot removeFromSuperview];
-        appDelegate.playerSnapshot = nil;
-    }
     userDidTap = YES;
     [self segueToPlayerViewControllerIfAppropriate];
 }
@@ -157,18 +133,14 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     }
     userDidSwipePlayerOffScreenManually = NO;
     Song *songWeAreKilling = [MusicPlaybackController nowPlayingSong];
-    PlaybackContext *oldContext = [NowPlayingSong sharedInstance].nowPlayingItem.contextForItem;
-    [PreviousPlaybackContext setPreviousPlaybackContext:oldContext];
     
-    //done because the method reacting to the MZNewSongLoading notification needs to know
-    //what the context was. hence keeping the context the same temporarily...
-#warning changed functionality. test to see if anything breaks as a result.
-    //[[NowPlayingSong sharedInstance] setNewNowPlayingSong:nil context:oldContext];
-    
-    //added this line instead of the one above.
-    [PreviousPlaybackContext setPreviousPlaybackContext:oldContext];
+    //This lets the tableview data sources figure out that there is no new song playing when
+    //efficiently updating the tableview cells.
+    [PreviousNowPlayingInfo setPreviousPlayableItem:[NowPlayingSong sharedInstance].nowPlayingItem];
+    [[NowPlayingSong sharedInstance] setNewNowPlayingItem:nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
                                                         object:songWeAreKilling];
+    [self performSelector:@selector(resetLastPlayableItem) withObject:nil afterDelay:0.2];
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     [player dismissAllSpinners];
     [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
@@ -182,6 +154,11 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     [[MZPlaybackQueue sharedInstance] clearEntireQueue];
     
     [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
+}
+
+- (void)resetLastPlayableItem
+{
+    [PreviousNowPlayingInfo setPreviousPlayableItem:nil];
 }
 
 #pragma mark - Airplay state stuff
@@ -254,14 +231,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 #pragma mark - Orientation and view "touch" code
 //used to help the touchesMoved method below get the swipe length
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    screenshotOfPlayer = nil;
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    if(appDelegate.playerSnapshot){
-        [appDelegate.playerSnapshot removeFromSuperview];
-        appDelegate.playerSnapshot = nil;
-    }
-    
+{    
     userDidSwipeUp = NO;
     userDidSwipeDown = NO;
     userDidTap = NO;

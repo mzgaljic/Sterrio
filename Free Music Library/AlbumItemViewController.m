@@ -18,6 +18,7 @@
 #import "MGSwipeButton.h"
 #import "AlbumDetailDisplayHelper.h"
 #import "PlayableItem.h"
+#import "PreviousNowPlayingInfo.h"
 
 @interface AlbumItemViewController ()
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -252,7 +253,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
 {
     if(self.playbackContext == nil)
         return;
-    Song *oldSong = (Song *)[notification object];
+    Song *oldSong = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading].songForItem;
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
     Song *newSong = nowPlaying.nowPlayingItem.songForItem;
     NSIndexPath *oldPath, *newPath;

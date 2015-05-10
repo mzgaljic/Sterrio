@@ -212,7 +212,7 @@
 		87F050611AE0BBD200BB0B2F /* AFBlurSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F0505D1AE0BBD200BB0B2F /* AFBlurSegue.m */; };
 		87F050621AE0BBD200BB0B2F /* LICENSE blurSegue.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87F0505E1AE0BBD200BB0B2F /* LICENSE blurSegue.txt */; };
 		87F050631AE0BBD200BB0B2F /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F050601AE0BBD200BB0B2F /* UIImage+ImageEffects.m */; };
-		87F575851AE9EB3800537471 /* PreviousPlaybackContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F575841AE9EB3800537471 /* PreviousPlaybackContext.m */; };
+		87F575851AE9EB3800537471 /* PreviousNowPlayingInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F575841AE9EB3800537471 /* PreviousNowPlayingInfo.m */; };
 		87F686A61AC9F48800EFF1E0 /* AbstractActionSheetPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F686951AC9F48800EFF1E0 /* AbstractActionSheetPicker.m */; };
 		87F686A71AC9F48800EFF1E0 /* ActionSheetCustomPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F686971AC9F48800EFF1E0 /* ActionSheetCustomPicker.m */; };
 		87F686A81AC9F48800EFF1E0 /* ActionSheetDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F6869A1AC9F48800EFF1E0 /* ActionSheetDatePicker.m */; };
@@ -638,8 +638,8 @@
 		87F0505E1AE0BBD200BB0B2F /* LICENSE blurSegue.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "LICENSE blurSegue.txt"; sourceTree = "<group>"; };
 		87F0505F1AE0BBD200BB0B2F /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
 		87F050601AE0BBD200BB0B2F /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
-		87F575831AE9EB3800537471 /* PreviousPlaybackContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreviousPlaybackContext.h; sourceTree = "<group>"; };
-		87F575841AE9EB3800537471 /* PreviousPlaybackContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreviousPlaybackContext.m; sourceTree = "<group>"; };
+		87F575831AE9EB3800537471 /* PreviousNowPlayingInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreviousNowPlayingInfo.h; sourceTree = "<group>"; };
+		87F575841AE9EB3800537471 /* PreviousNowPlayingInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreviousNowPlayingInfo.m; sourceTree = "<group>"; };
 		87F6868B1AC9211A00EFF1E0 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		87F686941AC9F48800EFF1E0 /* AbstractActionSheetPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractActionSheetPicker.h; sourceTree = "<group>"; };
 		87F686951AC9F48800EFF1E0 /* AbstractActionSheetPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AbstractActionSheetPicker.m; sourceTree = "<group>"; };
@@ -1692,8 +1692,8 @@
 				8741B4DE1AF536F900AF2BBC /* Core Data Stuff */,
 				871C2BEE1A97CAA0007A1DE5 /* NowPlayingSong.h */,
 				871C2BEF1A97CAA0007A1DE5 /* NowPlayingSong.m */,
-				87F575831AE9EB3800537471 /* PreviousPlaybackContext.h */,
-				87F575841AE9EB3800537471 /* PreviousPlaybackContext.m */,
+				87F575831AE9EB3800537471 /* PreviousNowPlayingInfo.h */,
+				87F575841AE9EB3800537471 /* PreviousNowPlayingInfo.m */,
 				87ECAFC51AAE8D2600C527B9 /* Playback Queue */,
 				87FA13741A998AFA00A1902F /* ReachabilitySingleton.h */,
 				87FA13751A998AFA00A1902F /* ReachabilitySingleton.m */,
@@ -2031,7 +2031,7 @@
 				8757117D1AEE9AD50077F8C3 /* AlbumDetailDisplayHelper.m in Sources */,
 				874DA0861ABA11DD003D69D6 /* MRBlurView.m in Sources */,
 				8786F3BE1AF862170083E95C /* Song.m in Sources */,
-				87F575851AE9EB3800537471 /* PreviousPlaybackContext.m in Sources */,
+				87F575851AE9EB3800537471 /* PreviousNowPlayingInfo.m in Sources */,
 				8712381A1AF4673E00DEEDC4 /* SDCAlertController.m in Sources */,
 				87D47DA419345D8E0057D49B /* MasterArtistsTableViewController.m in Sources */,
 				8734885319A1BBF4008CC6A5 /* Model.xcdatamodeld in Sources */,

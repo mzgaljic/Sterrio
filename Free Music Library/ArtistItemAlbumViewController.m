@@ -18,6 +18,7 @@
 #import "MGSwipeButton.h"
 #import "AlbumDetailDisplayHelper.h"
 #import "PlayableItem.h"
+#import "PreviousNowPlayingInfo.h"
 
 @interface ArtistItemAlbumViewController ()
 {
@@ -426,7 +427,8 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
 {
     if(self.playbackContext == nil)
         return;
-    Song *oldSong = (Song *)[notification object];
+    
+    Song *oldSong = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading].songForItem;
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
     Song *newSong = nowPlaying.nowPlayingItem.songForItem;
     NSIndexPath *oldPath, *newPath;
@@ -478,7 +480,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
 - (PlaybackContext *)contextForSpecificSong:(Song *)aSong
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"song_id == %@", aSong.uniqueId];
+    request.predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", aSong.uniqueId];
     //descriptor doesnt really matter here
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
                                                                      ascending:YES];

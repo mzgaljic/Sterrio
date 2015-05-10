@@ -14,6 +14,7 @@
 #import "AlbumAlbumArt+Utilities.h"
 #import "SongAlbumArt+Utilities.h"
 #import "PlayableItem.h"
+#import "PreviousNowPlayingInfo.h"
 
 @interface AllSongsDataSource ()
 {
@@ -429,7 +430,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     if(self.playbackContext == nil)
         return;
-    Song *oldSong = (Song *)[notification object];
+    Song *oldSong = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading].songForItem;
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
     Song *newSong = nowPlaying.nowPlayingItem.songForItem;
     NSIndexPath *oldPath, *newPath;

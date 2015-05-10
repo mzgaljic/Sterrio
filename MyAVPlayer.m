@@ -7,7 +7,7 @@
 //
 
 #import "MyAVPlayer.h"
-#import "PreviousPlaybackContext.h"
+#import "PreviousNowPlayingInfo.h"
 #import "PlayableItem.h"
 
 @interface MyAVPlayer ()
@@ -81,12 +81,11 @@ static ReachabilitySingleton *reachability;
 #pragma mark - Working with the queue to perform player actions (play, skip, etc)
 - (void)startPlaybackOfSong:(Song *)aSong
                goingForward:(BOOL)forward
-                    oldSong:(Song *)oldSong
-                 oldContext:(PlaybackContext *)oldContext
+            oldPlayableItem:(PlayableItem *)oldItem
 {
-    [PreviousPlaybackContext setPreviousPlaybackContext:oldContext];
+    [PreviousNowPlayingInfo setPreviousPlayableItem:oldItem];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
-                                                        object:oldSong];
+                                                        object:nil];
     if(aSong != nil){
         movingForward = forward;
         _playbackStarted = NO;

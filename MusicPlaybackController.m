@@ -10,6 +10,7 @@
 #import "SongAlbumArt+Utilities.h"
 #import "PlayableItem.h"
 #import "PlaylistItem.h"
+#import "PreviousNowPlayingInfo.h"
 
 static MyAVPlayer *player = nil;
 static PlayerView *playerView = nil;
@@ -24,6 +25,18 @@ static int numLongSongsSkipped = 0;
 static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 
 @implementation MusicPlaybackController
+
+void safeSynchronousDispatchToMainQueue(void (^block)(void))
+{
+    if ([NSThread isMainThread])
+    {
+        block();
+    }
+    else
+    {
+        dispatch_sync(dispatch_get_main_queue(), block);
+    }
+}
 
 + (void)resumePlayback
 {
@@ -55,7 +68,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 /** Stop playback of current song/track, and begin playback of the next track */
 + (void)skipToNextTrack
 {
-    dispatch_async(dispatch_get_main_queue(), ^(void){
+    safeSynchronousDispatchToMainQueue(^{
         //Run UI Updates
         [MusicPlaybackController internalSkipToNextTrack];
     });
@@ -85,23 +98,20 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
         allowSongDidFinishNotifToProceed = YES;
     
     [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
-    Song *skippedSong = [MusicPlaybackController nowPlayingSong];
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     [player allowSongDidFinishNotificationToProceed:allowSongDidFinishNotifToProceed];
+    PlayableItem *oldItem = [NowPlayingSong sharedInstance].nowPlayingItem;
     Song *nextSong = [playbackQueue skipForward].songForItem;
     
-    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-    PlaybackContext *oldContext = [nowPlayingObj nowPlayingItem].contextForItem;
     [VideoPlayerWrapper startPlaybackOfSong:nextSong
                                goingForward:YES
-                                    oldSong:skippedSong
-                                 oldContext:oldContext];
+                            oldPlayableItem:oldItem];
 }
 
 //used primarily when killing the player (to override the repeat mode settings)
 + (void)forcefullySkipToNextTrack
 {
-    dispatch_async(dispatch_get_main_queue(), ^(void){
+    safeSynchronousDispatchToMainQueue(^{
         //Run UI Updates
         [MusicPlaybackController internalForcefullySkipToNextTrack];
     });
@@ -110,17 +120,14 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 + (void)internalForcefullySkipToNextTrack
 {
     [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
-    Song *skippedSong = [MusicPlaybackController nowPlayingSong];
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     [player allowSongDidFinishNotificationToProceed:YES];
+    PlayableItem *oldItem = [NowPlayingSong sharedInstance].nowPlayingItem;
     Song *nextSong = [playbackQueue skipForward].songForItem;
     
-    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-    PlaybackContext *oldContext = [nowPlayingObj nowPlayingItem].contextForItem;
     [VideoPlayerWrapper startPlaybackOfSong:nextSong
                                goingForward:YES
-                                    oldSong:skippedSong
-                                 oldContext:oldContext];
+                            oldPlayableItem:oldItem];
 }
 
 /* Used to jump ahead or back in a video to an exact point. The player playback state
@@ -152,7 +159,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 /** Stop playback of current song/track, and begin playback of previous track */
 + (void)returnToPreviousTrack
 {
-    dispatch_async(dispatch_get_main_queue(), ^(void){
+    safeSynchronousDispatchToMainQueue(^{
         //Run UI Updates
         [MusicPlaybackController internalReturnToPreviousTrack];
     });
@@ -160,18 +167,14 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 
 + (void)internalReturnToPreviousTrack
 {
-    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-    
     if(! [MusicPlaybackController shouldSeekToStartOnBackPress]){
         [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
-        Song *oldNowPlaying = [MusicPlaybackController nowPlayingSong];
+        PlayableItem *oldItem = [NowPlayingSong sharedInstance].nowPlayingItem;
         Song *previousSong = [playbackQueue skipToPrevious].songForItem;
         
-        PlaybackContext *oldContext = [nowPlayingObj nowPlayingItem].contextForItem;
         [VideoPlayerWrapper startPlaybackOfSong:previousSong
                                    goingForward:NO
-                                        oldSong:oldNowPlaying
-                                     oldContext:oldContext];
+                                oldPlayableItem:oldItem];
     } else{
         [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
         [MusicPlaybackController resumePlayback];
@@ -202,6 +205,19 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 + (NSUInteger)playerElapsedTime
 {
     return CMTimeGetSeconds(player.currentItem.currentTime);
+}
+
++ (void)playlistItemAboutToBeDeleted:(PlaylistItem *)item
+{
+    if([nowPlayingObject.nowPlayingItem.playlistItemForItem.uniqueId isEqualToString:item.uniqueId]){
+        MZPlaybackQueue *queue = [MZPlaybackQueue sharedInstance];
+        if([queue numMoreItemsInMainQueue] + [queue numMoreItemsInUpNext] == 0){
+            PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+            [playerView userKilledPlayer];
+        }
+        else
+            [MusicPlaybackController forcefullySkipToNextTrack];
+    }
 }
 
 + (void)songAboutToBeDeleted:(Song *)song deletionContext:(PlaybackContext *)aContext;
@@ -298,7 +314,6 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 
 + (void)newQueueWithPlaylistItem:(PlaylistItem *)playlistItem withContext:(PlaybackContext *)aContext
 {
-    Song *originalSong = [MusicPlaybackController nowPlayingSong];
     BOOL playerEnabled = [SongPlayerCoordinator isPlayerEnabled];
     BOOL playerOnScreen = [SongPlayerCoordinator isPlayerOnScreen];
     
@@ -322,13 +337,12 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     PlayableItem *item = [[PlayableItem alloc] initWithPlaylistItem:playlistItem
                                                             context:aContext
                                                     fromUpNextSongs:NO];
-    [playbackQueue setMainQueueWithNewNowPlayingItem:item oldSong:originalSong];
+    [playbackQueue setMainQueueWithNewNowPlayingItem:item];
 }
 
 + (void)newQueueWithSong:(Song *)song
              withContext:(PlaybackContext *)aContext;
 {
-    Song *originalSong = [MusicPlaybackController nowPlayingSong];
     BOOL playerEnabled = [SongPlayerCoordinator isPlayerEnabled];
     BOOL playerOnScreen = [SongPlayerCoordinator isPlayerOnScreen];
     
@@ -350,7 +364,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     
     //starts playback with the song that was chosen
     PlayableItem *item = [[PlayableItem alloc] initWithSong:song context:aContext fromUpNextSongs:NO];
-    [playbackQueue setMainQueueWithNewNowPlayingItem:item oldSong:originalSong];
+    [playbackQueue setMainQueueWithNewNowPlayingItem:item];
 }
 
 + (void)queueUpNextSongsWithContexts:(NSArray *)contexts
@@ -369,20 +383,16 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 
 + (void)repeatEntireMainQueue
 {
-    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-    PlaybackContext *oldContext = [nowPlayingObj nowPlayingItem].contextForItem;
-    
-    Song *originalSong = [MusicPlaybackController nowPlayingSong];
     Song *firstSong = [playbackQueue skipToBeginningOfQueueReshufflingIfNeeded].songForItem;
     [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
     
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     [player allowSongDidFinishNotificationToProceed:YES];
 
+    PlayableItem *oldItem = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading];
     [VideoPlayerWrapper startPlaybackOfSong:firstSong
                                goingForward:YES
-                                    oldSong:originalSong
-                                 oldContext:oldContext];
+                            oldPlayableItem:oldItem];
 }
 
 #pragma mark - Playback status

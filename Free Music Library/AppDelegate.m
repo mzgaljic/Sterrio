@@ -35,17 +35,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 {
     [self.previewPlayer destroyPlayer];
     self.previewPlayer = nil;
-    self.playerSnapshot = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)restoreMainWindow
-{
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    [self.window setRootViewController:nil];
-    self.window.backgroundColor = [UIColor whiteColor];
-    [self.window makeKeyAndVisible];
-
 }
 
 - (GSTouchesShowingWindow *)windowShowingTouches
@@ -141,53 +131,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     [self startupBackgroundTask];
-    
-    if([AppEnvironmentConstants isUserPreviewingAVideo])
-        return;
-        
-    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    if(playerView == nil)
-        return;
-    
-    if(! [SongPlayerCoordinator screenShottingVideoPlayerNotAllowed]){
-        
-        //is the player visible already on the screen? sometimes the user quits
-        //before the playerview has a chance to be rendered again (user leaving and resuming
-        //app very aggresively).
-        if(! playerViewFadingBackOnScreen){
-            //we can capture a fresh snapshot with no worries.
-            _playerSnapshot = [playerView snapshotViewAfterScreenUpdates:NO];
-            _playerSnapshot.frame = playerView.frame;
-            _playerSnapshot.userInteractionEnabled = NO;
-            [self.window insertSubview:_playerSnapshot belowSubview:playerView];
-        }
-        else{
-            //too early to take fresh snapshot of player (alpha not 1 yet).
-            //(its still below the playerView in hierarchy if code reaches this point)
-            //we dont need to do anything...playerView wont be rendered anyway.
-        }
-    }
-    playerView.alpha = 0;
-    playerViewFadingBackOnScreen = NO;
-}
-
-- (void)removePlayerSnapshot
-{
-    if(! playerViewFadingBackOnScreen
-       && [UIApplication sharedApplication].applicationState == UIApplicationStateActive){
-        NSLog(@"removed old snapshot");
-        [_playerSnapshot removeFromSuperview];
-        _playerSnapshot = nil;
-    } else{
-        //schedule the removal a little bit later (recursively until it can be removed)
-        if(_playerSnapshot == nil)
-            return;
-        if([UIApplication sharedApplication].applicationState == UIApplicationStateActive){
-            [self performSelector:@selector(removePlayerSnapshot)
-                       withObject:nil
-                       afterDelay:1];
-        }
-    }
 }
 
 //background fetch when app is inactive
@@ -245,36 +188,10 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 {
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
     [[SDImageCache sharedImageCache] clearMemory];
-    
-    [_playerSnapshot removeFromSuperview];
-    _playerSnapshot = nil;
 }
 
-static BOOL playerViewFadingBackOnScreen = NO;
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    playerViewFadingBackOnScreen = YES;
-    //animate player back from snapshot
-    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    float animationDuration = 0.74f;
-    [UIView animateWithDuration:animationDuration
-                          delay:0
-                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
-                     animations:^{
-                         if([SongPlayerCoordinator isPlayerEnabled])
-                             playerView.alpha = 1;
-                         else
-                             playerView.alpha = [SongPlayerCoordinator alphaValueForDisabledPlayer];
-                     } completion:^(BOOL finished) {
-                         if(_playerSnapshot){
-                             [self performSelector:@selector(removePlayerSnapshot)
-                                        withObject:nil
-                                        afterDelay:1];
-                         }
-                         playerViewFadingBackOnScreen = NO;
-                     }];
-
-    
     if(nextEarliestAlbumArtUpdateForceTime == nil){
         nextEarliestAlbumArtUpdateForceTime = [NSDate date];
         nextEarliestAlbumArtUpdateForceTime = [self generateNextEarliestAlbumArtUpdateForceTime];

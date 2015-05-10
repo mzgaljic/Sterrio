@@ -8,9 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-@interface PreviousPlaybackContext : NSObject
+@interface PreviousNowPlayingInfo : NSObject
 
-+ (PlaybackContext *)contextBeforeNewSongBeganLoading;
-+ (void)setPreviousPlaybackContext:(PlaybackContext *)oldContext;
++ (PlayableItem *)playableItemBeforeNewSongBeganLoading;
++ (void)setPreviousPlayableItem:(PlayableItem *)oldItem;
 
 @end

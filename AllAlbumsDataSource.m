@@ -12,6 +12,7 @@
 #import "MusicPlaybackController.h"
 #import "AlbumAlbumArt+Utilities.h"
 #import "PlayableItem.h"
+#import "PreviousNowPlayingInfo.h"
 
 @interface AllAlbumsDataSource ()
 {
@@ -444,7 +445,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
 {
     if(self.playbackContext == nil)
         return;
-    Song *oldsong = (Song *)[notification object];
+    Song *oldsong = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading].songForItem;
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
     Song *newSong = nowPlaying.nowPlayingItem.songForItem;
     
@@ -545,7 +546,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
 - (PlaybackContext *)contextForSpecificAlbum:(Album *)anAlbum
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY album.album_id == %@", anAlbum.uniqueId];
+    request.predicate = [NSPredicate predicateWithFormat:@"ANY album.uniqueId == %@", anAlbum.uniqueId];
     
     NSSortDescriptor *sortDescriptor;
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"

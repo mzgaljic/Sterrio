@@ -10,7 +10,7 @@
 #import "StackController.h"
 #import "MZTableViewCell.h"
 #import "MusicPlaybackController.h"
-#import "PreviousPlaybackContext.h"
+#import "PreviousNowPlayingInfo.h"
 #import "PlaylistItem.h"
 #import "PlayableItem.h"
 
@@ -183,7 +183,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel];
+    return [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel] + 4;
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -312,61 +312,32 @@
 {
     //VC's using the AllPlaylistsDataSource do NOT have a playback context. instead they
     //use the context of the specific playlist they initiate.
+    PlayableItem *oldItem = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading];
     
-    Song *oldsong = (Song *)[notification object];
+    PlaylistItem *oldPlaylistItem = oldItem.playlistItemForItem;
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
-    Song *newSong = nowPlaying.nowPlayingItem.songForItem;
-    PlaybackContext *oldSongPlaybackContext = [PreviousPlaybackContext contextBeforeNewSongBeganLoading];
-    PlaybackContext *newSongPlaybackContext = nowPlaying.nowPlayingItem.contextForItem;
-    
-#warning broken.
-    NSSet *playlistsOldSongIsIn;// = oldsong.playlistsIAmIn;
-    NSSet *playlistsNewSongIsIn;// = newSong.playlistsIAmIn;
+    PlaylistItem *newPlaylistItem = nowPlaying.nowPlayingItem.playlistItemForItem;
     
     //nothing to possibly update
-    if(playlistsOldSongIsIn.count == 0
-       && playlistsNewSongIsIn.count == 0)
+    if(oldPlaylistItem == nil && newPlaylistItem == nil)
         return;
     
+    Playlist *oldItemPlaylist = oldPlaylistItem.playlist;
+    Playlist *newItemPlaylist = newPlaylistItem.playlist;
+    
     NSIndexPath *oldPath, *newPath;
-    NSArray *indexes = [self.tableView indexPathsForVisibleRows];
-    for(NSIndexPath *anIndexPath in indexes)
-    {
-        Playlist *aPlaylist;
-        if(self.displaySearchResults)
-            aPlaylist = [self.searchResults objectAtIndex:anIndexPath.row];
-        else
-            aPlaylist = [self.fetchedResultsController objectAtIndexPath:anIndexPath];
+    if(self.displaySearchResults){
+        NSUInteger oldRow = [self.searchResults indexOfObject:oldItemPlaylist];
+        if(oldRow != NSNotFound)
+            oldPath = [NSIndexPath indexPathForRow:oldRow inSection:0];
         
-        PlaybackContext *playlistDetailContext = [self playlistDetailContextForPlaylist:aPlaylist];
-        
-        //check if this playlist is in the old songs playlists (compare by playlist_id)
-        BOOL oldSongPartOfThisPlaylist = [[playlistsOldSongIsIn valueForKey:@"uniqueId"]
-                                          containsObject:aPlaylist.uniqueId];
-        BOOL newSongPartOfThisPlaylist = [[playlistsNewSongIsIn valueForKey:@"uniqueId"]
-                                          containsObject:aPlaylist.uniqueId];
-        
-        BOOL canBreakLoop = NO;
-        if(oldSongPartOfThisPlaylist)
-        {
-            if([playlistDetailContext isEqualToContext:oldSongPlaybackContext])
-            {
-                //old song was playing in this EXACT playlist, out of all the playlists its a part of.
-                oldPath = anIndexPath;
-                canBreakLoop = YES;
-            }
-        }
-        if(newSongPartOfThisPlaylist)
-        {
-            if([playlistDetailContext isEqualToContext:newSongPlaybackContext])
-            {
-                //new song is playing in this EXACT playlist, out of all the playlists its a part of.
-                newPath = anIndexPath;
-                canBreakLoop = YES;
-            }
-        }
-        if(canBreakLoop)
-            break;
+        NSUInteger newRow = [self.searchResults indexOfObject:newPlaylistItem];
+        if(newRow != NSNotFound)
+            newPath = [NSIndexPath indexPathForRow:newRow inSection:0];
+    }
+    else{
+        oldPath = [self.fetchedResultsController indexPathForObject:oldItemPlaylist];
+        newPath = [self.fetchedResultsController indexPathForObject:newItemPlaylist];
     }
     
     if(oldPath || newPath){
@@ -374,7 +345,7 @@
         if(oldPath)
             [self.tableView reloadRowsAtIndexPaths:@[oldPath]
                                   withRowAnimation:UITableViewRowAnimationFade];
-        if(newPath && ![newPath isEqual:newPath])
+        if(newPath && ![newPath isEqual:oldPath])
             [self.tableView reloadRowsAtIndexPaths:@[newPath]
                                   withRowAnimation:UITableViewRowAnimationFade];
         [self.tableView endUpdates];

@@ -13,8 +13,7 @@ static BOOL updatingPlayerViewDisabled = NO;
 
 + (void)startPlaybackOfSong:(Song *)aSong
                goingForward:(BOOL)forward
-                    oldSong:(Song *)oldSong
-                 oldContext:(PlaybackContext *)oldContext
+            oldPlayableItem:(PlayableItem *)oldItem
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:MZInitAudioSession
                                                         object:nil];
@@ -37,7 +36,9 @@ static BOOL updatingPlayerViewDisabled = NO;
     [MusicPlaybackController setAVPlayerTimeObserver:nil];
     
     [playerView reattachLayerToPlayer];
-    [newPlayer startPlaybackOfSong:aSong goingForward:forward oldSong:oldSong oldContext:oldContext];
+    [newPlayer startPlaybackOfSong:aSong
+                      goingForward:forward
+                   oldPlayableItem:oldItem];
     [VideoPlayerWrapper setupAvPlayerViewAgain];
 }
 

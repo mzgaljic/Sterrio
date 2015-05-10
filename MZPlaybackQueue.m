@@ -10,6 +10,7 @@
 #import "ProgressHUD.h"
 #import "PlayableItem.h"
 #import "PlaylistItem.h"
+#import "PreviousNowPlayingInfo.h"
 
 @interface MZPlaybackQueue ()
 {
@@ -125,40 +126,36 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
 
 //should be used when a user moves into a different context and wants to destroy their
 //current queue. This does not clear the "up next" section.
-- (void)setMainQueueWithNewNowPlayingItem:(PlayableItem *)item oldSong:(Song *)oldSong
+- (void)setMainQueueWithNewNowPlayingItem:(PlayableItem *)item;
 {
-    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-    PlaybackContext *oldContext = nowPlayingObj.nowPlayingItem.contextForItem;
+    PlayableItem *oldItem = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading];
     [mainQueue setMainQueueWithNewNowPlayingItem:item];
-    [nowPlayingObj setNewNowPlayingItem:item];
+    [[NowPlayingSong sharedInstance] setNewNowPlayingItem:item];
     
     //start playback in minimzed state
     [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
     [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
                                goingForward:YES
-                                    oldSong:oldSong
-                                 oldContext:oldContext];
+                            oldPlayableItem:oldItem];
     [self printQueueContents];
 }
 
 - (void)addItemsToPlayingNextWithContexts:(NSArray *)contexts
 {
+    PlayableItem *oldItem = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading];
+    
     if(! [SongPlayerCoordinator isPlayerOnScreen]){
-        NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-        PlaybackContext *oldContext = nowPlayingObj.nowPlayingItem.contextForItem;
-        
         //no songs currently playing, set defaults...
         [upNextQueue addItemsToUpNextWithContexts:contexts];
         PlayableItem *item = [upNextQueue obtainAndRemoveNextItem];
         
-        [nowPlayingObj setNewNowPlayingItem:item];
+        [[NowPlayingSong sharedInstance] setNewNowPlayingItem:item];
         
         //start playback in minimzed state
         [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
         [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
                                    goingForward:YES
-                                        oldSong:nil
-                                     oldContext:oldContext];
+                                oldPlayableItem:oldItem];
         [self printQueueContents];
         return;
     } else{
@@ -180,15 +177,11 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
                 [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
                 [upNextQueue addItemsToUpNextWithContexts:contexts];
                 PlayableItem *item = [upNextQueue obtainAndRemoveNextItem];
-                
-                NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-                PlaybackContext *oldContext = nowPlayingObj.nowPlayingItem.contextForItem;
-                [nowPlayingObj setNewNowPlayingItem:item];
+                [[NowPlayingSong sharedInstance] setNewNowPlayingItem:item];
 
                 [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
                                            goingForward:YES
-                                                oldSong:nowPlayingSong
-                                             oldContext:oldContext];
+                                        oldPlayableItem:oldItem];
                 [self printQueueContents];
                 return;
             }

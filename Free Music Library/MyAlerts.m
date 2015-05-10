@@ -14,7 +14,7 @@
 #import "UIWindow+VisibleVC.h"
 #import "SDCAlertControllerView.h"
 #import "PlayableItem.h"
-#import "PreviousPlaybackContext.h"
+#import "PreviousNowPlayingInfo.h"
 
 static AFDropdownNotification *notification;
 
@@ -31,11 +31,10 @@ static AFDropdownNotification *notification;
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         Song *nowPlayingSong = [NowPlayingSong sharedInstance].nowPlayingItem.songForItem;
-        PlaybackContext *oldContext = [PreviousPlaybackContext contextBeforeNewSongBeganLoading];
+        PlayableItem *oldItem = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading];
         [VideoPlayerWrapper startPlaybackOfSong:nowPlayingSong
                                    goingForward:YES
-                                        oldSong:nil
-                                     oldContext:oldContext];
+                                oldPlayableItem:oldItem];
     }];
 }
 

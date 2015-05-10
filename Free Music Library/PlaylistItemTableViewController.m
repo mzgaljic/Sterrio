@@ -17,6 +17,7 @@
 #import "Song+Utilities.h"
 #import "PlaylistItem+Utilities.h"
 #import "PlayableItem.h"
+#import "PreviousNowPlayingInfo.h"
 
 @interface PlaylistItemTableViewController()
 {
@@ -293,8 +294,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
         PlaylistItem *item = [self playlistItemForIndexPath:indexPath];
-        [MusicPlaybackController songAboutToBeDeleted:item.song deletionContext:self.playbackContext];
-        
+        [MusicPlaybackController playlistItemAboutToBeDeleted:item];
         
         //NOTE: Deleting the playlistItem (and saving context) will trigger code to run that
         //fixes the index of every playlistItem after the deleted one within this playlist.
@@ -305,7 +305,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         _playlist.playlistItems = set;
         [[CoreDataManager sharedInstance] saveContext];
         
-        
         [self.tableView beginUpdates];
         if(_playlist.playlistItems.count == 0){
             [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0]
@@ -313,9 +312,28 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         } else{
             [self.tableView deleteRowsAtIndexPaths:@[indexPath]
                                   withRowAnimation:UITableViewRowAnimationMiddle];
+            
+            if(_playlist.playlistItems.count > 0){
+                //need to update all visible cells in front of the deleted indexpath to ensure that
+                //the cells are refreshed and represent the new correct PlaylistItem (after indexes are
+                //changed).
+                
+                NSMutableArray *pathsToReload = [NSMutableArray array];
+                for(NSIndexPath *aPath in self.tableView.indexPathsForVisibleRows){
+                    if(aPath.row > indexPath.row)
+                        [pathsToReload addObject:aPath];
+                }
+                [self.tableView reloadRowsAtIndexPaths:pathsToReload
+                                      withRowAnimation:UITableViewRowAnimationFade];
+            }
         }
         [self.tableView endUpdates];
     }
+}
+
+- (void)reloadEntireTable
+{
+    [self.tableView reloadData];
 }
 
 - (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section
@@ -515,16 +533,16 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification
 {
-    Song *oldSong = (Song *)[notification object];
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
-    Song *newSong = nowPlaying.nowPlayingItem.songForItem;
+    PlayableItem *oldPlayableItem = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading];
+    PlaylistItem *oldItem = oldPlayableItem.playlistItemForItem;
+    PlaylistItem *newItem = nowPlaying.nowPlayingItem.playlistItemForItem;
     NSIndexPath *oldPath, *newPath;
     
-    //broken
-    /*
-    //tries to obtain the path to the changed songs if possible.
-    oldPath = [self.fetchedResultsController indexPathForObject:oldSong];
-    newPath = [self.fetchedResultsController indexPathForObject:newSong];
+    if(oldItem)
+        oldPath = [NSIndexPath indexPathForRow:[oldItem.index integerValue] inSection:0];
+    if(newItem)
+        newPath = [NSIndexPath indexPathForRow:[newItem.index integerValue] inSection:0];
     
     if(oldPath || newPath){
         [self.tableView beginUpdates];
@@ -536,7 +554,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                   withRowAnimation:UITableViewRowAnimationFade];
         [self.tableView endUpdates];
     }
-     */
 }
 
 #pragma mark - Button actions

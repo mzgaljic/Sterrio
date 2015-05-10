@@ -28,8 +28,7 @@
 
 - (void)startPlaybackOfSong:(Song *)aSong
                goingForward:(BOOL)forward
-                    oldSong:(Song *)oldSong
-                 oldContext:(PlaybackContext *)oldContext;
+            oldPlayableItem:(PlayableItem *)oldItem;
 
 - (void)showSpinnerForInternetConnectionIssueIfAppropriate;
 - (void)showSpinnerForBasicLoading;

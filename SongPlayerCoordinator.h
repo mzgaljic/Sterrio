@@ -44,10 +44,6 @@
 + (BOOL)isPlayerInDisabledState;
 + (BOOL)wasPlayerInPlayStateBeforeGUIDisabled;
 
-//for moments where you do NOT want a screenshot to be taken when leaving the view
-+ (BOOL)screenShottingVideoPlayerNotAllowed;
-+ (void)setScreenShottingVideoPlayerAllowed:(BOOL)allowed;
-
 //This is mainly exposed for the PlayerView class
 - (CGRect)smallPlayerFrameInLandscape;
 - (CGRect)smallPlayerFrameInPortrait;

@@ -39,6 +39,8 @@
  in the application should call this method as a "heads up" to avoid potential problems. **/
 + (void)groupOfSongsAboutToBeDeleted:(NSArray *)songs deletionContext:(PlaybackContext *)context;
 
++ (void)playlistItemAboutToBeDeleted:(PlaylistItem *)item;
+
 /** Stop playback of current song/track, and begin playback of the next track */
 + (void)skipToNextTrack;
 

@@ -21,7 +21,6 @@
 static BOOL isVideoPlayerExpanded;
 static BOOL playerIsOnScreen = NO;
 static BOOL playerIsInDisabledState = NO;
-static BOOL screenShottingVideoPlayerNotAllowed = NO;
 static BOOL isPlayerEnabled;
 static BOOL canIgnoreToolbar = YES;
 float const disabledPlayerAlpa = 0.20;
@@ -76,12 +75,6 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     //toOrientation code from songPlayerViewController was removed here (code copied)
     if(isVideoPlayerExpanded == YES)
         return;
-    
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    if(appDelegate.playerSnapshot){
-        [appDelegate.playerSnapshot removeFromSuperview];
-        appDelegate.playerSnapshot = nil;
-    }
     
     if([AppEnvironmentConstants isTabBarHidden])
         wasTabBarHiddenBeforePlayerExpansion = YES;
@@ -156,12 +149,6 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
 {
     if(isVideoPlayerExpanded == NO){
         return;
-    }
-    
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    if(appDelegate.playerSnapshot){
-        [appDelegate.playerSnapshot removeFromSuperview];
-        appDelegate.playerSnapshot = nil;
     }
     
     if(! wasTabBarHiddenBeforePlayerExpansion)
@@ -250,12 +237,6 @@ static UIInterfaceOrientation orientationOnLastRotate;
             return;
         
         orientationOnLastRotate = interfaceOrientation;
-        
-        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        if(appDelegate.playerSnapshot){
-            [appDelegate.playerSnapshot removeFromSuperview];
-            appDelegate.playerSnapshot = nil;
-        }
         
         PlayerView *videoPlayer = [MusicPlaybackController obtainRawPlayerView];
         currentPlayerFrame = [self smallPlayerFrameBasedOnCurrentOrientation];
@@ -519,17 +500,6 @@ static BOOL wasInPlayStateBeforeGUIDisabled = NO;
 + (BOOL)wasPlayerInPlayStateBeforeGUIDisabled
 {
     return wasInPlayStateBeforeGUIDisabled;
-}
-
-//for moments where you do NOT want a screenshot to be taken when leaving the view
-+ (BOOL)screenShottingVideoPlayerNotAllowed
-{
-    return screenShottingVideoPlayerNotAllowed;
-}
-
-+ (void)setScreenShottingVideoPlayerAllowed:(BOOL)allowed
-{
-    screenShottingVideoPlayerNotAllowed = !allowed;
 }
 
 + (int)heightOfMinimizedPlayer

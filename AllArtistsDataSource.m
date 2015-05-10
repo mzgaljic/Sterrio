@@ -12,6 +12,7 @@
 #import "MusicPlaybackController.h"
 #import "ArtistItemAlbumViewController.h"
 #import "PlayableItem.h"
+#import "PreviousNowPlayingInfo.h"
 
 @interface AllArtistsDataSource ()
 {
@@ -366,7 +367,7 @@
 {
     if(self.playbackContext == nil)
         return;
-    Song *oldsong = (Song *)[notification object];
+    Song *oldsong = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading].songForItem;
     NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
     Song *newSong = nowPlaying.nowPlayingItem.songForItem;
     
@@ -465,7 +466,8 @@
 - (PlaybackContext *)contextForSpecificArtist:(Artist *)anArtist
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY artist.artist_id == %@", anArtist.uniqueId];
+    
+    request.predicate = [NSPredicate predicateWithFormat:@"ANY artist.uniqueId == %@", anArtist.uniqueId];
     NSSortDescriptor *sortDescriptor;
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
                                                    ascending:YES

@@ -292,6 +292,9 @@
 //this is used to make sure we always work with PlayableItem objects.
 - (PlayableItem *)itemAtIndex:(NSUInteger)index inArray:(NSArray **)array
 {
+    if(index >= (*array).count)
+        return nil;
+    
     id obj = [*array objectAtIndex:index];
     if([obj isMemberOfClass:[PlayableItem class]])
         return (PlayableItem *)obj;
