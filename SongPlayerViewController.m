@@ -1141,11 +1141,8 @@ static int accomodateInterfaceLabelsCounter = 0;
 {
     NSInteger durationInSeconds = [[NowPlayingSong sharedInstance].nowPlayingItem.songForItem.duration integerValue];
     if(durationInSeconds <= 0.0f || isnan(durationInSeconds)){
-        // Handle error
-        if(![[ReachabilitySingleton sharedInstance] isConnectedToInternet])
-            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
-        else
-            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_FatalSongDurationError];
+        //Don't need to handle error, duration now showing isnt crucial.
+        return;
     } else{
         //setup total song duration label animations
         CATransition *animation = [CATransition animation];

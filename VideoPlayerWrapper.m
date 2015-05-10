@@ -16,6 +16,8 @@ static BOOL updatingPlayerViewDisabled = NO;
                     oldSong:(Song *)oldSong
                  oldContext:(PlaybackContext *)oldContext
 {
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZInitAudioSession
+                                                        object:nil];
     BOOL allowSongDidFinishToExecute;
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     [player replaceCurrentItemWithPlayerItem:nil];  //stop any ongoing playback
@@ -68,8 +70,6 @@ static BOOL updatingPlayerViewDisabled = NO;
 
 + (void)newPlayerItemAddedCleanup
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:MZInitAudioSession object:nil];
-    
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     BOOL airplayActive = player.externalPlaybackActive;
     [[MusicPlaybackController obtainRawPlayerView] showAirPlayInUseMsg:airplayActive];

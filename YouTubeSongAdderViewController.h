@@ -10,7 +10,6 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import <XCDYouTubeKit/XCDYouTubeClient.h>
 #import "YouTubeVideo.h"
-#import "Reachability.h"
 #import "MusicPlaybackController.h"
 #import "MyAlerts.h"
 #import "SongPlayerViewDisplayUtility.h"
@@ -22,9 +21,11 @@
 #import "MZSongModifierDelegate.h"
 #import "SongPlayerCoordinator.h"
 #import "MZActivityViewController.h"
+#import "MZPreviewPlayer.h"
 
 @interface YouTubeSongAdderViewController : MyViewController <YouTubeVideoDetailLookupDelegate,
-                                                            MZSongModifierDelegate>
+                                                            MZSongModifierDelegate,
+                                                            MZPreviewPlayerStallState>
 
 - (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject thumbnail:(UIImage *)img;
 

@@ -172,8 +172,9 @@ static ReachabilitySingleton *reachability;
     
     NSOperation *determineVideoPlayableOperation, *fetchVideoInfoOperation;
     
-    determineVideoPlayableOperation = [[DetermineVideoPlayableOperation alloc] initWithSong:aSong];
-    fetchVideoInfoOperation = [[FetchVideoInfoOperation alloc] initWithSong:aSong];
+    NSUInteger songDuration = [aSong.duration integerValue];
+    determineVideoPlayableOperation = [[DetermineVideoPlayableOperation alloc] initWithSongDuration:songDuration];
+    fetchVideoInfoOperation = [[FetchVideoInfoOperation alloc] initWithSongsYoutubeId:aSong.youtube_id];
     
     [fetchVideoInfoOperation addDependency:determineVideoPlayableOperation];
     [operationQueue addOperation:determineVideoPlayableOperation];
@@ -209,6 +210,10 @@ static ReachabilitySingleton *reachability;
             if(stallHasOccured)
             {
                 [self showSpinnerForBasicLoading];
+                //try to resume playback...
+                if(! [MusicPlaybackController playbackExplicitlyPaused]){
+                    [MusicPlaybackController resumePlayback];
+                }
                 return;
             }
 
@@ -229,6 +234,10 @@ static ReachabilitySingleton *reachability;
             if(stallHasOccured)
             {
                 [self showSpinnerForBasicLoading];
+                //try to resume playback...
+                if(! [MusicPlaybackController playbackExplicitlyPaused]){
+                    [MusicPlaybackController resumePlayback];
+                }
                 return;
             }
             //otherwise no problems could possibly occur at this point...
@@ -535,7 +544,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                                                                 object:nil];
         }
     } else if(context == airplayStateChanged){
-        BOOL airplayActive = self.externalPlaybackActive;
+        BOOL airplayActive = self.allowsExternalPlayback;
         
         [[MusicPlaybackController obtainRawPlayerView] showAirPlayInUseMsg:airplayActive];
     } else

@@ -81,6 +81,8 @@ const float SEPERATOR_HEIGHT = 0.5;
     if(anAlbum){
         albumArt = [anAlbum.albumArt imageWithSize:CGSizeMake(artSize, artSize)];
     }
+    if(albumArt == nil)
+        albumArt = [UIImage imageNamed:@"Sample Album Art"];
     
     //background color of view (under blurred base view)
     gradientView = [self gradientBackgroundBasedOnAlbumArtImage:albumArt];

@@ -14,19 +14,19 @@
     BOOL _isFinished;
     BOOL _isCancelled;
     BOOL allowedToPlayVideo;
-    Song *aSong;
+    NSString *songsYoutubeId;
     NSURL *currentItemLink;
 }
 @end
 @implementation FetchVideoInfoOperation
 
-- (id)initWithSong:(Song *)theSong;
+- (id)initWithSongsYoutubeId:(NSString *)youtubeId
 {
     if(self = [super init]){
         _isExecuting = NO;
         _isFinished = NO;
         _isCancelled = NO;
-        aSong = theSong;
+        songsYoutubeId = youtubeId;
     }
     return self;
 }
@@ -47,10 +47,9 @@
     //check if any of my dependancies were cancelled. In such an event, cancel this operation as well.
     for(int i = 0; i < self.dependencies.count; i++){
         if([self.dependencies[i] isCancelled]){
-            [self isCancelled];
+            [self cancel];
             NSLog(@"operation cancelled");
             return;
-
         }
         if([self.dependencies[i] isMemberOfClass:[DetermineVideoPlayableOperation class]]){
             DetermineVideoPlayableOperation *completedOperation;
@@ -63,6 +62,11 @@
                 NSLog(@"WARNING: allowedToPlayVideo var is not being passed between NSOperations anymore.");
             }
         }
+    }
+    
+    if(allowedToPlayVideo == NO){
+        NSLog(@"operation cancelled");
+        return;
     }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:MZStartBackgroundTaskHandlerIfInactive
@@ -83,7 +87,7 @@
         return;
     }
     
-    __weak NSString *weakId = aSong.youtube_id;
+    __weak NSString *weakId = songsYoutubeId;
     __weak SongPlayerCoordinator *weakCoordinator = [SongPlayerCoordinator sharedInstance];
     __weak FetchVideoInfoOperation *weakSelf = self;
     
@@ -221,7 +225,7 @@
 
 - (void)cleanupBeforeFinishedOrCancelled
 {
-    aSong = nil;
+    songsYoutubeId = nil;
     currentItemLink = nil;
     [self willChangeValueForKey:@"isExecuting"];
     [self willChangeValueForKey:@"isFinished"];

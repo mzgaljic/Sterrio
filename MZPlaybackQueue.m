@@ -125,7 +125,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
 
 //should be used when a user moves into a different context and wants to destroy their
 //current queue. This does not clear the "up next" section.
-- (void)setMainQueueWithNewNowPlayingItem:(PlayableItem *)item
+- (void)setMainQueueWithNewNowPlayingItem:(PlayableItem *)item oldSong:(Song *)oldSong
 {
     NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
     PlaybackContext *oldContext = nowPlayingObj.nowPlayingItem.contextForItem;
@@ -136,7 +136,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
     [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
     [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
                                goingForward:YES
-                                    oldSong:nil
+                                    oldSong:oldSong
                                  oldContext:oldContext];
     [self printQueueContents];
 }

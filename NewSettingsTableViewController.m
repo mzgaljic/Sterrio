@@ -597,6 +597,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
 - (IBAction)doneDismissButtonTapped:(id)sender
 {
     [self commitAllSettingChangesToNSUserDefaults];
+    [[UIApplication sharedApplication] ignoreSnapshotOnNextApplicationLaunch];
     
     [self dismissViewControllerAnimated:YES completion:^{
         NSString *settingsChangesNotifString = MZUserFinishedWithReviewingSettings;

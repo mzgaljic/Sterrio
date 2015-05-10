@@ -33,6 +33,9 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 - (void)dealloc
 {
+    [self.previewPlayer destroyPlayer];
+    self.previewPlayer = nil;
+    self.playerSnapshot = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -98,7 +101,8 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
                                                  name:MZInitAudioSession
                                                object:nil];
     
-    [[UIApplication sharedApplication]setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+    UIApplication *myApp = [UIApplication sharedApplication];
+    [myApp setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     return YES;
 }
 
@@ -136,6 +140,11 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
+    [self startupBackgroundTask];
+    
+    if([AppEnvironmentConstants isUserPreviewingAVideo])
+        return;
+        
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     if(playerView == nil)
         return;
@@ -159,6 +168,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         }
     }
     playerView.alpha = 0;
+    playerViewFadingBackOnScreen = NO;
 }
 
 - (void)removePlayerSnapshot
@@ -175,7 +185,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         if([UIApplication sharedApplication].applicationState == UIApplicationStateActive){
             [self performSelector:@selector(removePlayerSnapshot)
                        withObject:nil
-                       afterDelay:0.25];
+                       afterDelay:1];
         }
     }
 }
@@ -206,9 +216,12 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
+    if([AppEnvironmentConstants isUserPreviewingAVideo]){
+        [self.previewPlayer removePlayerFromLayer];
+    }
+    
     [self removePlayerFromPlayerLayer];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZAppWasBackgrounded object:nil];
-    [self startupBackgroundTask];
     [self attemptEnsembleMergeInBackgroundTaskIfAppropriate];
 }
 
@@ -218,6 +231,9 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
     [MusicPlaybackController resetNumberOfLongVideosSkippedOnCellularConnection];
     
+    if([AppEnvironmentConstants isUserPreviewingAVideo]){
+        [self.previewPlayer reattachLayerWithPlayer];
+    }
     [self reattachPlayerToPlayerLayer];
     
     if(! ensembleBackgroundMergeIsRunning){
@@ -258,13 +274,6 @@ static BOOL playerViewFadingBackOnScreen = NO;
                          playerViewFadingBackOnScreen = NO;
                      }];
 
-    //non-snapshot code below...
-    if([AppEnvironmentConstants isUserPreviewingAVideo]){
-        if(resumePlaybackAfterInterruptionPreviewPlayer && ! [AppEnvironmentConstants isUserCurrentlyOnCall]){
-            [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay object:nil];
-            resumePlaybackAfterInterruptionPreviewPlayer = NO;
-        }
-    }
     
     if(nextEarliestAlbumArtUpdateForceTime == nil){
         nextEarliestAlbumArtUpdateForceTime = [NSDate date];
@@ -295,34 +304,34 @@ static BOOL playerViewFadingBackOnScreen = NO;
 - (void)remoteControlReceivedWithEvent:(UIEvent *)event {
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     BOOL userCurrentlyOnCall = [AppEnvironmentConstants isUserCurrentlyOnCall];
+    if(userCurrentlyOnCall)
+        return;
+    
     switch (event.subtype)
     {
         case UIEventSubtypeRemoteControlTogglePlayPause:
             if([AppEnvironmentConstants isUserPreviewingAVideo])
-                [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerTogglePlayPause object:nil];
-            else if([player rate] == 0
-                    && ![SongPlayerCoordinator isPlayerInDisabledState]
-                    && !userCurrentlyOnCall){
+                [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerTogglePlayPause
+                                                                    object:nil];
+            else if([player rate] == 0 && ![SongPlayerCoordinator isPlayerInDisabledState])
+            {
                 [MusicPlaybackController explicitlyPausePlayback:NO];
                 [player play];
             }
-            else if([player rate] == 0
-                    && [SongPlayerCoordinator isPlayerInDisabledState]
-                    && !userCurrentlyOnCall){
-                break;
-            }else{
+            else
+            {
                 [MusicPlaybackController explicitlyPausePlayback:YES];
                 [player pause];
             }
-            
             break;
+            
         case UIEventSubtypeRemoteControlPlay:
             if([AppEnvironmentConstants isUserPreviewingAVideo])
                 [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay object:nil];
-            else{
-                if([player rate] == 0
-                   && ![SongPlayerCoordinator isPlayerInDisabledState]
-                   && !userCurrentlyOnCall){
+            else
+            {
+                if([player rate] == 0 && ![SongPlayerCoordinator isPlayerInDisabledState])
+                {
                     [MusicPlaybackController explicitlyPausePlayback:NO];
                     [player play];
                 }
@@ -331,18 +340,19 @@ static BOOL playerViewFadingBackOnScreen = NO;
         case UIEventSubtypeRemoteControlPause:
             if([AppEnvironmentConstants isUserPreviewingAVideo])
                 [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPause object:nil];
-            else{
+            else
+            {
                 [MusicPlaybackController explicitlyPausePlayback:YES];
                 [player pause];
             }
             break;
         case UIEventSubtypeRemoteControlNextTrack:
-            if([AppEnvironmentConstants isUserPreviewingAVideo] || userCurrentlyOnCall)
+            if([AppEnvironmentConstants isUserPreviewingAVideo])
                 return;
             [MusicPlaybackController skipToNextTrack];
             break;
         case UIEventSubtypeRemoteControlPreviousTrack:
-            if([AppEnvironmentConstants isUserPreviewingAVideo] || userCurrentlyOnCall)
+            if([AppEnvironmentConstants isUserPreviewingAVideo])
                 return;
             [MusicPlaybackController returnToPreviousTrack];
             break;
@@ -357,14 +367,11 @@ static BOOL playerViewFadingBackOnScreen = NO;
 }
 
 
-
 #pragma mark - AVAudioSession stuff
 /*
  useful link talking about the following methods:
  http://stackoverflow.com/questions/20736809/avplayer-handle-when-incoming-call-come
  */
-static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
-
 - (void)initAudioSession
 {
     audioSession = nil;
@@ -400,7 +407,8 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
             
             
             //this notification will also force the playerVC to check the apps playback rate...
-            [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged
+                                                                object:nil];
             break;
         }
         case AVAudioSessionInterruptionTypeEnded:
@@ -412,7 +420,12 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
                 && ![AppEnvironmentConstants isUserCurrentlyOnCall])
             {
                 // Here you should continue playback.
-                [MusicPlaybackController resumePlayback];
+                
+                if([AppEnvironmentConstants isUserPreviewingAVideo])
+                    [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay
+                                                                        object:nil];
+                else
+                    [MusicPlaybackController resumePlayback];
             }
             break;
         }
@@ -493,7 +506,9 @@ static BOOL resumePlaybackAfterInterruptionPreviewPlayer = NO;
     //check if we should continue to allow the app to monitor network changes for a limited time
     NSOperationQueue *loadingSongsQueue;
     loadingSongsQueue = [[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue];
-    if([SongPlayerCoordinator isPlayerOnScreen] || loadingSongsQueue.operationCount > 0){
+    if([SongPlayerCoordinator isPlayerOnScreen]
+       || loadingSongsQueue.operationCount > 0
+       || [AppEnvironmentConstants isUserPreviewingAVideo]){
         backgroundTaskIsRunning = YES;
         UIApplication *app = [UIApplication sharedApplication];
         __weak UIApplication *weakApp = app;

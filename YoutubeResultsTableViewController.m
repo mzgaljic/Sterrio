@@ -106,8 +106,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 {
     [self myPreDealloc];
     [self dismissViewControllerAnimated:YES completion:^{
-        if([MusicPlaybackController nowPlayingSong])
-            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     }];
 }
 
@@ -455,8 +454,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     if(! self.searchInitiatedAlready){
         [self myPreDealloc];
         [self dismissViewControllerAnimated:YES completion:^{
-            if([MusicPlaybackController nowPlayingSong])
-                [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
          }];
     }else{
         //setting it both ways, due to nav bar title bug

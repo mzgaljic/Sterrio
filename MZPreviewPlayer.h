@@ -10,6 +10,11 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import <AVFoundation/AVFoundation.h>
 
+@protocol MZPreviewPlayerStallState <NSObject>
+- (void)previewPlayerStallStateChanged;
+- (void)previewPlayerNeedsNowPlayingInfoCenterUpdate;
+@end
+
 @interface MZPreviewPlayer : UIView
 @property (strong, nonatomic, readonly) AVPlayer *avPlayer;
 @property (assign, nonatomic, readonly) BOOL isPlaying;
@@ -17,9 +22,12 @@
 @property (assign, nonatomic, readonly) NSUInteger elapsedTimeInSec;
 
 - (instancetype)initWithFrame:(CGRect)frame videoURL:(NSURL *)videoURL;
-- (void)setKnownTotalDurationInSec:(NSUInteger)duration;
+- (void)setStallValueChangedDelegate:(id <MZPreviewPlayerStallState>)aDelegate;
 - (void)play;
 - (void)pause;
 - (void)destroyPlayer;
+
+- (void)reattachLayerWithPlayer;
+- (void)removePlayerFromLayer;
 
 @end

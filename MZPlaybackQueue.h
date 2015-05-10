@@ -50,7 +50,7 @@ extern short const EXTERNAL_FETCH_BATCH_SIZE;
 
 //should be used when a user moves into a different context and wants to destroy their
 //current queue. This does not clear the "up next" section.
-- (void)setMainQueueWithNewNowPlayingItem:(PlayableItem *)item;
+- (void)setMainQueueWithNewNowPlayingItem:(PlayableItem *)item oldSong:(Song *)oldSong;
 
 //Will initiate playback if no items were played yet. or if the other queues are finished.
 - (void)addItemsToPlayingNextWithContexts:(NSArray *)contexts;

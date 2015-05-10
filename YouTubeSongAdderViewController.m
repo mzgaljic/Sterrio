@@ -9,18 +9,19 @@
 #import "YouTubeSongAdderViewController.h"
 #import "YouTubeVideoSearchService.h"
 #import "SDCAlertController.h"
-#import "MZPreviewPlayer.h"
 
 @interface YouTubeSongAdderViewController ()
 {
     YouTubeVideo *ytVideo;
     UIImage *lockScreenImg;
+    UIView *placeHolderView;
     BOOL enoughSongInformationGiven;
     BOOL userCreatedHisSong;
-    BOOL dontPreDealloc;
+    BOOL preDeallocedAlready;
     NSDictionary *videoDetails;
     
     BOOL previewPlaybackBegan;
+    BOOL previewIsUnplayable;
     
     BOOL musicWasPlayingBeforePreviewBegan;
     __block NSURL *url;
@@ -29,8 +30,6 @@
 @property (strong, nonatomic) MZPreviewPlayer* player;
 @property (nonatomic, strong) MZSongModifierTableView *tableView;
 @end
-
-static void *mIsPlayerInStall = &mIsPlayerInStall;
 
 @implementation YouTubeSongAdderViewController
 #pragma mark - Custom Initializer
@@ -57,12 +56,6 @@ static void *mIsPlayerInStall = &mIsPlayerInStall;
                                             UIViewAutoresizingFlexibleWidth;
         [self.view addSubview:self.tableView];
         [self.tableView initWasCalled];
-    
-        NSString *playbackStateChangedConst = MPMoviePlayerPlaybackStateDidChangeNotification;
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(playerPlaybackStateChanged:)
-                                                     name:playbackStateChangedConst
-                                                   object:nil];
 
         //provide default album art (making deep copy of album art)
         [self.tableView provideDefaultAlbumArt:lockScreenImg];
@@ -74,12 +67,33 @@ static void *mIsPlayerInStall = &mIsPlayerInStall;
 - (void)dealloc
 {
     numberTimesViewHasBeenShown = 0;
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-#warning make sure player doesnt leak!
-    [self.player destroyPlayer];
+    if(! preDeallocedAlready)
+        [self preDealloc];
     self.player = nil;
+    NSLog(@"Dealloc'ed in %@", NSStringFromClass([YouTubeSongAdderViewController class]));
+}
+
+- (void)preDealloc
+{
+    if(preDeallocedAlready)
+        return;
+    
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    appDelegate.previewPlayer = nil;
+    
+    [self.player destroyPlayer];
+    preDeallocedAlready = YES;
+    
+    //VC is actually being popped. Must delete the song the user somewhat created
+    if(!userCreatedHisSong)
+        [self.tableView cancelEditing];
+    
+    [self.tableView preDealloc];
+    self.tableView = nil;
+    lockScreenImg = nil;
+    url = nil;
+    [AppEnvironmentConstants setUserIsPreviewingAVideo:NO];
     
     [[YouTubeVideoSearchService sharedInstance] removeVideoDetailLookupDelegate];
     if(musicWasPlayingBeforePreviewBegan){
@@ -87,37 +101,12 @@ static void *mIsPlayerInStall = &mIsPlayerInStall;
         [MusicPlaybackController explicitlyPausePlayback:NO];
     }
     [[SongPlayerCoordinator sharedInstance] enablePlayerAgain];
-    
-    NSLog(@"Dealloc'ed in %@", NSStringFromClass([YouTubeSongAdderViewController class]));
-}
-
-- (void)preDealloc
-{
-    if(dontPreDealloc)
-        return;
-    //VC is actually being popped. Must delete the song the user somewhat created
-    if(!userCreatedHisSong)
-        [self.tableView cancelEditing];
-    [self.tableView preDealloc];
-    self.tableView = nil;
-    lockScreenImg = nil;
-    url = nil;
-    [AppEnvironmentConstants setUserIsPreviewingAVideo:NO];
-    
-    [self.player removeObserver:self forKeyPath:@"isInStall" context:mIsPlayerInStall];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleAppMovingToBackground)
-                                                 name:UIApplicationWillResignActiveNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleAppMovingToBackground)
-                                                 name:MZAppWasBackgrounded
-                                               object:nil];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(lockscreenPauseTapped)
                                                  name:MZPreviewPlayerPause
@@ -137,7 +126,6 @@ static short numberTimesViewHasBeenShown = 0;
 {
     [super viewWillAppear:animated];
     [self.tableView viewWillAppear:animated];
-    dontPreDealloc = NO;
     
     //hack to hide back button text.
     self.navigationController.navigationBar.topItem.title = @"";
@@ -179,63 +167,45 @@ static short numberTimesViewHasBeenShown = 0;
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    if ([self.navigationController.viewControllers indexOfObject:self] == NSNotFound) {
+        // Navigation back button was pressed.
+        [self preDealloc];
+    }
     [super viewWillDisappear:animated];
-    [self checkCurrentPlaybackState];
-}
-
-- (void)viewDidDisappear:(BOOL)animated
-{
-    [super viewDidDisappear:animated];
-    BOOL newVcHasBeenPushed = ![self isMovingFromParentViewController];
-    if(newVcHasBeenPushed)
-        return;
-    else
-        if(! dontPreDealloc)
-            [self preDealloc];
-}
-
-- (void)checkCurrentPlaybackState
-{
-    //garbage method
 }
 
 #pragma mark - Loading video
 - (void)loadVideo
 {
-    __weak NSNumber *weakDuration = [videoDetails valueForKey:MZKeyVideoDuration];
+    NSNumber *durationObj = [videoDetails valueForKey:MZKeyVideoDuration];
+    NSUInteger duration = [durationObj integerValue];
     __weak YouTubeVideo *weakVideo = ytVideo;
     __weak YouTubeSongAdderViewController *weakSelf = self;
     __weak SongPlayerCoordinator *weakAvplayerCoordinator = [SongPlayerCoordinator sharedInstance];
     
-    Reachability *reachability = [Reachability reachabilityForInternetConnection];
-    BOOL usingWifi = NO;
-    //not checking if we can physically play, but legally (Apple's 10 minute streaming rule)
     BOOL allowedToPlayVideo = YES;
+    ReachabilitySingleton *reachability = [ReachabilitySingleton sharedInstance];
     
-    NetworkStatus status = [reachability currentReachabilityStatus];
-    if (status == ReachableViaWiFi)
-        usingWifi = YES;
-    
-    if(! usingWifi && status != NotReachable){
-        if([weakDuration integerValue] >= MZLongestCellularPlayableDuration)
-            //user cant watch video longer than 10 minutes without wifi
+    if(duration >= MZLongestCellularPlayableDuration){
+        //videos of this length may only be played on wifi. Are we on wifi?
+        if(! [reachability isConnectedToWifi])
             allowedToPlayVideo = NO;
-    } else if(! usingWifi && status == NotReachable){
-        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
-        [MRProgressOverlayView dismissAllOverlaysForView:weakSelf.tableView.tableHeaderView
-                                                animated:YES];
     }
-    if(! allowedToPlayVideo){
-        if(status != NotReachable){
-            [self videoPreviewCannotBeShownDurationTooLong];
-        }
-        else{
-            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
-            [MRProgressOverlayView dismissAllOverlaysForView:weakSelf.tableView.tableHeaderView
-                                                    animated:YES];
-        }
+    
+    //connection problems should take presedence first over the allowedToPlay code further down...
+    if([reachability isConnectionCompletelyGone]){
+        [self videoPreviewCannotBeShownNoYoutubeConnection];
+        previewIsUnplayable = YES;
         return;
     }
+
+    if(! allowedToPlayVideo){
+        [self videoPreviewCannotBeShownDurationTooLong];
+        previewIsUnplayable = YES;
+        return;
+    }
+    
+    BOOL usingWifi = [[ReachabilitySingleton sharedInstance] isConnectedToWifi];
     
     [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakVideo.videoId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
         if(video){
@@ -249,7 +219,7 @@ static short numberTimesViewHasBeenShown = 0;
                 url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
             }
         }else{
-            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
+            [weakSelf videoPreviewCannotBeShownNoYoutubeConnection];
             [MRProgressOverlayView dismissAllOverlaysForView:weakSelf.tableView.tableHeaderView
                                                     animated:YES];
             return;
@@ -265,10 +235,65 @@ static short numberTimesViewHasBeenShown = 0;
 #pragma mark - Video Player problems encountered code
 - (void)videoPreviewCannotBeShownDurationTooLong
 {
-    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongPreviewVideoSkippedOnCellular];
+    previewIsUnplayable = YES;
     [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView
                                             animated:YES];
-    self.tableView.tableHeaderView.backgroundColor = [UIColor grayColor];
+    NSString *headerText = @"This video too long to preview on a cellular connection.";
+    UILabel *label = [self createLabelForPlacementOnTableHeaderWithText:headerText];
+    [self.tableView.tableHeaderView addSubview:label];
+    [self.tableView.tableHeaderView bringSubviewToFront:label];
+    [UIView animateWithDuration:2
+                          delay:0
+         usingSpringWithDamping:0.85
+          initialSpringVelocity:0
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         self.tableView.tableHeaderView.backgroundColor = [UIColor darkGrayColor];
+                         label.alpha = 1;
+                     }
+                     completion:nil];
+}
+
+- (void)videoPreviewCannotBeShownNoYoutubeConnection
+{
+    previewIsUnplayable = YES;
+    [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView
+                                            animated:YES];
+    NSString *headerText = @"Could not connect to YouTube.";
+    UILabel *label = [self createLabelForPlacementOnTableHeaderWithText:headerText];
+    [self.tableView.tableHeaderView addSubview:label];
+    [self.tableView.tableHeaderView bringSubviewToFront:label];
+    [UIView animateWithDuration:2
+                          delay:0
+         usingSpringWithDamping:0.85
+          initialSpringVelocity:0
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         self.tableView.tableHeaderView.backgroundColor = [UIColor darkGrayColor];
+                         label.alpha = 1;
+                     }
+                     completion:nil];
+}
+
+- (UILabel *)createLabelForPlacementOnTableHeaderWithText:(NSString *)text
+{
+    UILabel *label = [[UILabel alloc] init];
+    label.text = text;
+    label.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                 size:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
+    label.numberOfLines = 4;
+    label.textAlignment = NSTextAlignmentCenter;
+    label.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin   |
+                              UIViewAutoresizingFlexibleRightMargin  |
+                              UIViewAutoresizingFlexibleTopMargin    |
+                              UIViewAutoresizingFlexibleBottomMargin);
+    CGRect headerRect = self.tableView.tableHeaderView.frame;
+    label.frame = CGRectMake(0, 0, headerRect.size.width * 0.85, headerRect.size.height * 0.85);
+    [label sizeToFit];
+    label.center = self.tableView.tableHeaderView.center;
+    label.textColor = [UIColor whiteColor];
+    label.alpha = 0;
+    return label;
 }
 
 #pragma mark - Video frame and player setup
@@ -311,35 +336,35 @@ static short numberTimesViewHasBeenShown = 0;
     }
     
     CGRect viewFrame = self.view.frame;
+    if(previewIsUnplayable){
+        placeHolderView.frame = CGRectMake(0, 0, viewFrame.size.width, frameHeight);
+        return;
+    }
+    
     UIView *rootHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, viewFrame.size.width, frameHeight)];
     UIView *videoFrameView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
     [videoFrameView setBackgroundColor:[UIColor blackColor]];
     self.tableView.tableHeaderView = rootHeaderView;
 
-    if(self.player == nil){
+    if(self.player == nil && !preDeallocedAlready){
                                                 // player's frame size must match parent's
         self.player = [[MZPreviewPlayer alloc] initWithFrame:videoFrameView.frame
                                                     videoURL:url];
-        if(videoDetails){
-            NSNumber *duration = [videoDetails objectForKey:MZKeyVideoDuration];
-            [self.player setKnownTotalDurationInSec:[duration integerValue]];
-        }
-        
-        [self.player addObserver:self
-                      forKeyPath:@"isInStall"
-                         options:NSKeyValueObservingOptionNew
-                         context:mIsPlayerInStall];
-        
+        [self.player setStallValueChangedDelegate:self];
         [self.player play];
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:MZInitAudioSession object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZInitAudioSession
+                                                            object:nil];
     } else{
         self.player.frame = videoFrameView.frame;
     }
     
-    [rootHeaderView addSubview:videoFrameView];
-    [videoFrameView addSubview: self.player];
-    [videoFrameView bringSubviewToFront:self.player];
+    if(! preDeallocedAlready){
+        [rootHeaderView addSubview:videoFrameView];
+        [videoFrameView addSubview: self.player];
+        [videoFrameView bringSubviewToFront:self.player];
+    }
+
     
     if(self.player.isInStall)
         [MRProgressOverlayView showOverlayAddedTo:self.tableView.tableHeaderView
@@ -374,7 +399,7 @@ static short numberTimesViewHasBeenShown = 0;
     }
     
     int offset = [AppEnvironmentConstants statusBarHeight]+[AppEnvironmentConstants navBarHeight];
-    UIView *placeHolderView = [[UIView alloc] initWithFrame:CGRectMake(0, offset, frameWidth, frameHeight)];
+    placeHolderView = [[UIView alloc] initWithFrame:CGRectMake(0, offset, frameWidth, frameHeight)];
     [placeHolderView setBackgroundColor:[UIColor colorWithPatternImage:
                                          [UIImage imageWithColor:[UIColor clearColor] width:placeHolderView.frame.size.width height:placeHolderView.frame.size.height]]];
     self.tableView.tableHeaderView = placeHolderView;
@@ -385,23 +410,12 @@ static short numberTimesViewHasBeenShown = 0;
                                      animated:YES];
 }
 
-#pragma mark - Responding to video player events
-
-- (void)playerPlaybackStateChanged:(NSNotification *)notif
-{
-    //garbage method.
-}
-
 #pragma mark - Handling all background interaction (playback, lockscreen, etc)
-- (void)handleAppMovingToBackground
-{
-    //possibly useful
-}
-
 - (void)setUpLockScreenInfoAndArt
 {
-    //lockScreenImg
-    // do something with image
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZStartBackgroundTaskHandlerIfInactive
+                                                        object:nil];
+    
     Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
     if (playingInfoCenter) {
         NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
@@ -411,38 +425,43 @@ static short numberTimesViewHasBeenShown = 0;
         [songInfo setObject:ytVideo.videoName forKey:MPMediaItemPropertyTitle];
         if(ytVideo.channelTitle)
             [songInfo setObject:ytVideo.channelTitle forKey:MPMediaItemPropertyArtist];
-        [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
-        NSInteger duration = [[videoDetails valueForKey:MZKeyVideoDuration] integerValue];
-        [songInfo setObject:[NSNumber numberWithInteger:duration]
+        if(albumArt)
+            [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
+        
+        [songInfo setObject:[videoDetails valueForKey:MZKeyVideoDuration]
                      forKey:MPMediaItemPropertyPlaybackDuration];
         
         NSUInteger elapsedTime = [self.player elapsedTimeInSec];
         NSNumber *currentTime = [NSNumber numberWithInteger:elapsedTime];
         [songInfo setObject:currentTime forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+        [songInfo setObject:[NSNumber numberWithFloat:self.player.avPlayer.rate]
+                     forKey:MPNowPlayingInfoPropertyPlaybackRate];
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
     }
 }
 
 - (void)lockscreenPlayTapped
 {
-    //possibly useful
-    
+    [self.player play];
     [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
 }
 
 - (void)lockscreenPauseTapped
 {
-    //possibly useful
-
-    
+    [self.player pause];
     [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Paused];
 }
 
 - (void)lockscreenTogglePlayPause
 {
-
     //possibly useful
-    
+    if(self.player.isPlaying){
+        [self.player pause];
+        [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Paused];
+    } else{
+        [self.player play];
+        [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
+    }
 }
 
 
@@ -489,6 +508,15 @@ static short numberTimesViewHasBeenShown = 0;
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [self.tableView interfaceIsAboutToRotate];
     [self setUpVideoViewAndOrPlayerAboutToRotate:YES];
+    
+    if(previewIsUnplayable)
+        return;
+    [self performSelector:@selector(reCenterLoadingSpinner) withObject:nil afterDelay:0.2];
+}
+
+- (void)reCenterLoadingSpinner
+{
+    [[MRProgressOverlayView overlayForView:self.tableView.tableHeaderView] manualLayoutSubviews];
 }
 
 - (BOOL)prefersStatusBarHidden
@@ -533,9 +561,17 @@ static short numberTimesViewHasBeenShown = 0;
             NSNumber *duration = [details objectForKey:MZKeyVideoDuration];
             NSUInteger twenty_four_hours = 86400;
             if([duration integerValue] > twenty_four_hours){
+                NSString *msg = @"Unfortunately, this App only supports videos with a total duration of 24 hours or less.";
+
+                __weak YouTubeSongAdderViewController *weakself = self;
+                SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK" style:SDCAlertActionStyleRecommended handler:^(SDCAlertAction *action) {
+                    [weakself.navigationController popToRootViewControllerAnimated:YES];
+                }];
+                
                 [self launchAlertViewWithDialogTitle:@"Video Duration Exceeded"
-                                          andMessage:@"Unfortunately, this App only supports videos with a total duration of 24 hours or less."];
-                [self.navigationController popToRootViewControllerAnimated:YES];
+                                          andMessage:msg
+                                        customAction:okAction];
+                
             } else{
                 videoDetails = [details copy];
                 details = nil;
@@ -550,7 +586,16 @@ static short numberTimesViewHasBeenShown = 0;
 - (void)networkErrorHasOccuredFetchingVideoDetailsForVideo:(YouTubeVideo *)video
 {
     if([video.videoId isEqualToString:ytVideo.videoId]){
-        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_PotentialVideoDurationFetchFail];
+        __weak YouTubeSongAdderViewController *weakself = self;
+        SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK"
+                                                             style:SDCAlertActionStyleRecommended
+                                                           handler:^(SDCAlertAction *action) {
+                                                               [weakself.navigationController popToRootViewControllerAnimated:YES];
+                                                           }];
+        NSString *msg = @"This video can't be saved. Something went wrong fetching the video information.";
+        [self launchAlertViewWithDialogTitle:@"Lacking Info"
+                                  andMessage:msg
+                                customAction:okAction];
         [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
     }else
         //false alarm about a problem that occured with a previous fetch?
@@ -561,7 +606,6 @@ static short numberTimesViewHasBeenShown = 0;
 #pragma mark - Custom song tableview editor delegate stuff
 - (void)pushThisVC:(UIViewController *)vc
 {
-    dontPreDealloc = YES;
     [self presentViewController:vc animated:YES completion:nil];
 }
 
@@ -584,26 +628,43 @@ static short numberTimesViewHasBeenShown = 0;
     }];
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+#pragma mark - Preview Player Delegate Implementation
+- (void)previewPlayerStallStateChanged
 {
-    if(context == mIsPlayerInStall){
-        if(self.player.isInStall){
-            [MRProgressOverlayView showOverlayAddedTo:self.tableView.tableHeaderView
-                                                title:@""
-                                                 mode:MRProgressOverlayViewModeIndeterminateSmall
-                                             animated:YES];
-        }
-        else{
-            previewPlaybackBegan = YES;
-            [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
-        }
+    if(self.player.isInStall){
+        [MRProgressOverlayView showOverlayAddedTo:self.tableView.tableHeaderView
+                                            title:@""
+                                             mode:MRProgressOverlayViewModeIndeterminateSmall
+                                         animated:YES];
+        [self setUpLockScreenInfoAndArt];
     }
-    else
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    else{
+        if(previewPlaybackBegan == NO){
+            [AppEnvironmentConstants setUserIsPreviewingAVideo:YES];
+            
+            //first time we know that playback started, update album art now.
+            [self setUpLockScreenInfoAndArt];
+            AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+            appDelegate.previewPlayer = self.player;
+        }
+        previewPlaybackBegan = YES;
+        [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
+        
+        musicWasPlayingBeforePreviewBegan = ([MusicPlaybackController obtainRawAVPlayer].rate > 0);
+        [MusicPlaybackController explicitlyPausePlayback:YES];
+        [MusicPlaybackController pausePlayback];
+    }
+}
+
+- (void)previewPlayerNeedsNowPlayingInfoCenterUpdate
+{
+    [self setUpLockScreenInfoAndArt];
 }
 
 #pragma mark - AlertView
-- (void)launchAlertViewWithDialogTitle:(NSString *)title andMessage:(NSString *)message
+- (void)launchAlertViewWithDialogTitle:(NSString *)title
+                            andMessage:(NSString *)message
+                          customAction:(SDCAlertAction *)customAction;
 {
     SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
                                                                     message:message
@@ -611,7 +672,10 @@ static short numberTimesViewHasBeenShown = 0;
     SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK"
                                                          style:SDCAlertActionStyleRecommended
                                                        handler:nil];
-    [alert addAction:okAction];
+    if(customAction)
+        [alert addAction:customAction];
+    else
+        [alert addAction:okAction];
     [alert presentWithCompletion:nil];
 }
 

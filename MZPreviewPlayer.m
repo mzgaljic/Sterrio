@@ -12,6 +12,8 @@
 #import "UIImage+colorImages.h"
 #import "UIButton+ExpandedHitArea.h"
 #import "UIColor+LighterAndDarker.h"
+#import "AppEnvironmentConstants.h"
+#import "MZSlider.h"
 
 @interface MZPreviewPlayer ()
 {
@@ -25,9 +27,6 @@
     NSUInteger secondsLoaded;
     BOOL playbackStarted;
     BOOL playbackExplicitlyPaused;
-    
-    BOOL playerTappedWhileWaitingToHideHud;
-    BOOL waitingToAutoHideHud;
 }
 
 @property (strong, nonatomic, readwrite) AVPlayer *avPlayer;
@@ -35,7 +34,7 @@
 
 @property (strong, nonatomic) MPVolumeView *airplayButton;
 @property (strong, nonatomic) UIButton *playPauseButton;
-@property (strong, nonatomic) UISlider *progressBar;
+@property (strong, nonatomic) MZSlider *progressBar;
 @property (strong, nonatomic) UILabel *elapsedTimeLabel;
 @property (strong, nonatomic) UILabel *totalTimeLabel;
 
@@ -43,10 +42,13 @@
 
 @property (assign, nonatomic, readwrite) BOOL isPlaying;
 @property (assign, nonatomic, readwrite) BOOL isInStall;
+
+@property (weak, nonatomic) id <MZPreviewPlayerStallState> delegate;
 @end
 @implementation MZPreviewPlayer
 
 const int CONTROLS_HUD_HEIGHT = 45;
+const float AUTO_HIDE_HUD_DELAY = 2.2;
 static BOOL isHudOnScreen = NO;
 
 - (void)setFrame:(CGRect)frame
@@ -65,6 +67,12 @@ static BOOL isHudOnScreen = NO;
         [self.playPauseButton setSelected:NO];  //toggle to pause button image
     else
         [self.playPauseButton setSelected:YES]; //toggle to play button image
+}
+
+- (void)setIsInStall:(BOOL)isInStall
+{
+    _isInStall = isInStall;
+    [self.delegate previewPlayerStallStateChanged];
 }
    
 #pragma mark - Lifecycle
@@ -85,16 +93,23 @@ static BOOL isHudOnScreen = NO;
         [[UITapGestureRecognizer alloc] initWithTarget:self
                                                 action:@selector(userTappedPlayerView:)];
         [self addGestureRecognizer:singleFingerTap];
+        
+        self.avPlayer.allowsExternalPlayback = ![AppEnvironmentConstants shouldOnlyAirplayAudio];
+        [self setupTimeObserver];
     }
     return self;
-    
+}
+
+- (void)setStallValueChangedDelegate:(id <MZPreviewPlayerStallState>)aDelegate
+{
+    self.delegate = aDelegate;
 }
 
 - (void)destroyPlayer
 {
-    [self.avPlayer removeTimeObserver:playbackObserver];
-    [self removeObservers];
     [self.avPlayer replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+    [self removeTimeObserver];
+    [self removeObservers];
     self.avPlayer = nil;
 }
 
@@ -108,10 +123,15 @@ static BOOL isHudOnScreen = NO;
     playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.avPlayer];
     [playerLayer setFrame:self.bounds];
     [self.layer addSublayer:playerLayer];
+    if(self.controlsHud){
+        [self bringSubviewToFront:self.controlsHud];
+    }
+    [self setupTimeObserver];
 }
 
 - (void)removePlayerFromLayer
 {
+    [self removeTimeObserver];
     if([playerLayer player] != nil)
         [playerLayer setPlayer:nil];
 }
@@ -123,10 +143,11 @@ static BOOL isHudOnScreen = NO;
         self.controlsHud = [[UIView alloc] init];
     }
     
+    //adding some extra height at the bottom since the hud animates onto the screen with a spring effect.
     [self.controlsHud setFrame:CGRectMake(0,
                                          yOrigin,
                                          self.frame.size.width,
-                                          CONTROLS_HUD_HEIGHT)];
+                                         CONTROLS_HUD_HEIGHT + (CONTROLS_HUD_HEIGHT /2))];
     
     [self.controlsHud setBackgroundColor:[UIColor clearColor]];
     
@@ -171,6 +192,8 @@ static BOOL isHudOnScreen = NO;
         self.elapsedTimeLabel = [[UILabel alloc] init];
 
         if(totalDurationString.length <= 4)
+            self.elapsedTimeLabel.text = @"0:00";
+        else if(totalDurationString.length == 5)
             self.elapsedTimeLabel.text = @"00:00";
         else
             self.elapsedTimeLabel.text = @"00:00:00";
@@ -210,15 +233,35 @@ static BOOL isHudOnScreen = NO;
     //Seek Time Progress Bar
     int initialLayoutXCompensation = 0;
     if(self.progressBar == nil){
-        self.progressBar = [[UISlider alloc] init];
-        [self.progressBar addTarget:self action:@selector(progressBarChanged:) forControlEvents:UIControlEventValueChanged];
-        [self.progressBar addTarget:self action:@selector(proressBarChangeEnded:) forControlEvents:UIControlEventTouchUpInside];
-        [self.progressBar setThumbImage:[UIImage imageNamed:@"UISliderKnob"] forState:UIControlStateNormal];
+        self.progressBar = [[MZSlider alloc] init];
+        [self.progressBar addTarget:self
+                             action:@selector(progressBarChanged:)
+                   forControlEvents:UIControlEventValueChanged];
+        
+        //progressBarChangeEnded was never fucking called as it should have been
+        //with just 'UIControlEventEditingDidEnd'. So I added these extra targets.
+        [self.progressBar addTarget:self
+                             action:@selector(progressBarChangeEnded:)
+                   forControlEvents:UIControlEventTouchUpInside];
+        [self.progressBar addTarget:self
+                             action:@selector(progressBarChangeEnded:)
+                   forControlEvents:UIControlEventTouchUpOutside];
+        [self.progressBar addTarget:self
+                             action:@selector(progressBarChangeEnded:)
+                   forControlEvents:UIControlEventTouchDragExit];
+        [self.progressBar addTarget:self
+                             action:@selector(progressBarChangeEnded:)
+                   forControlEvents:UIControlEventEditingDidEndOnExit];
+        [self.progressBar addTarget:self
+                             action:@selector(progressBarChangeEnded:)
+                   forControlEvents:UIControlEventEditingDidEnd];
+        //[self.progressBar setThumbImage:[UIImage imageNamed:@"UISliderKnob"] forState:UIControlStateNormal];
         self.progressBar.transform = CGAffineTransformMakeScale(0.78, 0.78);  //make knob smaller
         self.progressBar.maximumValue = totalDuration;
         self.progressBar.minimumValue = 0;
         self.progressBar.minimumTrackTintColor = [[UIColor defaultAppColorScheme] lighterColor];
         self.progressBar.maximumTrackTintColor = [UIColor groupTableViewBackgroundColor];
+        self.progressBar.continuous = YES;
         initialLayoutXCompensation = -3;
     }
     int progressBarHeight = CONTROLS_HUD_HEIGHT/4;
@@ -257,7 +300,7 @@ static BOOL isHudOnScreen = NO;
     [self.controlsHud addSubview:self.progressBar];
     [self.controlsHud addSubview:self.totalTimeLabel];
     [self.controlsHud addSubview:self.airplayButton];
-    [self.controlsHud bringSubviewToFront:self.airplayButton];
+
     
     [self addSubview:self.controlsHud];
     
@@ -268,21 +311,29 @@ static BOOL isHudOnScreen = NO;
                                               self.controlsHud.frame.size.width,
                                               self.controlsHud.frame.size.height)];
     }
-    
-    
+}
+
+- (void)setupTimeObserver
+{
     CMTime interval = CMTimeMake(33, 1000);
     __weak __typeof(self) weakself = self;
-
+    
     playbackObserver = [self.avPlayer addPeriodicTimeObserverForInterval:interval queue:dispatch_get_main_queue() usingBlock: ^(CMTime time) {
-        CMTime endTime = CMTimeConvertScale (weakself.avPlayer.currentItem.asset.duration, weakself.avPlayer.currentTime.timescale, kCMTimeRoundingMethod_RoundHalfAwayFromZero);
-        if (CMTimeCompare(endTime, kCMTimeZero) != 0) {
-            double normalizedTime = (double) weakself.avPlayer.currentTime.value / (double) endTime.value;
-            weakself.progressBar.value = normalizedTime;
-        }
-        NSUInteger seconds = CMTimeGetSeconds(weakself.avPlayer.currentTime);
-        weakself.elapsedTimeLabel.text = [weakself convertSecondsToPrintableNSStringWithSliderValue:seconds];
-        _elapsedTimeInSec = seconds;
+        [weakself updatePlaybackTimeSlider];
     }];
+}
+
+- (void)removeTimeObserver
+{
+    [self.avPlayer removeTimeObserver:playbackObserver];
+}
+
+- (void)updatePlaybackTimeSlider
+{
+    Float64 currentTimeValue = CMTimeGetSeconds(self.avPlayer.currentItem.currentTime);
+    _elapsedTimeInSec = currentTimeValue;
+    [self.progressBar setValue:(currentTimeValue) animated:YES];
+    [self setElapsedTimeLabelstringForSliderValue:currentTimeValue];
 }
 
 #pragma mark - Hud Control Animations
@@ -296,22 +347,21 @@ static BOOL isHudOnScreen = NO;
                                        CONTROLS_HUD_HEIGHT);
     [UIView animateWithDuration:0.65
                           delay:0
-         usingSpringWithDamping:0.85
-          initialSpringVelocity:0.6
+         usingSpringWithDamping:0.60
+          initialSpringVelocity:0.65
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
                          self.controlsHud.frame = animationFrame;
                      }
-                     completion:nil];
-    float delay = 1.5;
-    playerTappedWhileWaitingToHideHud = NO;
-    [self performSelector:@selector(tryToHideHud) withObject:nil afterDelay:delay + 0.65];
+                     completion:^(BOOL finished) {
+                         [self startAutoHideTimer];
+                     }];
 }
 
 - (void)animateHudOffPlayer
 {
+    [self clearTimer];
     isHudOnScreen = NO;
-    waitingToAutoHideHud = NO;
     int yOrigin = self.frame.size.height;
     CGRect animationFrame = CGRectMake(0,
                                        yOrigin,
@@ -320,31 +370,17 @@ static BOOL isHudOnScreen = NO;
     [UIView animateWithDuration:0.65
                           delay:0
          usingSpringWithDamping:1
-          initialSpringVelocity:0.6
+          initialSpringVelocity:0.65
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
                          self.controlsHud.frame = animationFrame;
                      }
                      completion:nil];
-    playerTappedWhileWaitingToHideHud = NO;
 }
 
 #pragma mark - Hud Controls
-- (void)tryToHideHud
-{
-    waitingToAutoHideHud = NO;
-    if(playerTappedWhileWaitingToHideHud){
-        float delay = 1.5;
-        [self performSelector:@selector(tryToHideHud) withObject:nil afterDelay:delay + 0.65];
-    } else
-        [self animateHudOffPlayer];
-
-    playerTappedWhileWaitingToHideHud = NO;
-}
-
 - (void)userTappedPlayerView:(UITapGestureRecognizer *)recognizer
 {
-    waitingToAutoHideHud = YES;
     CGPoint location = [recognizer locationInView:recognizer.view];
     if(isHudOnScreen && location.y >= self.controlsHud.frame.origin.y){
         return;
@@ -357,36 +393,46 @@ static BOOL isHudOnScreen = NO;
 
 - (void)play
 {
-    playerTappedWhileWaitingToHideHud = YES;
+    [self startAutoHideTimer];
+    if(_elapsedTimeInSec == totalDuration){
+        //start playback from beginning
+        Float64 beginning = 0.00;
+        CMTime targetTime = CMTimeMakeWithSeconds(beginning, NSEC_PER_SEC);
+        [self.avPlayer seekToTime:targetTime
+                  toleranceBefore:kCMTimeZero
+                   toleranceAfter:kCMTimeZero];
+    }
     playbackExplicitlyPaused = NO;
     [self.avPlayer play];
     [self.playPauseButton setSelected:NO];
+    [self.delegate previewPlayerNeedsNowPlayingInfoCenterUpdate];
 }
 
 - (void)pause
 {
-    playerTappedWhileWaitingToHideHud = YES;
+    [self startAutoHideTimer];
     playbackExplicitlyPaused = YES;
     [self.avPlayer pause];
     [self.playPauseButton setSelected:YES];
+    [self.delegate previewPlayerNeedsNowPlayingInfoCenterUpdate];
 }
 
 
-- (void)progressBarChanged:(UISlider*)sender
+- (void)progressBarChanged:(UISlider *)sender
 {
-    playerTappedWhileWaitingToHideHud = YES;
+    [self startAutoHideTimer];
     if (self.isPlaying) {
         [self.avPlayer pause];
     }
+    _elapsedTimeInSec = sender.value;
     CMTime seekTime = CMTimeMakeWithSeconds(sender.value, NSEC_PER_SEC);
     [self.avPlayer seekToTime:seekTime];
-    NSUInteger seconds = CMTimeGetSeconds(self.avPlayer.currentItem.currentTime);
-    [self.progressBar setValue:seconds animated:YES];
     [self setElapsedTimeLabelstringForSliderValue:sender.value];
 }
 
-- (void)proressBarChangeEnded:(UISlider*)sender
+- (void)progressBarChangeEnded:(UISlider *)sender
 {
+    [self.delegate previewPlayerNeedsNowPlayingInfoCenterUpdate];
     if(! playbackExplicitlyPaused) {
         [self.avPlayer play];
     }
@@ -617,10 +663,23 @@ static void *ksAirplayState = &ksAirplayState;
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
-#pragma mark - Other
-- (void)setKnownTotalDurationInSec:(NSUInteger)duration
+#pragma mark - Stop-watch method to time code execution
+static NSTimer *autoHideTimer;
+- (void)startAutoHideTimer
 {
-    totalDuration = duration;
+    if(autoHideTimer)
+        [self clearTimer];
+    autoHideTimer = [NSTimer scheduledTimerWithTimeInterval:AUTO_HIDE_HUD_DELAY
+                                                     target:self
+                                                   selector:@selector(animateHudOffPlayer)
+                                                   userInfo:nil
+                                                    repeats:NO];
+}
+
+- (void)clearTimer
+{
+    [autoHideTimer invalidate];
+    autoHideTimer = nil;
 }
 
 @end

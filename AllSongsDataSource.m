@@ -202,7 +202,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                 }];
                 
                 if(albumArt == nil)
-                    return;  //no art loaded lol.
+                    albumArt = [UIImage imageNamed:@"Sample Album Art"];
             }
         }
         

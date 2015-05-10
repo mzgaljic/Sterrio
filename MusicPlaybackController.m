@@ -315,22 +315,14 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
         playbackQueue = [MZPlaybackQueue sharedInstance];
     
     NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-    PlaybackContext *oldContext = [nowPlayingObj nowPlayingItem].contextForItem;
+    if(nowPlayingObject == nil)
+        nowPlayingObject = nowPlayingObj;
     
+    //starts playback with the song that was chosen
     PlayableItem *item = [[PlayableItem alloc] initWithPlaylistItem:playlistItem
                                                             context:aContext
                                                     fromUpNextSongs:NO];
-    [playbackQueue setMainQueueWithNewNowPlayingItem:item];
-    
-    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
-    if(nowPlayingObject == nil)
-        nowPlayingObject = nowPlaying;
-    
-    //start playback with the song that was chosen
-    [VideoPlayerWrapper startPlaybackOfSong:playlistItem.song
-                               goingForward:YES
-                                    oldSong:originalSong
-                                 oldContext:oldContext];
+    [playbackQueue setMainQueueWithNewNowPlayingItem:item oldSong:originalSong];
 }
 
 + (void)newQueueWithSong:(Song *)song
@@ -353,20 +345,12 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
         playbackQueue = [MZPlaybackQueue sharedInstance];
     
     NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-    PlaybackContext *oldContext = [nowPlayingObj nowPlayingItem].contextForItem;
-    
-    PlayableItem *item = [[PlayableItem alloc] initWithSong:song context:aContext fromUpNextSongs:NO];
-    [playbackQueue setMainQueueWithNewNowPlayingItem:item];
-    
-    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
     if(nowPlayingObject == nil)
-        nowPlayingObject = nowPlaying;
+        nowPlayingObject = nowPlayingObj;
     
-    //start playback with the song that was chosen
-    [VideoPlayerWrapper startPlaybackOfSong:song
-                               goingForward:YES
-                                    oldSong:originalSong
-                                 oldContext:oldContext];
+    //starts playback with the song that was chosen
+    PlayableItem *item = [[PlayableItem alloc] initWithSong:song context:aContext fromUpNextSongs:NO];
+    [playbackQueue setMainQueueWithNewNowPlayingItem:item oldSong:originalSong];
 }
 
 + (void)queueUpNextSongsWithContexts:(NSArray *)contexts
@@ -528,16 +512,18 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 }
 
 #pragma mark - Lock Screen Song Info & Art
-+ (void)updateLockScreenInfoAndArtForSong:(Song *)song
++ (void)updateLockScreenInfoAndArtForSong:(Song *)nowPlayingSong
 {
-    if(song == nil){
-        //this happens when a new queue has to be built and the MyAVPlayer class detects a change in
-        // players currentItem...
-        return;
-    }
     Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
     if (playingInfoCenter){
-        Song *nowPlayingSong = [MusicPlaybackController nowPlayingSong];
+        if(nowPlayingSong == nil){
+            //this happens when a new queue has to be built and the MyAVPlayer class detects a change in
+            // players currentItem...
+            NSDictionary *emptyDict = [NSDictionary dictionary];
+            [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:emptyDict];
+            return;
+        }
+        
         NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
         MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
         

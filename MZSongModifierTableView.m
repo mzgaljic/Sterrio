@@ -105,7 +105,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 
 - (CGSize)albumArtSizeGivenPrefSizeSetting
 {
-    int heightOfAlbumArtCell = [AppEnvironmentConstants preferredSongCellHeight] * 2;
+    int heightOfAlbumArtCell = [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel] * 2;
     if(heightOfAlbumArtCell > MAX_ALBUM_ART_CELL_HEIGHT)
         heightOfAlbumArtCell = MAX_ALBUM_ART_CELL_HEIGHT;
     return  CGSizeMake(heightOfAlbumArtCell - 4, heightOfAlbumArtCell - 4);
@@ -994,6 +994,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     [picker dismissViewControllerAnimated:YES completion:nil];
+    picker = nil;
     UIImage *img = [info objectForKey:UIImagePickerControllerOriginalImage];
     if(img == nil)
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotOpenSelectedImageError];

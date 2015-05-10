@@ -60,7 +60,6 @@
 		8727003E199F0C1F00D71204 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8727003D199F0C1F00D71204 /* CoreData.framework */; };
 		87299AB41AFC016300E627A3 /* MZPreviewPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 87299AB31AFC016300E627A3 /* MZPreviewPlayer.m */; };
 		872EA4D61A54A98B00F8EE9D /* MyAlerts.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4D51A54A98B00F8EE9D /* MyAlerts.m */; };
-		872EA4DC1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4DB1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.m */; };
 		872EA4DE1A54CAAB00F8EE9D /* iOSDeviceModelMapping.plist in Resources */ = {isa = PBXBuildFile; fileRef = 872EA4DD1A54CAAB00F8EE9D /* iOSDeviceModelMapping.plist */; };
 		872EA4E11A54CAF200F8EE9D /* UIDevice+DeviceName.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4E01A54CAF200F8EE9D /* UIDevice+DeviceName.m */; };
 		872EA4E41A54F1EA00F8EE9D /* MyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 872EA4E31A54F1EA00F8EE9D /* MyTableViewController.m */; };
@@ -69,14 +68,6 @@
 		87334407198D8321002B9E18 /* NSString+HTTP_Char_Escape.m in Sources */ = {isa = PBXBuildFile; fileRef = 87334406198D8321002B9E18 /* NSString+HTTP_Char_Escape.m */; };
 		8733440B198DC915002B9E18 /* UIImage+colorImages.m in Sources */ = {isa = PBXBuildFile; fileRef = 8733440A198DC915002B9E18 /* UIImage+colorImages.m */; };
 		87334418198E0332002B9E18 /* UIColor+SystemTintColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 87334417198E0332002B9E18 /* UIColor+SystemTintColor.m */; };
-		8733C6B21AFB21C400FE19D0 /* KSVideoPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8733C6B11AFB21C400FE19D0 /* KSVideoPlayerView.m */; };
-		8733C6C31AFB220700FE19D0 /* KeepArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 8733C6B51AFB220700FE19D0 /* KeepArray.m */; };
-		8733C6C41AFB220700FE19D0 /* KeepAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 8733C6B71AFB220700FE19D0 /* KeepAttribute.m */; };
-		8733C6C51AFB220700FE19D0 /* KeepLayoutConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 8733C6BA1AFB220700FE19D0 /* KeepLayoutConstraint.m */; };
-		8733C6C61AFB220700FE19D0 /* KeepTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 8733C6BC1AFB220700FE19D0 /* KeepTypes.m */; };
-		8733C6C71AFB220700FE19D0 /* KeepView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8733C6BE1AFB220700FE19D0 /* KeepView.m */; };
-		8733C6C81AFB220700FE19D0 /* UIScrollView+KeepLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 8733C6C01AFB220700FE19D0 /* UIScrollView+KeepLayout.m */; };
-		8733C6C91AFB220700FE19D0 /* UIViewController+KeepLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 8733C6C21AFB220700FE19D0 /* UIViewController+KeepLayout.m */; };
 		8734885319A1BBF4008CC6A5 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8727003F199F0F5600D71204 /* Model.xcdatamodeld */; };
 		87362AFD194E68A5004DB544 /* Deque.m in Sources */ = {isa = PBXBuildFile; fileRef = 87362AFC194E68A5004DB544 /* Deque.m */; };
 		87362B03194E9CDF004DB544 /* Stack.m in Sources */ = {isa = PBXBuildFile; fileRef = 87362B01194E9CDF004DB544 /* Stack.m */; };
@@ -201,6 +192,7 @@
 		87BD42A319CD1A4C005ED8CD /* Free Music Library.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 87BD42A219CD1A4C005ED8CD /* Free Music Library.entitlements */; };
 		87C0BD5819C564CA00EB7D91 /* AutoScrollLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C0BD5719C564CA00EB7D91 /* AutoScrollLabel.m */; };
 		87CEDC6519731EF000780D57 /* PlaylistSongAdderTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87CEDC6419731EF000780D57 /* PlaylistSongAdderTableViewController.m */; };
+		87CF01A81AFEA240002808B5 /* MZSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 87CF01A71AFEA240002808B5 /* MZSlider.m */; };
 		87D16D621931B7EE00DB6A34 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 87D16D611931B7EE00DB6A34 /* Podfile */; };
 		87D37438199AA99700D3B70B /* UIColor+ColorComparison.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D37437199AA99700D3B70B /* UIColor+ColorComparison.m */; };
 		87D3743B199B13B300D3B70B /* UIButton+ExpandedHitArea.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D3743A199B13B300D3B70B /* UIButton+ExpandedHitArea.m */; };
@@ -356,8 +348,6 @@
 		87299AB31AFC016300E627A3 /* MZPreviewPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPreviewPlayer.m; sourceTree = "<group>"; };
 		872EA4D41A54A98B00F8EE9D /* MyAlerts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyAlerts.h; sourceTree = "<group>"; };
 		872EA4D51A54A98B00F8EE9D /* MyAlerts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyAlerts.m; sourceTree = "<group>"; };
-		872EA4DA1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SDCAlertView+DuplicateAlertsPreventer.h"; sourceTree = "<group>"; };
-		872EA4DB1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SDCAlertView+DuplicateAlertsPreventer.m"; sourceTree = "<group>"; };
 		872EA4DD1A54CAAB00F8EE9D /* iOSDeviceModelMapping.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = iOSDeviceModelMapping.plist; sourceTree = "<group>"; };
 		872EA4DF1A54CAF200F8EE9D /* UIDevice+DeviceName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice+DeviceName.h"; sourceTree = "<group>"; };
 		872EA4E01A54CAF200F8EE9D /* UIDevice+DeviceName.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+DeviceName.m"; sourceTree = "<group>"; };
@@ -374,23 +364,6 @@
 		8733440A198DC915002B9E18 /* UIImage+colorImages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+colorImages.m"; sourceTree = "<group>"; };
 		87334416198E0332002B9E18 /* UIColor+SystemTintColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+SystemTintColor.h"; sourceTree = "<group>"; };
 		87334417198E0332002B9E18 /* UIColor+SystemTintColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+SystemTintColor.m"; sourceTree = "<group>"; };
-		8733C6B01AFB21C400FE19D0 /* KSVideoPlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSVideoPlayerView.h; sourceTree = "<group>"; };
-		8733C6B11AFB21C400FE19D0 /* KSVideoPlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSVideoPlayerView.m; sourceTree = "<group>"; };
-		8733C6B41AFB220700FE19D0 /* KeepArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeepArray.h; sourceTree = "<group>"; };
-		8733C6B51AFB220700FE19D0 /* KeepArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeepArray.m; sourceTree = "<group>"; };
-		8733C6B61AFB220700FE19D0 /* KeepAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeepAttribute.h; sourceTree = "<group>"; };
-		8733C6B71AFB220700FE19D0 /* KeepAttribute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeepAttribute.m; sourceTree = "<group>"; };
-		8733C6B81AFB220700FE19D0 /* KeepLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeepLayout.h; sourceTree = "<group>"; };
-		8733C6B91AFB220700FE19D0 /* KeepLayoutConstraint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeepLayoutConstraint.h; sourceTree = "<group>"; };
-		8733C6BA1AFB220700FE19D0 /* KeepLayoutConstraint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeepLayoutConstraint.m; sourceTree = "<group>"; };
-		8733C6BB1AFB220700FE19D0 /* KeepTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeepTypes.h; sourceTree = "<group>"; };
-		8733C6BC1AFB220700FE19D0 /* KeepTypes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeepTypes.m; sourceTree = "<group>"; };
-		8733C6BD1AFB220700FE19D0 /* KeepView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeepView.h; sourceTree = "<group>"; };
-		8733C6BE1AFB220700FE19D0 /* KeepView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeepView.m; sourceTree = "<group>"; };
-		8733C6BF1AFB220700FE19D0 /* UIScrollView+KeepLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+KeepLayout.h"; sourceTree = "<group>"; };
-		8733C6C01AFB220700FE19D0 /* UIScrollView+KeepLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+KeepLayout.m"; sourceTree = "<group>"; };
-		8733C6C11AFB220700FE19D0 /* UIViewController+KeepLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+KeepLayout.h"; sourceTree = "<group>"; };
-		8733C6C21AFB220700FE19D0 /* UIViewController+KeepLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+KeepLayout.m"; sourceTree = "<group>"; };
 		87362AFB194E68A5004DB544 /* Deque.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Deque.h; sourceTree = "<group>"; };
 		87362AFC194E68A5004DB544 /* Deque.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Deque.m; sourceTree = "<group>"; };
 		87362B01194E9CDF004DB544 /* Stack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Stack.m; sourceTree = "<group>"; };
@@ -625,6 +598,8 @@
 		87C0BD5719C564CA00EB7D91 /* AutoScrollLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AutoScrollLabel.m; sourceTree = "<group>"; };
 		87CEDC6319731EF000780D57 /* PlaylistSongAdderTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistSongAdderTableViewController.h; sourceTree = "<group>"; };
 		87CEDC6419731EF000780D57 /* PlaylistSongAdderTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistSongAdderTableViewController.m; sourceTree = "<group>"; };
+		87CF01A61AFEA240002808B5 /* MZSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZSlider.h; sourceTree = "<group>"; };
+		87CF01A71AFEA240002808B5 /* MZSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZSlider.m; sourceTree = "<group>"; };
 		87D16D611931B7EE00DB6A34 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		87D37436199AA99700D3B70B /* UIColor+ColorComparison.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+ColorComparison.h"; sourceTree = "<group>"; };
 		87D37437199AA99700D3B70B /* UIColor+ColorComparison.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+ColorComparison.m"; sourceTree = "<group>"; };
@@ -957,45 +932,11 @@
 				87270031199E815000D71204 /* NSString+Levenshtein_Distance.m */,
 				87DB103019C53CC000B190E5 /* UINavigationController+CustomPushAnimation.h */,
 				87DB103119C53CC000B190E5 /* UINavigationController+CustomPushAnimation.m */,
-				872EA4DA1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.h */,
-				872EA4DB1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.m */,
 				8725B1B61A6C938700E58C3E /* UIWindow+VisibleVC.h */,
 				8725B1B71A6C938700E58C3E /* UIWindow+VisibleVC.m */,
 			);
 			name = Categories;
 			path = "Free Music Library";
-			sourceTree = "<group>";
-		};
-		8733C6AF1AFB21C400FE19D0 /* KSVideoPlayer */ = {
-			isa = PBXGroup;
-			children = (
-				8733C6B31AFB220700FE19D0 /* KeepLayout */,
-				8733C6B01AFB21C400FE19D0 /* KSVideoPlayerView.h */,
-				8733C6B11AFB21C400FE19D0 /* KSVideoPlayerView.m */,
-			);
-			path = KSVideoPlayer;
-			sourceTree = "<group>";
-		};
-		8733C6B31AFB220700FE19D0 /* KeepLayout */ = {
-			isa = PBXGroup;
-			children = (
-				8733C6B41AFB220700FE19D0 /* KeepArray.h */,
-				8733C6B51AFB220700FE19D0 /* KeepArray.m */,
-				8733C6B61AFB220700FE19D0 /* KeepAttribute.h */,
-				8733C6B71AFB220700FE19D0 /* KeepAttribute.m */,
-				8733C6B81AFB220700FE19D0 /* KeepLayout.h */,
-				8733C6B91AFB220700FE19D0 /* KeepLayoutConstraint.h */,
-				8733C6BA1AFB220700FE19D0 /* KeepLayoutConstraint.m */,
-				8733C6BB1AFB220700FE19D0 /* KeepTypes.h */,
-				8733C6BC1AFB220700FE19D0 /* KeepTypes.m */,
-				8733C6BD1AFB220700FE19D0 /* KeepView.h */,
-				8733C6BE1AFB220700FE19D0 /* KeepView.m */,
-				8733C6BF1AFB220700FE19D0 /* UIScrollView+KeepLayout.h */,
-				8733C6C01AFB220700FE19D0 /* UIScrollView+KeepLayout.m */,
-				8733C6C11AFB220700FE19D0 /* UIViewController+KeepLayout.h */,
-				8733C6C21AFB220700FE19D0 /* UIViewController+KeepLayout.m */,
-			);
-			path = KeepLayout;
 			sourceTree = "<group>";
 		};
 		87362AF6194E3B41004DB544 /* Data Structures */ = {
@@ -1250,8 +1191,6 @@
 				8750157F198C3D5300382945 /* YoutubeResultsTableViewController.m */,
 				87FB3A6A1A5A4682006F3163 /* YouTubeSongAdderViewController.h */,
 				87FB3A6B1A5A4682006F3163 /* YouTubeSongAdderViewController.m */,
-				87299AB21AFC016300E627A3 /* MZPreviewPlayer.h */,
-				87299AB31AFC016300E627A3 /* MZPreviewPlayer.m */,
 			);
 			name = "Adding Music To Library";
 			sourceTree = "<group>";
@@ -1554,7 +1493,6 @@
 		87A453A0199C0825004D1319 /* Imported Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				8733C6AF1AFB21C400FE19D0 /* KSVideoPlayer */,
 				87FFBFBD1AFACDD000D927F5 /* SSBouncyButton */,
 				871237EC1AF4673E00DEEDC4 /* SDCAlertView & Controller */,
 				8757117E1AEE9DFD0077F8C3 /* ColorCube */,
@@ -1589,6 +1527,17 @@
 				87C0BD5719C564CA00EB7D91 /* AutoScrollLabel.m */,
 			);
 			path = AutoScrollLabel;
+			sourceTree = "<group>";
+		};
+		87CF01A91AFEBF59002808B5 /* Preview Player */ = {
+			isa = PBXGroup;
+			children = (
+				87299AB21AFC016300E627A3 /* MZPreviewPlayer.h */,
+				87299AB31AFC016300E627A3 /* MZPreviewPlayer.m */,
+				87CF01A61AFEA240002808B5 /* MZSlider.h */,
+				87CF01A71AFEA240002808B5 /* MZSlider.m */,
+			);
+			name = "Preview Player";
 			sourceTree = "<group>";
 		};
 		87D47D9F19345BC00057D49B /* Artists tab */ = {
@@ -1661,6 +1610,7 @@
 		87ECF5221A57C5FB00D58EDF /* Custom GUI Elements/Classes */ = {
 			isa = PBXGroup;
 			children = (
+				87CF01A91AFEBF59002808B5 /* Preview Player */,
 				874814561AC23CF100F447C1 /* Album Section Header */,
 				870EDAE7197F4EB0001901B9 /* Editing Field View */,
 				87BBBE031A58A77300248E2F /* Custom Search Bar */,
@@ -2027,6 +1977,7 @@
 				876037461AE5F693004FA831 /* AllArtistsDataSource.m in Sources */,
 				87E085721AF2D52500F86324 /* EmailComposerManager.m in Sources */,
 				871C2BF01A97CAA0007A1DE5 /* NowPlayingSong.m in Sources */,
+				87CF01A81AFEA240002808B5 /* MZSlider.m in Sources */,
 				87270032199E815000D71204 /* NSString+Levenshtein_Distance.m in Sources */,
 				87F686A91AC9F48800EFF1E0 /* ActionSheetDistancePicker.m in Sources */,
 				8786F3B21AF862160083E95C /* PlaylistItem.m in Sources */,
@@ -2050,7 +2001,6 @@
 				87AE39751A4A8E6400C278BA /* PreloadedCoreDataModelUtility.m in Sources */,
 				8738E4CC1AE1EE0D00BA915F /* ASValueTrackingSlider.m in Sources */,
 				874DA0871ABA11DD003D69D6 /* UIImage+MRImageEffects.m in Sources */,
-				872EA4DC1A54B10900F8EE9D /* SDCAlertView+DuplicateAlertsPreventer.m in Sources */,
 				874DA0921ABA11DD003D69D6 /* MRProgressView+AFNetworking.m in Sources */,
 				874C535C19831825000382FA /* NSString+WhiteSpace_Utility.m in Sources */,
 				87E980BF1A759DD900B428F0 /* MasterSongEditorViewController.m in Sources */,
@@ -2112,7 +2062,6 @@
 				87CEDC6519731EF000780D57 /* PlaylistSongAdderTableViewController.m in Sources */,
 				874DA0941ABA11DD003D69D6 /* MRMethodCopier.m in Sources */,
 				876EC5F01965C9F6006B3C29 /* AppEnvironmentConstants.m in Sources */,
-				8733C6C51AFB220700FE19D0 /* KeepLayoutConstraint.m in Sources */,
 				875B3826197AFF29008B4409 /* NSString+smartSort.m in Sources */,
 				8725B1B81A6C938700E58C3E /* UIWindow+VisibleVC.m in Sources */,
 				876EDE6019648AA300795767 /* AlbumArtUtilities.m in Sources */,
@@ -2123,17 +2072,14 @@
 				87A04CAA1ACCDDCE007C9245 /* IBActionSheet.m in Sources */,
 				8786F3BB1AF862170083E95C /* Artist.m in Sources */,
 				87220CF81ACF03450047F7F4 /* AFDropdownNotification.m in Sources */,
-				8733C6C41AFB220700FE19D0 /* KeepAttribute.m in Sources */,
 				871238211AF4673E00DEEDC4 /* SDCAlertLabel.m in Sources */,
 				871238191AF4673E00DEEDC4 /* SDCAlertCollectionViewCell.m in Sources */,
 				876E92051AF72870004B5B48 /* PlaylistItem+Utilities.m in Sources */,
 				87ECAFC81AAEB21F00C527B9 /* MZPrivateMainPlaybackQueue.m in Sources */,
 				87449AF419971A58009F01EA /* AppDelegateSetupHelper.m in Sources */,
-				8733C6C81AFB220700FE19D0 /* UIScrollView+KeepLayout.m in Sources */,
 				872EA4E11A54CAF200F8EE9D /* UIDevice+DeviceName.m in Sources */,
 				87408EAB1AE4748600267C3A /* SongAlbumArt+Utilities.m in Sources */,
 				871FA7711A8D8A9A0045196C /* UIView+ScreenshotView.m in Sources */,
-				8733C6C91AFB220700FE19D0 /* UIViewController+KeepLayout.m in Sources */,
 				87A0FD91197DD594008FBBF7 /* PreferredFontSizeUtility.m in Sources */,
 				871238231AF4673E00DEEDC4 /* SDCAlertTextFieldTableViewCell.m in Sources */,
 				87C0BD5819C564CA00EB7D91 /* AutoScrollLabel.m in Sources */,
@@ -2155,10 +2101,8 @@
 				874CCAD11AF021F600FCEEDD /* FontSizeTableViewController.m in Sources */,
 				874DA08C1ABA11DD003D69D6 /* MRProgressOverlayView.m in Sources */,
 				870EDAE6197F4EAD001901B9 /* EditableCellTableViewController.m in Sources */,
-				8733C6C71AFB220700FE19D0 /* KeepView.m in Sources */,
 				876335271A8496D000A229C4 /* MZTableViewCell.m in Sources */,
 				877C4BAA199FE4CF00CE86BC /* Artist+Utilities.m in Sources */,
-				8733C6B21AFB21C400FE19D0 /* KSVideoPlayerView.m in Sources */,
 				871917351ADF7CAB00FFC791 /* AllAlbumsDataSource.m in Sources */,
 				8712382A1AF4673E00DEEDC4 /* SDCIntrinsicallySizedView.m in Sources */,
 				877A9AF91AE892A900C7D4C9 /* AllPlaylistsDataSource.m in Sources */,
@@ -2171,11 +2115,9 @@
 				871238351AF4685800DEEDC4 /* RBBBlockBasedArray.m in Sources */,
 				87BA3A5D1AA9467300A3ACA3 /* PlaybackContext.m in Sources */,
 				874CCACE1AF0129000FCEEDD /* NewSettingsTableViewController.m in Sources */,
-				8733C6C31AFB220700FE19D0 /* KeepArray.m in Sources */,
 				874DA0911ABA11DD003D69D6 /* MRProgressOverlayView+AFNetworking.m in Sources */,
 				87A453DF199C7096004D1319 /* ExistingAlbumPickerTableViewController.m in Sources */,
 				874DA0931ABA11DD003D69D6 /* MRMessageInterceptor.m in Sources */,
-				8733C6C61AFB220700FE19D0 /* KeepTypes.m in Sources */,
 				87AE3D641AD8CFE600910944 /* MZCoreDataModelDeletionService.m in Sources */,
 				87362B03194E9CDF004DB544 /* Stack.m in Sources */,
 				8712381C1AF4673E00DEEDC4 /* SDCAlertControllerDefaultVisualStyle.m in Sources */,

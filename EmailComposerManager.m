@@ -256,7 +256,10 @@
 
 #pragma mark - Photo Picker Delegate stuff
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
-{    
+{
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    picker = nil;
+
     UIImage *img = [info objectForKey:UIImagePickerControllerOriginalImage];
     if(img != nil){
         self.attachedImage = img;

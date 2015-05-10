@@ -28,6 +28,8 @@
 #import "MasterArtistsTableViewController.h"
 #import "MasterPlaylistTableViewController.h"
 
+#import "MZPreviewPlayer.h"
+
 //crash reporting framework
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
@@ -41,6 +43,8 @@
 
 //used to make it appear as if the playerlayer is still attached to the player in backgrounded mode.
 @property (strong, nonatomic) UIView *playerSnapshot;
+
+@property (strong, nonatomic) MZPreviewPlayer *previewPlayer;
 
 - (void)restoreMainWindow;
 

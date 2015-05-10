@@ -13,7 +13,7 @@
 
 @interface DetermineVideoPlayableOperation : NSOperation
 
-- (id)initWithSong:(Song *)theSong;
+- (id)initWithSongDuration:(NSUInteger)songduration;
 - (BOOL)allowedToPlayVideo;  //access by operations dependant on this one (ie: FetchVideoInfoOperation)
 
 @end

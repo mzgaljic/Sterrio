@@ -257,7 +257,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
             }];
             
             if(albumArt == nil)
-                return;  //no album art loaded lol.
+                albumArt = [UIImage imageNamed:@"Sample Album Art"];
         }
         
         // The block will be processed on a background Grand Central Dispatch queue.
