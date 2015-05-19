@@ -26,7 +26,6 @@
     NSUInteger totalDuration;
     NSUInteger secondsLoaded;
     BOOL playbackStarted;
-    BOOL playbackExplicitlyPaused;
 }
 
 @property (strong, nonatomic, readwrite) AVPlayer *avPlayer;
@@ -42,6 +41,7 @@
 
 @property (assign, nonatomic, readwrite) BOOL isPlaying;
 @property (assign, nonatomic, readwrite) BOOL isInStall;
+@property (assign, nonatomic, readwrite) BOOL playbackExplicitlyPaused;
 
 @property (weak, nonatomic) id <MZPreviewPlayerStallState> delegate;
 @end
@@ -402,7 +402,7 @@ static BOOL isHudOnScreen = NO;
                   toleranceBefore:kCMTimeZero
                    toleranceAfter:kCMTimeZero];
     }
-    playbackExplicitlyPaused = NO;
+    self.playbackExplicitlyPaused = NO;
     [self.avPlayer play];
     [self.playPauseButton setSelected:NO];
     [self.delegate previewPlayerNeedsNowPlayingInfoCenterUpdate];
@@ -411,7 +411,7 @@ static BOOL isHudOnScreen = NO;
 - (void)pause
 {
     [self startAutoHideTimer];
-    playbackExplicitlyPaused = YES;
+    self.playbackExplicitlyPaused = YES;
     [self.avPlayer pause];
     [self.playPauseButton setSelected:YES];
     [self.delegate previewPlayerNeedsNowPlayingInfoCenterUpdate];
@@ -433,7 +433,7 @@ static BOOL isHudOnScreen = NO;
 - (void)progressBarChangeEnded:(UISlider *)sender
 {
     [self.delegate previewPlayerNeedsNowPlayingInfoCenterUpdate];
-    if(! playbackExplicitlyPaused) {
+    if(! self.playbackExplicitlyPaused) {
         [self.avPlayer play];
     }
 }
@@ -635,7 +635,7 @@ static void *ksAirplayState = &ksAirplayState;
                     NSLog(@"Preview has left stall");
                     self.isInStall = NO;
                     
-                    if(! playbackExplicitlyPaused){
+                    if(! self.playbackExplicitlyPaused){
                         self.isPlaying = YES;
                         [self.avPlayer play];
                     }

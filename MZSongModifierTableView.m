@@ -317,7 +317,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     fullscreen = NO;
                 EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:_songIAmEditing.songName
                     notificationNameToPost:@"DoneEditingSongField" fullScreen:fullscreen];
-                [self.VC.navigationController pushViewController:vc animated:YES];
+                [self.theDelegate pushThisVC:vc];
                 break;
             }
             case 1:  //editing artist
@@ -769,7 +769,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     Artist *artist = _songIAmEditing.artist;
                     vc = [[ExistingArtistPickerTableViewController alloc] initWithCurrentArtist:artist
                                                                    existingEntityPickerDelegate:self];
-                    [self.VC.navigationController pushViewController:vc animated:YES];
+                    [self.theDelegate pushThisVC:vc];
                 } else if(_songIAmEditing.artist){  //remove from current artist
                     //order of these two calls matters!
                     [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];
@@ -797,7 +797,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                         fullscreen = NO;
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
                                                                                                   notificationNameToPost:@"DoneEditingArtistField" fullScreen:fullscreen];
-                    [self.VC.navigationController pushViewController:vc animated:YES];
+                    [self.theDelegate pushThisVC:vc];
                     
                 } else if(_songIAmEditing.artist){//choose different artist
                     ExistingArtistPickerTableViewController *vc;
@@ -805,7 +805,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     vc = [[ExistingArtistPickerTableViewController alloc] initWithCurrentArtist:artist
                                                                    existingEntityPickerDelegate:self];
                     
-                    [self.VC.navigationController pushViewController:vc animated:YES];
+                    [self.theDelegate pushThisVC:vc];
                 }
                 break;
             case 2:
@@ -823,7 +823,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
                                                                                                   notificationNameToPost:@"DoneEditingArtistField"
                                                                                                               fullScreen:fullscreen];
-                    [self.VC.navigationController pushViewController:vc animated:YES];
+                    [self.theDelegate pushThisVC:vc];
                 } else
                     break;
             }
@@ -849,7 +849,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     Album *album = _songIAmEditing.album;
                     vc = [[ExistingAlbumPickerTableViewController alloc] initWithCurrentAlbum:album
                                                                  existingEntityPickerDelegate:self];
-                    [self.VC.navigationController pushViewController:vc animated:YES];
+                    [self.theDelegate pushThisVC:vc];
                 }
                 break;
             case 1:
@@ -863,14 +863,14 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                         fullscreen = NO;
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
                                                                                                   notificationNameToPost:@"DoneEditingAlbumField" fullScreen:fullscreen];
-                    [self.VC.navigationController pushViewController:vc animated:YES];
+                    [self.theDelegate pushThisVC:vc];
                     break;
                 } else{  //place in different album (existing album picker)
                     ExistingAlbumPickerTableViewController *vc;
                     Album *album = _songIAmEditing.album;
                     vc = [[ExistingAlbumPickerTableViewController alloc] initWithCurrentAlbum:album
                                                                  existingEntityPickerDelegate:self];
-                    [self.VC.navigationController pushViewController:vc animated:YES];
+                    [self.theDelegate pushThisVC:vc];
                 }
                 
                 break;
@@ -889,7 +889,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                           initWithEditingString:nil
                           notificationNameToPost:@"DoneEditingAlbumField"
                           fullScreen:fullscreen];
-                    [self.VC.navigationController pushViewController:vc animated:YES];
+                    [self.theDelegate pushThisVC:vc];
                 } else{
                     //remove song from album
                     [MZCoreDataModelDeletionService removeSongFromItsAlbum:_songIAmEditing];

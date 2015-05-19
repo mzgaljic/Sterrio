@@ -93,6 +93,9 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     
     UIApplication *myApp = [UIApplication sharedApplication];
     [myApp setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+    
+    [Fabric with:@[CrashlyticsKit]];
+    
     return YES;
 }
 

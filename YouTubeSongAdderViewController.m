@@ -19,6 +19,8 @@
     BOOL userCreatedHisSong;
     BOOL preDeallocedAlready;
     
+    BOOL didPresentVc;
+    
     //fixes bug where player is invisible in view if it was added while the user was doing something else
     //(changing song name, etc)
     BOOL addPlayerToViewUponVcAppearance;
@@ -171,17 +173,27 @@ static short numberTimesViewHasBeenShown = 0;
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    didPresentVc = NO;
     [super viewDidAppear:animated];
     [self.tableView viewDidAppear:animated];
+    if(self.player){
+        if(! self.player.playbackExplicitlyPaused){
+            //if player was playing and we just returned to this VC, pause and play again.
+            //this fixes a bug where cancelling a "slide to pop" gesture would make the player appear "stuck".
+            [self.player pause];
+            [self.player play];
+        }
+    }
 }
 
-- (void)viewWillDisappear:(BOOL)animated
+- (void)viewDidDisappear:(BOOL)animated
 {
-    if ([self.navigationController.viewControllers indexOfObject:self] == NSNotFound) {
+    [super viewDidDisappear:animated];
+    if ([self.navigationController.viewControllers indexOfObject:self] == NSNotFound || !didPresentVc)
+    {
         // Navigation back button was pressed.
         [self preDealloc];
     }
-    [super viewWillDisappear:animated];
 }
 
 #pragma mark - Loading video
@@ -632,7 +644,16 @@ static short numberTimesViewHasBeenShown = 0;
 #pragma mark - Custom song tableview editor delegate stuff
 - (void)pushThisVC:(UIViewController *)vc
 {
-    [self presentViewController:vc animated:YES completion:nil];
+    didPresentVc = YES;
+    
+    //using isKindOfClass because im not looking for an exact match! Just looking for
+    //any descendant of these types.
+    if([vc isKindOfClass:[UINavigationController class]])
+        [self presentViewController:vc animated:YES completion:nil];
+    else if([vc isKindOfClass:[UIViewController class]])
+        [self.navigationController pushViewController:vc animated:YES];
+    else
+        didPresentVc = NO;
 }
 
 - (void)performCleanupBeforeSongIsSaved:(Song *)newLibSong
