@@ -128,7 +128,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
 //current queue. This does not clear the "up next" section.
 - (void)setMainQueueWithNewNowPlayingItem:(PlayableItem *)item;
 {
-    PlayableItem *oldItem = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading];
+    PlayableItem *oldItem = [NowPlayingSong sharedInstance].nowPlayingItem;
     [mainQueue setMainQueueWithNewNowPlayingItem:item];
     [[NowPlayingSong sharedInstance] setNewNowPlayingItem:item];
     

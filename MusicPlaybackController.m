@@ -324,6 +324,16 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void))
         //ignore new queue request. (SongPlayerViewController will will be unaffected by this...)
         return;
     }
+    
+    ReachabilitySingleton *reachability = [ReachabilitySingleton sharedInstance];
+    if([playlistItem.song.duration integerValue] >= MZLongestCellularPlayableDuration){
+        //videos of this length may only be played on wifi. Are we on wifi?
+        if(! [reachability isConnectedToWifi]){
+            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_Chosen_Song_Too_Long_For_Cellular];
+            return;
+        }
+    }
+    
     //purposely not deleting "playing next" here...it should remain intact.
     //queue will update the now playing song
     if(playbackQueue == nil)
@@ -353,6 +363,16 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void))
         //ignore new queue request. (SongPlayerViewController will will be unaffected by this...)
         return;
     }
+    
+    ReachabilitySingleton *reachability = [ReachabilitySingleton sharedInstance];
+    if([song.duration integerValue] >= MZLongestCellularPlayableDuration){
+        //videos of this length may only be played on wifi. Are we on wifi?
+        if(! [reachability isConnectedToWifi]){
+            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_Chosen_Song_Too_Long_For_Cellular];
+            return;
+        }
+    }
+    
     //purposely not deleting "playing next" here...it should remain intact.
     //queue will update the now playing song
     if(playbackQueue == nil)

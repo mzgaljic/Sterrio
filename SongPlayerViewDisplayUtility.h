@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
 @interface SongPlayerViewDisplayUtility : NSObject

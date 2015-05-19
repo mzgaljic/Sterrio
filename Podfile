@@ -14,7 +14,7 @@ pod 'SDWebImage', '~>3.6'
 pod 'MSCellAccessory', '~> 1.1'
 
 #banner for erros, msgs, etc
-pod 'CSNotificationView', '~> 0.5'
+pod 'CRToast', :head
 
 #VERY high performance XML parser for youtube
 pod 'TBXML'

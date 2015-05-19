@@ -4,17 +4,12 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>CSNotificationView.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods-AFNetworking.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-CSNotificationView.xcscheme</key>
+		<key>Pods-CRToast.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -72,67 +67,62 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>081D2E62CD4875DAC6B05415</key>
+		<key>145401B335D65668990BD74C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2D0B5A769304C3B24E38EE02</key>
+		<key>157925ED17CD9330D1F489B7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4D2080CE36A03B44CC5C0A7A</key>
+		<key>2E6673B456AB710201874333</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>51F2ED88A95A62B27692861C</key>
+		<key>2ECD7F73CF529E2A8B4F4DD0</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>7EB691F98FB5A1AB8440B236</key>
+		<key>32CA92CC1B1372E8DC5A3799</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>83E62A1248C1DB005ADECA6C</key>
+		<key>479225666916FFC7EA0790F5</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>87262FA8D38042AF4F410518</key>
+		<key>65562F67D2E1EEE024164047</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>CEE6D6C4E5047D8EFBD7D425</key>
+		<key>870AF39979DCADA8F744008A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>DD017E3638B8CFFB3EA4FF8C</key>
+		<key>8CBE68FA15F7A4ED55895BFE</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F20FBB271485A6A3050AF053</key>
+		<key>C687EAA1097025880BCE45E5</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F9069A48BC83CB0BC82962F5</key>
+		<key>E10AC3497FAD2D00909992D5</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F9A74C7598BA156775B1F31E</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>FE18C304A569E015D67F4519</key>
+		<key>E866AF7DC48DD060BB06EE90</key>
 		<dict>
 			<key>primary</key>
 			<true/>

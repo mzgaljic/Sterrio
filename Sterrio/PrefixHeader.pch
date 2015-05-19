@@ -16,7 +16,6 @@
 
 #import <Ensembles/Ensembles.h>
 
-#import <CSNotificationView.h>  //notification banners/alerts
 #import "MyAlerts.h"  //my custom class for displaying alerts from anywhere
 
 //helps to segue to video player view from anywhere,

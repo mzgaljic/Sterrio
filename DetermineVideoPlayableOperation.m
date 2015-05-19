@@ -16,6 +16,8 @@
 @end
 @implementation DetermineVideoPlayableOperation
 
+static BOOL lastSongWasSkipped = NO;
+
 - (id)initWithSongDuration:(NSUInteger)songduration
 {
     if(self = [super init]){
@@ -35,6 +37,7 @@
             allowedToPlayVideo = NO;
     }
     if ([self isCancelled]){
+        lastSongWasSkipped = NO;
         return;
     }
 
@@ -47,11 +50,12 @@
     }
     
     if ([self isCancelled]){
+        lastSongWasSkipped = NO;
         return;
     }
     
     if(! allowedToPlayVideo){
-        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
+        lastSongWasSkipped = YES;
         MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
         //triggers the next song to play
         [player performSelectorOnMainThread:@selector(songNeedsToBeSkippedDueToIssue)
@@ -59,6 +63,12 @@
                             waitUntilDone:NO];
         [self cancel];  //will allow dependant NSOperation to detect that it should also cancel.
         return;
+    }
+    
+    if(lastSongWasSkipped){
+        //finally reached a song in the queue that can be played. lets show the banner notif.
+        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
+        lastSongWasSkipped = NO;
     }
     
     NSLog(@"YAY! can play video!");

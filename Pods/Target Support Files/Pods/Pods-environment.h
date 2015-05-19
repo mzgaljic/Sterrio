@@ -48,11 +48,11 @@
 #define COCOAPODS_VERSION_MINOR_AFNetworking_UIKit 5
 #define COCOAPODS_VERSION_PATCH_AFNetworking_UIKit 4
 
-// CSNotificationView
-#define COCOAPODS_POD_AVAILABLE_CSNotificationView
-#define COCOAPODS_VERSION_MAJOR_CSNotificationView 0
-#define COCOAPODS_VERSION_MINOR_CSNotificationView 5
-#define COCOAPODS_VERSION_PATCH_CSNotificationView 4
+// CRToast
+#define COCOAPODS_POD_AVAILABLE_CRToast
+#define COCOAPODS_VERSION_MAJOR_CRToast 0
+#define COCOAPODS_VERSION_MINOR_CRToast 0
+#define COCOAPODS_VERSION_PATCH_CRToast 7
 
 // Ensembles
 #define COCOAPODS_POD_AVAILABLE_Ensembles

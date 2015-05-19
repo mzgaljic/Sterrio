@@ -15,12 +15,18 @@
 #import "SDCAlertControllerView.h"
 #import "PlayableItem.h"
 #import "PreviousNowPlayingInfo.h"
+#import <CRToast.h>
 
 @implementation MyAlerts
+
+static BOOL currentlyDisplayingBanner;
+static NSMutableArray *queuedToastBannerOptions;
 
 + (void)displayAlertWithAlertType:(ALERT_TYPE)type
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if(queuedToastBannerOptions == nil)
+            queuedToastBannerOptions = [NSMutableArray array];
         [MyAlerts runDisplayAlertCodeWithAlertType:type];
     }];
 }
@@ -71,6 +77,36 @@
         }
         case ALERT_TYPE_LongVideoSkippedOnCellular:
         {
+            NSDictionary *options = @{
+                                      kCRToastTextKey : @"Long song(s) skipped.",
+                                      kCRToastTextAlignmentKey : @(NSTextAlignmentLeft),
+                                      kCRToastBackgroundColorKey : [UIColor defaultAppColorScheme],
+                                      kCRToastAnimationInTypeKey : @(CRToastAnimationTypeGravity),
+                                      kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeGravity),
+                                      kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
+                                      kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionTop),
+                                      kCRToastFontKey   :   [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18],
+                                      kCRToastNotificationTypeKey   : @(CRToastPresentationTypePush),
+                                      kCRToastImageKey  : [UIImage imageNamed:@"alert_exclamation"],
+                                      };
+            [MyAlerts showOrQueueUpCRToastBannerWithOptions:options];
+            break;
+        }
+        case ALERT_TYPE_Chosen_Song_Too_Long_For_Cellular:
+        {
+            NSDictionary *options = @{
+                                      kCRToastTextKey : @"Song unplayable on LTE/3G, check settings.",
+                                      kCRToastTextAlignmentKey : @(NSTextAlignmentLeft),
+                                      kCRToastBackgroundColorKey : [UIColor defaultAppColorScheme],
+                                      kCRToastAnimationInTypeKey : @(CRToastAnimationTypeGravity),
+                                      kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeGravity),
+                                      kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
+                                      kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionTop),
+                                      kCRToastFontKey   :   [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18],
+                                      kCRToastNotificationTypeKey   : @(CRToastPresentationTypePush),
+                                      kCRToastImageKey  : [UIImage imageNamed:@"alert_exclamation"],
+                                      };
+            [MyAlerts showOrQueueUpCRToastBannerWithOptions:options];
             break;
         }
         case ALERT_TYPE_TroubleSharingVideo:
@@ -123,6 +159,29 @@
     }
 }
 
++ (void)showOrQueueUpCRToastBannerWithOptions:(NSDictionary *)options
+{
+    if(currentlyDisplayingBanner)
+        [queuedToastBannerOptions addObject:options];
+    else{
+        currentlyDisplayingBanner = YES;
+        [CRToastManager showNotificationWithOptions:options
+                                    completionBlock:^{
+                                        currentlyDisplayingBanner = NO;
+                                        if(queuedToastBannerOptions.count > 0){
+                                            NSDictionary *options = queuedToastBannerOptions[0];
+                                            [queuedToastBannerOptions removeObjectAtIndex:0];
+                                            
+                                            double delayInSeconds = 0.6;
+                                            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+                                            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                                                //code to be executed on the main queue after delay
+                                                [MyAlerts showOrQueueUpCRToastBannerWithOptions:options];
+                                            });
+                                        }
+                                    }];
+    }
+}
 
 + (void)launchAlertViewWithDialogTitle:(NSString *)title
                             andMessage:(NSString *)message
