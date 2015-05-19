@@ -1,0 +1,38 @@
+//
+//  PrefixHeader.pch
+//  Sterrio
+//
+//  Created by Mark Zgaljic on 5/18/15.
+//  Copyright (c) 2015 Mark Zgaljic Apps. All rights reserved.
+//
+
+#ifndef Sterrio_PrefixHeader_pch
+#define Sterrio_PrefixHeader_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+
+
+#import <Ensembles/Ensembles.h>
+
+#import <CSNotificationView.h>  //notification banners/alerts
+#import "MyAlerts.h"  //my custom class for displaying alerts from anywhere
+
+//helps to segue to video player view from anywhere,
+//determine aspect ratio for player based on width, etc.
+#import "SongPlayerViewDisplayUtility.h"
+#import "NowPlayingSong.h"
+#import "MZConstants.h"
+#import "UIColor+SystemTintColor.h"
+
+#import "MZConstants.h"
+
+//disables NSLog in release builds.
+#ifndef DEBUG
+#define NSLog(...);
+#endif
+
+
+
+#endif

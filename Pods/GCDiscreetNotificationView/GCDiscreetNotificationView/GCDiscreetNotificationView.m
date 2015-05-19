@@ -85,15 +85,11 @@ NSString* const GCDiscreetNotificationViewActivityKey = @"activity";
     return self;
 }
 
-- (void)setBoldTextFontName:(NSString *)fontName
-{
-    boldFontSetByProgrammer = fontName;
-}
-
 - (void)dealloc {
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideAnimated) object:nil];
     
     self.view = nil;
+    
     [label release];
     label = nil;
     
@@ -101,6 +97,11 @@ NSString* const GCDiscreetNotificationViewActivityKey = @"activity";
     activityIndicator = nil;
     
     [super dealloc];
+}
+
+- (void)setBoldTextFontName:(NSString *)fontName
+{
+    boldFontSetByProgrammer = fontName;
 }
 
 #pragma mark -
@@ -281,7 +282,7 @@ NSString* const GCDiscreetNotificationViewActivityKey = @"activity";
     if (label == nil) {
         label = [[UILabel alloc] init];
         
-        label.font = [UIFont fontWithName:boldFontSetByProgrammer size:15];
+        label.font = [UIFont boldSystemFontOfSize:15.0];
         label.textColor = [UIColor whiteColor];
         label.shadowColor = [UIColor blackColor];
         label.shadowOffset = CGSizeMake(0, 1);

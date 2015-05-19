@@ -18,6 +18,11 @@
     BOOL enoughSongInformationGiven;
     BOOL userCreatedHisSong;
     BOOL preDeallocedAlready;
+    
+    //fixes bug where player is invisible in view if it was added while the user was doing something else
+    //(changing song name, etc)
+    BOOL addPlayerToViewUponVcAppearance;
+    
     NSDictionary *videoDetails;
     
     BOOL previewPlaybackBegan;
@@ -157,6 +162,11 @@ static short numberTimesViewHasBeenShown = 0;
     numberTimesViewHasBeenShown++;
     
     [self setNeedsStatusBarAppearanceUpdate];
+    
+    if(addPlayerToViewUponVcAppearance){
+        [self setUpVideoViewAndOrPlayerAboutToRotate:NO];
+        addPlayerToViewUponVcAppearance = NO;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -299,6 +309,22 @@ static short numberTimesViewHasBeenShown = 0;
 #pragma mark - Video frame and player setup
 - (void)setUpVideoViewAndOrPlayerAboutToRotate:(BOOL)goingToRotate
 {
+    if([[UIApplication sharedApplication].keyWindow visibleViewController] != self){
+        addPlayerToViewUponVcAppearance = YES;
+        
+        if(self.player == nil && !preDeallocedAlready){
+            // player's frame size must match parent's
+            self.player = [[MZPreviewPlayer alloc] initWithFrame:CGRectZero
+                                                        videoURL:url];
+            [self.player setStallValueChangedDelegate:self];
+            [self.player play];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:MZInitAudioSession
+                                                                object:nil];
+        }
+        
+        return;
+    }
     int widthOfScreenRoationIndependant;
     int heightOfScreenRotationIndependant;
     int  a = [[UIScreen mainScreen] bounds].size.height;

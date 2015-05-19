@@ -34,11 +34,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-JAMAccurateSlider.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods-MSCellAccessory.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -77,72 +72,67 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>3083CCE892F5AB4F132CEC8C</key>
+		<key>081D2E62CD4875DAC6B05415</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4A522F085CCC10E59EF18EF4</key>
+		<key>2D0B5A769304C3B24E38EE02</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>548D555C318F7A5CF76E510D</key>
+		<key>4D2080CE36A03B44CC5C0A7A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>589C1C594F69334D58BCEA61</key>
+		<key>51F2ED88A95A62B27692861C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>5FAB542D204EDB159C090ABA</key>
+		<key>7EB691F98FB5A1AB8440B236</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>85159F42A76D3FE6C8288A8E</key>
+		<key>83E62A1248C1DB005ADECA6C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>89382B28385693C591B74FEB</key>
+		<key>87262FA8D38042AF4F410518</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9A57549321ACBEFB1DAA2F6A</key>
+		<key>CEE6D6C4E5047D8EFBD7D425</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>A1EBCE2D7653ED33683B4D1B</key>
+		<key>DD017E3638B8CFFB3EA4FF8C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>ABA3A52AD5BFC29F3631CB7A</key>
+		<key>F20FBB271485A6A3050AF053</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>BAD99D40D137084BCAF06134</key>
+		<key>F9069A48BC83CB0BC82962F5</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>DBD2F66FB0FFCF7496B8A1EC</key>
+		<key>F9A74C7598BA156775B1F31E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F0729E43ADA9E03876CE8BFD</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>F85A5DF2974C37E8DC97E4DE</key>
+		<key>FE18C304A569E015D67F4519</key>
 		<dict>
 			<key>primary</key>
 			<true/>

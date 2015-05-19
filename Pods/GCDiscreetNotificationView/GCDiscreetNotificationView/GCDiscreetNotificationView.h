@@ -28,11 +28,13 @@ typedef enum {
 
 @property (nonatomic, readonly, getter = isShowing) BOOL showing;
 
+
+- (void)setBoldTextFontName:(NSString *)fontName;
+
+
 - (id) initWithText:(NSString *)text inView:(UIView *)aView;
 - (id) initWithText:(NSString *)text showActivity:(BOOL)activity inView:(UIView *)aView;
 - (id) initWithText:(NSString *)text showActivity:(BOOL)activity inPresentationMode:(GCDiscreetNotificationViewPresentationMode) aPresentationMode inView:(UIView *)aView;
-
-- (void)setBoldTextFontName:(NSString *)fontName;
 
 //Show/Hide animated
 - (void) showAnimated;

@@ -31,7 +31,6 @@ short const dummyTabIndex = 2;
 @property (nonatomic, strong) NSArray *tabBarSelectedImageNames;
 @property (nonatomic, strong) NSArray *tabBarItems;
 @property (nonatomic, strong) UINavigationController *currentNavController;
-@property (nonatomic, strong) AFDropdownNotification *notification;
 @end
 
 

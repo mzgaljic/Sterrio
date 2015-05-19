@@ -22,9 +22,6 @@ pod 'TBXML'
 #scrolling label (Marquee)
 pod 'MarqueeLabel'
 
-#drop in uislider replacement allowing fine grain selection
-pod 'JAMAccurateSlider'
-
 #discrete message at top of screen for user (used for slider touch)
 pod 'GCDiscreetNotificationView'
 

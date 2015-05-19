@@ -8,7 +8,7 @@
 
 #import "MZAlbumSectionHeader.h"
 #import "AlbumAlbumArt+Utilities.h"
-#import "ColorCube/CCColorCube.h"
+#import "CCColorCube.h"
 
 @interface MZAlbumSectionHeader ()
 {
@@ -194,10 +194,10 @@ const float SEPERATOR_HEIGHT = 0.5;
     return songString;
 }
 
-- (NSString *)generateTotalAlbumDurationStringUsingAlbum:(Album *)album
+- (NSString *)generateTotalAlbumDurationStringUsingAlbum:(Album *)myAlbum
 {
     NSUInteger totalAlbumDuration = 0;
-    NSSet *songs = [album albumSongs];
+    NSSet *songs = [myAlbum albumSongs];
     NSEnumerator *setEnum = [songs objectEnumerator];
     Song *aSong;
     while ((aSong = [setEnum nextObject]) != nil){
@@ -225,7 +225,7 @@ const float SEPERATOR_HEIGHT = 0.5;
     //now try to generate a gradient in code
     if(imgColors.count >= 2)
     {
-        UIView *gradientView = [[UIView alloc] initWithFrame:self.bounds];
+        UIView *myGradientView = [[UIView alloc] initWithFrame:self.bounds];
         
         UIColor *color1 = imgColors[0];
         UIColor *color2 = imgColors[2];
@@ -246,9 +246,9 @@ const float SEPERATOR_HEIGHT = 0.5;
         
         maskLayer.bounds = self.bounds;
         maskLayer.anchorPoint = CGPointZero;
-        [gradientView.layer addSublayer:maskLayer];
+        [myGradientView.layer addSublayer:maskLayer];
         
-        return gradientView;
+        return myGradientView;
     }
     else if(imgColors.count == 1)
     {

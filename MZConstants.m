@@ -65,6 +65,6 @@ NSString * const MZHideTabBarAnimated = @"Pass @YES in notif to hide tab bar";
 
 
 
-NSString * const MZWhatsNewUserMsg = @"This is an internal build for testing icloud.";
+NSString * const MZWhatsNewUserMsg = @"This is a test message.";
 
 @end

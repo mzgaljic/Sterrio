@@ -207,7 +207,6 @@
     cell.textLabel.text = artist.artistName;
     cell.detailTextLabel.text = [self stringForArtistDetailLabelGivenArtist:artist];
     cell.delegate = self;
-    #warning NOT setting artist textlabel color based on whether or not a song from this artist is playing (in same context)!
     return cell;
 }
 

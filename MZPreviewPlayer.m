@@ -48,7 +48,7 @@
 @implementation MZPreviewPlayer
 
 const int CONTROLS_HUD_HEIGHT = 45;
-const float AUTO_HIDE_HUD_DELAY = 2.2;
+const float AUTO_HIDE_HUD_DELAY = 3;
 static BOOL isHudOnScreen = NO;
 
 - (void)setFrame:(CGRect)frame

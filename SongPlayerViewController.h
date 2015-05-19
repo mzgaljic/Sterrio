@@ -28,7 +28,7 @@
 #import "MyAlerts.h"
 #import "MyViewController.h"
 #import <MarqueeLabel.h>
-#import <JAMAccurateSlider.h>
+#import "JAMAccurateSlider.h"
 #import <GCDiscreetNotificationView.h>
 #import "ReachabilitySingleton.h"
 #import "VideoPlayerControlInterfaceDelegate.h"
