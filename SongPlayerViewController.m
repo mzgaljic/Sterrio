@@ -30,6 +30,7 @@ typedef enum{
     SSBouncyButton *backwardButton;
     SSBouncyButton *timerButton;
     SSBouncyButton *repeatModeButton;
+    SSBouncyButton *shuffleModeButton;
     
     GCDiscreetNotificationView *sliderHint;  //slider hint
     
@@ -755,7 +756,9 @@ static int accomodateInterfaceLabelsCounter = 0;
     repeatModeButton = [[SSBouncyButton alloc] init];
     repeatModeButton.titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                                        size:repeatModeButton.titleLabel.font.pointSize];
-    
+    shuffleModeButton = [[SSBouncyButton alloc] init];
+    shuffleModeButton.titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                        size:repeatModeButton.titleLabel.font.pointSize];
     
     [backwardButton addTarget:self
                        action:@selector(backwardsButtonTappedOnce)
@@ -772,7 +775,11 @@ static int accomodateInterfaceLabelsCounter = 0;
     [repeatModeButton addTarget:self
                          action:@selector(repeatModeButtonTapped)
                forControlEvents:UIControlEventTouchUpInside];
+    [shuffleModeButton addTarget:self
+                          action:@selector(shuffleModeButtonTapped)
+                forControlEvents:UIControlEventTouchUpInside];
     [self updateRepeatButtonGivenNewRepeatState];
+    [self updateShuffleButtonGivenNewShuffleState];
     
     musicButtons = @[backwardButton, playButton, forwardButton];
 }
@@ -908,6 +915,24 @@ static int accomodateInterfaceLabelsCounter = 0;
                           delay:0.1
                         options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
                      animations:^{ repeatModeButton.alpha = 1.0; }
+                     completion:nil];
+    
+    //shuffle mode button
+    shuffleModeButton.center = timerButton.center;
+    int repeatXStart = repeatModeBtnFrame.origin.x;
+    CGRect shuffleModeBtnFrame = CGRectMake(screenWidth - repeatXStart - bottomTextButtonsWidth,
+                                           repeatModeBtnFrame.origin.y,
+                                           bottomTextButtonsWidth,
+                                           bottomTextButtonsHeight);
+    shuffleModeButton.frame = shuffleModeBtnFrame;
+    shuffleModeButton.tintColor = [UIColor defaultAppColorScheme];
+    shuffleModeButton.alpha = 0;
+    [shuffleModeButton setHitTestEdgeInsets:UIEdgeInsetsMake(-15, -25, -15, -25)];
+    [self.view addSubview:shuffleModeButton];
+    [UIView animateWithDuration:0.70  //now animate a "fade in"
+                          delay:0.1
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseOut
+                     animations:^{ shuffleModeButton.alpha = 1.0; }
                      completion:nil];
 
     
@@ -1382,6 +1407,54 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
     [repeatModeButton setTitle:[AppEnvironmentConstants stringRepresentationOfRepeatMode]
                       forState:controlState];
 }
+
+- (void)shuffleModeButtonTapped
+{
+    switch ([AppEnvironmentConstants shuffleState])
+    {
+        case SHUFFLE_STATE_Disabled:
+        {
+            [AppEnvironmentConstants setShuffleState:SHUFFLE_STATE_Enabled];
+            break;
+        }
+        case SHUFFLE_STATE_Enabled:
+        {
+            [AppEnvironmentConstants setShuffleState:SHUFFLE_STATE_Disabled];
+            break;
+        }
+        default:
+            break;
+    }
+    [self updateShuffleButtonGivenNewShuffleState];
+}
+
+- (void)updateShuffleButtonGivenNewShuffleState
+{
+    switch ([AppEnvironmentConstants shuffleState])
+    {
+        case SHUFFLE_STATE_Disabled:
+        {
+            shuffleModeButton.selected = NO;
+            break;
+        }
+        case SHUFFLE_STATE_Enabled:
+        {
+            shuffleModeButton.selected = YES;
+            break;
+        }
+        default:
+            break;
+    }
+    UIControlState controlState;
+    if(shuffleModeButton.selected)
+        controlState = UIControlStateSelected;
+    else
+        controlState = UIControlStateNormal;
+    
+    [shuffleModeButton setTitle:[AppEnvironmentConstants stringRepresentationOfShuffleState]
+                       forState:controlState];
+}
+
 
 //BACK BUTTON
 - (void)backwardsButtonTappedOnce

@@ -40,6 +40,7 @@ short const SECTION_EMPTY = -1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [VideoPlayerWrapper temporarilyDisableUpdatingPlayerView:YES];
     stackController = [[StackController alloc] init];
     localAppTintColor = [[[UIColor defaultAppColorScheme] lighterColor] lighterColor];
     
@@ -86,6 +87,7 @@ short const SECTION_EMPTY = -1;
 
 - (void)dealloc
 {
+    [VideoPlayerWrapper temporarilyDisableUpdatingPlayerView:NO];
     self.tableView.delegate = nil;
     self.tableView = nil;
     cellBackgroundBlurView = nil;
@@ -340,8 +342,25 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             [self.tableView deleteRowsAtIndexPaths:deletePaths
                                   withRowAnimation:UITableViewRowAnimationTop];
             
-            [[MZPlaybackQueue sharedInstance] skipOverThisManyQueueItemsEfficiently:numRowsDeleted -1];
-            [MusicPlaybackController skipToNextTrack];
+            if(numRowsDeleted == 1){
+                [MusicPlaybackController skipToNextTrack];
+            } else{
+                [[MZPlaybackQueue sharedInstance] skipOverThisManyQueueItemsEfficiently:numRowsDeleted -1];
+                
+                //skip forward in the queue (custom logic here...thats why we're not using
+                //the MusicPlaybackController class to help us here.)
+                [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
+                MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+                BOOL allowSongDidFinishNotifToProceed = ([MusicPlaybackController numMoreSongsInQueue] != 0);
+                [player allowSongDidFinishNotificationToProceed:allowSongDidFinishNotifToProceed];
+                PlayableItem *oldItem = [NowPlayingSong sharedInstance].nowPlayingItem;
+                PlayableItem *newItem = [[MZPlaybackQueue sharedInstance] skipForward];
+                
+                [VideoPlayerWrapper startPlaybackOfSong:newItem.songForItem
+                                           goingForward:YES
+                                        oldPlayableItem:oldItem];
+                [[NowPlayingSong sharedInstance] setNewNowPlayingItem:newItem];
+            }
             
             //now need to refresh the model so everything matches up
 #warning would be more efficient to manually delete the relevant objects within these data sources.
@@ -350,15 +369,17 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             upNextItems = [queue tableViewOptimizedArrayOfUpNextItems];
             upNextPlaybackContexts = [queue tableViewOptimizedArrayOfUpNextItemsContexts];
             
-            [self.tableView endUpdates];
+            
             
             BOOL atLeast1RowRemainingInTable = (numRowsInTableBeforeDeletion - numRowsDeleted > 0);
             if(atLeast1RowRemainingInTable)
             {
-                [self.tableView beginUpdates];
-                [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
-                [self.tableView endUpdates];
+                NSIndexPath *newFirstRowPathAfterUpdates = [NSIndexPath indexPathForRow:numRowsDeleted
+                                                                              inSection:0];
+                [self.tableView reloadRowsAtIndexPaths:@[newFirstRowPathAfterUpdates]
+                                      withRowAnimation:UITableViewRowAnimationFade];
             }
+            [self.tableView endUpdates];
         }
     }
     skippingToTappedSong = NO;

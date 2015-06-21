@@ -16,6 +16,7 @@
 #define APP_THEME_COLOR_VALUE_KEY @"appThemeColorValue"
 #define ICLOUD_SYNC @"icloudSettingsSync"
 #define ONLY_AIRPLAY_AUDIO_VALUE_KEY @"shouldOnlyAirplayAudio"
+#define USER_HAS_SEEN_CELLULAR_WARNING @"alreadyShowedUserCellDataUsageWarning"
 #define LAST_SUCCESSFUL_ICLOUD_SYNC_KEY @"last date icloud synced"
 
 #import <Foundation/Foundation.h>
@@ -32,6 +33,11 @@ typedef enum{
     PLABACK_REPEAT_MODE_Song,
     PLABACK_REPEAT_MODE_All
 } PLABACK_REPEAT_MODE;
+
+typedef enum{
+    SHUFFLE_STATE_Disabled,
+    SHUFFLE_STATE_Enabled
+} SHUFFLE_STATE;
 
 @interface AppEnvironmentConstants : NSObject
 
@@ -79,7 +85,10 @@ typedef enum{
 
 + (PLABACK_REPEAT_MODE)playbackRepeatType;
 + (void)setPlaybackRepeatType:(PLABACK_REPEAT_MODE)type;
++ (SHUFFLE_STATE)shuffleState;
++ (void)setShuffleState:(SHUFFLE_STATE)state;
 + (NSString *)stringRepresentationOfRepeatMode;
++ (NSString *)stringRepresentationOfShuffleState;
 
 //fonts
 + (NSString *)regularFontName;
@@ -107,6 +116,9 @@ typedef enum{
 
 + (void)setShouldOnlyAirplayAudio:(BOOL)airplayAudio;
 + (BOOL)shouldOnlyAirplayAudio;
+
++ (void)setUserHasSeenCellularDataUsageWarning:(BOOL)hasSeen;
++ (BOOL)didPreviouslyShowUserCellularWarning;
 
 + (void)setAppTheme:(UIColor *)appTheme;
 //-----End of app settings------

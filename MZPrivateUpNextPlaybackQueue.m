@@ -49,11 +49,7 @@
 {
     NSArray *array = [self minimallyFaultedArrayOfUpNextItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE];
     if(array.count > 0){
-        if([[NowPlayingSong sharedInstance] isEqualToItem:array[0]])
-            //array contains now playing, dont include in count!
-            return array.count -1;
-        else
-            return array.count;
+        return array.count;
     } else
         return 0;
 }
@@ -158,8 +154,14 @@
         {
             numContextsToDelete++;
         }
-        
-        //otherwise we continue looping until the bool condition in the loop breaks the statement...
+        else
+        {
+            NSNumber *newIndexObj = [NSNumber numberWithInteger:itemIndex];
+            [fetchRequestIndexes replaceObjectAtIndex:i withObject:newIndexObj];
+            break;
+        }
+
+        //now continue looping until the bool condition in the loop breaks the statement...
     }
     
     //delete the contexts no longer needed
@@ -242,14 +244,6 @@
                                          withContext:aContext];
             [compiledItems addObjectsFromArray:itemsToAdd];
         }
-    }
-    
-    //remove item at first index if its actually the now playing one.
-    
-    if(compiledItems.count > 0){
-        PlayableItem *firstItem = [compiledItems objectAtIndex:0];
-        if([[NowPlayingSong sharedInstance] isEqualToItem:firstItem])
-            [compiledItems removeObjectAtIndex:0];
     }
     
     return compiledItems;

@@ -63,5 +63,6 @@ extern short const MZTabBarHeight;
 extern NSString * const MZHideTabBarAnimated;
 
 extern NSString * const MZWhatsNewUserMsg;
+extern NSString * const MZAppName;
 
 @end

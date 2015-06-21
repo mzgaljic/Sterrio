@@ -7,6 +7,7 @@
 //
 
 #import "ReachabilitySingleton.h"
+#import "AppEnvironmentConstants.h"
 
 typedef NS_ENUM(NSUInteger, Connection_Type) {
     Connection_Type_Wifi,
@@ -83,8 +84,16 @@ NSString * const host_Name = @"www.youtube.com";
         weakself.connectionState = Connection_State_Connected;
         if([reach isReachableViaWiFi])
             weakself.connectionType = Connection_Type_Wifi;
-        else
+        else{
             weakself.connectionType = Connection_Type_Cellular;
+            if(! [AppEnvironmentConstants didPreviouslyShowUserCellularWarning]){
+                [MyAlerts displayAlertWithAlertType:ALERT_TYPE_WarnUserOfCellularDataFees];
+                [AppEnvironmentConstants setUserHasSeenCellularDataUsageWarning:YES];
+                [[NSUserDefaults standardUserDefaults] setBool:YES
+                                                        forKey:USER_HAS_SEEN_CELLULAR_WARNING];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+            }
+        }
         
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [weakself.notifCenter postNotificationName:MZReachabilityStateChanged

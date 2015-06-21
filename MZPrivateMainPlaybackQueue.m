@@ -74,7 +74,6 @@
             return;
         }
     }
-    mostRecentItem = nil;
     fetchRequestIndex = 0;
 }
 
@@ -255,8 +254,6 @@
                 userWentBeyondEndOfQueue = YES;
                 return;
             }
-            
-            index = ++fetchRequestIndex;
             
             if(fetchRequestIndex > items.count-1){
                 atEndOfQueue = YES;

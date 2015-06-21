@@ -26,6 +26,7 @@ static BOOL shouldDisplayWelcomeScreen = NO;
 static BOOL isFirstTimeAppLaunched = NO;
 static BOOL whatsNewMsgIsNew = NO;
 static BOOL isBadTimeToMergeEnsemble = NO;
+static BOOL didPreviouslyShowUserCellularWarning = NO;
 static BOOL userIsPreviewingAVideo = NO;
 static BOOL tabBarIsHidden = NO;
 static BOOL isIcloudSwitchWaitingForActionToComplete = NO;
@@ -33,6 +34,7 @@ static BOOL playbackTimerActive = NO;
 static NSDate *lastSuccessfulSyncDate;
 static NSInteger activePlaybackTimerThreadNum;
 static PLABACK_REPEAT_MODE repeatType;
+static SHUFFLE_STATE shuffleState;
 static PREVIEW_PLAYBACK_STATE currentPreviewPlayerState = PREVIEW_PLAYBACK_STATE_Uninitialized;
 
 static int navBarHeight;
@@ -200,6 +202,16 @@ static NSLock *playbackTimerLock;
     repeatType = type;
 }
 
++ (SHUFFLE_STATE)shuffleState
+{
+    return shuffleState;
+}
+
++ (void)setShuffleState:(SHUFFLE_STATE)state
+{
+    shuffleState = state;
+}
+
 + (NSString *)stringRepresentationOfRepeatMode
 {
     switch (repeatType)
@@ -213,6 +225,20 @@ static NSLock *playbackTimerLock;
             return @"Repeat All";
         default:
             return @"";
+            break;
+    }
+}
+
++ (NSString *)stringRepresentationOfShuffleState
+{
+    switch (shuffleState)
+    {
+        case SHUFFLE_STATE_Disabled:
+            return @"Shuffle Off";
+            break;
+        case SHUFFLE_STATE_Enabled:
+            return @"Shuffle";
+        default:
             break;
     }
 }
@@ -290,6 +316,16 @@ static NSLock *playbackTimerLock;
 + (BOOL)shouldOnlyAirplayAudio
 {
     return shouldOnlyAirplayAudio;
+}
+
++ (void)setUserHasSeenCellularDataUsageWarning:(BOOL)hasSeen
+{
+    didPreviouslyShowUserCellularWarning = hasSeen;
+}
+
++ (BOOL)didPreviouslyShowUserCellularWarning
+{
+    return didPreviouslyShowUserCellularWarning;
 }
 
 + (BOOL)icloudSyncEnabled

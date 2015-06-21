@@ -66,5 +66,6 @@ NSString * const MZHideTabBarAnimated = @"Pass @YES in notif to hide tab bar";
 
 
 NSString * const MZWhatsNewUserMsg = @"This is a test message.";
+NSString * const MZAppName = @"Sterrio";
 
 @end

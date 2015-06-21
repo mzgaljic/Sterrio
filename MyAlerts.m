@@ -154,6 +154,15 @@ static NSMutableArray *queuedToastBannerOptions;
                                    customActions:nil];
             break;
         }
+        case ALERT_TYPE_WarnUserOfCellularDataFees:
+        {
+            NSString *title = @"Cellular Data Warning";
+            NSString *msg = [NSString stringWithFormat:@"Just a heads up, %@ can use large amounts of data depending on your settings. Please be conscious of your data usage as fees from your provider may apply.", MZAppName];
+            [self launchAlertViewWithDialogTitle:title
+                                      andMessage:msg
+                                   customActions:nil];
+            break;
+        }
         default:
             break;
     }

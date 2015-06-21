@@ -101,12 +101,14 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
 {
     NSUInteger numMoreItemsToSkip = totalItemsWeNeedToSkip;
     NSUInteger numMoreUpNextItems = [upNextQueue numMoreUpNextItemsCount];
-    if(numMoreUpNextItems <= numMoreItemsToSkip)
+    if(numMoreUpNextItems <= numMoreItemsToSkip){
         //even if we clear the entire upNext queue, we'll still have to skip items! so lets do it...
         [upNextQueue clearUpNext];
-    else
+        numMoreItemsToSkip -= numMoreUpNextItems;
+    }else{
         [upNextQueue efficientlySkipTheseManyItems:numMoreItemsToSkip];
-    numMoreItemsToSkip -= numMoreUpNextItems;
+        numMoreItemsToSkip = 0;
+    }
     
     if(numMoreItemsToSkip > 0)
     {

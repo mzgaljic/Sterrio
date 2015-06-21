@@ -30,12 +30,15 @@
         short prefCellStreamQuality = 240;
         BOOL icloudSync = NO;
         BOOL shouldOnlyAirplayAudio = YES;
+        BOOL userHasSeenCellDataWarning = NO;
         
         [AppEnvironmentConstants setPreferredSongCellHeight:prefSongCellHeight];
         [AppEnvironmentConstants setPreferredWifiStreamSetting:prefWifiStreamQuality];
         [AppEnvironmentConstants setPreferredCellularStreamSetting:prefCellStreamQuality];
         [AppEnvironmentConstants set_iCloudSyncEnabled:icloudSync];
+        [AppEnvironmentConstants setUserHasSeenCellularDataUsageWarning:userHasSeenCellDataWarning];
         [AppEnvironmentConstants setShouldOnlyAirplayAudio:shouldOnlyAirplayAudio];
+        
         
         [[NSUserDefaults standardUserDefaults] setInteger:prefSongCellHeight
                                                    forKey:PREFERRED_SONG_CELL_HEIGHT_KEY];
@@ -45,6 +48,8 @@
                                                    forKey:PREFERRED_CELL_VALUE_KEY];
         [[NSUserDefaults standardUserDefaults] setBool:icloudSync
                                                    forKey:ICLOUD_SYNC];
+        [[NSUserDefaults standardUserDefaults] setBool:userHasSeenCellDataWarning
+                                                forKey:USER_HAS_SEEN_CELLULAR_WARNING];
         [[NSUserDefaults standardUserDefaults] setBool:shouldOnlyAirplayAudio
                                                 forKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY];
         
@@ -72,6 +77,8 @@
                         [[NSUserDefaults standardUserDefaults] boolForKey:ICLOUD_SYNC]];
         [AppEnvironmentConstants setShouldOnlyAirplayAudio:
                         [[NSUserDefaults standardUserDefaults] boolForKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY]];
+        [AppEnvironmentConstants setUserHasSeenCellularDataUsageWarning:
+                        [[NSUserDefaults standardUserDefaults] boolForKey:USER_HAS_SEEN_CELLULAR_WARNING]];
         [AppEnvironmentConstants setLastSuccessfulSyncDate:
                         [[NSUserDefaults standardUserDefaults] objectForKey:LAST_SUCCESSFUL_ICLOUD_SYNC_KEY]];
         
