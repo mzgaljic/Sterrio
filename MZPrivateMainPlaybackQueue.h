@@ -30,6 +30,7 @@
 - (void)clearMainQueue;
 - (PlayableItem *)skipToPrevious;
 - (PlayableItem *)skipForward;
+- (void)efficientlySkipTheseManyItems:(NSUInteger)numToSkip;
 
 //- (void)skipThisManyItemsInQueue:(NSUInteger)numItemsToSkip;
 - (PlayableItem *)skipToBeginningOfQueue;

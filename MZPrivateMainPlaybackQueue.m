@@ -228,6 +228,50 @@
     }
 }
 
+- (void)efficientlySkipTheseManyItems:(NSUInteger)numToSkip
+{
+    if(playbackContext == nil)
+        return;
+    else{
+        int reasonableBatchSize = 3;
+        NSArray *items = [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:reasonableBatchSize
+                                                              nowPlayingInclusive:YES
+                                                               onlyUnplayedTracks:NO];
+        if(items.count > 0){
+            NSUInteger index = [self indexOfItem:mostRecentItem inArray:&items];
+            if(index != fetchRequestIndex)
+                fetchRequestIndex = index;
+            if(userWentBeyondStartOfQueue){
+                //user is just going to move toward the item at index 0 now, since they previously went
+                //"behind" the bounds of index 0.
+                userWentBeyondStartOfQueue = NO;
+                index += numToSkip;
+                mostRecentItem = [self itemAtIndex:index inArray:&items];
+                return;
+            } else if(userWentBeyondEndOfQueue)
+                return;
+            else if(fetchRequestIndex == items.count-1){
+                //dont let user beyond end of array.
+                userWentBeyondEndOfQueue = YES;
+                return;
+            }
+            
+            index = ++fetchRequestIndex;
+            
+            if(fetchRequestIndex > items.count-1){
+                atEndOfQueue = YES;
+                //no more items can possibly be skipped...reached the last one.
+                return;
+            } else{
+                index += numToSkip;
+                mostRecentItem = [self itemAtIndex:index inArray:&items];
+                return;
+            }
+        } else{
+            return;
+        }
+    }
+}
 
 //--------------private helpers--------------
 

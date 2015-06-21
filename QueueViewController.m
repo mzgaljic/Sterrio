@@ -9,6 +9,7 @@
 #import "QueueViewController.h"
 #import "MZTableViewCell.h"
 #import "SongAlbumArt+Utilities.h"
+#import "PlayableItem.h"
 
 @interface QueueViewController ()
 {
@@ -22,7 +23,7 @@
     PlaybackContext *mainQueueContext;
     
     NSArray *upNextPlaybackContexts;
-    NSArray *upNextSongs;
+    NSArray *upNextItems;
     
     BOOL skippingToTappedSong;
     UIView *cellBackgroundBlurView;
@@ -35,20 +36,18 @@
 short const TABLE_SECTION_FOOTER_HEIGHT = 25;
 short const SECTION_EMPTY = -1;
 
-/*
 #pragma mark - View Controller life cycle
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [SongPlayerCoordinator setScreenShottingVideoPlayerAllowed:NO];
     stackController = [[StackController alloc] init];
     localAppTintColor = [[[UIColor defaultAppColorScheme] lighterColor] lighterColor];
     
     queue = [MZPlaybackQueue sharedInstance];
-    mainQueueSongsComingUp = [queue tableViewOptimizedArrayOfMainQueueSongsComingUp];
+    mainQueueItemsComingUp = [queue tableViewOptimizedArrayOfMainQueueItemsComingUp];
     mainQueueContext = [queue mainQueuePlaybackContext];
-    upNextSongs = [queue tableViewOptimizedArrayOfUpNextSongs];
-    upNextPlaybackContexts = [queue tableViewOptimizedArrayOfUpNextSongContexts];
+    upNextItems = [queue tableViewOptimizedArrayOfUpNextItems];
+    upNextPlaybackContexts = [queue tableViewOptimizedArrayOfUpNextItemsContexts];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(newSongsIsLoading)
                                                  name:MZNewSongLoading
@@ -92,9 +91,9 @@ short const SECTION_EMPTY = -1;
     cellBackgroundBlurView = nil;
     sectionHeaderBackgroundBlurView = nil;
     mainQueueContext = nil;
-    mainQueueSongsComingUp = nil;
+    mainQueueItemsComingUp = nil;
     upNextPlaybackContexts = nil;
-    upNextSongs = nil;
+    upNextItems = nil;
     stackController = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([self class]));
@@ -154,7 +153,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     [cell setSelectedBackgroundView:cellBackgroundBlurView];
 
     // Set up other aspects of the cell content.
-    Song *song = [self songForIndexPath:indexPath];
+    PlayableItem *item = [self itemForIndexPath:indexPath];
+    Song *song = item.songForItem;
     
     //init cell fields
     cell.textLabel.text = song.songName;
@@ -166,7 +166,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.textLabel.textColor = [UIColor whiteColor];
     
     cell.isRepresentingAQueuedSong = [self isUpNextSongPresentAtIndexPath:indexPath];
-    
     // Store a reference to the current cell that will enable the image to be associated with the correct
     // cell, when the image is subsequently loaded asynchronously.
     objc_setAssociatedObject(cell,
@@ -278,10 +277,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     int nowPlayingCount = 0;
-    BOOL nowPlayingSongExists = [[NowPlayingSong sharedInstance] nowPlaying] ? YES : NO;
+    BOOL nowPlayingSongExists = [[NowPlayingSong sharedInstance] nowPlayingItem] ? YES : NO;
     if(nowPlayingSongExists)
         nowPlayingCount = 1;
-    if(upNextSongs.count + mainQueueSongsComingUp.count + nowPlayingCount > 0)
+    if(upNextItems.count + mainQueueItemsComingUp.count + nowPlayingCount > 0)
         return 1;
     else
         return 0;
@@ -290,12 +289,12 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if(section == 0){
-        BOOL nowPlayingSongExists = [[NowPlayingSong sharedInstance] nowPlaying] ? YES : NO;
+        BOOL nowPlayingSongExists = [[NowPlayingSong sharedInstance] nowPlayingItem] ? YES : NO;
         NSUInteger numRows;
         if(nowPlayingSongExists)
-            numRows = upNextSongs.count + mainQueueSongsComingUp.count +1;
+            numRows = upNextItems.count + mainQueueItemsComingUp.count +1;
         else
-            numRows = upNextSongs.count + mainQueueSongsComingUp.count;
+            numRows = upNextItems.count + mainQueueItemsComingUp.count;
         return numRows;
     } else
         return 0;
@@ -317,11 +316,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     skippingToTappedSong = YES;
     
-    Song *tappedSong = [self songForIndexPath:indexPath];
-    PlaybackContext *tappedSongsContext = [self contextForIndexPath:indexPath];
+    PlayableItem *tappedItem = [self itemForIndexPath:indexPath];
     if(indexPath.row == 0
-       && [[NowPlayingSong sharedInstance] isEqualToSong:tappedSong
-                                      compareWithContext:tappedSongsContext])
+       && [[NowPlayingSong sharedInstance] isEqualToItem:tappedItem])
     {
         [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
         [MusicPlaybackController resumePlayback];
@@ -343,16 +340,15 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             [self.tableView deleteRowsAtIndexPaths:deletePaths
                                   withRowAnimation:UITableViewRowAnimationTop];
             
-#warning this method call is broken. needs to be MUCH better.
-            [[MZPlaybackQueue sharedInstance] skipOverThisManyQueueSongsEfficiently:numRowsDeleted -1];
+            [[MZPlaybackQueue sharedInstance] skipOverThisManyQueueItemsEfficiently:numRowsDeleted -1];
             [MusicPlaybackController skipToNextTrack];
             [MusicPlaybackController resumePlayback];
             
             //now need to refresh the model so everything matches up
-            mainQueueSongsComingUp = [queue tableViewOptimizedArrayOfMainQueueSongsComingUp];
+            mainQueueItemsComingUp = [queue tableViewOptimizedArrayOfMainQueueItemsComingUp];
             mainQueueContext = [queue mainQueuePlaybackContext];
-            upNextSongs = [queue tableViewOptimizedArrayOfUpNextSongs];
-            upNextPlaybackContexts = [queue tableViewOptimizedArrayOfUpNextSongContexts];
+            upNextItems = [queue tableViewOptimizedArrayOfUpNextItems];
+            upNextPlaybackContexts = [queue tableViewOptimizedArrayOfUpNextItemsContexts];
             
             [self.tableView endUpdates];
             
@@ -375,20 +371,28 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 }
 
 #pragma mark - Tableview datasource helper
-- (Song *)songForIndexPath:(NSIndexPath *)indexPath
+- (PlayableItem *)itemForIndexPath:(NSIndexPath *)indexPath
 {
     if(indexPath.section == 0){
         int row = (int)indexPath.row;
         if(row == 0)
-            return [[NowPlayingSong sharedInstance] nowPlaying];
+            return [[NowPlayingSong sharedInstance] nowPlayingItem];
         
         if(! [self isUpNextSongPresentAtIndexPath:indexPath]){
-            row -= upNextSongs.count;  //1 is for the main now playing song
+            row -= upNextItems.count;  //1 is for the main now playing song
             row--;
-            return (Song *)mainQueueSongsComingUp[row];
+            id obj = mainQueueItemsComingUp[row];
+            if([obj isMemberOfClass:[PlayableItem class]])
+                return obj;
+            else{
+                return [[PlayableItem alloc] initWithSong:obj context:mainQueueContext fromUpNextSongs:NO];
+            }
+            
         } else{
             row--;
-            return (Song *)upNextSongs[row];
+            //not checking if return type is a PlayableItem because it is always of that
+            //type from the upNextItems array.
+            return upNextItems[row];
         }
     }
     return nil;
@@ -399,14 +403,14 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     if(indexPath.section == 0){
         int row = (int)indexPath.row;
         if(row == 0){
-            if([[NowPlayingSong sharedInstance] isFromPlayNextSongs])
+            if([[NowPlayingSong sharedInstance] nowPlayingItem].isFromUpNextSongs)
                 return YES;
             else
                 return NO;
         }
         
         row--;  //take into account the now playing song.
-        int lastUpNextSongArrayIndex = (int)upNextSongs.count - 1;
+        int lastUpNextSongArrayIndex = (int)upNextItems.count - 1;
         if(row > lastUpNextSongArrayIndex)
             return NO;
         else
@@ -419,14 +423,14 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     if(indexPath.section == 0){
 
-        int row = (int)indexPath.row;
         if(! [self isUpNextSongPresentAtIndexPath:indexPath]){
             return mainQueueContext;
         } else{
             //NEED to differentiate between a context being one row (representing one song)
             //and a context in the table representing a bunch of songs from an album, etc.
-#warning CRITICAL bug.
-            return upNextPlaybackContexts[--row];
+            
+            PlayableItem *item = [self itemForIndexPath:indexPath];
+            return item.contextForItem;
         }
     }
     return nil;
@@ -438,11 +442,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     if(skippingToTappedSong)
         return;
     
-    if(mainQueueSongsComingUp.count + upNextSongs.count > 0){
+    if(mainQueueItemsComingUp.count + upNextItems.count > 0){
 #warning would be more efficient to manually delete the relevant objects within these data sources.
-        mainQueueSongsComingUp = [queue tableViewOptimizedArrayOfMainQueueSongsComingUp];
-        upNextSongs = [queue tableViewOptimizedArrayOfUpNextSongs];
-        upNextPlaybackContexts = [queue tableViewOptimizedArrayOfUpNextSongContexts];
+        mainQueueItemsComingUp = [queue tableViewOptimizedArrayOfMainQueueItemsComingUp];
+        upNextItems = [queue tableViewOptimizedArrayOfUpNextItems];
+        upNextPlaybackContexts = [queue tableViewOptimizedArrayOfUpNextItemsContexts];
         
         [self.tableView beginUpdates];
         [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]]
@@ -507,9 +511,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (void)dismissQueueTapped
 {
-    [self dismissViewControllerAnimated:YES completion:^(){
-        [SongPlayerCoordinator setScreenShottingVideoPlayerAllowed:YES];
-    }];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Othe stuff
@@ -565,6 +567,5 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     } else  //case should never happen
         return nil;
 }
-*/
 
 @end

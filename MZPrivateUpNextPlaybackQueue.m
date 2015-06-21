@@ -123,6 +123,54 @@
     return desiredItem;
 }
 
+- (void)efficientlySkipTheseManyItems:(NSUInteger)numToSkip
+{
+    PlaybackContext *aContext;
+    NSFetchRequest *aRequest;
+    int numContextsToDelete = 0;
+    NSUInteger numItemsSkipped = 0;
+    
+    //iterate until we skip the desired amount of items...
+    for(NSInteger i = 0; i < playbackContexts.count && numItemsSkipped != numToSkip; i++)
+    {
+        aContext = playbackContexts[i];
+        aRequest = aContext.request;
+        NSUInteger reasonableBatchSize = numToSkip + 10;
+        [aRequest setFetchBatchSize:reasonableBatchSize];
+        
+        NSUInteger itemIndex = 0;
+        NSArray *array = [[CoreDataManager context] executeFetchRequest:aRequest error:nil];
+        
+        NSNumber *indexNumObj = [fetchRequestIndexes objectAtIndex:i];
+        itemIndex = [indexNumObj integerValue];
+        BOOL indexWasOutOfBounds;
+        if(itemIndex <= array.count-1 && array.count != 0)
+            indexWasOutOfBounds = NO;
+        else
+            indexWasOutOfBounds = YES;
+        
+        //advance
+        itemIndex++;
+        numItemsSkipped++;
+        
+        //this context is empty, or we have just pulled the very last item from this context.
+        if(indexWasOutOfBounds || itemIndex == array.count)
+        {
+            numContextsToDelete++;
+        }
+        
+        //otherwise we continue looping until the bool condition in the loop breaks the statement...
+    }
+    
+    //delete the contexts no longer needed
+    for(int i = 0; i < numContextsToDelete; i++){
+        if(playbackContexts.count-1 >= i){
+            [playbackContexts removeObjectAtIndex:i];
+            [fetchRequestIndexes removeObjectAtIndex:i];
+        }
+    }
+}
+
 - (PlayableItem *)peekAtNextItem
 {
     PlaybackContext *aContext;
@@ -238,7 +286,7 @@
     NSMutableArray *array = [NSMutableArray array];
     if((*items).count -1 >= index){
         for(int i = (int)index; i  < (*items).count; i++){
-            [array addObject:[self itemAtIndex:index inArray:items withContext:context]];
+            [array addObject:[self itemAtIndex:i inArray:items withContext:context]];
         }
     }
     return array;

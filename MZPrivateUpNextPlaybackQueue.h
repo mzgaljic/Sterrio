@@ -28,6 +28,7 @@
 
 //skipping forward
 - (PlayableItem *)obtainAndRemoveNextItem;
+- (void)efficientlySkipTheseManyItems:(NSUInteger)numToSkip;
 - (PlayableItem *)peekAtNextItem;  //not used but maybe useful at some point?
 
 //- (void)skipThisManyItemsInQueue:(NSUInteger)numItemsToSkip;
