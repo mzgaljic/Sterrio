@@ -29,4 +29,6 @@ typedef enum {
 
 + (void)displayAlertWithAlertType:(ALERT_TYPE)type;
 
++ (void)showAllQueuedBanners;
+
 @end

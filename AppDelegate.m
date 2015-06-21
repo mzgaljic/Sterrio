@@ -173,10 +173,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    //display how many songs were skipped while user was in background (long videos skipped)
-    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_LongVideoSkippedOnCellular];
-    [MusicPlaybackController resetNumberOfLongVideosSkippedOnCellularConnection];
-    
     if([AppEnvironmentConstants isUserPreviewingAVideo]){
         [self.previewPlayer reattachLayerWithPlayer];
     }
@@ -207,6 +203,8 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
             nextEarliestAlbumArtUpdateForceTime = [self generateNextEarliestAlbumArtUpdateForceTime];
         }
     }
+    
+    [MyAlerts showAllQueuedBanners];
 }
 
 //helpers for the above method

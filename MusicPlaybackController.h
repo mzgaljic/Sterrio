@@ -112,10 +112,6 @@
 + (NSString *)messageForCurrentSpinner;
 
 #pragma mark - Dealing with problems
-+ (void)longVideoSkippedOnCellularConnection;
-+ (int)numLongVideosSkippedOnCellularConnection;
-+ (void)resetNumberOfLongVideosSkippedOnCellularConnection;
-
 + (BOOL)isPlayerStalled;
 + (void)setPlayerInStall:(BOOL)stalled;
 

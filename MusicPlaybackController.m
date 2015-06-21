@@ -21,7 +21,6 @@ static BOOL simpleSpinnerOnScreen = NO;
 static BOOL spinnerForWifiNeededOnScreen = NO;
 static BOOL internetConnectionSpinnerOnScreen = NO;
 static BOOL isPlayerStalled = NO;
-static int numLongSongsSkipped = 0;
 static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 
 @implementation MusicPlaybackController
@@ -676,21 +675,6 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void))
 }
 
 #pragma mark - Dealing with problems
-+ (void)longVideoSkippedOnCellularConnection
-{
-    numLongSongsSkipped++;
-}
-
-+ (int)numLongVideosSkippedOnCellularConnection
-{
-    return numLongSongsSkipped;
-}
-
-+ (void)resetNumberOfLongVideosSkippedOnCellularConnection
-{
-    numLongSongsSkipped = 0;
-}
-
 + (BOOL)isPlayerStalled
 {
     return isPlayerStalled;

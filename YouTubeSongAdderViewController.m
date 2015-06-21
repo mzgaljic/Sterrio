@@ -186,14 +186,20 @@ static short numberTimesViewHasBeenShown = 0;
     }
 }
 
-- (void)viewDidDisappear:(BOOL)animated
+- (void)viewWillDisappear:(BOOL)animated
 {
-    [super viewDidDisappear:animated];
-    if ([self.navigationController.viewControllers indexOfObject:self] == NSNotFound || !didPresentVc)
+    if ([self.navigationController.viewControllers indexOfObject:self]==NSNotFound)
     {
-        // Navigation back button was pressed.
-        [self preDealloc];
+        [self navBarBackButtonTapped];
+        [self.navigationController popViewControllerAnimated:NO];
+        
     }
+    [super viewWillDisappear:animated];
+}
+
+- (void)navBarBackButtonTapped
+{
+    [self preDealloc];
 }
 
 #pragma mark - Loading video
@@ -458,7 +464,10 @@ static short numberTimesViewHasBeenShown = 0;
     if (playingInfoCenter) {
         NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
         UIImage *art = lockScreenImg;
-        MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage:art];
+        MPMediaItemArtwork *albumArt;
+        if(art){
+            albumArt = [[MPMediaItemArtwork alloc] initWithImage:art];
+        }
         
         [songInfo setObject:ytVideo.videoName forKey:MPMediaItemPropertyTitle];
         if(ytVideo.channelTitle)

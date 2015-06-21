@@ -86,7 +86,7 @@ static NSMutableArray *queuedToastBannerOptions;
                                       kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
                                       kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionTop),
                                       kCRToastFontKey   :   [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18],
-                                      kCRToastNotificationTypeKey   : @(CRToastPresentationTypePush),
+                                      kCRToastNotificationTypeKey   : @(CRToastPresentationTypeCover),
                                       kCRToastImageKey  : [UIImage imageNamed:@"alert_exclamation"],
                                       };
             [MyAlerts showOrQueueUpCRToastBannerWithOptions:options];
@@ -103,7 +103,7 @@ static NSMutableArray *queuedToastBannerOptions;
                                       kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
                                       kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionTop),
                                       kCRToastFontKey   :   [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18],
-                                      kCRToastNotificationTypeKey   : @(CRToastPresentationTypePush),
+                                      kCRToastNotificationTypeKey   : @(CRToastPresentationTypeCover),
                                       kCRToastImageKey  : [UIImage imageNamed:@"alert_exclamation"],
                                       };
             [MyAlerts showOrQueueUpCRToastBannerWithOptions:options];
@@ -161,11 +161,37 @@ static NSMutableArray *queuedToastBannerOptions;
 
 + (void)showOrQueueUpCRToastBannerWithOptions:(NSDictionary *)options
 {
-    if(currentlyDisplayingBanner)
+    BOOL appIsNotActive = [UIApplication sharedApplication].applicationState != UIApplicationStateActive;
+    if(currentlyDisplayingBanner || appIsNotActive)
         [queuedToastBannerOptions addObject:options];
     else{
         currentlyDisplayingBanner = YES;
         [CRToastManager showNotificationWithOptions:options
+                                    completionBlock:^{
+                                        currentlyDisplayingBanner = NO;
+                                        if(queuedToastBannerOptions.count > 0){
+                                            NSDictionary *options = queuedToastBannerOptions[0];
+                                            [queuedToastBannerOptions removeObjectAtIndex:0];
+                                            
+                                            double delayInSeconds = 0.6;
+                                            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+                                            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                                                //code to be executed on the main queue after delay
+                                                [MyAlerts showOrQueueUpCRToastBannerWithOptions:options];
+                                            });
+                                        }
+                                    }];
+    }
+}
+
++ (void)showAllQueuedBanners
+{
+    if(queuedToastBannerOptions.count == 0)
+        return;
+    else{
+        NSDictionary *firstOption = [queuedToastBannerOptions objectAtIndex:0];
+        [queuedToastBannerOptions removeObjectAtIndex:0];
+        [CRToastManager showNotificationWithOptions:firstOption
                                     completionBlock:^{
                                         currentlyDisplayingBanner = NO;
                                         if(queuedToastBannerOptions.count > 0){
