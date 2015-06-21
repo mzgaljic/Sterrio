@@ -342,9 +342,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             
             [[MZPlaybackQueue sharedInstance] skipOverThisManyQueueItemsEfficiently:numRowsDeleted -1];
             [MusicPlaybackController skipToNextTrack];
-            [MusicPlaybackController resumePlayback];
             
             //now need to refresh the model so everything matches up
+#warning would be more efficient to manually delete the relevant objects within these data sources.
             mainQueueItemsComingUp = [queue tableViewOptimizedArrayOfMainQueueItemsComingUp];
             mainQueueContext = [queue mainQueuePlaybackContext];
             upNextItems = [queue tableViewOptimizedArrayOfUpNextItems];
