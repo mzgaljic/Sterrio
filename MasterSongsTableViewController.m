@@ -137,7 +137,8 @@ static BOOL haveCheckedCoreDataInit = NO;
     
     //This is a ghetto version of an official welcome screen.
     if([AppEnvironmentConstants shouldDisplayWelcomeScreen]){
-        NSString *msg = @"The next beta update (which will not be ready for a while) will have the capability to auto-fill all song information for you. Consider this the 2nd to last beta release.";
+        NSString *msg = MZWhatsNewUserMsg;
+#warning not production ready.
         SDCAlertView *alert3 = [[SDCAlertView alloc] initWithTitle:@"Beta"
                                                            message:msg
                                                           delegate:nil

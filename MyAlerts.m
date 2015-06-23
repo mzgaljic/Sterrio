@@ -84,9 +84,9 @@ static NSMutableArray *queuedToastBannerOptions;
                                       kCRToastAnimationInTypeKey : @(CRToastAnimationTypeGravity),
                                       kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeGravity),
                                       kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
-                                      kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionTop),
+                                      kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom),
                                       kCRToastFontKey   :   [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18],
-                                      kCRToastNotificationTypeKey   : @(CRToastPresentationTypeCover),
+                                      kCRToastNotificationTypeKey   : @(CRToastPresentationTypePush),
                                       kCRToastImageKey  : [UIImage imageNamed:@"alert_exclamation"],
                                       };
             [MyAlerts showOrQueueUpCRToastBannerWithOptions:options];
@@ -101,9 +101,9 @@ static NSMutableArray *queuedToastBannerOptions;
                                       kCRToastAnimationInTypeKey : @(CRToastAnimationTypeGravity),
                                       kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeGravity),
                                       kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
-                                      kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionTop),
+                                      kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom),
                                       kCRToastFontKey   :   [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18],
-                                      kCRToastNotificationTypeKey   : @(CRToastPresentationTypeCover),
+                                      kCRToastNotificationTypeKey   : @(CRToastPresentationTypePush),
                                       kCRToastImageKey  : [UIImage imageNamed:@"alert_exclamation"],
                                       };
             [MyAlerts showOrQueueUpCRToastBannerWithOptions:options];

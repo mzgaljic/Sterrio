@@ -200,6 +200,9 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
 }
 - (void)performPlaylistDetailVCSegueWithPlaylist:(Playlist *)aPlaylist
 {
+    if(self.tableView.editing)
+        return;
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@YES];
     if(self.searchBar.isFirstResponder){
         lastQueryBeforeForceClosingSearchBar = self.searchBar.text;
