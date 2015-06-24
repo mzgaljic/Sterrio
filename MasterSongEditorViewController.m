@@ -125,8 +125,12 @@ static int timesVCHasAppeared = 0;
 #pragma mark - Custom song tableview editor delegate stuff
 - (void)pushThisVC:(UIViewController *)vc
 {
-    dontPreDealloc = YES;
-    [self presentViewController:vc animated:YES completion:nil];
+    //using isKindOfClass because im not looking for an exact match! Just looking for
+    //any descendant of these types.
+    if([vc isKindOfClass:[UINavigationController class]])
+        [self presentViewController:vc animated:YES completion:nil];
+    else if([vc isKindOfClass:[UIViewController class]])
+        [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)performCleanupBeforeSongIsSaved:(Song *)newLibSong
