@@ -851,8 +851,6 @@
 				87DD3AB81B0AB151003AFC9B /* Model.xcdatamodeld */,
 				873538571B0A9B5B009244E4 /* Core Data Model Entity Subclasses */,
 				8735386D1B0A9B80009244E4 /* Core Data Utilities */,
-				873538741B0A9B9E009244E4 /* LQAlbumArtBackgroundUpdater.h */,
-				873538751B0A9B9E009244E4 /* LQAlbumArtBackgroundUpdater.m */,
 				873538761B0A9B9E009244E4 /* LQAlbumArtItem.h */,
 				873538771B0A9B9E009244E4 /* LQAlbumArtItem.m */,
 				873538781B0A9B9E009244E4 /* PlaybackContext.h */,
@@ -907,6 +905,8 @@
 				873538861B0A9BCA009244E4 /* YouTubeVideoQueryDelegate.h */,
 				873538871B0A9BCA009244E4 /* YouTubeVideoSearchService.h */,
 				873538881B0A9BCA009244E4 /* YouTubeVideoSearchService.m */,
+				873538741B0A9B9E009244E4 /* LQAlbumArtBackgroundUpdater.h */,
+				873538751B0A9B9E009244E4 /* LQAlbumArtBackgroundUpdater.m */,
 			);
 			name = Services;
 			sourceTree = "<group>";

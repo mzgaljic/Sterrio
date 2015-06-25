@@ -28,6 +28,8 @@ static CoreDataManager __strong *manager = nil;
 // If the coordinator doesn't already exist, it is created and the application's 
 // store added to it.
 @property (readonly,strong,nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (readonly,strong,nonatomic) NSPersistentStoreCoordinator *stackControllerPersistentStoreCoordinator;
+@property (readonly,strong,nonatomic) NSPersistentStoreCoordinator *backgroundPersistentStoreCoordinator;
 
 // Returns the URL to the application's core data sql directory.
 + (NSURL *)applicationSQLDirectory;
@@ -42,6 +44,8 @@ static NSString *MODEL_NAME = @"Model";
 @synthesize stackControllerManagedObjectContext = __stackControllerManagedObjectContext;
 @synthesize managedObjectModel = __managedObjectModel;
 @synthesize persistentStoreCoordinator = __persistentStoreCoordinator;
+@synthesize stackControllerPersistentStoreCoordinator = __stackControllerPersistentStoreCoordinator;
+@synthesize backgroundPersistentStoreCoordinator = __backgroundPersistentStoreCoordinator;
 
 //------Ensemble Vars------
 static CDEICloudFileSystem *iCloudFileSystem;
@@ -256,7 +260,7 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
     if (__stackControllerManagedObjectContext != nil)
         return __stackControllerManagedObjectContext;
     
-    NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
+    NSPersistentStoreCoordinator *coordinator = [self stackControllerPersistentStoreCoordinator];
     if (coordinator != nil)
     {
         __stackControllerManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
@@ -274,7 +278,7 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
     if (__backgroundManagedObjectContext != nil)
         return __backgroundManagedObjectContext;
     
-    NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
+    NSPersistentStoreCoordinator *coordinator = [self backgroundPersistentStoreCoordinator];
     if (coordinator != nil)
     {
         __backgroundManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
@@ -335,6 +339,72 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
     }
     else
         return __persistentStoreCoordinator;
+}
+
+- (NSPersistentStoreCoordinator *)stackControllerPersistentStoreCoordinator
+{
+    if (__stackControllerPersistentStoreCoordinator != nil)
+        return __stackControllerPersistentStoreCoordinator;
+    NSDictionary *persistentOptions = @{
+                                        NSMigratePersistentStoresAutomaticallyOption:@YES,
+                                        NSInferMappingModelAutomaticallyOption:@YES,
+                                        NSFileProtectionKey:NSFileProtectionCompleteUntilFirstUserAuthentication
+                                        };
+    NSURL *storeURL = [[CoreDataManager applicationSQLDirectory] URLByAppendingPathComponent:SQL_FILE_NAME];
+    NSError *error = nil;
+    
+    // try to initialize persistent store coordinator with options defined below
+    __stackControllerPersistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc]
+                                                   initWithManagedObjectModel:self.managedObjectModel];
+    [__stackControllerPersistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
+                                                              configuration:nil
+                                                                        URL:storeURL
+                                                                    options:persistentOptions
+                                                                      error:&error];
+    if(error)
+    {
+        NSLog(@"[ERROR] Problem initializing persistent store coordinator:\n %@, %@", error,
+              [error localizedDescription]);
+        
+        //usually happens when the underlying model is different than the one our program is using.
+        //I test for this in StartupViewController.h
+        return nil;
+    }
+    else
+        return __stackControllerPersistentStoreCoordinator;
+}
+
+- (NSPersistentStoreCoordinator *)backgroundPersistentStoreCoordinator
+{
+    if (__backgroundPersistentStoreCoordinator != nil)
+        return __backgroundPersistentStoreCoordinator;
+    NSDictionary *persistentOptions = @{
+                                        NSMigratePersistentStoresAutomaticallyOption:@YES,
+                                        NSInferMappingModelAutomaticallyOption:@YES,
+                                        NSFileProtectionKey:NSFileProtectionCompleteUntilFirstUserAuthentication
+                                        };
+    NSURL *storeURL = [[CoreDataManager applicationSQLDirectory] URLByAppendingPathComponent:SQL_FILE_NAME];
+    NSError *error = nil;
+    
+    // try to initialize persistent store coordinator with options defined below
+    __backgroundPersistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc]
+                                              initWithManagedObjectModel:self.managedObjectModel];
+    [__backgroundPersistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
+                                                         configuration:nil
+                                                                   URL:storeURL
+                                                               options:persistentOptions
+                                                                 error:&error];
+    if(error)
+    {
+        NSLog(@"[ERROR] Problem initializing persistent store coordinator:\n %@, %@", error,
+              [error localizedDescription]);
+        
+        //usually happens when the underlying model is different than the one our program is using.
+        //I test for this in StartupViewController.h
+        return nil;
+    }
+    else
+        return __backgroundPersistentStoreCoordinator;
 }
 
 // Returns the URL to the application's Library directory (original method returned documents dir)
