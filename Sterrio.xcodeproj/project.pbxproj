@@ -215,6 +215,11 @@
 		87353A8F1B0AAA36009244E4 /* PlaylistItem+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A861B0AAA36009244E4 /* PlaylistItem+Utilities.m */; };
 		87353A901B0AAA36009244E4 /* Song+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A881B0AAA36009244E4 /* Song+Utilities.m */; };
 		87353A911B0AAA36009244E4 /* SongAlbumArt+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A8A1B0AAA36009244E4 /* SongAlbumArt+Utilities.m */; };
+		87A953621B3E1E54002E9872 /* MZMusicBrainz.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9535E1B3E1E54002E9872 /* MZMusicBrainz.m */; };
+		87A953631B3E1E54002E9872 /* MZSongMetaData.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A953611B3E1E54002E9872 /* MZSongMetaData.m */; };
+		87A9536C1B3E242A002E9872 /* SMURLImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A953681B3E242A002E9872 /* SMURLImageView.m */; };
+		87A9536D1B3E242A002E9872 /* LICENSE_webRequest.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A953691B3E242A002E9872 /* LICENSE_webRequest.txt */; };
+		87A9536E1B3E242A002E9872 /* SMWebRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9536B1B3E242A002E9872 /* SMWebRequest.m */; };
 		87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */; };
 		87DD3ABB1B0AB151003AFC9B /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB81B0AB151003AFC9B /* Model.xcdatamodeld */; };
 		CC4EB50DFF2CD80A06134B69 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B206C6594633BB85400EBDC /* libPods.a */; };
@@ -641,6 +646,16 @@
 		87353A881B0AAA36009244E4 /* Song+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Song+Utilities.m"; sourceTree = "<group>"; };
 		87353A891B0AAA36009244E4 /* SongAlbumArt+Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SongAlbumArt+Utilities.h"; sourceTree = "<group>"; };
 		87353A8A1B0AAA36009244E4 /* SongAlbumArt+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SongAlbumArt+Utilities.m"; sourceTree = "<group>"; };
+		87A9535D1B3E1E54002E9872 /* MZMusicBrainz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZMusicBrainz.h; sourceTree = "<group>"; };
+		87A9535E1B3E1E54002E9872 /* MZMusicBrainz.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZMusicBrainz.m; sourceTree = "<group>"; };
+		87A9535F1B3E1E54002E9872 /* MZMusicBrainzDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZMusicBrainzDelegate.h; sourceTree = "<group>"; };
+		87A953601B3E1E54002E9872 /* MZSongMetaData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZSongMetaData.h; sourceTree = "<group>"; };
+		87A953611B3E1E54002E9872 /* MZSongMetaData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZSongMetaData.m; sourceTree = "<group>"; };
+		87A953671B3E242A002E9872 /* SMURLImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMURLImageView.h; sourceTree = "<group>"; };
+		87A953681B3E242A002E9872 /* SMURLImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMURLImageView.m; sourceTree = "<group>"; };
+		87A953691B3E242A002E9872 /* LICENSE_webRequest.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE_webRequest.txt; sourceTree = "<group>"; };
+		87A9536A1B3E242A002E9872 /* SMWebRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMWebRequest.h; sourceTree = "<group>"; };
+		87A9536B1B3E242A002E9872 /* SMWebRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMWebRequest.m; sourceTree = "<group>"; };
 		87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailComposerManager.m; sourceTree = "<group>"; };
 		87DD3AB91B0AB151003AFC9B /* Model 1.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 1.0.xcdatamodel"; sourceTree = "<group>"; };
 		87DD3ABA1B0AB151003AFC9B /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
@@ -907,6 +922,7 @@
 				873538881B0A9BCA009244E4 /* YouTubeVideoSearchService.m */,
 				873538741B0A9B9E009244E4 /* LQAlbumArtBackgroundUpdater.h */,
 				873538751B0A9B9E009244E4 /* LQAlbumArtBackgroundUpdater.m */,
+				87A953641B3E1E5F002E9872 /* MusicBrainz */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -1321,6 +1337,7 @@
 		8735397B1B0AA14E009244E4 /* Imported Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				87A953651B3E242A002E9872 /* SMWebRequest */,
 				87353A771B0AA7C5009244E4 /* JamAccurateSlider */,
 				87353A611B0AA32A009244E4 /* AutoScrollLabel */,
 				87353A2A1B0AA298009244E4 /* MRProgress */,
@@ -1635,6 +1652,38 @@
 			name = "Entity Subclass Utils";
 			sourceTree = "<group>";
 		};
+		87A953641B3E1E5F002E9872 /* MusicBrainz */ = {
+			isa = PBXGroup;
+			children = (
+				87A9535D1B3E1E54002E9872 /* MZMusicBrainz.h */,
+				87A9535E1B3E1E54002E9872 /* MZMusicBrainz.m */,
+				87A9535F1B3E1E54002E9872 /* MZMusicBrainzDelegate.h */,
+				87A953601B3E1E54002E9872 /* MZSongMetaData.h */,
+				87A953611B3E1E54002E9872 /* MZSongMetaData.m */,
+			);
+			name = MusicBrainz;
+			sourceTree = "<group>";
+		};
+		87A953651B3E242A002E9872 /* SMWebRequest */ = {
+			isa = PBXGroup;
+			children = (
+				87A953661B3E242A002E9872 /* Extras */,
+				87A953691B3E242A002E9872 /* LICENSE_webRequest.txt */,
+				87A9536A1B3E242A002E9872 /* SMWebRequest.h */,
+				87A9536B1B3E242A002E9872 /* SMWebRequest.m */,
+			);
+			path = SMWebRequest;
+			sourceTree = "<group>";
+		};
+		87A953661B3E242A002E9872 /* Extras */ = {
+			isa = PBXGroup;
+			children = (
+				87A953671B3E242A002E9872 /* SMURLImageView.h */,
+				87A953681B3E242A002E9872 /* SMURLImageView.m */,
+			);
+			path = Extras;
+			sourceTree = "<group>";
+		};
 		95A486A0294577F099EF7326 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -1747,6 +1796,7 @@
 				873539E11B0AA1CB009244E4 /* LICENSE color cube.txt in Resources */,
 				873538041B0A9A5C009244E4 /* LICENCE-FAQ_ubuntu.txt in Resources */,
 				873537F71B0A9A38009244E4 /* Ubuntu.ttf in Resources */,
+				87A9536D1B3E242A002E9872 /* LICENSE_webRequest.txt in Resources */,
 				873538011B0A9A5C009244E4 /* copyright_ubuntu.txt in Resources */,
 				873538051B0A9A5C009244E4 /* README_ubuntu.txt in Resources */,
 				873537F41B0A9A38009244E4 /* Ubuntu-Bold.ttf in Resources */,
@@ -1830,6 +1880,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87A9536E1B3E242A002E9872 /* SMWebRequest.m in Sources */,
 				873538A21B0A9C40009244E4 /* MZPrivateMainPlaybackQueue.m in Sources */,
 				87353A231B0AA283009244E4 /* ActionSheetCustomPicker.m in Sources */,
 				873538B91B0A9CB3009244E4 /* ExistingArtistPickerTableViewController.m in Sources */,
@@ -1923,10 +1974,12 @@
 				873539711B0AA10F009244E4 /* AllSongsDataSource.m in Sources */,
 				87353A8D1B0AAA36009244E4 /* Artist+Utilities.m in Sources */,
 				87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */,
+				87A9536C1B3E242A002E9872 /* SMURLImageView.m in Sources */,
 				87353A441B0AA2C9009244E4 /* MRIconView.m in Sources */,
 				873539411B0AA00C009244E4 /* EditableCellTableViewController.m in Sources */,
 				873539381B0A9FCE009244E4 /* MZPreviewPlayer.m in Sources */,
 				8735390C1B0A9ED2009244E4 /* NewSettingsTableViewController.m in Sources */,
+				87A953631B3E1E54002E9872 /* MZSongMetaData.m in Sources */,
 				873538411B0A9AF4009244E4 /* UIDevice+DeviceName.m in Sources */,
 				87353A911B0AAA36009244E4 /* SongAlbumArt+Utilities.m in Sources */,
 				873539C51B0AA1B3009244E4 /* SDCAlertController.m in Sources */,
@@ -1984,6 +2037,7 @@
 				873539E91B0AA1E2009244E4 /* ProgressHUD.m in Sources */,
 				8735387E1B0A9B9E009244E4 /* PlaybackContext.m in Sources */,
 				873539F61B0AA216009244E4 /* MGSwipeTableCell.m in Sources */,
+				87A953621B3E1E54002E9872 /* MZMusicBrainz.m in Sources */,
 				873538E71B0A9D2D009244E4 /* SongPlayerViewDisplayUtility.m in Sources */,
 				873539CC1B0AA1B3009244E4 /* SDCAlertLabel.m in Sources */,
 				873538891B0A9BCA009244E4 /* LevenshteinDistanceItem.m in Sources */,

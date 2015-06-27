@@ -65,7 +65,7 @@ NSString * const MZHideTabBarAnimated = @"Pass @YES in notif to hide tab bar";
 
 
 
-NSString * const MZWhatsNewUserMsg = @"Welcome to the 2nd to last beta. The very last one will be able to auto-fill song info, making the process of adding new songs less cumbersome. The App should feel very polished for the most part.";
+NSString * const MZWhatsNewUserMsg = @"This is a quick fix for some big issues (crashing and strange page navigation issues).";
 NSString * const MZAppName = @"Sterrio";
 
 @end

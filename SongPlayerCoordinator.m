@@ -103,7 +103,6 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     }
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    __weak PlayerView *weakPlayerView = playerView;
     
     [UIView animateWithDuration:0.70
                           delay:0
@@ -120,7 +119,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
                              
                              //+1 is because the view ALMOST covered the full screen.
                              currentPlayerFrame = CGRectMake(0, 0, screenWidth, ceil(screenHeight +1));
-                             [weakPlayerView setFrame:currentPlayerFrame];
+                             [playerView setFrame:currentPlayerFrame];
                              //hide status bar
                              [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
                          }
@@ -128,19 +127,19 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
                          {
                              //show portrait player
                              currentPlayerFrame = [self bigPlayerFrameInPortrait];
-                             [weakPlayerView setFrame: currentPlayerFrame];
+                             [playerView setFrame: currentPlayerFrame];
                          }
-                         weakPlayerView.alpha = 1;  //in case player was killed.
+                         playerView.alpha = 1;  //in case player was killed.
                          
-                         MRProgressOverlayView *view = (MRProgressOverlayView *)[MRProgressOverlayView overlayForView:weakPlayerView];
+                         MRProgressOverlayView *view = (MRProgressOverlayView *)[MRProgressOverlayView overlayForView:playerView];
                          if([MusicPlaybackController isSpinnerForWifiNeededOnScreen])
                              view.titleLabelText = @"Song requires WiFi";
                          
                          [view manualLayoutSubviews];
                          
-                         CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
-                                                      fromCoordinateSpace:weakPlayerView.superview];
-                         [weakPlayerView newAirplayInUseMsgCenter:newCenter];
+                         CGPoint newCenter = [playerView convertPoint:playerView.center
+                                                  fromCoordinateSpace:playerView.superview];
+                         [playerView newAirplayInUseMsgCenter:newCenter];
 
                      } completion:nil];
 }
@@ -156,7 +155,7 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     
     wasTabBarHiddenBeforePlayerExpansion = NO;
     
-    __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
+    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     currentPlayerFrame = [self smallPlayerFrameBasedOnCurrentOrientation];
     [UIView animateWithDuration:0.56f
                           delay:0
@@ -164,18 +163,18 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
           initialSpringVelocity:0.2f
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^{
-                         weakPlayerView.frame = currentPlayerFrame;
+                         playerView.frame = currentPlayerFrame;
                          
-                         MRProgressOverlayView *view = (MRProgressOverlayView *)[MRProgressOverlayView overlayForView:weakPlayerView];
+                         MRProgressOverlayView *view = (MRProgressOverlayView *)[MRProgressOverlayView overlayForView:playerView];
                          if([MusicPlaybackController isSpinnerForWifiNeededOnScreen])
                              view.titleLabelText = @"WiFi";
                          [view manualLayoutSubviews];
-                         CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
-                                                      fromCoordinateSpace:weakPlayerView.superview];
-                         [weakPlayerView newAirplayInUseMsgCenter:newCenter];
+                         CGPoint newCenter = [playerView convertPoint:playerView.center
+                                                  fromCoordinateSpace:playerView.superview];
+                         [playerView newAirplayInUseMsgCenter:newCenter];
                      } completion:^(BOOL finished) {
                          isVideoPlayerExpanded = NO;
-                         [weakPlayerView shrunkenFrameHasChanged];
+                         [playerView shrunkenFrameHasChanged];
                      }];
 }
 
@@ -207,16 +206,15 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     [appWindow addSubview:playerView];
     [AppEnvironmentConstants recordIndexOfPlayerView:[[appWindow subviews] indexOfObject:playerView]];
     
-    __weak PlayerView *weakPlayerView = playerView;
     [UIView animateWithDuration:1
                           delay:0
          usingSpringWithDamping:0.85f
           initialSpringVelocity:1.0f
                         options:UIViewAnimationOptionCurveLinear | UIViewAnimationOptionAllowUserInteraction
                      animations:^{
-                         weakPlayerView.alpha = 1;
+                         playerView.alpha = 1;
                      } completion:^(BOOL finished) {
-                         [weakPlayerView shrunkenFrameHasChanged];
+                         [playerView shrunkenFrameHasChanged];
                      }];
 }
 
@@ -274,18 +272,18 @@ static UIInterfaceOrientation orientationOnLastRotate;
     if(![SongPlayerCoordinator isPlayerOnScreen])
         return;
     
-    __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
+    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     currentPlayerFrame = [self smallPlayerFrameBasedOnCurrentOrientation];
     
     [UIView animateWithDuration:0.6f animations:^{
-        weakPlayerView.frame = currentPlayerFrame;
-        [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
+        playerView.frame = currentPlayerFrame;
+        [[MRProgressOverlayView overlayForView:playerView] manualLayoutSubviews];
         
-        CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
-                                     fromCoordinateSpace:weakPlayerView.superview];
-        [weakPlayerView newAirplayInUseMsgCenter:newCenter];
+        CGPoint newCenter = [playerView convertPoint:playerView.center
+                                     fromCoordinateSpace:playerView.superview];
+        [playerView newAirplayInUseMsgCenter:newCenter];
     } completion:^(BOOL finished) {
-        [weakPlayerView shrunkenFrameHasChanged];
+        [playerView shrunkenFrameHasChanged];
     }];
 }
 
@@ -298,18 +296,17 @@ static UIInterfaceOrientation orientationOnLastRotate;
     if(![SongPlayerCoordinator isPlayerOnScreen])
         return;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    __weak PlayerView *weakPlayerView = [MusicPlaybackController obtainRawPlayerView];
     currentPlayerFrame = [self smallPlayerFrameBasedOnCurrentOrientation];
     
     [UIView animateWithDuration:0.6f animations:^{
         playerView.frame = currentPlayerFrame;
-        [[MRProgressOverlayView overlayForView:weakPlayerView] manualLayoutSubviews];
+        [[MRProgressOverlayView overlayForView:playerView] manualLayoutSubviews];
         
-        CGPoint newCenter = [weakPlayerView convertPoint:weakPlayerView.center
-                                     fromCoordinateSpace:weakPlayerView.superview];
-        [weakPlayerView newAirplayInUseMsgCenter:newCenter];
+        CGPoint newCenter = [playerView convertPoint:playerView.center
+                                     fromCoordinateSpace:playerView.superview];
+        [playerView newAirplayInUseMsgCenter:newCenter];
     } completion:^(BOOL finished) {
-        [weakPlayerView shrunkenFrameHasChanged];
+        [playerView shrunkenFrameHasChanged];
     }];
 }
 
