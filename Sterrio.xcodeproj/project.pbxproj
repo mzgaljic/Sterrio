@@ -24,7 +24,6 @@
 		873538091B0A9A80009244E4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873538071B0A9A80009244E4 /* LaunchScreen.storyboard */; };
 		8735380A1B0A9A80009244E4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873538081B0A9A80009244E4 /* Main.storyboard */; };
 		8735380D1B0A9A9A009244E4 /* MZConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735380C1B0A9A9A009244E4 /* MZConstants.m */; };
-		873538101B0A9AA2009244E4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735380F1B0A9AA2009244E4 /* AppDelegate.m */; };
 		873538141B0A9AC1009244E4 /* AppEnvironmentConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538131B0A9AC1009244E4 /* AppEnvironmentConstants.m */; };
 		873538191B0A9AC7009244E4 /* AppDelegateSetupHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538161B0A9AC7009244E4 /* AppDelegateSetupHelper.m */; };
 		8735381A1B0A9AC7009244E4 /* PreloadedCoreDataModelUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538181B0A9AC7009244E4 /* PreloadedCoreDataModelUtility.m */; };
@@ -215,6 +214,9 @@
 		87353A8F1B0AAA36009244E4 /* PlaylistItem+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A861B0AAA36009244E4 /* PlaylistItem+Utilities.m */; };
 		87353A901B0AAA36009244E4 /* Song+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A881B0AAA36009244E4 /* Song+Utilities.m */; };
 		87353A911B0AAA36009244E4 /* SongAlbumArt+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A8A1B0AAA36009244E4 /* SongAlbumArt+Utilities.m */; };
+		87414BC41B3FA92500FB8252 /* CoreSpotlight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		87414BC61B3FA93100FB8252 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		87414BC81B3FB85300FB8252 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87414BC71B3FB85300FB8252 /* AppDelegate.m */; };
 		87A953621B3E1E54002E9872 /* MZMusicBrainz.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9535E1B3E1E54002E9872 /* MZMusicBrainz.m */; };
 		87A953631B3E1E54002E9872 /* MZSongMetaData.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A953611B3E1E54002E9872 /* MZSongMetaData.m */; };
 		87A9536C1B3E242A002E9872 /* SMURLImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A953681B3E242A002E9872 /* SMURLImageView.m */; };
@@ -259,7 +261,6 @@
 		8735380B1B0A9A9A009244E4 /* MZConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZConstants.h; sourceTree = "<group>"; };
 		8735380C1B0A9A9A009244E4 /* MZConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZConstants.m; sourceTree = "<group>"; };
 		8735380E1B0A9AA2009244E4 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		8735380F1B0A9AA2009244E4 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		873538121B0A9AC1009244E4 /* AppEnvironmentConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppEnvironmentConstants.h; sourceTree = "<group>"; };
 		873538131B0A9AC1009244E4 /* AppEnvironmentConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppEnvironmentConstants.m; sourceTree = "<group>"; };
 		873538151B0A9AC7009244E4 /* AppDelegateSetupHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegateSetupHelper.h; sourceTree = "<group>"; };
@@ -646,6 +647,9 @@
 		87353A881B0AAA36009244E4 /* Song+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Song+Utilities.m"; sourceTree = "<group>"; };
 		87353A891B0AAA36009244E4 /* SongAlbumArt+Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SongAlbumArt+Utilities.h"; sourceTree = "<group>"; };
 		87353A8A1B0AAA36009244E4 /* SongAlbumArt+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SongAlbumArt+Utilities.m"; sourceTree = "<group>"; };
+		87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreSpotlight.framework; path = System/Library/Frameworks/CoreSpotlight.framework; sourceTree = SDKROOT; };
+		87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		87414BC71B3FB85300FB8252 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		87A9535D1B3E1E54002E9872 /* MZMusicBrainz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZMusicBrainz.h; sourceTree = "<group>"; };
 		87A9535E1B3E1E54002E9872 /* MZMusicBrainz.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZMusicBrainz.m; sourceTree = "<group>"; };
 		87A9535F1B3E1E54002E9872 /* MZMusicBrainzDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZMusicBrainzDelegate.h; sourceTree = "<group>"; };
@@ -669,6 +673,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87414BC61B3FA93100FB8252 /* MobileCoreServices.framework in Frameworks */,
+				87414BC41B3FA92500FB8252 /* CoreSpotlight.framework in Frameworks */,
 				87353A681B0AA576009244E4 /* Foundation.framework in Frameworks */,
 				87353A741B0AA5C4009244E4 /* UIKit.framework in Frameworks */,
 				87353A761B0AA5C9009244E4 /* CoreGraphics.framework in Frameworks */,
@@ -709,7 +715,7 @@
 				873538071B0A9A80009244E4 /* LaunchScreen.storyboard */,
 				873538081B0A9A80009244E4 /* Main.storyboard */,
 				8735380E1B0A9AA2009244E4 /* AppDelegate.h */,
-				8735380F1B0A9AA2009244E4 /* AppDelegate.m */,
+				87414BC71B3FB85300FB8252 /* AppDelegate.m */,
 				8735380B1B0A9A9A009244E4 /* MZConstants.h */,
 				8735380C1B0A9A9A009244E4 /* MZConstants.m */,
 				873538111B0A9AAC009244E4 /* App Helpers */,
@@ -1687,6 +1693,8 @@
 		95A486A0294577F099EF7326 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */,
+				87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */,
 				87353A751B0AA5C9009244E4 /* CoreGraphics.framework */,
 				87353A731B0AA5C4009244E4 /* UIKit.framework */,
 				87353A711B0AA5B6009244E4 /* MessageUI.framework */,
@@ -2016,7 +2024,6 @@
 				8735392D1B0A9F68009244E4 /* StackController.m in Sources */,
 				8735394A1B0AA037009244E4 /* MyTableViewController.m in Sources */,
 				8735388A1B0A9BCA009244E4 /* MZCoreDataModelDeletionService.m in Sources */,
-				873538101B0A9AA2009244E4 /* AppDelegate.m in Sources */,
 				873539CB1B0AA1B3009244E4 /* SDCAlertControllerView.m in Sources */,
 				873538FB1B0A9E95009244E4 /* ArtistItemAlbumViewController.m in Sources */,
 				873538E01B0A9D1F009244E4 /* QueueViewController.m in Sources */,
@@ -2045,6 +2052,7 @@
 				873538D91B0A9D0B009244E4 /* MusicPlaybackController.m in Sources */,
 				873539291B0A9F43009244E4 /* PreferredFontSizeUtility.m in Sources */,
 				873539D71B0AA1B3009244E4 /* UIView+SDCAutoLayout.m in Sources */,
+				87414BC81B3FB85300FB8252 /* AppDelegate.m in Sources */,
 				87353A081B0AA24B009244E4 /* UIImage+ImageEffects.m in Sources */,
 				873538191B0A9AC7009244E4 /* AppDelegateSetupHelper.m in Sources */,
 				87353A5F1B0AA316009244E4 /* MRMethodCopier.m in Sources */,

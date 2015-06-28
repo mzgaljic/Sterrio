@@ -136,7 +136,6 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
                              view.titleLabelText = @"Song requires WiFi";
                          
                          [view manualLayoutSubviews];
-                         
                          CGPoint newCenter = [playerView convertPoint:playerView.center
                                                   fromCoordinateSpace:playerView.superview];
                          [playerView newAirplayInUseMsgCenter:newCenter];

@@ -9,6 +9,8 @@
 #import "AppDelegate.h"
 #import "GSTouchesShowingWindow.h"
 #import "PreloadedCoreDataModelUtility.h"
+#import <CoreSpotlight/CoreSpotlight.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 @interface AppDelegate ()
@@ -483,6 +485,55 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
             }  //end while
         });  //end async dispatch
     }
+}
+
+#pragma mark - Spotlight Search
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *))restorationHandler
+{
+    //This activity represents an item indexed using Core Spotlight, so restore the context
+    //related to the unique identifier.
+    if ([[userActivity activityType] isEqualToString:CSSearchableItemActionType]){
+        NSString *uniqueId = [userActivity.userInfo objectForKey:CSSearchableItemActivityIdentifier];
+        Song *songFromSpotlight = [AppDelegate songObjectGivenSongId:uniqueId];
+        PlaybackContext *context = [AppDelegate contextForSpecificSongInAllSongsPage:songFromSpotlight];
+    
+        PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+        [playerView userKilledPlayer];
+        [MusicPlaybackController newQueueWithSong:songFromSpotlight withContext:context];
+    }
+    
+    return YES;
+}
+
++ (Song *)songObjectGivenSongId:(NSString *)songId
+{
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Song"];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", songId];
+    //descriptor doesnt really matter here
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
+                                                                     ascending:YES];
+    fetchRequest.sortDescriptors = @[sortDescriptor];
+    NSArray *results = [[CoreDataManager context] executeFetchRequest:fetchRequest error:nil];
+    if(results.count == 1)
+        return results[0];
+    else
+        return nil;
+}
+
++ (PlaybackContext *)contextForSpecificSongInAllSongsPage:(Song *)theSong
+{
+    NSString *allSongsPageVcName = @"MasterSongsTableViewController";
+
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
+    request.predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", theSong.uniqueId];
+    //descriptor doesnt really matter here
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
+                                                                     ascending:YES];
+    
+    request.sortDescriptors = @[sortDescriptor];
+    return [[PlaybackContext alloc] initWithFetchRequest:[request copy]
+                                         prettyQueueName:@""
+                                               contextId:allSongsPageVcName];
 }
 
 @end

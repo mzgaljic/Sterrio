@@ -10,6 +10,8 @@
 #import "AlbumAlbumArt+Utilities.h"
 #import "SongAlbumArt+Utilities.h"
 #import "IBActionSheet.h"
+#import <CoreSpotlight/CoreSpotlight.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 
 @interface MZSongModifierTableView ()
 {
@@ -472,6 +474,8 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 }
                 else
                 {
+                    [self addSongMetaDataToSpotlight:_songIAmEditing];
+                    
                     //save success
                     if(! userReplacedDefaultYoutubeArt){
                         [LQAlbumArtBackgroundUpdater downloadHqAlbumArtWhenConvenientForSongId:_songIAmEditing.uniqueId];
@@ -486,9 +490,15 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     {
                         [ensemble mergeWithCompletion:^(NSError *error) {
                             if(error){
-                                NSLog(@"Saved song (editing mode), but couldnt merge.");
+                                if(self.creatingANewSong)
+                                    NSLog(@"Saved song (creation mode), but couldnt merge.");
+                                else
+                                    NSLog(@"Saved song (editing mode), but couldnt merge.");
                             } else{
-                                NSLog(@"Just Merged after saving song (editing mode).");
+                                if(self.creatingANewSong)
+                                    NSLog(@"Just Merged after saving song (creation mode).");
+                                else
+                                    NSLog(@"Just Merged after saving song (editing mode).");
                                 [AppEnvironmentConstants setLastSuccessfulSyncDate:[[NSDate alloc] init]];
                             }
                         }];
@@ -500,6 +510,36 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         else
             return;
     }
+}
+
+#pragma mark - Core Spotlight API stuff
+- (void)addSongMetaDataToSpotlight:(Song *)newSong
+{
+    // Create an attribute set for an item that represents an audio-visual content.
+    CSSearchableItemAttributeSet *attributeSet = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:(NSString *)kUTTypeAudiovisualContent];
+    // Properties that describe attributes of the item such as title, description, and image.
+    attributeSet.title = newSong.songName;
+    attributeSet.duration = newSong.duration;
+    attributeSet.originalSource = @"YouTube";
+    if(newSong.artist)
+        attributeSet.artist = newSong.artist.artistName;
+    if(newSong.album)
+        attributeSet.album = newSong.album.albumName;
+    
+    // Create a searchable item, specifying its ID, associated domain, and attributes.
+    CSSearchableItem *item = [[CSSearchableItem alloc] initWithUniqueIdentifier:newSong.uniqueId
+                                                               domainIdentifier:@"Sterrio.SongItem"
+                                                                   attributeSet:attributeSet];
+    item.expirationDate = [NSDate distantFuture];
+    
+    // Index the items.
+    [[CSSearchableIndex defaultSearchableIndex] indexSearchableItems:@[item] completionHandler: ^(NSError * __nullable error) {
+        if(error){
+            NSLog(@"Error indexing item(s) in Spotlight.");
+        } else{
+            NSLog(@"Item(s) indexed in Spotlight.");
+        }
+    }];
 }
 
 

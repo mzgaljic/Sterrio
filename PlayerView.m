@@ -143,7 +143,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     [self performSelector:@selector(resetLastPlayableItem) withObject:nil afterDelay:0.2];
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     [player dismissAllSpinners];
-    [player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+    [player replaceCurrentItemWithPlayerItem:nil];
     [SongPlayerCoordinator playerWasKilled:YES];
     [[NowPlayingSong sharedInstance] setNewNowPlayingItem:nil];
     
