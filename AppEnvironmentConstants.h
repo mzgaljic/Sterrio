@@ -43,6 +43,7 @@ typedef enum{
 
 //runtime configuration
 + (BOOL)isUserOniOS8OrAbove;
++ (BOOL)isUserOniOS9OrAbove;
 
 /**
  Returns YES if the user is currently on a phone call

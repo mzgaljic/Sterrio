@@ -13,6 +13,7 @@
 #import "AlbumAlbumArt+Utilities.h"
 #import "PlayableItem.h"
 #import "PreviousNowPlayingInfo.h"
+#import "SpotlightHelper.h"
 
 @interface AllAlbumsDataSource ()
 {
@@ -317,6 +318,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         else
              album = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
+        [SpotlightHelper removeAlbumSongsFromSpotlightIndex:album];
         [MZCoreDataModelDeletionService prepareAlbumForDeletion:album];
         
         //remove songs from queue if they are in it

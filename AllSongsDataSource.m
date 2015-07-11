@@ -15,6 +15,7 @@
 #import "SongAlbumArt+Utilities.h"
 #import "PlayableItem.h"
 #import "PreviousNowPlayingInfo.h"
+#import "SpotlightHelper.h"
 
 @interface AllSongsDataSource ()
 {
@@ -268,6 +269,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             song = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
         [MusicPlaybackController songAboutToBeDeleted:song deletionContext:self.playbackContext];
+        [SpotlightHelper removeSongFromSpotlightIndex:song];
         [MZCoreDataModelDeletionService prepareSongForDeletion:song];
         
         [[CoreDataManager context] deleteObject:song];

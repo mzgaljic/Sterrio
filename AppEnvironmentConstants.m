@@ -60,6 +60,19 @@ static BOOL shouldOnlyAirplayAudio;
         return NO;
 }
 
++ (BOOL)isUserOniOS9OrAbove
+{
+    if([AppEnvironmentConstants isUserOniOS8OrAbove]){
+        NSOperatingSystemVersion ios9;
+        ios9.majorVersion = 9;
+        ios9.minorVersion = 0;
+        ios9.patchVersion = 0;
+        return [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:ios9];
+    }
+    else
+        return NO;
+}
+
 
 + (BOOL)isUserCurrentlyOnCall
 {    

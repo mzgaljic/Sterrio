@@ -495,6 +495,8 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     if ([[userActivity activityType] isEqualToString:CSSearchableItemActionType]){
         NSString *uniqueId = [userActivity.userInfo objectForKey:CSSearchableItemActivityIdentifier];
         Song *songFromSpotlight = [AppDelegate songObjectGivenSongId:uniqueId];
+        if(songFromSpotlight == nil)
+            return NO;
         PlaybackContext *context = [AppDelegate contextForSpecificSongInAllSongsPage:songFromSpotlight];
     
         PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];

@@ -238,7 +238,7 @@
             NSString *buildNum = [UIDevice appBuildString];
             NSString *deviceName = [UIDevice deviceName];
             
-            NSString *body = @"Name the bug:\n\nLocation of issue (in App):\n\n\nIt's OK to get in touch with me if something is unclear: (Y/N)\n\n\n~Bug Details~\nBasic Description:\n\nSteps for reproducing the bug, if possible:\n1)\n2)\n\n\n~Bug Report Info~\ntime&date\nApp Version: appVersion# (build build#)\niOS Version: iosVersion#\nDevice: deviceName#";
+            NSString *body = @"Name the bug:\n\nLocation of issue (in App):\n\n\nIt's okay to get in touch with me if something is unclear: (Y/N)\n\n\n~Bug Details~\nBasic Description:\n\nSteps for reproducing the bug, if possible:\n1)\n2)\n\n\n~Bug Report Info~\ntime&date\nApp Version: appVersion# (build build#)\niOS Version: iosVersion#\nDevice: deviceName#";
             
             body = [body stringByReplacingOccurrencesOfString:@"time&date" withString:[self buildCurrentEstTimeString]];
             body = [body stringByReplacingOccurrencesOfString:@"appVersion#" withString:appVersion];

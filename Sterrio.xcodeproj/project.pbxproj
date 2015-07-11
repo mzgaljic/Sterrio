@@ -217,6 +217,7 @@
 		87414BC41B3FA92500FB8252 /* CoreSpotlight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		87414BC61B3FA93100FB8252 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		87414BC81B3FB85300FB8252 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87414BC71B3FB85300FB8252 /* AppDelegate.m */; };
+		8773AE2D1B509A5500C3E64E /* SpotlightHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */; };
 		87A953621B3E1E54002E9872 /* MZMusicBrainz.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9535E1B3E1E54002E9872 /* MZMusicBrainz.m */; };
 		87A953631B3E1E54002E9872 /* MZSongMetaData.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A953611B3E1E54002E9872 /* MZSongMetaData.m */; };
 		87A9536C1B3E242A002E9872 /* SMURLImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A953681B3E242A002E9872 /* SMURLImageView.m */; };
@@ -650,6 +651,8 @@
 		87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreSpotlight.framework; path = System/Library/Frameworks/CoreSpotlight.framework; sourceTree = SDKROOT; };
 		87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		87414BC71B3FB85300FB8252 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		8773AE2B1B509A5500C3E64E /* SpotlightHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpotlightHelper.h; sourceTree = "<group>"; };
+		8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpotlightHelper.m; sourceTree = "<group>"; };
 		87A9535D1B3E1E54002E9872 /* MZMusicBrainz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZMusicBrainz.h; sourceTree = "<group>"; };
 		87A9535E1B3E1E54002E9872 /* MZMusicBrainz.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZMusicBrainz.m; sourceTree = "<group>"; };
 		87A9535F1B3E1E54002E9872 /* MZMusicBrainzDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZMusicBrainzDelegate.h; sourceTree = "<group>"; };
@@ -928,6 +931,8 @@
 				873538881B0A9BCA009244E4 /* YouTubeVideoSearchService.m */,
 				873538741B0A9B9E009244E4 /* LQAlbumArtBackgroundUpdater.h */,
 				873538751B0A9B9E009244E4 /* LQAlbumArtBackgroundUpdater.m */,
+				8773AE2B1B509A5500C3E64E /* SpotlightHelper.h */,
+				8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */,
 				87A953641B3E1E5F002E9872 /* MusicBrainz */,
 			);
 			name = Services;
@@ -2011,6 +2016,7 @@
 				87353A061B0AA24B009244E4 /* AFBlurSegue.m in Sources */,
 				873538DB1B0A9D0B009244E4 /* PlayerView.m in Sources */,
 				873538AA1B0A9C52009244E4 /* ReachabilitySingleton.m in Sources */,
+				8773AE2D1B509A5500C3E64E /* SpotlightHelper.m in Sources */,
 				873539521B0AA062009244E4 /* CustomYoutubeTableViewCell.m in Sources */,
 				873538A91B0A9C52009244E4 /* OperationQueuesSingeton.m in Sources */,
 				873539CD1B0AA1B3009244E4 /* SDCAlertPresentationController.m in Sources */,

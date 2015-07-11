@@ -10,8 +10,7 @@
 #import "AlbumAlbumArt+Utilities.h"
 #import "SongAlbumArt+Utilities.h"
 #import "IBActionSheet.h"
-#import <CoreSpotlight/CoreSpotlight.h>
-#import <MobileCoreServices/MobileCoreServices.h>
+#import "SpotlightHelper.h"
 
 @interface MZSongModifierTableView ()
 {
@@ -474,9 +473,10 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 }
                 else
                 {
-                    [self addSongMetaDataToSpotlight:_songIAmEditing];
-                    
                     //save success
+                    
+                    [SpotlightHelper addSongToSpotlightIndex:_songIAmEditing];
+                    
                     if(! userReplacedDefaultYoutubeArt){
                         [LQAlbumArtBackgroundUpdater downloadHqAlbumArtWhenConvenientForSongId:_songIAmEditing.uniqueId];
                         [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
@@ -511,38 +511,6 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             return;
     }
 }
-
-#pragma mark - Core Spotlight API stuff
-- (void)addSongMetaDataToSpotlight:(Song *)newSong
-{
-    // Create an attribute set for an item that represents an audio-visual content.
-    CSSearchableItemAttributeSet *attributeSet = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:(NSString *)kUTTypeAudiovisualContent];
-    // Properties that describe attributes of the item such as title, description, and image.
-    attributeSet.title = newSong.songName;
-    attributeSet.duration = newSong.duration;
-    attributeSet.originalSource = @"YouTube";
-    if(newSong.artist)
-        attributeSet.artist = newSong.artist.artistName;
-    if(newSong.album)
-        attributeSet.album = newSong.album.albumName;
-    
-    // Create a searchable item, specifying its ID, associated domain, and attributes.
-    CSSearchableItem *item = [[CSSearchableItem alloc] initWithUniqueIdentifier:newSong.uniqueId
-                                                               domainIdentifier:@"Sterrio.SongItem"
-                                                                   attributeSet:attributeSet];
-    item.expirationDate = [NSDate distantFuture];
-    
-    // Index the items.
-    [[CSSearchableIndex defaultSearchableIndex] indexSearchableItems:@[item] completionHandler: ^(NSError * __nullable error) {
-        if(error){
-            NSLog(@"Error indexing item(s) in Spotlight.");
-        } else{
-            NSLog(@"Item(s) indexed in Spotlight.");
-        }
-    }];
-}
-
-
 #pragma mark - Song editing logic
 #pragma mark - Editing text fields and creating new stuff
 - (void)songNameEditingComplete:(NSNotification *)notification
@@ -1075,6 +1043,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 - (void)songEditingWasSuccessful
 {
     [[CoreDataManager sharedInstance] saveContext]; //saves the context to disk
+    [SpotlightHelper updateSpotlightIndexForSong:_songIAmEditing];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
     [self.VC dismissViewControllerAnimated:YES completion:nil];
     [self preDealloc];

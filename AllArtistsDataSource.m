@@ -13,6 +13,7 @@
 #import "ArtistItemAlbumViewController.h"
 #import "PlayableItem.h"
 #import "PreviousNowPlayingInfo.h"
+#import "SpotlightHelper.h"
 
 @interface AllArtistsDataSource ()
 {
@@ -247,6 +248,8 @@
                                               deletionContext:self.playbackContext];
             anAlbum.albumArt = nil;
         }
+        
+        [SpotlightHelper removeArtistSongsFromSpotlightIndex:artist];
         
         //delete the artist and save changes
         [[CoreDataManager context] deleteObject:artist];
