@@ -103,6 +103,34 @@
     [SpotlightHelper addSongToSpotlightIndex:aSong];
 }
 
++ (void)updateSpotlightIndexForAlbum:(Album *)anAlbum
+{
+    if(! [AppEnvironmentConstants isUserOniOS9OrAbove])
+        return;
+    
+    NSSet *albumSongs = anAlbum.albumSongs;
+    [albumSongs enumerateObjectsUsingBlock:^(id  __nonnull obj, BOOL * __nonnull stop) {
+        //CoreSpotlight seems to update the existing indexed item if you re-add it.
+        //iterating through all of albums songs and re-adding them to make sure everything
+        //is updated.
+        [SpotlightHelper addSongToSpotlightIndex:(Song *)obj];
+    }];
+}
+
++ (void)updateSpotlightIndexForArtist:(Artist *)anArtist
+{
+    if(! [AppEnvironmentConstants isUserOniOS9OrAbove])
+        return;
+    NSSet *artistStandaloneSongs = anArtist.standAloneSongs;
+    NSSet *artistAlbums = anArtist.albums;
+    [artistStandaloneSongs enumerateObjectsUsingBlock:^(id  __nonnull obj, BOOL * __nonnull stop) {
+        [SpotlightHelper updateSpotlightIndexForSong:(Song *)obj];
+    }];
+    [artistAlbums enumerateObjectsUsingBlock:^(id  __nonnull obj, BOOL * __nonnull stop) {
+        [SpotlightHelper updateSpotlightIndexForAlbum:(Album *)obj];
+    }];
+}
+
 + (NSString *)spotlightIndexItemDomainIdGivenSong:(Song *)aSong
 {
     if(aSong == nil)

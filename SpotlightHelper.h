@@ -17,5 +17,7 @@
 + (void)removeArtistSongsFromSpotlightIndex:(Artist *)anArtist;
 
 + (void)updateSpotlightIndexForSong:(Song *)aSong;
++ (void)updateSpotlightIndexForAlbum:(Album *)anAlbum;
++ (void)updateSpotlightIndexForArtist:(Artist *)anArtist;
 
 @end

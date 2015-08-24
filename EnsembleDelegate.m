@@ -11,6 +11,8 @@
 #import "AlbumAlbumArt.h"
 #import "SongAlbumArt.h"
 #import "AppEnvironmentConstants.h"
+#import "MRProgress.h"
+#import "SpotlightHelper.h"
 
 @implementation EnsembleDelegate
 
@@ -44,11 +46,6 @@
 
 - (void)ensemblesHasDownloadedFilesToMerge
 {
-    //we try to merge when user returns app to foreground. lets only merge these changes
-    //if app is currently the active app.
-    if([UIApplication sharedApplication].applicationState != UIApplicationStateActive)
-        return;
-    
     CDEPersistentStoreEnsemble *ensemble = [[CoreDataManager sharedInstance] ensembleForMainContext];
     [ensemble mergeWithCompletion:^(NSError *error) {
         if(error){
@@ -63,27 +60,85 @@
 //METHOD INVOKED ON BACKGROUND THREAD
 - (void)persistentStoreEnsemble:(CDEPersistentStoreEnsemble *)ensemble didSaveMergeChangesWithNotification:(NSNotification *)notification
 {
-    NSManagedObjectContext *managedObjectContext = [CoreDataManager context];
-    [managedObjectContext performBlock:^{
-        [managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
+    NSManagedObjectContext *context = [CoreDataManager context];
+    [context performBlock:^{
+        [context mergeChangesFromContextDidSaveNotification:notification];
+    }];
+    
+    NSManagedObjectContext *stackControllerThreadContext = [CoreDataManager stackControllerThreadContext];
+    [stackControllerThreadContext performBlock:^{
+        [stackControllerThreadContext mergeChangesFromContextDidSaveNotification:notification];
     }];
     
     NSManagedObjectContext *backgroundManagedObjectContext = [CoreDataManager backgroundThreadContext];
     [backgroundManagedObjectContext performBlock:^{
         [backgroundManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
     }];
+    
+    [MRProgressOverlayView dismissAllOverlaysForView:[UIApplication sharedApplication].keyWindow
+                                            animated:YES];
 }
 
 //METHOD INVOKED ON BACKGROUND THREAD
 - (BOOL)persistentStoreEnsemble:(CDEPersistentStoreEnsemble*)ensemble shouldSaveMergedChangesInManagedObjectContext:(NSManagedObjectContext *)savingContext reparationManagedObjectContext:(NSManagedObjectContext *)reparationContext
 {
-    return ([AppEnvironmentConstants isABadTimeToMergeEnsemble]) ? NO : YES;
+    if([AppEnvironmentConstants isABadTimeToMergeEnsemble])
+        return NO;
+    else{
+        if(! [AppEnvironmentConstants isUserOniOS9OrAbove])  //spotlight can't even be used lol.
+            return YES;
+        
+        //update the spotlight index with changes in the library.
+        
+        [savingContext performBlock:^{
+            NSSet *setOfDeletedObjects = [savingContext deletedObjects];
+            
+            [setOfDeletedObjects enumerateObjectsUsingBlock:^(id  __nonnull obj, BOOL * __nonnull stop) {
+                if([obj isMemberOfClass:[Song class]]){
+                    [SpotlightHelper removeSongFromSpotlightIndex:(Song *)obj];
+                } else if([obj isMemberOfClass:[Artist class]]){
+                    [SpotlightHelper removeArtistSongsFromSpotlightIndex:(Artist *)obj];
+                } else if([obj isMemberOfClass:[Album class]]){
+                    [SpotlightHelper removeAlbumSongsFromSpotlightIndex:(Album *)obj];
+                }
+            }];
+            
+            NSSet *setOfInsertedObjects = [savingContext insertedObjects];
+            [setOfInsertedObjects enumerateObjectsUsingBlock:^(id  __nonnull obj, BOOL * __nonnull stop) {
+                //SpotlightHelper API only supports adding songs, but supports removing all 3 music types.
+                //this is by design...
+                if([obj isMemberOfClass:[Song class]]){
+                    [SpotlightHelper addSongToSpotlightIndex:(Song *)obj];
+                }
+            }];
+            
+            NSSet *setOfUpdatedObjects = [savingContext updatedObjects];
+            [setOfUpdatedObjects enumerateObjectsUsingBlock:^(id  __nonnull obj, BOOL * __nonnull stop) {
+                //stuff
+                if([obj isMemberOfClass:[Song class]]){
+                    [SpotlightHelper updateSpotlightIndexForSong:(Song *)obj];
+                } else if([obj isMemberOfClass:[Artist class]]){
+                    [SpotlightHelper updateSpotlightIndexForArtist:(Artist *)obj];
+                } else if([obj isMemberOfClass:[Album class]]){
+                    [SpotlightHelper updateSpotlightIndexForAlbum:(Album *)obj];
+                }
+            }];
+        }];
+        
+        return YES;
+    }
 }
 
 //METHOD INVOKED ON BACKGROUND THREAD
 - (NSArray *)persistentStoreEnsemble:(CDEPersistentStoreEnsemble *)ensemble
   globalIdentifiersForManagedObjects:(NSArray *)objects
 {
+    if(objects.count > 100){  //just picked a ranom large amount.
+        [MRProgressOverlayView showOverlayAddedTo:[UIApplication sharedApplication].keyWindow
+                                            title:@"Spotlight is indexing your media."
+                                             mode:MRProgressOverlayViewModeIndeterminate
+                                         animated:YES];
+    }
     NSMutableArray *arrayOfIds = [NSMutableArray array];
     [objects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         [arrayOfIds addObject:[EnsembleDelegate globalIdentifierForObject:obj]];
