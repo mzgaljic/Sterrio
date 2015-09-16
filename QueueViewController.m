@@ -136,12 +136,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     if (!cell)
         cell = [[MZTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                       reuseIdentifier:cellIdentifier];
-    else
-    {
-        // If an existing cell is being reused, reset the image to the default until it is populated.
-        // Without this code, previous images are displayed against the new people during rapid scrolling.
-        cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
-    }
+
+    cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
     cell.displayQueueSongsMode = YES;
     cell.contentView.backgroundColor = [UIColor clearColor];
     cell.backgroundColor = [UIColor clearColor];

@@ -223,8 +223,8 @@
 		87A9536C1B3E242A002E9872 /* SMURLImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A953681B3E242A002E9872 /* SMURLImageView.m */; };
 		87A9536D1B3E242A002E9872 /* LICENSE_webRequest.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A953691B3E242A002E9872 /* LICENSE_webRequest.txt */; };
 		87A9536E1B3E242A002E9872 /* SMWebRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9536B1B3E242A002E9872 /* SMWebRequest.m */; };
+		87DAA6C51B8AA9FF008D8684 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 87DAA6C21B8AA9FF008D8684 /* Model.xcdatamodeld */; };
 		87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */; };
-		87DD3ABB1B0AB151003AFC9B /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB81B0AB151003AFC9B /* Model.xcdatamodeld */; };
 		CC4EB50DFF2CD80A06134B69 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B206C6594633BB85400EBDC /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -663,9 +663,9 @@
 		87A953691B3E242A002E9872 /* LICENSE_webRequest.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE_webRequest.txt; sourceTree = "<group>"; };
 		87A9536A1B3E242A002E9872 /* SMWebRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMWebRequest.h; sourceTree = "<group>"; };
 		87A9536B1B3E242A002E9872 /* SMWebRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMWebRequest.m; sourceTree = "<group>"; };
+		87DAA6C31B8AA9FF008D8684 /* Model 1.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 1.0.xcdatamodel"; sourceTree = "<group>"; };
+		87DAA6C41B8AA9FF008D8684 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailComposerManager.m; sourceTree = "<group>"; };
-		87DD3AB91B0AB151003AFC9B /* Model 1.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 1.0.xcdatamodel"; sourceTree = "<group>"; };
-		87DD3ABA1B0AB151003AFC9B /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		8B206C6594633BB85400EBDC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		92B6CB546F4E7E88A9974B8F /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		C79109650D7488FFD1AB95FF /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -872,7 +872,7 @@
 		873538541B0A9B38009244E4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				87DD3AB81B0AB151003AFC9B /* Model.xcdatamodeld */,
+				87DAA6C21B8AA9FF008D8684 /* Model.xcdatamodeld */,
 				873538571B0A9B5B009244E4 /* Core Data Model Entity Subclasses */,
 				8735386D1B0A9B80009244E4 /* Core Data Utilities */,
 				873538761B0A9B9E009244E4 /* LQAlbumArtItem.h */,
@@ -1969,7 +1969,6 @@
 				87353A221B0AA283009244E4 /* AbstractActionSheetPicker.m in Sources */,
 				873538D01B0A9CFD009244E4 /* FetchVideoInfoOperation.m in Sources */,
 				87353A8B1B0AAA36009244E4 /* Album+Utilities.m in Sources */,
-				87DD3ABB1B0AB151003AFC9B /* Model.xcdatamodeld in Sources */,
 				873539D21B0AA1B3009244E4 /* SDCAlertViewController.m in Sources */,
 				8735395A1B0AA0A2009244E4 /* PlayableBaseDataSource.m in Sources */,
 				87353A551B0AA2F9009244E4 /* MRProgressView+AFNetworking.m in Sources */,
@@ -1982,6 +1981,7 @@
 				873538E61B0A9D2D009244E4 /* SongPlayerCoordinator.m in Sources */,
 				873537CC1B0A9981009244E4 /* main.m in Sources */,
 				873539651B0AA0CB009244E4 /* AllPlaylistsDataSource.m in Sources */,
+				87DAA6C51B8AA9FF008D8684 /* Model.xcdatamodeld in Sources */,
 				8735383E1B0A9AF4009244E4 /* UIButton+ExpandedHitArea.m in Sources */,
 				87353A8F1B0AAA36009244E4 /* PlaylistItem+Utilities.m in Sources */,
 				873539711B0AA10F009244E4 /* AllSongsDataSource.m in Sources */,
@@ -2301,13 +2301,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		87DD3AB81B0AB151003AFC9B /* Model.xcdatamodeld */ = {
+		87DAA6C21B8AA9FF008D8684 /* Model.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				87DD3AB91B0AB151003AFC9B /* Model 1.0.xcdatamodel */,
-				87DD3ABA1B0AB151003AFC9B /* Model.xcdatamodel */,
+				87DAA6C31B8AA9FF008D8684 /* Model 1.0.xcdatamodel */,
+				87DAA6C41B8AA9FF008D8684 /* Model.xcdatamodel */,
 			);
-			currentVersion = 87DD3AB91B0AB151003AFC9B /* Model 1.0.xcdatamodel */;
+			currentVersion = 87DAA6C31B8AA9FF008D8684 /* Model 1.0.xcdatamodel */;
 			path = Model.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
