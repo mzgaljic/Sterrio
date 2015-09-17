@@ -415,6 +415,15 @@ typedef enum{
 - (void)settingsPossiblyChanged
 {
     [tableView beginUpdates];
+    NSArray *visiblePaths = tableView.indexPathsForVisibleRows;
+    for(NSIndexPath *visiblePath in visiblePaths){
+        UITableViewCell *cell = [tableView cellForRowAtIndexPath:visiblePath];
+        if(! [cell.textLabel.textColor isEqualToColor:[UIColor blackColor]]){
+            //this song is unique, it's the now playing. update textcolor in case
+            //app theme changed.
+            cell.textLabel.textColor = [[UIColor defaultAppColorScheme] lighterColor];
+        }
+    }
     [tableView endUpdates];
 }
 

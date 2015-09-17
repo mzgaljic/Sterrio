@@ -1662,10 +1662,15 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
         
         NSArray *activityItems = [NSArray arrayWithObjects:shareString, nil];
         
-        __block MZActivityViewController *activityVC = [[MZActivityViewController alloc]
+        //temporarily changing app default colors for the activityviewcontroller.
+        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        appDelegate.window.tintColor = [UIColor defaultAppColorScheme];
+        [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor defaultAppColorScheme], NSForegroundColorAttributeName, nil]];
+        
+        __block UIActivityViewController *activityVC = [[UIActivityViewController alloc]
                                                         initWithActivityItems:activityItems
                                                         applicationActivities:nil];
-        __weak MZActivityViewController *weakActivityVC = activityVC;
+        __weak UIActivityViewController *weakActivityVC = activityVC;
         __weak SongPlayerViewController *weakSelf = self;
         
         activityVC.excludedActivityTypes = @[UIActivityTypePrint,
@@ -1680,6 +1685,15 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
         [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
             //finish your code when the user finish or dismiss...
             [weakSelf restoreTimeObserver];
+            
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+                //restoring default button and title font colors in the app.
+                AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+                appDelegate.window.tintColor = [UIColor defaultWindowTintColor];
+                [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor defaultWindowTintColor], NSForegroundColorAttributeName, nil]];
+                [weakSelf.navigationController.navigationBar setTitleTextAttributes:
+                 @{NSForegroundColorAttributeName:[UIColor defaultWindowTintColor]}];
+            }];
         }];
         [self presentViewController:activityVC
                            animated:YES

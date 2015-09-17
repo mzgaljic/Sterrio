@@ -163,6 +163,15 @@ static NSMutableArray *queuedToastBannerOptions;
                                    customActions:nil];
             break;
         }
+        case ALERT_TYPE_NowPlayingSongWasDeletedOnOtherDevice:
+        {
+            NSString *title = @"Current Song Deleted";
+            NSString *msg = [NSString stringWithFormat:@"The previously playing song was deleted on another one of your devices. This device has synced with iCloud, so the song no longer exists. Skipping ahead..."];
+            [self launchAlertViewWithDialogTitle:title
+                                      andMessage:msg
+                                   customActions:nil];
+            break;
+        }
         default:
             break;
     }

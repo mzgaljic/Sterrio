@@ -186,15 +186,13 @@ static short numberTimesViewHasBeenShown = 0;
     }
 }
 
-- (void)viewWillDisappear:(BOOL)animated
+- (void)viewDidDisappear:(BOOL)animated
 {
-    if ([self.navigationController.viewControllers indexOfObject:self]==NSNotFound)
-    {
+    if(! didPresentVc){
         [self navBarBackButtonTapped];
         [self.navigationController popViewControllerAnimated:NO];
-        
     }
-    [super viewWillDisappear:animated];
+    [super viewDidDisappear:animated];
 }
 
 - (void)navBarBackButtonTapped

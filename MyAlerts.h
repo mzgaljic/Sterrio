@@ -26,7 +26,9 @@ typedef enum {
     
     ALERT_TYPE_SongSaveHasFailed,
     
-    ALERT_TYPE_WarnUserOfCellularDataFees
+    ALERT_TYPE_WarnUserOfCellularDataFees,
+    
+    ALERT_TYPE_NowPlayingSongWasDeletedOnOtherDevice
 } ALERT_TYPE;
 
 + (void)displayAlertWithAlertType:(ALERT_TYPE)type;

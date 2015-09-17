@@ -13,6 +13,9 @@
 #import "AppEnvironmentConstants.h"
 #import "MRProgress.h"
 #import "SpotlightHelper.h"
+#import "PlayableItem.h"
+#import "MusicPlaybackController.h"
+#import "MyAlerts.h"
 
 @implementation EnsembleDelegate
 
@@ -89,12 +92,16 @@
             return YES;
         
         //update the spotlight index with changes in the library.
-        
+        __block BOOL nowPlayingDeleted = NO;
         [savingContext performBlock:^{
             NSSet *setOfDeletedObjects = [savingContext deletedObjects];
             
             [setOfDeletedObjects enumerateObjectsUsingBlock:^(id  __nonnull obj, BOOL * __nonnull stop) {
                 if([obj isMemberOfClass:[Song class]]){
+                    PlayableItem *currSong = [NowPlayingSong sharedInstance].nowPlayingItem;
+                    if([currSong isEqualToSong:(Song *)obj withContext:currSong.contextForItem]){
+                        nowPlayingDeleted = YES;
+                    }
                     [SpotlightHelper removeSongFromSpotlightIndex:(Song *)obj];
                 } else if([obj isMemberOfClass:[Artist class]]){
                     [SpotlightHelper removeArtistSongsFromSpotlightIndex:(Artist *)obj];
@@ -124,6 +131,11 @@
                 }
             }];
         }];
+        
+        if(nowPlayingDeleted){
+            [MusicPlaybackController skipToNextTrack];
+            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_NowPlayingSongWasDeletedOnOtherDevice];
+        }
         
         return YES;
     }

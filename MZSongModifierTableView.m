@@ -490,15 +490,18 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     {
                         [ensemble mergeWithCompletion:^(NSError *error) {
                             if(error){
-                                if(self.creatingANewSong)
+                                if(self.creatingANewSong){
                                     NSLog(@"Saved song (creation mode), but couldnt merge.");
-                                else
+                                } else {
                                     NSLog(@"Saved song (editing mode), but couldnt merge.");
+                                }
                             } else{
-                                if(self.creatingANewSong)
+                                if(self.creatingANewSong){
                                     NSLog(@"Just Merged after saving song (creation mode).");
-                                else
+                                } else {
                                     NSLog(@"Just Merged after saving song (editing mode).");
+                                }
+                                
                                 [AppEnvironmentConstants setLastSuccessfulSyncDate:[[NSDate alloc] init]];
                             }
                         }];

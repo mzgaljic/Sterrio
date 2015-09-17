@@ -72,8 +72,9 @@
 {
     MFMailComposeViewController *composer = [[MFMailComposeViewController alloc] init];
     
-    //tint of buttons
-    [composer.navigationBar setTintColor:[UIColor blackColor]];
+    //for cancel and send button, as well as actionsheet thingy.
+    composer.view.tintColor = [UIColor defaultAppColorScheme];
+    
     
     //title color
     composer.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor defaultAppColorScheme]};
@@ -87,18 +88,14 @@
     [composer setMessageBody:[self emailBodyForComposePurpose:self.composePurpose] isHTML:NO];
     
     if(self.attachedImage){
-        
         [composer addAttachmentData:UIImagePNGRepresentation(self.attachedImage)
                          mimeType:@"image/png"
                          fileName:@"My Screenshot"];
-        [self.photoPickerController presentViewController:composer animated:YES completion:nil];
     }
-    else
-        [self.callingVc presentViewController:composer animated:YES completion:nil];
-
     
-    if(composer)
-        composer = nil;
+    [self.callingVc.navigationController presentViewController:composer
+                                                      animated:YES
+                                                    completion:nil];
 }
 
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
@@ -161,34 +158,19 @@
     }
     
     //this alert is self-dismissing
-    float secondsUntilAutoDismiss = 2.3;
+    float secondsUntilAutoDismiss = 3;
     SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:alertTitle
                                                                     message:alertMessage
                                                              preferredStyle:SDCAlertControllerStyleAlert];
     __block SDCAlertController *blockAlert = alert;
-    
-    if(self.attachedImage){
-        //dismiss BOTH photo picker and mail composer.
-        
-        [controller.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:^{
-            if(showEmailAlertView)
-                [blockAlert presentWithCompletion:^{
-                    [blockAlert performSelector:@selector(dismissWithCompletion:)
-                                     withObject:nil
-                                     afterDelay:secondsUntilAutoDismiss];
-                }];
-        }];
-    }
-    else
-        //just dismiss the mail composer, photo picker wasnt used.
-        [controller dismissViewControllerAnimated:YES completion:^{
-            if(showEmailAlertView)
-                [blockAlert presentWithCompletion:^{
-                    [blockAlert performSelector:@selector(dismissWithCompletion:)
-                                     withObject:nil
-                                     afterDelay:secondsUntilAutoDismiss];
-                }];
-        }];
+    [controller dismissViewControllerAnimated:YES completion:^{
+        if(showEmailAlertView)
+            [blockAlert presentWithCompletion:^{
+                [blockAlert performSelector:@selector(dismissWithCompletion:)
+                                 withObject:nil
+                                 afterDelay:secondsUntilAutoDismiss];
+            }];
+    }];
 }
 
 // Launches the Mail application on the device (when does this occur?)
@@ -264,8 +246,6 @@
     if(img != nil){
         self.attachedImage = img;
     }
-    
-    //photo picker is dismissed with the mail composer at the very end. dismissing too early looks ugly.
     [self callMailComposer];
 }
 

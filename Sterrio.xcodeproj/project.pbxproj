@@ -115,7 +115,6 @@
 		873539451B0AA027009244E4 /* MySearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539441B0AA027009244E4 /* MySearchBar.m */; };
 		8735394A1B0AA037009244E4 /* MyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539471B0AA037009244E4 /* MyTableViewController.m */; };
 		8735394B1B0AA037009244E4 /* MyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539491B0AA037009244E4 /* MyViewController.m */; };
-		8735394E1B0AA040009244E4 /* MZActivityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735394D1B0AA040009244E4 /* MZActivityViewController.m */; };
 		873539521B0AA062009244E4 /* CustomYoutubeTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539511B0AA062009244E4 /* CustomYoutubeTableViewCell.m */; };
 		873539551B0AA069009244E4 /* MZTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539541B0AA069009244E4 /* MZTableViewCell.m */; };
 		8735395A1B0AA0A2009244E4 /* PlayableBaseDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539591B0AA0A2009244E4 /* PlayableBaseDataSource.m */; };
@@ -451,8 +450,6 @@
 		873539471B0AA037009244E4 /* MyTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTableViewController.m; sourceTree = "<group>"; };
 		873539481B0AA037009244E4 /* MyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyViewController.h; sourceTree = "<group>"; };
 		873539491B0AA037009244E4 /* MyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyViewController.m; sourceTree = "<group>"; };
-		8735394C1B0AA040009244E4 /* MZActivityViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZActivityViewController.h; sourceTree = "<group>"; };
-		8735394D1B0AA040009244E4 /* MZActivityViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZActivityViewController.m; sourceTree = "<group>"; };
 		873539501B0AA062009244E4 /* CustomYoutubeTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomYoutubeTableViewCell.h; sourceTree = "<group>"; };
 		873539511B0AA062009244E4 /* CustomYoutubeTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomYoutubeTableViewCell.m; sourceTree = "<group>"; };
 		873539531B0AA069009244E4 /* MZTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZTableViewCell.h; sourceTree = "<group>"; };
@@ -1215,8 +1212,6 @@
 				873539471B0AA037009244E4 /* MyTableViewController.m */,
 				873539481B0AA037009244E4 /* MyViewController.h */,
 				873539491B0AA037009244E4 /* MyViewController.m */,
-				8735394C1B0AA040009244E4 /* MZActivityViewController.h */,
-				8735394D1B0AA040009244E4 /* MZActivityViewController.m */,
 				8735394F1B0AA04B009244E4 /* Tableview Cells */,
 			);
 			name = "Custom GUI Classes";
@@ -2003,7 +1998,6 @@
 				873539CF1B0AA1B3009244E4 /* SDCAlertView.m in Sources */,
 				873538F41B0A9E78009244E4 /* AlbumItemViewController.m in Sources */,
 				873538B21B0A9C92009244E4 /* MainScreenViewController.m in Sources */,
-				8735394E1B0AA040009244E4 /* MZActivityViewController.m in Sources */,
 				87353A451B0AA2C9009244E4 /* MRNavigationBarProgressView.m in Sources */,
 				87353A311B0AA2B0009244E4 /* UIImage+MRImageEffects.m in Sources */,
 				873539D41B0AA1B3009244E4 /* SDCDemoViewController.m in Sources */,

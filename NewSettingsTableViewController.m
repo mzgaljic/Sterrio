@@ -63,7 +63,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
     [super viewWillAppear:animated];
     [self.tableView reloadData];
     
-    mailComposer = nil;
+    //mailComposer = nil;
 }
 
 - (void)dealloc
