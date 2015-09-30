@@ -513,6 +513,7 @@ static short numberTimesViewHasBeenShown = 0;
 #pragma mark - Share Button Tapped
 - (void)shareButtonTapped
 {
+    didPresentVc = YES;
     YouTubeVideo *currentVideo = ytVideo;
     if(currentVideo){
         NSString *youtubeLinkBeginning = @"www.youtube.com/watch?v=";
@@ -522,16 +523,35 @@ static short numberTimesViewHasBeenShown = 0;
         
         NSArray *activityItems = [NSArray arrayWithObjects:shareString, nil];
         
-        __block MZActivityViewController *activityVC = [[MZActivityViewController alloc] initWithActivityItems:activityItems
-                                                                                         applicationActivities:nil];
-        __weak MZActivityViewController *weakActivityVC = activityVC;
+        //temporarily changing app default colors for the activityviewcontroller.
+        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        appDelegate.window.tintColor = [UIColor defaultAppColorScheme];
+        [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor defaultAppColorScheme], NSForegroundColorAttributeName, nil]];
+        
+        __block UIActivityViewController *activityVC = [[UIActivityViewController alloc]
+                                                        initWithActivityItems:activityItems
+                                                        applicationActivities:nil];
+        __weak UIActivityViewController *weakActivityVC = activityVC;
+        __weak YouTubeSongAdderViewController *weakSelf = self;
         
         activityVC.excludedActivityTypes = @[UIActivityTypePrint,
                                              UIActivityTypeAssignToContact,
                                              UIActivityTypeSaveToCameraRoll,
                                              UIActivityTypeAirDrop];
-        //set tint color specifically for this VC so that the cancel buttons are visible
-        [activityVC.view setTintColor:[[UIColor defaultAppColorScheme] lighterColor]];
+        //set tint color specifically for this VC so that the text and buttons are visible
+        [activityVC.view setTintColor:[UIColor defaultAppColorScheme]];
+        
+        [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
+            //finish your code when the user finish or dismiss...
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+                //restoring default button and title font colors in the app.
+                AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+                appDelegate.window.tintColor = [UIColor defaultWindowTintColor];
+                [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor defaultWindowTintColor], NSForegroundColorAttributeName, nil]];
+                [weakSelf.navigationController.navigationBar setTitleTextAttributes:
+                 @{NSForegroundColorAttributeName:[UIColor defaultWindowTintColor]}];
+            }];
+        }];
         [self presentViewController:activityVC
                            animated:YES
                          completion:^{
@@ -539,7 +559,6 @@ static short numberTimesViewHasBeenShown = 0;
                              weakActivityVC.excludedActivityTypes = nil;
                              activityVC = nil;
                          }];
-        
     } else{
         // Handle error
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_TroubleSharingVideo];

@@ -18,6 +18,7 @@
 #import "MyAlerts.h"
 
 @implementation EnsembleDelegate
+static MRProgressOverlayView *hud;
 
 + (instancetype)sharedInstance
 {
@@ -77,9 +78,6 @@
     [backgroundManagedObjectContext performBlock:^{
         [backgroundManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
     }];
-    
-    [MRProgressOverlayView dismissAllOverlaysForView:[UIApplication sharedApplication].keyWindow
-                                            animated:YES];
 }
 
 //METHOD INVOKED ON BACKGROUND THREAD
@@ -93,8 +91,27 @@
         
         //update the spotlight index with changes in the library.
         __block BOOL nowPlayingDeleted = NO;
-        [savingContext performBlock:^{
+        [savingContext performBlockAndWait:^{
             NSSet *setOfDeletedObjects = [savingContext deletedObjects];
+            NSSet *setOfInsertedObjects = [savingContext insertedObjects];
+            NSSet *setOfUpdatedObjects = [savingContext updatedObjects];
+            __block NSUInteger objsIterated = 0;
+            NSUInteger totalObjCount = setOfDeletedObjects.count
+                                    + setOfInsertedObjects.count
+                                    + setOfUpdatedObjects.count;
+            
+            //if(totalObjCount > 100){
+            if(true){
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [EnsembleDelegate startTimingExecution];
+                    //shows progress bar (its updated below)
+                    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+                    hud = [MRProgressOverlayView showOverlayAddedTo:keyWindow
+                                                              title:@"Spotlight is indexing your music."
+                                                               mode:MRProgressOverlayViewModeDeterminateHorizontalBar
+                                                           animated:YES];
+                });
+            }
             
             [setOfDeletedObjects enumerateObjectsUsingBlock:^(id  __nonnull obj, BOOL * __nonnull stop) {
                 if([obj isMemberOfClass:[Song class]]){
@@ -108,18 +125,19 @@
                 } else if([obj isMemberOfClass:[Album class]]){
                     [SpotlightHelper removeAlbumSongsFromSpotlightIndex:(Album *)obj];
                 }
+                
+                [self setHudProgressTo:(float)++objsIterated / (float)totalObjCount];
             }];
             
-            NSSet *setOfInsertedObjects = [savingContext insertedObjects];
             [setOfInsertedObjects enumerateObjectsUsingBlock:^(id  __nonnull obj, BOOL * __nonnull stop) {
                 //SpotlightHelper API only supports adding songs, but supports removing all 3 music types.
                 //this is by design...
                 if([obj isMemberOfClass:[Song class]]){
                     [SpotlightHelper addSongToSpotlightIndex:(Song *)obj];
                 }
+                [self setHudProgressTo:(float)++objsIterated / (float)totalObjCount];
             }];
             
-            NSSet *setOfUpdatedObjects = [savingContext updatedObjects];
             [setOfUpdatedObjects enumerateObjectsUsingBlock:^(id  __nonnull obj, BOOL * __nonnull stop) {
                 //stuff
                 if([obj isMemberOfClass:[Song class]]){
@@ -129,6 +147,7 @@
                 } else if([obj isMemberOfClass:[Album class]]){
                     [SpotlightHelper updateSpotlightIndexForAlbum:(Album *)obj];
                 }
+                [self setHudProgressTo:(float)++objsIterated / (float)totalObjCount];
             }];
         }];
         
@@ -145,17 +164,10 @@
 - (NSArray *)persistentStoreEnsemble:(CDEPersistentStoreEnsemble *)ensemble
   globalIdentifiersForManagedObjects:(NSArray *)objects
 {
-    if(objects.count > 100){  //just picked a ranom large amount.
-        [MRProgressOverlayView showOverlayAddedTo:[UIApplication sharedApplication].keyWindow
-                                            title:@"Spotlight is indexing your media."
-                                             mode:MRProgressOverlayViewModeIndeterminate
-                                         animated:YES];
-    }
     NSMutableArray *arrayOfIds = [NSMutableArray array];
     [objects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         [arrayOfIds addObject:[EnsembleDelegate globalIdentifierForObject:obj]];
     }];
-    
     return arrayOfIds;
 }
 
@@ -165,6 +177,47 @@
         return [someObject performSelector:@selector(uniqueId)];
     } else
         return [NSNull null];
+}
+
+#pragma mark - GUI stuff
+- (void)setHudProgressTo:(float)value
+{
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        hud.progress = value;
+        
+        if(value == 1) {
+            //at 100%
+            NSUInteger minDesiredDuration = 2.3;
+            NSTimeInterval time = [EnsembleDelegate timeOnExecutionTimer];
+            
+            //ensure the hud doesn't dissapear instantly, which would look really bad.
+            if(time < minDesiredDuration){
+                [NSThread sleepForTimeInterval:fabs(time - minDesiredDuration)];
+            }
+            
+            [hud dismiss:YES];
+            hud = nil;
+        }
+    });
+}
+
+static NSDate *start;
+static NSDate *finish;
++ (void)startTimingExecution
+{
+    start = [NSDate date];
+}
+
++ (NSTimeInterval)timeOnExecutionTimer
+{
+    if(start == nil)
+        return 0;
+    finish = [NSDate date];
+    NSTimeInterval executionTime = [finish timeIntervalSinceDate:start];
+    start = nil;
+    finish = nil;
+    
+    return executionTime;
 }
 
 @end

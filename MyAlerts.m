@@ -64,7 +64,8 @@ static NSMutableArray *queuedToastBannerOptions;
             NSArray *actions = @[ok, retry];
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
-                                    customActions:actions];
+                                    customActions:actions
+                           allowsBasicLocalNotif:YES];
             break;
         }
         case ALERT_TYPE_CannotLoadVideo:
@@ -72,7 +73,8 @@ static NSMutableArray *queuedToastBannerOptions;
             NSString *msg = @"Video failed to load.";
             [self launchAlertViewWithDialogTitle:nil
                                       andMessage:msg
-                                   customActions:nil];
+                                   customActions:nil
+                           allowsBasicLocalNotif:YES];
             break;
         }
         case ALERT_TYPE_LongVideoSkippedOnCellular:
@@ -115,7 +117,8 @@ static NSMutableArray *queuedToastBannerOptions;
             NSString *msg = @"Something went wrong sharing your video.";
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
-                                   customActions:nil];
+                                   customActions:nil
+                           allowsBasicLocalNotif:NO];
             break;
         }
         case ALERT_TYPE_TroubleSharingLibrarySong:
@@ -124,7 +127,8 @@ static NSMutableArray *queuedToastBannerOptions;
             NSString *msg = @"Something went wrong sharing your song.";
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
-                                   customActions:nil];
+                                   customActions:nil
+                           allowsBasicLocalNotif:NO];
             break;
         }
         case ALERT_TYPE_CannotOpenSafariError:
@@ -133,7 +137,8 @@ static NSMutableArray *queuedToastBannerOptions;
             NSString *msg = @"Something went wrong trying to launch Safari.";
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
-                                   customActions:nil];
+                                   customActions:nil
+                           allowsBasicLocalNotif:YES];
             break;
         }
         case ALERT_TYPE_CannotOpenSelectedImageError:
@@ -142,7 +147,8 @@ static NSMutableArray *queuedToastBannerOptions;
             NSString *msg = @"The selected image could not be opened. Try a different image.";
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
-                                   customActions:nil];
+                                   customActions:nil
+                           allowsBasicLocalNotif:NO];
             break;
         }
         case ALERT_TYPE_SongSaveHasFailed:
@@ -151,7 +157,8 @@ static NSMutableArray *queuedToastBannerOptions;
             NSString *msg = @"Sorry, something went wrong saving your song.";
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
-                                   customActions:nil];
+                                   customActions:nil
+                           allowsBasicLocalNotif:NO];
             break;
         }
         case ALERT_TYPE_WarnUserOfCellularDataFees:
@@ -160,7 +167,8 @@ static NSMutableArray *queuedToastBannerOptions;
             NSString *msg = [NSString stringWithFormat:@"Just a heads up, %@ can use large amounts of data depending on your settings. Please be conscious of your data usage as fees from your provider may apply.", MZAppName];
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
-                                   customActions:nil];
+                                   customActions:nil
+                           allowsBasicLocalNotif:YES];
             break;
         }
         case ALERT_TYPE_NowPlayingSongWasDeletedOnOtherDevice:
@@ -169,7 +177,8 @@ static NSMutableArray *queuedToastBannerOptions;
             NSString *msg = [NSString stringWithFormat:@"The previously playing song was deleted on another one of your devices. This device has synced with iCloud, so the song no longer exists. Skipping ahead..."];
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
-                                   customActions:nil];
+                                   customActions:nil
+                           allowsBasicLocalNotif:YES];
             break;
         }
         default:
@@ -229,21 +238,34 @@ static NSMutableArray *queuedToastBannerOptions;
 
 + (void)launchAlertViewWithDialogTitle:(NSString *)title
                             andMessage:(NSString *)message
-                         customActions:(NSArray *)customAlertActions;
+                         customActions:(NSArray *)customAlertActions
+                 allowsBasicLocalNotif:(BOOL)allowed
 {
-    SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
-                                                                    message:message
-                                                             preferredStyle:SDCAlertControllerStyleAlert];
-    SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK"
-                                                         style:SDCAlertActionStyleRecommended
-                                                       handler:nil];
-    if(customAlertActions){
-        for(SDCAlertAction *someAction in customAlertActions)
-            [alert addAction:someAction];
+    UIApplication *app = [UIApplication sharedApplication];
+    if(allowed && app.applicationState != UIApplicationStateActive){
+        UILocalNotification *notification = [[UILocalNotification alloc]init];
+        notification.repeatInterval = 0;
+        [notification setAlertTitle:title];
+        [notification setAlertBody:message];
+        [notification setTimeZone:[NSTimeZone defaultTimeZone]];
+        //[notification setSoundName:UILocalNotificationDefaultSoundName];
+        [notification setFireDate:[NSDate dateWithTimeIntervalSinceNow:1]];
+        [app scheduleLocalNotification:notification];
+    } else {
+        SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
+                                                                        message:message
+                                                                 preferredStyle:SDCAlertControllerStyleAlert];
+        SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK"
+                                                             style:SDCAlertActionStyleRecommended
+                                                           handler:nil];
+        if(customAlertActions){
+            for(SDCAlertAction *someAction in customAlertActions)
+                [alert addAction:someAction];
+        }
+        else
+            [alert addAction:okAction];
+        [alert presentWithCompletion:nil];
     }
-    else
-        [alert addAction:okAction];
-    [alert presentWithCompletion:nil];
 }
 
 

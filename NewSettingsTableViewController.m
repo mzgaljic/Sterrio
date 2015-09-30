@@ -119,6 +119,9 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
             
             NSString *syncDateString = [AppEnvironmentConstants humanReadableLastSyncTime];
             NSString *footerText = [NSString stringWithFormat:@"Last Synced %@", syncDateString];
+            if(syncDateString == nil){
+                footerText = @"Still trying to sync...";
+            }
             float footerWidth = [UIScreen mainScreen].bounds.size.width;
             float padding = 10.0f; // an arbitrary amount to center the label in the container
             footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, footerWidth, 44.0f)];

@@ -19,9 +19,9 @@
 @end
 @implementation AdvancedOptionsTableViewController
 
-short const NUMBER_OF_SECTIONS = 2;
+short const NUMBER_OF_SECTIONS = 1;
 short const PLAYER_AIRPLAY_OPTIONS_SECTION_NUM = 0;
-short const MUSIC_LIB_SORTING_SECTION_NUM = 1;
+//short const MUSIC_LIB_SORTING_SECTION_NUM = 1;
 
 NSString * const AIRPLAY_AUDIO_ONLY_ENABLED_FOOTER = @"Video is displayed on this device while audio is streamed to the Airplay receiver. Volume can be controlled from this device.";
 NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are streamed to the airplay receiver. Volume control is not supported.";
@@ -105,7 +105,7 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
             else
                 return AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER;
         }
-        case MUSIC_LIB_SORTING_SECTION_NUM          :   return nil;
+        //case MUSIC_LIB_SORTING_SECTION_NUM          :   return nil;
             
         default:    return nil;
     }
@@ -121,7 +121,7 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
     switch (section)
     {
         case PLAYER_AIRPLAY_OPTIONS_SECTION_NUM     :   return 1;
-        case MUSIC_LIB_SORTING_SECTION_NUM          :   return 1;
+        //case MUSIC_LIB_SORTING_SECTION_NUM          :   return 1;
             
         default:    return -1;
     }
@@ -160,6 +160,7 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
     }
+    /*
     else if(indexPath.section == MUSIC_LIB_SORTING_SECTION_NUM)
     {
         cell = [tableView dequeueReusableCellWithIdentifier:@"advancedSettingRightDetailCell"
@@ -183,6 +184,7 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
             cell.accessoryView = coloredDisclosureIndicator;
         }
     }
+     */
     
     float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
     cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
@@ -232,7 +234,6 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
 - (void)updateAirplaySectionFooterFrame
 {
     int footerViewHeight;
-    NSString *footerText;
     if([AppEnvironmentConstants shouldOnlyAirplayAudio])
         footerViewHeight = 95;
     else

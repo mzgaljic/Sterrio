@@ -11,6 +11,7 @@
 #import "PreloadedCoreDataModelUtility.h"
 #import <CoreSpotlight/CoreSpotlight.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+#import "SDCAlertControllerView.h"
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 @interface AppDelegate ()
@@ -63,6 +64,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     }
     
     [ReachabilitySingleton sharedInstance];  //init reachability class
+#warning improve this album art updater before releasing app.
     //[LQAlbumArtBackgroundUpdater beginWaitingForEfficientMomentsToUpdateAlbumArt];
     //[LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
     
@@ -97,6 +99,15 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [myApp setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
     [Fabric with:@[CrashlyticsKit]];
+    
+    if([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
+        [[UIApplication sharedApplication] registerForRemoteNotifications];
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert) categories:nil];
+        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+        
+    } else {
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge];
+    }
     
     return YES;
 }
@@ -183,6 +194,8 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     if(! ensembleBackgroundMergeIsRunning){
         [self attemptEnsembleMergeInBackgroundTaskIfAppropriate];
     }
+    
+    [[UIApplication sharedApplication] cancelAllLocalNotifications];
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
@@ -536,6 +549,21 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     return [[PlaybackContext alloc] initWithFetchRequest:[request copy]
                                          prettyQueueName:@""
                                                contextId:allSongsPageVcName];
+}
+
+#pragma mark - Local notifications
+- (void)application:(UIApplication *)app didReceiveLocalNotification:(UILocalNotification *)notif
+{
+    [app cancelAllLocalNotifications];
+    
+    SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:notif.alertTitle
+                                                                    message:notif.alertBody
+                                                             preferredStyle:SDCAlertControllerStyleAlert];
+    SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK"
+                                                         style:SDCAlertActionStyleRecommended
+                                                       handler:nil];
+    [alert addAction:okAction];
+    [alert presentWithCompletion:nil];
 }
 
 @end
