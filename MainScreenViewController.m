@@ -532,21 +532,13 @@ short const dummyTabIndex = 2;
                              [self setupTabBarAndTabBarViewUsingOrientation:toInterfaceOrientation];
                          } completion:nil];
     } else{
-        int originalWidth = self.tabBarView.frame.size.width;
-        [self setupTabBarAndTabBarViewUsingOrientation:toInterfaceOrientation];
-        [self.tabBarView setFrame:CGRectMake(self.tabBarView.frame.origin.x,
-                                             self.tabBarView.frame.origin.y,
-                                             originalWidth,
-                                             self.tabBarView.frame.size.height)];
-        
-        double delayInSeconds = 0.35;
-        __weak MainScreenViewController *weakSelf = self;
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            [UIView animateWithDuration:0.2 animations:^{
-                [weakSelf setupTabBarAndTabBarViewUsingOrientation:toInterfaceOrientation];
-            }];
-        });
+        [UIView animateWithDuration:0.2 animations:^{
+            int originalWidth = self.tabBarView.frame.size.width;
+            [self.tabBarView setFrame:CGRectMake(self.tabBarView.frame.origin.x,
+                                                 self.tabBarView.frame.origin.y,
+                                                 originalWidth,
+                                                 self.tabBarView.frame.size.height)];
+        }];
     }
 }
 

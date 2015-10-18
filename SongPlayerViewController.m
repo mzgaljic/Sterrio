@@ -395,11 +395,11 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     CGFloat screenWidth = screenRect.size.width;
     CGFloat screenHeight = screenRect.size.height;
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    CGRect newFrame;
     
     if(UIInterfaceOrientationIsLandscape(toInterfaceOrientation)){
-        CGRect newFrame = CGRectMake(0, 0, ceil(screenHeight +1), screenWidth);
+        newFrame = CGRectMake(0, 0, screenWidth, ceil(screenHeight +1));
         [[SongPlayerCoordinator sharedInstance] recordCurrentPlayerViewFrame:newFrame];
-        [playerView setFrame:newFrame];  //make frame full screen
     }
     else{
         //show portrait player
@@ -420,16 +420,22 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
         float videoFrameHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:widthOfScreenRoationIndependant];
         float playerFrameYTempValue = roundf(((heightOfScreenRotationIndependant / 2.0) /1.5));
         int playerYValue = nearestEvenInt((int)playerFrameYTempValue);
-        CGRect newFrame = CGRectMake(0,
-                                     playerYValue,
-                                     widthOfScreenRoationIndependant,
-                                     videoFrameHeight);
+        newFrame = CGRectMake(0,
+                            playerYValue,
+                            widthOfScreenRoationIndependant,
+                            videoFrameHeight);
         [[SongPlayerCoordinator sharedInstance] recordCurrentPlayerViewFrame:newFrame];
-        [playerView setFrame:newFrame];
 
         [self positionMusicButtonsOnScreenAndSetThemUp];
         [self positionPlaybackSliderOnScreen];
     }
+    
+    [UIView animateWithDuration:0.25
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         [playerView setFrame:newFrame];  //make frame full screen
+                     } completion:nil];
     
     lastKnownOrientation = toInterfaceOrientation;
     [self setNeedsStatusBarAppearanceUpdate];
