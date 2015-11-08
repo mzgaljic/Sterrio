@@ -46,6 +46,8 @@
                                                    forKey:PREFERRED_WIFI_VALUE_KEY];
         [[NSUserDefaults standardUserDefaults] setInteger:prefCellStreamQuality
                                                    forKey:PREFERRED_CELL_VALUE_KEY];
+        [[NSUserDefaults standardUserDefaults] setInteger:[AppEnvironmentConstants usersMajorIosVersion]
+                                                   forKey:USERS_LAST_KNOWN_MAJOR_IOS_VERS_VALUE_KEY];
         [[NSUserDefaults standardUserDefaults] setBool:icloudSync
                                                    forKey:ICLOUD_SYNC];
         [[NSUserDefaults standardUserDefaults] setBool:userHasSeenCellDataWarning

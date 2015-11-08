@@ -65,6 +65,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         self.window.frame = [[UIScreen mainScreen] bounds];
     }
     
+    [AppDelegate upgradeLibraryToUseSpotlightIfApplicable];
     [ReachabilitySingleton sharedInstance];  //init reachability class
 #warning improve this album art updater before releasing app.
     //[LQAlbumArtBackgroundUpdater beginWaitingForEfficientMomentsToUpdateAlbumArt];
@@ -100,7 +101,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     UIApplication *myApp = [UIApplication sharedApplication];
     [myApp setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
-    [Fabric with:@[CrashlyticsKit]];
+    //[Fabric with:@[CrashlyticsKit]];
     
     if([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
         [[UIApplication sharedApplication] registerForRemoteNotifications];
@@ -575,15 +576,15 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         return;  //users device is below ios 9 right now. no change spotlight is possible.
     }
     
-    int lastKnownUserIosVersionNumber = (int)[[NSUserDefaults standardUserDefaults] integerForKey:USERS_MAJOR_IOS_VERS_VALUE_KEY];
+    int lastKnownUserIosVersionNumber = (int)[[NSUserDefaults standardUserDefaults] integerForKey:USERS_LAST_KNOWN_MAJOR_IOS_VERS_VALUE_KEY];
     
     if(lastKnownUserIosVersionNumber >= 9) {
         return;  //user has already upgraded library to use spotlight.
     }
     
     //if this point is reached, we need to get users songs into spotlight.
-    [[NSUserDefaults standardUserDefaults] setInteger:[AppEnvironmentConstants usersCurrentMajorIosVersion]
-                                               forKey:USERS_MAJOR_IOS_VERS_VALUE_KEY];
+    [[NSUserDefaults standardUserDefaults] setInteger:[AppEnvironmentConstants usersMajorIosVersion]
+                                               forKey:USERS_LAST_KNOWN_MAJOR_IOS_VERS_VALUE_KEY];
     
     [AppDelegate startTimingExecution];
     //shows progress bar (its updated below)

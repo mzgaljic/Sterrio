@@ -31,8 +31,8 @@
 #import "MZPreviewPlayer.h"
 
 //crash reporting framework
-#import <Fabric/Fabric.h>
-#import <Crashlytics/Crashlytics.h>
+//#import <Fabric/Fabric.h>
+//#import <Crashlytics/Crashlytics.h>
 
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate,

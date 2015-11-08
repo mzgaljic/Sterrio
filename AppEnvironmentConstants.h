@@ -13,6 +13,7 @@
 #define PREFERRED_SONG_CELL_HEIGHT_KEY @"preferredSongCellHeight"
 #define PREFERRED_WIFI_VALUE_KEY @"preferredWifiStreamValue"
 #define PREFERRED_CELL_VALUE_KEY @"preferredCellularStreamValue"
+#define USERS_LAST_KNOWN_MAJOR_IOS_VERS_VALUE_KEY @"the users last known major ios version number"
 #define APP_THEME_COLOR_VALUE_KEY @"appThemeColorValue"
 #define ICLOUD_SYNC @"icloudSettingsSync"
 #define ONLY_AIRPLAY_AUDIO_VALUE_KEY @"shouldOnlyAirplayAudio"
@@ -42,6 +43,7 @@ typedef enum{
 @interface AppEnvironmentConstants : NSObject
 
 //runtime configuration
++ (int)usersMajorIosVersion;
 + (BOOL)isUserOniOS8OrAbove;
 + (BOOL)isUserOniOS9OrAbove;
 

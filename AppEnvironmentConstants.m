@@ -51,6 +51,11 @@ static BOOL shouldOnlyAirplayAudio;
 
 
 //runtime configuration
++ (int)usersMajorIosVersion
+{
+    return [[[UIDevice currentDevice] systemVersion] intValue];
+}
+
 + (BOOL)isUserOniOS8OrAbove
 {
     // conditionally check for any version >= iOS 8 using 'isOperatingSystemAtLeastVersion'
