@@ -35,4 +35,4 @@ pod 'Reachability'
 #pod 'MGSwipeTableCell'  --using dev branch for now...
 
 #needed for MRProgressView...dont ask lol.
-pod "AFNetworking"
+pod "AFNetworking" , '~> 2.5.4'

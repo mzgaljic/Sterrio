@@ -159,7 +159,7 @@
         MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
                                                                                    color:appTheme];
         
-        cell.editingAccessoryView = coloredDisclosureIndicator;
+        //cell.editingAccessoryView = coloredDisclosureIndicator;
         cell.accessoryView = coloredDisclosureIndicator;
         
         //check if artist is now playing context, if so make cell changes here...

@@ -4,57 +4,37 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Pods-AFNetworking.xcscheme</key>
+		<key>AFNetworking.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-CRToast.xcscheme</key>
+		<key>CRToast.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-Ensembles.xcscheme</key>
+		<key>Ensembles.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-FXImageView.xcscheme</key>
+		<key>FXImageView.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-GCDiscreetNotificationView.xcscheme</key>
+		<key>GCDiscreetNotificationView.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-MSCellAccessory.xcscheme</key>
+		<key>MSCellAccessory.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-MarqueeLabel.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-Reachability.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-SDWebImage.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-TBXML.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-XCDYouTubeKit.xcscheme</key>
+		<key>MarqueeLabel.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -64,65 +44,85 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>Reachability.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>SDWebImage.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>TBXML.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>XCDYouTubeKit.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>145401B335D65668990BD74C</key>
+		<key>1A3155A1CE86FD415A2FA193545BAB2E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>157925ED17CD9330D1F489B7</key>
+		<key>1AEC095A5EBE89ED43F53A265B329625</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2E6673B456AB710201874333</key>
+		<key>2602F3D0DAC534568B6AD7EEA0DD1959</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2ECD7F73CF529E2A8B4F4DD0</key>
+		<key>4088F5F352C9D36602FF84D0B462D206</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>32CA92CC1B1372E8DC5A3799</key>
+		<key>68C64A67D266D1B26CD1A3910FDA4833</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>479225666916FFC7EA0790F5</key>
+		<key>6B67FFBADD6E5B886488F66ADE018C17</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>65562F67D2E1EEE024164047</key>
+		<key>7112751ACED56349A420B879DDAD76F8</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>870AF39979DCADA8F744008A</key>
+		<key>78239A33F829C2F1E81A0ACEDD00709E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8CBE68FA15F7A4ED55895BFE</key>
+		<key>C288CC12C4A0F4859BEFBF9569CC5EE1</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C687EAA1097025880BCE45E5</key>
+		<key>D5E6473B93C57DC39E091DF59D44DEC3</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>E10AC3497FAD2D00909992D5</key>
+		<key>EE8547F80C85CFE8BB0B9E0E1B26C422</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>E866AF7DC48DD060BB06EE90</key>
+		<key>FC04C601CA3DDBCDBBF188FB8A35AA23</key>
 		<dict>
 			<key>primary</key>
 			<true/>

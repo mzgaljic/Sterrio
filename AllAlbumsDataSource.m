@@ -184,7 +184,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         UIColor *appTheme = [[UIColor defaultAppColorScheme] lighterColor];
         MSCellAccessory *chevron = [MSCellAccessory accessoryWithType:flatIndicator
                                                                 color:appTheme];
-        cell.editingAccessoryView = chevron;
+        //cell.editingAccessoryView = chevron;
         cell.accessoryView = chevron;
         
         //check if a song in this album is the now playing song

@@ -212,10 +212,7 @@
 static BOOL didForcefullyCloseSearchBarBeforeSegue = NO;
 static NSString *lastQueryBeforeForceClosingSearchBar;
 
-- (void)performEditSegueWithAlbum:(Album *)albumToBeEdited
-{
-#warning implementation needed.
-}
+- (void)performEditSegueWithAlbum:(Album *)albumToBeEdited  {}
 
 - (void)performAlbumDetailVCSegueWithAlbum:(Album *)anAlbum
 {

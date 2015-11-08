@@ -148,7 +148,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 ## MarqueeLabel
 
-Copyright (c) 2011-2013 Charles Powell
+Copyright (c) 2011-2015 Charles Powell
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the "Software"), to deal in the Software without restriction, including without limitation 
@@ -261,7 +261,7 @@ Love the project? Wanna buy me a coffee? [![donation](http://www.paypal.com/en_U
 
 The MIT License (MIT)
 
-Copyright (c) 2013-2014 Cédric Luthi
+Copyright (c) 2013-2015 Cédric Luthi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

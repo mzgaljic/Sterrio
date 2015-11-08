@@ -20,23 +20,23 @@ PODS:
   - AFNetworking/UIKit (2.5.4):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - CRToast (HEAD based on 0.0.7)
-  - Ensembles (1.3.3):
-    - Ensembles/Core (= 1.3.3)
-  - Ensembles/Core (1.3.3)
+  - CRToast (HEAD based on 0.0.9)
+  - Ensembles (1.4.1):
+    - Ensembles/Core (= 1.4.1)
+  - Ensembles/Core (1.4.1)
   - FXImageView (1.3.5)
   - GCDiscreetNotificationView (1.0.2)
-  - MarqueeLabel (2.2.3)
+  - MarqueeLabel (2.3.5)
   - MSCellAccessory (1.1.2)
   - Reachability (3.2)
-  - SDWebImage (3.7.2):
-    - SDWebImage/Core (= 3.7.2)
-  - SDWebImage/Core (3.7.2)
+  - SDWebImage (3.7.3):
+    - SDWebImage/Core (= 3.7.3)
+  - SDWebImage/Core (3.7.3)
   - TBXML (1.5)
-  - XCDYouTubeKit (2.1.3)
+  - XCDYouTubeKit (2.3.2)
 
 DEPENDENCIES:
-  - AFNetworking
+  - AFNetworking (~> 2.5.4)
   - CRToast (HEAD)
   - Ensembles (~> 1.0)
   - FXImageView
@@ -50,15 +50,15 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
-  CRToast: 99a28f4387def43b439ad88f957ce31357ff7373
-  Ensembles: f7ed72e0adaab5893fba9ce8859d8390d338677e
+  CRToast: 5a78c22b921c5ed3487488af605bc403a9c92fed
+  Ensembles: 90013c435ff874a7a9ccb7a334b74b93ac53dc12
   FXImageView: 7d84722b37f0afea9a64f12fdd4a6c7f9ecc4b16
   GCDiscreetNotificationView: b093cce1fe82f6d9784169a156b48ecb1465ad8a
-  MarqueeLabel: f03d12e3a1572893f78ecb22aa5dd774099c7208
+  MarqueeLabel: fd29be3b4cf5f37b01676749409679aac23eb6fa
   MSCellAccessory: 8265f3cd2386c1f372da00232472605ab11426e4
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  SDWebImage: 71b7cdc1d1721d6a82ed62889030225f2c249e29
+  SDWebImage: 1d2b1a1efda1ade1b00b6f8498865f8ddedc8a84
   TBXML: 9f9dadb239f2f2af1dadb87fe43a0ce6e479379a
-  XCDYouTubeKit: ca3120218413fdd141567ca98b5418df309b1ced
+  XCDYouTubeKit: 6aff378bcbbf06d058f2c2d2df655c376970ee03
 
-COCOAPODS: 0.35.0
+COCOAPODS: 0.39.0
