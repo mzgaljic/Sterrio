@@ -12,6 +12,7 @@
 #import <CoreSpotlight/CoreSpotlight.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "SDCAlertControllerView.h"
+#import "SpotlightHelper.h"
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 @interface AppDelegate ()
@@ -28,6 +29,7 @@
 @implementation AppDelegate
 
 static NSDate *nextEarliestAlbumArtUpdateForceTime;
+static MRProgressOverlayView *hud;
 static NSString * const storyboardFileName = @"Main";
 static NSString * const songsVcSbId = @"songs view controller storyboard ID";
 static NSString * const albumsVcSbId = @"albums view controller storyboard ID";
@@ -565,5 +567,99 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [alert addAction:okAction];
     [alert presentWithCompletion:nil];
 }
+
+//----Spotlight upgrade helper code----
++ (void)upgradeLibraryToUseSpotlightIfApplicable
+{
+    if(! [AppEnvironmentConstants isUserOniOS9OrAbove]) {
+        return;  //users device is below ios 9 right now. no change spotlight is possible.
+    }
+    
+    int lastKnownUserIosVersionNumber = (int)[[NSUserDefaults standardUserDefaults] integerForKey:USERS_MAJOR_IOS_VERS_VALUE_KEY];
+    
+    if(lastKnownUserIosVersionNumber >= 9) {
+        return;  //user has already upgraded library to use spotlight.
+    }
+    
+    //if this point is reached, we need to get users songs into spotlight.
+    [[NSUserDefaults standardUserDefaults] setInteger:[AppEnvironmentConstants usersCurrentMajorIosVersion]
+                                               forKey:USERS_MAJOR_IOS_VERS_VALUE_KEY];
+    
+    [AppDelegate startTimingExecution];
+    //shows progress bar (its updated below)
+    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+    hud = [MRProgressOverlayView showOverlayAddedTo:keyWindow
+                                              title:@"Spotlight is indexing your music."
+                                               mode:MRProgressOverlayViewModeDeterminateHorizontalBar
+                                           animated:YES];
+    
+    
+    NSManagedObjectContext *context = [CoreDataManager context];
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
+    request.predicate = nil;  //means i want all of the songs
+    NSSortDescriptor *sortDescriptor;
+    NSFetchedResultsController *fetchedRC;
+    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
+                                                   ascending:YES
+                                                    selector:@selector(localizedStandardCompare:)];
+    request.sortDescriptors = @[sortDescriptor];
+    fetchedRC = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+                                                    managedObjectContext:context
+                                                      sectionNameKeyPath:nil
+                                                               cacheName:nil];
+    id <NSFetchedResultsSectionInfo> sectionInfo = nil;
+    if(fetchedRC.sections.count > 0) {
+        sectionInfo = [fetchedRC.sections objectAtIndex:0];
+    } else {
+        fetchedRC = nil;
+        return;  //no songs in library, nothing to update lol.
+    }
+    NSUInteger numTotalSongs = sectionInfo.numberOfObjects;
+    NSUInteger numSongsIterated = 0;
+    for(NSUInteger i = 0; i < numTotalSongs; i++) {
+        //SpotlightHelper API only supports adding songs, but supports removing all 3 music types.
+        //this is by design...
+        Song *song = [fetchedRC objectAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+        [SpotlightHelper addSongToSpotlightIndex:song];
+        song = nil;  //possible we might iterate through a huge # of songs. Should help with memory...
+        [AppDelegate setHudProgressTo:(float)++numSongsIterated / (float)numTotalSongs];
+    }
+}
++ (void)setHudProgressTo:(float)value
+{
+    hud.progress = value;
+    
+    if(value == 1) {
+        //at 100%
+        NSUInteger minDesiredDuration = 2.3;
+        NSTimeInterval time = [AppDelegate timeOnExecutionTimer];
+        
+        //ensure the hud doesn't dissapear instantly, which would look really bad.
+        if(time < minDesiredDuration){
+            [NSThread sleepForTimeInterval:fabs(time - minDesiredDuration)];
+        }
+        
+        [hud dismiss:YES];
+        hud = nil;
+    }
+}
+static NSDate *start;
+static NSDate *finish;
++ (void)startTimingExecution
+{
+    start = [NSDate date];
+}
++ (NSTimeInterval)timeOnExecutionTimer
+{
+    if(start == nil)
+        return 0;
+    finish = [NSDate date];
+    NSTimeInterval executionTime = [finish timeIntervalSinceDate:start];
+    start = nil;
+    finish = nil;
+    
+    return executionTime;
+}
+//----/End/ of Spotlight upgrade helper code----
 
 @end
