@@ -14,6 +14,7 @@
 @interface Song : NSManagedObject
 
 @property (nonatomic, retain) NSNumber * duration;
+@property (nonatomic, retain) NSNumber * nonDefaultArtSpecified;
 @property (nonatomic, retain) NSString * smartSortSongName;
 @property (nonatomic, retain) NSString * songName;
 @property (nonatomic, retain) NSString * uniqueId;

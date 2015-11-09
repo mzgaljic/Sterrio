@@ -16,6 +16,7 @@
 @implementation Song
 
 @dynamic duration;
+@dynamic nonDefaultArtSpecified;
 @dynamic smartSortSongName;
 @dynamic songName;
 @dynamic uniqueId;

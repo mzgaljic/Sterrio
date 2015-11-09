@@ -67,9 +67,14 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     
     [AppDelegate upgradeLibraryToUseSpotlightIfApplicable];
     [ReachabilitySingleton sharedInstance];  //init reachability class
-#warning improve this album art updater before releasing app.
-    //[LQAlbumArtBackgroundUpdater beginWaitingForEfficientMomentsToUpdateAlbumArt];
-    //[LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
+
+    //create all contexts up front to avoid any funny business later (thread issues, etc.)
+    [CoreDataManager context];
+    [CoreDataManager backgroundThreadContext];
+    [CoreDataManager stackControllerThreadContext];
+    
+    [LQAlbumArtBackgroundUpdater beginWaitingForEfficientMomentsToUpdateAlbumArt];
+    [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
     
     [AppDelegateSetupHelper setupDiskAndMemoryWebCache];
     

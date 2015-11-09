@@ -71,6 +71,7 @@ static NSInteger const SONG7_DURATION = 137;
                                                                videoDuration:SONG2_DURATION];
                 UIImage *someImage = [UIImage imageNamed:@"testAlbumArt.jpg"];
                 someSong.albumArt = [SongAlbumArt createNewAlbumArtWithUIImage:someImage withContext:context];
+                someSong.nonDefaultArtSpecified = @YES;
 
             } else {
                 // odd

@@ -462,6 +462,9 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 if(self.currentAlbumArt){
                     _songIAmEditing.albumArt.image = [AlbumArtUtilities compressedDataFromUIImage:self.currentAlbumArt];
                 }
+                if(userReplacedDefaultYoutubeArt) {
+                    _songIAmEditing.nonDefaultArtSpecified = @YES;
+                }
                 
                 //save song into library
                 NSError *error;
@@ -479,7 +482,10 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     
                     if(! userReplacedDefaultYoutubeArt){
                         [LQAlbumArtBackgroundUpdater downloadHqAlbumArtWhenConvenientForSongId:_songIAmEditing.uniqueId];
-                        [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
+                        
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                            [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
+                        });
                     }
                     
                     [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:NO];

@@ -86,10 +86,7 @@ static MRProgressOverlayView *hud;
     if([AppEnvironmentConstants isABadTimeToMergeEnsemble])
         return NO;
     else{
-        if(! [AppEnvironmentConstants isUserOniOS9OrAbove])  //spotlight can't even be used lol.
-            return YES;
-        
-        //update the spotlight index with changes in the library.
+        //update the spotlight index with changes in the library, AND add songs to LQ Art updater.
         __block BOOL nowPlayingDeleted = NO;
         [savingContext performBlockAndWait:^{
             NSSet *setOfDeletedObjects = [savingContext deletedObjects];
@@ -100,8 +97,7 @@ static MRProgressOverlayView *hud;
                                     + setOfInsertedObjects.count
                                     + setOfUpdatedObjects.count;
             
-            //if(totalObjCount > 100){
-            if(true){
+            if(totalObjCount > 100){  //only show gui alert if it will take a reasonably long time...
                 dispatch_sync(dispatch_get_main_queue(), ^{
                     [EnsembleDelegate startTimingExecution];
                     //shows progress bar (its updated below)
@@ -133,6 +129,10 @@ static MRProgressOverlayView *hud;
                 //SpotlightHelper API only supports adding songs, but supports removing all 3 music types.
                 //this is by design...
                 if([obj isMemberOfClass:[Song class]]){
+                    Song *aSong = (Song*)obj;
+                    if([aSong.nonDefaultArtSpecified boolValue] == NO) {
+                        [LQAlbumArtBackgroundUpdater downloadHqAlbumArtWhenConvenientForSongId:aSong.uniqueId];
+                    }
                     [SpotlightHelper addSongToSpotlightIndex:(Song *)obj];
                 }
                 [self setHudProgressTo:(float)++objsIterated / (float)totalObjCount];

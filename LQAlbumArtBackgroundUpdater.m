@@ -21,7 +21,7 @@
 @end
 @implementation LQAlbumArtBackgroundUpdater
 
-const int limitPerFetchOnBattery = 4;
+const NSUInteger limitPerFetchOnBattery = 4;
 static LQAlbumArtBackgroundUpdater *internalSingleton;
 static NSLock *myLock1;
 static BOOL isAsyncUpdateInProgress = NO;
@@ -151,8 +151,12 @@ static BOOL abortAsyncArtUpdate = NO;
     [LQAlbumArtBackgroundUpdater setAsyncUpdateInProgress:YES];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        pthread_setname_np("MZMusic: LQ Art Updater");
-        [weakself startUpdatingLowQualityAlbumArtInBackground];
+        pthread_setname_np("Sterrio: LQ Art Updater");
+        
+        [[CoreDataManager backgroundThreadContext] performBlockAndWait:^{
+            [weakself startUpdatingLowQualityAlbumArtInBackground];
+        }];
+        [[CoreDataManager backgroundThreadContext] save:nil];
         [LQAlbumArtBackgroundUpdater setAsyncUpdateInProgress:NO];
     });
 }
@@ -168,15 +172,8 @@ static BOOL abortAsyncArtUpdate = NO;
     if(setOfLqAlbumArtItems == nil || setOfLqAlbumArtItems.count == 0)
         return;
     
-    NSInteger updateLimit = NSIntegerMax;
-    UIDeviceBatteryState batteryState = [UIDevice currentDevice].batteryState;
-    if (batteryState == UIDeviceBatteryStateUnplugged
-        || batteryState == UIDeviceBatteryStateUnknown) {
-        updateLimit = limitPerFetchOnBattery;
-    }
-    
     NSMutableArray *itemsToDelete = [NSMutableArray array];
-    int counter = 0;
+    NSUInteger counter = 0;
     
     for(LQAlbumArtItem *lqItem in setOfLqAlbumArtItems)
     {
@@ -215,7 +212,7 @@ static BOOL abortAsyncArtUpdate = NO;
         if(downloadedHqArtSuccessfully || songStillExists == NO)
             [itemsToDelete addObject:lqItem];
         
-        if(updateLimit == counter)
+        if([self artUpdateLimitBasedOnPowerState] <= counter)
             break;
     }
     
@@ -231,7 +228,18 @@ static BOOL abortAsyncArtUpdate = NO;
     
     //save the array to disk (in case all of the tasks couldn't complete)
     [NSKeyedArchiver archiveRootObject:setOfLqAlbumArtItems toFile:archivePath];
-    NSLog(@"Updated %i LQ ALbum Art", (int)itemsToDelete.count);
+    NSLog(@"Updated %i LQ ALbum Art", (int)counter);
+}
+
+- (NSUInteger)artUpdateLimitBasedOnPowerState
+{
+    UIDeviceBatteryState batteryState = [UIDevice currentDevice].batteryState;
+    if (batteryState == UIDeviceBatteryStateUnplugged
+        || batteryState == UIDeviceBatteryStateUnknown) {
+        return limitPerFetchOnBattery;
+    } else {
+        return NSUIntegerMax;
+    }
 }
 
 - (NSArray *)highQualityThumbnailUrlsForYoutubeVideoId:(NSString *)videoId
@@ -251,7 +259,6 @@ static BOOL abortAsyncArtUpdate = NO;
     if(songId == nil)
         return nil;
     
-#warning this code should use performBlock: to ensure the calls are made on the contexts queue.
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Song"];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", songId];
     //descriptor doesnt really matter here
