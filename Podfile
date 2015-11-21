@@ -1,3 +1,5 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
 #Ensembles 1.0
 pod "Ensembles", "~> 1.0"
 
@@ -36,3 +38,6 @@ pod 'Reachability'
 
 #needed for MRProgressView...dont ask lol.
 pod "AFNetworking" , '~> 2.5.4'
+
+#ads
+pod 'Google-Mobile-Ads-SDK'

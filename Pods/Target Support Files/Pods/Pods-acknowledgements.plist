@@ -163,6 +163,14 @@ OTHER DEALINGS IN THE SOFTWARE.</string>
 		</dict>
 		<dict>
 			<key>FooterText</key>
+			<string>Copyright 2011 Google Inc. All Rights Reserved.</string>
+			<key>Title</key>
+			<string>Google-Mobile-Ads-SDK</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
 			<string>Software License Agreement (BSD License)
 
 Copyright (c) 2013 SHIM MIN SEOK(bitmapdata.com@gmail.com) All rights reserved.

@@ -222,6 +222,7 @@
 		87A9536E1B3E242A002E9872 /* SMWebRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9536B1B3E242A002E9872 /* SMWebRequest.m */; };
 		87DAA6C51B8AA9FF008D8684 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 87DAA6C21B8AA9FF008D8684 /* Model.xcdatamodeld */; };
 		87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */; };
+		87E152671C0041E100C82737 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87E152661C0041E100C82737 /* StoreKit.framework */; };
 		CC4EB50DFF2CD80A06134B69 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B206C6594633BB85400EBDC /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -236,6 +237,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		871FE2D01BFACDC000588C2B /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMobileAds.framework; path = "Pods/Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.5.2/GoogleMobileAds.framework"; sourceTree = "<group>"; };
 		873537C61B0A9981009244E4 /* Sterrio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sterrio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		873537CA1B0A9981009244E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		873537CB1B0A9981009244E4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -659,6 +661,7 @@
 		87DAA6C31B8AA9FF008D8684 /* Model 1.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 1.0.xcdatamodel"; sourceTree = "<group>"; };
 		87DAA6C41B8AA9FF008D8684 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailComposerManager.m; sourceTree = "<group>"; };
+		87E152661C0041E100C82737 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		8B206C6594633BB85400EBDC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		92B6CB546F4E7E88A9974B8F /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		C79109650D7488FFD1AB95FF /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -669,6 +672,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87E152671C0041E100C82737 /* StoreKit.framework in Frameworks */,
 				87414BC61B3FA93100FB8252 /* MobileCoreServices.framework in Frameworks */,
 				87414BC41B3FA92500FB8252 /* CoreSpotlight.framework in Frameworks */,
 				87353A681B0AA576009244E4 /* Foundation.framework in Frameworks */,
@@ -1685,6 +1689,8 @@
 		95A486A0294577F099EF7326 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				87E152661C0041E100C82737 /* StoreKit.framework */,
+				871FE2D01BFACDC000588C2B /* GoogleMobileAds.framework */,
 				87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */,
 				87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */,
 				87353A751B0AA5C9009244E4 /* CoreGraphics.framework */,
@@ -2193,6 +2199,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Pods/Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.5.2",
 				);
 				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -2218,6 +2225,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Pods/Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.5.2",
 				);
 				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
 				GCC_OPTIMIZATION_LEVEL = fast;

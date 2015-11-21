@@ -7,6 +7,7 @@
 //
 
 #import "MainScreenViewController.h"
+@import GoogleMobileAds;  //#import "GADBannerView.h"
 
 NSString * const CENTER_BTN_IMG_NAME = @"plus_sign";
 short const dummyTabIndex = 2;
@@ -21,6 +22,7 @@ short const dummyTabIndex = 2;
     BOOL tabBarAnimationInProgress;
     BOOL changingTabs;
     UIInterfaceOrientation lastVisibleTabBarOrientation;
+    NSUInteger heightOfAdBanner;
 }
 @property (nonatomic, strong) UIView *tabBarView;  //contains the tab bar and center button - the whole visual thing.
 @property (nonatomic, strong) UITabBar *tabBar;  //this tab bar is containing within a tab bar view
@@ -155,11 +157,22 @@ short const dummyTabIndex = 2;
     [oldVc viewDidDisappear:YES];
     [oldVc.navigationController removeFromParentViewController];
     
+    GADBannerView *myAd = [[GADBannerView alloc] initWithAdSize:kGADAdSizeSmartBannerPortrait];
+    myAd.rootViewController = self;
+    //real ad unit for production: ca-app-pub-3961646861945951/6727549027
+    myAd.adUnitID = @"ca-app-pub-3940256099942544/2934735716";  //test ad unit
+    
+    heightOfAdBanner = myAd.frame.size.height;
+    int yStartOfAdBanner = self.view.frame.size.height - heightOfAdBanner;
+    [self.view addSubview:myAd];
+    myAd.frame = CGRectMake(0, yStartOfAdBanner, myAd.frame.size.width, myAd.frame.size.height);
+    [myAd loadRequest:[GADRequest request]];
+    
     //containing the nav controller within a container
     CGRect desiredVcFrame = CGRectMake(0,
                                        0,
                                        self.view.frame.size.width,
-                                       self.view.frame.size.height);
+                                       self.view.frame.size.height - heightOfAdBanner);
     [self addChildViewController:newNavController];
     newNavController.view.frame = desiredVcFrame;
     
@@ -309,7 +322,7 @@ short const dummyTabIndex = 2;
         portraitWidth = b;
         portraitHeight = a;
     }
-    int yVal = portraitHeight - MZTabBarHeight;
+    int yVal = portraitHeight - heightOfAdBanner - MZTabBarHeight;
     return CGRectMake(0, yVal, portraitWidth, MZTabBarHeight);
 }
 
@@ -326,7 +339,7 @@ short const dummyTabIndex = 2;
         landscapeHeight = b;
         landscapeWidth = a;
     }
-    int yVal = landscapeHeight - MZTabBarHeight;
+    int yVal = landscapeHeight - heightOfAdBanner - MZTabBarHeight;
     return CGRectMake(0, yVal, landscapeWidth, MZTabBarHeight);
 }
 
