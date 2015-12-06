@@ -20,7 +20,7 @@ PODS:
   - AFNetworking/UIKit (2.5.4):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - CRToast (HEAD based on 0.0.9)
+  - CRToast (0.0.9)
   - Ensembles (1.4.1):
     - Ensembles/Core (= 1.4.1)
   - Ensembles/Core (1.4.1)
@@ -34,11 +34,12 @@ PODS:
     - SDWebImage/Core (= 3.7.3)
   - SDWebImage/Core (3.7.3)
   - TBXML (1.5)
+  - Valet (2.0.6)
   - XCDYouTubeKit (2.3.3)
 
 DEPENDENCIES:
   - AFNetworking (~> 2.5.4)
-  - CRToast (HEAD)
+  - CRToast (~> 0.0.7)
   - Ensembles (~> 1.0)
   - FXImageView
   - GCDiscreetNotificationView
@@ -48,6 +49,7 @@ DEPENDENCIES:
   - Reachability
   - SDWebImage (~> 3.6)
   - TBXML
+  - Valet
   - XCDYouTubeKit
 
 SPEC CHECKSUMS:
@@ -62,6 +64,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 1d2b1a1efda1ade1b00b6f8498865f8ddedc8a84
   TBXML: 9f9dadb239f2f2af1dadb87fe43a0ce6e479379a
+  Valet: 435ce71d7514ed407764a44b77591f7b0e43e122
   XCDYouTubeKit: 3d7a146c19e0364eac42559672a81bb273e32227
 
 COCOAPODS: 0.39.0

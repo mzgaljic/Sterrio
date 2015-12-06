@@ -59,6 +59,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>Valet.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>XCDYouTubeKit.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -72,27 +77,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>1AEC095A5EBE89ED43F53A265B329625</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>2602F3D0DAC534568B6AD7EEA0DD1959</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4088F5F352C9D36602FF84D0B462D206</key>
+		<key>54BE19778F65524D684FD599FD0C7901</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>61F97BD2EEC71F73DED9993A276ECB46</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>68C64A67D266D1B26CD1A3910FDA4833</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>6B67FFBADD6E5B886488F66ADE018C17</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -107,7 +107,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C288CC12C4A0F4859BEFBF9569CC5EE1</key>
+		<key>C54C0AE65EFCF4CD035E625E54E59D99</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -117,12 +117,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>E6B7049DBFA184E7D92E7EE824859ECD</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E8C44974B9CF8DBEE10608BC87D9D2A5</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>EE8547F80C85CFE8BB0B9E0E1B26C422</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>FC04C601CA3DDBCDBBF188FB8A35AA23</key>
+		<key>EF1F2988129C2C5BF0C6FCCF67C9B192</key>
 		<dict>
 			<key>primary</key>
 			<true/>

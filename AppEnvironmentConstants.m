@@ -15,6 +15,7 @@
 
 #import <CoreTelephony/CTCallCenter.h>
 #import <CoreTelephony/CTCall.h>
+#import <Valet/VALSynchronizableValet.h>
 
 #define Rgb2UIColor(r, g, b, a)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:(a)]
 
@@ -40,6 +41,8 @@ static PREVIEW_PLAYBACK_STATE currentPreviewPlayerState = PREVIEW_PLAYBACK_STATE
 static int navBarHeight;
 static short statusBarHeight;
 static NSInteger lastPlayerViewIndex = NSNotFound;
+
+static VALSynchronizableValet *adsKeychainItem;
 
 //setting vars
 static int preferredSongCellHeight;
@@ -279,6 +282,34 @@ static NSLock *playbackTimerLock;
     return @"Ubuntu-BoldItalic";
 }
 
+
+static NSString *const areAdsRemovedKeychainKey = @"ads removed yet?";
++ (void)adsHaveBeenRemoved:(BOOL)adsRemoved
+{
+    if(adsKeychainItem == nil) {
+        adsKeychainItem = [[VALSynchronizableValet alloc] initWithIdentifier:ARE_ADS_REMOVED_KEYCHAIN_ID
+                                                               accessibility:VALAccessibilityAfterFirstUnlock];
+    }
+    
+    int boolAsInt = [[NSNumber numberWithBool:adsRemoved] intValue];
+    NSData *data = [NSData dataWithBytes:&boolAsInt length:sizeof(boolAsInt)];
+    [adsKeychainItem setObject:data forKey:areAdsRemovedKeychainKey];
+}
++ (BOOL)areAdsRemoved
+{
+    if(adsKeychainItem == nil) {
+        adsKeychainItem = [[VALSynchronizableValet alloc] initWithIdentifier:ARE_ADS_REMOVED_KEYCHAIN_ID
+                                                               accessibility:VALAccessibilityAfterFirstUnlock];
+    }
+    
+    NSData *data = [adsKeychainItem objectForKey:areAdsRemovedKeychainKey];
+    int boolAsInt;
+    if(data == nil) {
+        return NO;
+    }
+    [data getBytes:&boolAsInt length:sizeof(boolAsInt)];
+    return [[NSNumber numberWithInt:boolAsInt] boolValue];
+}
 //app settings
 + (int)preferredSongCellHeight
 {

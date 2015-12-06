@@ -19,6 +19,7 @@
 #define ONLY_AIRPLAY_AUDIO_VALUE_KEY @"shouldOnlyAirplayAudio"
 #define USER_HAS_SEEN_CELLULAR_WARNING @"alreadyShowedUserCellDataUsageWarning"
 #define LAST_SUCCESSFUL_ICLOUD_SYNC_KEY @"last date icloud synced"
+#define ARE_ADS_REMOVED_KEYCHAIN_ID @"Have ads been removed?"
 
 #import <Foundation/Foundation.h>
 
@@ -100,7 +101,8 @@ typedef enum{
 + (NSString *)boldItalicFontName;
 
 //---Stuff in NSUserDefaults----
-
++ (void)adsHaveBeenRemoved:(BOOL)adsRemoved;
++ (BOOL)areAdsRemoved;
 //----app settings---
 + (int)preferredSongCellHeight;
 + (void)setPreferredSongCellHeight:(int)cellHeight;

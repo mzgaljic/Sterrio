@@ -9,5 +9,4 @@
 #import "MyTableViewController.h"
 
 @interface NewSettingsTableViewController : MyTableViewController
-
 @end

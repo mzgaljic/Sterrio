@@ -16,7 +16,7 @@ pod 'SDWebImage', '~>3.6'
 pod 'MSCellAccessory', '~> 1.1'
 
 #banner for erros, msgs, etc
-pod 'CRToast', :head
+pod 'CRToast', '~> 0.0.7'
 
 #VERY high performance XML parser for youtube
 pod 'TBXML'
@@ -41,3 +41,7 @@ pod "AFNetworking" , '~> 2.5.4'
 
 #ads
 pod 'Google-Mobile-Ads-SDK'
+
+#keychain stuff
+platform :ios, '7.0'
+pod 'Valet'

@@ -15,8 +15,10 @@
 #import "SDCAlertController.h"
 #import "EmailComposerManager.h"
 #import "StreamQualityPickerTableViewController.h"
+#import <StoreKit/StoreKit.h>
 
-@interface NewSettingsTableViewController ()
+@interface NewSettingsTableViewController () <SKProductsRequestDelegate,
+                                            SKPaymentTransactionObserver>
 {
     UISwitch *icloudSwitch;
     IBActionSheet *feedbackBtnActionSheet;
@@ -24,23 +26,41 @@
     EmailComposerManager *mailComposer;
     UITableViewCell *icloudCell;
 }
+@property (nonatomic, assign) BOOL areAdsRemoved;
 @end
-@implementation NewSettingsTableViewController
-short const NUM_SECTIONS = 5;
-short const ICLOUD_SYNC_SECTION_NUM = 0;
-short const MUSIC_QUALITY_SECTION_NUM = 1;
-short const APPEARANCE_SECTION_NUM = 2;
-short const ADVANCED_SECTION_NUM = 3;
-short const FEEDBACK_SECTION_NUM = 4;
 
-int const FEEDBACK_CELL_ACTION_SHEET_TAG = 100;
-int const BUG_FOUND_ACTION_SHEET_TAG = 101;
+@implementation NewSettingsTableViewController
+short NUM_SECTIONS = 6;
+
+short REMOVE_ADS_SECTION_NUM = 0;
+short ICLOUD_SYNC_SECTION_NUM = 1;
+short MUSIC_QUALITY_SECTION_NUM = 2;
+short APPEARANCE_SECTION_NUM = 3;
+short ADVANCED_SECTION_NUM = 4;
+short FEEDBACK_SECTION_NUM = 5;
+
+int const RESTORE_PURCHASE_ACTION_SHEET_TAG = 100;
+int const FEEDBACK_CELL_ACTION_SHEET_TAG = 101;
+int const BUG_FOUND_ACTION_SHEET_TAG = 102;
+
+#define kRemoveAdsProductIdentifier @"com.mzgaljic.removeads"
 
 #pragma mark - lifecycle
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    if((self.areAdsRemoved = [AppEnvironmentConstants areAdsRemoved])) {
+        REMOVE_ADS_SECTION_NUM = -1;
+        
+        ICLOUD_SYNC_SECTION_NUM--;
+        MUSIC_QUALITY_SECTION_NUM--;
+        APPEARANCE_SECTION_NUM--;
+        ADVANCED_SECTION_NUM--;
+        FEEDBACK_SECTION_NUM--;
+        
+        NUM_SECTIONS--;
+    }
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(icloudSwitchMustBeTurnedOff)
                                                  name:MZTurningOnIcloudFailed
@@ -62,8 +82,6 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
 {
     [super viewWillAppear:animated];
     [self.tableView reloadData];
-    
-    //mailComposer = nil;
 }
 
 - (void)dealloc
@@ -84,7 +102,13 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 30;
+    if(section == ICLOUD_SYNC_SECTION_NUM + 1) {
+        //the icloud section has a big footer. The section beneath this icloud section
+        //will want more padding...
+        return 38;
+    } else {
+        return 26;
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -94,52 +118,53 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    switch (section)
-    {
-        case ICLOUD_SYNC_SECTION_NUM    :   return 1;
-        case MUSIC_QUALITY_SECTION_NUM  :   return 2;
-        case APPEARANCE_SECTION_NUM     :   return 2;
-        case ADVANCED_SECTION_NUM       :   return 1;
-        case FEEDBACK_SECTION_NUM       :   return 1;
-            
-        default:    return -1;
+    if(section == ICLOUD_SYNC_SECTION_NUM) {
+        return 1;
+    } else if(section == REMOVE_ADS_SECTION_NUM) {
+        return 2;
+    } else if(section == MUSIC_QUALITY_SECTION_NUM) {
+        return 2;
+    } else if(section == APPEARANCE_SECTION_NUM) {
+        return 2;
+    } else if(section == ADVANCED_SECTION_NUM) {
+        return 1;
+    } else if(section == FEEDBACK_SECTION_NUM) {
+        return 1;
+    } else {
+        return -1;
     }
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
 {
-    switch (section)
-    {
-        case ICLOUD_SYNC_SECTION_NUM:
-        {
-            if(! [AppEnvironmentConstants icloudSyncEnabled])
-                return nil;
-            
-            static UIView *footerView;
-            
-            NSString *syncDateString = [AppEnvironmentConstants humanReadableLastSyncTime];
-            NSString *footerText = [NSString stringWithFormat:@"Last Synced %@", syncDateString];
-            if(syncDateString == nil){
-                footerText = @"Still trying to sync...";
-            }
-            float footerWidth = [UIScreen mainScreen].bounds.size.width;
-            float padding = 10.0f; // an arbitrary amount to center the label in the container
-            footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, footerWidth, 44.0f)];
-            footerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-            
-            // create the label centered in the container, then set the appropriate autoresize mask
-            UILabel *footerLabel = [[UILabel alloc] initWithFrame:CGRectMake(padding, 0, footerWidth - 2.0f * padding, 44.0f)];
-            footerLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-            footerLabel.textAlignment = NSTextAlignmentCenter;
-            footerLabel.text = footerText;
-            footerLabel.textColor = [UIColor darkGrayColor];
-            
-            [footerView addSubview:footerLabel];
-            
-            return footerView;
+    if(section == ICLOUD_SYNC_SECTION_NUM) {
+        if(! [AppEnvironmentConstants icloudSyncEnabled])
+            return nil;
+        
+        static UIView *footerView;
+        
+        NSString *syncDateString = [AppEnvironmentConstants humanReadableLastSyncTime];
+        NSString *footerText = [NSString stringWithFormat:@"Last Synced %@", syncDateString];
+        if(syncDateString == nil){
+            footerText = @"Still trying to sync...";
         }
-            
-        default:    return nil;
+        float footerWidth = [UIScreen mainScreen].bounds.size.width;
+        float padding = 10.0f; // an arbitrary amount to center the label in the container
+        footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, footerWidth, 44.0f)];
+        footerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        
+        // create the label centered in the container, then set the appropriate autoresize mask
+        UILabel *footerLabel = [[UILabel alloc] initWithFrame:CGRectMake(padding, 0, footerWidth - 2.0f * padding, 44.0f)];
+        footerLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+        footerLabel.textAlignment = NSTextAlignmentCenter;
+        footerLabel.text = footerText;
+        footerLabel.textColor = [UIColor darkGrayColor];
+        
+        [footerView addSubview:footerLabel];
+        
+        return footerView;
+    } else {
+        return nil;
     }
 }
 
@@ -148,7 +173,38 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
     UITableViewCell *cell;
     BOOL overrideCodeAtEndOfMethod = NO;
     
-    if(indexPath.section == ICLOUD_SYNC_SECTION_NUM)
+    if(indexPath.section == REMOVE_ADS_SECTION_NUM)
+    {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"settingBasicDetailCell"
+                                               forIndexPath:indexPath];
+        if(indexPath.row == 0)
+        {
+            //Remove ads
+            
+            cell.textLabel.text = @"Remove Ads";
+            overrideCodeAtEndOfMethod = YES;
+            float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+            cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                                  size:fontSize];
+            cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+            cell.textLabel.textAlignment = NSTextAlignmentCenter;
+            cell.detailTextLabel.text = nil;
+            cell.imageView.image = nil;
+        } else if(indexPath.row == 1) {
+            //Restore purchase
+            
+            cell.textLabel.text = @"Restore Purchase (Ad Removal)";
+            overrideCodeAtEndOfMethod = YES;
+            float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+            cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                                  size:fontSize];
+            cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+            cell.textLabel.textAlignment = NSTextAlignmentCenter;
+            cell.detailTextLabel.text = nil;
+            cell.imageView.image = nil;
+        }
+    }
+    else if(indexPath.section == ICLOUD_SYNC_SECTION_NUM)
     {
         cell = [tableView dequeueReusableCellWithIdentifier:@"settingRightDetailCell"
                                                forIndexPath:indexPath];
@@ -189,9 +245,9 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
     }
     else if(indexPath.section == MUSIC_QUALITY_SECTION_NUM)
     {
+        
         cell = [tableView dequeueReusableCellWithIdentifier:@"settingRightDetailCell"
                                                forIndexPath:indexPath];
-        
         if(indexPath.row == 0)
         {
             //cell stream quality
@@ -333,7 +389,19 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
 {
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    if(indexPath.section == APPEARANCE_SECTION_NUM)
+    if(indexPath.section == REMOVE_ADS_SECTION_NUM)
+    {
+        if(indexPath.row == 0)
+        {
+            //remove ads
+            [self userWantsToRemoveAds];
+        } else if(indexPath.row == 1) {
+            //let user pick which purchase to restore
+            IBActionSheet *mySheet = [self actionSheetForRestoringPurchases];
+            [mySheet showInView:[UIApplication sharedApplication].keyWindow];
+        }
+    }
+    else if(indexPath.section == APPEARANCE_SECTION_NUM)
     {
         if(indexPath.row == 0)
         {
@@ -462,11 +530,140 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
             }
         }
         break;
+        
+        case RESTORE_PURCHASE_ACTION_SHEET_TAG:
+        {
+            if(buttonIndex == 0) {
+                //restore ad removal purchase
+                [self restore];
+            } else {
+                //cancel
+            }
+        }
+        break;
             
-        default:
-            return;
+        default: return;
     }
 }
+
+#pragma mark - Removing ads code
+- (void)userWantsToRemoveAds
+{
+    NSLog(@"User requests to remove ads");
+    
+    if([SKPaymentQueue canMakePayments]){
+        NSLog(@"User can make payments");
+        SKProductsRequest *productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObject:kRemoveAdsProductIdentifier]];
+        productsRequest.delegate = self;
+        [productsRequest start];
+    } else{
+        //this is called the user cannot make payments, most likely due to parental controls
+        NSString *title = @"Purchase failed";
+        NSString *message = @"This is likely due to parental control settings on this device.";
+        NSLog(@"Purchase failed, %@", message);
+        SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
+                                                                        message:message
+                                                                 preferredStyle:SDCAlertControllerStyleAlert];
+        SDCAlertAction *okay = [SDCAlertAction actionWithTitle:@"Okay"
+                                                             style:SDCAlertActionStyleDefault
+                                                           handler:^(SDCAlertAction *action) {}];
+        [alert addAction:okay];
+        [alert presentWithCompletion:nil];
+    }
+}
+
+- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response
+{
+    SKProduct *validProduct = nil;
+    NSUInteger count = [response.products count];
+    if(count > 0) {
+        validProduct = [response.products objectAtIndex:0];
+        NSLog(@"Product Available!");
+        [self purchase:validProduct];
+    }
+    else if(!validProduct) {
+        //this is called if your product id is not valid, this shouldn't be called unless that happens.
+        NSString *title = @"Item unavailable";
+        NSString *message = @"This item is currently unavailable on the App Store.";
+        NSLog(@"%@", message);
+        SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
+                                                                        message:message
+                                                                 preferredStyle:SDCAlertControllerStyleAlert];
+        SDCAlertAction *okay = [SDCAlertAction actionWithTitle:@"Okay"
+                                                         style:SDCAlertActionStyleDefault
+                                                       handler:^(SDCAlertAction *action) {}];
+        [alert addAction:okay];
+        [alert presentWithCompletion:nil];
+    }
+}
+
+- (void)purchase:(SKProduct *)product
+{
+    SKPayment *payment = [SKPayment paymentWithProduct:product];
+    
+    [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+    [[SKPaymentQueue defaultQueue] addPayment:payment];
+}
+
+- (void)restore
+{
+    //this is called when the user restores purchases, you should hook this up to a button
+    [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+}
+
+- (void) paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
+{
+    NSLog(@"received restored transactions: %lu", (unsigned long)queue.transactions.count);
+    for(SKPaymentTransaction *transaction in queue.transactions){
+        if(transaction.transactionState == SKPaymentTransactionStateRestored){
+            //called when the user successfully restores a purchase
+            NSLog(@"Transaction state -> Restored");
+            
+            [self doRemoveAds];
+            [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+            break;
+        }
+    }   
+}
+
+- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions
+{
+    for(SKPaymentTransaction *transaction in transactions){
+        switch(transaction.transactionState){
+            case SKPaymentTransactionStatePurchasing: NSLog(@"Transaction state -> Purchasing");
+                //called when the user is in the process of purchasing, do not add any of your own code here.
+                break;
+            case SKPaymentTransactionStatePurchased:
+                //this is called when the user has successfully purchased the package (Cha-Ching!)
+                [self doRemoveAds]; //the action to occur when the purchase is made.
+                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+                NSLog(@"Transaction state -> Purchased");
+                break;
+            case SKPaymentTransactionStateRestored:
+                NSLog(@"Transaction state -> Restored");
+                //add the same code as you did from SKPaymentTransactionStatePurchased here
+                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+                break;
+            case SKPaymentTransactionStateFailed:
+                //called when the transaction does not finish
+                if(transaction.error.code == SKErrorPaymentCancelled){
+                    NSLog(@"Transaction state -> Cancelled");
+                    //the user cancelled the payment ;(
+                }
+                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+                break;
+            case SKPaymentTransactionStateDeferred:
+                //Should not block the ui or do anything, purchase is pending approval (by parent, etc.).
+                break;
+        }
+    }
+}
+
+- (void)doRemoveAds{
+    self.areAdsRemoved = YES;
+    [AppEnvironmentConstants adsHaveBeenRemoved:self.areAdsRemoved];
+}
+
 
 #pragma mark - Helper
 - (void)icloudSwitchToggled
@@ -576,6 +773,30 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 101;
     [mySheet setTitleTextColor:[UIColor darkGrayColor]];
     [mySheet setCancelButtonFont:[UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                                      size:20]];
+    [mySheet setTitleFont:[UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18]];
+    return mySheet;
+}
+
+- (IBActionSheet *)actionSheetForRestoringPurchases
+{
+    __weak NewSettingsTableViewController *weakself = self;
+    NSString *title = @"Which purchase are you restoring?";
+    IBActionSheet *mySheet = [[IBActionSheet alloc] initWithTitle:title
+                                                         callback:^(IBActionSheet *myActionSheet, NSInteger buttonIndex){
+                                                             [weakself handleActionClickWithButtonIndex:buttonIndex actionSheet:myActionSheet];
+                                                         } cancelButtonTitle:@"Cancel"
+                                           destructiveButtonTitle:nil
+                                                otherButtonTitles:@"Ad Removal", nil];
+    
+    for(UIButton *aButton in mySheet.buttons){
+        aButton.titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                  size:20];
+    }
+    mySheet.tag = RESTORE_PURCHASE_ACTION_SHEET_TAG;
+    [mySheet setButtonTextColor:[UIColor defaultAppColorScheme]];
+    [mySheet setTitleTextColor:[UIColor darkGrayColor]];
+    [mySheet setCancelButtonFont:[UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                                 size:20]];
     [mySheet setTitleFont:[UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18]];
     return mySheet;
 }
