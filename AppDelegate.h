@@ -28,6 +28,8 @@
 #import "MasterArtistsTableViewController.h"
 #import "MasterPlaylistTableViewController.h"
 
+#import <StoreKit/StoreKit.h>
+
 #import "MZPreviewPlayer.h"
 
 //crash reporting framework

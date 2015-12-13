@@ -157,16 +157,18 @@ short const dummyTabIndex = 2;
     [oldVc viewDidDisappear:YES];
     [oldVc.navigationController removeFromParentViewController];
     
-    GADBannerView *myAd = [[GADBannerView alloc] initWithAdSize:kGADAdSizeSmartBannerPortrait];
-    myAd.rootViewController = self;
-    //real ad unit for production: ca-app-pub-3961646861945951/6727549027
-    myAd.adUnitID = @"ca-app-pub-3940256099942544/2934735716";  //test ad unit
-    
-    heightOfAdBanner = myAd.frame.size.height;
-    int yStartOfAdBanner = self.view.frame.size.height - heightOfAdBanner;
-    [self.view addSubview:myAd];
-    myAd.frame = CGRectMake(0, yStartOfAdBanner, myAd.frame.size.width, myAd.frame.size.height);
-    [myAd loadRequest:[GADRequest request]];
+    if(! [AppEnvironmentConstants areAdsRemoved]) {
+        GADBannerView *myAd = [[GADBannerView alloc] initWithAdSize:kGADAdSizeSmartBannerPortrait];
+        myAd.rootViewController = self;
+        //real ad unit for production: ca-app-pub-3961646861945951/6727549027
+        myAd.adUnitID = @"ca-app-pub-3940256099942544/2934735716";  //test ad unit
+        
+        heightOfAdBanner = myAd.frame.size.height;
+        int yStartOfAdBanner = self.view.frame.size.height - heightOfAdBanner;
+        [self.view addSubview:myAd];
+        myAd.frame = CGRectMake(0, yStartOfAdBanner, myAd.frame.size.width, myAd.frame.size.height);
+        [myAd loadRequest:[GADRequest request]];
+    }
     
     //containing the nav controller within a container
     CGRect desiredVcFrame = CGRectMake(0,

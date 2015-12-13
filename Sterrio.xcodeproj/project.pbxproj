@@ -214,6 +214,7 @@
 		87414BC41B3FA92500FB8252 /* CoreSpotlight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		87414BC61B3FA93100FB8252 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		87414BC81B3FB85300FB8252 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87414BC71B3FB85300FB8252 /* AppDelegate.m */; };
+		8755545E1C1DF6EA00259CA8 /* InAppPurchaseUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8755545D1C1DF6EA00259CA8 /* InAppPurchaseUtils.m */; };
 		8773AE2D1B509A5500C3E64E /* SpotlightHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */; };
 		87A953621B3E1E54002E9872 /* MZMusicBrainz.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9535E1B3E1E54002E9872 /* MZMusicBrainz.m */; };
 		87A953631B3E1E54002E9872 /* MZSongMetaData.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A953611B3E1E54002E9872 /* MZSongMetaData.m */; };
@@ -646,6 +647,8 @@
 		87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreSpotlight.framework; path = System/Library/Frameworks/CoreSpotlight.framework; sourceTree = SDKROOT; };
 		87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		87414BC71B3FB85300FB8252 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		8755545C1C1DF6EA00259CA8 /* InAppPurchaseUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppPurchaseUtils.h; sourceTree = "<group>"; };
+		8755545D1C1DF6EA00259CA8 /* InAppPurchaseUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppPurchaseUtils.m; sourceTree = "<group>"; };
 		8773AE2B1B509A5500C3E64E /* SpotlightHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpotlightHelper.h; sourceTree = "<group>"; };
 		8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpotlightHelper.m; sourceTree = "<group>"; };
 		87A9535D1B3E1E54002E9872 /* MZMusicBrainz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZMusicBrainz.h; sourceTree = "<group>"; };
@@ -944,6 +947,8 @@
 				873538A61B0A9C52009244E4 /* OperationQueuesSingeton.m */,
 				873538A71B0A9C52009244E4 /* ReachabilitySingleton.h */,
 				873538A81B0A9C52009244E4 /* ReachabilitySingleton.m */,
+				8755545C1C1DF6EA00259CA8 /* InAppPurchaseUtils.h */,
+				8755545D1C1DF6EA00259CA8 /* InAppPurchaseUtils.m */,
 			);
 			name = Singletons;
 			sourceTree = "<group>";
@@ -1917,6 +1922,7 @@
 				873539211B0A9F11009244E4 /* YouTubeSongAdderViewController.m in Sources */,
 				873538531B0A9B23009244E4 /* Stack.m in Sources */,
 				8735388B1B0A9BCA009244E4 /* YouTubeVideoSearchService.m in Sources */,
+				8755545E1C1DF6EA00259CA8 /* InAppPurchaseUtils.m in Sources */,
 				873539551B0AA069009244E4 /* MZTableViewCell.m in Sources */,
 				873538391B0A9AF4009244E4 /* NSObject+ObjectUUID.m in Sources */,
 				873538421B0A9AF4009244E4 /* UIImage+colorImages.m in Sources */,

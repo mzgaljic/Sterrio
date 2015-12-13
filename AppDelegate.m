@@ -13,6 +13,7 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "SDCAlertControllerView.h"
 #import "SpotlightHelper.h"
+#import "InAppPurchaseUtils.h"
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 @interface AppDelegate ()
@@ -24,6 +25,7 @@
     BOOL backgroundTaskIsRunning;
     BOOL ensembleBackgroundMergeIsRunning;
 }
+@property (nonatomic, strong) InAppPurchaseUtils *inAppPurchaseUtils;
 @end
 
 @implementation AppDelegate
@@ -67,6 +69,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     
     [AppDelegate upgradeLibraryToUseSpotlightIfApplicable];
     [ReachabilitySingleton sharedInstance];  //init reachability class
+    self.inAppPurchaseUtils = [InAppPurchaseUtils sharedInstance];  //sets up transaction observers
 
     //create all contexts up front to avoid any funny business later (thread issues, etc.)
     [CoreDataManager context];
@@ -85,6 +88,8 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         //do stuff that you'd want to see the first time you launch!
         [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
     }
+    
+    [AppEnvironmentConstants adsHaveBeenRemoved:NO];
     
     
     [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY
@@ -667,5 +672,6 @@ static NSDate *finish;
     return executionTime;
 }
 //----/End/ of Spotlight upgrade helper code----
+
 
 @end
