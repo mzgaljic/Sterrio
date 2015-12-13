@@ -65,7 +65,7 @@ NSString * const MZHideTabBarAnimated = @"Pass @YES in notif to hide tab bar";
 
 
 
-NSString * const MZWhatsNewUserMsg = @"This is a quick fix for some big issues (crashing and strange page navigation issues).";
+NSString * const MZWhatsNewUserMsg = @"Ads have been added to the app. Test removal of ads in app settings.";
 NSString * const MZAppName = @"Sterrio";
 
 @end

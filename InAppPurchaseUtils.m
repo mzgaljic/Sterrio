@@ -131,25 +131,14 @@ static MRProgressOverlayView *hud;
             {
                 NSLog(@"Transaction state -> Purchasing");
                 //user is in the process of purchasing.
-                
-                UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    hud = [MRProgressOverlayView showOverlayAddedTo:keyWindow
-                                                              title:@""
-                                                               mode:MRProgressOverlayViewModeIndeterminateSmall
-                                                           animated:YES];
-                });
+                [self showSpinner];
                 break;
             }
                 
             case SKPaymentTransactionStatePurchased:  //(Cha-Ching!)
                 NSLog(@"Transaction state -> Purchased");
                 
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [hud dismiss:YES];
-                    hud = nil;
-                });
+                [self hideSpinner];
                 [self removeAdsForUser];
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
                 break;
@@ -157,10 +146,7 @@ static MRProgressOverlayView *hud;
             case SKPaymentTransactionStateRestored:
                 NSLog(@"Transaction state -> Restored");
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [hud dismiss:YES];
-                    hud = nil;
-                });
+                [self hideSpinner];
                 [self removeAdsForUser];
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
                 break;
@@ -173,19 +159,13 @@ static MRProgressOverlayView *hud;
                 } else {
                     NSLog(@"Transaction state -> Other purchase failure.");
                 }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [hud dismiss:YES];
-                    hud = nil;
-                });
+                [self hideSpinner];
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
                 break;
                 
             case SKPaymentTransactionStateDeferred:
                 //Don't block the UI, purchase is pending approval (by parent, etc.).
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [hud dismiss:YES];
-                    hud = nil;
-                });
+                [self hideSpinner];
                 break;
         }
     }
@@ -195,6 +175,26 @@ static MRProgressOverlayView *hud;
 - (void)removeAdsForUser
 {
     [AppEnvironmentConstants adsHaveBeenRemoved:YES];
+}
+
+#pragma mark - Gui Utils
+- (void)showSpinner
+{
+    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        hud = [MRProgressOverlayView showOverlayAddedTo:keyWindow
+                                                  title:@""
+                                                   mode:MRProgressOverlayViewModeIndeterminateSmall
+                                               animated:YES];
+    });
+}
+
+- (void)hideSpinner
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [hud dismiss:YES];
+        hud = nil;
+    });
 }
 
 @end
