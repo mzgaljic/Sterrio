@@ -456,6 +456,10 @@ short const dummyTabIndex = 2;
 
 - (void)updateAdBannerForOrientation:(UIInterfaceOrientation)orientation
 {
+    if([AppEnvironmentConstants areAdsRemoved]){
+        return;
+    }
+    
     GADBannerView *adBanner = self.adBanner;
     if(UIInterfaceOrientationIsLandscape(orientation)) {
         adBanner.adSize = kGADAdSizeSmartBannerLandscape;
