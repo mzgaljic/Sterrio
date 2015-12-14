@@ -111,7 +111,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     UIApplication *myApp = [UIApplication sharedApplication];
     [myApp setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
-    //[Fabric with:@[CrashlyticsKit]];
+    [Fabric with:@[CrashlyticsKit]];
     
     if([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
         [[UIApplication sharedApplication] registerForRemoteNotifications];

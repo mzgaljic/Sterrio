@@ -253,7 +253,7 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
                         @"Forest Green",
                         @"Bubblegum Pink",
                         @"Mighty Blue",
-                        @"Purple",
+                        @"Dashing Purple",
                         @"Dandelion Yellow"
                         ];
     
