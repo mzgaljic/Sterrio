@@ -580,6 +580,28 @@ short const dummyTabIndex = 2;
         
         [self setupTabBarAndTabBarViewUsingOrientation:toInterfaceOrientation];
     }
+    
+    [self ensureTabBarRotatesSmoothlyToInterfaceOrientation:toInterfaceOrientation];
+}
+
+- (void)ensureTabBarRotatesSmoothlyToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+    if(UIInterfaceOrientationIsPortrait(toInterfaceOrientation)){
+        [UIView animateWithDuration:0.3
+                              delay:0
+                            options:UIViewAnimationOptionAllowAnimatedContent
+                         animations:^{
+                             [self setupTabBarAndTabBarViewUsingOrientation:toInterfaceOrientation];
+                         } completion:nil];
+    } else{
+        [UIView animateWithDuration:0.2 animations:^{
+            int originalWidth = self.tabBarView.frame.size.width;
+            [self.tabBarView setFrame:CGRectMake(self.tabBarView.frame.origin.x,
+                                                 self.tabBarView.frame.origin.y,
+                                                 originalWidth,
+                                                 self.tabBarView.frame.size.height)];
+        }];
+    }
 }
 
 #pragma mark - adding music to library
