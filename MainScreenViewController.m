@@ -7,7 +7,6 @@
 //
 
 #import "MainScreenViewController.h"
-@import GoogleMobileAds;  //#import "GADBannerView.h"
 
 NSString * const CENTER_BTN_IMG_NAME = @"plus_sign";
 short const dummyTabIndex = 2;
@@ -21,9 +20,11 @@ short const dummyTabIndex = 2;
     BOOL alwaysKeepStatusBarInvisible;
     BOOL tabBarAnimationInProgress;
     BOOL changingTabs;
+    BOOL prevAdsRemovedValue;
     UIInterfaceOrientation lastVisibleTabBarOrientation;
     NSUInteger heightOfAdBanner;
 }
+@property (nonatomic, strong) GADBannerView *adBanner;
 @property (nonatomic, strong) UIView *tabBarView;  //contains the tab bar and center button - the whole visual thing.
 @property (nonatomic, strong) UITabBar *tabBar;  //this tab bar is containing within a tab bar view
 @property (nonatomic, strong) SSBouncyButton *centerButton;
@@ -54,6 +55,8 @@ short const dummyTabIndex = 2;
         [AppEnvironmentConstants setTabBarHidden:NO];
         tabBarAnimationInProgress = NO;
         changingTabs = NO;
+        prevAdsRemovedValue = [AppEnvironmentConstants areAdsRemoved];
+        [AppEnvironmentConstants setBannerAdHeight:0];
     }
     return self;
 }
@@ -61,6 +64,7 @@ short const dummyTabIndex = 2;
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    self.adBanner.delegate = nil;
 }
 
 - (void)viewDidLoad
@@ -140,7 +144,8 @@ short const dummyTabIndex = 2;
 #pragma mark - GUI helpers
 - (void)replaceNavControllerOnScreenWithNavController:(UINavigationController *)newNavController
 {
-    if(self.currentNavController == newNavController)
+    BOOL adsRemoved = [AppEnvironmentConstants areAdsRemoved];
+    if(adsRemoved == prevAdsRemovedValue && self.currentNavController == newNavController)
         return;
     
     BOOL oldNavBarHidden = self.currentNavController.navigationBarHidden;
@@ -157,17 +162,33 @@ short const dummyTabIndex = 2;
     [oldVc viewDidDisappear:YES];
     [oldVc.navigationController removeFromParentViewController];
     
-    if(! [AppEnvironmentConstants areAdsRemoved]) {
-        GADBannerView *myAd = [[GADBannerView alloc] initWithAdSize:kGADAdSizeSmartBannerPortrait];
-        myAd.rootViewController = self;
-        //real ad unit for production: ca-app-pub-3961646861945951/6727549027
-        myAd.adUnitID = @"ca-app-pub-3940256099942544/2934735716";  //test ad unit
+    if(! adsRemoved && self.adBanner == nil) {
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        GADBannerView *adBanner = nil;
+        if(UIInterfaceOrientationIsPortrait(orientation)) {
+            adBanner = [[GADBannerView alloc] initWithAdSize:kGADAdSizeSmartBannerPortrait];
+        } else {
+            adBanner = [[GADBannerView alloc] initWithAdSize:kGADAdSizeSmartBannerLandscape];
+        }
+        adBanner.delegate = self;
         
-        heightOfAdBanner = myAd.frame.size.height;
+        adBanner.rootViewController = self;
+        //real ad unit for production: ca-app-pub-3961646861945951/6727549027
+        adBanner.adUnitID = @"ca-app-pub-3940256099942544/2934735716";  //test ad unit
+        [adBanner loadRequest:[GADRequest request]];
+        
+        heightOfAdBanner = adBanner.frame.size.height;
+        [AppEnvironmentConstants setBannerAdHeight:(int)heightOfAdBanner];
         int yStartOfAdBanner = self.view.frame.size.height - heightOfAdBanner;
-        [self.view addSubview:myAd];
-        myAd.frame = CGRectMake(0, yStartOfAdBanner, myAd.frame.size.width, myAd.frame.size.height);
-        [myAd loadRequest:[GADRequest request]];
+        adBanner.alpha = 0;
+        adBanner.frame = CGRectMake(0, yStartOfAdBanner, adBanner.frame.size.width, adBanner.frame.size.height);
+        [self.view addSubview:adBanner];
+        self.adBanner = adBanner;
+    }
+    
+    if(adsRemoved == YES && prevAdsRemovedValue == NO) {
+        heightOfAdBanner = 0;
+        [self.adBanner removeFromSuperview];
     }
     
     //containing the nav controller within a container
@@ -263,8 +284,10 @@ short const dummyTabIndex = 2;
     
     if(! [AppEnvironmentConstants isTabBarHidden]){
         lastVisibleTabBarOrientation = [UIApplication sharedApplication].statusBarOrientation;
-        if(! self.tabBarView.superview)
+        if(! self.tabBarView.superview) {
             [self.view addSubview:self.tabBarView];
+        }
+        
         self.tabBarView.alpha = 1;
     }
 }
@@ -389,9 +412,9 @@ short const dummyTabIndex = 2;
                             options:UIViewAnimationOptionBeginFromCurrentState
                          animations:^{
                              [self.tabBarView setFrame:hiddenFrame];
+                             self.tabBarView.alpha = 0;
                          }
                          completion:^(BOOL finished) {
-                             self.tabBarView.hidden = YES;
                              [AppEnvironmentConstants setTabBarHidden:YES];
                              tabBarAnimationInProgress = NO;
                          }];
@@ -414,7 +437,7 @@ short const dummyTabIndex = 2;
                                                  self.tabBarView.frame.size.width,
                                                  self.tabBarView.frame.size.height)];
         }
-             
+        
         [UIView animateWithDuration:showDuration
                               delay:delay
              usingSpringWithDamping:springDamping + 0.1
@@ -422,13 +445,30 @@ short const dummyTabIndex = 2;
                             options:UIViewAnimationOptionBeginFromCurrentState
                          animations:^{
                              [self.tabBarView setFrame:visibleRect];
-                             self.tabBarView.hidden = NO;
+                              self.tabBarView.alpha = 1;
                          }
                          completion:^(BOOL finished) {
                              [AppEnvironmentConstants setTabBarHidden:NO];
                              tabBarAnimationInProgress = NO;
                          }];
     }
+}
+
+- (void)updateAdBannerForOrientation:(UIInterfaceOrientation)orientation
+{
+    GADBannerView *adBanner = self.adBanner;
+    if(UIInterfaceOrientationIsLandscape(orientation)) {
+        adBanner.adSize = kGADAdSizeSmartBannerLandscape;
+    } else {
+        adBanner.adSize = kGADAdSizeSmartBannerPortrait;
+    }
+    heightOfAdBanner = adBanner.frame.size.height;
+    [AppEnvironmentConstants setBannerAdHeight:(int)heightOfAdBanner];
+    int yStartOfAdBanner = self.view.frame.size.width - heightOfAdBanner;
+    adBanner.frame = CGRectMake(0, yStartOfAdBanner, adBanner.frame.size.width, adBanner.frame.size.height);
+    [self.adBanner removeFromSuperview];
+    self.adBanner.alpha = 0;
+    [self.view addSubview:self.adBanner];
 }
 
 - (void)appThemePossiblyChanged
@@ -523,6 +563,9 @@ short const dummyTabIndex = 2;
                                 duration:(NSTimeInterval)duration
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    
+    [self updateAdBannerForOrientation:toInterfaceOrientation];
+    
     if([AppEnvironmentConstants isTabBarHidden] && !tabBarAnimationInProgress)
         return;
     
@@ -532,28 +575,6 @@ short const dummyTabIndex = 2;
             self.tabBarView.alpha = 0;  //animation is going to hide it anyway...
         
         [self setupTabBarAndTabBarViewUsingOrientation:toInterfaceOrientation];
-    }
-    
-    [self ensureTabBarRotatesSmoothlyToInterfaceOrientation:toInterfaceOrientation];
-}
-
-- (void)ensureTabBarRotatesSmoothlyToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-{
-    if(UIInterfaceOrientationIsPortrait(toInterfaceOrientation)){
-        [UIView animateWithDuration:0.3
-                              delay:0
-                            options:UIViewAnimationOptionAllowAnimatedContent
-                         animations:^{
-                             [self setupTabBarAndTabBarViewUsingOrientation:toInterfaceOrientation];
-                         } completion:nil];
-    } else{
-        [UIView animateWithDuration:0.2 animations:^{
-            int originalWidth = self.tabBarView.frame.size.width;
-            [self.tabBarView setFrame:CGRectMake(self.tabBarView.frame.origin.x,
-                                                 self.tabBarView.frame.origin.y,
-                                                 originalWidth,
-                                                 self.tabBarView.frame.size.height)];
-        }];
     }
 }
 
@@ -585,6 +606,14 @@ short const dummyTabIndex = 2;
             [topVc performSelector:@selector(tabBarAddButtonPressed)];
         }
     }
+}
+
+#pragma mark - GADBanner delegate
+- (void)adViewDidReceiveAd:(GADBannerView *)bannerView
+{
+    [UIView animateWithDuration:0.35 animations:^{
+        self.adBanner.alpha = 1;
+    }];
 }
 
 @end

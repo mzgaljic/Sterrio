@@ -335,10 +335,11 @@ static UIInterfaceOrientation orientationOnLastRotate;
     
     //set frame based on what kind of mode the VC wants the player in.
     if(canIgnoreToolbar){
+        int adBannerHeight = [AppEnvironmentConstants bannerAdHeight];
         width = SMALL_VIDEO_WIDTH;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
         x = screenWidth - width - MZSmallPlayerVideoFramePadding;
-        y = screenHeight - height - MZSmallPlayerVideoFramePadding - MZTabBarHeight;
+        y = screenHeight - height - MZSmallPlayerVideoFramePadding - MZTabBarHeight - adBannerHeight;
     } else{
         width = SMALL_VIDEO_WIDTH - amountToShrinkSmallPlayerWhenRespectingToolbar;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
@@ -360,10 +361,11 @@ static UIInterfaceOrientation orientationOnLastRotate;
     
     //set frame based on what kind of VC we are over at the moment
     if(canIgnoreToolbar){
+        int adBannerHeight = [AppEnvironmentConstants bannerAdHeight];
         width = SMALL_VIDEO_WIDTH;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];
         x = screenWidth - width - MZSmallPlayerVideoFramePadding;
-        y = screenHeight - height - MZSmallPlayerVideoFramePadding - MZTabBarHeight;
+        y = screenHeight - height - MZSmallPlayerVideoFramePadding - MZTabBarHeight - adBannerHeight;
     } else{
         width = SMALL_VIDEO_WIDTH - amountToShrinkSmallPlayerWhenRespectingToolbar;
         height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:width];

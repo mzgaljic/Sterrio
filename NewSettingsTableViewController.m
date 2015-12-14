@@ -28,14 +28,14 @@
 @end
 
 @implementation NewSettingsTableViewController
-short NUM_SECTIONS = 6;
+short NUM_SECTIONS;
 
-short REMOVE_ADS_SECTION_NUM = 0;
-short ICLOUD_SYNC_SECTION_NUM = 1;
-short MUSIC_QUALITY_SECTION_NUM = 2;
-short APPEARANCE_SECTION_NUM = 3;
-short ADVANCED_SECTION_NUM = 4;
-short FEEDBACK_SECTION_NUM = 5;
+short REMOVE_ADS_SECTION_NUM;
+short ICLOUD_SYNC_SECTION_NUM;
+short MUSIC_QUALITY_SECTION_NUM;
+short APPEARANCE_SECTION_NUM;
+short ADVANCED_SECTION_NUM;
+short FEEDBACK_SECTION_NUM;
 
 int const FEEDBACK_CELL_ACTION_SHEET_TAG = 101;
 int const BUG_FOUND_ACTION_SHEET_TAG = 102;
@@ -47,13 +47,22 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
     if([AppEnvironmentConstants areAdsRemoved]) {
         REMOVE_ADS_SECTION_NUM = -1;
         
-        ICLOUD_SYNC_SECTION_NUM--;
-        MUSIC_QUALITY_SECTION_NUM--;
-        APPEARANCE_SECTION_NUM--;
-        ADVANCED_SECTION_NUM--;
-        FEEDBACK_SECTION_NUM--;
+        ICLOUD_SYNC_SECTION_NUM = 0;
+        MUSIC_QUALITY_SECTION_NUM = 1;
+        APPEARANCE_SECTION_NUM = 2;
+        ADVANCED_SECTION_NUM = 3;
+        FEEDBACK_SECTION_NUM = 4;
         
-        NUM_SECTIONS--;
+        NUM_SECTIONS = 5;
+    } else {
+        REMOVE_ADS_SECTION_NUM = 0;
+        ICLOUD_SYNC_SECTION_NUM = 1;
+        MUSIC_QUALITY_SECTION_NUM = 2;
+        APPEARANCE_SECTION_NUM = 3;
+        ADVANCED_SECTION_NUM = 4;
+        FEEDBACK_SECTION_NUM = 5;
+        
+        NUM_SECTIONS = 6;
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self

@@ -140,6 +140,8 @@ typedef enum{
 + (void)setNavBarHeight:(int)height;
 + (int)statusBarHeight;
 + (void)setStatusBarHeight:(int)height;
++ (void)setBannerAdHeight:(int)height;
++ (int)bannerAdHeight;
 
 + (UIColor *)expandingCellGestureInitialColor;
 + (UIColor *)expandingCellGestureQueueItemColor;

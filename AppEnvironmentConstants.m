@@ -39,7 +39,8 @@ static SHUFFLE_STATE shuffleState;
 static PREVIEW_PLAYBACK_STATE currentPreviewPlayerState = PREVIEW_PLAYBACK_STATE_Uninitialized;
 
 static int navBarHeight;
-static short statusBarHeight;
+static int statusBarHeight;
+static int bannerAdHeight;
 static NSInteger lastPlayerViewIndex = NSNotFound;
 
 static VALSynchronizableValet *adsKeychainItem;
@@ -635,6 +636,16 @@ static int icloudEnabledCounter = 0;
 + (void)setStatusBarHeight:(int)height
 {
     statusBarHeight = height;
+}
+
++ (void)setBannerAdHeight:(int)height
+{
+    bannerAdHeight = height;
+}
+
++ (int)bannerAdHeight
+{
+    return bannerAdHeight;
 }
 
 

@@ -44,23 +44,14 @@
         [productsRequest start];
     } else{
         //this is called the user cannot make payments, most likely due to parental controls
-        NSString *title = @"Purchase failed";
-        NSString *message = @"This is likely due to parental control settings on this device.";
-        NSLog(@"%@: %@", title, message);
-        SDCAlertController *alert = [SDCAlertController alertControllerWithTitle:title
-                                                                         message:message
-                                                                  preferredStyle:SDCAlertControllerStyleAlert];
-        SDCAlertAction *okay = [SDCAlertAction actionWithTitle:@"Okay"
-                                                         style:SDCAlertActionStyleDefault
-                                                       handler:^(SDCAlertAction *action) {}];
-        [alert addAction:okay];
-        [alert presentWithCompletion:nil];
+        NSLog(@"Purchase failed: This is likely due to parental control settings on this device.");
+        [self showPurchaseFailedAlert];
     }
 }
 
 - (void)restoreAdRemoval
 {
-    //this is called when the user restores purchases, you should hook this up to a button
+    [self showSpinner];
     [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
 
@@ -77,17 +68,8 @@
     }
     else if(!validProduct) {
         //this is called if your product id is not valid, this shouldn't be called unless that happens.
-        NSString *title = @"Item unavailable";
-        NSString *message = @"This item is currently unavailable on the App Store.";
-        NSLog(@"%@", message);
-        SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
-                                                                        message:message
-                                                                 preferredStyle:SDCAlertControllerStyleAlert];
-        SDCAlertAction *okay = [SDCAlertAction actionWithTitle:@"Okay"
-                                                         style:SDCAlertActionStyleDefault
-                                                       handler:^(SDCAlertAction *action) {}];
-        [alert addAction:okay];
-        [alert presentWithCompletion:nil];
+        NSLog(@"This item is currently unavailable on the App Store.");
+        [self showItemUnavailableOnStoreAlert];
     }
 }
 
@@ -96,17 +78,9 @@
     NSUInteger numTransactionsToRestore = queue.transactions.count;
     NSLog(@"received restored transactions: %lu", numTransactionsToRestore);
     if(numTransactionsToRestore == 0) {
-        NSString *title = @"Restore failed";
-        NSString *msg = @"There are no purchases to restore.";
-        NSLog(@"%@", msg);
-        SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
-                                                                        message:msg
-                                                                 preferredStyle:SDCAlertControllerStyleAlert];
-        SDCAlertAction *okay = [SDCAlertAction actionWithTitle:@"Okay"
-                                                         style:SDCAlertActionStyleDefault
-                                                       handler:^(SDCAlertAction *action) {}];
-        [alert addAction:okay];
-        [alert presentWithCompletion:nil];
+        NSLog(@"There are no purchases to restore.");
+        [self hideSpinner];
+        [self showNothingToRestoreAlert];
         return;
     }
     
@@ -115,8 +89,12 @@
             //called when the user successfully restores a purchase
             NSLog(@"Transaction state -> Restored");
             
+            [self hideSpinner];
             [self removeAdsForUser];
             [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+            
+            //"Thank you" message isn't shown by ios automatically during a restore. Only for purchase.
+            [self showRestoreSuccessAlert];
             break;
         }
     }
@@ -195,6 +173,46 @@ static MRProgressOverlayView *hud;
         [hud dismiss:YES];
         hud = nil;
     });
+}
+
+- (void)showRestoreSuccessAlert
+{
+    NSString *msg = @"Your purchase has been restored.";
+    [self showAlertWithTitle:@"Success" message:msg btnText:@"Okay"];
+}
+
+- (void)showNothingToRestoreAlert
+{
+    NSString *title = @"Restore failed";
+    NSString *msg = @"There are no purchases to restore.";
+    [self showAlertWithTitle:title message:msg btnText:@"Okay"];
+}
+
+- (void)showItemUnavailableOnStoreAlert
+{
+    
+    NSString *title = @"Item unavailable";
+    NSString *message = @"This item is currently unavailable on the App Store.";
+    [self showAlertWithTitle:title message:message btnText:@"Okay"];
+}
+
+- (void)showPurchaseFailedAlert
+{
+    NSString *title = @"Purchase failed";
+    NSString *message = @"This is likely due to parental control settings on this device.";
+    [self showAlertWithTitle:title message:message btnText:@"Okay"];
+}
+
+- (void)showAlertWithTitle:(NSString *)title message:(NSString *)msg btnText:(NSString *)btnText
+{
+    SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
+                                                                    message:msg
+                                                             preferredStyle:SDCAlertControllerStyleAlert];
+    SDCAlertAction *okay = [SDCAlertAction actionWithTitle:btnText
+                                                     style:SDCAlertActionStyleDefault
+                                                   handler:^(SDCAlertAction *action) {}];
+    [alert addAction:okay];
+    [alert presentWithCompletion:nil];
 }
 
 @end

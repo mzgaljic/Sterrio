@@ -89,7 +89,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
     }
     
-    [AppEnvironmentConstants adsHaveBeenRemoved:NO];
+    //[AppEnvironmentConstants adsHaveBeenRemoved:NO];   ONLY FOR DEVELOPMENT!!
     
     
     [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY

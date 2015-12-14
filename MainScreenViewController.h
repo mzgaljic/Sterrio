@@ -15,8 +15,9 @@
 #import "MainScreenViewControllerDelegate.h"
 #import "SSBouncyButton.h"
 #import "SongPlayerCoordinator.h"
+@import GoogleMobileAds;  //#import "GADBannerView.h"
 
-@interface MainScreenViewController : UIViewController <UITabBarDelegate>
+@interface MainScreenViewController : UIViewController <UITabBarDelegate, GADBannerViewDelegate>
 
 //exposed so the PlaylistItemTableViewController can use the same image in its own VC.
 @property (nonatomic, strong) UIImage *centerButtonImg;
