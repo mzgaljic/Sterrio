@@ -958,6 +958,9 @@ CGPoint MLOffsetCGPoint(CGPoint point, CGFloat offset);
 #pragma mark - Label Control
 
 - (void)restartLabel {
+    // Shutdown the label
+    [self shutdownLabel];
+    // Restart scrolling if appropriate
     if (self.labelShouldScroll && !self.tapToScroll && !self.holdScrolling) {
         [self beginScroll];
     }
@@ -970,12 +973,16 @@ CGPoint MLOffsetCGPoint(CGPoint point, CGFloat offset);
 }
 
 - (void)shutdownLabel {
+    // Bring label to home location
     [self returnLabelToOriginImmediately];
+    // Apply gradient mask for home location
+    [self applyGradientMaskForFadeLength:self.fadeLength animated:false];
 }
 
 -(void)pauseLabel
 {
-    if (!self.isPaused) {
+    // Only pause if label is not already paused, and already in a scrolling animation
+    if (!self.isPaused && self.awayFromHome) {
         // Pause sublabel position animation
         CFTimeInterval labelPauseTime = [self.subLabel.layer convertTime:CACurrentMediaTime() fromLayer:nil];
         self.subLabel.layer.speed = 0.0;

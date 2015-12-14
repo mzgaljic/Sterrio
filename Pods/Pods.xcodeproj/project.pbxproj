@@ -407,6 +407,7 @@
 		40BAC2DD6D2F3E362A4E22F8DC0E1D59 /* NSMapTable+CDEAdditions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSMapTable+CDEAdditions.h"; path = "Framework/Source/General/NSMapTable+CDEAdditions.h"; sourceTree = "<group>"; };
 		43186800760B619441537E38DA80FAA2 /* XCDYouTubeLogger.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = XCDYouTubeLogger.h; path = XCDYouTubeKit/XCDYouTubeLogger.h; sourceTree = "<group>"; };
 		4350C865ADFB324FD67998DA790B4FB7 /* SDWebImageDownloader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageDownloader.m; path = SDWebImage/SDWebImageDownloader.m; sourceTree = "<group>"; };
+		4371DD353F3C75D6E809A9681F867AE6 /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMobileAds.framework; path = "GoogleMobileAdsSdkiOS-7.6.0/GoogleMobileAds.framework"; sourceTree = "<group>"; };
 		44F2411720D3ACBE20D1A3E03449C152 /* CRToast-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "CRToast-dummy.m"; sourceTree = "<group>"; };
 		45795554281F9D3C736257771A8DBE0D /* GCDiscreetNotificationView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GCDiscreetNotificationView.h; path = GCDiscreetNotificationView/GCDiscreetNotificationView.h; sourceTree = "<group>"; };
 		45A3E6DB5A99B6278E7A01721B4177C0 /* AFNetworkActivityIndicatorManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFNetworkActivityIndicatorManager.m; path = "UIKit+AFNetworking/AFNetworkActivityIndicatorManager.m"; sourceTree = "<group>"; };
@@ -452,7 +453,6 @@
 		687A611684F54AB7A850771967B731D1 /* MarqueeLabel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MarqueeLabel.h; sourceTree = "<group>"; };
 		68DE20636B7B73FD566AFCF623A3CB73 /* XCDYouTubeVideoPlayerViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = XCDYouTubeVideoPlayerViewController.h; path = XCDYouTubeKit/XCDYouTubeVideoPlayerViewController.h; sourceTree = "<group>"; };
 		6911BECA35E7518D864239B7E898EEF3 /* Pods-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-frameworks.sh"; sourceTree = "<group>"; };
-		6934A7A3569BDC52688C2EA868910F08 /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMobileAds.framework; path = "GoogleMobileAdsSdkiOS-7.5.2/GoogleMobileAds.framework"; sourceTree = "<group>"; };
 		6A528C5A6ACB4FAEFD11A22055D17C9B /* CDEPropertyChangeValue.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = CDEPropertyChangeValue.m; path = Framework/Source/Events/CDEPropertyChangeValue.m; sourceTree = "<group>"; };
 		6ABEC4B1A9C48653D4C3067468C7D567 /* CRToast.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = CRToast.xcconfig; sourceTree = "<group>"; };
 		6D56E42BF6455499CEE3F2AEDFCF646C /* CDEEventStoreModel_1.xcdatamodel */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.xcdatamodel; path = CDEEventStoreModel_1.xcdatamodel; sourceTree = "<group>"; };
@@ -984,7 +984,7 @@
 		9888EBEF71C29783AFB6261F5FFF4BAF /* Google-Mobile-Ads-SDK */ = {
 			isa = PBXGroup;
 			children = (
-				B292CE8269A043D038F4641501E3CB61 /* Frameworks */,
+				FF0528159D92F00F5F028DE0E9E3DFA7 /* Frameworks */,
 			);
 			path = "Google-Mobile-Ads-SDK";
 			sourceTree = "<group>";
@@ -1106,14 +1106,6 @@
 				89991002D52BEB7EB947C208D7D24F0C /* Resources */,
 			);
 			name = Core;
-			sourceTree = "<group>";
-		};
-		B292CE8269A043D038F4641501E3CB61 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				6934A7A3569BDC52688C2EA868910F08 /* GoogleMobileAds.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		B3D1D13E0C6553800746CB8FD61CF946 /* Pods */ = {
@@ -1325,6 +1317,14 @@
 				9446E3D4F3B1675974655C29BFAEC24A /* AFNetworkReachabilityManager.m */,
 			);
 			name = Reachability;
+			sourceTree = "<group>";
+		};
+		FF0528159D92F00F5F028DE0E9E3DFA7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4371DD353F3C75D6E809A9681F867AE6 /* GoogleMobileAds.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -174,9 +174,11 @@ typedef NS_ENUM(NSUInteger, MarqueeType) {
  @see textAlignment
  */
 
-
+#if TARGET_INTERFACE_BUILDER
+@property (nonatomic, assign) IBInspectable NSInteger marqueeType;
+#else
 @property (nonatomic, assign) MarqueeType marqueeType;
-
+#endif
 
 /** Defines the duration of the scrolling animation.
  
@@ -275,13 +277,27 @@ typedef NS_ENUM(NSUInteger, MarqueeType) {
 /// @name Animation control
 ////////////////////////////////////////////////////////////////////////////////
 
-/** Immediately resets the label to the home position, and restarts the scroll animation if the appropriate conditions are met.
+/** Immediately resets the label to the home position, cancelling any in-flight scroll animation, and restarts the scroll animation if the appropriate conditions are met.
  
  @see resetLabel
  @see triggerScrollStart
  */
 
 - (void)restartLabel;
+
+
+/** Immediately resets the label to the home position, cancelling any in-flight scroll animation.
+ 
+ The text is immediately returned to the home position. Scrolling will not resume automatically after a call to this method. 
+ To re-initiate scrolling use a call to `restartLabel` or `triggerScrollStart`, or make a change to a UILabel property such as text, bounds/frame,
+ font, font size, etc.
+ 
+ @see restartLabel
+ @see triggerScrollStart
+ @since Available in 2.4.0 and later.
+ */
+
+- (void)shutdownLabel;
 
 
 /** Resets the label text, recalculating the scroll animation.
@@ -296,15 +312,18 @@ typedef NS_ENUM(NSUInteger, MarqueeType) {
 - (void)resetLabel;
 
 
-/** Pauses the text scrolling animation, at any point during the animation.
+/** Pauses the text scrolling animation, at any point during an in-progress animation.
  
+ @note This method has no effect if a scroll animation is NOT already in progress. To prevent automatic scrolling on a newly-initialized label prior to its presentation onscreen, see the `holdScrolling` property.
+ 
+ @see holdScrolling
  @see unpauseLabel
  */
 
 - (void)pauseLabel;
 
 
-/** Un-pauses a previously paused text scrolling animation
+/** Un-pauses a previously paused text scrolling animation. This method has no effect if the label was not previously paused using `pauseLabel`.
  
  @see pauseLabel
  */
