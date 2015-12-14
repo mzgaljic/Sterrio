@@ -145,8 +145,8 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     UINavigationController *navController4 = [[UINavigationController alloc]initWithRootViewController:vc4];
     
     NSArray *navControllers = @[navController1, navController2, navController3, navController4];
-    NSArray *selectedImgNames = @[@"song_note_select", @"albums", @"", @"playlist_select"];
-    NSArray *unselectedImgNames = @[@"song_note_unselect", @"albums", @"", @"playlist_unselect"];
+    NSArray *selectedImgNames = @[@"song_note_select", @"albums", @"artists", @"playlist_select"];
+    NSArray *unselectedImgNames = @[@"song_note_unselect", @"albums", @"artists", @"playlist_unselect"];
     mainVC = [[MainScreenViewController alloc] initWithNavControllers:navControllers
                                          correspondingViewControllers:@[vc1, vc2, vc3, vc4]
                                            tabBarUnselectedImageNames:unselectedImgNames
