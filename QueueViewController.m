@@ -200,18 +200,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                 // Only set cell image if the cell currently being displayed is the one that actually required this image.
                 // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
                 
-                __weak UIImage *cellImg = albumArt;
-                //calculate how much one length varies from the other.
-                int diff = abs((int)albumArt.size.width - (int)albumArt.size.height);
-                if(diff > 10){
-                    //image is not a perfect (or close to perfect) square. Compensate for this...
-                    cellImg = [albumArt imageScaledToFitSize:cell.imageView.frame.size];
-                }
                 [UIView transitionWithView:cell.imageView
                                   duration:MZCellImageViewFadeDuration
                                    options:UIViewAnimationOptionTransitionCrossDissolve
                                 animations:^{
-                                    cell.imageView.image = cellImg;
+                                    cell.imageView.image = albumArt;
                                 } completion:nil];
             }
         });

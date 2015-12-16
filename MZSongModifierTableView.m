@@ -89,7 +89,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         _currentAlbumArt = newArt;
         CGSize size = [self albumArtSizeGivenPrefSizeSetting];
         
-        //calculate how much one length varies from the other.
+        //calculate how much one length varies from the other (actually needed here and only here.)
         int diff = abs((int)newArt.size.width - (int)newArt.size.height);
         if(diff > 10){
             //image is not a perfect (or close to perfect) square. Compensate for this...

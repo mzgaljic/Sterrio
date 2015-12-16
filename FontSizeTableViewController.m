@@ -128,24 +128,16 @@ short const PREVIEW_SONG_SECTION_NUM = 1;
             cell.textLabel.text = aSong.songName;
             cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringForArtistName:aSong.artist.artistName albumName:aSong.album.albumName];
             
-            UIImage *cellImg, *albumArt;
+            UIImage *albumArt;
             if(aSong.albumArt){
                 albumArt = [aSong.albumArt imageFromImageData];
             }
-            
-            //calculate how much one length varies from the other.
-            int diff = abs((int)cellImg.size.width - (int)cellImg.size.height);
-            if(diff > 10){
-                //image is not a perfect (or close to perfect) square. Compensate for this...
-                cellImg = [albumArt imageScaledToFitSize:cell.imageView.frame.size];
-            } else
-                cellImg = albumArt;
             
             [UIView transitionWithView:cell.imageView
                               duration:MZCellImageViewFadeDuration
                                options:UIViewAnimationOptionTransitionCrossDissolve
                             animations:^{
-                                cell.imageView.image = cellImg;
+                                cell.imageView.image = albumArt;
                             } completion:nil];
             albumArt = nil;
         }
