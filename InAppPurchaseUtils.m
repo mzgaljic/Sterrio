@@ -39,6 +39,7 @@
 
 - (void)purchaseAdRemoval
 {
+    self.product = nil;
     NSLog(@"User tapped remove ads button");
     
     if([SKPaymentQueue canMakePayments]){
@@ -58,6 +59,7 @@
 
 - (void)restoreAdRemoval
 {
+    self.product = nil;
     [self showSpinner];
     [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
@@ -114,7 +116,6 @@
             break;
         }
     }
-    self.product = nil;
 }
 
 static MRProgressOverlayView *hud;
@@ -253,7 +254,7 @@ static MRProgressOverlayView *hud;
                   freeProductRestore:(BOOL)freeRestore
                             errorMsg:(NSString *)errorMsg
 {
-    id purchaseError = (errorMsg == nil) ? [NSNull null] : errorMsg;
+    id purchaseError = (errorMsg == nil) ? @"" : errorMsg;
     NSString *currencyCode = nil;
     if(product) {
         NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
