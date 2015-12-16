@@ -34,7 +34,8 @@
     __block NSURL *url;
 }
 
-@property (strong, nonatomic) MZPreviewPlayer* player;
+@property (nonatomic, strong) UIImage *poweredByYtLogo;
+@property (nonatomic, strong) MZPreviewPlayer* player;
 @property (nonatomic, strong) MZSongModifierTableView *tableView;
 @end
 
@@ -184,6 +185,8 @@ static short numberTimesViewHasBeenShown = 0;
             [self.player play];
         }
     }
+    
+    [self showOrUpdatePoweredByYtLogoGivenScreenWidth:self.view.frame.size.width];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -576,6 +579,7 @@ static short numberTimesViewHasBeenShown = 0;
     if(previewIsUnplayable)
         return;
     [self performSelector:@selector(reCenterLoadingSpinner) withObject:nil afterDelay:0.2];
+    [self showOrUpdatePoweredByYtLogoGivenScreenWidth:self.tableView.frame.size.height];
 }
 
 - (void)reCenterLoadingSpinner
@@ -750,6 +754,38 @@ static short numberTimesViewHasBeenShown = 0;
     else
         [alert addAction:okAction];
     [alert presentWithCompletion:nil];
+}
+
+- (void)showOrUpdatePoweredByYtLogoGivenScreenWidth:(float)width
+{
+    BOOL animateOnScreen = NO;
+    if(self.poweredByYtLogo == nil) {
+        self.poweredByYtLogo = [UIImage imageNamed:@"poweredByYtDark"];
+        animateOnScreen = YES;
+    } else {
+        self.tableView.tableFooterView = nil;
+    }
+    
+    UIImage *logo = self.poweredByYtLogo;
+    int xStart = width/2 - (logo.size.width/2);
+    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(xStart,
+                                                                  30,
+                                                                  logo.size.width,
+                                                                  logo.size.height)];
+    UIImageView * imageView = [[UIImageView alloc] initWithImage:logo];
+    [footerView addSubview:imageView];
+    if(animateOnScreen) {
+        footerView.alpha = 0;
+        [self.tableView setTableFooterView:footerView];
+        
+        [UIView transitionWithView:self.tableView.tableFooterView
+                          duration:MZCellImageViewFadeDuration
+                           options:UIViewAnimationOptionTransitionCrossDissolve
+                        animations:^{
+                            footerView.alpha = 1;
+                        } completion:nil];
+    }
+    [self.tableView setTableFooterView:footerView];
 }
 
 @end

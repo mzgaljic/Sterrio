@@ -139,8 +139,8 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
                                                  name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
     
-    if(self.displaySearchResults)
-        _navBar.title = @"Search Results";
+    //if(self.displaySearchResults)
+        //_navBar.title = @"Search Results";
     [self setNeedsStatusBarAppearanceUpdate];
 }
 
@@ -159,12 +159,21 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 {
     [super viewDidLoad];
     
+    UIImage *poweredByYtLogo = [UIImage imageNamed:@"poweredByYtLight"];
+    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0,
+                                                                  0,
+                                                                  poweredByYtLogo.size.width,
+                                                                  poweredByYtLogo.size.height)];
+    UIImageView * imgView = [[UIImageView alloc] initWithImage:poweredByYtLogo];
+    [footerView addSubview:imgView];
+    self.navigationItem.titleView = footerView;
+    
     self.searchSuggestions = [NSMutableArray array];
     _searchResults = [NSMutableArray array];
     _lastSuccessfullSuggestions = [NSMutableArray array];
     
     self.navigationController.toolbarHidden = NO;
-    _navBar.title = @"Adding Music";
+    //_navBar.title = @"Adding Music";
     _cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                   target:self
                                                                   action:@selector(cancelTapped)];
@@ -394,7 +403,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)setUpSearchBar
 {
     //create search bar, add to viewController
-    _searchBar = [[MySearchBar alloc] initWithPlaceholderText:@"Search YouTube"];
+    _searchBar = [[MySearchBar alloc] initWithPlaceholderText:@"Search"];
     _searchBar.delegate = self;
     self.tableView.tableHeaderView = _searchBar;
 }
@@ -407,7 +416,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     
     //show the cancel button
     self.displaySearchResults = NO;
-    _navBar.title = @"Adding Music";
+    //_navBar.title = @"Adding Music";
     [_searchBar setShowsCancelButton:YES animated:YES];
 
     if(self.searchInitiatedAlready){
@@ -431,7 +440,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     _lastSuccessfullSearchString = searchBar.text;
     //setting it both ways, do to nav bar title bug
     self.navigationController.navigationBar.topItem.title = @"Search Results";
-    _navBar.title = @"Search Results";
+    //_navBar.title = @"Search Results";
     [_searchBar resignFirstResponder];
     
     [self showLoadingIndicatorInCenterOfTable:YES];
@@ -459,7 +468,7 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     }else{
         //setting it both ways, due to nav bar title bug
         self.navigationController.navigationBar.topItem.title = @"Search Results";
-        _navBar.title = @"Search Results";
+        //_navBar.title = @"Search Results";
         
         //restore state of search bar and table before uncommited search bar edit began
         [_searchBar setText:_lastSuccessfullSearchString];
