@@ -14,6 +14,8 @@
 #import "SDCAlertControllerView.h"
 #import "SpotlightHelper.h"
 #import "InAppPurchaseUtils.h"
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 @interface AppDelegate ()
@@ -111,7 +113,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     UIApplication *myApp = [UIApplication sharedApplication];
     [myApp setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
-    [Fabric with:@[CrashlyticsKit]];
+    [Fabric with:@[[Answers class], [Crashlytics class]]];
     
     if([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
         [[UIApplication sharedApplication] registerForRemoteNotifications];

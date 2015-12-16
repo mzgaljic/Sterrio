@@ -725,8 +725,6 @@
 				873538541B0A9B38009244E4 /* Models */,
 				873538801B0A9BBA009244E4 /* Services */,
 				8735388C1B0A9BD5009244E4 /* Singletons */,
-				873538AB1B0A9C6F009244E4 /* MyAlerts.h */,
-				873538AC1B0A9C70009244E4 /* MyAlerts.m */,
 				873538AE1B0A9C7E009244E4 /* GUI & GUI Controllers */,
 				8735397B1B0AA14E009244E4 /* Imported Libraries */,
 				873537D61B0A9981009244E4 /* Images.xcassets */,
@@ -988,6 +986,8 @@
 		873538AE1B0A9C7E009244E4 /* GUI & GUI Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				873538AB1B0A9C6F009244E4 /* MyAlerts.h */,
+				873538AC1B0A9C70009244E4 /* MyAlerts.m */,
 				873538AF1B0A9C92009244E4 /* MainScreenViewController.h */,
 				873538B01B0A9C92009244E4 /* MainScreenViewController.m */,
 				873538B11B0A9C92009244E4 /* MainScreenViewControllerDelegate.h */,

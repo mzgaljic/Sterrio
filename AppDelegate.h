@@ -28,13 +28,7 @@
 #import "MasterArtistsTableViewController.h"
 #import "MasterPlaylistTableViewController.h"
 
-#import <StoreKit/StoreKit.h>
-
 #import "MZPreviewPlayer.h"
-
-//crash reporting framework
-#import <Fabric/Fabric.h>
-#import <Crashlytics/Crashlytics.h>
 
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate,

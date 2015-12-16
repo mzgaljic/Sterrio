@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '0AD50E83502AAE3678EFAF64'
+               BlueprintIdentifier = '6E9A299C6AB3920016AC2070'
                BlueprintName = 'TBXML'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'libTBXML.a'>

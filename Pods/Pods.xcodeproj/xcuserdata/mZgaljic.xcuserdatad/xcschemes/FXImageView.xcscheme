@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '9D71D258AB07CC1D8E3F9EB2'
+               BlueprintIdentifier = 'A9DA48FF7A275F25A2FD8CE5'
                BlueprintName = 'FXImageView'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'libFXImageView.a'>
