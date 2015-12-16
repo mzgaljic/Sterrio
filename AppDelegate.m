@@ -60,6 +60,9 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    //set up Crashlytics immediately so any crashes are recorded.
+    [Fabric with:@[[Answers class], [Crashlytics class]]];
+    
     BOOL showUserTouchesOnScreen = NO;
     if(showUserTouchesOnScreen)
         self.window = [self windowShowingTouches];
@@ -112,8 +115,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     
     UIApplication *myApp = [UIApplication sharedApplication];
     [myApp setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
-    
-    [Fabric with:@[[Answers class], [Crashlytics class]]];
     
     if([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
         [[UIApplication sharedApplication] registerForRemoteNotifications];

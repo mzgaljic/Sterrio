@@ -10,9 +10,13 @@
 #import "SDCAlertController.h"
 #import "AppEnvironmentConstants.h"
 #import "MRProgress.h"
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
 
+@interface InAppPurchaseUtils ()
+@property (nonatomic, strong) SKProduct *product;  //caching product for logging purposes (Fabric.io)
+@end
 @implementation InAppPurchaseUtils
-
 #define kRemoveAdsProductIdentifier @"com.mzgaljic.removeads"
 
 + (instancetype)sharedInstance
@@ -44,8 +48,11 @@
         [productsRequest start];
     } else{
         //this is called the user cannot make payments, most likely due to parental controls
-        NSLog(@"Purchase failed: This is likely due to parental control settings on this device.");
         [self showPurchaseFailedAlert];
+        [self logFabricPurchaseWithProduct:nil
+                         purchaseSucceeded:NO
+                        freeProductRestore:NO
+                                  errorMsg:@"if([SKPaymentQueue canMakePayments]) is false. User unable to buy."];
     }
 }
 
@@ -62,14 +69,19 @@
     NSUInteger count = [response.products count];
     if(count > 0) {
         validProduct = [response.products objectAtIndex:0];
+        self.product = validProduct;
         NSLog(@"Product Available!");
         //begin purchase...
         [[SKPaymentQueue defaultQueue] addPayment:[SKPayment paymentWithProduct:validProduct]];
     }
     else if(!validProduct) {
         //this is called if your product id is not valid, this shouldn't be called unless that happens.
-        NSLog(@"This item is currently unavailable on the App Store.");
         [self showItemUnavailableOnStoreAlert];
+        [self logFabricPurchaseWithProduct:nil
+                         purchaseSucceeded:NO
+                        freeProductRestore:NO
+                                  errorMsg:@"No valid products returned. Product id is invalid?"];
+        self.product = nil;
     }
 }
 
@@ -78,9 +90,13 @@
     NSUInteger numTransactionsToRestore = queue.transactions.count;
     NSLog(@"received restored transactions: %lu", numTransactionsToRestore);
     if(numTransactionsToRestore == 0) {
-        NSLog(@"There are no purchases to restore.");
         [self hideSpinner];
         [self showNothingToRestoreAlert];
+        [self logFabricPurchaseWithProduct:nil
+                         purchaseSucceeded:NO
+                        freeProductRestore:YES
+                                  errorMsg:@"No restored products for this user."];
+        self.product = nil;
         return;
     }
     
@@ -98,6 +114,7 @@
             break;
         }
     }
+    self.product = nil;
 }
 
 static MRProgressOverlayView *hud;
@@ -106,39 +123,52 @@ static MRProgressOverlayView *hud;
     for(SKPaymentTransaction *transaction in transactions){
         switch(transaction.transactionState){
             case SKPaymentTransactionStatePurchasing:
-            {
                 NSLog(@"Transaction state -> Purchasing");
                 //user is in the process of purchasing.
                 [self showSpinner];
                 break;
-            }
                 
             case SKPaymentTransactionStatePurchased:  //(Cha-Ching!)
                 NSLog(@"Transaction state -> Purchased");
-                
                 [self hideSpinner];
                 [self removeAdsForUser];
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+                [self logFabricPurchaseWithProduct:self.product
+                                 purchaseSucceeded:YES
+                                freeProductRestore:NO
+                                          errorMsg:nil];
                 break;
                 
             case SKPaymentTransactionStateRestored:
+                //user paid for this item before, will get it again for free.
                 NSLog(@"Transaction state -> Restored");
                 
                 [self hideSpinner];
                 [self removeAdsForUser];
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+                [self logFabricPurchaseWithProduct:self.product
+                                 purchaseSucceeded:YES
+                                freeProductRestore:YES
+                                          errorMsg:nil];
                 break;
                 
             case SKPaymentTransactionStateFailed:
+            {
                 //called when the transaction does not finish/fails
+                NSString *errorMsg = nil;
                 if(transaction.error.code == SKErrorPaymentCancelled){
-                    NSLog(@"Transaction state -> Cancelled");
-                  
+                    errorMsg = @"Transaction state -> Cancelled";
                 } else {
-                    NSLog(@"Transaction state -> Other purchase failure.");
+                    errorMsg = @"Transaction state -> Other purchase failure.";
                 }
+                NSLog(@"%@", errorMsg);
                 [self hideSpinner];
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+                [self logFabricPurchaseWithProduct:self.product
+                                 purchaseSucceeded:YES
+                                freeProductRestore:YES
+                                          errorMsg:errorMsg];
+            }
                 break;
                 
             case SKPaymentTransactionStateDeferred:
@@ -147,6 +177,7 @@ static MRProgressOverlayView *hud;
                 break;
         }
     }
+    self.product = nil;
 }
 
 #pragma mark - Removing ads
@@ -183,6 +214,7 @@ static MRProgressOverlayView *hud;
 
 - (void)showNothingToRestoreAlert
 {
+    NSLog(@"There are no purchases to restore.");
     NSString *title = @"Restore failed";
     NSString *msg = @"There are no purchases to restore.";
     [self showAlertWithTitle:title message:msg btnText:@"Okay"];
@@ -190,7 +222,7 @@ static MRProgressOverlayView *hud;
 
 - (void)showItemUnavailableOnStoreAlert
 {
-    
+    NSLog(@"This item is currently unavailable on the App Store.");
     NSString *title = @"Item unavailable";
     NSString *message = @"This item is currently unavailable on the App Store.";
     [self showAlertWithTitle:title message:message btnText:@"Okay"];
@@ -198,6 +230,7 @@ static MRProgressOverlayView *hud;
 
 - (void)showPurchaseFailedAlert
 {
+    NSLog(@"Purchase failed: This is likely due to parental control settings on this device.");
     NSString *title = @"Purchase failed";
     NSString *message = @"This is likely due to parental control settings on this device.";
     [self showAlertWithTitle:title message:message btnText:@"Okay"];
@@ -213,6 +246,31 @@ static MRProgressOverlayView *hud;
                                                    handler:^(SDCAlertAction *action) {}];
     [alert addAction:okay];
     [alert presentWithCompletion:nil];
+}
+
+- (void)logFabricPurchaseWithProduct:(SKProduct *)product
+                   purchaseSucceeded:(BOOL)success
+                  freeProductRestore:(BOOL)freeRestore
+                            errorMsg:(NSString *)errorMsg
+{
+    id purchaseError = (errorMsg == nil) ? [NSNull null] : errorMsg;
+    NSString *currencyCode = nil;
+    if(product) {
+        NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+        [formatter setNumberStyle:NSNumberFormatterCurrencyStyle];
+        [formatter setLocale:product.priceLocale];
+        currencyCode = [formatter currencyCode];
+    }
+    
+    [Answers logPurchaseWithPrice: (product == nil) ? nil : product.price
+                         currency:currencyCode
+                          success:[NSNumber numberWithBool:success]
+                         itemName:(product == nil) ? nil : product.localizedTitle
+                         itemType:@"In-App Purchase"
+                           itemId:nil
+                 customAttributes:@{@"Free product restore" : (freeRestore) ? @"Yes" : @"NO",
+                                    @"Error W/ Purchase"    : purchaseError}];
+    self.product = nil;
 }
 
 @end
