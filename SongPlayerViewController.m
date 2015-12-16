@@ -381,6 +381,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
+    _sliderHintView.hidden = YES;
     short cancelButtonIndex = 2;
     [popup dismissWithClickedButtonIndex:cancelButtonIndex animated:NO];
     //in case the timer picker is on screen...need to do this since it cant "cancel" itself
