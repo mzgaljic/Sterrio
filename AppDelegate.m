@@ -27,7 +27,6 @@
     BOOL backgroundTaskIsRunning;
     BOOL ensembleBackgroundMergeIsRunning;
 }
-@property (nonatomic, strong) InAppPurchaseUtils *inAppPurchaseUtils;
 @end
 
 @implementation AppDelegate
@@ -74,7 +73,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     
     [AppDelegate upgradeLibraryToUseSpotlightIfApplicable];
     [ReachabilitySingleton sharedInstance];  //init reachability class
-    self.inAppPurchaseUtils = [InAppPurchaseUtils sharedInstance];  //sets up transaction observers
+    [InAppPurchaseUtils sharedInstance];  //sets up transaction observers
 
     //create all contexts up front to avoid any funny business later (thread issues, etc.)
     [CoreDataManager context];

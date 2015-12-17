@@ -9,6 +9,7 @@
 #import "YouTubeSongAdderViewController.h"
 #import "YouTubeVideoSearchService.h"
 #import "SDCAlertController.h"
+#import "SSBouncyButton.h"
 
 @interface YouTubeSongAdderViewController ()
 {
@@ -30,12 +31,14 @@
     BOOL previewPlaybackBegan;
     BOOL previewIsUnplayable;
     
+    BOOL leftAppDuePoweredByYtLogoClick;
+    
     BOOL musicWasPlayingBeforePreviewBegan;
     __block NSURL *url;
 }
 
-@property (nonatomic, strong) UIImage *poweredByYtLogo;
-@property (nonatomic, strong) MZPreviewPlayer* player;
+@property (nonatomic, strong) SSBouncyButton *poweredByYtBtn;
+@property (nonatomic, strong) MZPreviewPlayer *player;
 @property (nonatomic, strong) MZSongModifierTableView *tableView;
 @end
 
@@ -126,6 +129,10 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(lockscreenTogglePlayPause)
                                                  name:MZPreviewPlayerTogglePlayPause
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(appReturningToForeground)
+                                                 name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
 }
 
@@ -759,33 +766,69 @@ static short numberTimesViewHasBeenShown = 0;
 - (void)showOrUpdatePoweredByYtLogoGivenScreenWidth:(float)width
 {
     BOOL animateOnScreen = NO;
-    if(self.poweredByYtLogo == nil) {
-        self.poweredByYtLogo = [UIImage imageNamed:@"poweredByYtDark"];
+    UIButton *btn = self.poweredByYtBtn;
+    UIImage *logo = [UIImage imageNamed:@"poweredByYtDark"];
+    if(btn == nil) {
+        btn = [[SSBouncyButton alloc] initAsImage];
+        [btn setImage:logo forState:UIControlStateNormal];
         animateOnScreen = YES;
     } else {
         self.tableView.tableFooterView = nil;
     }
+    int yPadding = 20;
+    btn.frame = CGRectMake(0, yPadding, logo.size.width, logo.size.height);
+    [btn setImage:logo forState:UIControlStateNormal];
+    [btn addTarget:self
+            action:@selector(poweredByYtTapped)
+  forControlEvents:UIControlEventTouchUpInside];
     
-    UIImage *logo = self.poweredByYtLogo;
-    int xStart = width/2 - (logo.size.width/2);
-    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(xStart,
-                                                                  30,
-                                                                  logo.size.width,
-                                                                  logo.size.height)];
-    UIImageView * imageView = [[UIImageView alloc] initWithImage:logo];
-    [footerView addSubview:imageView];
-    if(animateOnScreen) {
-        footerView.alpha = 0;
-        [self.tableView setTableFooterView:footerView];
-        
-        [UIView transitionWithView:self.tableView.tableFooterView
-                          duration:MZCellImageViewFadeDuration
-                           options:UIViewAnimationOptionTransitionCrossDissolve
-                        animations:^{
-                            footerView.alpha = 1;
-                        } completion:nil];
-    }
+    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(width/2 - (logo.size.width/2),
+                                                                 0,
+                                                                 logo.size.width,
+                                                                 logo.size.height + yPadding)];
+    [footerView addSubview:btn];
+    footerView.alpha = 0;
+    footerView.userInteractionEnabled = YES;
     [self.tableView setTableFooterView:footerView];
+    if(animateOnScreen) {
+        [UIView animateWithDuration:MZCellImageViewFadeDuration
+                         animations:^{
+                             footerView.alpha = 1;
+                         }];
+    }
+}
+
+static BOOL powerByYtHandled = NO;  //needed if user aggressively taps button more than once
+- (void)poweredByYtTapped
+{
+    powerByYtHandled = NO;
+    [self performSelector:@selector(handlePoweredByYtTapped) withObject:nil afterDelay:0.25];
+}
+
+- (void)handlePoweredByYtTapped
+{
+    if(powerByYtHandled)
+        return;
+    [self.player pause];
+    
+    NSString *youtubeLinkBeginning = @"https://www.youtube.com/watch?v=";
+    NSMutableString *ytWebUrl = [NSMutableString stringWithString:youtubeLinkBeginning];
+    [ytWebUrl appendString:ytVideo.videoId];
+    
+    NSURL *previewYtWebUrl = [NSURL URLWithString:ytWebUrl];
+    leftAppDuePoweredByYtLogoClick = YES;
+    if (![[UIApplication sharedApplication] openURL:previewYtWebUrl]){
+        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotOpenSafariError];
+        leftAppDuePoweredByYtLogoClick = NO;
+    }
+}
+
+- (void)appReturningToForeground
+{
+    if(leftAppDuePoweredByYtLogoClick) {
+        [self.player performSelector:@selector(play) withObject:nil afterDelay:0.2];
+    }
+    leftAppDuePoweredByYtLogoClick = NO;
 }
 
 @end

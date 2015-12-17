@@ -433,9 +433,7 @@ static BOOL isHudOnScreen = NO;
 - (void)progressBarChangeEnded:(UISlider *)sender
 {
     [self.delegate previewPlayerNeedsNowPlayingInfoCenterUpdate];
-    if(! self.playbackExplicitlyPaused) {
-        [self.avPlayer play];
-    }
+    [self.avPlayer play];
 }
 
 //Slider helper stuff
