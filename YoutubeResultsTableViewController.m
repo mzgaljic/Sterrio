@@ -22,6 +22,7 @@
 //right before loading more results.
 @interface YoutubeResultsTableViewController ()
 {
+    UIActivityIndicatorView *loadingNextPageSpinner;
     UIActivityIndicatorView *loadingResultsIndicator;
 }
 @property (nonatomic, strong) MySearchBar *searchBar;
@@ -239,6 +240,8 @@ static NSDate *timeSinceLastPageLoaded;
     
     self.searchInitiatedAlready = YES;
     self.waitingOnYoutubeResults = NO;
+    _networkErrorLoadingMoreResults = NO;
+    
     [self.tableView beginUpdates];
     //I deleted section 0 when search was tapped
     if([self.tableView numberOfSections] == 0){
@@ -369,15 +372,19 @@ static NSDate *timeSinceLastPageLoaded;
 - (void)networkErrorHasOccuredFetchingMorePages
 {
     self.waitingOnNextPageResults = NO;
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
-    UITableViewCell *loadMoreCell = [self.tableView cellForRowAtIndexPath:indexPath];
-    //change "Load More" button
-    loadMoreCell.textLabel.text = Network_Error_Loading_More_Results_Msg;
-    loadMoreCell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                                                  size:19];
-    loadMoreCell.textLabel.textColor = [UIColor redColor];
-    _networkErrorLoadingMoreResults = YES;
-    [self.tableView reloadData];
+    
+    [loadingNextPageSpinner removeFromSuperview];
+    [self.tableView setTableFooterView:nil];
+    loadingNextPageSpinner = nil;
+    
+    if(_networkErrorLoadingMoreResults){
+        //reloading the table here wouldn't do anything for us + the table would flicker a lot
+        //as this delegate is called multiple times during scrolling.
+        return;
+    } else {
+        _networkErrorLoadingMoreResults = YES;
+        [self.tableView reloadData];
+    }
 }
 
 #pragma mark - AlertView
@@ -605,23 +612,6 @@ static BOOL userClearedTextField = NO;
             else
                 label.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                               size:[PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:middle]];
-            CGSize maximumLabelSize = CGSizeMake(label.frame.size.width, CGFLOAT_MAX);
-            CGSize requiredSize = [label sizeThatFits:maximumLabelSize];
-            CGRect labelFrame = label.frame;
-            labelFrame.size.height = requiredSize.height;
-            label.frame = labelFrame;
-            UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, label.frame.size.width, label.frame.size.height)];
-            [label setTextAlignment:NSTextAlignmentCenter];
-            [view addSubview:label];
-            return view;
-        } else{
-            //just show that more results are below if user scrolls
-            UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, defaultFooterHeight)];
-            label.text = @"···";
-            label.textColor = [UIColor defaultAppColorScheme];
-            label.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                            size:[PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:[AppEnvironmentConstants maximumSongCellHeight] -15]];
-            
             CGSize maximumLabelSize = CGSizeMake(label.frame.size.width, CGFLOAT_MAX);
             CGSize requiredSize = [label sizeThatFits:maximumLabelSize];
             CGRect labelFrame = label.frame;
@@ -882,6 +872,23 @@ static BOOL userClearedTextField = NO;
         return;
 
     self.waitingOnNextPageResults = YES;
+    
+    loadingNextPageSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    int footerHeight = 50;
+    float indicatorSize = loadingNextPageSpinner.frame.size.width;
+    loadingNextPageSpinner.frame = CGRectMake(self.view.frame.size.width/2 - indicatorSize/2,
+                                               (footerHeight / 2.0) - (indicatorSize/2),
+                                               indicatorSize,
+                                               indicatorSize);
+    loadingNextPageSpinner.color = [UIColor defaultAppColorScheme];
+    [loadingNextPageSpinner startAnimating];
+    UIView *footer = [[UIView alloc] initWithFrame:CGRectMake(0,
+                                                             0,
+                                                             self.view.frame.size.width,
+                                                             footerHeight)];
+    [footer addSubview:loadingNextPageSpinner];
+    [self.tableView setTableFooterView:footer];
+
     //try to load more results
     [[YouTubeVideoSearchService sharedInstance] fetchNextYouTubePageUsingLastQueryString];
 }
