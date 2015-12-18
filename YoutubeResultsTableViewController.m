@@ -22,7 +22,6 @@
 //right before loading more results.
 @interface YoutubeResultsTableViewController ()
 {
-    UIActivityIndicatorView *loadingMoreResultsSpinner;
     UIActivityIndicatorView *loadingResultsIndicator;
 }
 @property (nonatomic, strong) MySearchBar *searchBar;
@@ -58,6 +57,17 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     _displaySearchResults = displaySearchResults;
 }
 
+static NSDate *timeSinceLastPageLoaded;
+- (void)setWaitingOnNextPageResults:(BOOL)waitingOnNextPageResults
+{
+    if(_waitingOnNextPageResults == NO) {
+        //mark when next page finished loading. Used to avoid loading too many pages
+        //if the user scrolls aggressively.
+        timeSinceLastPageLoaded = [NSDate date];
+    }
+    _waitingOnNextPageResults = waitingOnNextPageResults;
+}
+
 #pragma mark - Miscellaneous
 - (void)dealloc
 {
@@ -67,7 +77,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
 - (void)myPreDealloc
 {
     _searchBar.delegate = nil;
-    loadingMoreResultsSpinner = nil;
     _searchBar = nil;
     _searchResults = nil;
     self.searchSuggestions = nil;
@@ -230,7 +239,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     
     self.searchInitiatedAlready = YES;
     self.waitingOnYoutubeResults = NO;
-    
     [self.tableView beginUpdates];
     //I deleted section 0 when search was tapped
     if([self.tableView numberOfSections] == 0){
@@ -268,7 +276,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     moreYouTubeVideoObjects = nil;
     
     _networkErrorLoadingMoreResults = NO;
-    [loadingMoreResultsSpinner stopAnimating];
 }
 
 - (void)ytvideoResultsNoMorePagesToView
@@ -279,7 +286,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     UITableViewCell *loadMoreCell = [self.tableView cellForRowAtIndexPath:indexPath];
     //change "Load More" button
     loadMoreCell.textLabel.text = No_More_Results_To_Display_Msg;
-    [loadingMoreResultsSpinner stopAnimating];
     _noMoreResultsToDisplay = YES;
 }
 
@@ -370,7 +376,6 @@ static NSString *No_More_Results_To_Display_Msg = @"No more results";
     loadMoreCell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                                   size:19];
     loadMoreCell.textLabel.textColor = [UIColor redColor];
-    [loadingMoreResultsSpinner stopAnimating];
     _networkErrorLoadingMoreResults = YES;
     [self.tableView reloadData];
 }
@@ -608,20 +613,6 @@ static BOOL userClearedTextField = NO;
             UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, label.frame.size.width, label.frame.size.height)];
             [label setTextAlignment:NSTextAlignmentCenter];
             [view addSubview:label];
-            return view;
-        } else if(self.waitingOnNextPageResults){
-            [loadingMoreResultsSpinner removeFromSuperview];
-            loadingMoreResultsSpinner = nil;
-            loadingMoreResultsSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-            UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, defaultFooterHeight)];
-            [view addSubview:loadingMoreResultsSpinner];
-            int spinnerWidth = loadingMoreResultsSpinner.frame.size.width;
-            loadingMoreResultsSpinner.frame = CGRectMake(view.frame.size.width/2 - (spinnerWidth/2),
-                                                         0,
-                                                         spinnerWidth,
-                                                         spinnerWidth);
-            [loadingMoreResultsSpinner setColor:[UIColor defaultAppColorScheme]];
-            [loadingMoreResultsSpinner startAnimating];
             return view;
         } else{
             //just show that more results are below if user scrolls
@@ -862,17 +853,28 @@ static BOOL userClearedTextField = NO;
         CGFloat scrollViewBottomOffset = scrollContentSizeHeight + bottomInset - scrollViewHeight;
         
         if (scrollView.contentOffset.y >= scrollViewBottomOffset && self.displaySearchResults){
-            [self userDidScrollToBottomOfTable];
             if(self.waitingOnNextPageResults)
                 return;
+            
+            NSTimeInterval secondsSinceLastPageLoaded = -1;
+            BOOL newPagesNeverLoaded = (timeSinceLastPageLoaded) ? NO : YES;
+            if(timeSinceLastPageLoaded != nil) {
+                NSDate *now = [NSDate date];
+                secondsSinceLastPageLoaded = [now timeIntervalSinceDate:timeSinceLastPageLoaded];
+                now = nil;
+            }
+            if(secondsSinceLastPageLoaded > 1.5 || newPagesNeverLoaded) {
+                [self userDidScrollToBottomOfTable];
+            }
         }
     }
 }
 
 - (void)userDidScrollToBottomOfTable
 {
-    if(self.waitingOnNextPageResults || !self.displaySearchResults)
+    if(self.waitingOnNextPageResults || !self.displaySearchResults){
         return;
+    }
     //covers an edge case where the user scrolls down to the bottom while the
     //search results are showing...and a crash occurs due to the fact that there are
     //no valid sections yet. and the "next page" delegate assumes it can just insert new rows lol.
@@ -958,7 +960,6 @@ static NSDate *finish;
 
 - (void)updateToolbarAfterRotation
 {
-    
     if(_scrollToTopButtonVisible)
         [self showScrollToTopButton:YES];
     else
