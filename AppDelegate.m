@@ -7,6 +7,9 @@
 //
 
 #import "AppDelegate.h"
+
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
 #import "GSTouchesShowingWindow.h"
 #import "PreloadedCoreDataModelUtility.h"
 #import <CoreSpotlight/CoreSpotlight.h>
@@ -14,8 +17,7 @@
 #import "SDCAlertControllerView.h"
 #import "SpotlightHelper.h"
 #import "InAppPurchaseUtils.h"
-#import <Fabric/Fabric.h>
-#import <Crashlytics/Crashlytics.h>
+
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 @interface AppDelegate ()
@@ -48,13 +50,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 - (GSTouchesShowingWindow *)windowShowingTouches
 {
-    static GSTouchesShowingWindow *window = nil;
-    if (!window) {
-        self.window = [GSTouchesShowingWindow alloc];
-        [self.window makeKeyAndVisible];
-        self.window.frame = [[UIScreen mainScreen] bounds];
-    }
-    return window;
+    return [[GSTouchesShowingWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -62,10 +58,10 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     //set up Crashlytics immediately so any crashes are recorded.
     [Fabric with:@[[Answers class], [Crashlytics class]]];
     
-    BOOL showUserTouchesOnScreen = NO;
-    if(showUserTouchesOnScreen)
+    BOOL showUserTouchesOnScreen = YES;
+    if(showUserTouchesOnScreen) {
         self.window = [self windowShowingTouches];
-    else{
+    } else {
         self.window = [UIWindow new];
         [self.window makeKeyAndVisible];
         self.window.frame = [[UIScreen mainScreen] bounds];
