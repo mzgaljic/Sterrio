@@ -71,7 +71,7 @@
     touchImgView.transform = CGAffineTransformMakeScale(1.13, 1.13);
     [self setTouchImageView:touchImgView forTouch:touch];
     
-    [UIView animateWithDuration:0.1 animations:^{
+    [UIView animateWithDuration:0.3 animations:^{
         touchImgView.alpha = 1.0f;
         touchImgView.transform = CGAffineTransformMakeScale(1, 1);
     }];
@@ -84,7 +84,7 @@
 
 - (void)touchEnded:(UITouch *)touch {
     UIImageView *touchImgView = [self touchImageViewForTouch:touch];
-    [UIView animateWithDuration:0.1
+    [UIView animateWithDuration:0.3
                      animations:^{
                          touchImgView.alpha = 0.0f;
                          touchImgView.transform = CGAffineTransformMakeScale(1.13, 1.13);
