@@ -159,7 +159,6 @@
 		873539E71B0AA1E2009244E4 /* LICENSE progressHUD.txt in Resources */ = {isa = PBXBuildFile; fileRef = 873539E31B0AA1E2009244E4 /* LICENSE progressHUD.txt */; };
 		873539E81B0AA1E2009244E4 /* ProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 873539E41B0AA1E2009244E4 /* ProgressHUD.bundle */; };
 		873539E91B0AA1E2009244E4 /* ProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539E61B0AA1E2009244E4 /* ProgressHUD.m */; };
-		873539EE1B0AA1F4009244E4 /* GSTouchesShowingWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539EC1B0AA1F4009244E4 /* GSTouchesShowingWindow.m */; };
 		873539EF1B0AA1F4009244E4 /* LICENSE gstouches.txt in Resources */ = {isa = PBXBuildFile; fileRef = 873539ED1B0AA1F4009244E4 /* LICENSE gstouches.txt */; };
 		873539F51B0AA216009244E4 /* MGSwipeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539F21B0AA216009244E4 /* MGSwipeButton.m */; };
 		873539F61B0AA216009244E4 /* MGSwipeTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539F41B0AA216009244E4 /* MGSwipeTableCell.m */; };
@@ -224,6 +223,8 @@
 		87DAA6C51B8AA9FF008D8684 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 87DAA6C21B8AA9FF008D8684 /* Model.xcdatamodeld */; };
 		87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */; };
 		87E152671C0041E100C82737 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87E152661C0041E100C82737 /* StoreKit.framework */; };
+		87F34FB71C25086E00BAD73B /* LCTipsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F34FB61C25086E00BAD73B /* LCTipsView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		87F34FBA1C251D0200BAD73B /* GSTouchesShowingWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F34FB91C251D0200BAD73B /* GSTouchesShowingWindow.m */; };
 		CC4EB50DFF2CD80A06134B69 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B206C6594633BB85400EBDC /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -544,8 +545,6 @@
 		873539E41B0AA1E2009244E4 /* ProgressHUD.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = ProgressHUD.bundle; sourceTree = "<group>"; };
 		873539E51B0AA1E2009244E4 /* ProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProgressHUD.h; sourceTree = "<group>"; };
 		873539E61B0AA1E2009244E4 /* ProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProgressHUD.m; sourceTree = "<group>"; };
-		873539EB1B0AA1F4009244E4 /* GSTouchesShowingWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSTouchesShowingWindow.h; sourceTree = "<group>"; };
-		873539EC1B0AA1F4009244E4 /* GSTouchesShowingWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSTouchesShowingWindow.m; sourceTree = "<group>"; };
 		873539ED1B0AA1F4009244E4 /* LICENSE gstouches.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "LICENSE gstouches.txt"; sourceTree = "<group>"; };
 		873539F11B0AA216009244E4 /* MGSwipeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeButton.h; sourceTree = "<group>"; };
 		873539F21B0AA216009244E4 /* MGSwipeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeButton.m; sourceTree = "<group>"; };
@@ -665,6 +664,10 @@
 		87DAA6C41B8AA9FF008D8684 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailComposerManager.m; sourceTree = "<group>"; };
 		87E152661C0041E100C82737 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		87F34FB51C25086E00BAD73B /* LCTipsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LCTipsView.h; sourceTree = "<group>"; };
+		87F34FB61C25086E00BAD73B /* LCTipsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LCTipsView.m; sourceTree = "<group>"; };
+		87F34FB81C251D0200BAD73B /* GSTouchesShowingWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSTouchesShowingWindow.h; sourceTree = "<group>"; };
+		87F34FB91C251D0200BAD73B /* GSTouchesShowingWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSTouchesShowingWindow.m; sourceTree = "<group>"; };
 		8B206C6594633BB85400EBDC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		92B6CB546F4E7E88A9974B8F /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		C79109650D7488FFD1AB95FF /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -1344,6 +1347,7 @@
 		8735397B1B0AA14E009244E4 /* Imported Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				87F34FB41C25086E00BAD73B /* LCTipsView */,
 				87A953651B3E242A002E9872 /* SMWebRequest */,
 				87353A771B0AA7C5009244E4 /* JamAccurateSlider */,
 				87353A611B0AA32A009244E4 /* AutoScrollLabel */,
@@ -1470,8 +1474,8 @@
 		873539EA1B0AA1ED009244E4 /* GSTouches */ = {
 			isa = PBXGroup;
 			children = (
-				873539EB1B0AA1F4009244E4 /* GSTouchesShowingWindow.h */,
-				873539EC1B0AA1F4009244E4 /* GSTouchesShowingWindow.m */,
+				87F34FB81C251D0200BAD73B /* GSTouchesShowingWindow.h */,
+				87F34FB91C251D0200BAD73B /* GSTouchesShowingWindow.m */,
 				873539ED1B0AA1F4009244E4 /* LICENSE gstouches.txt */,
 			);
 			name = GSTouches;
@@ -1689,6 +1693,15 @@
 				87A953681B3E242A002E9872 /* SMURLImageView.m */,
 			);
 			path = Extras;
+			sourceTree = "<group>";
+		};
+		87F34FB41C25086E00BAD73B /* LCTipsView */ = {
+			isa = PBXGroup;
+			children = (
+				87F34FB51C25086E00BAD73B /* LCTipsView.h */,
+				87F34FB61C25086E00BAD73B /* LCTipsView.m */,
+			);
+			path = LCTipsView;
 			sourceTree = "<group>";
 		};
 		95A486A0294577F099EF7326 /* Frameworks */ = {
@@ -2010,8 +2023,10 @@
 				87A953631B3E1E54002E9872 /* MZSongMetaData.m in Sources */,
 				873538411B0A9AF4009244E4 /* UIDevice+DeviceName.m in Sources */,
 				87353A911B0AAA36009244E4 /* SongAlbumArt+Utilities.m in Sources */,
+				87F34FBA1C251D0200BAD73B /* GSTouchesShowingWindow.m in Sources */,
 				873539C51B0AA1B3009244E4 /* SDCAlertController.m in Sources */,
 				87353A8E1B0AAA36009244E4 /* Playlist+Utilities.m in Sources */,
+				87F34FB71C25086E00BAD73B /* LCTipsView.m in Sources */,
 				87353A5E1B0AA316009244E4 /* MRMessageInterceptor.m in Sources */,
 				873538431B0A9AF4009244E4 /* UIImage+ColoringExistingImage.m in Sources */,
 				87353A261B0AA283009244E4 /* ActionSheetLocalePicker.m in Sources */,
@@ -2035,7 +2050,6 @@
 				873538A91B0A9C52009244E4 /* OperationQueuesSingeton.m in Sources */,
 				873539CD1B0AA1B3009244E4 /* SDCAlertPresentationController.m in Sources */,
 				873539CA1B0AA1B3009244E4 /* SDCAlertControllerTransition.m in Sources */,
-				873539EE1B0AA1F4009244E4 /* GSTouchesShowingWindow.m in Sources */,
 				873539D61B0AA1B3009244E4 /* UIView+Parallax.m in Sources */,
 				8735383D1B0A9AF4009244E4 /* NSString+WhiteSpace_Utility.m in Sources */,
 				87353A461B0AA2C9009244E4 /* MRProgressOverlayView.m in Sources */,
