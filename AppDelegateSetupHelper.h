@@ -22,6 +22,4 @@ static const short APP_LAUNCHED_FIRST_TIME = 0;
 + (void)setupDiskAndMemoryWebCache;
 + (BOOL)appLaunchedFirstTime;
 
-+ (void)changeRootViewController:(UIViewController*)viewController forWindow:(UIWindow *)window;
-
 @end

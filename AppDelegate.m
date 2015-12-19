@@ -32,7 +32,7 @@
     BOOL ensembleBackgroundMergeIsRunning;
 }
 @property (nonatomic, strong) EAIntroView *intro;
-@property (nonatomic, strong) UIViewController *introVc;
+@property (nonatomic, strong) MainScreenViewController *mainVC;
 @end
 
 @implementation AppDelegate
@@ -75,12 +75,10 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [AppDelegateSetupHelper setupDiskAndMemoryWebCache];
     [AppDelegateSetupHelper loadUsersSettingsFromNSUserDefaults];
     
-    if(true || [AppDelegateSetupHelper appLaunchedFirstTime]){
+    [self setupMainVC];
+    if([AppDelegateSetupHelper appLaunchedFirstTime]){
         //do stuff that you'd want to see the first time you launch!
         [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
-        [self showIntroTutorial];
-    } else {
-        [self setupMainVC];
     }
     
     //create all contexts up front to avoid any funny business later (thread issues, etc.)
@@ -128,7 +126,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 - (void)setupMainVC
 {
-    MainScreenViewController *mainVC;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:storyboardFileName bundle: nil];
     
     MasterSongsTableViewController *vc1 = [storyboard instantiateViewControllerWithIdentifier:songsVcSbId];
@@ -148,11 +145,15 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     NSArray *navControllers = @[nav1, nav2, nav3, nav4];
     NSArray *selectedImgNames = @[@"song_note_select", @"albums", @"artists", @"playlist_select"];
     NSArray *unselectedImgNames = @[@"song_note_unselect", @"albums", @"artists", @"playlist_unselect"];
-    mainVC = [[MainScreenViewController alloc] initWithNavControllers:navControllers
+    self.mainVC = [[MainScreenViewController alloc] initWithNavControllers:navControllers
                                          correspondingViewControllers:@[vc1, vc2, vc3, vc4]
                                            tabBarUnselectedImageNames:unselectedImgNames
                                              tabBarselectedImageNames:selectedImgNames];
-    [AppDelegateSetupHelper changeRootViewController:mainVC forWindow:self.window];
+    [self.window setRootViewController:self.mainVC];
+    if(true || [AppDelegateSetupHelper appLaunchedFirstTime]) {
+        self.mainVC.introOnScreen = YES;
+        [self performSelector:@selector(showIntroTutorial) withObject:nil afterDelay:0.7 ];
+    }
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -686,16 +687,12 @@ static NSDate *finish;
 - (void)showIntroTutorial
 {
     //IMPORTANT NOTE: EAIntroView is WEIRD. Y coordinates are backwards. 0 is at bottom.
-    self.introVc = [[UIViewController alloc] init];
-    self.introVc.view.frame = self.window.frame;
-    self.introVc.view.backgroundColor = [UIColor lightGrayColor];
-    [self.window setRootViewController:self.introVc];
-    float height = self.introVc.view.frame.size.height;
-    float width = self.introVc.view.frame.size.width;
+    float height = self.mainVC.view.frame.size.height;
+    float width = self.mainVC.view.frame.size.width;
     
     EAIntroPage *page1 = [EAIntroPage page];
     UIView *customView1 = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, height)];
-    customView1.backgroundColor = [UIColor defaultAppColorScheme];
+    //customView1.backgroundColor = [UIColor defaultAppColorScheme];
     UILabel *title1 = [[UILabel alloc] initWithFrame:CGRectMake(15,
                                                                 height/3,
                                                                 width - 15,
@@ -711,34 +708,38 @@ static NSDate *finish;
     //                               size:18];
     [customView1 addSubview:title1];
     page1.customView = customView1;
+    page1.bgColor = [UIColor defaultAppColorScheme];
     
     //custom
     EAIntroPage *page2 = [EAIntroPage page];
     page2.title = @"This is page 2";
     page2.titleFont = [UIFont fontWithName:@"Georgia-BoldItalic" size:20];
     page2.titlePositionY = 220;
+    page2.bgColor = [UIColor redColor];
     
     EAIntroPage *page3 = [EAIntroPage page];
     page3.title = @"page 3";
     page3.titleFont = [UIFont fontWithName:@"Georgia-BoldItalic" size:20];
     page3.titlePositionY = 220;
+    page3.bgColor = [UIColor purpleColor];
     
-    self.intro = [[EAIntroView alloc] initWithFrame:self.introVc.view.frame
+    self.intro = [[EAIntroView alloc] initWithFrame:self.mainVC.view.frame
                                            andPages:@[page1,page2,page3]];
+    self.intro.bgViewContentMode = UIViewContentModeCenter;
     self.intro.hideSkipButton = YES;
     self.intro.delegate = self;
-    [self.intro showInView:self.introVc.view animateDuration:2];
+    [self.intro showInView:self.mainVC.view animateDuration:1.5];
 }
 
 static BOOL introAlreadyFinished = NO;
 //intro did finish is called MANY times. prob has a bug lol.
 - (void)introDidFinish:(EAIntroView *)introView
 {
+    self.mainVC.introOnScreen = NO;
     if(introAlreadyFinished)
         return;
     else
         introAlreadyFinished = YES;
-    [self setupMainVC];
     [self.intro hideWithFadeOutDuration:2];
 }
 

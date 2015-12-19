@@ -234,43 +234,6 @@ static short appLaunchedFirstTimeDefensiveCount = 0;
         return NO;
 }
 
-+ (void)changeRootViewController:(UIViewController*)viewController forWindow:(UIWindow *)window
-{
-    UIViewController *previousRootViewController = window.rootViewController;
-    if (! previousRootViewController) {
-        window.rootViewController = viewController;
-        return;
-    }
-    
-    UIView *snapShot = [window snapshotViewAfterScreenUpdates:YES];
-    [viewController.view addSubview:snapShot];
-    
-    // Nasty hack to fix http://stackoverflow.com/questions/26763020/leaking-views-when-changing-rootviewcontroller-inside-transitionwithview
-    // The presenting view controllers view doesn't get removed from the window as its currently
-    //transistioning and presenting a view controller
-    for (UIView *subview in window.subviews) {
-        if ([subview isKindOfClass:NSClassFromString(@"UITransitionView")]) {
-            [subview removeFromSuperview];
-        }
-    }
-    
-    window.rootViewController = viewController;
-
-    [UIView animateWithDuration:0.5 animations:^{
-        snapShot.layer.opacity = 0;
-        snapShot.layer.transform = CATransform3DMakeScale(1.5, 1.5, 1.5);
-    } completion:^(BOOL finished) {
-        [snapShot removeFromSuperview];
-    }];
-    
-    // Allow the view controller to be deallocated
-    [previousRootViewController dismissViewControllerAnimated:NO completion:^{
-        // Remove the root view in case its still showing
-        [previousRootViewController.view removeFromSuperview];
-    }];
-}
-
-
 //used for debugging
 + (void)logGlobalAppTintColor
 {

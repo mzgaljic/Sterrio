@@ -642,6 +642,20 @@ short const dummyTabIndex = 2;
     }
 }
 
+- (BOOL)shouldAutorotate
+{
+    return !self.introOnScreen;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    if(self.introOnScreen) {
+        return UIInterfaceOrientationMaskPortrait;
+    } else {
+        return UIInterfaceOrientationMaskAll;
+    }
+}
+
 #pragma mark - GADBanner delegate
 - (void)adViewDidReceiveAd:(GADBannerView *)bannerView
 {
