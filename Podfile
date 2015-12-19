@@ -49,3 +49,6 @@ pod 'Valet'
 #Fabrio.io stuff (crashlytics & answers)
 pod 'Fabric'
 pod 'Crashlytics'
+
+#intro view stuff
+pod 'EAIntroView', '~> 2.8.0'

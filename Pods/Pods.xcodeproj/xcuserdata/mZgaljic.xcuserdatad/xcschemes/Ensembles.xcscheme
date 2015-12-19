@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '482860C7B7448CF2BC28774E'
+               BlueprintIdentifier = '00D605C8B8B56441D8F80099'
                BlueprintName = 'Ensembles'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'libEnsembles.a'>

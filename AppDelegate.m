@@ -17,6 +17,7 @@
 #import "SDCAlertControllerView.h"
 #import "SpotlightHelper.h"
 #import "InAppPurchaseUtils.h"
+#import "EAIntroView.h"
 
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
@@ -66,48 +67,30 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         [self.window makeKeyAndVisible];
         self.window.frame = [[UIScreen mainScreen] bounds];
     }
-    
-    [AppDelegate upgradeLibraryToUseSpotlightIfApplicable];
-    [ReachabilitySingleton sharedInstance];  //init reachability class
-    [InAppPurchaseUtils sharedInstance];  //sets up transaction observers
+    [AppDelegateSetupHelper setGlobalFontsAndColorsForAppGUIComponents];
 
+    [AppDelegateSetupHelper setupDiskAndMemoryWebCache];
+    [AppDelegateSetupHelper loadUsersSettingsFromNSUserDefaults];
+    
+    if([AppDelegateSetupHelper appLaunchedFirstTime]){
+        //do stuff that you'd want to see the first time you launch!
+        [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
+        [self showIntroTutorial];
+    } else {
+        [self setupMainVC];
+    }
+    
     //create all contexts up front to avoid any funny business later (thread issues, etc.)
     [CoreDataManager context];
     [CoreDataManager backgroundThreadContext];
     [CoreDataManager stackControllerThreadContext];
     
-    [LQAlbumArtBackgroundUpdater beginWaitingForEfficientMomentsToUpdateAlbumArt];
-    [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
+    [AppDelegate upgradeLibraryToUseSpotlightIfApplicable];
+    [ReachabilitySingleton sharedInstance];  //init reachability class
+    [InAppPurchaseUtils sharedInstance];  //sets up transaction observers
     
-    [AppDelegateSetupHelper setupDiskAndMemoryWebCache];
-    
-    BOOL appLaunchedFirstTime = [AppDelegateSetupHelper appLaunchedFirstTime];
-    [AppDelegateSetupHelper loadUsersSettingsFromNSUserDefaults];
-    
-    if(appLaunchedFirstTime){
-        //do stuff that you'd want to see the first time you launch!
-        [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
-    }
-    
-    //[AppEnvironmentConstants adsHaveBeenRemoved:NO];   ONLY FOR DEVELOPMENT!!
-    
-    
-    [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY
-                                               forKey:APP_ALREADY_LAUNCHED_KEY];
-    
+
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-    [AppDelegateSetupHelper setGlobalFontsAndColorsForAppGUIComponents];
-    [self setupMainVC];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(startupBackgroundTask)
-                                                 name:MZStartBackgroundTaskHandlerIfInactive
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(initAudioSession)
-                                                 name:MZInitAudioSession
-                                               object:nil];
-    
     UIApplication *myApp = [UIApplication sharedApplication];
     [myApp setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
@@ -120,7 +103,29 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge];
     }
     
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(startupBackgroundTask)
+                                                 name:MZStartBackgroundTaskHandlerIfInactive
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(initAudioSession)
+                                                 name:MZInitAudioSession
+                                               object:nil];
+    
+    [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY
+                                               forKey:APP_ALREADY_LAUNCHED_KEY];
+    
+    [LQAlbumArtBackgroundUpdater beginWaitingForEfficientMomentsToUpdateAlbumArt];
+    [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
+    //[AppEnvironmentConstants adsHaveBeenRemoved:NO];   ONLY FOR DEVELOPMENT!!
+    
     return YES;
+}
+
+- (void)showIntroTutorial
+{
+    
 }
 
 - (void)setupMainVC
