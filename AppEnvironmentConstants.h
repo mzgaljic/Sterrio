@@ -129,6 +129,7 @@ typedef enum{
 //-----End of app settings------
 
 + (void)setLastSuccessfulSyncDate:(NSDate *)date;
++ (NSDate *)lastSuccessfulSyncDate;
 + (NSString *)humanReadableLastSyncTime;
 //---End of stuff in NSUserDefaults---
 

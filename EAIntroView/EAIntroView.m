@@ -605,6 +605,11 @@ CGFloat easeOutValue(CGFloat value) {
         }
     }
     
+    if(self.hideSkipButton) {
+        [self.skipButton setAlpha:0.0];
+        return;
+    }
+    
     if(self.skipButton && self.showSkipButtonOnlyOnLastPage) {
         if(page < (long)[self.pages count] - 2) {
             [self.skipButton setAlpha:0.0];
@@ -933,16 +938,21 @@ CGFloat easeOutValue(CGFloat value) {
         [view bringSubviewToFront:self];
     }
    
-    [UIView animateWithDuration:duration animations:^{
-        self.alpha = 1;
-    } completion:^(BOOL finished) {
-        EAIntroPage *currentPage = _pages[self.currentPageIndex];
-        if(currentPage.onPageDidAppear) currentPage.onPageDidAppear();
-        
-        if ([(id)self.delegate respondsToSelector:@selector(intro:pageAppeared:withIndex:)]) {
-            [self.delegate intro:self pageAppeared:_pages[self.currentPageIndex] withIndex:self.currentPageIndex];
-        }
-    }];
+    [UIView animateWithDuration:duration
+                          delay:0
+         usingSpringWithDamping:0.80
+          initialSpringVelocity:0
+                        options:UIViewAnimationOptionAllowAnimatedContent
+                     animations:^{
+                         self.alpha = 1;
+                     } completion:^(BOOL finished) {
+                         EAIntroPage *currentPage = _pages[self.currentPageIndex];
+                         if(currentPage.onPageDidAppear) currentPage.onPageDidAppear();
+                         
+                         if ([(id)self.delegate respondsToSelector:@selector(intro:pageAppeared:withIndex:)]) {
+                             [self.delegate intro:self pageAppeared:_pages[self.currentPageIndex] withIndex:self.currentPageIndex];
+                         }
+                     }];
 }
 
 - (void)hideWithFadeOutDuration:(CGFloat)duration {

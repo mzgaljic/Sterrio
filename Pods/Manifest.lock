@@ -23,9 +23,6 @@ PODS:
   - Crashlytics (3.4.1):
     - Fabric (~> 1.6.0)
   - CRToast (0.0.9)
-  - EAIntroView (2.8.1):
-    - EARestrictedScrollView (~> 0.2.0)
-  - EARestrictedScrollView (0.2.0)
   - Ensembles (1.4.3):
     - Ensembles/Core (= 1.4.3)
   - Ensembles/Core (1.4.3)
@@ -47,7 +44,6 @@ DEPENDENCIES:
   - AFNetworking (~> 2.5.4)
   - Crashlytics
   - CRToast (~> 0.0.7)
-  - EAIntroView (~> 2.8.0)
   - Ensembles (~> 1.0)
   - Fabric
   - FXImageView
@@ -65,8 +61,6 @@ SPEC CHECKSUMS:
   AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
   Crashlytics: 41574a245bc6ae10c55d57f385ebd2004e5bee05
   CRToast: 5a78c22b921c5ed3487488af605bc403a9c92fed
-  EAIntroView: 73abfa89caa311f450af876421d950b96679e845
-  EARestrictedScrollView: f86d61e16c61d3e93c84f8e96e83122a2a3b7631
   Ensembles: dec7c46616bbb1fb5611f19567b0e0725edab6af
   Fabric: bf0ceb04e7c924090efc5f8c55e4fbcca189e0a0
   FXImageView: 7d84722b37f0afea9a64f12fdd4a6c7f9ecc4b16

@@ -18,10 +18,11 @@
 #import "SpotlightHelper.h"
 #import "InAppPurchaseUtils.h"
 #import "EAIntroView.h"
+#import "AppDelegateUtils.h"
 
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
-@interface AppDelegate ()
+@interface AppDelegate () <EAIntroDelegate>
 {
     AVAudioSession *audioSession;
     UIBackgroundTaskIdentifier task;
@@ -30,6 +31,8 @@
     BOOL backgroundTaskIsRunning;
     BOOL ensembleBackgroundMergeIsRunning;
 }
+@property (nonatomic, strong) EAIntroView *intro;
+@property (nonatomic, strong) UIViewController *introVc;
 @end
 
 @implementation AppDelegate
@@ -59,20 +62,20 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     //set up Crashlytics immediately so any crashes are recorded.
     [Fabric with:@[[Answers class], [Crashlytics class]]];
     
-    BOOL showUserTouchesOnScreen = YES;
+    BOOL showUserTouchesOnScreen = NO;
     if(showUserTouchesOnScreen) {
         self.window = [self windowShowingTouches];
     } else {
         self.window = [UIWindow new];
-        [self.window makeKeyAndVisible];
         self.window.frame = [[UIScreen mainScreen] bounds];
     }
+    [self.window makeKeyAndVisible];
     [AppDelegateSetupHelper setGlobalFontsAndColorsForAppGUIComponents];
 
     [AppDelegateSetupHelper setupDiskAndMemoryWebCache];
     [AppDelegateSetupHelper loadUsersSettingsFromNSUserDefaults];
     
-    if([AppDelegateSetupHelper appLaunchedFirstTime]){
+    if(true || [AppDelegateSetupHelper appLaunchedFirstTime]){
         //do stuff that you'd want to see the first time you launch!
         [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
         [self showIntroTutorial];
@@ -123,11 +126,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     return YES;
 }
 
-- (void)showIntroTutorial
-{
-    
-}
-
 - (void)setupMainVC
 {
     MainScreenViewController *mainVC;
@@ -139,25 +137,22 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     MasterPlaylistTableViewController *vc4 = [storyboard instantiateViewControllerWithIdentifier:playlistsVcSbId];
     
     vc1.tabBarItem = [[UITabBarItem alloc]initWithTabBarSystemItem:UITabBarSystemItemRecents tag:0];
-    UINavigationController *navController1 = [[UINavigationController alloc]initWithRootViewController:vc1];
+    UINavigationController *nav1 = [[UINavigationController alloc]initWithRootViewController:vc1];
     vc2.tabBarItem = [[UITabBarItem alloc]initWithTabBarSystemItem:UITabBarSystemItemRecents tag:1];
-    UINavigationController *navController2 = [[UINavigationController alloc]initWithRootViewController:vc2];
+    UINavigationController *nav2 = [[UINavigationController alloc]initWithRootViewController:vc2];
     vc3.tabBarItem = [[UITabBarItem alloc]initWithTabBarSystemItem:UITabBarSystemItemRecents tag:2];
-    UINavigationController *navController3 = [[UINavigationController alloc]initWithRootViewController:vc3];
+    UINavigationController *nav3 = [[UINavigationController alloc]initWithRootViewController:vc3];
     vc4.tabBarItem = [[UITabBarItem alloc]initWithTabBarSystemItem:UITabBarSystemItemRecents tag:3];
-    UINavigationController *navController4 = [[UINavigationController alloc]initWithRootViewController:vc4];
+    UINavigationController *nav4 = [[UINavigationController alloc]initWithRootViewController:vc4];
     
-    NSArray *navControllers = @[navController1, navController2, navController3, navController4];
+    NSArray *navControllers = @[nav1, nav2, nav3, nav4];
     NSArray *selectedImgNames = @[@"song_note_select", @"albums", @"artists", @"playlist_select"];
     NSArray *unselectedImgNames = @[@"song_note_unselect", @"albums", @"artists", @"playlist_unselect"];
     mainVC = [[MainScreenViewController alloc] initWithNavControllers:navControllers
                                          correspondingViewControllers:@[vc1, vc2, vc3, vc4]
                                            tabBarUnselectedImageNames:unselectedImgNames
                                              tabBarselectedImageNames:selectedImgNames];
-    
-    [self.window setRootViewController:mainVC];
-    self.window.backgroundColor = [UIColor whiteColor];
-    [self.window makeKeyAndVisible];
+    [AppDelegateSetupHelper changeRootViewController:mainVC forWindow:self.window];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -411,6 +406,17 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 {
     if(! [AppEnvironmentConstants icloudSyncEnabled])
         return;
+
+    NSDate *lastSuccessfulSyncDate = [AppEnvironmentConstants lastSuccessfulSyncDate];
+    //did we already sync with icloud recently? If so, don't resync so soon!
+    if([AppDelegateUtils daysBetweenDate:lastSuccessfulSyncDate andDate:[NSDate date]] <= 1) {
+        NSTimeInterval distanceBetweenDates = [lastSuccessfulSyncDate timeIntervalSinceDate:[NSDate date]];
+        double secondsInAnHour = 3600;  //not perfect but good enough here.
+        NSInteger hoursBetweenDates = distanceBetweenDates / secondsInAnHour;
+        if(hoursBetweenDates <= 1) {
+            return;
+        }
+    }
     
     CDEPersistentStoreEnsemble *ensemble = [[CoreDataManager sharedInstance] ensembleForMainContext];
     if(! ensemble.isLeeched
@@ -676,5 +682,64 @@ static NSDate *finish;
 }
 //----/End/ of Spotlight upgrade helper code----
 
+#pragma mark - App Intro
+- (void)showIntroTutorial
+{
+    //IMPORTANT NOTE: EAIntroView is WEIRD. Y coordinates are backwards. 0 is at bottom.
+    self.introVc = [[UIViewController alloc] init];
+    self.introVc.view.frame = self.window.frame;
+    self.introVc.view.backgroundColor = [UIColor lightGrayColor];
+    [self.window setRootViewController:self.introVc];
+    float height = self.introVc.view.frame.size.height;
+    float width = self.introVc.view.frame.size.width;
+    
+    EAIntroPage *page1 = [EAIntroPage page];
+    UIView *customView1 = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, height)];
+    customView1.backgroundColor = [UIColor defaultAppColorScheme];
+    UILabel *title1 = [[UILabel alloc] initWithFrame:CGRectMake(15,
+                                                                height/3,
+                                                                width - 15,
+                                                                70)];
+    title1.text = [NSString stringWithFormat:@"Welcome to %@.", MZAppName];
+    title1.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                  size:30];
+    title1.backgroundColor = [UIColor clearColor];
+    title1.textColor = [UIColor whiteColor];
+    title1.textAlignment = NSTextAlignmentCenter;
+    //page1.desc = @"Unlimited Free Music Streaming.\n\n\n\n\n\n\n\n\n\nSwipe for introduction.";
+    //page1.descFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+    //                               size:18];
+    [customView1 addSubview:title1];
+    page1.customView = customView1;
+    
+    //custom
+    EAIntroPage *page2 = [EAIntroPage page];
+    page2.title = @"This is page 2";
+    page2.titleFont = [UIFont fontWithName:@"Georgia-BoldItalic" size:20];
+    page2.titlePositionY = 220;
+    
+    EAIntroPage *page3 = [EAIntroPage page];
+    page3.title = @"page 3";
+    page3.titleFont = [UIFont fontWithName:@"Georgia-BoldItalic" size:20];
+    page3.titlePositionY = 220;
+    
+    self.intro = [[EAIntroView alloc] initWithFrame:self.introVc.view.frame
+                                           andPages:@[page1,page2,page3]];
+    self.intro.hideSkipButton = YES;
+    self.intro.delegate = self;
+    [self.intro showInView:self.introVc.view animateDuration:2];
+}
+
+static BOOL introAlreadyFinished = NO;
+//intro did finish is called MANY times. prob has a bug lol.
+- (void)introDidFinish:(EAIntroView *)introView
+{
+    if(introAlreadyFinished)
+        return;
+    else
+        introAlreadyFinished = YES;
+    [self setupMainVC];
+    [self.intro hideWithFadeOutDuration:2];
+}
 
 @end

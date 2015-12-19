@@ -512,6 +512,11 @@ static int icloudEnabledCounter = 0;
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
++ (NSDate *)lastSuccessfulSyncDate
+{
+    return lastSuccessfulSyncDate;
+}
+
 //returns a date in a nice user readable format, such as "Yesterday at 1:15 PM".
 + (NSString *)humanReadableLastSyncTime
 {
