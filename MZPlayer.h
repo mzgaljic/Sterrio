@@ -15,14 +15,15 @@
 - (void)previewPlayerNeedsNowPlayingInfoCenterUpdate;
 @end
 
-@interface MZPreviewPlayer : UIView
+@interface MZPlayer : UIView
+@property (assign, nonatomic) BOOL loopPlaybackForever;
 @property (strong, nonatomic, readonly) AVPlayer *avPlayer;
 @property (assign, nonatomic, readonly) BOOL isPlaying;
 @property (assign, nonatomic, readonly) BOOL isInStall;
 @property (assign, nonatomic, readonly) BOOL playbackExplicitlyPaused;
 @property (assign, nonatomic, readonly) NSUInteger elapsedTimeInSec;
 
-- (instancetype)initWithFrame:(CGRect)frame videoURL:(NSURL *)videoURL;
+- (instancetype)initWithFrame:(CGRect)frame videoURL:(NSURL *)videoURL useControlsOverlay:(BOOL)useOverlay;
 - (void)setStallValueChangedDelegate:(id <MZPreviewPlayerStallState>)aDelegate;
 - (void)play;
 - (void)pause;

@@ -38,7 +38,7 @@
 }
 
 @property (nonatomic, strong) SSBouncyButton *poweredByYtBtn;
-@property (nonatomic, strong) MZPreviewPlayer *player;
+@property (nonatomic, strong) MZPlayer *player;
 @property (nonatomic, strong) MZSongModifierTableView *tableView;
 @end
 
@@ -340,8 +340,9 @@ static short numberTimesViewHasBeenShown = 0;
         
         if(self.player == nil && !preDeallocedAlready){
             // player's frame size must match parent's
-            self.player = [[MZPreviewPlayer alloc] initWithFrame:CGRectZero
-                                                        videoURL:url];
+            self.player = [[MZPlayer alloc] initWithFrame:CGRectZero
+                                                 videoURL:url
+                                       useControlsOverlay:YES];
             [self.player setStallValueChangedDelegate:self];
             [self.player play];
             
@@ -400,8 +401,9 @@ static short numberTimesViewHasBeenShown = 0;
 
     if(self.player == nil && !preDeallocedAlready){
                                                 // player's frame size must match parent's
-        self.player = [[MZPreviewPlayer alloc] initWithFrame:videoFrameView.frame
-                                                    videoURL:url];
+        self.player = [[MZPlayer alloc] initWithFrame:videoFrameView.frame
+                                             videoURL:url
+                                   useControlsOverlay:YES];
         [self.player setStallValueChangedDelegate:self];
         [self.player play];
         

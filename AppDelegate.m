@@ -19,6 +19,7 @@
 #import "InAppPurchaseUtils.h"
 #import "EAIntroView.h"
 #import "AppDelegateUtils.h"
+#import "MZPlayer.h"
 
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
@@ -691,7 +692,7 @@ static NSDate *finish;
     float width = self.mainVC.view.frame.size.width;
     
     EAIntroPage *page1 = [EAIntroPage page];
-    UIView *customView1 = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, height)];
+    UIView *customView1 = [[UIView alloc] initWithFrame:self.mainVC.view.frame];
     //customView1.backgroundColor = [UIColor defaultAppColorScheme];
     UILabel *title1 = [[UILabel alloc] initWithFrame:CGRectMake(15,
                                                                 height/3,
@@ -712,10 +713,20 @@ static NSDate *finish;
     
     //custom
     EAIntroPage *page2 = [EAIntroPage page];
-    page2.title = @"This is page 2";
-    page2.titleFont = [UIFont fontWithName:@"Georgia-BoldItalic" size:20];
-    page2.titlePositionY = 220;
     page2.bgColor = [UIColor redColor];
+    UIView *customView2 = [[UIView alloc] initWithFrame:self.mainVC.view.frame];
+    NSURL *videoUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"Queue songs video"
+                                                                             ofType:@"mp4"]];
+
+    
+    MZPlayer *player = [[MZPlayer alloc] initWithFrame:CGRectMake(0, height/2 - 200, width, 200)
+                                              videoURL:videoUrl
+                                    useControlsOverlay:NO];
+    player.loopPlaybackForever = YES;
+    [player play];
+
+    [customView2 addSubview:player];
+    page2.customView = customView2;
     
     EAIntroPage *page3 = [EAIntroPage page];
     page3.title = @"page 3";

@@ -20,7 +20,7 @@
 #import "MZSongModifierTableView.h"
 #import "MZSongModifierDelegate.h"
 #import "SongPlayerCoordinator.h"
-#import "MZPreviewPlayer.h"
+#import "MZPlayer.h"
 
 @interface YouTubeSongAdderViewController : MyViewController <YouTubeVideoDetailLookupDelegate,
                                                             MZSongModifierDelegate,

@@ -7,7 +7,7 @@
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
-#import "MZPreviewPlayer.h"
+#import "MZPlayer.h"
 #import "ReachabilitySingleton.h"
 #import "UIImage+colorImages.h"
 #import "UIButton+ExpandedHitArea.h"
@@ -15,7 +15,7 @@
 #import "AppEnvironmentConstants.h"
 #import "MZSlider.h"
 
-@interface MZPreviewPlayer ()
+@interface MZPlayer ()
 {
     id playbackObserver;
     AVPlayerLayer *playerLayer;
@@ -42,10 +42,11 @@
 @property (assign, nonatomic, readwrite) BOOL isPlaying;
 @property (assign, nonatomic, readwrite) BOOL isInStall;
 @property (assign, nonatomic, readwrite) BOOL playbackExplicitlyPaused;
+@property (assign, nonatomic, readwrite) BOOL useControlsOverlay;
 
 @property (weak, nonatomic) id <MZPreviewPlayerStallState> delegate;
 @end
-@implementation MZPreviewPlayer
+@implementation MZPlayer
 
 const int CONTROLS_HUD_HEIGHT = 45;
 const float AUTO_HIDE_HUD_DELAY = 3;
@@ -74,9 +75,28 @@ static BOOL isHudOnScreen = NO;
     _isInStall = isInStall;
     [self.delegate previewPlayerStallStateChanged];
 }
+
+- (void)setLoopPlaybackForever:(BOOL)loopPlaybackForever
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:AVPlayerItemDidPlayToEndTimeNotification
+                                                  object:nil];
+    if(loopPlaybackForever) {
+         __weak typeof(self) weakSelf = self; // prevent memory cycle
+        [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemDidPlayToEndTimeNotification
+                                                          object:nil
+                                                           queue:nil
+                                                      usingBlock:^(NSNotification * _Nonnull note) {
+                                                          // holding a pointer to avPlayer to reuse it
+                                                          [weakSelf.avPlayer seekToTime:kCMTimeZero];
+                                                          [weakSelf.avPlayer play];
+                                                      }];
+    }
+    _loopPlaybackForever = loopPlaybackForever;
+}
    
 #pragma mark - Lifecycle
-- (instancetype)initWithFrame:(CGRect)frame videoURL:(NSURL *)videoURL
+- (instancetype)initWithFrame:(CGRect)frame videoURL:(NSURL *)videoURL useControlsOverlay:(BOOL)useOverlay
 {
     if (self = [super initWithFrame:frame]) {
         self.isInStall = YES;
@@ -84,15 +104,18 @@ static BOOL isHudOnScreen = NO;
         self.avPlayer = [AVPlayer playerWithPlayerItem:playerItem];
         [self initObservers];
         playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.avPlayer];
+        playerLayer.backgroundColor = [[UIColor clearColor] CGColor];
         [playerLayer setFrame:self.bounds];
         [self.layer addSublayer:playerLayer];
         [self.layer setMasksToBounds:YES];
         self.videoURL = videoURL;
         
-        UITapGestureRecognizer *singleFingerTap =
-        [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                action:@selector(userTappedPlayerView:)];
-        [self addGestureRecognizer:singleFingerTap];
+        if(useOverlay) {
+            UITapGestureRecognizer *singleFingerTap =
+            [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                    action:@selector(userTappedPlayerView:)];
+            [self addGestureRecognizer:singleFingerTap];
+        }
         
         self.avPlayer.allowsExternalPlayback = ![AppEnvironmentConstants shouldOnlyAirplayAudio];
         [self setupTimeObserver];
@@ -138,6 +161,10 @@ static BOOL isHudOnScreen = NO;
 
 - (void)setupControlsHud
 {
+    if(! self.useControlsOverlay) {
+        return;
+    }
+    
     int yOrigin = self.frame.size.height - CONTROLS_HUD_HEIGHT;
     if(self.controlsHud == nil){
         self.controlsHud = [[UIView alloc] init];
@@ -256,7 +283,7 @@ static BOOL isHudOnScreen = NO;
                              action:@selector(progressBarChangeEnded:)
                    forControlEvents:UIControlEventEditingDidEnd];
         //[self.progressBar setThumbImage:[UIImage imageNamed:@"UISliderKnob"] forState:UIControlStateNormal];
-        self.progressBar.transform = CGAffineTransformMakeScale(0.78, 0.78);  //make knob smaller
+        self.progressBar.transform = CGAffineTransformMakeScale(0.80, 0.80);  //make knob smaller
         self.progressBar.maximumValue = totalDuration;
         self.progressBar.minimumValue = 0;
         self.progressBar.minimumTrackTintColor = [[UIColor defaultAppColorScheme] lighterColor];
@@ -653,7 +680,7 @@ static void *ksAirplayState = &ksAirplayState;
         }
     } else if(context == ksPlaybackRate){
         self.isPlaying = (self.avPlayer.rate == 1);
-    }else if(context == ksAirplayState){
+    } else if(context == ksAirplayState){
         BOOL airplayActive = self.avPlayer.externalPlaybackActive;
         [self showAirPlayLogoView:airplayActive];
     }

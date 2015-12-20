@@ -108,7 +108,7 @@
 		873539291B0A9F43009244E4 /* PreferredFontSizeUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539281B0A9F43009244E4 /* PreferredFontSizeUtility.m */; };
 		8735392D1B0A9F68009244E4 /* StackController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735392C1B0A9F68009244E4 /* StackController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		873539311B0A9F94009244E4 /* CoreDataCustomTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539301B0A9F94009244E4 /* CoreDataCustomTableViewController.m */; };
-		873539381B0A9FCE009244E4 /* MZPreviewPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539351B0A9FCE009244E4 /* MZPreviewPlayer.m */; };
+		873539381B0A9FCE009244E4 /* MZPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539351B0A9FCE009244E4 /* MZPlayer.m */; };
 		873539391B0A9FCE009244E4 /* MZSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539371B0A9FCE009244E4 /* MZSlider.m */; };
 		8735393D1B0A9FEA009244E4 /* MZAlbumSectionHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735393C1B0A9FEA009244E4 /* MZAlbumSectionHeader.m */; };
 		873539411B0AA00C009244E4 /* EditableCellTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539401B0AA00C009244E4 /* EditableCellTableViewController.m */; };
@@ -443,8 +443,8 @@
 		8735392C1B0A9F68009244E4 /* StackController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StackController.m; sourceTree = "<group>"; };
 		8735392F1B0A9F94009244E4 /* CoreDataCustomTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataCustomTableViewController.h; sourceTree = "<group>"; };
 		873539301B0A9F94009244E4 /* CoreDataCustomTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataCustomTableViewController.m; sourceTree = "<group>"; };
-		873539341B0A9FCE009244E4 /* MZPreviewPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPreviewPlayer.h; sourceTree = "<group>"; };
-		873539351B0A9FCE009244E4 /* MZPreviewPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPreviewPlayer.m; sourceTree = "<group>"; };
+		873539341B0A9FCE009244E4 /* MZPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPlayer.h; sourceTree = "<group>"; };
+		873539351B0A9FCE009244E4 /* MZPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPlayer.m; sourceTree = "<group>"; };
 		873539361B0A9FCE009244E4 /* MZSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZSlider.h; sourceTree = "<group>"; };
 		873539371B0A9FCE009244E4 /* MZSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZSlider.m; sourceTree = "<group>"; };
 		8735393B1B0A9FEA009244E4 /* MZAlbumSectionHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZAlbumSectionHeader.h; sourceTree = "<group>"; };
@@ -738,6 +738,7 @@
 				8735380C1B0A9A9A009244E4 /* MZConstants.m */,
 				8736AA9C1C2613A2005FAE07 /* AppDelegateUtils.h */,
 				8736AA9D1C2613A2005FAE07 /* AppDelegateUtils.m */,
+				8736AA9F1C262231005FAE07 /* Intro Views */,
 				873538111B0A9AAC009244E4 /* App Helpers */,
 				8735381B1B0A9AD2009244E4 /* Categories */,
 				8735384A1B0A9B0C009244E4 /* Data Structures */,
@@ -1240,8 +1241,8 @@
 		873539331B0A9FC0009244E4 /* Preview AV-Player */ = {
 			isa = PBXGroup;
 			children = (
-				873539341B0A9FCE009244E4 /* MZPreviewPlayer.h */,
-				873539351B0A9FCE009244E4 /* MZPreviewPlayer.m */,
+				873539341B0A9FCE009244E4 /* MZPlayer.h */,
+				873539351B0A9FCE009244E4 /* MZPlayer.m */,
 				873539361B0A9FCE009244E4 /* MZSlider.h */,
 				873539371B0A9FCE009244E4 /* MZSlider.m */,
 			);
@@ -1702,6 +1703,13 @@
 			path = EARestrictedScrollView;
 			sourceTree = "<group>";
 		};
+		8736AA9F1C262231005FAE07 /* Intro Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Intro Views";
+			sourceTree = "<group>";
+		};
 		87A953641B3E1E5F002E9872 /* MusicBrainz */ = {
 			isa = PBXGroup;
 			children = (
@@ -2060,7 +2068,7 @@
 				87A9536C1B3E242A002E9872 /* SMURLImageView.m in Sources */,
 				87353A441B0AA2C9009244E4 /* MRIconView.m in Sources */,
 				873539411B0AA00C009244E4 /* EditableCellTableViewController.m in Sources */,
-				873539381B0A9FCE009244E4 /* MZPreviewPlayer.m in Sources */,
+				873539381B0A9FCE009244E4 /* MZPlayer.m in Sources */,
 				8735390C1B0A9ED2009244E4 /* NewSettingsTableViewController.m in Sources */,
 				87A953631B3E1E54002E9872 /* MZSongMetaData.m in Sources */,
 				873538411B0A9AF4009244E4 /* UIDevice+DeviceName.m in Sources */,
