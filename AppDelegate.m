@@ -22,6 +22,8 @@
 #import "MZPlayer.h"
 
 #import "QueueSongsIntro.h"
+#import "KillingPlayerIntro.h"
+#import "EditingSongIntro.h"
 
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
@@ -719,13 +721,15 @@ static NSDate *finish;
     page2.customView = [[QueueSongsIntro alloc] initWithFrame:self.mainVC.view.frame];
     
     EAIntroPage *page3 = [EAIntroPage page];
-    page3.title = @"page 3";
-    page3.titleFont = [UIFont fontWithName:@"Georgia-BoldItalic" size:20];
-    page3.titlePositionY = 220;
+    page3.customView = [[KillingPlayerIntro alloc] initWithFrame:self.mainVC.view.frame];
     page3.bgColor = [UIColor purpleColor];
     
+    EAIntroPage *page4 = [EAIntroPage page];
+    page4.customView = [[EditingSongIntro alloc] initWithFrame:self.mainVC.view.frame];
+    page4.bgColor = [UIColor yellowColor];
+    
     self.intro = [[EAIntroView alloc] initWithFrame:self.mainVC.view.frame
-                                           andPages:@[page1,page2,page3]];
+                                           andPages:@[page1,page2,page3, page4]];
     self.intro.bgViewContentMode = UIViewContentModeCenter;
     self.intro.hideSkipButton = YES;
     self.intro.delegate = self;

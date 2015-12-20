@@ -84,7 +84,7 @@ static BOOL isHudOnScreen = NO;
     if(loopPlaybackForever) {
          __weak typeof(self) weakSelf = self; // prevent memory cycle
         [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemDidPlayToEndTimeNotification
-                                                          object:nil
+                                                          object:self.avPlayer.currentItem
                                                            queue:nil
                                                       usingBlock:^(NSNotification * _Nonnull note) {
                                                           // holding a pointer to avPlayer to reuse it

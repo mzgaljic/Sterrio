@@ -218,6 +218,7 @@
 		87414BC41B3FA92500FB8252 /* CoreSpotlight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		87414BC61B3FA93100FB8252 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		87414BC81B3FB85300FB8252 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87414BC71B3FB85300FB8252 /* AppDelegate.m */; };
+		87494D3A1C272DF000AA9637 /* EditingSongIntro.m in Sources */ = {isa = PBXBuildFile; fileRef = 87494D391C272DF000AA9637 /* EditingSongIntro.m */; };
 		8755545E1C1DF6EA00259CA8 /* InAppPurchaseUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8755545D1C1DF6EA00259CA8 /* InAppPurchaseUtils.m */; };
 		8773AE2D1B509A5500C3E64E /* SpotlightHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */; };
 		87A953621B3E1E54002E9872 /* MZMusicBrainz.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9535E1B3E1E54002E9872 /* MZMusicBrainz.m */; };
@@ -662,6 +663,8 @@
 		87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreSpotlight.framework; path = System/Library/Frameworks/CoreSpotlight.framework; sourceTree = SDKROOT; };
 		87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		87414BC71B3FB85300FB8252 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		87494D381C272DF000AA9637 /* EditingSongIntro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditingSongIntro.h; sourceTree = "<group>"; };
+		87494D391C272DF000AA9637 /* EditingSongIntro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditingSongIntro.m; sourceTree = "<group>"; };
 		8755545C1C1DF6EA00259CA8 /* InAppPurchaseUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppPurchaseUtils.h; sourceTree = "<group>"; };
 		8755545D1C1DF6EA00259CA8 /* InAppPurchaseUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppPurchaseUtils.m; sourceTree = "<group>"; };
 		8773AE2B1B509A5500C3E64E /* SpotlightHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpotlightHelper.h; sourceTree = "<group>"; };
@@ -742,8 +745,6 @@
 				87414BC71B3FB85300FB8252 /* AppDelegate.m */,
 				8735380B1B0A9A9A009244E4 /* MZConstants.h */,
 				8735380C1B0A9A9A009244E4 /* MZConstants.m */,
-				8736AA9C1C2613A2005FAE07 /* AppDelegateUtils.h */,
-				8736AA9D1C2613A2005FAE07 /* AppDelegateUtils.m */,
 				8736AA9F1C262231005FAE07 /* Intro Views */,
 				873538111B0A9AAC009244E4 /* App Helpers */,
 				8735381B1B0A9AD2009244E4 /* Categories */,
@@ -828,6 +829,8 @@
 		873538111B0A9AAC009244E4 /* App Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				8736AA9C1C2613A2005FAE07 /* AppDelegateUtils.h */,
+				8736AA9D1C2613A2005FAE07 /* AppDelegateUtils.m */,
 				873538121B0A9AC1009244E4 /* AppEnvironmentConstants.h */,
 				873538131B0A9AC1009244E4 /* AppEnvironmentConstants.m */,
 				873538151B0A9AC7009244E4 /* AppDelegateSetupHelper.h */,
@@ -1716,6 +1719,8 @@
 				87BB51041C26796400EA6BB2 /* QueueSongsIntro.m */,
 				87BB51061C267FDB00EA6BB2 /* KillingPlayerIntro.h */,
 				87BB51071C267FDB00EA6BB2 /* KillingPlayerIntro.m */,
+				87494D381C272DF000AA9637 /* EditingSongIntro.h */,
+				87494D391C272DF000AA9637 /* EditingSongIntro.m */,
 			);
 			name = "Intro Views";
 			sourceTree = "<group>";
@@ -2028,6 +2033,7 @@
 				87353A901B0AAA36009244E4 /* Song+Utilities.m in Sources */,
 				873538F51B0A9E78009244E4 /* MasterAlbumsTableViewController.m in Sources */,
 				873538C21B0A9CD0009244E4 /* MZSongModifierTableView.m in Sources */,
+				87494D3A1C272DF000AA9637 /* EditingSongIntro.m in Sources */,
 				873539C81B0AA1B3009244E4 /* SDCAlertControllerScrollView.m in Sources */,
 				873538931B0A9BFF009244E4 /* PreviousNowPlayingInfo.m in Sources */,
 				873539C11B0AA1B3009244E4 /* RBBLinearInterpolation.m in Sources */,

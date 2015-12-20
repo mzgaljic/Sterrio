@@ -22,7 +22,7 @@
         int playerWidth = width - (width/5);
         
         NSBundle *mainBundle = [NSBundle mainBundle];
-        NSURL *videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Queue songs video"
+        NSURL *videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Queue Songs"
                                                                       ofType:@"mp4"]];
         
         _player = [[MZPlayer alloc] initWithFrame:CGRectMake((width - playerWidth)/2,
