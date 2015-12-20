@@ -225,6 +225,8 @@
 		87A9536C1B3E242A002E9872 /* SMURLImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A953681B3E242A002E9872 /* SMURLImageView.m */; };
 		87A9536D1B3E242A002E9872 /* LICENSE_webRequest.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A953691B3E242A002E9872 /* LICENSE_webRequest.txt */; };
 		87A9536E1B3E242A002E9872 /* SMWebRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9536B1B3E242A002E9872 /* SMWebRequest.m */; };
+		87BB51051C26796400EA6BB2 /* QueueSongsIntro.m in Sources */ = {isa = PBXBuildFile; fileRef = 87BB51041C26796400EA6BB2 /* QueueSongsIntro.m */; };
+		87BB51081C267FDB00EA6BB2 /* KillingPlayerIntro.m in Sources */ = {isa = PBXBuildFile; fileRef = 87BB51071C267FDB00EA6BB2 /* KillingPlayerIntro.m */; };
 		87DAA6C51B8AA9FF008D8684 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 87DAA6C21B8AA9FF008D8684 /* Model.xcdatamodeld */; };
 		87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */; };
 		87E152671C0041E100C82737 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87E152661C0041E100C82737 /* StoreKit.framework */; };
@@ -674,6 +676,10 @@
 		87A953691B3E242A002E9872 /* LICENSE_webRequest.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE_webRequest.txt; sourceTree = "<group>"; };
 		87A9536A1B3E242A002E9872 /* SMWebRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMWebRequest.h; sourceTree = "<group>"; };
 		87A9536B1B3E242A002E9872 /* SMWebRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMWebRequest.m; sourceTree = "<group>"; };
+		87BB51031C26796400EA6BB2 /* QueueSongsIntro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QueueSongsIntro.h; sourceTree = "<group>"; };
+		87BB51041C26796400EA6BB2 /* QueueSongsIntro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QueueSongsIntro.m; sourceTree = "<group>"; };
+		87BB51061C267FDB00EA6BB2 /* KillingPlayerIntro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KillingPlayerIntro.h; sourceTree = "<group>"; };
+		87BB51071C267FDB00EA6BB2 /* KillingPlayerIntro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KillingPlayerIntro.m; sourceTree = "<group>"; };
 		87DAA6C31B8AA9FF008D8684 /* Model 1.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 1.0.xcdatamodel"; sourceTree = "<group>"; };
 		87DAA6C41B8AA9FF008D8684 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailComposerManager.m; sourceTree = "<group>"; };
@@ -1706,6 +1712,10 @@
 		8736AA9F1C262231005FAE07 /* Intro Views */ = {
 			isa = PBXGroup;
 			children = (
+				87BB51031C26796400EA6BB2 /* QueueSongsIntro.h */,
+				87BB51041C26796400EA6BB2 /* QueueSongsIntro.m */,
+				87BB51061C267FDB00EA6BB2 /* KillingPlayerIntro.h */,
+				87BB51071C267FDB00EA6BB2 /* KillingPlayerIntro.m */,
 			);
 			name = "Intro Views";
 			sourceTree = "<group>";
@@ -2030,6 +2040,7 @@
 				873539691B0AA0E1009244E4 /* AllArtistsDataSource.m in Sources */,
 				87353A7A1B0AA7F7009244E4 /* JAMAccurateSlider.m in Sources */,
 				873539251B0A9F29009244E4 /* CoreDataErrorViewController.m in Sources */,
+				87BB51081C267FDB00EA6BB2 /* KillingPlayerIntro.m in Sources */,
 				8736AA991C25F3BF005FAE07 /* EAIntroView.m in Sources */,
 				873538521B0A9B23009244E4 /* Queue.m in Sources */,
 				873539DF1B0AA1CB009244E4 /* CCColorCube.m in Sources */,
@@ -2125,6 +2136,7 @@
 				873538FC1B0A9E95009244E4 /* MasterArtistsTableViewController.m in Sources */,
 				8735383A1B0A9AF4009244E4 /* NSString+HTTP_Char_Escape.m in Sources */,
 				873539171B0A9EF6009244E4 /* AdvancedOptionsTableViewController.m in Sources */,
+				87BB51051C26796400EA6BB2 /* QueueSongsIntro.m in Sources */,
 				873539061B0A9EBB009244E4 /* PlaylistSongAdderTableViewController.m in Sources */,
 				873539E91B0AA1E2009244E4 /* ProgressHUD.m in Sources */,
 				8735387E1B0A9B9E009244E4 /* PlaybackContext.m in Sources */,

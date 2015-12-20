@@ -21,6 +21,8 @@
 #import "AppDelegateUtils.h"
 #import "MZPlayer.h"
 
+#import "QueueSongsIntro.h"
+
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 @interface AppDelegate () <EAIntroDelegate>
@@ -714,19 +716,7 @@ static NSDate *finish;
     //custom
     EAIntroPage *page2 = [EAIntroPage page];
     page2.bgColor = [UIColor redColor];
-    UIView *customView2 = [[UIView alloc] initWithFrame:self.mainVC.view.frame];
-    NSURL *videoUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"Queue songs video"
-                                                                             ofType:@"mp4"]];
-
-    
-    MZPlayer *player = [[MZPlayer alloc] initWithFrame:CGRectMake(0, height/2 - 200, width, 200)
-                                              videoURL:videoUrl
-                                    useControlsOverlay:NO];
-    player.loopPlaybackForever = YES;
-    [player play];
-
-    [customView2 addSubview:player];
-    page2.customView = customView2;
+    page2.customView = [[QueueSongsIntro alloc] initWithFrame:self.mainVC.view.frame];
     
     EAIntroPage *page3 = [EAIntroPage page];
     page3.title = @"page 3";
