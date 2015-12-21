@@ -228,25 +228,7 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
 #pragma mark - Helpers
 - (void)initColorArrays
 {
-    tableColors = @[
-                    //vibrant orange
-                    Rgb2UIColor(227, 136, 91, 1),
-                    
-                    //emerald green
-                    Rgb2UIColor(97, 131, 111, 1),
-                    
-                    //bright pink
-                    Rgb2UIColor(237, 138, 182, 1),
-                    
-                    //blue
-                    Rgb2UIColor(89, 130, 196, 1),
-                    
-                    //purple
-                    Rgb2UIColor(127, 121, 176, 1),
-                    
-                    //yellow
-                    Rgb2UIColor(249, 205, 90, 1)
-                    ];
+    tableColors = [AppEnvironmentConstants appThemeMockColorsForUserToVisualize];
     
     tableColorNames = @[
                         @"Vibrant Orange",

@@ -150,4 +150,6 @@ typedef enum{
 
 + (UIColor *)nowPlayingItemColor;
 
++ (NSArray *)appThemeMockColorsForUserToVisualize;
+
 @end

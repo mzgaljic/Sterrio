@@ -88,8 +88,10 @@ static BOOL isHudOnScreen = NO;
                                                            queue:nil
                                                       usingBlock:^(NSNotification * _Nonnull note) {
                                                           // holding a pointer to avPlayer to reuse it
-                                                          [weakSelf.avPlayer seekToTime:kCMTimeZero];
-                                                          [weakSelf.avPlayer play];
+                                                          if(weakSelf.loopPlaybackForever) {
+                                                              [weakSelf.avPlayer seekToTime:kCMTimeZero];
+                                                              [weakSelf.avPlayer play];
+                                                          }
                                                       }];
     }
     _loopPlaybackForever = loopPlaybackForever;
@@ -435,6 +437,21 @@ static BOOL isHudOnScreen = NO;
     [self.delegate previewPlayerNeedsNowPlayingInfoCenterUpdate];
 }
 
+- (void)playFromBeginning
+{
+    [self startAutoHideTimer];
+    //start playback from beginning
+    Float64 beginning = 0.00;
+    CMTime targetTime = CMTimeMakeWithSeconds(beginning, NSEC_PER_SEC);
+    [self.avPlayer seekToTime:targetTime
+              toleranceBefore:kCMTimeZero
+               toleranceAfter:kCMTimeZero];
+    self.playbackExplicitlyPaused = NO;
+    [self.avPlayer play];
+    [self.playPauseButton setSelected:NO];
+    [self.delegate previewPlayerNeedsNowPlayingInfoCenterUpdate];
+}
+
 - (void)pause
 {
     [self startAutoHideTimer];
@@ -692,6 +709,9 @@ static void *ksAirplayState = &ksAirplayState;
 static NSTimer *autoHideTimer;
 - (void)startAutoHideTimer
 {
+    if(! self.useControlsOverlay) {
+        return;
+    }
     if(autoHideTimer)
         [self clearTimer];
     autoHideTimer = [NSTimer scheduledTimerWithTimeInterval:AUTO_HIDE_HUD_DELAY

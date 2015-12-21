@@ -21,9 +21,7 @@
 #import "AppDelegateUtils.h"
 #import "MZPlayer.h"
 
-#import "QueueSongsIntro.h"
-#import "KillingPlayerIntro.h"
-#import "EditingSongIntro.h"
+#import "IntroVideoView.h"
 
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
@@ -694,6 +692,7 @@ static NSDate *finish;
     //IMPORTANT NOTE: EAIntroView is WEIRD. Y coordinates are backwards. 0 is at bottom.
     float height = self.mainVC.view.frame.size.height;
     float width = self.mainVC.view.frame.size.width;
+    NSArray *appColors = [AppEnvironmentConstants appThemeMockColorsForUserToVisualize];
     
     EAIntroPage *page1 = [EAIntroPage page];
     UIView *customView1 = [[UIView alloc] initWithFrame:self.mainVC.view.frame];
@@ -708,25 +707,39 @@ static NSDate *finish;
     title1.backgroundColor = [UIColor clearColor];
     title1.textColor = [UIColor whiteColor];
     title1.textAlignment = NSTextAlignmentCenter;
-    //page1.desc = @"Unlimited Free Music Streaming.\n\n\n\n\n\n\n\n\n\nSwipe for introduction.";
-    //page1.descFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-    //                               size:18];
     [customView1 addSubview:title1];
     page1.customView = customView1;
-    page1.bgColor = [UIColor defaultAppColorScheme];
+    page1.bgColor = appColors[0];
     
-    //custom
+    NSBundle *mainBundle = [NSBundle mainBundle];
+    NSURL *videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Queue Songs"
+                                                                  ofType:@"mp4"]];
     EAIntroPage *page2 = [EAIntroPage page];
-    page2.bgColor = [UIColor redColor];
-    page2.customView = [[QueueSongsIntro alloc] initWithFrame:self.mainVC.view.frame];
+    page2.bgColor = appColors[1];
+    page2.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
+                                                       title:@"Queing Up Songs"
+                                                 description:@"Queue songs to make a playlist on the fly!"
+                                                    videoUrl:videoUrl];
     
+    videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Killing Player"
+                                                           ofType:@"mp4"]];
     EAIntroPage *page3 = [EAIntroPage page];
-    page3.customView = [[KillingPlayerIntro alloc] initWithFrame:self.mainVC.view.frame];
-    page3.bgColor = [UIColor purpleColor];
+    page3.bgColor = appColors[2];
+    page3.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
+                                                       title:@"Closing the Player"
+                                                 description:@"When you're finished, swipe the player off the screen."
+                                                    videoUrl:videoUrl];
     
+    
+    videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Editing A Song"
+                                                           ofType:@"mp4"]];
     EAIntroPage *page4 = [EAIntroPage page];
-    page4.customView = [[EditingSongIntro alloc] initWithFrame:self.mainVC.view.frame];
-    page4.bgColor = [UIColor yellowColor];
+    page4.bgColor = appColors[3];
+    page4.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
+                                                       title:@"Editing a Song"
+                                                 description:[NSString stringWithFormat:@"%@ makes editing songs easy.", MZAppName]
+                                                    videoUrl:videoUrl];
+    
     
     self.intro = [[EAIntroView alloc] initWithFrame:self.mainVC.view.frame
                                            andPages:@[page1,page2,page3, page4]];
@@ -736,6 +749,7 @@ static NSDate *finish;
     [self.intro showInView:self.mainVC.view animateDuration:1.5];
 }
 
+//delegates
 static BOOL introAlreadyFinished = NO;
 //intro did finish is called MANY times. prob has a bug lol.
 - (void)introDidFinish:(EAIntroView *)introView
@@ -746,6 +760,32 @@ static BOOL introAlreadyFinished = NO;
     else
         introAlreadyFinished = YES;
     [self.intro hideWithFadeOutDuration:2];
+}
+static NSUInteger lastScrollingPageIndex = -1;
+- (void)intro:(EAIntroView *)introView pageEndScrolling:(EAIntroPage *)page withIndex:(NSUInteger)pageIndex
+{
+    BOOL userNeverFullyScrolledAwayFromThisPage = (lastScrollingPageIndex == pageIndex);
+    if(userNeverFullyScrolledAwayFromThisPage) {
+        [self intro:introView pageAppeared:page withIndex:pageIndex];
+    }
+}
+- (void)intro:(EAIntroView *)introView pageStartScrolling:(EAIntroPage *)page withIndex:(NSUInteger)pageIndex
+{
+    //user is beginning to swipe away from this page. Pause playback.
+    UIView *customView = page.customView;
+    if([customView respondsToSelector:@selector(stopPlaybackAndResetToBeginning)]) {
+        [customView performSelector:@selector(stopPlaybackAndResetToBeginning)];
+    }
+    lastScrollingPageIndex = pageIndex;
+}
+- (void)intro:(EAIntroView *)introView pageAppeared:(EAIntroPage *)page withIndex:(NSUInteger)pageIndex
+{
+    //page appeared, start playing!
+    UIView *customView = page.customView;
+    if([customView respondsToSelector:@selector(startVideoLooping)]) {
+        [customView performSelector:@selector(startVideoLooping)];
+    }
+    lastScrollingPageIndex = pageIndex;
 }
 
 @end

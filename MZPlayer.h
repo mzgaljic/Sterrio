@@ -27,6 +27,7 @@
 - (void)setStallValueChangedDelegate:(id <MZPreviewPlayerStallState>)aDelegate;
 - (void)play;
 - (void)pause;
+- (void)playFromBeginning;
 - (void)destroyPlayer;
 
 - (void)reattachLayerWithPlayer;
