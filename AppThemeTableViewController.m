@@ -228,7 +228,25 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
 #pragma mark - Helpers
 - (void)initColorArrays
 {
-    tableColors = [AppEnvironmentConstants appThemeMockColorsForUserToVisualize];
+    tableColors = @[
+                    //orange
+                    Rgb2UIColor(227, 136, 91, 1),
+                    
+                    //green
+                    Rgb2UIColor(97, 131, 111, 1),
+                    
+                    //pink
+                    Rgb2UIColor(237, 138, 182, 1),
+                    
+                    //blue
+                    Rgb2UIColor(89, 130, 196, 1),
+                    
+                    //purple
+                    Rgb2UIColor(127, 121, 176, 1),
+                    
+                    //yellow
+                    Rgb2UIColor(249, 205, 90, 1)
+                    ];
     
     tableColorNames = @[
                         @"Vibrant Orange",
@@ -239,25 +257,7 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
                         @"Dandelion Yellow"
                         ];
     
-    actualColors = @[
-                     //vibrant orange
-                     [AppEnvironmentConstants defaultAppThemeBeforeUserPickedTheme],
-                     
-                     //emerald green
-                     [Rgb2UIColor(74, 153, 118, 1) darkerColor],
-                     
-                     //bright pink
-                     [Rgb2UIColor(233, 91, 152, 1) lighterColor],
-                     
-                     //blue
-                     Rgb2UIColor(57, 104, 190, 1),
-                     
-                     //purple
-                     Rgb2UIColor(111, 91, 164, 1),
-                     
-                     //yellow
-                     Rgb2UIColor(254, 200, 45, 1)
-                     ];
+    actualColors = [AppEnvironmentConstants appThemeColors];
     
     UIColor *aColor = [UIColor defaultAppColorScheme];
     for(int i = 0; i < actualColors.count; i++)

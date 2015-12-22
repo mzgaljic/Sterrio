@@ -52,6 +52,9 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 {
     [self.previewPlayer destroyPlayer];
     self.previewPlayer = nil;
+    self.intro.delegate = nil;
+    self.intro = nil;
+    self.mainVC = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -689,12 +692,91 @@ static NSDate *finish;
 #pragma mark - App Intro
 - (void)showIntroTutorial
 {
+    NSArray *pages = @[[EAIntroPage page], [EAIntroPage page], [EAIntroPage page], [EAIntroPage page]];
+    NSArray *appColors = [AppEnvironmentConstants appThemeColors];
+    NSBundle *mainBundle = [NSBundle mainBundle];
+    NSURL *videoUrl = nil;
+    NSMutableArray *pickedIndexes = [NSMutableArray arrayWithCapacity:pages.count];
+    for(int i = 0; i < pages.count; i++) {
+        EAIntroPage *page = pages[i];
+        
+        if(i == 0) {
+            //make the color match the current app theme.
+            
+            page.bgColor = [UIColor defaultAppColorScheme];
+            [pickedIndexes addObject:[NSNumber numberWithInt:(int)[appColors indexOfObject:page.bgColor]]];
+            
+        } else {
+            //pick one of the app theme colors at random. Each page has a unique one.
+            
+            NSNumber *randIndex = nil;
+            //loop until we get a new random color.
+            while(true) {
+                randIndex = [NSNumber numberWithInt:arc4random() % [pages count]];
+                if([pickedIndexes indexOfObject:randIndex] == NSNotFound) {
+                    [pickedIndexes addObject:randIndex];
+                    break;
+                }
+            }
+            UIColor *someAppColor = [appColors objectAtIndex:[randIndex intValue]];
+            page.bgColor = someAppColor;
+        }
+        
+        switch (i) {
+            case 0:
+            {
+                page.customView = [self viewForFirstPageOfIntro];
+            }
+                break;
+            case 1:
+            {
+                NSString *desc = @"Queue songs to make a playlist on the fly!";
+                videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Queue Songs"
+                                                                       ofType:@"mp4"]];
+                page.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
+                                                                  title:@"Queing Up Songs"
+                                                            description:desc
+                                                               videoUrl:videoUrl];
+            }
+                break;
+            case 2:
+            {
+                NSString *desc = @"When you're finished, swipe the player off the screen.";
+                videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Killing Player"
+                                                                       ofType:@"mp4"]];
+                page.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
+                                                                  title:@"Closing the Player"
+                                                            description:desc
+                                                               videoUrl:videoUrl];
+            }
+                break;
+            case 3:
+            {
+                NSString *desc = [NSString stringWithFormat:@"%@ makes editing songs easy.", MZAppName];
+                videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Editing A Song"
+                                                                       ofType:@"mp4"]];
+                page.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
+                                                                  title:@"Editing a Song"
+                                                            description:desc
+                                                               videoUrl:videoUrl];
+            }
+                break;
+            default:
+                break;
+        }
+    }
+    self.intro = [[EAIntroView alloc] initWithFrame:self.mainVC.view.frame
+                                           andPages:pages];
+    self.intro.hideSkipButton = YES;
+    self.intro.delegate = self;
+    [self.intro showInView:self.mainVC.view animateDuration:1.5];
+}
+
+- (UIView *)viewForFirstPageOfIntro
+{
     //IMPORTANT NOTE: EAIntroView is WEIRD. Y coordinates are backwards. 0 is at bottom.
     float height = self.mainVC.view.frame.size.height;
     float width = self.mainVC.view.frame.size.width;
-    NSArray *appColors = [AppEnvironmentConstants appThemeMockColorsForUserToVisualize];
-    
-    EAIntroPage *page1 = [EAIntroPage page];
     UIView *customView1 = [[UIView alloc] initWithFrame:self.mainVC.view.frame];
     //customView1.backgroundColor = [UIColor defaultAppColorScheme];
     UILabel *title1 = [[UILabel alloc] initWithFrame:CGRectMake(15,
@@ -708,45 +790,7 @@ static NSDate *finish;
     title1.textColor = [UIColor whiteColor];
     title1.textAlignment = NSTextAlignmentCenter;
     [customView1 addSubview:title1];
-    page1.customView = customView1;
-    page1.bgColor = appColors[0];
-    
-    NSBundle *mainBundle = [NSBundle mainBundle];
-    NSURL *videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Queue Songs"
-                                                                  ofType:@"mp4"]];
-    EAIntroPage *page2 = [EAIntroPage page];
-    page2.bgColor = appColors[1];
-    page2.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
-                                                       title:@"Queing Up Songs"
-                                                 description:@"Queue songs to make a playlist on the fly!"
-                                                    videoUrl:videoUrl];
-    
-    videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Killing Player"
-                                                           ofType:@"mp4"]];
-    EAIntroPage *page3 = [EAIntroPage page];
-    page3.bgColor = appColors[2];
-    page3.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
-                                                       title:@"Closing the Player"
-                                                 description:@"When you're finished, swipe the player off the screen."
-                                                    videoUrl:videoUrl];
-    
-    
-    videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Editing A Song"
-                                                           ofType:@"mp4"]];
-    EAIntroPage *page4 = [EAIntroPage page];
-    page4.bgColor = appColors[3];
-    page4.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
-                                                       title:@"Editing a Song"
-                                                 description:[NSString stringWithFormat:@"%@ makes editing songs easy.", MZAppName]
-                                                    videoUrl:videoUrl];
-    
-    
-    self.intro = [[EAIntroView alloc] initWithFrame:self.mainVC.view.frame
-                                           andPages:@[page1,page2,page3, page4]];
-    self.intro.bgViewContentMode = UIViewContentModeCenter;
-    self.intro.hideSkipButton = YES;
-    self.intro.delegate = self;
-    [self.intro showInView:self.mainVC.view animateDuration:1.5];
+    return customView1;
 }
 
 //delegates
