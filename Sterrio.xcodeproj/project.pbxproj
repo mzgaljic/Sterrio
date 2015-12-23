@@ -222,6 +222,7 @@
 		8755545E1C1DF6EA00259CA8 /* InAppPurchaseUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8755545D1C1DF6EA00259CA8 /* InAppPurchaseUtils.m */; };
 		876C53D21C2A136C007AFC3C /* CMPopTipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 876C53D11C2A136C007AFC3C /* CMPopTipView.m */; };
 		876C53D41C2A1383007AFC3C /* cm_pop_tim_view_license.txt in Resources */ = {isa = PBXBuildFile; fileRef = 876C53D31C2A1383007AFC3C /* cm_pop_tim_view_license.txt */; };
+		876C53D71C2A557A007AFC3C /* PushNotificationsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 876C53D61C2A557A007AFC3C /* PushNotificationsHelper.m */; };
 		8773AE2D1B509A5500C3E64E /* SpotlightHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */; };
 		87A953621B3E1E54002E9872 /* MZMusicBrainz.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9535E1B3E1E54002E9872 /* MZMusicBrainz.m */; };
 		87A953631B3E1E54002E9872 /* MZSongMetaData.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A953611B3E1E54002E9872 /* MZSongMetaData.m */; };
@@ -670,6 +671,8 @@
 		876C53D01C2A136C007AFC3C /* CMPopTipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMPopTipView.h; sourceTree = "<group>"; };
 		876C53D11C2A136C007AFC3C /* CMPopTipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMPopTipView.m; sourceTree = "<group>"; };
 		876C53D31C2A1383007AFC3C /* cm_pop_tim_view_license.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cm_pop_tim_view_license.txt; sourceTree = "<group>"; };
+		876C53D51C2A557A007AFC3C /* PushNotificationsHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PushNotificationsHelper.h; sourceTree = "<group>"; };
+		876C53D61C2A557A007AFC3C /* PushNotificationsHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushNotificationsHelper.m; sourceTree = "<group>"; };
 		8773AE2B1B509A5500C3E64E /* SpotlightHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpotlightHelper.h; sourceTree = "<group>"; };
 		8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpotlightHelper.m; sourceTree = "<group>"; };
 		87A9535D1B3E1E54002E9872 /* MZMusicBrainz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZMusicBrainz.h; sourceTree = "<group>"; };
@@ -828,6 +831,8 @@
 		873538111B0A9AAC009244E4 /* App Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				876C53D51C2A557A007AFC3C /* PushNotificationsHelper.h */,
+				876C53D61C2A557A007AFC3C /* PushNotificationsHelper.m */,
 				8736AA9C1C2613A2005FAE07 /* AppDelegateUtils.h */,
 				8736AA9D1C2613A2005FAE07 /* AppDelegateUtils.m */,
 				873538121B0A9AC1009244E4 /* AppEnvironmentConstants.h */,
@@ -2090,6 +2095,7 @@
 				873538B21B0A9C92009244E4 /* MainScreenViewController.m in Sources */,
 				87353A451B0AA2C9009244E4 /* MRNavigationBarProgressView.m in Sources */,
 				87353A311B0AA2B0009244E4 /* UIImage+MRImageEffects.m in Sources */,
+				876C53D71C2A557A007AFC3C /* PushNotificationsHelper.m in Sources */,
 				873539D41B0AA1B3009244E4 /* SDCDemoViewController.m in Sources */,
 				873538491B0A9AFC009244E4 /* UIColor+LighterAndDarker.m in Sources */,
 				873539D51B0AA1B3009244E4 /* SDCIntrinsicallySizedView.m in Sources */,

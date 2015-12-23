@@ -17,4 +17,8 @@
 - (void)startVideoLooping;
 - (void)stopPlaybackAndResetToBeginning;
 
+//just a helper for outside classes since the description label placement depends
+//on the players size (and that is dynamic)
++ (int)descriptionYValueForViewSize:(CGSize)size;
+
 @end

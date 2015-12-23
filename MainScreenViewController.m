@@ -7,6 +7,7 @@
 //
 
 #import "MainScreenViewController.h"
+#import "PushNotificationsHelper.h"
 
 NSString * const CENTER_BTN_IMG_NAME = @"plus_sign";
 short const dummyTabIndex = 2;
@@ -122,6 +123,16 @@ short const dummyTabIndex = 2;
     
     [self setTabBarItems];
     self.edgesForExtendedLayout = UIRectEdgeNone;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    if(! [AppEnvironmentConstants isFirstTimeAppLaunched]) {
+        //want to ask the 2nd time, not the 1st. User sees the intro the first time,
+        //lets not overload them with stuff to read.
+        [PushNotificationsHelper askUserIfTheyAreInterestedInPushNotif];
+    }
 }
 
 //this method fixes a bug where the tab bar would look screwed up mid-call (hard to reproduce)

@@ -27,6 +27,7 @@ static BOOL shouldDisplayWelcomeScreen = NO;
 static BOOL isFirstTimeAppLaunched = NO;
 static BOOL whatsNewMsgIsNew = NO;
 static BOOL isBadTimeToMergeEnsemble = NO;
+static BOOL userAcceptedOrDeclinedPushNotifications = NO;
 static BOOL didPreviouslyShowUserCellularWarning = NO;
 static BOOL userIsPreviewingAVideo = NO;
 static BOOL tabBarIsHidden = NO;
@@ -310,6 +311,17 @@ static NSString *const areAdsRemovedKeychainKey = @"ads removed yet?";
     }
     [data getBytes:&boolAsInt length:sizeof(boolAsInt)];
     return [[NSNumber numberWithInt:boolAsInt] boolValue];
+}
++ (BOOL)userAcceptedOrDeclinedPushNotifications
+{
+    return userAcceptedOrDeclinedPushNotifications;
+}
++ (void)userAcceptedOrDeclinedPushNotif:(BOOL)something
+{
+    [[NSUserDefaults standardUserDefaults] setBool:something
+                                            forKey:USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF];
+    userAcceptedOrDeclinedPushNotifications = something;
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 //app settings
 + (int)preferredSongCellHeight

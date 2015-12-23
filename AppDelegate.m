@@ -96,20 +96,9 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [ReachabilitySingleton sharedInstance];  //init reachability class
     [InAppPurchaseUtils sharedInstance];  //sets up transaction observers
     
-
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
     UIApplication *myApp = [UIApplication sharedApplication];
     [myApp setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
-    
-    if([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
-        [[UIApplication sharedApplication] registerForRemoteNotifications];
-        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert) categories:nil];
-        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-        
-    } else {
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge];
-    }
-    
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(startupBackgroundTask)
@@ -741,17 +730,6 @@ static NSDate *finish;
                 break;
             case 2:
             {
-                NSString *desc = @"When you're finished, swipe the player off the screen.";
-                videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Killing Player"
-                                                                       ofType:@"mp4"]];
-                page.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
-                                                                  title:@"Closing the Player"
-                                                            description:desc
-                                                               videoUrl:videoUrl];
-            }
-                break;
-            case 3:
-            {
                 NSString *desc = [NSString stringWithFormat:@"%@ makes editing songs easy.", MZAppName];
                 videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Editing A Song"
                                                                        ofType:@"mp4"]];
@@ -761,6 +739,21 @@ static NSDate *finish;
                                                                videoUrl:videoUrl];
             }
                 break;
+            case 3:
+            {
+                NSString *desc = @"When you're finished, swipe the player off the screen.";
+                videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Killing Player"
+                                                                       ofType:@"mp4"]];
+                page.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
+                                                                  title:@"Closing the Player"
+                                                            description:desc
+                                                               videoUrl:videoUrl];
+            }
+                break;
+            case 4:
+            {
+                
+            }
             default:
                 break;
         }
@@ -775,21 +768,34 @@ static NSDate *finish;
 - (UIView *)viewForFirstPageOfIntro
 {
     //IMPORTANT NOTE: EAIntroView is WEIRD. Y coordinates are backwards. 0 is at bottom.
-    float height = self.mainVC.view.frame.size.height;
     float width = self.mainVC.view.frame.size.width;
+    float height = self.mainVC.view.frame.size.height;
     UIView *customView1 = [[UIView alloc] initWithFrame:self.mainVC.view.frame];
-    //customView1.backgroundColor = [UIColor defaultAppColorScheme];
-    UILabel *title1 = [[UILabel alloc] initWithFrame:CGRectMake(15,
+    
+    UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(15,
                                                                 height/3,
                                                                 width - 15,
                                                                 70)];
-    title1.text = [NSString stringWithFormat:@"Welcome to %@.", MZAppName];
-    title1.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+    title.text = [NSString stringWithFormat:@"Welcome to %@.", MZAppName];
+    title.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                   size:30];
-    title1.backgroundColor = [UIColor clearColor];
-    title1.textColor = [UIColor whiteColor];
-    title1.textAlignment = NSTextAlignmentCenter;
-    [customView1 addSubview:title1];
+    title.textColor = [UIColor whiteColor];
+    title.numberOfLines = 0;
+    title.textAlignment = NSTextAlignmentCenter;
+    int descLabelY = [IntroVideoView descriptionYValueForViewSize:CGSizeMake(width, height)];
+    UILabel *description = [[UILabel alloc] initWithFrame:CGRectMake(15,
+                                                                     descLabelY,
+                                                                     width - 15,
+                                                                     height / 4)];
+    description.text = @"Swipe for introduction.";
+    description.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                       size:20];
+    description.textColor = [UIColor whiteColor];
+    description.numberOfLines = 0;
+    description.textAlignment = NSTextAlignmentCenter;
+    
+    [customView1 addSubview:title];
+    [customView1 addSubview:description];
     return customView1;
 }
 

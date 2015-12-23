@@ -18,6 +18,7 @@
 #define ICLOUD_SYNC @"icloudSettingsSync"
 #define ONLY_AIRPLAY_AUDIO_VALUE_KEY @"shouldOnlyAirplayAudio"
 #define USER_HAS_SEEN_CELLULAR_WARNING @"alreadyShowedUserCellDataUsageWarning"
+#define USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF @"userHasAcceptedOrDeclinedPushNotif"
 #define LAST_SUCCESSFUL_ICLOUD_SYNC_KEY @"last date icloud synced"
 #define ARE_ADS_REMOVED_KEYCHAIN_ID @"Have ads been removed?"
 
@@ -103,6 +104,8 @@ typedef enum{
 //---Stuff in NSUserDefaults----
 + (void)adsHaveBeenRemoved:(BOOL)adsRemoved;
 + (BOOL)areAdsRemoved;
++ (BOOL)userAcceptedOrDeclinedPushNotifications;
++ (void)userAcceptedOrDeclinedPushNotif:(BOOL)something;
 //----app settings---
 + (int)preferredSongCellHeight;
 + (void)setPreferredSongCellHeight:(int)cellHeight;

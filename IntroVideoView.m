@@ -35,7 +35,7 @@ static int const paddingFromScreenEdge = 25;
 {
     int width = self.frame.size.width;
     int labelHeight = 45;
-    int labelY = self.player.frame.origin.y - (labelHeight * 2.5);
+    int labelY = (self.player.frame.origin.y / 2) - (labelHeight / 2);
     UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(paddingFromScreenEdge,
                                                                labelY,
                                                                width - (paddingFromScreenEdge * 2),
@@ -73,9 +73,6 @@ static int const paddingFromScreenEdge = 25;
     int height = self.frame.size.height;
     int playerWidth = width - paddingFromScreenEdge;
     int playerHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:playerWidth];
-    
-
-    
     _player = [[MZPlayer alloc] initWithFrame:CGRectMake((width - playerWidth)/2,
                                                          (height/2) - (playerHeight / 1.5),
                                                          playerWidth,
@@ -101,6 +98,17 @@ static int const paddingFromScreenEdge = 25;
     [self.player.avPlayer seekToTime:targetTime
                      toleranceBefore:kCMTimeZero
                       toleranceAfter:kCMTimeZero];
+}
+
++ (int)descriptionYValueForViewSize:(CGSize)size
+{
+    int width = size.width;
+    int height = size.height;
+    int playerWidth = width - paddingFromScreenEdge;
+    int playerHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:playerWidth];
+    int playerY = (height/2) - (playerHeight / 1.5);
+    int labelY = playerY + playerHeight + 20;
+    return labelY;
 }
 
 - (void)dealloc

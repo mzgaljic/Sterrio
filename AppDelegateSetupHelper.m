@@ -31,6 +31,7 @@
         BOOL icloudSync = NO;
         BOOL shouldOnlyAirplayAudio = YES;
         BOOL userHasSeenCellDataWarning = NO;
+        BOOL userAcceptedOrDeclinedPushNotif = NO;
         
         [AppEnvironmentConstants setPreferredSongCellHeight:prefSongCellHeight];
         [AppEnvironmentConstants setPreferredWifiStreamSetting:prefWifiStreamQuality];
@@ -52,6 +53,8 @@
                                                    forKey:ICLOUD_SYNC];
         [[NSUserDefaults standardUserDefaults] setBool:userHasSeenCellDataWarning
                                                 forKey:USER_HAS_SEEN_CELLULAR_WARNING];
+        [[NSUserDefaults standardUserDefaults] setBool:userAcceptedOrDeclinedPushNotif
+                                                forKey:USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF];
         [[NSUserDefaults standardUserDefaults] setBool:shouldOnlyAirplayAudio
                                                 forKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY];
         
@@ -81,6 +84,8 @@
                         [[NSUserDefaults standardUserDefaults] boolForKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY]];
         [AppEnvironmentConstants setUserHasSeenCellularDataUsageWarning:
                         [[NSUserDefaults standardUserDefaults] boolForKey:USER_HAS_SEEN_CELLULAR_WARNING]];
+        [AppEnvironmentConstants userAcceptedOrDeclinedPushNotif:
+                        [[NSUserDefaults standardUserDefaults] boolForKey:USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF]];
         [AppEnvironmentConstants setLastSuccessfulSyncDate:
                         [[NSUserDefaults standardUserDefaults] objectForKey:LAST_SUCCESSFUL_ICLOUD_SYNC_KEY]];
         
