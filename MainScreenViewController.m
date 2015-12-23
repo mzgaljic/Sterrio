@@ -663,7 +663,7 @@ short const dummyTabIndex = 2;
 {
     [self performSelector:@selector(showAddSongsGettingStartedTip)
                withObject:nil
-               afterDelay:0.5];
+               afterDelay:0.2];
 }
 
 - (void)showAddSongsGettingStartedTip
@@ -675,6 +675,7 @@ short const dummyTabIndex = 2;
     tipView.has3DStyle = NO;
     tipView.hasGradientBackground = NO;
     tipView.borderColor = [UIColor clearColor];
+    tipView.textFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:16];
     tipView.dismissAlongWithUserInteraction = YES;
     [tipView presentPointingAtView:self.centerButton inView:self.view animated:YES];
 }

@@ -101,17 +101,17 @@ static BOOL isHudOnScreen = NO;
 - (instancetype)initWithFrame:(CGRect)frame videoURL:(NSURL *)videoURL useControlsOverlay:(BOOL)useOverlay
 {
     if (self = [super initWithFrame:frame]) {
-        self.isInStall = YES;
+        _isInStall = YES;
         AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:videoURL];
-        self.avPlayer = [AVPlayer playerWithPlayerItem:playerItem];
+        _avPlayer = [AVPlayer playerWithPlayerItem:playerItem];
         [self initObservers];
         playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.avPlayer];
         playerLayer.backgroundColor = [[UIColor clearColor] CGColor];
         [playerLayer setFrame:self.bounds];
         [self.layer addSublayer:playerLayer];
         [self.layer setMasksToBounds:YES];
-        self.videoURL = videoURL;
-        
+        _videoURL = videoURL;
+        _useControlsOverlay = useOverlay;
         if(useOverlay) {
             UITapGestureRecognizer *singleFingerTap =
             [[UITapGestureRecognizer alloc] initWithTarget:self
@@ -119,7 +119,7 @@ static BOOL isHudOnScreen = NO;
             [self addGestureRecognizer:singleFingerTap];
         }
         
-        self.avPlayer.allowsExternalPlayback = ![AppEnvironmentConstants shouldOnlyAirplayAudio];
+        _avPlayer.allowsExternalPlayback = ![AppEnvironmentConstants shouldOnlyAirplayAudio];
         [self setupTimeObserver];
     }
     return self;
