@@ -220,6 +220,8 @@
 		87414BC81B3FB85300FB8252 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87414BC71B3FB85300FB8252 /* AppDelegate.m */; };
 		87494D3D1C27476A00AA9637 /* IntroVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87494D3C1C27476A00AA9637 /* IntroVideoView.m */; };
 		8755545E1C1DF6EA00259CA8 /* InAppPurchaseUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8755545D1C1DF6EA00259CA8 /* InAppPurchaseUtils.m */; };
+		876C53D21C2A136C007AFC3C /* CMPopTipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 876C53D11C2A136C007AFC3C /* CMPopTipView.m */; };
+		876C53D41C2A1383007AFC3C /* cm_pop_tim_view_license.txt in Resources */ = {isa = PBXBuildFile; fileRef = 876C53D31C2A1383007AFC3C /* cm_pop_tim_view_license.txt */; };
 		8773AE2D1B509A5500C3E64E /* SpotlightHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */; };
 		87A953621B3E1E54002E9872 /* MZMusicBrainz.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9535E1B3E1E54002E9872 /* MZMusicBrainz.m */; };
 		87A953631B3E1E54002E9872 /* MZSongMetaData.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A953611B3E1E54002E9872 /* MZSongMetaData.m */; };
@@ -229,7 +231,6 @@
 		87DAA6C51B8AA9FF008D8684 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 87DAA6C21B8AA9FF008D8684 /* Model.xcdatamodeld */; };
 		87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */; };
 		87E152671C0041E100C82737 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87E152661C0041E100C82737 /* StoreKit.framework */; };
-		87F34FB71C25086E00BAD73B /* LCTipsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F34FB61C25086E00BAD73B /* LCTipsView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		87F34FBA1C251D0200BAD73B /* GSTouchesShowingWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F34FB91C251D0200BAD73B /* GSTouchesShowingWindow.m */; };
 		CC4EB50DFF2CD80A06134B69 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B206C6594633BB85400EBDC /* libPods.a */; };
 /* End PBXBuildFile section */
@@ -665,6 +666,10 @@
 		87494D3C1C27476A00AA9637 /* IntroVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntroVideoView.m; sourceTree = "<group>"; };
 		8755545C1C1DF6EA00259CA8 /* InAppPurchaseUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppPurchaseUtils.h; sourceTree = "<group>"; };
 		8755545D1C1DF6EA00259CA8 /* InAppPurchaseUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppPurchaseUtils.m; sourceTree = "<group>"; };
+		876C53CC1C2A12A1007AFC3C /* Sterrio-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Sterrio-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
+		876C53D01C2A136C007AFC3C /* CMPopTipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMPopTipView.h; sourceTree = "<group>"; };
+		876C53D11C2A136C007AFC3C /* CMPopTipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMPopTipView.m; sourceTree = "<group>"; };
+		876C53D31C2A1383007AFC3C /* cm_pop_tim_view_license.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cm_pop_tim_view_license.txt; sourceTree = "<group>"; };
 		8773AE2B1B509A5500C3E64E /* SpotlightHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpotlightHelper.h; sourceTree = "<group>"; };
 		8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpotlightHelper.m; sourceTree = "<group>"; };
 		87A9535D1B3E1E54002E9872 /* MZMusicBrainz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZMusicBrainz.h; sourceTree = "<group>"; };
@@ -681,8 +686,6 @@
 		87DAA6C41B8AA9FF008D8684 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailComposerManager.m; sourceTree = "<group>"; };
 		87E152661C0041E100C82737 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		87F34FB51C25086E00BAD73B /* LCTipsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LCTipsView.h; sourceTree = "<group>"; };
-		87F34FB61C25086E00BAD73B /* LCTipsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LCTipsView.m; sourceTree = "<group>"; };
 		87F34FB81C251D0200BAD73B /* GSTouchesShowingWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSTouchesShowingWindow.h; sourceTree = "<group>"; };
 		87F34FB91C251D0200BAD73B /* GSTouchesShowingWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSTouchesShowingWindow.m; sourceTree = "<group>"; };
 		8B206C6594633BB85400EBDC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -770,6 +773,7 @@
 		873537C91B0A9981009244E4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				876C53CC1C2A12A1007AFC3C /* Sterrio-Bridging-Header.h */,
 				873537CA1B0A9981009244E4 /* Info.plist */,
 				873537CB1B0A9981009244E4 /* main.m */,
 				87353A7B1B0AA96F009244E4 /* PrefixHeader.pch */,
@@ -1368,8 +1372,8 @@
 		8735397B1B0AA14E009244E4 /* Imported Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				876C53CF1C2A136C007AFC3C /* CMPopTipView */,
 				8736AA8F1C25F3BF005FAE07 /* EAIntroView */,
-				87F34FB41C25086E00BAD73B /* LCTipsView */,
 				87A953651B3E242A002E9872 /* SMWebRequest */,
 				87353A771B0AA7C5009244E4 /* JamAccurateSlider */,
 				87353A611B0AA32A009244E4 /* AutoScrollLabel */,
@@ -1707,6 +1711,16 @@
 			path = EARestrictedScrollView;
 			sourceTree = "<group>";
 		};
+		876C53CF1C2A136C007AFC3C /* CMPopTipView */ = {
+			isa = PBXGroup;
+			children = (
+				876C53D31C2A1383007AFC3C /* cm_pop_tim_view_license.txt */,
+				876C53D01C2A136C007AFC3C /* CMPopTipView.h */,
+				876C53D11C2A136C007AFC3C /* CMPopTipView.m */,
+			);
+			path = CMPopTipView;
+			sourceTree = "<group>";
+		};
 		87A953641B3E1E5F002E9872 /* MusicBrainz */ = {
 			isa = PBXGroup;
 			children = (
@@ -1737,15 +1751,6 @@
 				87A953681B3E242A002E9872 /* SMURLImageView.m */,
 			);
 			path = Extras;
-			sourceTree = "<group>";
-		};
-		87F34FB41C25086E00BAD73B /* LCTipsView */ = {
-			isa = PBXGroup;
-			children = (
-				87F34FB51C25086E00BAD73B /* LCTipsView.h */,
-				87F34FB61C25086E00BAD73B /* LCTipsView.m */,
-			);
-			path = LCTipsView;
 			sourceTree = "<group>";
 		};
 		95A486A0294577F099EF7326 /* Frameworks */ = {
@@ -1816,6 +1821,7 @@
 		873537BE1B0A9981009244E4 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Mark Zgaljic Apps";
 				TargetAttributes = {
@@ -1864,6 +1870,7 @@
 				8736AA9B1C25F3BF005FAE07 /* README_ea_intro_view.txt in Resources */,
 				873539E71B0AA1E2009244E4 /* LICENSE progressHUD.txt in Resources */,
 				873539E11B0AA1CB009244E4 /* LICENSE color cube.txt in Resources */,
+				876C53D41C2A1383007AFC3C /* cm_pop_tim_view_license.txt in Resources */,
 				873538041B0A9A5C009244E4 /* LICENCE-FAQ_ubuntu.txt in Resources */,
 				873537F71B0A9A38009244E4 /* Ubuntu.ttf in Resources */,
 				87A9536D1B3E242A002E9872 /* LICENSE_webRequest.txt in Resources */,
@@ -2039,6 +2046,7 @@
 				873538DA1B0A9D0B009244E4 /* MyAVPlayer.m in Sources */,
 				873539871B0AA178009244E4 /* UIColor+Hex.m in Sources */,
 				87353A541B0AA2F9009244E4 /* MRProgressOverlayView+AFNetworking.m in Sources */,
+				876C53D21C2A136C007AFC3C /* CMPopTipView.m in Sources */,
 				8735381A1B0A9AC7009244E4 /* PreloadedCoreDataModelUtility.m in Sources */,
 				87353A0D1B0AA264009244E4 /* IBActionSheet.m in Sources */,
 				873539311B0A9F94009244E4 /* CoreDataCustomTableViewController.m in Sources */,
@@ -2074,7 +2082,6 @@
 				87F34FBA1C251D0200BAD73B /* GSTouchesShowingWindow.m in Sources */,
 				873539C51B0AA1B3009244E4 /* SDCAlertController.m in Sources */,
 				87353A8E1B0AAA36009244E4 /* Playlist+Utilities.m in Sources */,
-				87F34FB71C25086E00BAD73B /* LCTipsView.m in Sources */,
 				87353A5E1B0AA316009244E4 /* MRMessageInterceptor.m in Sources */,
 				873538431B0A9AF4009244E4 /* UIImage+ColoringExistingImage.m in Sources */,
 				87353A261B0AA283009244E4 /* ActionSheetLocalePicker.m in Sources */,
@@ -2262,6 +2269,7 @@
 			baseConfigurationReference = 92B6CB546F4E7E88A9974B8F /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Sterrio/Sterrio.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -2281,6 +2289,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mzgaljic.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "Sterrio-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -2289,6 +2299,7 @@
 			baseConfigurationReference = C79109650D7488FFD1AB95FF /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Sterrio/Sterrio.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -2308,6 +2319,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mzgaljic.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "Sterrio-Bridging-Header.h";
 			};
 			name = Release;
 		};

@@ -8,7 +8,6 @@
 
 #import "MasterSongsTableViewController.h"
 #import "AllSongsDataSource.h"
-#import "LCTipsView.h"
 
 @interface MasterSongsTableViewController ()
 {

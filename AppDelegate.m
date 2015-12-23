@@ -156,7 +156,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
                                            tabBarUnselectedImageNames:unselectedImgNames
                                              tabBarselectedImageNames:selectedImgNames];
     [self.window setRootViewController:self.mainVC];
-    if(true || [AppDelegateSetupHelper appLaunchedFirstTime]) {
+    if([AppDelegateSetupHelper appLaunchedFirstTime]) {
         self.mainVC.introOnScreen = YES;
         [self performSelector:@selector(showIntroTutorial) withObject:nil afterDelay:0.7 ];
     }
@@ -804,6 +804,7 @@ static BOOL introAlreadyFinished = NO;
     else
         introAlreadyFinished = YES;
     [self.intro hideWithFadeOutDuration:2];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZAppIntroComplete object:nil];
 }
 static NSUInteger lastScrollingPageIndex = -1;
 - (void)intro:(EAIntroView *)introView pageEndScrolling:(EAIntroPage *)page withIndex:(NSUInteger)pageIndex

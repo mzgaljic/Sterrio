@@ -85,6 +85,9 @@ short const dummyTabIndex = 2;
                                              selector:@selector(appThemePossiblyChanged)
                                                  name:@"app theme color has possibly changed"
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(userDoneWithIntro)
+                                                 name:MZAppIntroComplete object:nil];
 }
 
 - (UIStatusBarStyle) preferredStatusBarStyle
@@ -656,6 +659,26 @@ short const dummyTabIndex = 2;
     }
 }
 
+- (void)userDoneWithIntro
+{
+    [self performSelector:@selector(showAddSongsGettingStartedTip)
+               withObject:nil
+               afterDelay:0.5];
+}
+
+- (void)showAddSongsGettingStartedTip
+{
+    CMPopTipView *tipView = [[CMPopTipView alloc] initWithMessage:@"Tap to get started."];
+    tipView.delegate = self;
+    tipView.backgroundColor = [UIColor defaultAppColorScheme];
+    tipView.textColor = [UIColor whiteColor];
+    tipView.has3DStyle = NO;
+    tipView.hasGradientBackground = NO;
+    tipView.borderColor = [UIColor clearColor];
+    tipView.dismissAlongWithUserInteraction = YES;
+    [tipView presentPointingAtView:self.centerButton inView:self.view animated:YES];
+}
+
 #pragma mark - GADBanner delegate
 - (void)adViewDidReceiveAd:(GADBannerView *)bannerView
 {
@@ -663,5 +686,8 @@ short const dummyTabIndex = 2;
         self.adBanner.alpha = 1;
     }];
 }
+
+#pragma mark - CMPopTipView delegate
+- (void)popTipViewWasDismissedByUser:(CMPopTipView *)popTipView {}
 
 @end

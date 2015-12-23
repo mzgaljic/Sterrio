@@ -34,6 +34,8 @@ NSString * const MZAVPlayerStallStateChanged = @"AVPlayer stalls changed";
 
 NSString * const MZInitAudioSession = @"Init the audio session if it isnt already setup";
 
+NSString * const MZAppIntroComplete = @"Intro on initial app launch has been completed";
+
 NSString * const MZKeyNumLikes = @"numLikes";
 NSString * const MZKeyNumDislikes = @"numDislikes";
 NSString * const MZKeyVideoDuration = @"videoDuration";

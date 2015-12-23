@@ -33,6 +33,8 @@ extern NSString * const MZAVPlayerStallStateChanged;
 
 extern NSString * const MZInitAudioSession;
 
+extern NSString * const MZAppIntroComplete;
+
 extern NSString * const MZKeyNumLikes;
 extern NSString * const MZKeyNumDislikes;
 extern NSString * const MZKeyVideoDuration;
