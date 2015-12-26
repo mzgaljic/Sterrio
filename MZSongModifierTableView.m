@@ -181,14 +181,19 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                                           reuseIdentifier:cellIdentifier];
         if(indexPath.row == 0){  //song name
             cell.textLabel.text = @"Song Name";
+            if(canShowAddtoLibButton) {
+                cell.detailTextLabel.textColor = [UIColor groupTableViewBackgroundColor];
+            }
+            
             if(_songIAmEditing.songName){
                 NSString *detailLabelValue = nil;
                 detailLabelValue = _songIAmEditing.songName;
                 cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:detailLabelValue];
             }
             else{
-                cell.detailTextLabel.text = @"  ";
+                cell.detailTextLabel.text = @"name needed";
             }
+            cell.detailTextLabel.textColor = [UIColor defaultAppColorScheme];
             cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[UIColor defaultAppColorScheme] lighterColor]];
             
         } else if(indexPath.row == 1){  //artist
