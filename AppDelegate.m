@@ -76,7 +76,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         self.window.frame = [[UIScreen mainScreen] bounds];
     }
     [self.window makeKeyAndVisible];
-    [AppDelegateSetupHelper setGlobalFontsAndColorsForAppGUIComponents];
 
     [AppDelegateSetupHelper setupDiskAndMemoryWebCache];
     [AppDelegateSetupHelper loadUsersSettingsFromNSUserDefaults];
@@ -86,6 +85,9 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         //do stuff that you'd want to see the first time you launch!
         [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
     }
+    
+    //must be after the previous if statement, otherwise not all colors are applied correctly.
+    [AppDelegateSetupHelper setGlobalFontsAndColorsForAppGUIComponents];
     
     //create all contexts up front to avoid any funny business later (thread issues, etc.)
     [CoreDataManager context];

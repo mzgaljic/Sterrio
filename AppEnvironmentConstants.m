@@ -342,7 +342,7 @@ static NSString *const areAdsRemovedKeychainKey = @"ads removed yet?";
 }
 + (int)defaultSongCellHeight
 {
-    return 65;
+    return 50;
 }
 
 + (short)preferredWifiStreamSetting
