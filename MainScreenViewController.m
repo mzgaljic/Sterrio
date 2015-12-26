@@ -107,6 +107,12 @@ short const dummyTabIndex = 2;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    if(! [AppEnvironmentConstants areAdsRemoved] && self.adBanner) {
+        //get new ad.
+        [self.adBanner loadRequest:[GADRequest request]];
+    }
+    
     if(numTimesViewHasAppeared != 0)
         [self replaceNavControllerOnScreenWithNavController:self.currentNavController];
     else{

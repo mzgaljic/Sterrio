@@ -8,6 +8,7 @@
 
 #import "SongPlayerViewController.h"
 #import "PlayableItem.h"
+#import "SDCAlertController.h"
 typedef enum{
     DurationLabelStateNotSet,
     DurationLabelStateMinutes,
@@ -1411,6 +1412,17 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
 
 - (void)shuffleModeButtonTapped
 {
+    NSString *msg = @"Sorry, this feature is coming soon.";
+    SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:@"Suffle"
+                                                                    message:msg
+                                                             preferredStyle:SDCAlertControllerStyleAlert];
+    [alert addAction:[SDCAlertAction actionWithTitle:@"Okay"
+                                               style:SDCAlertActionStyleRecommended
+                                             handler:nil]];
+    [alert presentWithCompletion:nil];
+    return;
+    
+#warning eventually add shuffle capability.
     switch ([AppEnvironmentConstants shuffleState])
     {
         case SHUFFLE_STATE_Disabled:
