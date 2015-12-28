@@ -38,6 +38,9 @@
     [self deleteSubstring:@"performed by" onTarget:&title];
     
     [self deleteSubstring:@"[audio]" onTarget:&title];
+    [self deleteSubstring:@"(audio)" onTarget:&title];
+    [self deleteSubstring:@"audio only" onTarget:&title];
+    [self deleteSubstring:@"official audio" onTarget:&title];
     [self deleteSubstring:@"audio and video" onTarget:&title];
     [self deleteSubstring:@"audio & video" onTarget:&title];
     [self deleteSubstring:@"download link" onTarget:&title];
@@ -46,8 +49,13 @@
     [self deleteSubstring:@"karaoke version" onTarget:&title];
     [self deleteSubstring:@"live performance" onTarget:&title];
     [self deleteSubstring:@"[live]" onTarget:&title];
+    [self deleteSubstring:@"[explicit]" onTarget:&title];
+    [self deleteSubstring:@"[explicit version]" onTarget:&title];
+    [self deleteSubstring:@"[soundtrack]" onTarget:&title];
 
     [self removeVeryNicheKeywordsOnTarget:&title];
+    [self removeEverythingFromFtToEndOnTarget:&title];
+    
     [self removeEmptyParensBracesOrBracketsOnTarget:&title];
     return title;
 }
@@ -143,6 +151,18 @@
                                 range:NSMakeRange(0, [*aString length])
                          withTemplate:@""];
     }
+}
+
+//looks for "ft." and removes everything starting from there to the end of the string.
+- (void)removeEverythingFromFtToEndOnTarget:(NSMutableString **)aString
+{
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"ft\\..*|feat\\..*"
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:nil];
+    [regex replaceMatchesInString:*aString
+                          options:0
+                            range:NSMakeRange(0, [*aString length])
+                     withTemplate:@""];
 }
 
 - (void)removeSongDiscInfoOnTarget:(NSMutableString **)aString
