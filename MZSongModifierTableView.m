@@ -18,6 +18,7 @@
     BOOL userReplacedDefaultYoutubeArt;
     UIActivityIndicatorView *spinner;
     IBActionSheet *popup;
+    UIColor *defaultDetailTextLabelColor;
 }
 @property (nonatomic, strong) UIImage *currentAlbumArt;
 @property (nonatomic, strong) UIImage *currentSmallAlbumArt;
@@ -76,6 +77,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     self.songIAmEditing = nil;
     self.theDelegate = nil;
     popup = nil;
+    defaultDetailTextLabelColor = nil;
 }
 
 - (void)setCurrentAlbumArt:(UIImage *)newArt
@@ -176,24 +178,28 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     if(indexPath.section == 0){
         static NSString *cellIdentifier = @"detail label cell";
         cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-        if(cell == nil)
+        if(cell == nil){
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
                                           reuseIdentifier:cellIdentifier];
+        }
+        if(defaultDetailTextLabelColor == nil) {
+            defaultDetailTextLabelColor = cell.detailTextLabel.textColor;
+        }
+        
         if(indexPath.row == 0){  //song name
             cell.textLabel.text = @"Song Name";
-            if(canShowAddtoLibButton) {
-                cell.detailTextLabel.textColor = [UIColor groupTableViewBackgroundColor];
-            }
             
             if(_songIAmEditing.songName){
                 NSString *detailLabelValue = nil;
                 detailLabelValue = _songIAmEditing.songName;
                 cell.detailTextLabel.attributedText = [self makeAttrStringGrayUsingString:detailLabelValue];
+                cell.detailTextLabel.textColor = defaultDetailTextLabelColor;
             }
             else{
                 cell.detailTextLabel.text = @"name needed";
+                cell.detailTextLabel.textColor = [UIColor defaultAppColorScheme];
             }
-            cell.detailTextLabel.textColor = [UIColor defaultAppColorScheme];
+            
             cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[UIColor defaultAppColorScheme] lighterColor]];
             
         } else if(indexPath.row == 1){  //artist
