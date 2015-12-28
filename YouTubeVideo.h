@@ -16,4 +16,10 @@
 @property (nonatomic, strong) NSString *channelTitle;
 ///Video duration in seconds.
 @property (nonatomic, assign) NSUInteger duration;
+
+/**
+ *Removes as much garbage from the video title as possible. (ie: "[HQ]", "Lyrics", etc.)
+ */
+- (NSString *)sanitizedTitle;
+
 @end
