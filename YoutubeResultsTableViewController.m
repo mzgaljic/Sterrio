@@ -757,7 +757,8 @@ static BOOL userClearedTextField = NO;
             [self.navigationController pushViewController:[[YouTubeSongAdderViewController alloc] initWithYouTubeVideo:ytVideo thumbnail:img]
                                                  animated:YES];
             
-            _discogsSearchServ = [[DiscogsSearchService alloc] initAndQueryWithTitle:ytVideo.videoName];
+            NSString *sanitizedTitle = [ytVideo sanitizedTitle];
+            _discogsSearchServ = [[DiscogsSearchService alloc] initAndQueryWithTitle:sanitizedTitle];
         }
     }
     else{  //auto suggestions in table

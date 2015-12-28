@@ -22,6 +22,8 @@
     [self deleteSubstring:@"official lyric video" onTarget:&title];
     [self deleteSubstring:@"official music video" onTarget:&title];
     [self deleteSubstring:@"official video" onTarget:&title];
+    [self deleteSubstring:@"lyric video" onTarget:&title];
+    [self deleteSubstring:@"music video" onTarget:&title];
     [self deleteSubstring:@"full song" onTarget:&title];
     [self deleteSubstring:@"full album" onTarget:&title];
     [self deleteSubstring:@"entire song" onTarget:&title];
@@ -45,6 +47,7 @@
     [self deleteSubstring:@"live performance" onTarget:&title];
     [self deleteSubstring:@"[live]" onTarget:&title];
 
+    [self removeVeryNicheKeywordsOnTarget:&title];
     [self removeEmptyParensBracesOrBracketsOnTarget:&title];
     return title;
 }
@@ -87,12 +90,22 @@
     [self deleteSubstring:@"high quality video" onTarget:aString];
     [self deleteSubstring:@"cd" onTarget:aString];
     [self deleteSubstring:@"recording" onTarget:aString];
+    [self deleteSubstring:@"drum cover" onTarget:aString];
+    [self deleteSubstring:@"guitar cover" onTarget:aString];
+    [self deleteSubstring:@"vocal cover" onTarget:aString];
     [self deleteSubstring:@"flac version" onTarget:aString];
     [self deleteSubstring:@"cd version" onTarget:aString];
     [self deleteSubstring:@"mp3 version" onTarget:aString];
     [self deleteSubstring:@"HD" onTarget:aString];
+    [self deleteSubstring:@"*HD*" onTarget:aString];
     [self deleteSubstring:@".mp4" onTarget:aString];
     [self deleteSubstring:@".mp3" onTarget:aString];
+}
+
+- (void)removeVeryNicheKeywordsOnTarget:(NSMutableString **)aString
+{
+    //justin biebers YT videos (latest album) has this in title.
+    [self deleteSubstring:@"purpose : the movement" onTarget:aString];
 }
 
 #pragma mark - Utility methods
@@ -107,9 +120,9 @@
 
 - (void)removeEmptyParensBracesOrBracketsOnTarget:(NSMutableString **)aString
 {
-    NSString *parensPattern = @"\(\\s*-*\\s*\\/*\\s*\\*\\s*\\|*\\s*\\)";
-    NSString *bracketPattern = @"\[\\s*-*\\s*\\/*\\s*\\*\\s*\\|*\\s*\\]";
-    NSString *bracesPattern = @"\{\\s*-*\\s*\\/*\\s*\\*\\s*\\|*\\s*\\}";
+    NSString *parensPattern = @"\\\(\\s*-*\\s*\\/*\\s*\\\\*\\s*\\|*\\s*\\)";
+    NSString *bracketPattern = @"\\\[\\s*-*\\s*\\/*\\s*\\\\*\\s*\\|*\\s*\\]";
+    NSString *bracesPattern = @"\\\{\\s*-*\\s*\\/*\\s*\\\\*\\s*\\|*\\s*\\}";
     NSArray *regexes = @[
                          //match on (  ) or (  -  ) or (  \  ) or (  /  ) or ( | ) w/ 0+ spaces
                          [NSRegularExpression regularExpressionWithPattern:parensPattern
