@@ -187,7 +187,7 @@ static MRProgressOverlayView *hud;
         
         if(value == 1) {
             //at 100%
-            NSUInteger minDesiredDuration = 2.3;
+            NSUInteger minDesiredDuration = 2.4;
             NSTimeInterval time = [EnsembleDelegate timeOnExecutionTimer];
             
             //ensure the hud doesn't dissapear instantly, which would look really bad.

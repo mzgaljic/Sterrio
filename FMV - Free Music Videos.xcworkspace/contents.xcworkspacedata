@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/mzgaljic/Library/Mobile Documents/com~apple~CloudDocs/Developer/Xcode/Sterrio/FMV - Free Music Videos.xcodeproj">
+      location = "group:FMV - Free Music Videos.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">

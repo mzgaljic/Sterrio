@@ -43,7 +43,6 @@ pod "AFNetworking" , '~> 2.5.4'
 pod 'Google-Mobile-Ads-SDK'
 
 #keychain stuff
-platform :ios, '7.0'
 pod 'Valet'
 
 #Fabrio.io stuff (crashlytics & answers)

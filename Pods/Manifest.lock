@@ -38,7 +38,7 @@ PODS:
   - SDWebImage/Core (3.7.3)
   - TBXML (1.5)
   - Valet (2.0.6)
-  - XCDYouTubeKit (2.4.2)
+  - XCDYouTubeKit (2.4.3)
 
 DEPENDENCIES:
   - AFNetworking (~> 2.5.4)
@@ -72,6 +72,6 @@ SPEC CHECKSUMS:
   SDWebImage: 1d2b1a1efda1ade1b00b6f8498865f8ddedc8a84
   TBXML: 9f9dadb239f2f2af1dadb87fe43a0ce6e479379a
   Valet: 435ce71d7514ed407764a44b77591f7b0e43e122
-  XCDYouTubeKit: fa2eaa600d062fd812ee69fd5f905e3b066dce07
+  XCDYouTubeKit: a4a1a60faa7bc97744a1184501e82ef10ca15897
 
 COCOAPODS: 0.39.0

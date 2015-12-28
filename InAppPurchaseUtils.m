@@ -17,7 +17,7 @@
 @property (nonatomic, strong) SKProduct *product;  //caching product for logging purposes (Fabric.io)
 @end
 @implementation InAppPurchaseUtils
-#define kRemoveAdsProductIdentifier @"com.mzgaljic.removeads"
+#define kRemoveAdsProductIdentifier @"com.mzgaljic.fmv.removeads"
 
 + (instancetype)sharedInstance
 {

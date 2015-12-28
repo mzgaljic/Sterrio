@@ -332,7 +332,7 @@ const int time_out_interval_seconds = 10;
     NSDictionary *details;
     if(durationInISO8601 != nil)
     {
-        NSUInteger duration = [self durationFromIOS8601FormattedString:durationInISO8601];
+        NSUInteger duration = [self durationFromISO8601FormattedString:durationInISO8601];
         NSNumber *durationNumObj = [NSNumber numberWithInteger:duration];
         details = @{
                     MZKeyVideoDuration    :   durationNumObj
@@ -373,7 +373,7 @@ const int time_out_interval_seconds = 10;
 }
 
 //Accepts a string (duration) from the youtube api in ISO 8601 format duration
-- (NSUInteger)durationFromIOS8601FormattedString:(NSString *)string
+- (NSUInteger)durationFromISO8601FormattedString:(NSString *)string
 {
     const char *stringToParse = [string UTF8String];
     int days = 0, hours = 0, minutes = 0, seconds = 0;

@@ -76,7 +76,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         self.window.frame = [[UIScreen mainScreen] bounds];
     }
     [self.window makeKeyAndVisible];
-
+    
     [AppDelegateSetupHelper setupDiskAndMemoryWebCache];
     [AppDelegateSetupHelper loadUsersSettingsFromNSUserDefaults];
     
