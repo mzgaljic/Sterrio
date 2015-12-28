@@ -188,9 +188,7 @@ static NSDate *timeSinceLastPageLoaded;
     
     self.navigationController.toolbarHidden = NO;
     //_navBar.title = @"Adding Music";
-    _cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                                  target:self
-                                                                  action:@selector(cancelTapped)];
+    _cancelButton = [[UIBarButtonItem alloc] initWithTitle:@"Close" style:UIBarButtonItemStyleDone target:self action:@selector(cancelTapped)];
     [self setToolbarItems:@[_cancelButton]];
     [self setProductionModeValue];
     
@@ -283,6 +281,8 @@ static NSDate *timeSinceLastPageLoaded;
     moreYouTubeVideoObjects = nil;
     
     _networkErrorLoadingMoreResults = NO;
+    [loadingNextPageSpinner stopAnimating];
+    [loadingNextPageSpinner removeFromSuperview];
 }
 
 - (void)ytvideoResultsNoMorePagesToView
@@ -294,6 +294,8 @@ static NSDate *timeSinceLastPageLoaded;
     //change "Load More" button
     loadMoreCell.textLabel.text = No_More_Results_To_Display_Msg;
     _noMoreResultsToDisplay = YES;
+    [loadingNextPageSpinner stopAnimating];
+    [loadingNextPageSpinner removeFromSuperview];
 }
 
 - (void)ytVideoAutoCompleteResultsDidDownload:(NSArray *)arrayOfNSStrings
