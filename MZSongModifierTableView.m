@@ -1047,6 +1047,31 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 
 
 #pragma mark - public methods
+- (void)newSongNameGuessed:(NSString *)songName
+               artistGuess:(NSString *)artistName
+                albumGuess:(NSString *)albumName
+{
+    //does all the heavy logic lifting...updates the gui, everything.
+    [self songNameEditingComplete:[NSNotification notificationWithName:@"" object:songName]];
+
+    BOOL foundVeryGoodExistingArtistNameMatch = NO;
+    if(foundVeryGoodExistingArtistNameMatch) {
+        Artist *someExistingArtist = nil;
+        [self existingArtistHasBeenChosen:someExistingArtist];
+    } else {
+        [self artistNameCreationCompleteAndSetUpArtist:[NSNotification notificationWithName:@""
+                                                                                     object:artistName]];
+    }
+    
+    BOOL foundVeryGoodExistingAlbumNameMatch = NO;
+    if(foundVeryGoodExistingAlbumNameMatch) {
+        Album *someExistingAlbum = nil;
+        [self existingAlbumHasBeenChosen:someExistingAlbum];
+    } else {
+        [self albumNameCreationCompleteAndSetUpAlbum:[NSNotification notificationWithName:@"" object:albumName]];
+    }
+}
+
 - (void)cancelEditing
 {
     //now reset any context deletions, insertions, blah blah...

@@ -21,10 +21,12 @@
 #import "MZSongModifierDelegate.h"
 #import "SongPlayerCoordinator.h"
 #import "MZPlayer.h"
+#import "DiscogsSearchDelegate.h"
 
 @interface YouTubeSongAdderViewController : MyViewController <YouTubeVideoDetailLookupDelegate,
                                                             MZSongModifierDelegate,
-                                                            MZPreviewPlayerStallState>
+                                                            MZPreviewPlayerStallState,
+                                                            DiscogsSearchDelegate>
 
 - (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject thumbnail:(UIImage *)img;
 

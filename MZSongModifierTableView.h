@@ -56,5 +56,8 @@
 //optional but very important methods
 - (void)cancelEditing;
 - (void)songEditingWasSuccessful;
+- (void)newSongNameGuessed:(NSString *)songName
+               artistGuess:(NSString *)artistName
+                albumGuess:(NSString *)albumName;
 
 @end

@@ -30,6 +30,7 @@
     [self deleteSubstring:@"entire album" onTarget:&title];
     [self deleteSubstring:@"short version" onTarget:&title];
     [self deleteSubstring:@"long version" onTarget:&title];
+    [self deleteSubstring:@"full version" onTarget:&title];
     
     [self deleteSubstring:@"lyrics" onTarget:&title];
     [self deleteSubstring:@"with lyrics" onTarget:&title];
@@ -49,10 +50,18 @@
     [self deleteSubstring:@"karaoke version" onTarget:&title];
     [self deleteSubstring:@"live performance" onTarget:&title];
     [self deleteSubstring:@"[live]" onTarget:&title];
+    [self deleteSubstring:@"(live)" onTarget:&title];
     [self deleteSubstring:@"[explicit]" onTarget:&title];
+    [self deleteSubstring:@"(explicit)" onTarget:&title];
     [self deleteSubstring:@"[explicit version]" onTarget:&title];
+    [self deleteSubstring:@"(explicit version)" onTarget:&title];
+    [self deleteSubstring:@"[us version]" onTarget:&title];
+    [self deleteSubstring:@"(us version)" onTarget:&title];
+    [self deleteSubstring:@"[uk version]" onTarget:&title];
+    [self deleteSubstring:@"(uk version)" onTarget:&title];
     [self deleteSubstring:@"[soundtrack]" onTarget:&title];
-
+    [self deleteSubstring:@"(soundtrack)" onTarget:&title];
+    
     [self removeVeryNicheKeywordsOnTarget:&title];
     [self removeEverythingFromFtToEndOnTarget:&title];
     

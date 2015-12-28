@@ -17,7 +17,6 @@
 #import "PreferredFontSizeUtility.h"
 #import "YouTubeSongAdderViewController.h"
 #import "CustomYoutubeTableViewCell.h"
-#import "DiscogsSearchService.h"
 
 //NOTE loadingMoreResultsSpinner is not currently used. To use again, call "reload" on tableview
 //right before loading more results.
@@ -26,8 +25,6 @@
     UIActivityIndicatorView *loadingNextPageSpinner;
     UIActivityIndicatorView *loadingResultsIndicator;
 }
-@property (nonatomic, strong) DiscogsSearchService *discogsSearchServ;
-
 @property (nonatomic, strong) MySearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray *searchResults;
 @property (nonatomic, strong) NSMutableArray *searchSuggestions;
@@ -80,7 +77,6 @@ static NSDate *timeSinceLastPageLoaded;
 
 - (void)myPreDealloc
 {
-    _discogsSearchServ = nil;
     _searchBar.delegate = nil;
     _searchBar = nil;
     _searchResults = nil;
@@ -756,9 +752,6 @@ static BOOL userClearedTextField = NO;
             UIImage *img = [UIImage imageWithCGImage:cell.videoThumbnail.image.CGImage];
             [self.navigationController pushViewController:[[YouTubeSongAdderViewController alloc] initWithYouTubeVideo:ytVideo thumbnail:img]
                                                  animated:YES];
-            
-            NSString *sanitizedTitle = [ytVideo sanitizedTitle];
-            _discogsSearchServ = [[DiscogsSearchService alloc] initAndQueryWithTitle:sanitizedTitle];
         }
     }
     else{  //auto suggestions in table

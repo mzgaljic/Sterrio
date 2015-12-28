@@ -249,11 +249,11 @@
 /* Begin PBXFileReference section */
 		8716560E1C30AB41000FF02B /* DiscogsItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsItem.m; sourceTree = "<group>"; };
 		871FE2D01BFACDC000588C2B /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMobileAds.framework; path = "Pods/Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.5.2/GoogleMobileAds.framework"; sourceTree = "<group>"; };
-		873537C61B0A9981009244E4 /* FMV - Free Music Videos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FMV - Free Music Videos.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		873537C61B0A9981009244E4 /* Sterrio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sterrio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		873537CA1B0A9981009244E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		873537CB1B0A9981009244E4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		873537D61B0A9981009244E4 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Sterrio/Images.xcassets; sourceTree = "<group>"; };
-		873537DF1B0A9981009244E4 /* FMV - Free Music Videos.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "FMV - Free Music Videos.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		873537DF1B0A9981009244E4 /* Sterrio.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Sterrio.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		873537E41B0A9981009244E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		873537E51B0A9981009244E4 /* SterrioTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SterrioTests.m; sourceTree = "<group>"; };
 		873537F01B0A9A38009244E4 /* Ubuntu-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Ubuntu-Bold.ttf"; sourceTree = "<group>"; };
@@ -684,6 +684,7 @@
 		87A953691B3E242A002E9872 /* LICENSE_webRequest.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE_webRequest.txt; sourceTree = "<group>"; };
 		87A9536A1B3E242A002E9872 /* SMWebRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMWebRequest.h; sourceTree = "<group>"; };
 		87A9536B1B3E242A002E9872 /* SMWebRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMWebRequest.m; sourceTree = "<group>"; };
+		87CD5A3D1C31B22C0077CF0C /* DiscogsSearchDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DiscogsSearchDelegate.h; sourceTree = "<group>"; };
 		87DAA6C31B8AA9FF008D8684 /* Model 1.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 1.0.xcdatamodel"; sourceTree = "<group>"; };
 		87DAA6C41B8AA9FF008D8684 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailComposerManager.m; sourceTree = "<group>"; };
@@ -766,8 +767,8 @@
 		873537C71B0A9981009244E4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				873537C61B0A9981009244E4 /* FMV - Free Music Videos.app */,
-				873537DF1B0A9981009244E4 /* FMV - Free Music Videos.xctest */,
+				873537C61B0A9981009244E4 /* Sterrio.app */,
+				873537DF1B0A9981009244E4 /* Sterrio.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1728,6 +1729,7 @@
 		87A953641B3E1E5F002E9872 /* Discogs */ = {
 			isa = PBXGroup;
 			children = (
+				87CD5A3D1C31B22C0077CF0C /* DiscogsSearchDelegate.h */,
 				87A9535D1B3E1E54002E9872 /* DiscogsSearchService.h */,
 				87A9535E1B3E1E54002E9872 /* DiscogsSearchService.m */,
 				87A953601B3E1E54002E9872 /* DiscogsItem.h */,
@@ -1779,9 +1781,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		873537C51B0A9981009244E4 /* FMV - Free Music Videos */ = {
+		873537C51B0A9981009244E4 /* Sterrio */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 873537E91B0A9981009244E4 /* Build configuration list for PBXNativeTarget "FMV - Free Music Videos" */;
+			buildConfigurationList = 873537E91B0A9981009244E4 /* Build configuration list for PBXNativeTarget "Sterrio" */;
 			buildPhases = (
 				C40FBC495E44D2F698A962A2 /* Check Pods Manifest.lock */,
 				873537C21B0A9981009244E4 /* Sources */,
@@ -1795,14 +1797,14 @@
 			);
 			dependencies = (
 			);
-			name = "FMV - Free Music Videos";
+			name = Sterrio;
 			productName = Sterrio;
-			productReference = 873537C61B0A9981009244E4 /* FMV - Free Music Videos.app */;
+			productReference = 873537C61B0A9981009244E4 /* Sterrio.app */;
 			productType = "com.apple.product-type.application";
 		};
-		873537DE1B0A9981009244E4 /* FMV - Free Music VideosTests */ = {
+		873537DE1B0A9981009244E4 /* SterrioTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 873537EC1B0A9981009244E4 /* Build configuration list for PBXNativeTarget "FMV - Free Music VideosTests" */;
+			buildConfigurationList = 873537EC1B0A9981009244E4 /* Build configuration list for PBXNativeTarget "SterrioTests" */;
 			buildPhases = (
 				873537DB1B0A9981009244E4 /* Sources */,
 				873537DC1B0A9981009244E4 /* Frameworks */,
@@ -1813,9 +1815,9 @@
 			dependencies = (
 				873537E11B0A9981009244E4 /* PBXTargetDependency */,
 			);
-			name = "FMV - Free Music VideosTests";
+			name = SterrioTests;
 			productName = SterrioTests;
-			productReference = 873537DF1B0A9981009244E4 /* FMV - Free Music Videos.xctest */;
+			productReference = 873537DF1B0A9981009244E4 /* Sterrio.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -1846,7 +1848,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 873537C11B0A9981009244E4 /* Build configuration list for PBXProject "FMV - Free Music Videos" */;
+			buildConfigurationList = 873537C11B0A9981009244E4 /* Build configuration list for PBXProject "Sterrio" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -1859,8 +1861,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				873537C51B0A9981009244E4 /* FMV - Free Music Videos */,
-				873537DE1B0A9981009244E4 /* FMV - Free Music VideosTests */,
+				873537C51B0A9981009244E4 /* Sterrio */,
+				873537DE1B0A9981009244E4 /* SterrioTests */,
 			);
 		};
 /* End PBXProject section */
@@ -2179,7 +2181,7 @@
 /* Begin PBXTargetDependency section */
 		873537E11B0A9981009244E4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 873537C51B0A9981009244E4 /* FMV - Free Music Videos */;
+			target = 873537C51B0A9981009244E4 /* Sterrio */;
 			targetProxy = 873537E01B0A9981009244E4 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -2290,8 +2292,8 @@
 				INFOPLIST_FILE = Sterrio/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.mzgaljic.fmv;
-				PRODUCT_NAME = "FMV - Free Music Videos";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mzgaljic.Sterrio;
+				PRODUCT_NAME = Sterrio;
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Sterrio-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -2320,8 +2322,8 @@
 				INFOPLIST_FILE = Sterrio/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.mzgaljic.fmv;
-				PRODUCT_NAME = "FMV - Free Music Videos";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mzgaljic.Sterrio;
+				PRODUCT_NAME = Sterrio;
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Sterrio-Bridging-Header.h";
 			};
@@ -2342,8 +2344,8 @@
 				INFOPLIST_FILE = SterrioTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mzgaljic.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "FMV - Free Music Videos";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FMV - Free Music Videos.app/FMV - Free Music Videos";
+				PRODUCT_NAME = Sterrio;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Sterrio.app/Sterrio";
 			};
 			name = Debug;
 		};
@@ -2358,15 +2360,15 @@
 				INFOPLIST_FILE = SterrioTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mzgaljic.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "FMV - Free Music Videos";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FMV - Free Music Videos.app/FMV - Free Music Videos";
+				PRODUCT_NAME = Sterrio;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Sterrio.app/Sterrio";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		873537C11B0A9981009244E4 /* Build configuration list for PBXProject "FMV - Free Music Videos" */ = {
+		873537C11B0A9981009244E4 /* Build configuration list for PBXProject "Sterrio" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				873537E71B0A9981009244E4 /* Debug */,
@@ -2375,7 +2377,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		873537E91B0A9981009244E4 /* Build configuration list for PBXNativeTarget "FMV - Free Music Videos" */ = {
+		873537E91B0A9981009244E4 /* Build configuration list for PBXNativeTarget "Sterrio" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				873537EA1B0A9981009244E4 /* Debug */,
@@ -2384,7 +2386,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		873537EC1B0A9981009244E4 /* Build configuration list for PBXNativeTarget "FMV - Free Music VideosTests" */ = {
+		873537EC1B0A9981009244E4 /* Build configuration list for PBXNativeTarget "SterrioTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				873537ED1B0A9981009244E4 /* Debug */,

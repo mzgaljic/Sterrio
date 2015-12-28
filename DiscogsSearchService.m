@@ -7,38 +7,35 @@
 //
 
 #import "DiscogsSearchService.h"
-#import "YouTubeVideo.h"
 #import "DiscogsItem.h"
-#import "SMWebRequest.h"
 #import "SDCAlertController.h"
 
-NSString * const MUSIC_BRAINZ_CLIENT_NAME = @"Sterrio - iOS App";
-NSString * const MUSIC_BRAINZ_SERVER_URL = @"musicbrainz.org";
-int const MUSIC_BRAINZ_QUERY_LIMIT = 10;
+//Requests are throttled by the server to 20 per minute per IP address.
+//locally throttling to 1 request per 3 seconds helps abide by the rate limit (3 * 20 = 60).
+double const DISCOGS_SECONDS_BETWEEN_REQUESTS = 3;
 
 @interface DiscogsSearchService ()
-@property (nonatomic, strong) YouTubeVideo *ytVideo;
 @property (nonatomic, strong) SMWebRequest *request;
-@property (nonatomic, strong) NSArray *items;
+@property (nonatomic, strong) NSDate *lastQueryDate;
+@property (nonatomic, assign) id delegate;
 @end
 
 @implementation DiscogsSearchService
 
-- (void)dealloc
++ (instancetype)sharedInstance
 {
-    self.ytVideo = nil;
+    static dispatch_once_t pred;
+    static id sharedInstance = nil;
+    dispatch_once(&pred, ^{
+        sharedInstance = [[[self class] alloc] init];
+    });
+    return sharedInstance;
 }
 
-- (id)initAndQueryWithTitle:(NSString *)title
+- (instancetype)queryWithTitle:(NSString *)title callbackDelegate:(id)delegate;
 {
-    if(self = [super init]) {
-        [self queryWithTitle:title];
-    }
-    return self;
-}
-
-- (void)queryWithTitle:(NSString *)title;
-{
+    self.delegate = delegate;
+    
     [self.request cancel]; // in case one was running already
     self.request = [DiscogsItem requestForDiscogsItems:title];
     [self.request addTarget:self
@@ -47,13 +44,33 @@ int const MUSIC_BRAINZ_QUERY_LIMIT = 10;
     [self.request addTarget:self
                      action:@selector(requestError:)
            forRequestEvents:SMWebRequestEventError];
-    [self.request start];
+    
+    
+    if(self.lastQueryDate == nil) {
+        self.lastQueryDate = [NSDate date];
+        [self.request start];
+    } else {
+        NSTimeInterval secondsElapsed = fabs([self.lastQueryDate timeIntervalSinceNow]);
+        self.lastQueryDate = [NSDate date];
+        
+        if(secondsElapsed >= DISCOGS_SECONDS_BETWEEN_REQUESTS) {
+            [self.request start];
+        } else {
+            double remainingRateLimit = DISCOGS_SECONDS_BETWEEN_REQUESTS - secondsElapsed;
+            [self.request performSelector:@selector(start) withObject:nil afterDelay:remainingRateLimit];
+        }
+    }
+    
+    return self;
 }
 
 - (void)requestComplete:(NSArray *)theItems
 {
-    NSLog(@"request done yo!");
-    
+    [self.delegate performSelectorOnMainThread:@selector(videoSongSuggestionsRequestComplete:)
+                                    withObject:theItems
+                                 waitUntilDone:YES];
+    self.delegate = nil;
+    /*
     NSString *msg = nil;
     if(theItems.count > 0) {
         DiscogsItem *item = theItems[0];
@@ -61,6 +78,7 @@ int const MUSIC_BRAINZ_QUERY_LIMIT = 10;
     } else {
         msg = @"No suggestions found.";
     }
+    
     
     SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:@"Song Metadata suggestions"
                                                                     message:msg
@@ -70,11 +88,15 @@ int const MUSIC_BRAINZ_QUERY_LIMIT = 10;
                                                   handler:nil];
     [alert addAction:act];
     [alert presentWithCompletion:nil];
+     */
 }
 
 - (void)requestError:(NSError *)theError
 {
-     NSLog(@"request failed :(");
+    [self.delegate performSelectorOnMainThread:@selector(videoSongSuggestionsRequestError:)
+                                    withObject:theError
+                                 waitUntilDone:YES];
+    self.delegate = nil;
 }
 
 @end

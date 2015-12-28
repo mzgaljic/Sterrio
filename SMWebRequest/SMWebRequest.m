@@ -154,8 +154,10 @@ NSString *const SMErrorResponseKey = @"response";
     #pragma clang diagnostic push
     #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
 
-    for (SMTargetAction *ta in [self targetActionsForEvents:events])
-        [ta.target performSelector:ta.action withObject:arg withObject:self.context];
+    if(! self.cancelled) {
+        for (SMTargetAction *ta in [self targetActionsForEvents:events])
+            [ta.target performSelector:ta.action withObject:arg withObject:self.context];
+    }
     
     #pragma clang diagnostic pop
 

@@ -7,10 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "SMWebRequest.h"
+#import "DiscogsSearchDelegate.h"
 @interface DiscogsSearchService : NSObject
 
-- (void)queryWithTitle:(NSString *)title;
-- (id)initAndQueryWithTitle:(NSString *)title;
++ (instancetype)sharedInstance;
+
+//instancetype returned as convenience for chaining the call on 1 line.
+- (instancetype)queryWithTitle:(NSString *)title callbackDelegate:(id<DiscogsSearchDelegate>)delegate;
 
 @end

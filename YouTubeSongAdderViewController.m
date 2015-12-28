@@ -10,6 +10,8 @@
 #import "YouTubeVideoSearchService.h"
 #import "SDCAlertController.h"
 #import "SSBouncyButton.h"
+#import "DiscogsSearchService.h"
+#import "DiscogsItem.h"
 
 @interface YouTubeSongAdderViewController ()
 {
@@ -51,6 +53,9 @@
             return nil;
     
         ytVideo = youtubeVideoObject;
+        NSString *sanitizedTitle = [ytVideo sanitizedTitle];
+        [[DiscogsSearchService sharedInstance] queryWithTitle:sanitizedTitle callbackDelegate:self];
+        
         
         //fire off network request for video duration ASAP
         [[YouTubeVideoSearchService sharedInstance] setVideoDetailLookupDelegate:self];
@@ -831,6 +836,18 @@ static BOOL powerByYtHandled = NO;  //needed if user aggressively taps button mo
         [self.player performSelector:@selector(play) withObject:nil afterDelay:0.2];
     }
     leftAppDuePoweredByYtLogoClick = NO;
+}
+
+- (void)videoSongSuggestionsRequestComplete:(NSArray *)theItems
+{
+    NSLog(@"request done yo!");
+    DiscogsItem *item = (theItems.count > 0) ? theItems[0] : nil;
+    [self.tableView newSongNameGuessed:@"" artistGuess:item.artistName albumGuess:item.albumName];
+}
+
+- (void)videoSongSuggestionsRequestError:(NSError *)theError
+{
+    NSLog(@"request failed :(");
 }
 
 @end
