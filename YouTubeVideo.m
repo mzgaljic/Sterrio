@@ -17,81 +17,39 @@
     NSMutableString *title = [NSMutableString stringWithString:temp];
     
     [self removeVideoQualityStuffFromTitleOnTarget:&title];
+    [self removeSongDiscInfoOnTarget:&title];
     
     [self deleteSubstring:@"official lyric video" onTarget:&title];
     [self deleteSubstring:@"official music video" onTarget:&title];
     [self deleteSubstring:@"official video" onTarget:&title];
-
+    [self deleteSubstring:@"full song" onTarget:&title];
+    [self deleteSubstring:@"full album" onTarget:&title];
+    [self deleteSubstring:@"entire song" onTarget:&title];
+    [self deleteSubstring:@"entire album" onTarget:&title];
+    [self deleteSubstring:@"short version" onTarget:&title];
+    [self deleteSubstring:@"long version" onTarget:&title];
+    
     [self deleteSubstring:@"lyrics" onTarget:&title];
     [self deleteSubstring:@"with lyrics" onTarget:&title];
+    [self deleteSubstring:@"w/ lyrics" onTarget:&title];
     [self deleteSubstring:@"~" onTarget:&title];
+    [self deleteSubstring:@"performed by" onTarget:&title];
     
+    [self deleteSubstring:@"[audio]" onTarget:&title];
     [self deleteSubstring:@"audio and video" onTarget:&title];
     [self deleteSubstring:@"audio & video" onTarget:&title];
     [self deleteSubstring:@"download link" onTarget:&title];
     [self deleteSubstring:@"audio & video" onTarget:&title];
+    [self deleteSubstring:@"karaoke" onTarget:&title];
+    [self deleteSubstring:@"karaoke version" onTarget:&title];
+    [self deleteSubstring:@"live performance" onTarget:&title];
+    [self deleteSubstring:@"[live]" onTarget:&title];
 
-    
     [self removeEmptyParensBracesOrBracketsOnTarget:&title];
     return title;
 }
 
-- (void)deleteSubstring:(NSString *)subStringToRemove onTarget:(NSMutableString **)aString
-{
-    NSRange range = [*aString rangeOfString:subStringToRemove options:NSCaseInsensitiveSearch];
-    if(range.location == NSNotFound) {
-        return;
-    }
-    [*aString deleteCharactersInRange:range];
-}
-
-- (void)removeEmptyParensBracesOrBracketsOnTarget:(NSMutableString **)aString
-{
-    NSArray *regexes = @[
-                         //match on (    )
-                         [NSRegularExpression regularExpressionWithPattern:@"\(\\s+\\)"
-                                                                   options:0
-                                                                     error:nil],
-                         //match on [    ]
-                         [NSRegularExpression regularExpressionWithPattern:@"\[\\s+\\]"
-                                                                   options:0
-                                                                     error:nil],
-                         //match on {    }
-                         [NSRegularExpression regularExpressionWithPattern:@"\{\\s+\\}"
-                                                                   options:0
-                                                                     error:nil]
-                         ];
-    for(NSRegularExpression *regex in regexes) {
-        [regex replaceMatchesInString:*aString
-                              options:0
-                                range:NSMakeRange(0, [*aString length])
-                         withTemplate:@""];
-    }
-}
-
-- (void)removeSongDiscStuffOnTarget:(NSMutableString **)aString
-{
-    //match on "disc 1", "Disc 3", etc.
-    NSRegularExpression *discRegex = [NSRegularExpression regularExpressionWithPattern:@"\(\\s+\\)"
-                                                                               options:NSRegularExpressionCaseInsensitive
-                                                                                 error:nil];
-    [discRegex replaceMatchesInString:*aString
-                              options:0
-                                range:NSMakeRange(0, [*aString length])
-                         withTemplate:@""];
-}
-
-- (NSString *)removeExtraneousWhitespaceOnTarget:(NSString *)aString
-{
-    //from: http://stackoverflow.com/a/12137128/4534674
-    
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"  +" options:NSRegularExpressionCaseInsensitive error:nil];
-    return [regex stringByReplacingMatchesInString:aString
-                                           options:0
-                                             range:NSMakeRange(0, aString.length)
-                                      withTemplate:@" "];
-}
-
+#pragma mark - Sub-routines
 - (void)removeVideoQualityStuffFromTitleOnTarget:(NSMutableString **)aString
 {
     [self deleteSubstring:@"144p" onTarget:aString];
@@ -115,8 +73,17 @@
     [self deleteSubstring:@"4k" onTarget:aString];
     [self deleteSubstring:@"8k" onTarget:aString];
     
+    [self deleteSubstring:@"128kbps" onTarget:aString];
+    [self deleteSubstring:@"128 kbps" onTarget:aString];
+    [self deleteSubstring:@"256kbps" onTarget:aString];
+    [self deleteSubstring:@"256 kbps" onTarget:aString];
+    [self deleteSubstring:@"320kbps" onTarget:aString];
+    [self deleteSubstring:@"320 kbps" onTarget:aString];
+    
     [self deleteSubstring:@"hq" onTarget:aString];
     [self deleteSubstring:@"high quality" onTarget:aString];
+    [self deleteSubstring:@"very quality" onTarget:aString];
+    [self deleteSubstring:@"lossless quality" onTarget:aString];
     [self deleteSubstring:@"high quality video" onTarget:aString];
     [self deleteSubstring:@"cd" onTarget:aString];
     [self deleteSubstring:@"recording" onTarget:aString];
@@ -126,5 +93,73 @@
     [self deleteSubstring:@"HD" onTarget:aString];
     [self deleteSubstring:@".mp4" onTarget:aString];
     [self deleteSubstring:@".mp3" onTarget:aString];
+}
+
+#pragma mark - Utility methods
+- (void)deleteSubstring:(NSString *)subStringToRemove onTarget:(NSMutableString **)aString
+{
+    NSRange range = [*aString rangeOfString:subStringToRemove options:NSCaseInsensitiveSearch];
+    if(range.location == NSNotFound) {
+        return;
+    }
+    [*aString deleteCharactersInRange:range];
+}
+
+- (void)removeEmptyParensBracesOrBracketsOnTarget:(NSMutableString **)aString
+{
+    NSString *parensPattern = @"\(\\s*-*\\s*\\/*\\s*\\*\\s*\\|*\\s*\\)";
+    NSString *bracketPattern = @"\[\\s*-*\\s*\\/*\\s*\\*\\s*\\|*\\s*\\]";
+    NSString *bracesPattern = @"\{\\s*-*\\s*\\/*\\s*\\*\\s*\\|*\\s*\\}";
+    NSArray *regexes = @[
+                         //match on (  ) or (  -  ) or (  \  ) or (  /  ) or ( | ) w/ 0+ spaces
+                         [NSRegularExpression regularExpressionWithPattern:parensPattern
+                                                                   options:0
+                                                                     error:nil],
+                         //match on [  ] or [  -  ] or [  \  ] or [ /  ] or [ | ] w/ 0+ spaces
+                         [NSRegularExpression regularExpressionWithPattern:bracketPattern
+                                                                   options:0
+                                                                     error:nil],
+                         //match on {  } or {  -  } or {  \  } or {  /  } or { | } w/ 0+ spaces
+                         [NSRegularExpression regularExpressionWithPattern:bracesPattern
+                                                                   options:0
+                                                                     error:nil]
+                         ];
+    for(NSRegularExpression *regex in regexes) {
+        [regex replaceMatchesInString:*aString
+                              options:0
+                                range:NSMakeRange(0, [*aString length])
+                         withTemplate:@""];
+    }
+}
+
+- (void)removeSongDiscInfoOnTarget:(NSMutableString **)aString
+{
+    NSArray *regexes = @[
+                         //match on "disc 1", "Disc 3", etc.
+                         [NSRegularExpression regularExpressionWithPattern:@"(disc|disk) \\d+"
+                                                                   options:NSRegularExpressionCaseInsensitive
+                                                                     error:nil],
+                         //match on "disc 1 of 4", "Disc 3 of 4", etc.
+                         [NSRegularExpression regularExpressionWithPattern:@"(disk|disc) \\d+ of \\d+"
+                                                                   options:NSRegularExpressionCaseInsensitive
+                                                                     error:nil]
+                         ];
+    for(NSRegularExpression *regex in regexes) {
+        [regex replaceMatchesInString:*aString
+                              options:0
+                                range:NSMakeRange(0, [*aString length])
+                         withTemplate:@""];
+    }
+}
+
+- (NSString *)removeExtraneousWhitespaceOnTarget:(NSString *)aString
+{
+    //from: http://stackoverflow.com/a/12137128/4534674
+    
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"  +" options:NSRegularExpressionCaseInsensitive error:nil];
+    return [regex stringByReplacingMatchesInString:aString
+                                           options:0
+                                             range:NSMakeRange(0, aString.length)
+                                      withTemplate:@" "];
 }
 @end
