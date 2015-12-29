@@ -70,25 +70,6 @@ double const DISCOGS_SECONDS_BETWEEN_REQUESTS = 3;
                                     withObject:theItems
                                  waitUntilDone:YES];
     self.delegate = nil;
-    /*
-    NSString *msg = nil;
-    if(theItems.count > 0) {
-        DiscogsItem *item = theItems[0];
-        msg = [NSString stringWithFormat:@"Artist: %@\n\nAlbum: %@", item.artistName, item.albumName];
-    } else {
-        msg = @"No suggestions found.";
-    }
-    
-    
-    SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:@"Song Metadata suggestions"
-                                                                    message:msg
-                                                             preferredStyle:SDCAlertControllerStyleAlert];
-    SDCAlertAction *act = [SDCAlertAction actionWithTitle:@"Okay"
-                                                    style:SDCAlertActionStyleRecommended
-                                                  handler:nil];
-    [alert addAction:act];
-    [alert presentWithCompletion:nil];
-     */
 }
 
 - (void)requestError:(NSError *)theError

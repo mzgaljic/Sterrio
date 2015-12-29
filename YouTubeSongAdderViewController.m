@@ -12,6 +12,7 @@
 #import "SSBouncyButton.h"
 #import "DiscogsSearchService.h"
 #import "DiscogsItem.h"
+#import "DiscogsResultsUtils.h"
 
 @interface YouTubeSongAdderViewController ()
 {
@@ -52,7 +53,9 @@
         if(youtubeVideoObject == nil)
             return nil;
     
-        ytVideo = youtubeVideoObject;
+        //copying since certain internal ivars are cached, can mess up behavior of program if reused
+        //across multiple inits of YouTubeSongAdderViewController.
+        ytVideo = [youtubeVideoObject copy];
         NSString *sanitizedTitle = [ytVideo sanitizedTitle];
         [[DiscogsSearchService sharedInstance] queryWithTitle:sanitizedTitle callbackDelegate:self];
         
@@ -838,11 +841,19 @@ static BOOL powerByYtHandled = NO;  //needed if user aggressively taps button mo
     leftAppDuePoweredByYtLogoClick = NO;
 }
 
+#pragma mark - DiscogsSearchDelegate stuff
 - (void)videoSongSuggestionsRequestComplete:(NSArray *)theItems
 {
-    NSLog(@"request done yo!");
-    DiscogsItem *item = (theItems.count > 0) ? theItems[0] : nil;
-    [self.tableView newSongNameGuessed:@"" artistGuess:item.artistName albumGuess:item.albumName];
+    [DiscogsResultsUtils applyConfidenceLevelsToDiscogsItemsForResults:&theItems youtubeVideo:ytVideo];
+    NSUInteger bestMatchIndex = [DiscogsResultsUtils indexOfBestMatchFromResults:theItems];
+    DiscogsItem *item = (bestMatchIndex == NSNotFound) ? nil : theItems[bestMatchIndex];
+    [DiscogsResultsUtils applySongNameToDiscogsItem:&item youtubeVideo:ytVideo];
+    
+    if(item) {
+        [self.tableView newSongNameGuessed:item.songName
+                               artistGuess:item.artistName
+                                albumGuess:item.albumName];
+    }
 }
 
 - (void)videoSongSuggestionsRequestError:(NSError *)theError

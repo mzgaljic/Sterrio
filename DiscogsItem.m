@@ -54,13 +54,25 @@
             [albumName appendString:split[i]];
         }
         
+        //the DiscogsItem songName is set in YouTubeSongAdderViewController when results are processed.
         DiscogsItem *item = [[DiscogsItem alloc] init];
-        item.artistName = artistName;
-        item.albumName = albumName;
+        item.artistName = [DiscogsItem removeRandomAsteriskAtEndOfNamesIfPresent:artistName];
+        item.albumName = [DiscogsItem removeRandomAsteriskAtEndOfNamesIfPresent:albumName];
         item.releaseYear = year;
         [itemsArray addObject:item];
     }
     return itemsArray;
+}
+
++ (NSString *)removeRandomAsteriskAtEndOfNamesIfPresent:(NSString *)originalName
+{
+    NSString *someRegexp = @".*\\*($|[^\\*])";
+    NSPredicate *regex = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", someRegexp];
+    if ([regex evaluateWithObject:originalName] && originalName.length > 0){
+        return [originalName substringToIndex:originalName.length-1];  //index is exclusive
+    } else {
+        return originalName;
+    }
 }
 
 @end

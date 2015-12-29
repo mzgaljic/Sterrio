@@ -8,15 +8,14 @@
 
 #import <Foundation/Foundation.h>
 #import "DiscogsItem.h"
+#import "YouTubeVideo.h"
 
 @interface DiscogsResultsUtils : NSObject
 
-/**
- *This method mutates the array passed in (it updates the confidence of eash item).
- */
-+ (NSUInteger)indexOfBestMatchFromResults:(NSArray **)discogsItems
-                             youtubeVideo:(YouTubeVideo *)ytVideo;
++ (void)applyConfidenceLevelsToDiscogsItemsForResults:(NSArray **)discogsItems
+                                         youtubeVideo:(YouTubeVideo *)ytVideo;
++ (NSUInteger)indexOfBestMatchFromResults:(NSArray *)discogsItems;
 
-+ (NSString *)songNameForDiscogsItem:(DiscogsItem *)discogsItem youtubeVideo:(YouTubeVideo *)ytVideo;
++ (void)applySongNameToDiscogsItem:(DiscogsItem **)discogsItem youtubeVideo:(YouTubeVideo *)ytVideo;
 
 @end
