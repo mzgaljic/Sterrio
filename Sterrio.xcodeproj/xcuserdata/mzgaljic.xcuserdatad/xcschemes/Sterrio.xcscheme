@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0700"
+   LastUpgradeVersion = "0720"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -15,23 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "873537C51B0A9981009244E4"
-               BuildableName = "FMV - Free Music Videos.app"
-               BlueprintName = "FMV - Free Music Videos"
-               ReferencedContainer = "container:FMV - Free Music Videos.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "873537DE1B0A9981009244E4"
-               BuildableName = "FMV - Free Music Videos.xctest"
-               BlueprintName = "FMV - Free Music VideosTests"
-               ReferencedContainer = "container:FMV - Free Music Videos.xcodeproj">
+               BuildableName = "Sterrio.app"
+               BlueprintName = "Sterrio"
+               ReferencedContainer = "container:Sterrio.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -42,24 +28,14 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "873537DE1B0A9981009244E4"
-               BuildableName = "FMV - Free Music Videos.xctest"
-               BlueprintName = "FMV - Free Music VideosTests"
-               ReferencedContainer = "container:FMV - Free Music Videos.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "873537C51B0A9981009244E4"
-            BuildableName = "FMV - Free Music Videos.app"
-            BlueprintName = "FMV - Free Music Videos"
-            ReferencedContainer = "container:FMV - Free Music Videos.xcodeproj">
+            BuildableName = "Sterrio.app"
+            BlueprintName = "Sterrio"
+            ReferencedContainer = "container:Sterrio.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -80,9 +56,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "873537C51B0A9981009244E4"
-            BuildableName = "FMV - Free Music Videos.app"
-            BlueprintName = "FMV - Free Music Videos"
-            ReferencedContainer = "container:FMV - Free Music Videos.xcodeproj">
+            BuildableName = "Sterrio.app"
+            BlueprintName = "Sterrio"
+            ReferencedContainer = "container:Sterrio.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -99,9 +75,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "873537C51B0A9981009244E4"
-            BuildableName = "FMV - Free Music Videos.app"
-            BlueprintName = "FMV - Free Music Videos"
-            ReferencedContainer = "container:FMV - Free Music Videos.xcodeproj">
+            BuildableName = "Sterrio.app"
+            BlueprintName = "Sterrio"
+            ReferencedContainer = "container:Sterrio.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

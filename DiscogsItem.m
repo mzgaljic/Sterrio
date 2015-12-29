@@ -13,11 +13,8 @@
 
 + (SMWebRequest *)requestForDiscogsItems:(NSString *)query;
 {
-    //https://api.discogs.com/database/search?key=ixbyRvPNpISUPqIxZyXG&secret=EQIXDjGcHneqrMnGnKtHAKFmBtImbHCm&type=master&format=album&format=vinyl&q=justin bieber - sorry
-    
-    
     // Set ourself as the background processing delegate. The caller can still add herself as a listener for the resulting data.
-    NSString *urlString = @"https://api.discogs.com/database/search?format=album&format=vinyl&per_page=3&page=1&q=";
+    NSString *urlString = @"https://api.discogs.com/database/search?format=album&format=vinyl&per_page=6&page=1&q=";
     query = [query stringForHTTPRequest];
     NSURL *myUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", urlString, query]];
     NSMutableURLRequest *mutUrlRequest = [NSMutableURLRequest requestWithURL:myUrl];

@@ -12,7 +12,9 @@
 @interface DiscogsItem : NSObject
 
 typedef enum {
+    MatchConfidence_UNDEFINED,
     MatchConfidence_LOW,
+    MatchConfidence_MEDIUM,
     MatchConfidence_HIGH
 } MatchConfidence;
 
