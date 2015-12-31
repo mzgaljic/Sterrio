@@ -104,7 +104,7 @@ short const fontSizeIncrease = 4;
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
     [[NSNotificationCenter defaultCenter] postNotificationName:_notificationName
-                                                        object:textField.text];
+                                                        object:@[textField.text, @YES]];
     [self.navigationController popViewControllerAnimated:YES];
     return YES;
 }

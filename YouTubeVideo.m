@@ -86,6 +86,8 @@
     [self deleteSubstring:@"(uk version)" onTarget:&title];
     [self deleteSubstring:@"[soundtrack]" onTarget:&title];
     [self deleteSubstring:@"(soundtrack)" onTarget:&title];
+    [self deleteSubstring:@"(official)" onTarget:&title];
+    [self deleteSubstring:@"[official]" onTarget:&title];
     
     [self removeVeryNicheKeywordsOnTarget:&title];
     [self removeEverythingFromFtToEndOnTarget:&title];
@@ -221,7 +223,7 @@
     }
 }
 
-- (void)removeLiveAtInParensOnTarget:(NSMutabeString **)aString
+- (void)removeLiveAtInParensOnTarget:(NSMutableString **)aString
 {
     //matches (live on .....) or (live at .....), etc.
     NSString *regexText = @"\(\s*live\s*(at|in|on)\s*([^\)]*)\)";

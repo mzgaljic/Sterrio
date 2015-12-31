@@ -536,7 +536,8 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 - (void)songNameEditingComplete:(NSNotification *)notification
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"DoneEditingSongField" object:nil];
-    NSString *newName = (NSString *)notification.object;
+    BOOL shouldScrollTableview = [notification.object[1] boolValue];
+    NSString *newName = (NSString *)notification.object[0];
     newName = [newName removeIrrelevantWhitespace];
     
     BOOL songHadNameBeforeUpdate = (_songIAmEditing.songName);
@@ -574,14 +575,22 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     withRowAnimation:UITableViewRowAnimationFade];
         if(_creatingANewSong){
             if(! [weakself isRowPresentInTableView:0 withSection:1]){
+                UITableViewRowAnimation animation;
+                if(shouldScrollTableview) {
+                    animation = UITableViewRowAnimationBottom;
+                } else {
+                    animation = UITableViewRowAnimationNone;
+                }
                 [weakself insertSections:[NSIndexSet indexSetWithIndex:1]
-                    withRowAnimation:UITableViewRowAnimationBottom];
+                    withRowAnimation:animation];
             }
         }
         [weakself endUpdates];
         
         //if the new add to lib section was added to the table, scroll to it (if not visible)
-        if(! songHadNameBeforeUpdate && [weakself isRowPresentInTableView:0 withSection:1])
+        if(shouldScrollTableview
+           && ! songHadNameBeforeUpdate
+           && [weakself isRowPresentInTableView:0 withSection:1])
         {
             NSArray *indexes = [self indexPathsForVisibleRows];
             BOOL addToLibButtonVisible = NO;
@@ -1052,7 +1061,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 albumGuess:(NSString *)albumName
 {
     //does all the heavy logic lifting...updates the gui, everything.
-    [self songNameEditingComplete:[NSNotification notificationWithName:@"" object:songName]];
+    [self songNameEditingComplete:[NSNotification notificationWithName:@"" object:@[songName, @NO]]];
 
     BOOL foundVeryGoodExistingArtistNameMatch = NO;
     if(foundVeryGoodExistingArtistNameMatch) {
