@@ -38,7 +38,7 @@
         return self.cachedSanitizedTitle;
     }
     
-    NSString *temp = [self removeExtraneousWhitespaceOnTarget:[self.videoName copy]];
+    NSString *temp = [self removeExtraneousWhitespace:[self.videoName copy]];
     NSMutableString *title = [NSMutableString stringWithString:temp];
     
     [self removeVideoQualityStuffFromTitleOnTarget:&title];
@@ -89,6 +89,7 @@
     
     [self removeVeryNicheKeywordsOnTarget:&title];
     [self removeEverythingFromFtToEndOnTarget:&title];
+    [self removeLiveAtInParensOnTarget:&title];
     
     [self removeEmptyParensBracesOrBracketsOnTarget:&title];
     self.cachedSanitizedTitle = title;
@@ -220,7 +221,20 @@
     }
 }
 
-- (NSString *)removeExtraneousWhitespaceOnTarget:(NSString *)aString
+- (void)removeLiveAtInParensOnTarget:(NSMutabeString **)aString
+{
+    //matches (live on .....) or (live at .....), etc.
+    NSString *regexText = @"\(\s*live\s*(at|in|on)\s*([^\)]*)\)";
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexText
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:nil];
+    [regex replaceMatchesInString:*aString
+                          options:0
+                            range:NSMakeRange(0, [*aString length])
+                     withTemplate:@""];
+}
+
+- (NSString *)removeExtraneousWhitespace:(NSString *)aString
 {
     //from: http://stackoverflow.com/a/12137128/4534674
     
@@ -230,4 +244,5 @@
                                              range:NSMakeRange(0, aString.length)
                                       withTemplate:@" "];
 }
+
 @end
