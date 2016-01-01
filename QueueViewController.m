@@ -10,6 +10,7 @@
 #import "MZTableViewCell.h"
 #import "SongAlbumArt+Utilities.h"
 #import "PlayableItem.h"
+#import "PlaylistItem.h"
 
 @interface QueueViewController ()
 {
@@ -395,7 +396,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             if([obj isMemberOfClass:[PlayableItem class]])
                 return obj;
             else{
-                return [[PlayableItem alloc] initWithSong:obj context:mainQueueContext fromUpNextSongs:NO];
+                if([obj isMemberOfClass:[PlaylistItem class]]) {
+                    return [[PlayableItem alloc] initWithPlaylistItem:obj context:mainQueueContext fromUpNextSongs:NO];
+                } else if([obj isMemberOfClass:[Song class]]){
+                    return [[PlayableItem alloc] initWithSong:obj context:mainQueueContext fromUpNextSongs:NO];
+                }
             }
             
         } else{
