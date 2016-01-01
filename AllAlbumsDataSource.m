@@ -24,6 +24,8 @@
 @property (nonatomic, strong) NSMutableArray *searchResults;
 @property (nonatomic, strong) Album *selectedAlbum;  //for album picker VC's
 
+//for allowing the user to add an entire album to their playlist. Look at AllSongsDataSource
+//as an example.
 //@property (nonatomic, strong) NSMutableArray *selectedSongIds;
 //@property (nonatomic, strong) NSOrderedSet *existingPlaylistSongs;
 @end
@@ -620,7 +622,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
 - (void)searchResultsFromUsersQuery:(NSArray *)modelObjects
 {
     [self.searchResults removeAllObjects];
-    [self.searchResults addObjectsFromArray:modelObjects];
+    self.searchResults = [NSMutableArray arrayWithArray:modelObjects];
 }
 
 - (NSUInteger)playableDataSourceEntireModelCount
