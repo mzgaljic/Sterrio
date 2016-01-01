@@ -22,8 +22,6 @@
 @property (nonatomic, assign, readwrite) PLAYLIST_DATA_SRC_TYPE dataSourceType;
 @property (nonatomic, strong) NSMutableArray *searchResults;
 
-//@property (nonatomic, strong) NSMutableArray *selectedSongIds;
-//@property (nonatomic, strong) NSOrderedSet *existingPlaylistSongs;
 @end
 @implementation AllPlaylistsDataSource
 
@@ -32,15 +30,6 @@
     _cellReuseId = cellReuseId;
     cellReuseIdDetailLabelNull = [NSString stringWithFormat:@"%@_nilDetail", cellReuseId];
 }
-
-/*
- - (NSOrderedSet *)existingPlaylistSongs
- {
- if(_existingPlaylistSongs == nil && _playlistSongAdderDelegate != nil)
- _existingPlaylistSongs = [_playlistSongAdderDelegate existingPlaylistSongs];
- return _existingPlaylistSongs;
- }
- */
 
 - (void)setTableView:(UITableView *)tableView
 {
@@ -65,8 +54,6 @@
     self.searchBarDataSourceDelegate = nil;
     stackController = nil;
     
-    //self.selectedSongIds = nil;
-    //self.existingPlaylistSongs = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"%@ dealloced!", NSStringFromClass([self class]));
 }
@@ -78,8 +65,6 @@
         stackController = [[StackController alloc] init];
         self.dataSourceType = type;
         self.searchBarDataSourceDelegate = delegate;
-        //if(type == SONG_DATA_SRC_TYPE_Playlist_MultiSelect)
-        //    self.selectedSongIds = [NSMutableArray array];
         
         [self setupAppThemeColorObserver];
     }
@@ -450,27 +435,6 @@
                                                                                  contextId:playlistDetailContextId];
     return playlistDetailContext;
 }
-
-/*
- - (NSArray *)minimallyFaultedArrayOfSelectedPlaylistSongs
- {
- if(self.dataSourceType == SONG_DATA_SRC_TYPE_Playlist_MultiSelect)
- {
- //incomplete implementation
- NSMutableArray *selectedSongs = [NSMutableArray arrayWithCapacity:_selectedSongIds.count];
- Song *aSong;
- for(NSString *aSongId in _selectedSongIds)
- {
- aSong = [self songObjectGivenSongId:aSongId];
- if(aSong != nil)
- [selectedSongs addObject:aSong];
- }
- return selectedSongs;
- }
- else
- return nil;
- }
- */
 
 #pragma mark - SearchBarDataSourceDelegate implementation
 - (NSString *)placeholderTextForSearchBar
