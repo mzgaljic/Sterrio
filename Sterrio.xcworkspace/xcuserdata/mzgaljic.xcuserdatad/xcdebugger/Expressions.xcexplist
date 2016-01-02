@@ -3,6 +3,9 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "-[AllArtistsDataSource reflectNowPlayingChangesInTableview:]:AllArtistsDataSource.m">
+      </ContextState>
+      <ContextState
          contextName = "-[NewSettingsTableViewController viewDidLoad]:NewSettingsTableViewController.m">
       </ContextState>
    </ContextStates>
