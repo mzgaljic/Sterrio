@@ -1067,14 +1067,14 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     if(existingAlbumGuess) {
         [self existingAlbumHasBeenChosen:existingAlbumGuess];
     } else {
-        [self albumNameCreationCompleteAndSetUpAlbum:[NSNotification notificationWithName:@""
-                                                                                   object:albumName]];
+        NSNotification *notif = [NSNotification notificationWithName:@"" object:@[albumName, @NO]];
+        [self albumNameCreationCompleteAndSetUpAlbum:notif];
         
         Artist *existingArtistGuess = [self existingArtistWithName:artistName];
         if(existingArtistGuess) {
             [self existingArtistHasBeenChosen:existingArtistGuess];
         } else {
-            NSNotification *notif = [NSNotification notificationWithName:@"" object:artistName];
+            NSNotification *notif = [NSNotification notificationWithName:@"" object:@[artistName, @NO]];
             [self artistNameCreationCompleteAndSetUpArtist:notif];
         }
     }
@@ -1121,7 +1121,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     request.sortDescriptors = @[sortDescriptor];
     request.predicate = [self generateCompoundPredicateForEntity:[Album alloc] entityName:albumName];
     NSArray *result = [[CoreDataManager context] executeFetchRequest:request error:nil];
-    return (result) ? result[0] : nil;
+    return (result && result.count > 0) ? result[0] : nil;
 }
 
 - (Artist *)existingArtistWithName:(NSString *)artistName
@@ -1137,26 +1137,45 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     request.sortDescriptors = @[sortDescriptor];
     request.predicate = [self generateCompoundPredicateForEntity:[Artist alloc] entityName:artistName];
     NSArray *result = [[CoreDataManager context] executeFetchRequest:request error:nil];
-    return (result) ? result[0] : nil;
+    return (result && result.count > 0) ? result[0] : nil;
 }
 
 - (NSPredicate *)generateCompoundPredicateForEntity:(id)albumOrArtist entityName:(NSString *)query
 {
-    NSPredicate *predicate1, *predicate2;
+    NSPredicate *predicate1, *predicate2, *predicate3;
     NSString *sqlLikePattern = [NSString stringWithFormat:@"*%@*", query];
     
     if([albumOrArtist isMemberOfClass:[Album class]]) {
         predicate1 = [NSPredicate predicateWithFormat:@"albumName contains[cd] %@",  query];
         predicate2 = [NSPredicate predicateWithFormat:@"albumName LIKE[cd] %@",  sqlLikePattern];
+        NSString *noParensOrBrackets = [self stringWithoutParensOrBrackets:query];
+        noParensOrBrackets = [noParensOrBrackets removeIrrelevantWhitespace];
+        noParensOrBrackets = [NSString stringWithFormat:@"*%@*", noParensOrBrackets];
+        predicate3 = [NSPredicate predicateWithFormat:@"albumName LIKE[cd] %@", noParensOrBrackets];
+        return [NSCompoundPredicate orPredicateWithSubpredicates:@[predicate1, predicate2, predicate3]];
         
     } else if([albumOrArtist isMemberOfClass:[Artist class]]) {
         predicate1 = [NSPredicate predicateWithFormat:@"artistName contains[cd] %@",  query];
         predicate2 = [NSPredicate predicateWithFormat:@"artistName LIKE[cd] %@",  sqlLikePattern];
+        return [NSCompoundPredicate orPredicateWithSubpredicates:@[predicate1, predicate2]];
         
     } else {
         return nil;
     }
-    return [NSCompoundPredicate orPredicateWithSubpredicates:@[predicate1, predicate2]];
+}
+
+- (NSString *)stringWithoutParensOrBrackets:(NSString *)originalString
+{
+    NSMutableString *newString = [NSMutableString stringWithString:[originalString copy]];
+    NSString *regexText = @"(\\(.*\\))|(\\[.*\\])";
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexText
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:nil];
+    [regex replaceMatchesInString:newString
+                          options:0
+                            range:NSMakeRange(0, [newString length])
+                     withTemplate:@""];
+    return newString;
 }
 
 

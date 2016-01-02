@@ -226,7 +226,7 @@
 - (void)removeLiveAtInParensOnTarget:(NSMutableString **)aString
 {
     //matches (live on .....) or (live at .....), etc.
-    NSString *regexText = @"\(\s*live\s*(at|in|on)\s*([^\)]*)\)";
+    NSString *regexText = @"\\(\\s*live\\s*(at|in|on)\\s*([^\\)]*)\\)";
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexText
                                                                            options:NSRegularExpressionCaseInsensitive
                                                                              error:nil];
