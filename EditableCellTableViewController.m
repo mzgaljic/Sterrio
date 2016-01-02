@@ -103,8 +103,9 @@ short const fontSizeIncrease = 4;
 #pragma mark - UITextField methods
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
+    NSNumber *shouldAutoScrollTable = @YES;
     [[NSNotificationCenter defaultCenter] postNotificationName:_notificationName
-                                                        object:@[textField.text, @YES]];
+                                                        object:@[textField.text, shouldAutoScrollTable]];
     [self.navigationController popViewControllerAnimated:YES];
     return YES;
 }

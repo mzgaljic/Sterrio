@@ -639,7 +639,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 - (void)artistNameCreationCompleteAndSetUpArtist:(NSNotification *)notification
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"DoneEditingArtistField" object:nil];
-    NSString *artistName = (NSString *)notification.object;
+    NSString *artistName = notification.object[0];
     artistName = [artistName removeIrrelevantWhitespace];
     
     if(artistName.length == 0)  //was all whitespace, or user gave us an empty string
@@ -685,7 +685,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 - (void)albumNameCreationCompleteAndSetUpAlbum:(NSNotification *)notification
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"DoneEditingAlbumField" object:nil];
-    NSString *albumName = (NSString *)notification.object;
+    NSString *albumName = notification.object[0];
     albumName = [albumName removeIrrelevantWhitespace];
     
     //not checking for some album name because we CAN create albums with the same name!
