@@ -147,7 +147,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
                                            tabBarUnselectedImageNames:unselectedImgNames
                                              tabBarselectedImageNames:selectedImgNames];
     [self.window setRootViewController:self.mainVC];
-    if([AppDelegateSetupHelper appLaunchedFirstTime]) {
+    if([AppEnvironmentConstants shouldDisplayWelcomeScreen]) {
         self.mainVC.introOnScreen = YES;
         [self performSelector:@selector(showIntroTutorial) withObject:nil afterDelay:0.7 ];
     }

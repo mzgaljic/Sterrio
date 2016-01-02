@@ -67,7 +67,7 @@ NSString * const MZHideTabBarAnimated = @"Pass @YES in notif to hide tab bar";
 
 
 
-NSString * const MZWhatsNewUserMsg = @"Bugs have been fixed and an ad-banner is now in the app. Please test removal of the ad in app settings.\nThanks!  :)";
-NSString * const MZAppName = @"Music Video Library";
+NSString * const MZWhatsNewUserMsg = @"Sterrio can now guess the song info for most YouTube videos (w/ a reasonably clean title.) \n\nManually entering information is now a rare occurence.";
+NSString * const MZAppName = @"Sterrio";
 
 @end

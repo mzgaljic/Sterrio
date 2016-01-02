@@ -134,32 +134,6 @@ static BOOL haveCheckedCoreDataInit = NO;
                                              selector:@selector(editingModeCompleted:)
                                                  name:@"SongEditDone"
                                                object:nil];
-    
-    if([AppEnvironmentConstants shouldDisplayWelcomeScreen]){
-        
-        //Implement if desired.
-        /*
-        NSString *msg = MZWhatsNewUserMsg;
-         SDCAlertView *alert3 = [[SDCAlertView alloc] initWithTitle:@"Beta"
-                                                           message:msg
-                                                          delegate:nil
-                                                 cancelButtonTitle:@"OK"
-                                                 otherButtonTitles: nil];
-
-        alert3.titleLabelFont = [UIFont boldSystemFontOfSize:20];
-        alert3.messageLabelFont = [UIFont systemFontOfSize:20];
-        alert3.suggestedButtonFont = [UIFont boldSystemFontOfSize:20];
-        alert3.buttonTextColor = [UIColor defaultAppColorScheme];
-        [alert3 show];
-         */
-        
-        //show user how the app works a bit.
-        //LCTipsView *someTips = [[LCTipsView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-        //[someTips addTip:@"" forView:startButton];
-
-    } else if([AppEnvironmentConstants shouldDisplayWhatsNewScreen]){
-        //implement if desired.
-    }
 }
 
 - (void)dealloc
