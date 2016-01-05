@@ -49,8 +49,11 @@
     [self deleteSubstring:@"official video" onTarget:&title];
     [self deleteSubstring:@"lyric video" onTarget:&title];
     [self deleteSubstring:@"music video" onTarget:&title];
+    [self deleteSubstring:@"new music video" onTarget:&title];
     [self deleteSubstring:@"full song" onTarget:&title];
+    [self deleteSubstring:@"new song" onTarget:&title];
     [self deleteSubstring:@"full album" onTarget:&title];
+    [self deleteSubstring:@"new album" onTarget:&title];
     [self deleteSubstring:@"entire song" onTarget:&title];
     [self deleteSubstring:@"entire album" onTarget:&title];
     [self deleteSubstring:@"short version" onTarget:&title];
