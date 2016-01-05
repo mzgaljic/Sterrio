@@ -477,6 +477,13 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     _songIAmEditing.nonDefaultArtSpecified = @YES;
                 }
                 
+                //marking songs album album-art as dirty because this song was already added into
+                //the tableview controllers during the editing process (you just can't see it
+                //since this youtube adder VC is blocking everything.) If you don't mark it as
+                //dirty before saving and dismissing this vc, then the album art will be missing
+                //some stuff and will look incomplete (only 3 of 4 images will show in collage.)
+                _songIAmEditing.album.albumArt.isDirty = @YES;
+                
                 //save song into library
                 NSError *error;
                 [self.theDelegate performCleanupBeforeSongIsSaved:_songIAmEditing];
