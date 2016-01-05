@@ -1513,8 +1513,19 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
 - (void)changePlayButtonImageTo:(UIImage *)newBtnImage
 {
     [playButton setImage:newBtnImage forState:UIControlStateNormal];
-    int screenWidth = [UIScreen mainScreen].bounds.size.width;
-    int screenHeight = [UIScreen mainScreen].bounds.size.height;
+    
+    //want these values to be as if the phone was always in portrait (since that's the only
+    //position the buttons are visible in. don't want to accidentally set their frames off
+    //the edge of the screen after a rotation or whatever.)
+    int screenWidth, screenHeight;
+    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        screenWidth = [UIScreen mainScreen].bounds.size.height;
+        screenHeight = [UIScreen mainScreen].bounds.size.width;
+    } else {
+        screenWidth = [UIScreen mainScreen].bounds.size.width;
+        screenHeight = [UIScreen mainScreen].bounds.size.height;
+    }
+    
     
     //+1 is just for visual offset. code is perfect without it but the +1 makes it FEEL better.
     int xOrig = (screenWidth/2) - (newBtnImage.size.width/2) +1;
