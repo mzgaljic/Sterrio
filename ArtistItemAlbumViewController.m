@@ -10,6 +10,7 @@
 
 #import "MZCoreDataModelDeletionService.h"
 #import "AlbumArtUtilities.h"
+#import "AlbumAlbumArt.h"
 #import "Album.h"
 #import "Song.h"
 #import "MZAlbumSectionHeader.h"
@@ -189,6 +190,8 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
         
+        BOOL shouldReloadThisSection = NO;
+        
         [self.tableView beginUpdates];
         Song *aSong;
         if(indexPath.section == 0 && self.artistsStandAloneSongs.count > 0){
@@ -217,9 +220,13 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
                 [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section]
                               withRowAnimation:UITableViewRowAnimationMiddle];
             }
-            else
+            else {
                 [self.tableView deleteRowsAtIndexPaths:@[indexPath]
                                       withRowAnimation:UITableViewRowAnimationMiddle];
+                shouldReloadThisSection = YES;
+            }
+            
+            albumAtSection.albumArt.isDirty = @YES;
         }
         
         
@@ -231,6 +238,12 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
         [self fetchAndInitArtistInfo];
         
         [self.tableView endUpdates];
+        
+        if(shouldReloadThisSection) {
+            //for updating the album art once songs are removed from the album.
+            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section]
+                          withRowAnimation: UITableViewRowAnimationAutomatic];
+        }
         
         //parent vc tableview doesnt update song count after deletion. this fixes that.
         UITableView *parentTableview = [self.parentVc performSelector:@selector(tableView)];

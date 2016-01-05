@@ -10,6 +10,7 @@
 
 #import "MZCoreDataModelDeletionService.h"
 #import "AlbumArtUtilities.h"
+#import "AlbumAlbumArt.h"
 #import "Album.h"
 #import "Song.h"
 #import "MZAlbumSectionHeader.h"
@@ -148,6 +149,9 @@ const int ALBUM_HEADER_HEIGHT = 120;
         if(songsAlbum == nil || songsAlbum.albumSongs.count == 0){
             [self.navigationController popViewControllerAnimated:YES];
         }
+        songsAlbum.albumArt.isDirty = @YES;
+        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section]
+                      withRowAnimation: UITableViewRowAnimationAutomatic];
     }
 }
 
