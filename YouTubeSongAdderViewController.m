@@ -13,6 +13,7 @@
 #import "DiscogsSearchService.h"
 #import "DiscogsItem.h"
 #import "DiscogsResultsUtils.h"
+#import "MZPlayer.h"
 
 @interface YouTubeSongAdderViewController ()
 {
@@ -35,6 +36,7 @@
     BOOL previewIsUnplayable;
     
     BOOL leftAppDuePoweredByYtLogoClick;
+    BOOL playerWasPlayingBeforeTappingPoweredByYt;
     
     BOOL musicWasPlayingBeforePreviewBegan;
     __block NSURL *url;
@@ -819,6 +821,9 @@ static BOOL powerByYtHandled = NO;  //needed if user aggressively taps button mo
 {
     if(powerByYtHandled)
         return;
+    if(!self.player.playbackExplicitlyPaused && !self.player.isInStall) {
+        playerWasPlayingBeforeTappingPoweredByYt = YES;
+    }
     [self.player pause];
     
     NSString *youtubeLinkBeginning = @"https://www.youtube.com/watch?v=";
@@ -830,15 +835,17 @@ static BOOL powerByYtHandled = NO;  //needed if user aggressively taps button mo
     if (![[UIApplication sharedApplication] openURL:previewYtWebUrl]){
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotOpenSafariError];
         leftAppDuePoweredByYtLogoClick = NO;
+        playerWasPlayingBeforeTappingPoweredByYt = NO;
     }
 }
 
 - (void)appReturningToForeground
 {
-    if(leftAppDuePoweredByYtLogoClick) {
+    if(leftAppDuePoweredByYtLogoClick && playerWasPlayingBeforeTappingPoweredByYt) {
         [self.player performSelector:@selector(play) withObject:nil afterDelay:0.2];
     }
     leftAppDuePoweredByYtLogoClick = NO;
+    playerWasPlayingBeforeTappingPoweredByYt = NO;
 }
 
 #pragma mark - DiscogsSearchDelegate stuff
