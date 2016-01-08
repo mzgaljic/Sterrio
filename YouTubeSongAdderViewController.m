@@ -39,6 +39,7 @@
     BOOL playerWasPlayingBeforeTappingPoweredByYt;
     
     BOOL musicWasPlayingBeforePreviewBegan;
+    BOOL previousAllowsExternalPlayback;
     __block NSURL *url;
 }
 
@@ -60,7 +61,6 @@
         ytVideo = [youtubeVideoObject copy];
         NSString *sanitizedTitle = [ytVideo sanitizedTitle];
         [[DiscogsSearchService sharedInstance] queryWithTitle:sanitizedTitle callbackDelegate:self];
-        
         
         //fire off network request for video duration ASAP
         [[YouTubeVideoSearchService sharedInstance] setVideoDetailLookupDelegate:self];
@@ -117,6 +117,9 @@
     [AppEnvironmentConstants setUserIsPreviewingAVideo:NO];
     
     [[YouTubeVideoSearchService sharedInstance] removeVideoDetailLookupDelegate];
+    [[DiscogsSearchService sharedInstance] cancelAllPendingRequests];
+    
+    [MusicPlaybackController obtainRawAVPlayer].allowsExternalPlayback = previousAllowsExternalPlayback;
     if(musicWasPlayingBeforePreviewBegan){
         [MusicPlaybackController resumePlayback];
         [MusicPlaybackController explicitlyPausePlayback:NO];
@@ -736,19 +739,24 @@ static short numberTimesViewHasBeenShown = 0;
     }
     else{
         if(previewPlaybackBegan == NO){
+            previewPlaybackBegan = YES;
             [AppEnvironmentConstants setUserIsPreviewingAVideo:YES];
+            
+            //needed to cause an airplay conflict between the two avplayers
+            previousAllowsExternalPlayback = [MusicPlaybackController obtainRawAVPlayer].allowsExternalPlayback;
+            [MusicPlaybackController obtainRawAVPlayer].allowsExternalPlayback = NO;
+            
+            
+            musicWasPlayingBeforePreviewBegan = ([MusicPlaybackController obtainRawAVPlayer].rate > 0);
+            [MusicPlaybackController explicitlyPausePlayback:YES];
+            [MusicPlaybackController pausePlayback];
             
             //first time we know that playback started, update album art now.
             [self setUpLockScreenInfoAndArt];
             AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
             appDelegate.previewPlayer = self.player;
         }
-        previewPlaybackBegan = YES;
         [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
-        
-        musicWasPlayingBeforePreviewBegan = ([MusicPlaybackController obtainRawAVPlayer].rate > 0);
-        [MusicPlaybackController explicitlyPausePlayback:YES];
-        [MusicPlaybackController pausePlayback];
     }
 }
 

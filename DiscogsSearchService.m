@@ -64,6 +64,11 @@ double const DISCOGS_SECONDS_BETWEEN_REQUESTS = 3;
     return self;
 }
 
+- (void)cancelAllPendingRequests
+{
+    [self.request removeTarget:self];
+}
+
 - (void)requestComplete:(NSArray *)theItems
 {
     [self.delegate performSelectorOnMainThread:@selector(videoSongSuggestionsRequestComplete:)
