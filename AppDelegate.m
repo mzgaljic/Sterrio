@@ -486,7 +486,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         __weak UIApplication *weakApplication = [UIApplication sharedApplication];
         //Start the long-running task and return immediately.
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            pthread_setname_np("MZMusic: Bckgrnd long video state checker");
+            pthread_setname_np([[NSString stringWithFormat:@"%@: Bckgrnd long video state checker", MZAppName] UTF8String]);
             [weakApplication beginReceivingRemoteControlEvents];
             int sleepInterval = 3;
             Song *nowPlaying;
