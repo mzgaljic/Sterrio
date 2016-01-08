@@ -646,7 +646,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
                                                   [weakself handleActionClickWithButtonIndex:buttonIndex actionSheet:myActionSheet];
                                               } cancelButtonTitle:@"Cancel"
                                 destructiveButtonTitle:nil
-                                     otherButtonTitles:@"I Found A Bug 🐛", @"General Feedback", nil];
+                                     otherButtonTitles:@"I Found A Bug  🐛", @"General Feedback", nil];
     
     for(UIButton *aButton in mySheet.buttons){
         aButton.titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]

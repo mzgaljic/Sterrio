@@ -185,6 +185,8 @@ static MRProgressOverlayView *hud;
 - (void)removeAdsForUser
 {
     [AppEnvironmentConstants adsHaveBeenRemoved:YES];
+    //must be set now so the playerview frames are correct during animations.
+    [AppEnvironmentConstants setBannerAdHeight:0];
 }
 
 #pragma mark - Gui Utils
