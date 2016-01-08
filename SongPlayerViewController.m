@@ -372,11 +372,6 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     }
     if(! UIInterfaceOrientationIsPortrait(fromInterfaceOrientation))
         [self setupSliderHintView];
-    
-    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    CGPoint newCenter = [playerView convertPoint:playerView.center
-                              fromCoordinateSpace:playerView.superview];
-    [playerView newAirplayInUseMsgCenter:newCenter];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -438,6 +433,10 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     [self performSelector:@selector(initLabelsOnScreenDelayed)
                withObject:nil
                afterDelay:0.05f];
+    
+    CGPoint newCenter = [playerView convertPoint:playerView.center
+                             fromCoordinateSpace:playerView.superview];
+    [playerView newAirplayInUseMsgCenter:newCenter];
 }
 
 - (void)initLabelsOnScreenDelayed
