@@ -543,7 +543,22 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                                                                 object:nil];
         }
     } else if(context == airplayStateChanged){
-        BOOL airplayActive = self.allowsExternalPlayback;
+        BOOL airplayActive = self.externalPlaybackActive;
+        //there's a weird bug in my code that only happens in a particular scenario.
+        //occurs if audio-only airplay is off, and it happens when airplay goes from
+        //an enabled state to a disabled state. What happens is Sterrio thinks the app is stalled
+        //and a spinner appears, even if the app isn't really stalled. Adding this logic in here
+        //to try and compensate.
+        if(airplayActive == NO && self.rate > 0) {
+            NSLog(@"left stall");
+            stallHasOccured = NO;
+            [MusicPlaybackController setPlayerInStall:NO];
+            [self dismissAllSpinnersIfPossible];
+            if(! [MusicPlaybackController playbackExplicitlyPaused])
+                [MusicPlaybackController resumePlayback];
+            [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_RESUMED_PLAYBACK object:nil];
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+        }
         
         [[MusicPlaybackController obtainRawPlayerView] showAirPlayInUseMsg:airplayActive];
     } else
