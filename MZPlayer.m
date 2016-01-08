@@ -469,13 +469,21 @@ static BOOL isHudOnScreen = NO;
         [self.avPlayer pause];
     }
     _elapsedTimeInSec = sender.value;
-    CMTime seekTime = CMTimeMakeWithSeconds(sender.value, NSEC_PER_SEC);
-    [self.avPlayer seekToTime:seekTime];
+    if(! self.avPlayer.externalPlaybackActive) {
+        CMTime seekTime = CMTimeMakeWithSeconds(sender.value, NSEC_PER_SEC);
+        [self.avPlayer seekToTime:seekTime];
+    }
     [self setElapsedTimeLabelstringForSliderValue:sender.value];
 }
 
 - (void)progressBarChangeEnded:(UISlider *)sender
 {
+    _elapsedTimeInSec = sender.value;
+    if(self.avPlayer.externalPlaybackActive) {
+        CMTime seekTime = CMTimeMakeWithSeconds(sender.value, NSEC_PER_SEC);
+        [self.avPlayer seekToTime:seekTime];
+    }
+
     [self.delegate previewPlayerNeedsNowPlayingInfoCenterUpdate];
     [self.avPlayer play];
 }
