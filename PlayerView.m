@@ -173,7 +173,15 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
             
             airplayMsgView = [[UIImageView alloc] initWithImage:airplayImg];
             airplayMsgView.userInteractionEnabled = NO;
-            [self addSubview:airplayMsgView];
+
+            MRProgressOverlayView *spinner = [MRProgressOverlayView overlayForView:self];
+            if(spinner) {
+                //i want the airplay logo above the playerview but under the spinner.
+                [self insertSubview:airplayMsgView belowSubview:spinner];
+            } else {
+                [self addSubview:airplayMsgView];
+            }
+            
             airplayMsgView.center = [self convertPoint:self.center fromView:self.superview];
             CGRect originalImgViewFrame = airplayMsgView.frame;
             airplayMsgView.frame = CGRectMake(0,
