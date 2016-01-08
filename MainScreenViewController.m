@@ -26,6 +26,7 @@ short const dummyTabIndex = 2;
     NSUInteger heightOfAdBanner;
 }
 @property (nonatomic, strong) GADBannerView *adBanner;
+@property (nonatomic, strong) UIActivityIndicatorView *adBannerSpinner;
 @property (nonatomic, strong) UIView *tabBarView;  //contains the tab bar and center button - the whole visual thing.
 @property (nonatomic, strong) UITabBar *tabBar;  //this tab bar is containing within a tab bar view
 @property (nonatomic, strong) SSBouncyButton *centerButton;
@@ -96,6 +97,8 @@ short const dummyTabIndex = 2;
     return UIStatusBarStyleLightContent;
 }
 
+//this is called when Sterrio itself is hiding and showing the status bar. this is NOT called
+//when the status bar expanded and contracts, that's a totally separate thing.
 - (void)portraitStatusBarStateChanging:(NSNotification *)notification
 {
     alwaysKeepStatusBarInvisible = [(NSNumber *)notification.object boolValue];
@@ -195,15 +198,30 @@ short const dummyTabIndex = 2;
         adBanner.rootViewController = self;
         //real ad unit for production: ca-app-pub-3961646861945951/6727549027
         adBanner.adUnitID = @"ca-app-pub-3940256099942544/2934735716";  //test ad unit
-        [adBanner loadRequest:[GADRequest request]];
         
         heightOfAdBanner = adBanner.frame.size.height;
         [AppEnvironmentConstants setBannerAdHeight:(int)heightOfAdBanner];
         int yStartOfAdBanner = self.view.frame.size.height - heightOfAdBanner;
         adBanner.alpha = 0;
         adBanner.frame = CGRectMake(0, yStartOfAdBanner, adBanner.frame.size.width, adBanner.frame.size.height);
+        [adBanner loadRequest:[GADRequest request]];
         [self.view addSubview:adBanner];
         self.adBanner = adBanner;
+        
+        //set up spinner so it doesn't look as ugly
+        UIView *spinnerView = [[UIView alloc] initWithFrame:adBanner.frame];
+        [self.view addSubview:spinnerView];
+        spinnerView.backgroundColor = [UIColor whiteColor];
+        self.adBannerSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        UIActivityIndicatorView *spinner = self.adBannerSpinner;
+        float indicatorSize = self.adBannerSpinner.frame.size.width;
+        spinner.frame = CGRectMake(self.view.frame.size.width/2 - indicatorSize/2,
+                                   (adBanner.frame.size.height / 2.0) - (indicatorSize/2),
+                                   indicatorSize,
+                                   indicatorSize);
+        spinner.color = [UIColor defaultAppColorScheme];
+        [spinner startAnimating];
+        [spinnerView addSubview:spinner];
     }
     
     if(adsRemoved == YES && prevAdsRemovedValue == NO) {
@@ -260,16 +278,8 @@ short const dummyTabIndex = 2;
         self.tabBarView = [[UIView alloc] init];
         
         self.tabBar = [[UITabBar alloc] init];
+        [self.tabBar setTranslucent:YES];
         self.tabBar.delegate = self;
-        
-        if([AppEnvironmentConstants isUserOniOS8OrAbove])
-        {
-            UIVisualEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
-            visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-            visualEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-            [self.tabBarView addSubview:visualEffectView];
-            [self.tabBar setBackgroundImage:[UIImage new]];
-        }
         
         self.centerButtonImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
                                                               :[UIImage imageNamed:CENTER_BTN_IMG_NAME]];
@@ -305,10 +315,16 @@ short const dummyTabIndex = 2;
     if(! [AppEnvironmentConstants isTabBarHidden]){
         lastVisibleTabBarOrientation = [UIApplication sharedApplication].statusBarOrientation;
         if(! self.tabBarView.superview) {
+            self.tabBarView.alpha = 0;
             [self.view addSubview:self.tabBarView];
         }
         
-        self.tabBarView.alpha = 1;
+        [UIView animateWithDuration:0.6
+                              delay:0.2
+                            options:UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionAllowUserInteraction
+                         animations:^{
+                                self.tabBarView.alpha = 1;
+                         } completion:nil];
     }
 }
 
@@ -367,7 +383,10 @@ short const dummyTabIndex = 2;
         portraitWidth = b;
         portraitHeight = a;
     }
-    int yVal = portraitHeight - heightOfAdBanner - MZTabBarHeight;
+    
+    //the +1 at the end fixes a weird bug where the tableview underneath the tab bar
+    //would be visible in an ugly way if the user is on ios7 & sees the adbanner.
+    int yVal = portraitHeight - heightOfAdBanner - MZTabBarHeight + 1;
     return CGRectMake(0, yVal, portraitWidth, MZTabBarHeight);
 }
 
@@ -384,7 +403,10 @@ short const dummyTabIndex = 2;
         landscapeHeight = b;
         landscapeWidth = a;
     }
-    int yVal = landscapeHeight - heightOfAdBanner - MZTabBarHeight;
+    
+    //the +1 at the end fixes a weird bug where the tableview underneath the tab bar
+    //would be visible in an ugly way if the user is on ios7 & sees the adbanner.
+    int yVal = landscapeHeight - heightOfAdBanner - MZTabBarHeight + 1;
     return CGRectMake(0, yVal, landscapeWidth, MZTabBarHeight);
 }
 
@@ -480,6 +502,15 @@ short const dummyTabIndex = 2;
         return;
     }
     
+    //remove spinner if it's on screen
+    if(self.adBannerSpinner) {
+        UIView *spinnerView = self.adBannerSpinner.superview;
+        [self.adBannerSpinner stopAnimating];
+        [self.adBannerSpinner removeFromSuperview];
+        [spinnerView removeFromSuperview];
+        spinnerView = nil;
+    }
+
     GADBannerView *adBanner = self.adBanner;
     if(UIInterfaceOrientationIsLandscape(orientation)) {
         adBanner.adSize = kGADAdSizeSmartBannerLandscape;
@@ -493,6 +524,21 @@ short const dummyTabIndex = 2;
     [self.adBanner removeFromSuperview];
     self.adBanner.alpha = 0;
     [self.view addSubview:self.adBanner];
+    
+    //set up spinner so it doesn't look as ugly
+    UIView *newSpinnerView = [[UIView alloc] initWithFrame:adBanner.frame];
+    [self.view addSubview:newSpinnerView];
+    newSpinnerView.backgroundColor = [UIColor whiteColor];
+    self.adBannerSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    UIActivityIndicatorView *spinner = self.adBannerSpinner;
+    float indicatorSize = self.adBannerSpinner.frame.size.width;
+    spinner.frame = CGRectMake(adBanner.frame.size.width/2 - indicatorSize/2,
+                               (adBanner.frame.size.height / 2.0) - (indicatorSize/2),
+                               indicatorSize,
+                               indicatorSize);
+    spinner.color = [UIColor defaultAppColorScheme];
+    [spinner startAnimating];
+    [newSpinnerView addSubview:spinner];
 }
 
 - (void)appThemePossiblyChanged
@@ -700,8 +746,12 @@ short const dummyTabIndex = 2;
 #pragma mark - GADBanner delegate
 - (void)adViewDidReceiveAd:(GADBannerView *)bannerView
 {
-    [UIView animateWithDuration:0.35 animations:^{
+    UIView *spinnerView = self.adBannerSpinner.superview;
+    [self.adBannerSpinner stopAnimating];
+    [self.adBannerSpinner removeFromSuperview];
+    [UIView animateWithDuration:0.5 animations:^{
         self.adBanner.alpha = 1;
+        [spinnerView removeFromSuperview];
     }];
 }
 

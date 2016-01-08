@@ -75,6 +75,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         self.window = [UIWindow new];
         self.window.frame = [[UIScreen mainScreen] bounds];
     }
+    self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
     [AppDelegateSetupHelper setupDiskAndMemoryWebCache];
