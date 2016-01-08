@@ -650,6 +650,11 @@ static int icloudEnabledCounter = 0;
     return statusBarHeight;
 }
 
++ (int)regularStatusBarHeightPortrait  //the non-expanded height
+{
+    return 20;
+}
+
 + (void)setStatusBarHeight:(int)height
 {
     statusBarHeight = height;

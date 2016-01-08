@@ -448,15 +448,23 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 #pragma mark - Responding to player playback events (rate, internet connection, etc.) Slider and labels.
 - (IBAction)playbackSliderEditingHasBegun:(id)sender
 {
+    BOOL dontShowHint = NO;
+    //if the status bar is expanded (in a call, using navigation, etc.) don't show hint. has bug...
+    if([UIApplication sharedApplication].statusBarFrame.size.height >= [AppEnvironmentConstants regularStatusBarHeightPortrait]) {
+        dontShowHint = YES;
+    }
+    
     NSString *hint = @"Slide ↑ or ↓ for more accuracy.";
     int presentationMode = GCDiscreetNotificationViewPresentationModeTop;
-    if(! sliderHint)
+    if(! sliderHint && !dontShowHint) {
         sliderHint = [[GCDiscreetNotificationView alloc] initWithText:hint
                                                          showActivity:NO
                                                    inPresentationMode:presentationMode
                                                                inView:_sliderHintView];
+    }
+
     _sliderHintView.hidden = NO;
-    if(sliderHint)
+    if(sliderHint && !dontShowHint)
         [sliderHint showAnimated];
     
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
@@ -890,6 +898,7 @@ static int accomodateInterfaceLabelsCounter = 0;
                                       timerImg.size.width,
                                       timerImg.size.height);
     timerButton.frame = timerBtnFrame;
+    timerButton.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
     [timerButton setImage:timerImg forState:UIControlStateNormal];
     timerButton.alpha = 0;
     [timerButton setHitTestEdgeInsets:UIEdgeInsetsMake(-20, -30, -15, -30)];
@@ -909,6 +918,7 @@ static int accomodateInterfaceLabelsCounter = 0;
                                            bottomTextButtonsWidth,
                                            bottomTextButtonsHeight);
     repeatModeButton.frame = repeatModeBtnFrame;
+    repeatModeButton.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
     repeatModeButton.tintColor = [UIColor defaultAppColorScheme];
     repeatModeButton.alpha = 0;
     [repeatModeButton setHitTestEdgeInsets:UIEdgeInsetsMake(-15, -25, -15, -25)];
@@ -927,6 +937,7 @@ static int accomodateInterfaceLabelsCounter = 0;
                                            bottomTextButtonsWidth,
                                            bottomTextButtonsHeight);
     shuffleModeButton.frame = shuffleModeBtnFrame;
+    shuffleModeButton.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
     shuffleModeButton.tintColor = [UIColor defaultAppColorScheme];
     shuffleModeButton.alpha = 0;
     [shuffleModeButton setHitTestEdgeInsets:UIEdgeInsetsMake(-15, -25, -15, -25)];
@@ -940,6 +951,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     
     //add buttons to the viewControllers view
     for(UIButton *aButton in musicButtons){
+        aButton.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
         [self.view addSubview:aButton];
         aButton.alpha = 0.0;  //make button transparent
         [UIView animateWithDuration:0.70  //now animate a "fade in"
@@ -978,7 +990,9 @@ static int accomodateInterfaceLabelsCounter = 0;
         songNameFontSize = 20;
     
     _songNameLabel.text = [MusicPlaybackController nowPlayingSong].songName;
+    _songNameLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
     _artistAndAlbumLabel.text = [self generateArtistAndAlbumString];
+    _artistAndAlbumLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
     
     float labelScrollRate = phoneWidth / 25.0;
     _songNameLabel.rate = labelScrollRate;
@@ -1107,6 +1121,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     int labelXValue = screenWidth * 0.02f;
     int yValue = screenHeight * 0.74f;
     [_currentTimeLabel setFrame:CGRectMake(labelXValue, yValue, labelWidth, labelHeight)];
+    _currentTimeLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
     _currentTimeLabel.font = [UIFont fontWithName:nameOfFontForTimeLabels
                                              size:timeLabelFontSize];
     [self.view addSubview:_currentTimeLabel];
@@ -1118,6 +1133,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     int sliderWidth = screenWidth - ((labelXValue + labelWidth + padding) * 2);
     int sliderHeight = labelHeight;
     [_playbackSlider setFrame:CGRectMake(xValue, yValue +2, sliderWidth, sliderHeight)];
+    _playbackSlider.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
     _playbackSlider.transform = CGAffineTransformMakeScale(0.82, 0.82);  //make knob smaller
     [self.view addSubview:_playbackSlider];
     
@@ -1146,6 +1162,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     labelXValue = xValue + sliderWidth + padding;
     yValue = yValue;
     [_totalDurationLabel setFrame:CGRectMake(labelXValue, yValue, labelWidth, labelHeight)];
+    _totalDurationLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
     _totalDurationLabel.font = [UIFont fontWithName:nameOfFontForTimeLabels
                                                size:timeLabelFontSize];
     [self.view addSubview:_totalDurationLabel];

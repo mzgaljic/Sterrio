@@ -143,6 +143,7 @@ typedef enum{
 + (int)navBarHeight;
 + (void)setNavBarHeight:(int)height;
 + (int)statusBarHeight;
++ (int)regularStatusBarHeightPortrait;  //the non-expanded height
 + (void)setStatusBarHeight:(int)height;
 + (void)setBannerAdHeight:(int)height;
 + (int)bannerAdHeight;
