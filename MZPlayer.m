@@ -50,7 +50,7 @@
 @implementation MZPlayer
 
 const int CONTROLS_HUD_HEIGHT = 45;
-const float AUTO_HIDE_HUD_DELAY = 3;
+const float AUTO_HIDE_HUD_DELAY = 4;
 static BOOL isHudOnScreen = NO;
 
 - (void)setFrame:(CGRect)frame
@@ -183,7 +183,7 @@ static BOOL isHudOnScreen = NO;
     
     if(visualEffectView == nil){
         UIVisualEffect *blurEffect;
-        blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+        blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
         visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
     }
     
