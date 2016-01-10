@@ -211,7 +211,23 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     }
 
     cell.textLabel.text = song.songName;
-    cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringForSong:song];
+    //cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringForSong:song];
+    NSMutableString *detailText = [NSMutableString new];
+    NSString *artistName = song.artist.artistName;
+    NSString *albumName = song.album.albumName;
+    if(artistName != nil && albumName != nil){
+        [detailText appendString:artistName];
+        [detailText appendString:@" — "];
+        [detailText appendString:albumName];
+    } else if(artistName == nil && albumName == nil){
+        detailText = nil;
+    } else if(artistName == nil && albumName != nil){
+        [detailText appendString:albumName];
+    } else if(artistName != nil && albumName == nil){
+        [detailText appendString:artistName];
+    } //else  --case should never happen
+
+    cell.detailTextLabel.text = detailText;
     
     NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
     BOOL songIsNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToPlaylistItem:item withContext:self.playbackContext];
@@ -220,6 +236,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.textLabel.textColor = [AppEnvironmentConstants nowPlayingItemColor];
     else
         cell.textLabel.textColor = [UIColor blackColor];
+    cell.detailTextLabel.textColor = [UIColor grayColor];
     
     // Store a reference to the current cell that will enable the image to be associated with the correct
     // cell, when the image is subsequently loaded asynchronously.
@@ -871,14 +888,11 @@ static BOOL hidingCenterBtnAnimationComplete = YES;
     NSString *albumString = aSong.album.albumName;
     if(artistString != nil && albumString != nil){
         NSMutableString *newArtistString = [NSMutableString stringWithString:artistString];
-        [newArtistString appendString:@" "];
+        [newArtistString appendString:@" — "];  //this is a special dash called an 'em dash'.
         
         NSMutableString *entireString = [NSMutableString stringWithString:newArtistString];
         [entireString appendString:albumString];
-        
-        NSArray *components = @[newArtistString, albumString];
-        //NSRange untouchedRange = [entireString rangeOfString:[components objectAtIndex:0]];
-        NSRange grayRange = [entireString rangeOfString:[components objectAtIndex:1]];
+        NSRange grayRange = [entireString rangeOfString:entireString];
         
         NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
         

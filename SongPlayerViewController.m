@@ -1438,7 +1438,7 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
 
 - (void)shuffleModeButtonTapped
 {
-    NSString *msg = @"This feature is coming soon.";
+    NSString *msg = @"This feature is comiFng soon.";
     SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:@"Shuffle"
                                                                     message:msg
                                                              preferredStyle:SDCAlertControllerStyleAlert];

@@ -144,10 +144,26 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                                              color:[[UIColor defaultAppColorScheme] lighterColor]];
     cell.textLabel.text = song.songName;
     
-    if(![reuseID isEqualToString:cellReuseIdDetailLabelNull])
-        cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringForSong:song];
-    else
+    if(![reuseID isEqualToString:cellReuseIdDetailLabelNull]){
+        //cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringForSong:song];
+        NSMutableString *detailText = [NSMutableString new];
+        NSString *artistName = song.artist.artistName;
+        NSString *albumName = song.album.albumName;
+        if(artistName != nil && albumName != nil){
+            [detailText appendString:artistName];
+            [detailText appendString:@" — "];
+            [detailText appendString:albumName];
+        } else if(artistName == nil && albumName == nil){
+            detailText = nil;
+        } else if(artistName == nil && albumName != nil){
+            [detailText appendString:albumName];
+        } else if(artistName != nil && albumName == nil){
+            [detailText appendString:artistName];
+        } //else  --case should never happen
+        cell.detailTextLabel.text = detailText;
+    } else {
         cell.detailTextLabel.text = nil;
+    }
     
     BOOL isNowPlaying = [[NowPlayingSong sharedInstance].nowPlayingItem isEqualToSong:song
                                                                           withContext:self.playbackContext];
@@ -155,6 +171,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.textLabel.textColor = [super colorForNowPlayingItem];
     else
         cell.textLabel.textColor = [UIColor blackColor];
+    cell.detailTextLabel.textColor = [UIColor grayColor];
     
     if(self.dataSourceType == SONG_DATA_SRC_TYPE_Playlist_MultiSelect)
     {
@@ -690,14 +707,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     NSString *albumString = aSong.album.albumName;
     if(artistString != nil && albumString != nil){
         NSMutableString *newArtistString = [NSMutableString stringWithString:artistString];
-        [newArtistString appendString:@" "];
+        [newArtistString appendString:@" — "];  //this is a special dash called an 'em dash'.
         
         NSMutableString *entireString = [NSMutableString stringWithString:newArtistString];
         [entireString appendString:albumString];
-        
-        NSArray *components = @[newArtistString, albumString];
-        //NSRange untouchedRange = [entireString rangeOfString:[components objectAtIndex:0]];
-        NSRange grayRange = [entireString rangeOfString:[components objectAtIndex:1]];
+        NSRange grayRange = [entireString rangeOfString:entireString];
         
         NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
         

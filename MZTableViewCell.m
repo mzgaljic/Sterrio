@@ -87,9 +87,9 @@ short const dotLabelPadding = 20;
     [self setLabelsFramesBasedOnEditingMode];
     UIFont *textLabelFont;
     NSString *regularFontName = [AppEnvironmentConstants regularFontName];
-    NSString *boldFontName = [AppEnvironmentConstants boldFontName];
+    //NSString *boldFontName = [AppEnvironmentConstants boldFontName];
     
-    textLabelFont = [MZTableViewCell findAdaptiveFontWithName:boldFontName
+    textLabelFont = [MZTableViewCell findAdaptiveFontWithName:regularFontName
                                                forUILabelSize:self.textLabel.frame.size
                                               withMinimumSize:16];
     
