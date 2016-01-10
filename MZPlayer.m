@@ -14,6 +14,7 @@
 #import "UIColor+LighterAndDarker.h"
 #import "AppEnvironmentConstants.h"
 #import "MZSlider.h"
+#import "SSBouncyButton.h"
 
 @interface MZPlayer ()
 {
@@ -32,7 +33,7 @@
 @property (strong,nonatomic) UIView *controlsHud;
 
 @property (strong, nonatomic) MPVolumeView *airplayButton;
-@property (strong, nonatomic) UIButton *playPauseButton;
+@property (strong, nonatomic) SSBouncyButton *playPauseButton;
 @property (strong, nonatomic) MZSlider *progressBar;
 @property (strong, nonatomic) UILabel *elapsedTimeLabel;
 @property (strong, nonatomic) UILabel *totalTimeLabel;
@@ -191,18 +192,18 @@ static BOOL isHudOnScreen = NO;
     
     //Play-Pause button
     if(self.playPauseButton == nil){
-        self.playPauseButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        
-        UIColor *buttonTint = [UIColor whiteColor];
-        UIImage *pauseImage = [UIImage colorOpaquePartOfImage:buttonTint
+        self.playPauseButton = [[SSBouncyButton alloc] initAsImage];
+        UIImage *pauseImage = [UIImage colorOpaquePartOfImage:[UIColor defaultWindowTintColor]
                                                              :[UIImage imageNamed:@"Pause"]];
-        UIImage *playImage = [UIImage colorOpaquePartOfImage:buttonTint
+        UIImage *playImage = [UIImage colorOpaquePartOfImage:[UIColor defaultWindowTintColor]
                                                             :[UIImage imageNamed:@"Play"]];
-        [self.playPauseButton setBackgroundImage:pauseImage forState:UIControlStateNormal];
-        [self.playPauseButton setBackgroundImage:playImage forState:UIControlStateSelected];
+        [self.playPauseButton setImage:pauseImage forState:UIControlStateNormal];
+        [self.playPauseButton setImage:playImage forState:UIControlStateSelected];
         [self.playPauseButton setSelected:NO];
         [self.playPauseButton setHitTestEdgeInsets:UIEdgeInsetsMake(-30, -30, -30, -25)];
-        [self.playPauseButton addTarget:self action:@selector(playButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+        [self.playPauseButton addTarget:self
+                                 action:@selector(playButtonTapped:)
+                       forControlEvents:UIControlEventTouchUpInside];
     }
     
     int playBtnEdgePadding = 10;
@@ -305,9 +306,7 @@ static BOOL isHudOnScreen = NO;
     //airplay button
     if(self.airplayButton == nil){
         self.airplayButton = [[MPVolumeView alloc] init];
-        [self.airplayButton setShowsVolumeSlider:NO];
-        self.airplayButton.tintColor = [UIColor defaultAppColorScheme];
-        
+        [self.airplayButton setShowsVolumeSlider:NO];        
         UIImage *airplayImg = [UIImage imageNamed:@"airplay_button"];
         UIImage *airplayNormalState = [UIImage colorOpaquePartOfImage:[UIColor whiteColor]
                                                                      :airplayImg];
