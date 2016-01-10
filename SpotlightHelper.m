@@ -142,6 +142,8 @@
         [domainId appendString:@"."];
         [domainId appendString:aSong.album.uniqueId];
     }
+    [domainId appendString:@"."];
+    [domainId appendString:aSong.uniqueId];
     if(domainId.length == 0)
         return nil;
     
