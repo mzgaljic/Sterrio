@@ -174,10 +174,9 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     _totalDurationLabel.textColor = [UIColor blackColor];
     self.navBar.title = [MusicPlaybackController prettyPrintNavBarTitle];
     
-    int defaultStatusBarHeight = 20;
     extraStatusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
-    if(extraStatusBarHeight >= defaultStatusBarHeight) {
-        extraStatusBarHeight -= defaultStatusBarHeight;
+    if(extraStatusBarHeight >= [AppEnvironmentConstants regularStatusBarHeightPortrait]) {
+        extraStatusBarHeight -= [AppEnvironmentConstants regularStatusBarHeightPortrait];
     }
     
     //app crashes shortly after dismissing this VC if the share sheet was selected. Need

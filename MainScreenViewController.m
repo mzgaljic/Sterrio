@@ -90,6 +90,13 @@ short const dummyTabIndex = 2;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(userDoneWithIntro)
                                                  name:MZAppIntroComplete object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(newSongIsLoading:)
+                                                 name:MZNewSongLoading
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(dismissPlayerExpandingTip) name:@"shouldDismissPlayerExpandingTip"
+                                               object:nil];
 }
 
 - (UIStatusBarStyle) preferredStatusBarStyle
@@ -776,5 +783,59 @@ short const dummyTabIndex = 2;
 
 #pragma mark - CMPopTipView delegate
 - (void)popTipViewWasDismissedByUser:(CMPopTipView *)popTipView {}
+
+#pragma mark - Showing user tip when song played for first time
+- (void)newSongIsLoading:(NSNotification *)notification
+{
+    if ([[notification name] isEqualToString:MZNewSongLoading]) {
+        if(! [AppEnvironmentConstants userSawExpandingPlayerTip]) {
+            [self performSelector:@selector(showSwipeUpTipForExpandingPlayer)
+                       withObject:nil
+                       afterDelay:0.5];
+        }
+    }
+}
+
+static UIImageView *playerExpansionTipView = nil;
+- (void)showSwipeUpTipForExpandingPlayer
+{
+    PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
+    UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"swipe_up_img"]];
+    imgView.center = playerView.center;
+    imgView.frame = CGRectMake(imgView.frame.origin.x,
+                               imgView.frame.origin.y - (playerView.frame.size.height/2),
+                               imgView.frame.size.width,
+                               imgView.frame.size.height);
+    imgView.alpha = 0;
+    UIWindow *window = [[[UIApplication sharedApplication] delegate] window];
+    [window addSubview:imgView];
+    [UIView animateWithDuration:1
+                          delay:0
+         usingSpringWithDamping:1
+          initialSpringVelocity:0.2
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         imgView.alpha = 1;
+                     }
+                     completion:nil];
+    playerExpansionTipView = imgView;
+}
+
+- (void)dismissPlayerExpandingTip
+{
+    [UIView animateWithDuration:0.5
+                          delay:0
+         usingSpringWithDamping:1
+          initialSpringVelocity:0.6
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         playerExpansionTipView.alpha = 0;
+                     }
+                     completion:^(BOOL finished) {
+                         [AppEnvironmentConstants setUserSawExpandingPlayerTip:YES];
+                         [playerExpansionTipView removeFromSuperview];
+                         playerExpansionTipView = nil;
+                     }];
+}
 
 @end

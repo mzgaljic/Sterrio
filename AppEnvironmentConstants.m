@@ -33,6 +33,7 @@ static BOOL userIsPreviewingAVideo = NO;
 static BOOL tabBarIsHidden = NO;
 static BOOL isIcloudSwitchWaitingForActionToComplete = NO;
 static BOOL playbackTimerActive = NO;
+static BOOL userSawExpandingPlayerTip = NO;
 static NSDate *lastSuccessfulSyncDate;
 static NSInteger activePlaybackTimerThreadNum;
 static PLABACK_REPEAT_MODE repeatType;
@@ -312,6 +313,17 @@ static NSString *const areAdsRemovedKeychainKey = @"ads removed yet?";
     [data getBytes:&boolAsInt length:sizeof(boolAsInt)];
     return [[NSNumber numberWithInt:boolAsInt] boolValue];
 }
++ (void)setUserSawExpandingPlayerTip:(BOOL)userSawIt
+{
+    [[NSUserDefaults standardUserDefaults] setBool:userSawIt
+                                            forKey:USER_SAW_EXPANDING_PLAYER_TIP_VALUE_KEY];
+    userSawExpandingPlayerTip = userSawIt;
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
++ (BOOL)userSawExpandingPlayerTip
+{
+    return userSawExpandingPlayerTip;
+}
 + (BOOL)userAcceptedOrDeclinedPushNotifications
 {
     return userAcceptedOrDeclinedPushNotifications;
@@ -323,7 +335,7 @@ static NSString *const areAdsRemovedKeychainKey = @"ads removed yet?";
     userAcceptedOrDeclinedPushNotifications = something;
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
-//app settings
+//app settings  --these are saved in nsuserdefaults once user leaves settings page.
 + (int)preferredSongCellHeight
 {
     return preferredSongCellHeight;
@@ -382,7 +394,10 @@ static NSString *const areAdsRemovedKeychainKey = @"ads removed yet?";
 
 + (void)setUserHasSeenCellularDataUsageWarning:(BOOL)hasSeen
 {
+    [[NSUserDefaults standardUserDefaults] setBool:hasSeen
+                                            forKey:USER_HAS_SEEN_CELLULAR_WARNING];
     didPreviouslyShowUserCellularWarning = hasSeen;
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 + (BOOL)didPreviouslyShowUserCellularWarning
@@ -519,8 +534,8 @@ static int icloudEnabledCounter = 0;
 
 + (void)setLastSuccessfulSyncDate:(NSDate *)date
 {
-    lastSuccessfulSyncDate = date;
     [[NSUserDefaults standardUserDefaults] setObject:date forKey:LAST_SUCCESSFUL_ICLOUD_SYNC_KEY];
+    lastSuccessfulSyncDate = date;
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
@@ -628,6 +643,7 @@ static int icloudEnabledCounter = 0;
     
     [UIColor defaultAppColorScheme:appThemeColor];
     [AppDelegateSetupHelper setGlobalFontsAndColorsForAppGUIComponents];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 + (UIColor *)defaultAppThemeBeforeUserPickedTheme

@@ -23,6 +23,8 @@
 
 + (void)loadUsersSettingsFromNSUserDefaults
 {
+    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
+    
     if([AppDelegateSetupHelper appLaunchedFirstTime]){
         //these are the default settings
         int prefSongCellHeight = [AppEnvironmentConstants defaultSongCellHeight];
@@ -30,6 +32,7 @@
         short prefCellStreamQuality = 240;
         BOOL icloudSync = NO;
         BOOL shouldOnlyAirplayAudio = YES;
+        BOOL userSawExpandingPlayerTip = NO;
         BOOL userHasSeenCellDataWarning = NO;
         BOOL userAcceptedOrDeclinedPushNotif = NO;
         
@@ -39,24 +42,27 @@
         [AppEnvironmentConstants set_iCloudSyncEnabled:icloudSync];
         [AppEnvironmentConstants setUserHasSeenCellularDataUsageWarning:userHasSeenCellDataWarning];
         [AppEnvironmentConstants setShouldOnlyAirplayAudio:shouldOnlyAirplayAudio];
+        [AppEnvironmentConstants setUserSawExpandingPlayerTip:userSawExpandingPlayerTip];
         
         
-        [[NSUserDefaults standardUserDefaults] setInteger:prefSongCellHeight
-                                                   forKey:PREFERRED_SONG_CELL_HEIGHT_KEY];
-        [[NSUserDefaults standardUserDefaults] setInteger:prefWifiStreamQuality
-                                                   forKey:PREFERRED_WIFI_VALUE_KEY];
-        [[NSUserDefaults standardUserDefaults] setInteger:prefCellStreamQuality
-                                                   forKey:PREFERRED_CELL_VALUE_KEY];
-        [[NSUserDefaults standardUserDefaults] setInteger:[AppEnvironmentConstants usersMajorIosVersion]
-                                                   forKey:USERS_LAST_KNOWN_MAJOR_IOS_VERS_VALUE_KEY];
-        [[NSUserDefaults standardUserDefaults] setBool:icloudSync
-                                                   forKey:ICLOUD_SYNC];
-        [[NSUserDefaults standardUserDefaults] setBool:userHasSeenCellDataWarning
-                                                forKey:USER_HAS_SEEN_CELLULAR_WARNING];
-        [[NSUserDefaults standardUserDefaults] setBool:userAcceptedOrDeclinedPushNotif
-                                                forKey:USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF];
-        [[NSUserDefaults standardUserDefaults] setBool:shouldOnlyAirplayAudio
-                                                forKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY];
+        [standardDefaults setInteger:prefSongCellHeight
+                              forKey:PREFERRED_SONG_CELL_HEIGHT_KEY];
+        [standardDefaults setInteger:prefWifiStreamQuality
+                              forKey:PREFERRED_WIFI_VALUE_KEY];
+        [standardDefaults setInteger:prefCellStreamQuality
+                              forKey:PREFERRED_CELL_VALUE_KEY];
+        [standardDefaults setInteger:[AppEnvironmentConstants usersMajorIosVersion]
+                              forKey:USERS_LAST_KNOWN_MAJOR_IOS_VERS_VALUE_KEY];
+        [standardDefaults setBool:icloudSync
+                           forKey:ICLOUD_SYNC];
+        [standardDefaults setBool:userHasSeenCellDataWarning
+                           forKey:USER_HAS_SEEN_CELLULAR_WARNING];
+        [standardDefaults setBool:userAcceptedOrDeclinedPushNotif
+                           forKey:USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF];
+        [standardDefaults setBool:shouldOnlyAirplayAudio
+                           forKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY];
+        [standardDefaults setBool:userSawExpandingPlayerTip
+                           forKey:USER_SAW_EXPANDING_PLAYER_TIP_VALUE_KEY];
         
         UIColor *color = [AppEnvironmentConstants defaultAppThemeBeforeUserPickedTheme];
         const CGFloat* components = CGColorGetComponents(color.CGColor);
@@ -65,32 +71,33 @@
         NSNumber *blue = [NSNumber numberWithDouble:components[2]];
         NSNumber *alpha = [NSNumber numberWithDouble:components[3]];
         NSArray *defaultColorRepresentation = @[red, green, blue, alpha];
-        [[NSUserDefaults standardUserDefaults] setObject:defaultColorRepresentation
-                                                  forKey:APP_THEME_COLOR_VALUE_KEY];
+        [standardDefaults setObject:defaultColorRepresentation
+                             forKey:APP_THEME_COLOR_VALUE_KEY];
         [UIColor defaultAppColorScheme:color];
         
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        [standardDefaults synchronize];
     } else{
         //load users last settings from disk before setting these values.
         [AppEnvironmentConstants setPreferredSongCellHeight:(int)
-                        [[NSUserDefaults standardUserDefaults] integerForKey:PREFERRED_SONG_CELL_HEIGHT_KEY]];
+                        [standardDefaults integerForKey:PREFERRED_SONG_CELL_HEIGHT_KEY]];
         [AppEnvironmentConstants setPreferredWifiStreamSetting:
-                        [[NSUserDefaults standardUserDefaults] integerForKey:PREFERRED_WIFI_VALUE_KEY]];
+                        [standardDefaults integerForKey:PREFERRED_WIFI_VALUE_KEY]];
         [AppEnvironmentConstants setPreferredCellularStreamSetting:
-                        [[NSUserDefaults standardUserDefaults] integerForKey:PREFERRED_CELL_VALUE_KEY]];
+                        [standardDefaults integerForKey:PREFERRED_CELL_VALUE_KEY]];
         [AppEnvironmentConstants set_iCloudSyncEnabled:
-                        [[NSUserDefaults standardUserDefaults] boolForKey:ICLOUD_SYNC]];
+                        [standardDefaults boolForKey:ICLOUD_SYNC]];
         [AppEnvironmentConstants setShouldOnlyAirplayAudio:
-                        [[NSUserDefaults standardUserDefaults] boolForKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY]];
+                        [standardDefaults boolForKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY]];
         [AppEnvironmentConstants setUserHasSeenCellularDataUsageWarning:
-                        [[NSUserDefaults standardUserDefaults] boolForKey:USER_HAS_SEEN_CELLULAR_WARNING]];
+                        [standardDefaults boolForKey:USER_HAS_SEEN_CELLULAR_WARNING]];
         [AppEnvironmentConstants userAcceptedOrDeclinedPushNotif:
-                        [[NSUserDefaults standardUserDefaults] boolForKey:USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF]];
+                        [standardDefaults boolForKey:USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF]];
         [AppEnvironmentConstants setLastSuccessfulSyncDate:
-                        [[NSUserDefaults standardUserDefaults] objectForKey:LAST_SUCCESSFUL_ICLOUD_SYNC_KEY]];
+                        [standardDefaults objectForKey:LAST_SUCCESSFUL_ICLOUD_SYNC_KEY]];
+        [AppEnvironmentConstants setUserSawExpandingPlayerTip:[standardDefaults boolForKey:USER_SAW_EXPANDING_PLAYER_TIP_VALUE_KEY]];
         
         //I manually retrieve App color from NSUserDefaults
-        NSArray *defaultColorRep2 = [[NSUserDefaults standardUserDefaults] objectForKey:APP_THEME_COLOR_VALUE_KEY];
+        NSArray *defaultColorRep2 = [standardDefaults objectForKey:APP_THEME_COLOR_VALUE_KEY];
         UIColor *usersChosenDefaultColor = [UIColor colorWithRed:[defaultColorRep2[0] doubleValue]
                                                            green:[defaultColorRep2[1] doubleValue]
                                                             blue:[defaultColorRep2[2] doubleValue]

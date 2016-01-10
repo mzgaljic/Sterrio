@@ -56,6 +56,10 @@ int nearestEvenInt(int to)
                 [SongPlayerViewDisplayUtility makeAlphaOne:weakVC];
             });
         }
+        
+        if(! [AppEnvironmentConstants userSawExpandingPlayerTip]) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"shouldDismissPlayerExpandingTip" object:nil];
+        }
     }
 }
 

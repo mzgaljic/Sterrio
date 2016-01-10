@@ -14,6 +14,7 @@
 #define PREFERRED_WIFI_VALUE_KEY @"preferredWifiStreamValue"
 #define PREFERRED_CELL_VALUE_KEY @"preferredCellularStreamValue"
 #define USERS_LAST_KNOWN_MAJOR_IOS_VERS_VALUE_KEY @"the users last known major ios version number"
+#define USER_SAW_EXPANDING_PLAYER_TIP_VALUE_KEY @"user already saw the swipe up gesture tips"
 #define APP_THEME_COLOR_VALUE_KEY @"appThemeColorValue"
 #define ICLOUD_SYNC @"icloudSettingsSync"
 #define ONLY_AIRPLAY_AUDIO_VALUE_KEY @"shouldOnlyAirplayAudio"
@@ -101,9 +102,15 @@ typedef enum{
 + (NSString *)italicFontName;
 + (NSString *)boldItalicFontName;
 
-//---Stuff in NSUserDefaults----
+
+//---Stuff in Keychain---
 + (void)adsHaveBeenRemoved:(BOOL)adsRemoved;
 + (BOOL)areAdsRemoved;
+//---End of stuff in Keychain---
+
+//---Stuff in NSUserDefaults----
++ (void)setUserSawExpandingPlayerTip:(BOOL)userSawIt;
++ (BOOL)userSawExpandingPlayerTip;
 + (BOOL)userAcceptedOrDeclinedPushNotifications;
 + (void)userAcceptedOrDeclinedPushNotif:(BOOL)something;
 //----app settings---
