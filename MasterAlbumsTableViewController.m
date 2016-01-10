@@ -236,8 +236,6 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
         [weakself.navigationController popViewControllerAnimated:YES];
         [weakself performSegueWithIdentifier:@"albumItemSegue" sender:weakAlbum];
         didForcefullyCloseSearchBarBeforeSegue = YES;
-        [weakself.tableViewDataSourceAndDelegate clearSearchResultsDataSource];
-        [weakself.tableViewDataSourceAndDelegate searchResultsShouldBeDisplayed:NO];
     });
 }
 
