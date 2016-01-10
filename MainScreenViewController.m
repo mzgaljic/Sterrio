@@ -148,8 +148,27 @@ short const dummyTabIndex = 2;
 - (void)viewWillLayoutSubviews
 {
     [super viewWillLayoutSubviews];
-    if(! changingTabs)
-        [self setupTabBarAndTabBarViewUsingOrientation:[UIApplication sharedApplication].statusBarOrientation];
+    if(! changingTabs) {
+        float duration = [UIApplication sharedApplication].statusBarOrientationAnimationDuration;
+        [UIView animateWithDuration:duration
+                         animations:^{
+                                     [self setupTabBarAndTabBarViewUsingOrientation:[UIApplication sharedApplication].statusBarOrientation];
+        }];
+
+        int subFromY = 0;
+        if([AppEnvironmentConstants isTabBarHidden]) {
+            //weird ass logic that helps place the ad banner correctly when the user is in a
+            //detail VC (and tab bar isn't visible.)
+            subFromY = 50;
+        }
+        [UIView animateWithDuration:duration
+                         animations:^{
+                             self.adBanner.frame = CGRectMake(0,
+                                                              self.tabBarView.frame.origin.y + self.tabBarView.frame.size.height - subFromY,
+                                                              self.adBanner.frame.size.width,
+                                                              self.adBanner.frame.size.height);
+        }];
+    }
     
     changingTabs = NO;
 }
