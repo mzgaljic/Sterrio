@@ -90,23 +90,7 @@
     //order of calls matters here...
     self.searchBar = [self.tableViewDataSourceAndDelegate setUpSearchBar];
     [super setSearchBar:self.searchBar];
-    [super viewWillAppear:animated];
-    
-    //if any albums in the table have a dirty image, reload those cells only!
-    NSArray *visibleIndexes = [self.tableView indexPathsForVisibleRows];
-    NSMutableArray *indexPathsInNeedOfReload = [NSMutableArray array];
-    for(NSIndexPath *anIndexPath in visibleIndexes)
-    {
-        Album *anAlbum = [self.tableViewDataSourceAndDelegate albumAtIndexPath:anIndexPath];
-        if([anAlbum.albumArt.isDirty isEqualToNumber:@YES])
-            [indexPathsInNeedOfReload addObject:anIndexPath];
-    }
-    if(indexPathsInNeedOfReload.count > 0){
-        [self.tableView beginUpdates];
-        [self.tableView reloadRowsAtIndexPaths:indexPathsInNeedOfReload
-                              withRowAnimation:UITableViewRowAnimationFade];
-        [self.tableView endUpdates];
-    }
+    [super viewWillAppear:animated];  //super class reloads visible cells here.
 }
 
 - (void)viewDidAppear:(BOOL)animated

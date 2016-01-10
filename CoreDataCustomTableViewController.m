@@ -357,6 +357,14 @@ typedef enum{
         searchBar = nil;
         tableView.tableHeaderView = nil;
     }
+    
+    NSArray *visibleIndexes = [tableView indexPathsForVisibleRows];
+    if(visibleIndexes.count > 0){
+        [tableView beginUpdates];
+        [tableView reloadRowsAtIndexPaths:visibleIndexes
+                              withRowAnimation:UITableViewRowAnimationFade];
+        [tableView endUpdates];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
