@@ -219,7 +219,9 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     if(! positionedSliderAlready)
         [self positionPlaybackSliderOnScreen];
     
-    [self InitSongInfoLabelsOnScreenAnimated:NO onRotation:NO];
+    if(UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)) {
+        [self InitSongInfoLabelsOnScreenAnimated:NO onRotation:NO];
+    }
     
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     
