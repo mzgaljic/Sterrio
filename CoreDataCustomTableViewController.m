@@ -29,6 +29,7 @@ typedef enum{
     int offsetHeightWhenPlayerVisible;
     int lastKnownTableViewVerticalContentOffset;
     ContentInsetState insetState;
+    BOOL viewWillAppearCalledAlready;
 }
 
 @property (nonatomic) BOOL beganUpdates;
@@ -358,13 +359,19 @@ typedef enum{
         tableView.tableHeaderView = nil;
     }
     
-    NSArray *visibleIndexes = [tableView indexPathsForVisibleRows];
-    if(visibleIndexes.count > 0){
-        [tableView beginUpdates];
-        [tableView reloadRowsAtIndexPaths:visibleIndexes
-                              withRowAnimation:UITableViewRowAnimationFade];
-        [tableView endUpdates];
+    if(viewWillAppearCalledAlready) {
+        //updating the visible cells to prevent cells accidentally containing outdated data.
+        //this is only done on sub-sequent calls to viewWillApper for efficiency purposes.
+        NSArray *visibleIndexes = [tableView indexPathsForVisibleRows];
+        if(visibleIndexes.count > 0){
+            [tableView beginUpdates];
+            [tableView reloadRowsAtIndexPaths:visibleIndexes
+                             withRowAnimation:UITableViewRowAnimationNone];
+            [tableView endUpdates];
+        }
     }
+    
+    viewWillAppearCalledAlready = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated
