@@ -45,6 +45,7 @@ typedef enum{
     BOOL firstTimeUpdatingSliderSinceShowingPlayer;
     BOOL deferTimeLabelAdjustmentUntilPortrait;
 
+    int extraStatusBarHeight;
     int totalVideoDuration;
     //int mostRecentLoadedDuration;  unneeded for now. Used in observeValueForKeyPath
 }
@@ -172,6 +173,12 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     _currentTimeLabel.textColor = [UIColor blackColor];
     _totalDurationLabel.textColor = [UIColor blackColor];
     self.navBar.title = [MusicPlaybackController prettyPrintNavBarTitle];
+    
+    int defaultStatusBarHeight = 20;
+    extraStatusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+    if(extraStatusBarHeight >= defaultStatusBarHeight) {
+        extraStatusBarHeight -= defaultStatusBarHeight;
+    }
     
     //app crashes shortly after dismissing this VC if the share sheet was selected. Need
     //this if statement!
@@ -837,7 +844,6 @@ static int accomodateInterfaceLabelsCounter = 0;
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     CGFloat screenHeight = screenRect.size.height;
     CGFloat screenWidth = screenRect.size.width;
-    
     UIColor *buttonTint = [UIColor blackColor];
     
     //play button or pause button
@@ -854,6 +860,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     float playButtonHeight = playBtnImage.size.height;
     //want the play button to be 84% of the way down the screen
     yValue = round(screenHeight * percentDownScreen);
+    yValue -= extraStatusBarHeight;
     
     //+1 is just for visual offset. code is perfect without it but the +1 makes it FEEL better.
     xValue = (screenWidth/2) - (playButtonWidth/2)+1;
@@ -893,7 +900,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     UIColor *appTint = [UIColor defaultAppColorScheme];
     UIImage *timerImg = [UIImage colorOpaquePartOfImage:appTint :[UIImage imageNamed:btnImgName]];
     CGRect timerBtnFrame = CGRectMake(screenWidth/2 - timerImg.size.width/2,
-                                      screenHeight - timerImg.size.height - paddingFromScreenBottom,
+                                      screenHeight - timerImg.size.height - paddingFromScreenBottom - extraStatusBarHeight,
                                       timerImg.size.width,
                                       timerImg.size.height);
     timerButton.frame = timerBtnFrame;
@@ -1119,6 +1126,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     //setup current time label
     int labelXValue = screenWidth * 0.02f;
     int yValue = screenHeight * 0.74f;
+    yValue -= extraStatusBarHeight;
     [_currentTimeLabel setFrame:CGRectMake(labelXValue, yValue, labelWidth, labelHeight)];
     _currentTimeLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
     _currentTimeLabel.font = [UIFont fontWithName:nameOfFontForTimeLabels
@@ -1528,35 +1536,14 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
 
 - (void)changePlayButtonImageTo:(UIImage *)newBtnImage
 {
+    CGPoint buttonCenter = playButton.center;
     [playButton setImage:newBtnImage forState:UIControlStateNormal];
-    
-    //want these values to be as if the phone was always in portrait (since that's the only
-    //position the buttons are visible in. don't want to accidentally set their frames off
-    //the edge of the screen after a rotation or whatever.)
-    int screenWidth, screenHeight;
-    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        screenWidth = [UIScreen mainScreen].bounds.size.height;
-        screenHeight = [UIScreen mainScreen].bounds.size.width;
-    } else {
-        screenWidth = [UIScreen mainScreen].bounds.size.width;
-        screenHeight = [UIScreen mainScreen].bounds.size.height;
-    }
-    
-    
-    //+1 is just for visual offset. code is perfect without it but the +1 makes it FEEL better.
-    int xOrig = (screenWidth/2) - (newBtnImage.size.width/2) +1;
-    //want the play button to be 84% of the way down the screen
-    int yOrig = round(screenHeight * 0.84);
 
-    //y orig can remain the same, both play & pause images are same height
     [UIView animateWithDuration:0.2
                           delay:0
                         options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionAllowAnimatedContent
                      animations:^{
-                         [playButton setFrame:CGRectMake(xOrig,
-                                                         yOrig,
-                                                         newBtnImage.size.width,
-                                                         newBtnImage.size.height)];
+                         [playButton setCenter:buttonCenter];
                      }
                      completion:nil];
 }
