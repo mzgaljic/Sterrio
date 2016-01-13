@@ -265,6 +265,9 @@ static BOOL isHudOnScreen = NO;
     if(self.progressBar == nil){
         self.progressBar = [[MZSlider alloc] init];
         [self.progressBar addTarget:self
+                             action:@selector(progressBarEditingBegan:)
+                   forControlEvents:UIControlEventTouchDown];
+        [self.progressBar addTarget:self
                              action:@selector(progressBarChanged:)
                    forControlEvents:UIControlEventValueChanged];
         
@@ -285,6 +288,9 @@ static BOOL isHudOnScreen = NO;
         [self.progressBar addTarget:self
                              action:@selector(progressBarChangeEnded:)
                    forControlEvents:UIControlEventEditingDidEnd];
+        [self.progressBar addTarget:self
+                             action:@selector(progressBarChangeEnded:)
+                   forControlEvents:UIControlEventTouchCancel];
         //[self.progressBar setThumbImage:[UIImage imageNamed:@"UISliderKnob"] forState:UIControlStateNormal];
         self.progressBar.transform = CGAffineTransformMakeScale(0.80, 0.80);  //make knob smaller
         self.progressBar.maximumValue = totalDuration;
@@ -460,19 +466,24 @@ static BOOL isHudOnScreen = NO;
     [self.delegate previewPlayerNeedsNowPlayingInfoCenterUpdate];
 }
 
-
-- (void)progressBarChanged:(UISlider *)sender
+- (void)progressBarEditingBegan:(UISlider *)sender
 {
-    [self startAutoHideTimer];
     if (self.isPlaying) {
         [self.avPlayer pause];
     }
+    [self clearTimer];
+    NSLog(@"progress editing began.");
+}
+
+- (void)progressBarChanged:(UISlider *)sender
+{
     _elapsedTimeInSec = sender.value;
     if(! self.avPlayer.externalPlaybackActive) {
         CMTime seekTime = CMTimeMakeWithSeconds(sender.value, NSEC_PER_SEC);
         [self.avPlayer seekToTime:seekTime];
     }
     [self setElapsedTimeLabelstringForSliderValue:sender.value];
+    NSLog(@"--progress editing--");
 }
 
 - (void)progressBarChangeEnded:(UISlider *)sender
@@ -485,6 +496,8 @@ static BOOL isHudOnScreen = NO;
 
     [self.delegate previewPlayerNeedsNowPlayingInfoCenterUpdate];
     [self.avPlayer play];
+    [self startAutoHideTimer];
+    NSLog(@"progress editing done.  :D");
 }
 
 //Slider helper stuff
