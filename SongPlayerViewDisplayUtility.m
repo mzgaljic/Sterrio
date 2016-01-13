@@ -50,15 +50,15 @@ int nearestEvenInt(int to)
         
         [[SongPlayerCoordinator sharedInstance] begingExpandingVideoPlayer];
 
-        if(!animate){
-            __weak UIViewController *weakVC = vc;
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
-                [SongPlayerViewDisplayUtility makeAlphaOne:weakVC];
-            });
-        }
-        
         if(! [AppEnvironmentConstants userSawExpandingPlayerTip]) {
             [[NSNotificationCenter defaultCenter] postNotificationName:@"shouldDismissPlayerExpandingTip" object:nil];
+        }
+
+        if(!animate){
+            __weak UIViewController *weakVC = vc;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
+                [SongPlayerViewDisplayUtility makeAlphaOne:weakVC];
+            });
         }
     }
 }

@@ -61,8 +61,6 @@
                            forKey:USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF];
         [standardDefaults setBool:shouldOnlyAirplayAudio
                            forKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY];
-        [standardDefaults setBool:userSawExpandingPlayerTip
-                           forKey:USER_SAW_EXPANDING_PLAYER_TIP_VALUE_KEY];
         
         UIColor *color = [AppEnvironmentConstants defaultAppThemeBeforeUserPickedTheme];
         const CGFloat* components = CGColorGetComponents(color.CGColor);

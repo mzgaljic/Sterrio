@@ -823,6 +823,13 @@ static UIImageView *playerExpansionTipView = nil;
 
 - (void)dismissPlayerExpandingTip
 {
+    [self performSelectorOnMainThread:@selector(dismissPlayerExpandingTipOnGuiThread)
+                           withObject:nil
+                        waitUntilDone:YES];
+}
+
+- (void)dismissPlayerExpandingTipOnGuiThread
+{
     [UIView animateWithDuration:0.5
                           delay:0
          usingSpringWithDamping:1
