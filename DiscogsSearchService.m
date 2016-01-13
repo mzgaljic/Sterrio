@@ -67,6 +67,7 @@ double const DISCOGS_SECONDS_BETWEEN_REQUESTS = 3;
 - (void)cancelAllPendingRequests
 {
     [self.request removeTarget:self];
+    [self.request cancel];
 }
 
 - (void)requestComplete:(NSArray *)theItems

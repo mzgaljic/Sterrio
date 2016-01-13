@@ -46,6 +46,8 @@
     
     [self deleteSubstring:@"official lyric video" onTarget:&title];
     [self deleteSubstring:@"official music video" onTarget:&title];
+    [self deleteSubstring:@"official hd lyric video" onTarget:&title];
+    [self deleteSubstring:@"official hd music video" onTarget:&title];
     [self deleteSubstring:@"official video" onTarget:&title];
     [self deleteSubstring:@"lyric video" onTarget:&title];
     [self deleteSubstring:@"music video" onTarget:&title];
