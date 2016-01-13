@@ -7,8 +7,7 @@
 //
 
 #import "DiscogsResultsUtils.h"
-#import "LevenshteinDistanceItem.h"
-#import "NSString+Levenshtein_Distance.h"
+#import "NSString+WhiteSpace_Utility.h"
 
 @implementation DiscogsResultsUtils
 
@@ -51,10 +50,27 @@
 + (void)applySongNameToDiscogsItem:(DiscogsItem **)discogsItem youtubeVideo:(YouTubeVideo *)ytVideo
 {
     //copy so we don't pollute internal cache
-    NSMutableString *sanitizedTitle = [NSMutableString stringWithString:[[ytVideo sanitizedTitle] copy]];
+    NSMutableString *sanitizedTitle = [NSMutableString stringWithString:[[[ytVideo sanitizedTitle] removeIrrelevantWhitespace] copy]];
     [DiscogsResultsUtils removeRandomHyphensIfPresent:&sanitizedTitle];
     [DiscogsResultsUtils deleteSubstring:(*discogsItem).artistName onTarget:&sanitizedTitle];
     [DiscogsResultsUtils deleteSubstring:(*discogsItem).albumName onTarget:&sanitizedTitle];
+    
+    //some video titles contain 1 char or more of whitespace in front which the method
+    //[NSString removeIrrelevantWhitespace] does not handle for some reason! Handling that now...
+    while(sanitizedTitle.length > 0 && [sanitizedTitle characterAtIndex:0] == ' ') {
+        [sanitizedTitle deleteCharactersInRange:NSMakeRange(0, 1)];
+    }
+    
+    //if after removing the album and artist names from the video title we are left with just
+    //"________", then we should remove the quotes from the title! This typically occurs
+    //if the song name is in quotes within the title itself. Note in this if we check for the
+    // \ char as well since that is how the title is given to use by the YouTube APIs.
+    if(sanitizedTitle.length >= 2
+       && [sanitizedTitle characterAtIndex:0] == '\"'
+       && [sanitizedTitle characterAtIndex:sanitizedTitle.length-1] == '\"') {
+        [sanitizedTitle deleteCharactersInRange:NSMakeRange(sanitizedTitle.length-1, 1)];
+        [sanitizedTitle deleteCharactersInRange:NSMakeRange(0, 1)];
+    }
     (*discogsItem).songName = sanitizedTitle;
 }
 
