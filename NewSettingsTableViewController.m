@@ -682,7 +682,8 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
 {
     [self commitAllSettingChangesToNSUserDefaults];
     [[UIApplication sharedApplication] ignoreSnapshotOnNextApplicationLaunch];
-    
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZUserAboutToDismissFromSettings
+                                                        object:nil];
     [self dismissViewControllerAnimated:YES completion:^{
         NSString *settingsChangesNotifString = MZUserFinishedWithReviewingSettings;
         [[NSNotificationCenter defaultCenter] postNotificationName:settingsChangesNotifString

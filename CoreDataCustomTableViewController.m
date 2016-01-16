@@ -30,6 +30,7 @@ typedef enum{
     int lastKnownTableViewVerticalContentOffset;
     ContentInsetState insetState;
     BOOL viewWillAppearCalledAlready;
+    BOOL allowNextViewWillAppearTableViewUpdate;
 }
 
 @property (nonatomic) BOOL beganUpdates;
@@ -359,7 +360,7 @@ typedef enum{
         tableView.tableHeaderView = nil;
     }
     
-    if(viewWillAppearCalledAlready) {
+    if(viewWillAppearCalledAlready && allowNextViewWillAppearTableViewUpdate) {
         //updating the visible cells to prevent cells accidentally containing outdated data.
         //this is only done on sub-sequent calls to viewWillApper for efficiency purposes.
         NSArray *visibleIndexes = [tableView indexPathsForVisibleRows];
@@ -372,6 +373,7 @@ typedef enum{
     }
     
     viewWillAppearCalledAlready = YES;
+    allowNextViewWillAppearTableViewUpdate = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -390,6 +392,10 @@ typedef enum{
 {
     [super viewDidLoad];
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(settingsDismissingVerySoon)
+                                                 name:MZUserAboutToDismissFromSettings
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(settingsPossiblyChanged)
                                                  name:MZUserFinishedWithReviewingSettings
                                                object:nil];
@@ -404,6 +410,7 @@ typedef enum{
     self.edgesForExtendedLayout = UIRectEdgeNone;
     lastKnownTableViewVerticalContentOffset = 0;
     self.automaticallyAdjustsScrollViewInsets = YES;
+    allowNextViewWillAppearTableViewUpdate = YES;
 }
 
 - (void)prepareFetchedResultsControllerForDealloc
@@ -424,6 +431,11 @@ typedef enum{
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)settingsDismissingVerySoon
+{
+    allowNextViewWillAppearTableViewUpdate = NO;
 }
 
 //only called if a more specific notification wasnt fired (such as font size update)

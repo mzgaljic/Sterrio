@@ -42,6 +42,7 @@ extern NSString * const MZKeyVideoDuration;
 extern NSString * const MZEmailBugReport;
 extern NSString * const MZAddSongToUpNextString;
 extern NSString * const MZUserCanTransitionToMainInterface;
+extern NSString * const MZUserAboutToDismissFromSettings;
 extern NSString * const MZUserFinishedWithReviewingSettings;
 extern NSString * const MZUserChangedFontSize;
 
@@ -65,7 +66,7 @@ extern short const MZTabBarHeight;
 extern NSString * const MZHideTabBarAnimated;
 
 //determined this would work well with smallest font size on largest iphone (iphone 6 plus)
-extern MZDefaultCoreDataFetchBatchSize;
+extern int MZDefaultCoreDataFetchBatchSize;
 
 extern NSString * const MZWhatsNewUserMsg;
 extern NSString * const MZAppName;

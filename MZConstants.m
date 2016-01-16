@@ -44,6 +44,7 @@ NSString * const MZKeyVideoDuration = @"videoDuration";
 NSString * const MZEmailBugReport = @"marksBetaMusicApp@gmail.com";
 NSString * const MZAddSongToUpNextString = @"Play Next";
 NSString * const MZUserCanTransitionToMainInterface = @"user can transition to main interface";
+NSString * const MZUserAboutToDismissFromSettings = @"User going to dismiss Settings VC";
 NSString * const MZUserFinishedWithReviewingSettings = @"User finished looking at Settings VC";
 NSString * const MZUserChangedFontSize = @"Font size has just been changed in settings";
 
