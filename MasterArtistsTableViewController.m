@@ -295,6 +295,7 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
     NSManagedObjectContext *context = [CoreDataManager context];
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Artist"];
     request.predicate = nil;  //means i want all of the artists
+    [request setFetchBatchSize:MZDefaultCoreDataFetchBatchSize];
     
     NSSortDescriptor *sortDescriptor;
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortArtistName"

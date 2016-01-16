@@ -869,6 +869,7 @@ static BOOL hidingCenterBtnAnimationComplete = YES;
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"PlaylistItem"];
     request.predicate = [NSPredicate predicateWithFormat:@"ANY playlist.uniqueId == %@", _playlist.uniqueId];
+    [request setFetchBatchSize:MZDefaultCoreDataFetchBatchSize];
     
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"index"
                                                                      ascending:YES];

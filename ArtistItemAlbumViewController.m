@@ -555,7 +555,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
                                                     selector:@selector(localizedStandardCompare:)];
 
     request.sortDescriptors = @[sortDescriptor];
-    //[request setFetchBatchSize:40];
+    [request setFetchBatchSize:MZDefaultCoreDataFetchBatchSize];
     
     self.artistsStandAloneSongs = [[CoreDataManager context] executeFetchRequest:request error:nil];
 }
@@ -567,6 +567,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"artist.uniqueId == %@",
                                self.artist.uniqueId];
     request.predicate = predicate;
+    [request setFetchBatchSize:MZDefaultCoreDataFetchBatchSize];
     
     NSSortDescriptor *sortDescriptor;
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortAlbumName"
@@ -574,7 +575,6 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
                                                     selector:@selector(localizedStandardCompare:)];
 
     request.sortDescriptors = @[sortDescriptor];
-    //[request setFetchBatchSize:10];
     
     self.artistAlbums = [[CoreDataManager context] executeFetchRequest:request error:nil];
 }

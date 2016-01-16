@@ -64,6 +64,9 @@ extern short const MZSkipToSongBeginningIfBackBtnTappedBoundary;
 extern short const MZTabBarHeight;
 extern NSString * const MZHideTabBarAnimated;
 
+//determined this would work well with smallest font size on largest iphone (iphone 6 plus)
+extern MZDefaultCoreDataFetchBatchSize;
+
 extern NSString * const MZWhatsNewUserMsg;
 extern NSString * const MZAppName;
 

@@ -462,7 +462,7 @@
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Playlist"];
     request.returnsObjectsAsFaults = NO;
-    [request setFetchBatchSize:50];
+    [request setFetchBatchSize:MZDefaultCoreDataFetchBatchSize];
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistName"
                                                        ascending:YES
                                                         selector:@selector(localizedStandardCompare:)];

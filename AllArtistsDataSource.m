@@ -526,7 +526,7 @@
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Artist"];
     request.returnsObjectsAsFaults = NO;
-    [request setFetchBatchSize:50];
+    [request setFetchBatchSize:MZDefaultCoreDataFetchBatchSize];
     NSSortDescriptor *sortDescriptor;
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortArtistName"
                                                    ascending:YES

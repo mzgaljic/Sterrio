@@ -609,7 +609,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
     request.returnsObjectsAsFaults = NO;
-    [request setFetchBatchSize:50];
+    [request setFetchBatchSize:MZDefaultCoreDataFetchBatchSize];
     NSSortDescriptor *sortDescriptor;
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
                                                    ascending:YES

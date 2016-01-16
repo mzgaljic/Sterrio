@@ -602,7 +602,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Album"];
     request.returnsObjectsAsFaults = NO;
-    [request setFetchBatchSize:50];
+    [request setFetchBatchSize:MZDefaultCoreDataFetchBatchSize];
     NSSortDescriptor *sortDescriptor;
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortAlbumName"
                                                    ascending:YES
