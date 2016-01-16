@@ -714,17 +714,19 @@ static short numberTimesViewHasBeenShown = 0;
     newLibSong.duration = duration;
     newLibSong.youtube_id = ytVideo.videoId;
     userCreatedHisSong = YES;
-    [self performSelector:@selector(destructThisVCDelayed) withObject:nil afterDelay:0.2];
-    [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
-}
-
-- (void)destructThisVCDelayed
-{
+    
     [self preDealloc];
     [self.navigationController dismissViewControllerAnimated:YES completion:^{
         if([MusicPlaybackController nowPlayingSong])
             [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
     }];
+    
+    [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
+}
+
+- (void)destructThisVCDelayed
+{
+
 }
 
 #pragma mark - Preview Player Delegate Implementation

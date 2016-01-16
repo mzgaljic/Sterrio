@@ -182,10 +182,12 @@
             artistHasNowPlaying = YES;
         }
         
-        if(artistHasNowPlaying)
+        if(artistHasNowPlaying) {
             cell.textLabel.textColor = [AppEnvironmentConstants nowPlayingItemColor];
-        else
+        } else {
             cell.textLabel.textColor = [UIColor blackColor];
+        }
+        cell.detailTextLabel.textColor = [UIColor grayColor];
     }
     else if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Single_Artist_Picker)
     {
@@ -197,13 +199,14 @@
             cell.backgroundColor = appThemeSuperLight;
             [cell setUserInteractionEnabled:NO];
             cell.textLabel.textColor = [UIColor whiteColor];
+            cell.detailTextLabel.textColor = [UIColor whiteColor];
         } else{
             cell.backgroundColor = [UIColor clearColor];
             [cell setUserInteractionEnabled:YES];
             cell.textLabel.textColor = [UIColor blackColor];
+            cell.detailTextLabel.textColor = [UIColor grayColor];
         }
     }
-    cell.detailTextLabel.textColor = [UIColor grayColor];
     cell.textLabel.text = artist.artistName;
     cell.detailTextLabel.text = [self stringForArtistDetailLabelGivenArtist:artist];
     cell.delegate = self;

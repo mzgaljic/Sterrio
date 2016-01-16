@@ -345,8 +345,8 @@ short const dummyTabIndex = 2;
             [self.view addSubview:self.tabBarView];
         }
         
-        [UIView animateWithDuration:0.6
-                              delay:0.2
+        [UIView animateWithDuration:0.4
+                              delay:0
                             options:UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionAllowUserInteraction
                          animations:^{
                                 self.tabBarView.alpha = 1;
@@ -459,8 +459,8 @@ short const dummyTabIndex = 2;
     float hideDuration = 0.5;
     float showDuration = 0.35;
     float delay = 0;
-    float springDamping = 0.80;
-    float initialHideVelocity = 0.65;
+    float springDamping = 0.90;
+    float initialHideVelocity = 0.35;
     float initialShowVelocity = 0.9;
     
     if(hide)

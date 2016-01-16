@@ -212,10 +212,12 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
             }
         }
         
-        if(albumHasNowPlaying)
+        if(albumHasNowPlaying) {
             cell.textLabel.textColor = [super colorForNowPlayingItem];
-        else
+        } else {
             cell.textLabel.textColor = [UIColor blackColor];
+        }
+        cell.detailTextLabel.textColor = [UIColor grayColor];
     }
     else if(self.dataSourceType == ALBUM_DATA_SRC_TYPE_Single_Album_Picker)
     {
@@ -226,13 +228,14 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
             cell.backgroundColor = appThemeSuperLight;
             [cell setUserInteractionEnabled:NO];
             cell.textLabel.textColor = [UIColor whiteColor];
+            cell.detailTextLabel.textColor = [UIColor whiteColor];
         } else{
             cell.backgroundColor = [UIColor clearColor];
             [cell setUserInteractionEnabled:YES];
             cell.textLabel.textColor = [UIColor blackColor];
+            cell.detailTextLabel.textColor = [UIColor grayColor];
         }
     }
-    cell.detailTextLabel.textColor = [UIColor grayColor];
     
     // Store a reference to the current cell that will enable the image to be associated with the correct
     // cell, when the image is subsequently loaded asynchronously.
