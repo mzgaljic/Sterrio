@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8716560F1C30AB41000FF02B /* DiscogsItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8716560E1C30AB41000FF02B /* DiscogsItem.m */; };
+		8727A5791C49EC05008FC03E /* CoreDataEntityMappingUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8727A5781C49EC05008FC03E /* CoreDataEntityMappingUtils.m */; };
 		873537CC1B0A9981009244E4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 873537CB1B0A9981009244E4 /* main.m */; };
 		873537D71B0A9981009244E4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 873537D61B0A9981009244E4 /* Images.xcassets */; };
 		873537E61B0A9981009244E4 /* SterrioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 873537E51B0A9981009244E4 /* SterrioTests.m */; };
@@ -250,6 +251,8 @@
 /* Begin PBXFileReference section */
 		8716560E1C30AB41000FF02B /* DiscogsItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsItem.m; sourceTree = "<group>"; };
 		871FE2D01BFACDC000588C2B /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMobileAds.framework; path = "Pods/Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.5.2/GoogleMobileAds.framework"; sourceTree = "<group>"; };
+		8727A5771C49EC05008FC03E /* CoreDataEntityMappingUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataEntityMappingUtils.h; sourceTree = "<group>"; };
+		8727A5781C49EC05008FC03E /* CoreDataEntityMappingUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataEntityMappingUtils.m; sourceTree = "<group>"; };
 		873537C61B0A9981009244E4 /* Sterrio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sterrio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		873537CA1B0A9981009244E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		873537CB1B0A9981009244E4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -944,6 +947,8 @@
 				8735386F1B0A9B8B009244E4 /* AlbumArtUtilities.m */,
 				873538701B0A9B8B009244E4 /* CoreDataManager.h */,
 				873538711B0A9B8B009244E4 /* CoreDataManager.m */,
+				8727A5771C49EC05008FC03E /* CoreDataEntityMappingUtils.h */,
+				8727A5781C49EC05008FC03E /* CoreDataEntityMappingUtils.m */,
 			);
 			name = "Core Data Utilities";
 			sourceTree = "<group>";
@@ -2106,6 +2111,7 @@
 				8735394B1B0AA037009244E4 /* MyViewController.m in Sources */,
 				8736AA981C25F3BF005FAE07 /* EAIntroPage.m in Sources */,
 				8735383B1B0A9AF4009244E4 /* NSString+Levenshtein_Distance.m in Sources */,
+				8727A5791C49EC05008FC03E /* CoreDataEntityMappingUtils.m in Sources */,
 				873539C01B0AA1B3009244E4 /* RBBBlockBasedArray.m in Sources */,
 				873539451B0AA027009244E4 /* MySearchBar.m in Sources */,
 				87353A061B0AA24B009244E4 /* AFBlurSegue.m in Sources */,

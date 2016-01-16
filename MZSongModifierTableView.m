@@ -11,6 +11,7 @@
 #import "SongAlbumArt+Utilities.h"
 #import "IBActionSheet.h"
 #import "SpotlightHelper.h"
+#import "CoreDataEntityMappingUtils.h"
 
 @interface MZSongModifierTableView ()
 {
@@ -1070,14 +1071,14 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     //does all the heavy logic lifting...updates the gui, everything.
     [self songNameEditingComplete:[NSNotification notificationWithName:@"" object:@[songName, @NO]]];
 
-    Album *existingAlbumGuess = [self existingAlbumWithName:albumName];
+    Album *existingAlbumGuess = [CoreDataEntityMappingUtils existingAlbumWithName:albumName];
     if(existingAlbumGuess) {
         [self existingAlbumHasBeenChosen:existingAlbumGuess];
     } else {
         NSNotification *notif = [NSNotification notificationWithName:@"" object:@[albumName, @NO]];
         [self albumNameCreationCompleteAndSetUpAlbum:notif];
         
-        Artist *existingArtistGuess = [self existingArtistWithName:artistName];
+        Artist *existingArtistGuess = [CoreDataEntityMappingUtils existingArtistWithName:artistName];
         if(existingArtistGuess) {
             [self existingArtistHasBeenChosen:existingArtistGuess];
         } else {
@@ -1113,77 +1114,5 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 {
     [self performSelector:@selector(rotateActionSheet) withObject:nil afterDelay:0.1];
 }
-
-#pragma mark - Finding existing artists and/or albums given a name
-- (Album *)existingAlbumWithName:(NSString *)albumName
-{
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Album"];
-    request.returnsObjectsAsFaults = NO;
-    [request setFetchBatchSize:1];
-    NSSortDescriptor *sortDescriptor;
-    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortAlbumName"
-                                                   ascending:YES
-                                                    selector:@selector(localizedStandardCompare:)];
-    
-    request.sortDescriptors = @[sortDescriptor];
-    request.predicate = [self generateCompoundPredicateForEntity:[Album alloc] entityName:albumName];
-    NSArray *result = [[CoreDataManager context] executeFetchRequest:request error:nil];
-    return (result && result.count > 0) ? result[0] : nil;
-}
-
-- (Artist *)existingArtistWithName:(NSString *)artistName
-{
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Artist"];
-    request.returnsObjectsAsFaults = NO;
-    [request setFetchBatchSize:1];
-    NSSortDescriptor *sortDescriptor;
-    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortArtistName"
-                                                   ascending:YES
-                                                    selector:@selector(localizedStandardCompare:)];
-    
-    request.sortDescriptors = @[sortDescriptor];
-    request.predicate = [self generateCompoundPredicateForEntity:[Artist alloc] entityName:artistName];
-    NSArray *result = [[CoreDataManager context] executeFetchRequest:request error:nil];
-    return (result && result.count > 0) ? result[0] : nil;
-}
-
-- (NSPredicate *)generateCompoundPredicateForEntity:(id)albumOrArtist entityName:(NSString *)query
-{
-    NSPredicate *predicate1, *predicate2, *predicate3;
-    NSString *sqlLikePattern = [NSString stringWithFormat:@"*%@*", query];
-    
-    if([albumOrArtist isMemberOfClass:[Album class]]) {
-        predicate1 = [NSPredicate predicateWithFormat:@"albumName contains[cd] %@",  query];
-        predicate2 = [NSPredicate predicateWithFormat:@"albumName LIKE[cd] %@",  sqlLikePattern];
-        NSString *noParensOrBrackets = [self stringWithoutParensOrBrackets:query];
-        noParensOrBrackets = [noParensOrBrackets removeIrrelevantWhitespace];
-        noParensOrBrackets = [NSString stringWithFormat:@"*%@*", noParensOrBrackets];
-        predicate3 = [NSPredicate predicateWithFormat:@"albumName LIKE[cd] %@", noParensOrBrackets];
-        return [NSCompoundPredicate orPredicateWithSubpredicates:@[predicate1, predicate2, predicate3]];
-        
-    } else if([albumOrArtist isMemberOfClass:[Artist class]]) {
-        predicate1 = [NSPredicate predicateWithFormat:@"artistName contains[cd] %@",  query];
-        predicate2 = [NSPredicate predicateWithFormat:@"artistName LIKE[cd] %@",  sqlLikePattern];
-        return [NSCompoundPredicate orPredicateWithSubpredicates:@[predicate1, predicate2]];
-        
-    } else {
-        return nil;
-    }
-}
-
-- (NSString *)stringWithoutParensOrBrackets:(NSString *)originalString
-{
-    NSMutableString *newString = [NSMutableString stringWithString:[originalString copy]];
-    NSString *regexText = @"(\\(.*\\))|(\\[.*\\])";
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexText
-                                                                           options:NSRegularExpressionCaseInsensitive
-                                                                             error:nil];
-    [regex replaceMatchesInString:newString
-                          options:0
-                            range:NSMakeRange(0, [newString length])
-                     withTemplate:@""];
-    return newString;
-}
-
 
 @end
