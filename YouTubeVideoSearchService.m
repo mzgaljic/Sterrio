@@ -220,7 +220,8 @@ const int time_out_interval_seconds = 10;
 - (NSArray *)parseYouTubeVideoResultsResponse:(NSData *)jsonData
 {
     //root dictionary
-    NSDictionary *allDataDict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:nil];
+    NSDictionary *allDataDict = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:nil];
+
     //update nextPageToken
     nextPageToken = [allDataDict objectForKey:@"nextPageToken"];
     
@@ -255,7 +256,8 @@ const int time_out_interval_seconds = 10;
         snippetAtItemIndex = [itemAtIndexI objectForKey:@"snippet"];
         idDictAtIndex = [itemAtIndexI objectForKey:@"id"];
         videoID = [idDictAtIndex objectForKey:@"videoId"];
-        videoTitle = [snippetAtItemIndex objectForKey:@"title"];
+        videoTitle = [NSString stringWithUTF8String:[[snippetAtItemIndex objectForKey:@"title"] UTF8String]];
+        //videoTitle = [snippetAtItemIndex objectForKey:@"title"];
         channelTitle = [snippetAtItemIndex objectForKey:@"channelTitle"];
 
         thumbnailsDict = [snippetAtItemIndex objectForKey:@"thumbnails"];
@@ -280,7 +282,9 @@ const int time_out_interval_seconds = 10;
 //returns array of NSString objects
 - (NSArray *)parseYouTubeVideoAutoSuggestResponse:(NSData *)jsonData
 {
-    NSMutableString *originalData = [[NSMutableString alloc] initWithData:jsonData encoding:NSNonLossyASCIIStringEncoding];
+    //content-type of response is NSISOLatin1StringEncoding
+    NSMutableString *originalData = [[NSMutableString alloc] initWithData:jsonData encoding:NSISOLatin1StringEncoding];
+    
     if(originalData.length > 0){
         //delete last character
         [originalData deleteCharactersInRange:NSMakeRange([originalData length]-1, 1)];
@@ -288,15 +292,19 @@ const int time_out_interval_seconds = 10;
         //delete first 19 characters - "window.google.ac.h("
         if([[originalData substringToIndex:19] isEqualToString:@"window.google.ac.h("])
             [originalData deleteCharactersInRange:NSMakeRange(0, 19)];
-        else
+        else{
             //response from server has changed or an error occured.
+            CLS_LOG(@"%@", @"Google suggestions api response has changed!");
             return nil;
+        }
     }
     //root dictionary
     if(originalData == nil)
         return nil;
-    NSArray *allDataArray = [NSJSONSerialization JSONObjectWithData:[originalData dataUsingEncoding:NSNonLossyASCIIStringEncoding]
-                                                                options:NSJSONReadingMutableContainers error:nil];
+    
+    //converting data to NSUTF8StringEncoding so that it can be easily worked with in my app.
+    NSArray *allDataArray = [NSJSONSerialization JSONObjectWithData:[originalData dataUsingEncoding:NSUTF8StringEncoding]
+                                                                options:kNilOptions error:nil];
     if(allDataArray == nil)
         return nil;
     
@@ -318,7 +326,7 @@ const int time_out_interval_seconds = 10;
 {
     //root dictionary
     NSDictionary *allDataDict = [NSJSONSerialization JSONObjectWithData:JSONdata
-                                                                options:NSJSONReadingMutableContainers
+                                                                options:kNilOptions
                                                                   error:nil];
     NSArray *itemsArray = [allDataDict objectForKey:@"items"];
     

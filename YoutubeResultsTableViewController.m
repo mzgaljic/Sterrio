@@ -649,8 +649,11 @@ static BOOL userClearedTextField = NO;
     
     if(self.displaySearchResults){  //video search results will populate the table
         if(indexPath.section == 0){
-            if(_searchResults.count-1 < indexPath.row){
-                NSLog(@"Woah!");
+            BOOL assertCondition = _searchResults.count-1 < indexPath.row;
+            if(assertCondition) {
+                NSString *assertDesc = [NSString stringWithFormat:@"Cell indexpath.row is %li but there are only %lu search results (last index is %lu)", (long)indexPath.row, (unsigned long)_searchResults.count, _searchResults.count-1];
+                CLS_LOG(@"%@", assertDesc);
+                NSAssert(assertCondition, assertDesc);
             }
             ytVideo = [_searchResults objectAtIndex:indexPath.row];
             

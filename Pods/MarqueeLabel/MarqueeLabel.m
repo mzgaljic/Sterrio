@@ -447,7 +447,7 @@ CGPoint MLOffsetCGPoint(CGPoint point, CGFloat offset);
     // Get size of subLabel
     expectedLabelSize = [self.subLabel sizeThatFits:maximumLabelSize];
     // Sanitize width to 5461.0f (largest width a UILabel will draw on an iPhone 6S Plus)
-    expectedLabelSize.width = ceil(MIN(expectedLabelSize.width, 5461.0f));
+    expectedLabelSize.width = MIN(expectedLabelSize.width, 5461.0f);
     // Adjust to own height (make text baseline match normal label)
     expectedLabelSize.height = self.bounds.size.height;
     
@@ -456,7 +456,7 @@ CGPoint MLOffsetCGPoint(CGPoint point, CGFloat offset);
 
 - (CGSize)sizeThatFits:(CGSize)size {
     CGSize fitSize = [self.subLabel sizeThatFits:size];
-    fitSize.width += 2.0f * self.fadeLength;
+    fitSize.width += self.leadingBuffer;
     return fitSize;
 }
 
@@ -699,7 +699,7 @@ CGPoint MLOffsetCGPoint(CGPoint point, CGFloat offset);
     
     // Determine colors for non-scrolling label (i.e. at home)
     NSArray *adjustedColors;
-    BOOL trailingFadeNeeded = (!self.labelize || self.labelShouldScroll);
+    BOOL trailingFadeNeeded = self.labelShouldScroll;
     switch (self.marqueeType) {
         case MLContinuousReverse:
         case MLRightLeft:
@@ -1194,7 +1194,9 @@ CGPoint MLOffsetCGPoint(CGPoint point, CGFloat offset);
 }
 
 - (CGSize)intrinsicContentSize {
-    return self.subLabel.intrinsicContentSize;
+    CGSize contentSize = self.subLabel.intrinsicContentSize;
+    contentSize.width += self.leadingBuffer;
+    return contentSize;
 }
 
 - (void)setAdjustsLetterSpacingToFitWidth:(BOOL)adjustsLetterSpacingToFitWidth {

@@ -34,7 +34,7 @@
 {
     // We do this gnarly parsing on a background thread to keep the UI responsive.
     NSDictionary *allDataDict = [NSJSONSerialization JSONObjectWithData:data
-                                                                options:NSJSONReadingMutableContainers
+                                                                options:kNilOptions
                                                                   error:nil];
     NSArray *resultsArray = [allDataDict objectForKey:@"results"];
     NSMutableArray *itemsArray = [NSMutableArray arrayWithCapacity:allDataDict.count];

@@ -12,11 +12,12 @@
 
 - (NSString *)stringForHTTPRequest
 {
-    return CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-                                                                     (CFStringRef)self,
-                                                                     NULL,
-                                                                     (CFStringRef)@":/?@!$&'()*+,;=",
-                                                                     kCFStringEncodingUTF8));
+    NSString *yo =CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL,
+                                                                            (CFStringRef)self,
+                                                                            NULL,
+                                                                            (CFStringRef)@"!*'();:@&=+$,/?%#[]",
+                                                                            kCFStringEncodingUTF8));
+    return yo;
 }
 
 @end

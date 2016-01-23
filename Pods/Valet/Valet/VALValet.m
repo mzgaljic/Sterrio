@@ -35,7 +35,7 @@ NSString *VALStringForAccessibility(VALAccessibility accessibility)
             return @"AccessibleAfterFirstUnlock";
         case VALAccessibilityAlways:
             return @"AccessibleAlways";
-#if VAL_IOS_8_OR_LATER || __MAC_10_10
+#if (TARGET_OS_IPHONE && __IPHONE_8_0) || __MAC_10_10
         case VALAccessibilityWhenPasscodeSetThisDeviceOnly:
             return @"AccessibleWhenPasscodeSetThisDeviceOnly";
 #endif
@@ -48,7 +48,7 @@ NSString *VALStringForAccessibility(VALAccessibility accessibility)
     }
 }
 
-void VALExecuteBlockInLock(dispatch_block_t block, NSLock *lock)
+void VALExecuteBlockInLock(__nonnull dispatch_block_t block, NSLock *__nonnull lock)
 {
     VALCheckCondition(block != NULL, , @"Must pass in a block");
     VALCheckCondition(lock != nil, , @"Must pass in a lock");
@@ -63,7 +63,7 @@ void VALExecuteBlockInLock(dispatch_block_t block, NSLock *lock)
 }
 
 /// We can't be sure that SecItem calls are atomic, so ensure atomicity ourselves.
-void VALAtomicSecItemLock(dispatch_block_t block)
+void VALAtomicSecItemLock(__nonnull dispatch_block_t block)
 {
     VALCheckCondition(block != NULL, , @"Must pass in a block");
     
@@ -76,7 +76,7 @@ void VALAtomicSecItemLock(dispatch_block_t block)
     VALExecuteBlockInLock(block, sSecItemLock);
 }
 
-OSStatus VALAtomicSecItemCopyMatching(CFDictionaryRef query, CFTypeRef *result)
+OSStatus VALAtomicSecItemCopyMatching(__nonnull CFDictionaryRef query, CFTypeRef *__nullable result)
 {
     VALCheckCondition(CFDictionaryGetCount(query) > 0, errSecParam, @"Must provide a query with at least one item");
     
@@ -88,7 +88,7 @@ OSStatus VALAtomicSecItemCopyMatching(CFDictionaryRef query, CFTypeRef *result)
     return status;
 }
 
-OSStatus VALAtomicSecItemAdd(CFDictionaryRef attributes, CFTypeRef *result)
+OSStatus VALAtomicSecItemAdd(__nonnull CFDictionaryRef attributes, CFTypeRef *__nullable result)
 {
     VALCheckCondition(CFDictionaryGetCount(attributes) > 0, errSecParam, @"Must provide attributes with at least one item");
     
@@ -100,7 +100,7 @@ OSStatus VALAtomicSecItemAdd(CFDictionaryRef attributes, CFTypeRef *result)
     return status;
 }
 
-OSStatus VALAtomicSecItemUpdate(CFDictionaryRef query, CFDictionaryRef attributesToUpdate)
+OSStatus VALAtomicSecItemUpdate(__nonnull CFDictionaryRef query, __nonnull CFDictionaryRef attributesToUpdate)
 {
     VALCheckCondition(CFDictionaryGetCount(query) > 0, errSecParam, @"Must provide a query with at least one item");
     VALCheckCondition(CFDictionaryGetCount(attributesToUpdate) > 0, errSecParam, @"Must provide a attributesToUpdate with at least one item");
@@ -113,7 +113,7 @@ OSStatus VALAtomicSecItemUpdate(CFDictionaryRef query, CFDictionaryRef attribute
     return status;
 }
 
-OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
+OSStatus VALAtomicSecItemDelete(__nonnull CFDictionaryRef query)
 {
     VALCheckCondition(CFDictionaryGetCount(query) > 0, errSecParam, @"Must provide a query with at least one item");
     
@@ -128,24 +128,20 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
 
 @interface VALValet ()
 
-/// Stores the root query to be used in all SecItem queries.
-@property (copy, readonly) NSDictionary *baseQuery;
-
 /// The service identifier within the baseQuery (kSecAttrService).
-@property (copy, readonly) NSString *secServiceIdentifier;
+@property (nonnull, copy, readonly) NSString *secServiceIdentifier;
 
 /// Set and Remove must be atomic operations relative to one another to ensure that SecItemUpdate is never called on an item that has been removed from the keychain.
-@property (copy, readonly) NSLock *lockForSetAndRemoveOperations;
+@property (nonnull, copy, readonly) NSLock *lockForSetAndRemoveOperations;
 
 @end
 
 
 @implementation VALValet
 
-#pragma mark - Private Class Methods
+#pragma mark - Protected Class Methods
 
-/// Ensure the atomicity for set and remove operations by limiting ourselves to one instance per configuration.
-+ (VALValet *)_sharedValetForValet:(VALValet *)valet;
++ (nonnull id)sharedValetForValet:(nonnull VALValet *)valet;
 {
     @synchronized(self) {
         static NSMapTable *sServiceIdentifierToWeakValet = nil;
@@ -164,12 +160,81 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
     }
 }
 
-#pragma mark - Initialization
-
-- (nullable instancetype)init NS_UNAVAILABLE;
++ (nullable NSMutableDictionary *)mutableBaseQueryWithIdentifier:(nonnull NSString *)identifier accessibility:(VALAccessibility)accessibility initializer:(nonnull SEL)initializer;
 {
-    VALCheckCondition(NO, nil, @"Use a designated initializer");
+    VALCheckCondition(identifier.length > 0, nil, @"Must provide a valid identifier");
+    
+    return [@{
+              // Valet only handles generic passwords.
+              (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
+              // Use the identifier, Valet type and accessibility settings to create the keychain service name.
+              (__bridge id)kSecAttrService : [NSString stringWithFormat:@"VAL_%@_%@_%@_%@", NSStringFromClass(self), NSStringFromSelector(initializer), identifier, VALStringForAccessibility(accessibility)],
+              // Set our accessibility.
+              (__bridge id)kSecAttrAccessible : [self _secAccessibilityAttributeForAccessibility:accessibility],
+              } mutableCopy];
 }
+
++ (nullable NSMutableDictionary *)mutableBaseQueryWithSharedAccessGroupIdentifier:(nonnull NSString *)sharedAccessGroupIdentifier accessibility:(VALAccessibility)accessibility initializer:(nonnull SEL)initializer;
+{
+    NSMutableDictionary *const mutableBaseQuery = [self mutableBaseQueryWithIdentifier:sharedAccessGroupIdentifier accessibility:accessibility initializer:initializer];
+    
+    mutableBaseQuery[(__bridge id)kSecAttrAccessGroup] = [NSString stringWithFormat:@"%@.%@", [self _sharedAccessGroupPrefix], sharedAccessGroupIdentifier];
+    
+    return mutableBaseQuery;
+}
+
+#pragma mark - Private Class Methods
+
++ (nonnull id)_secAccessibilityAttributeForAccessibility:(VALAccessibility)accessibility;
+{
+    switch (accessibility) {
+        case VALAccessibilityWhenUnlocked:
+            return (__bridge id)kSecAttrAccessibleWhenUnlocked;
+        case VALAccessibilityAfterFirstUnlock:
+            return (__bridge id)kSecAttrAccessibleAfterFirstUnlock;
+        case VALAccessibilityAlways:
+            return (__bridge id)kSecAttrAccessibleAlways;
+#if (TARGET_OS_IPHONE && __IPHONE_8_0) || __MAC_10_10
+        case VALAccessibilityWhenPasscodeSetThisDeviceOnly:
+            return (__bridge id)kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly;
+#endif
+        case VALAccessibilityWhenUnlockedThisDeviceOnly:
+            return (__bridge id)kSecAttrAccessibleWhenUnlockedThisDeviceOnly;
+        case VALAccessibilityAfterFirstUnlockThisDeviceOnly:
+            return (__bridge id)kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly;
+        case VALAccessibilityAlwaysThisDeviceOnly:
+            return (__bridge id)kSecAttrAccessibleAlwaysThisDeviceOnly;
+    }
+}
+
+/// Programatically grab the required prefix for the shared access group (i.e. Bundle Seed ID). The value for the kSecAttrAccessGroup key in queries for data that is shared between apps must be of the format bundleSeedID.sharedAccessGroup. For more information on the Bundle Seed ID, see https://developer.apple.com/library/ios/qa/qa1713/_index.html
++ (nullable NSString *)_sharedAccessGroupPrefix;
+{
+    NSDictionary *query = @{ (__bridge NSString *)kSecClass : (__bridge NSString *)kSecClassGenericPassword,
+                             (__bridge id)kSecAttrAccount : @"SharedAccessGroupAlwaysAccessiblePrefixPlaceholder",
+                             (__bridge id)kSecReturnAttributes : @YES,
+                             (__bridge id)kSecAttrAccessible : (__bridge id)kSecAttrAccessibleAlwaysThisDeviceOnly };
+    
+    CFTypeRef outTypeRef = NULL;
+    
+    OSStatus status = VALAtomicSecItemCopyMatching((__bridge CFDictionaryRef)query, &outTypeRef);
+    NSDictionary *queryResult = (__bridge_transfer NSDictionary *)outTypeRef;
+    
+    if (status == errSecItemNotFound) {
+        status = VALAtomicSecItemAdd((__bridge CFDictionaryRef)query, &outTypeRef);
+        queryResult = (__bridge_transfer NSDictionary *)outTypeRef;
+    }
+    
+    VALCheckCondition(status == errSecSuccess, nil, @"Could not find shared access group prefix.");
+    
+    NSString *const accessGroup = queryResult[(__bridge id)kSecAttrAccessGroup];
+    NSArray *const components = [accessGroup componentsSeparatedByString:@"."];
+    NSString *const bundleSeedID = components.firstObject;
+    
+    return bundleSeedID;
+}
+
+#pragma mark - Initialization
 
 - (nullable instancetype)initWithIdentifier:(nonnull NSString *)identifier accessibility:(VALAccessibility)accessibility;
 {
@@ -178,14 +243,14 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
     
     self = [super init];
     if (self != nil) {
-        _baseQuery = [[self mutableBaseQueryWithIdentifier:identifier initializer:_cmd accessibility:accessibility] copy];
+        _baseQuery = [[self class] mutableBaseQueryWithIdentifier:identifier accessibility:accessibility initializer:_cmd];
         _identifier = [identifier copy];
         _sharedAcrossApplications = NO;
         _accessibility = accessibility;
         _lockForSetAndRemoveOperations = [NSLock new];
     }
     
-    return [[self class] _sharedValetForValet:self];
+    return [[self class] sharedValetForValet:self];
 }
 
 - (nullable instancetype)initWithSharedAccessGroupIdentifier:(nonnull NSString *)sharedAccessGroupIdentifier accessibility:(VALAccessibility)accessibility;
@@ -195,24 +260,22 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
     
     self = [super init];
     if (self != nil) {
-        NSMutableDictionary *baseQuery = [self mutableBaseQueryWithIdentifier:sharedAccessGroupIdentifier initializer:_cmd accessibility:accessibility];
-        baseQuery[(__bridge id)kSecAttrAccessGroup] = [NSString stringWithFormat:@"%@.%@", [self _sharedAccessGroupPrefix], sharedAccessGroupIdentifier];
+        _baseQuery = [[self class] mutableBaseQueryWithSharedAccessGroupIdentifier:sharedAccessGroupIdentifier accessibility:accessibility initializer:_cmd];
         
-        _baseQuery = [baseQuery copy];
         _identifier = [sharedAccessGroupIdentifier copy];
         _sharedAcrossApplications = YES;
         _accessibility = accessibility;
         _lockForSetAndRemoveOperations = [NSLock new];
     }
     
-    return [[self class] _sharedValetForValet:self];
+    return [[self class] sharedValetForValet:self];
 }
 
 #pragma mark - NSObject
 
 - (BOOL)isEqual:(id)object;
 {
-    VALValet *otherValet = (VALValet *)object;
+    VALValet *const otherValet = (VALValet *)object;
     return [otherValet isKindOfClass:[VALValet class]] && [self isEqualToValet:otherValet];
 }
 
@@ -221,7 +284,7 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
     return [self.secServiceIdentifier hash];
 }
 
-- (NSString *)description;
+- (nonnull NSString *)description;
 {
     return [NSString stringWithFormat:@"%@: %@ %@%@", [super description], self.identifier, (self.sharedAcrossApplications ? @"Shared " : @""), VALStringForAccessibility(self.accessibility)];
 }
@@ -248,14 +311,21 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
         NSString *const canaryKey = @"VAL_KeychainCanaryUsername";
         NSString *const canaryValue = @"VAL_KeychainCanaryPassword";
         
-        // Manually add the key to the keychain since we don't care about duplicates and are optimizing for speed.
-        NSMutableDictionary *query = [self.baseQuery mutableCopy];
-        [query addEntriesFromDictionary:[self _secItemFormatDictionaryWithKey:canaryKey]];
-        query[(__bridge id)kSecValueData] = [canaryValue dataUsingEncoding:NSUTF8StringEncoding];
-        (void)VALAtomicSecItemAdd((__bridge CFDictionaryRef)query, NULL);
-        
         NSString *const retrievedCanaryValue = [self stringForKey:canaryKey];
-        canAccessKeychain = [canaryValue isEqualToString:retrievedCanaryValue];
+        if ([canaryValue isEqualToString:retrievedCanaryValue]) {
+            canAccessKeychain = YES;
+            
+        } else {
+            // Canary value can't be found. Manually add the value to see if we can pull it back out.
+            NSMutableDictionary *query = [self.baseQuery mutableCopy];
+            [query addEntriesFromDictionary:[self _secItemFormatDictionaryWithKey:canaryKey]];
+            query[(__bridge id)kSecValueData] = [canaryValue dataUsingEncoding:NSUTF8StringEncoding];
+            (void)VALAtomicSecItemAdd((__bridge CFDictionaryRef)query, NULL);
+            
+            NSString *const retrievedCanaryValueAfterAdding = [self stringForKey:canaryKey];
+            canAccessKeychain = [canaryValue isEqualToString:retrievedCanaryValueAfterAdding];
+        }
+        
     }, self.lockForSetAndRemoveOperations);
     
     return canAccessKeychain;
@@ -268,7 +338,7 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
 
 - (nullable NSData *)objectForKey:(nonnull NSString *)key;
 {
-    return [self objectForKey:key options:nil];
+    return [self objectForKey:key options:nil status:NULL];
 }
 
 - (BOOL)setString:(nonnull NSString *)string forKey:(nonnull NSString *)key;
@@ -278,7 +348,7 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
 
 - (nullable NSString *)stringForKey:(nonnull NSString *)key;
 {
-    return [self stringForKey:key options:nil];
+    return [self stringForKey:key options:nil status:NULL];
 }
 
 - (BOOL)containsObjectForKey:(nonnull NSString *)key;
@@ -317,7 +387,7 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
     VALCheckCondition(secItemQuery[(__bridge id)kSecReturnPersistentRef] != (__bridge id)kCFBooleanFalse, [NSError errorWithDomain:VALMigrationErrorDomain code:VALMigrationErrorInvalidQuery userInfo:nil], @"Migration requires SecReturnPersistentRef to be set to kCFBooleanTrue.");
     VALCheckCondition([secItemQuery[(__bridge id)kSecClass] isKindOfClass:[NSString class]], [NSError errorWithDomain:VALMigrationErrorDomain code:VALMigrationErrorInvalidQuery userInfo:nil], @"Migration requires a kSecClass to be set to a valid kSecClass string.");
     
-    NSMutableDictionary *query = [secItemQuery mutableCopy];
+    NSMutableDictionary *const query = [secItemQuery mutableCopy];
     query[(__bridge id)kSecMatchLimit] = (__bridge id)kSecMatchLimitAll;
     query[(__bridge id)kSecReturnAttributes] = @YES;
     query[(__bridge id)kSecReturnData] = @NO;
@@ -337,10 +407,10 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
     
     // Now that we have the persistent refs with attributes, get the data associated with each keychain entry.
     NSMutableArray *queryResultWithData = [NSMutableArray new];
-    for (NSDictionary *keychainEntry in queryResult) {
+    for (NSDictionary *const keychainEntry in queryResult) {
         CFTypeRef outValueRef = NULL;
         status = VALAtomicSecItemCopyMatching((__bridge CFDictionaryRef)@{ (__bridge id)kSecValuePersistentRef : keychainEntry[(__bridge id)kSecValuePersistentRef], (__bridge id)kSecReturnData : @YES }, &outValueRef);
-        NSData *data = (__bridge_transfer NSData *)outValueRef;
+        NSData *const data = (__bridge_transfer NSData *)outValueRef;
         
         VALCheckCondition(status == errSecSuccess, [NSError errorWithDomain:VALMigrationErrorDomain code:VALMigrationErrorCouldNotReadKeychain userInfo:nil], @"Could not copy items matching secItemQuery");
         VALCheckCondition(data.length > 0, [NSError errorWithDomain:VALMigrationErrorDomain code:VALMigrationErrorDataInQueryResultInvalid userInfo:nil], @"Can not migrate keychain entry with no value data");
@@ -352,10 +422,10 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
     }
     
     // Sanity check that we are capable of migrating the data.
-    NSMutableSet *keysToMigrate = [NSMutableSet new];
-    for (NSDictionary *keychainEntry in queryResultWithData) {
-        NSString *key = keychainEntry[(__bridge id)kSecAttrAccount];
-        NSData *data = keychainEntry[(__bridge id)kSecValueData];
+    NSMutableSet *const keysToMigrate = [NSMutableSet new];
+    for (NSDictionary *const keychainEntry in queryResultWithData) {
+        NSString *const key = keychainEntry[(__bridge id)kSecAttrAccount];
+        NSData *const data = keychainEntry[(__bridge id)kSecValueData];
         
         VALCheckCondition(key.length > 0, [NSError errorWithDomain:VALMigrationErrorDomain code:VALMigrationErrorKeyInQueryResultInvalid userInfo:nil], @"Can not migrate keychain entry with no key");
         VALCheckCondition(data.length > 0, [NSError errorWithDomain:VALMigrationErrorDomain code:VALMigrationErrorDataInQueryResultInvalid userInfo:nil], @"Can not migrate keychain entry with no value data");
@@ -365,18 +435,18 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
     }
     
     // If all looks good, actually migrate.
-    NSMutableArray *alreadyMigratedKeys = [NSMutableArray new];
-    for (NSDictionary *keychainEntry in queryResultWithData) {
-        NSString *key = keychainEntry[(__bridge id)kSecAttrAccount];
-        NSData *data = keychainEntry[(__bridge id)kSecValueData];
+    NSMutableArray *const alreadyMigratedKeys = [NSMutableArray new];
+    for (NSDictionary *const keychainEntry in queryResultWithData) {
+        NSString *const key = keychainEntry[(__bridge id)kSecAttrAccount];
+        NSData *const data = keychainEntry[(__bridge id)kSecValueData];
         
         if ([self setObject:data forKey:key]) {
             [alreadyMigratedKeys addObject:key];
             
         } else {
             // Something went wrong. Remove all migrated items.
-            for (NSString *key in alreadyMigratedKeys) {
-                [self removeObjectForKey:key];
+            for (NSString *const alreadyMigratedKey in alreadyMigratedKeys) {
+                [self removeObjectForKey:alreadyMigratedKey];
             }
             
             return [NSError errorWithDomain:VALMigrationErrorDomain code:VALMigrationErrorCouldNotWriteToKeychain userInfo:nil];
@@ -385,7 +455,7 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
     
     // Remove data if requested.
     if (remove) {
-        NSMutableDictionary *removeQuery = [secItemQuery mutableCopy];
+        NSMutableDictionary *const removeQuery = [secItemQuery mutableCopy];
 #if !TARGET_OS_IPHONE
         // This line must exist on OS X, but must not exist on iOS.
         removeQuery[(__bridge id)kSecMatchLimit] = (__bridge id)kSecMatchLimitAll;
@@ -394,8 +464,8 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
         status = VALAtomicSecItemDelete((__bridge CFDictionaryRef)removeQuery);
         if (status != errSecSuccess) {
             // Something went wrong. Remove all migrated items.
-            for (NSString *key in alreadyMigratedKeys) {
-                [self removeObjectForKey:key];
+            for (NSString *const alreadyMigratedKey in alreadyMigratedKeys) {
+                [self removeObjectForKey:alreadyMigratedKey];
             }
             
             return [NSError errorWithDomain:VALMigrationErrorDomain code:VALMigrationErrorRemovalFailed userInfo:nil];
@@ -412,26 +482,12 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
 
 #pragma mark - Protected Methods
 
-- (nonnull NSMutableDictionary *)mutableBaseQueryWithIdentifier:(nonnull NSString *)identifier initializer:(SEL)initializer accessibility:(VALAccessibility)accessibility;
-{
-    VALCheckCondition(identifier.length > 0, nil, @"Must provide a valid identifier");
-    
-    return [@{
-              // Valet only handles generic passwords.
-              (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
-              // Use the identifier, Valet type and accessibility settings to create the keychain service name.
-              (__bridge id)kSecAttrService : [NSString stringWithFormat:@"VAL_%@_%@_%@_%@", NSStringFromClass([self class]), NSStringFromSelector(initializer), identifier, VALStringForAccessibility(accessibility)],
-              // Set our accessibility.
-              (__bridge id)kSecAttrAccessible : [self _secAccessibilityAttributeForAccessibility:accessibility],
-              } mutableCopy];
-}
-
 - (BOOL)setObject:(nonnull NSData *)value forKey:(nonnull NSString *)key options:(nullable NSDictionary *)options;
 {
     VALCheckCondition(key.length > 0, NO, @"Can not set a value with an empty key.");
     VALCheckCondition(value.length > 0, NO, @"Can not set an empty value.");
     
-    NSMutableDictionary *query = [self.baseQuery mutableCopy];
+    NSMutableDictionary *const query = [self.baseQuery mutableCopy];
     [query addEntriesFromDictionary:[self _secItemFormatDictionaryWithKey:key]];
     if (options.count > 0) {
         [query addEntriesFromDictionary:options];
@@ -472,7 +528,7 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
     return (status == errSecSuccess);
 }
 
-- (nullable NSData *)objectForKey:(nonnull NSString *)key options:(nullable NSDictionary *)options;
+- (nullable NSData *)objectForKey:(nonnull NSString *)key options:(nullable NSDictionary *)options status:(nullable inout OSStatus *)status;
 {
     VALCheckCondition(key.length > 0, nil, @"Can not retrieve value with empty key.");
     NSMutableDictionary *query = [self.baseQuery mutableCopy];
@@ -484,21 +540,23 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
     }
     
     CFTypeRef outTypeRef = NULL;
-    
-    OSStatus status = VALAtomicSecItemCopyMatching((__bridge CFDictionaryRef)query, &outTypeRef);
-    
-    if (status == errSecMissingEntitlement) {
+    OSStatus const copyMatchingStatus = VALAtomicSecItemCopyMatching((__bridge CFDictionaryRef)query, &outTypeRef);
+    if (copyMatchingStatus == errSecMissingEntitlement) {
         NSLog(@"A 'Missing Entitlements' error occurred. This is likely due to an Apple Keychain bug. As a workaround try running on a device that is not attached to a debugger.\n\nMore information: https://forums.developer.apple.com/thread/4743\n");
     }
     
-    NSData *value = (__bridge_transfer NSData *)outTypeRef;
-    return (status == errSecSuccess) ? value : nil;
+    if (status != NULL) {
+        *status = copyMatchingStatus;
+    }
+    
+    NSData *const value = (__bridge_transfer NSData *)outTypeRef;
+    return (copyMatchingStatus == errSecSuccess) ? value : nil;
 }
 
 - (BOOL)setString:(nonnull NSString *)string forKey:(nonnull NSString *)key options:(nullable NSDictionary *)options;
 {
     VALCheckCondition(string.length > 0, NO, @"Can not set empty string for key.");
-    NSData *stringData = [string dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *const stringData = [string dataUsingEncoding:NSUTF8StringEncoding];
     if (stringData.length > 0) {
         return [self setObject:stringData forKey:key options:options];
     }
@@ -506,9 +564,9 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
     return NO;
 }
 
-- (nullable NSString *)stringForKey:(nonnull NSString *)key options:(nullable NSDictionary *)options;
+- (nullable NSString *)stringForKey:(nonnull NSString *)key options:(nullable NSDictionary *)options  status:(nullable inout OSStatus *)status;
 {
-    NSData *stringData = [self objectForKey:key options:options];
+    NSData *const stringData = [self objectForKey:key options:options status:status];
     if (stringData.length > 0) {
         return [[NSString alloc] initWithBytes:stringData.bytes length:stringData.length encoding:NSUTF8StringEncoding];
     }
@@ -520,20 +578,20 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
 {
     VALCheckCondition(key.length > 0, errSecParam, @"Can not check if empty key exists in the keychain.");
     
-    NSMutableDictionary *query = [self.baseQuery mutableCopy];
+    NSMutableDictionary *const query = [self.baseQuery mutableCopy];
     [query addEntriesFromDictionary:[self _secItemFormatDictionaryWithKey:key]];
     if (options.count > 0) {
         [query addEntriesFromDictionary:options];
     }
     
-    OSStatus status = VALAtomicSecItemCopyMatching((__bridge CFDictionaryRef)query, NULL);
+    OSStatus const status = VALAtomicSecItemCopyMatching((__bridge CFDictionaryRef)query, NULL);
     return status;
 }
 
 - (nonnull NSSet *)allKeysWithOptions:(nullable NSDictionary *)options;
 {
     NSSet *keys = [NSSet set];
-    NSMutableDictionary *query = [self.baseQuery mutableCopy];
+    NSMutableDictionary *const query = [self.baseQuery mutableCopy];
     [query addEntriesFromDictionary:@{ (__bridge id)kSecMatchLimit : (__bridge id)kSecMatchLimitAll,
                                        (__bridge id)kSecReturnAttributes : @YES }];
     if (options.count > 0) {
@@ -548,7 +606,7 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
     if (status == errSecSuccess) {
         if ([queryResult isKindOfClass:[NSArray class]]) {
             NSMutableSet *allKeys = [NSMutableSet new];
-            for (NSDictionary *attributes in queryResult) {
+            for (NSDictionary *const attributes in queryResult) {
                 // There were many matches.
                 if (attributes[(__bridge id)kSecAttrAccount]) {
                     [allKeys addObject:attributes[(__bridge id)kSecAttrAccount]];
@@ -569,7 +627,7 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
 {
     VALCheckCondition(key.length > 0, NO, @"Can not remove object for empty key from the keychain.");
     
-    NSMutableDictionary *query = [self.baseQuery mutableCopy];
+    NSMutableDictionary *const query = [self.baseQuery mutableCopy];
     [query addEntriesFromDictionary:[self _secItemFormatDictionaryWithKey:key]];
     if (options.count > 0) {
         [query addEntriesFromDictionary:options];
@@ -586,7 +644,7 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
 
 - (BOOL)removeAllObjectsWithOptions:(nullable NSDictionary *)options;
 {
-    for (NSString *key in [self allKeys]) {
+    for (NSString *const key in [self allKeys]) {
         if (![self removeObjectForKey:key options:options]) {
             return NO;
         }
@@ -603,56 +661,6 @@ OSStatus VALAtomicSecItemDelete(CFDictionaryRef query)
 }
 
 #pragma mark - Private Methods
-
-/// Programatically grab the required prefix for the shared access group (i.e. Bundle Seed ID). The value for the kSecAttrAccessGroup key in queries for data that is shared between apps must be of the format bundleSeedID.sharedAccessGroup. For more information on the Bundle Seed ID, see https://developer.apple.com/library/ios/qa/qa1713/_index.html
-- (nullable NSString *)_sharedAccessGroupPrefix;
-{
-    NSDictionary *query = @{ (__bridge NSString *)kSecClass : (__bridge NSString *)kSecClassGenericPassword,
-                             (__bridge id)kSecAttrAccount : @"SharedAccessGroupAlwaysAccessiblePrefixPlaceholder",
-                             (__bridge id)kSecReturnAttributes : @YES,
-                             (__bridge id)kSecAttrAccessible : (__bridge id)kSecAttrAccessibleAlwaysThisDeviceOnly };
-    
-    CFTypeRef outTypeRef = NULL;
-    NSDictionary *queryResult = nil;
-    
-    OSStatus status = VALAtomicSecItemCopyMatching((__bridge CFDictionaryRef)query, &outTypeRef);
-    queryResult = (__bridge_transfer NSDictionary *)outTypeRef;
-    
-    if (status == errSecItemNotFound) {
-        status = VALAtomicSecItemAdd((__bridge CFDictionaryRef)query, &outTypeRef);
-        queryResult = (__bridge_transfer NSDictionary *)outTypeRef;
-    }
-    
-    VALCheckCondition(status == errSecSuccess, nil, @"Could not find shared access group prefix.");
-    
-    NSString *accessGroup = queryResult[(__bridge id)kSecAttrAccessGroup];
-    NSArray *components = [accessGroup componentsSeparatedByString:@"."];
-    NSString *bundleSeedID = components.firstObject;
-    
-    return bundleSeedID;
-}
-
-- (id)_secAccessibilityAttributeForAccessibility:(VALAccessibility)accessibility;
-{
-    switch (accessibility) {
-        case VALAccessibilityWhenUnlocked:
-            return (__bridge id)kSecAttrAccessibleWhenUnlocked;
-        case VALAccessibilityAfterFirstUnlock:
-            return (__bridge id)kSecAttrAccessibleAfterFirstUnlock;
-        case VALAccessibilityAlways:
-            return (__bridge id)kSecAttrAccessibleAlways;
-#if VAL_IOS_8_OR_LATER || __MAC_10_10
-        case VALAccessibilityWhenPasscodeSetThisDeviceOnly:
-            return (__bridge id)kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly;
-#endif
-        case VALAccessibilityWhenUnlockedThisDeviceOnly:
-            return (__bridge id)kSecAttrAccessibleWhenUnlockedThisDeviceOnly;
-        case VALAccessibilityAfterFirstUnlockThisDeviceOnly:
-            return (__bridge id)kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly;
-        case VALAccessibilityAlwaysThisDeviceOnly:
-            return (__bridge id)kSecAttrAccessibleAlwaysThisDeviceOnly;
-    }
-}
 
 - (nonnull NSDictionary *)_secItemFormatDictionaryWithKey:(nonnull NSString *)key;
 {

@@ -45,7 +45,6 @@ double const DISCOGS_SECONDS_BETWEEN_REQUESTS = 3;
                      action:@selector(requestError:)
            forRequestEvents:SMWebRequestEventError];
     
-    
     if(self.lastQueryDate == nil) {
         self.lastQueryDate = [NSDate date];
         [self.request start];
