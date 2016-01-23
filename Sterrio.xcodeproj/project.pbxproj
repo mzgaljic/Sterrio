@@ -2298,7 +2298,7 @@
 					"$(PROJECT_DIR)/Pods/Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.5.2",
 				);
 				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
-				GCC_OPTIMIZATION_LEVEL = fast;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Sterrio/PrefixHeader.pch;
 				INFOPLIST_FILE = Sterrio/Info.plist;

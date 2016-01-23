@@ -67,7 +67,7 @@ short const MZTabBarHeight = 50;
 NSString * const MZHideTabBarAnimated = @"Pass @YES in notif to hide tab bar";
 
 //determined this would work well with smallest font size on largest iphone (iphone 6 plus)
-int MZDefaultCoreDataFetchBatchSize = 30;
+int MZDefaultCoreDataFetchBatchSize = 35;
 
 NSString * const MZWhatsNewUserMsg = @"Sterrio can now guess the song info for most YouTube videos (w/ a reasonably clean title.) \n\nManually entering information is now a rare occurence.";
 NSString * const MZAppName = @"Sterrio";

@@ -48,3 +48,6 @@ pod 'Valet'
 #Fabrio.io stuff (crashlytics & answers)
 pod 'Fabric'
 pod 'Crashlytics'
+
+#default cell uilabel truncation messes chars up
+pod 'TTTAttributedLabel'

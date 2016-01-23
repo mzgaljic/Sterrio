@@ -30,10 +30,6 @@ static NSString * const SONG3_YTID = @"rkBvhnri5s0";
 static NSString * const ARTIST3_NAME = @"The Fray";
 static NSInteger const SONG3_DURATION = 263;
 
-static NSString * const SONG4_NAME = @"Christmas Songs 2014 (1hr Mix Playlist)";
-static NSString * const SONG4_YTID = @"mVp0brA3Hpk";
-static NSInteger const SONG4_DURATION = 3757;
-
 static NSString * const SONG5_NAME = @"Geronimo";
 static NSString * const ARTIST5_NAME = @"Sheppard";
 static NSString * const SONG5_YTID = @"UL_EXAyGCkw";
@@ -69,17 +65,17 @@ static NSInteger const SONG7_DURATION = 137;
                                                             partOfAlbumNamed:ALBUM2_NAME
                                                                    youtubeID:SONG2_YTID
                                                                videoDuration:SONG2_DURATION];
-                UIImage *someImage = [UIImage imageNamed:@"testAlbumArt.jpg"];
+                UIImage *someImage = [UIImage imageNamed:@"testAlbumArt"];
                 someSong.albumArt = [SongAlbumArt createNewAlbumArtWithUIImage:someImage withContext:context];
                 someSong.nonDefaultArtSpecified = @YES;
 
             } else {
                 // odd
-                [PreloadedCoreDataModelUtility createSongWithName:SONG4_NAME
-                                                     byArtistName:nil
+                [PreloadedCoreDataModelUtility createSongWithName:SONG5_NAME
+                                                     byArtistName:ARTIST5_NAME
                                                  partOfAlbumNamed:nil
-                                                        youtubeID:SONG4_YTID
-                                                    videoDuration:SONG4_DURATION];
+                                                        youtubeID:SONG5_YTID
+                                                    videoDuration:SONG5_DURATION];
             }
             
             if(i == stopToPrint && i != songCreationCount){
@@ -112,11 +108,6 @@ static NSInteger const SONG7_DURATION = 137;
                                                 youtubeID:SONG3_YTID
                                             videoDuration:SONG3_DURATION];
         
-        [PreloadedCoreDataModelUtility createSongWithName:SONG4_NAME
-                                             byArtistName:nil
-                                         partOfAlbumNamed:nil
-                                                youtubeID:SONG4_YTID
-                                            videoDuration:SONG4_DURATION];
         [PreloadedCoreDataModelUtility createSongWithName:SONG5_NAME
                                              byArtistName:ARTIST5_NAME
                                          partOfAlbumNamed:nil

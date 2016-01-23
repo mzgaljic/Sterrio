@@ -314,6 +314,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
     NSPredicate *albumPredicate = [NSPredicate predicateWithFormat:@"album.uniqueId == %@", self.album.uniqueId];
     request.predicate = albumPredicate;
     [request setFetchBatchSize:MZDefaultCoreDataFetchBatchSize];
+    [request setPropertiesToFetch:@[@"songName", @"duration"]];
 
     NSSortDescriptor *sortDescriptor;
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"

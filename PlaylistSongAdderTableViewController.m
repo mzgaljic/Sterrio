@@ -290,6 +290,7 @@
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
     request.predicate = nil;  //means i want all of the songs
     [request setFetchBatchSize:MZDefaultCoreDataFetchBatchSize];
+    [request setPropertiesToFetch:@[@"songName", @"album", @"artist"]];
     
     NSSortDescriptor *sortDescriptor;
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"

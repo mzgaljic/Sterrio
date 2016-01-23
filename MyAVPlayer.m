@@ -176,8 +176,8 @@ static ReachabilitySingleton *reachability;
     fetchVideoInfoOperation = [[FetchVideoInfoOperation alloc] initWithSongsYoutubeId:aSong.youtube_id];
     
     [fetchVideoInfoOperation addDependency:determineVideoPlayableOperation];
-    [operationQueue addOperation:determineVideoPlayableOperation];
     [operationQueue addOperation:fetchVideoInfoOperation];
+    [operationQueue addOperation:determineVideoPlayableOperation];
     
     //if player was disabled, see if we can re-enable it
     if([SongPlayerCoordinator isPlayerInDisabledState]){

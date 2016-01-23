@@ -340,6 +340,7 @@ static NSString *currentAlertTextFieldText;
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Playlist"];
     request.predicate = nil;  //means i want all of the playlists
     [request setFetchBatchSize:MZDefaultCoreDataFetchBatchSize];
+    [request setPropertiesToFetch:@[@"playlistName"]];
     
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"creationDate"
                                                                      ascending:NO];

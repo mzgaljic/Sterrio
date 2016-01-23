@@ -298,6 +298,7 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Album"];
     request.predicate = nil;  //means i want all of the albums
     [request setFetchBatchSize:MZDefaultCoreDataFetchBatchSize];
+    [request setPropertiesToFetch:@[@"albumName", @"artist"]];
     
     NSSortDescriptor *sortDescriptor;
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortAlbumName"
