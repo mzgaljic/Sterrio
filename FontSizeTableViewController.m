@@ -125,8 +125,21 @@ short const PREVIEW_SONG_SECTION_NUM = 1;
         Song *aSong = [self randomSongObjectFromModelIfPresent];
         if(aSong)
         {
-            cell.textLabel.text = aSong.songName;
-            cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringForArtistName:aSong.artist.artistName albumName:aSong.album.albumName];
+            NSMutableString *detailText = [NSMutableString new];
+            NSString *artistName = aSong.artist.artistName;
+            NSString *albumName = aSong.album.albumName;
+            if(artistName != nil && albumName != nil){
+                [detailText appendString:artistName];
+                [detailText appendString:@" — "];
+                [detailText appendString:albumName];
+            } else if(artistName == nil && albumName == nil){
+                detailText = nil;
+            } else if(artistName == nil && albumName != nil){
+                [detailText appendString:albumName];
+            } else if(artistName != nil && albumName == nil){
+                [detailText appendString:artistName];
+            } //else  --case should never happen
+            cell.detailTextLabel.text = detailText;
             
             UIImage *albumArt;
             if(aSong.albumArt){
@@ -145,6 +158,7 @@ short const PREVIEW_SONG_SECTION_NUM = 1;
             //show sample song since user has no songs in app.
             cell.textLabel.text = @"Song Name";
             cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringForArtistName:@"Artist" albumName:@"Album"];
+            cell.detailTextLabel.text = @"Album — Artist";
             
             sampleAlbumArtImg = [UIImage imageNamed:@"Sample Album Art"];
             [UIView transitionWithView:cell.imageView
@@ -155,6 +169,7 @@ short const PREVIEW_SONG_SECTION_NUM = 1;
                             }
                             completion:nil];
         }
+        cell.detailTextLabel.textColor = [UIColor grayColor];
     }
     
     return cell;
