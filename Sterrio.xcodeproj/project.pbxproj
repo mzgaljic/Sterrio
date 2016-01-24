@@ -12,17 +12,6 @@
 		873537CC1B0A9981009244E4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 873537CB1B0A9981009244E4 /* main.m */; };
 		873537D71B0A9981009244E4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 873537D61B0A9981009244E4 /* Images.xcassets */; };
 		873537E61B0A9981009244E4 /* SterrioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 873537E51B0A9981009244E4 /* SterrioTests.m */; };
-		873537F41B0A9A38009244E4 /* Ubuntu-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 873537F01B0A9A38009244E4 /* Ubuntu-Bold.ttf */; };
-		873537F51B0A9A38009244E4 /* Ubuntu-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 873537F11B0A9A38009244E4 /* Ubuntu-BoldItalic.ttf */; };
-		873537F61B0A9A38009244E4 /* Ubuntu-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 873537F21B0A9A38009244E4 /* Ubuntu-Italic.ttf */; };
-		873537F71B0A9A38009244E4 /* Ubuntu.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 873537F31B0A9A38009244E4 /* Ubuntu.ttf */; };
-		873538001B0A9A5C009244E4 /* CONTRIBUTING_ubuntu.txt in Resources */ = {isa = PBXBuildFile; fileRef = 873537F91B0A9A5C009244E4 /* CONTRIBUTING_ubuntu.txt */; };
-		873538011B0A9A5C009244E4 /* copyright_ubuntu.txt in Resources */ = {isa = PBXBuildFile; fileRef = 873537FA1B0A9A5C009244E4 /* copyright_ubuntu.txt */; };
-		873538021B0A9A5C009244E4 /* FONTLOG_ubuntu.txt in Resources */ = {isa = PBXBuildFile; fileRef = 873537FB1B0A9A5C009244E4 /* FONTLOG_ubuntu.txt */; };
-		873538031B0A9A5C009244E4 /* LICENCE_ubuntu.txt in Resources */ = {isa = PBXBuildFile; fileRef = 873537FC1B0A9A5C009244E4 /* LICENCE_ubuntu.txt */; };
-		873538041B0A9A5C009244E4 /* LICENCE-FAQ_ubuntu.txt in Resources */ = {isa = PBXBuildFile; fileRef = 873537FD1B0A9A5C009244E4 /* LICENCE-FAQ_ubuntu.txt */; };
-		873538051B0A9A5C009244E4 /* README_ubuntu.txt in Resources */ = {isa = PBXBuildFile; fileRef = 873537FE1B0A9A5C009244E4 /* README_ubuntu.txt */; };
-		873538061B0A9A5C009244E4 /* TRADEMARKS_ubuntu.txt in Resources */ = {isa = PBXBuildFile; fileRef = 873537FF1B0A9A5C009244E4 /* TRADEMARKS_ubuntu.txt */; };
 		873538091B0A9A80009244E4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873538071B0A9A80009244E4 /* LaunchScreen.storyboard */; };
 		8735380A1B0A9A80009244E4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873538081B0A9A80009244E4 /* Main.storyboard */; };
 		8735380D1B0A9A9A009244E4 /* MZConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735380C1B0A9A9A009244E4 /* MZConstants.m */; };
@@ -260,17 +249,6 @@
 		873537DF1B0A9981009244E4 /* Sterrio.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Sterrio.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		873537E41B0A9981009244E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		873537E51B0A9981009244E4 /* SterrioTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SterrioTests.m; sourceTree = "<group>"; };
-		873537F01B0A9A38009244E4 /* Ubuntu-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Ubuntu-Bold.ttf"; sourceTree = "<group>"; };
-		873537F11B0A9A38009244E4 /* Ubuntu-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Ubuntu-BoldItalic.ttf"; sourceTree = "<group>"; };
-		873537F21B0A9A38009244E4 /* Ubuntu-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Ubuntu-Italic.ttf"; sourceTree = "<group>"; };
-		873537F31B0A9A38009244E4 /* Ubuntu.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ubuntu.ttf; sourceTree = "<group>"; };
-		873537F91B0A9A5C009244E4 /* CONTRIBUTING_ubuntu.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CONTRIBUTING_ubuntu.txt; sourceTree = "<group>"; };
-		873537FA1B0A9A5C009244E4 /* copyright_ubuntu.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = copyright_ubuntu.txt; sourceTree = "<group>"; };
-		873537FB1B0A9A5C009244E4 /* FONTLOG_ubuntu.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = FONTLOG_ubuntu.txt; sourceTree = "<group>"; };
-		873537FC1B0A9A5C009244E4 /* LICENCE_ubuntu.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENCE_ubuntu.txt; sourceTree = "<group>"; };
-		873537FD1B0A9A5C009244E4 /* LICENCE-FAQ_ubuntu.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "LICENCE-FAQ_ubuntu.txt"; sourceTree = "<group>"; };
-		873537FE1B0A9A5C009244E4 /* README_ubuntu.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README_ubuntu.txt; sourceTree = "<group>"; };
-		873537FF1B0A9A5C009244E4 /* TRADEMARKS_ubuntu.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TRADEMARKS_ubuntu.txt; sourceTree = "<group>"; };
 		873538071B0A9A80009244E4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		873538081B0A9A80009244E4 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		8735380B1B0A9A9A009244E4 /* MZConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZConstants.h; sourceTree = "<group>"; };
@@ -744,7 +722,6 @@
 			isa = PBXGroup;
 			children = (
 				87353A651B0AA3F1009244E4 /* Sterrio.entitlements */,
-				873537EF1B0A9A2B009244E4 /* Fonts */,
 				873538071B0A9A80009244E4 /* LaunchScreen.storyboard */,
 				873538081B0A9A80009244E4 /* Main.storyboard */,
 				8735380E1B0A9AA2009244E4 /* AppDelegate.h */,
@@ -806,32 +783,6 @@
 				873537E41B0A9981009244E4 /* Info.plist */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		873537EF1B0A9A2B009244E4 /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				873537F81B0A9A4A009244E4 /* Lisence Stuff */,
-				873537F01B0A9A38009244E4 /* Ubuntu-Bold.ttf */,
-				873537F11B0A9A38009244E4 /* Ubuntu-BoldItalic.ttf */,
-				873537F21B0A9A38009244E4 /* Ubuntu-Italic.ttf */,
-				873537F31B0A9A38009244E4 /* Ubuntu.ttf */,
-			);
-			name = Fonts;
-			sourceTree = "<group>";
-		};
-		873537F81B0A9A4A009244E4 /* Lisence Stuff */ = {
-			isa = PBXGroup;
-			children = (
-				873537F91B0A9A5C009244E4 /* CONTRIBUTING_ubuntu.txt */,
-				873537FA1B0A9A5C009244E4 /* copyright_ubuntu.txt */,
-				873537FB1B0A9A5C009244E4 /* FONTLOG_ubuntu.txt */,
-				873537FC1B0A9A5C009244E4 /* LICENCE_ubuntu.txt */,
-				873537FD1B0A9A5C009244E4 /* LICENCE-FAQ_ubuntu.txt */,
-				873537FE1B0A9A5C009244E4 /* README_ubuntu.txt */,
-				873537FF1B0A9A5C009244E4 /* TRADEMARKS_ubuntu.txt */,
-			);
-			name = "Lisence Stuff";
 			sourceTree = "<group>";
 		};
 		873538111B0A9AAC009244E4 /* App Helpers */ = {
@@ -1886,29 +1837,18 @@
 				873539E71B0AA1E2009244E4 /* LICENSE progressHUD.txt in Resources */,
 				873539E11B0AA1CB009244E4 /* LICENSE color cube.txt in Resources */,
 				876C53D41C2A1383007AFC3C /* cm_pop_tim_view_license.txt in Resources */,
-				873538041B0A9A5C009244E4 /* LICENCE-FAQ_ubuntu.txt in Resources */,
-				873537F71B0A9A38009244E4 /* Ubuntu.ttf in Resources */,
 				87A9536D1B3E242A002E9872 /* LICENSE_webRequest.txt in Resources */,
-				873538011B0A9A5C009244E4 /* copyright_ubuntu.txt in Resources */,
-				873538051B0A9A5C009244E4 /* README_ubuntu.txt in Resources */,
-				873537F41B0A9A38009244E4 /* Ubuntu-Bold.ttf in Resources */,
-				873538021B0A9A5C009244E4 /* FONTLOG_ubuntu.txt in Resources */,
 				8735390B1B0A9ED2009244E4 /* iOSDeviceModelMapping.plist in Resources */,
 				873537D71B0A9981009244E4 /* Images.xcassets in Resources */,
 				8735380A1B0A9A80009244E4 /* Main.storyboard in Resources */,
 				873539FF1B0AA231009244E4 /* LICENSE asvalue tracking slider.txt in Resources */,
 				87353A071B0AA24B009244E4 /* LICENSE blurSegue.txt in Resources */,
 				873538091B0A9A80009244E4 /* LaunchScreen.storyboard in Resources */,
-				873538061B0A9A5C009244E4 /* TRADEMARKS_ubuntu.txt in Resources */,
 				873539801B0AA168009244E4 /* LICENSE ssbouncy.txt in Resources */,
-				873537F51B0A9A38009244E4 /* Ubuntu-BoldItalic.ttf in Resources */,
 				87353A0E1B0AA264009244E4 /* LICENSE_IBActionSheet.txt in Resources */,
 				873539EF1B0AA1F4009244E4 /* LICENSE gstouches.txt in Resources */,
 				873539E81B0AA1E2009244E4 /* ProgressHUD.bundle in Resources */,
-				873538031B0A9A5C009244E4 /* LICENCE_ubuntu.txt in Resources */,
-				873537F61B0A9A38009244E4 /* Ubuntu-Italic.ttf in Resources */,
 				87353A4B1B0AA2DE009244E4 /* README.txt in Resources */,
-				873538001B0A9A5C009244E4 /* CONTRIBUTING_ubuntu.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

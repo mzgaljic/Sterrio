@@ -100,7 +100,6 @@ typedef enum{
 + (NSString *)regularFontName;
 + (NSString *)boldFontName;
 + (NSString *)italicFontName;
-+ (NSString *)boldItalicFontName;
 
 
 //---Stuff in Keychain---

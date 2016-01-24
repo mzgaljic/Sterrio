@@ -19,8 +19,10 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(orientationNeedsToChanged)
                                                  name:UIDeviceOrientationDidChangeNotification object:nil];
-    self.videoTitle.lineBreakMode = NSLineBreakByCharWrapping;
-    self.videoChannel.lineBreakMode = NSLineBreakByCharWrapping;
+    self.videoTitle.numberOfLines = 0;
+    self.videoChannel.numberOfLines = 0;
+    self.videoTitle.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.videoChannel.lineBreakMode = NSLineBreakByTruncatingTail;
     if([AppEnvironmentConstants isUserOniOS9OrAbove]) {
         [self.videoChannel setAllowsDefaultTighteningForTruncation:YES];
         [self.videoTitle setAllowsDefaultTighteningForTruncation:YES];

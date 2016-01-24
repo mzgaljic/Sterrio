@@ -268,21 +268,29 @@ static NSLock *playbackTimerLock;
 }
 
 //fonts
+static NSString *regularFontName = nil;
+static NSString *boldFontName = nil;
+static NSString *italicFontName = nil;
 + (NSString *)regularFontName
 {
-    return @"Ubuntu";
+    if(regularFontName == nil) {
+        regularFontName = [[UIFont systemFontOfSize:10] fontName];
+    }
+    return regularFontName;
 }
 + (NSString *)boldFontName
 {
-    return @"Ubuntu-Bold";
+    if(boldFontName == nil) {
+        boldFontName = [[UIFont boldSystemFontOfSize:10] fontName];
+    }
+    return boldFontName;
 }
 + (NSString *)italicFontName
 {
-    return @"Ubuntu-Italic";
-}
-+ (NSString *)boldItalicFontName
-{
-    return @"Ubuntu-BoldItalic";
+    if(italicFontName == nil) {
+        italicFontName = [[UIFont italicSystemFontOfSize:10] fontName];
+    }
+    return italicFontName;
 }
 
 

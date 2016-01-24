@@ -19,7 +19,7 @@
     float height = prefSongCellHeight * [MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
     CGSize labelSize = CGSizeMake(fakeButRealisticWidth, height);
     
-    NSString *fontName = [AppEnvironmentConstants boldFontName];
+    NSString *fontName = [AppEnvironmentConstants regularFontName];
     UIFont *font = [PreferredFontSizeUtility findAdaptiveFontWithName:fontName
                                                        forUILabelSize:labelSize
                                                       withMinimumSize:16];
