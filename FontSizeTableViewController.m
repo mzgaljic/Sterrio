@@ -140,6 +140,7 @@ short const PREVIEW_SONG_SECTION_NUM = 1;
                 [detailText appendString:artistName];
             } //else  --case should never happen
             cell.detailTextLabel.text = detailText;
+            cell.textLabel.text = aSong.songName;
             
             UIImage *albumArt;
             if(aSong.albumArt){
