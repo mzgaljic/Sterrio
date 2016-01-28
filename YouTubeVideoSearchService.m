@@ -183,9 +183,17 @@ const int time_out_interval_seconds = 10;
 }
 
 #pragma mark - Query Auto-complete as you type
+static NSOperationQueue *autoCompleteRequestQueue = nil;
 - (void)fetchYouTubeAutoCompleteResultsForString:(NSString *)currentString
 {
     if(currentString){
+        if(autoCompleteRequestQueue == nil) {
+            autoCompleteRequestQueue = [[NSOperationQueue alloc] init];
+        } else {
+            //indirectly cancels the last NSURLRequest.
+            [[autoCompleteRequestQueue.operations lastObject] cancel];
+        }
+        
         NSMutableString *tempUrl = [NSMutableString stringWithString: QUERY_SUGGESTION_BASE];
         [tempUrl appendString:[currentString stringForHTTPRequest]];
         NSString *fullUrl = [NSString stringWithString:tempUrl];
@@ -194,9 +202,8 @@ const int time_out_interval_seconds = 10;
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:fullUrl]
                                                  cachePolicy:NSURLRequestUseProtocolCachePolicy
                                              timeoutInterval:time_out_interval_seconds];
-        NSOperationQueue *queue = [[NSOperationQueue alloc] init];
         
-        [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^
+        [NSURLConnection sendAsynchronousRequest:request queue:autoCompleteRequestQueue completionHandler:^
             (NSURLResponse *response, NSData *data, NSError *connectionError)
         {
             if (data == nil)

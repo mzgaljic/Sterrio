@@ -58,18 +58,6 @@ static ReachabilitySingleton *reachability;
     return self;
 }
 
-void safeSynchronousDispatchToMainQueue(void (^block)(void))
-{
-    if ([NSThread isMainThread])
-    {
-        block();
-    }
-    else
-    {
-        dispatch_sync(dispatch_get_main_queue(), block);
-    }
-}
-
 - (void)dealloc
 {
     [self deregisterForObservers];

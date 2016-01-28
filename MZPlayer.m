@@ -349,7 +349,7 @@ static BOOL isHudOnScreen = NO;
 
 - (void)setupTimeObserver
 {
-    CMTime interval = CMTimeMake(33, 1000);
+    CMTime interval = CMTimeMake(1, 8);
     __weak __typeof(self) weakself = self;
     
     playbackObserver = [self.avPlayer addPeriodicTimeObserverForInterval:interval queue:dispatch_get_main_queue() usingBlock: ^(CMTime time) {

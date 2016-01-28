@@ -61,7 +61,6 @@ static BOOL waitingForNextOrPrevVideoToLoad;
 static BOOL isPlayerOnExternalDisplayWhileScrubbing = NO;
 static const short longDurationLabelOffset = 24;
 static int numTimesSetupKeyValueObservers = 0;
-const CGFloat observationsPerSecond = 15.0f;  //for timeObserver var
 
 NSString * const CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update gui please!";
 NSString * const CURRENT_SONG_STOPPED_PLAYBACK = @"playback has stopped for some unknown reason (stall?)";
@@ -1661,9 +1660,9 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
     
     __weak SongPlayerViewController *weakSelf = self;
     __weak AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
-    CMTime timeInterval = CMTimeMake(1, observationsPerSecond);
+    CMTime timeInterval = CMTimeMake(1, 8);
     [MusicPlaybackController setAVPlayerTimeObserver: [player addPeriodicTimeObserverForInterval:timeInterval queue:nil usingBlock:^(CMTime time){
-        //code will be called each 1/10th second...
+        //code will be called 10 times a second (ie. every 0.1 seconds)
         [weakSelf updatePlaybackTimeSlider];
         
         id observer = [MusicPlaybackController avplayerTimeObserver];

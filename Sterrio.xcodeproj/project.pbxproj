@@ -11,6 +11,7 @@
 		8727A5791C49EC05008FC03E /* CoreDataEntityMappingUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8727A5781C49EC05008FC03E /* CoreDataEntityMappingUtils.m */; };
 		8730C0D71C5989F9001FC8A6 /* NSString+Morphing.m in Sources */ = {isa = PBXBuildFile; fileRef = 8730C0D41C5989F9001FC8A6 /* NSString+Morphing.m */; };
 		8730C0D81C5989F9001FC8A6 /* TOMSMorphingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8730C0D61C5989F9001FC8A6 /* TOMSMorphingLabel.m */; };
+		8730C0E11C59B8C0001FC8A6 /* MZCommons.m in Sources */ = {isa = PBXBuildFile; fileRef = 8730C0E01C59B8C0001FC8A6 /* MZCommons.m */; };
 		873537CC1B0A9981009244E4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 873537CB1B0A9981009244E4 /* main.m */; };
 		873537D71B0A9981009244E4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 873537D61B0A9981009244E4 /* Images.xcassets */; };
 		873537E61B0A9981009244E4 /* SterrioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 873537E51B0A9981009244E4 /* SterrioTests.m */; };
@@ -248,6 +249,8 @@
 		8730C0D41C5989F9001FC8A6 /* NSString+Morphing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Morphing.m"; sourceTree = "<group>"; };
 		8730C0D51C5989F9001FC8A6 /* TOMSMorphingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOMSMorphingLabel.h; sourceTree = "<group>"; };
 		8730C0D61C5989F9001FC8A6 /* TOMSMorphingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOMSMorphingLabel.m; sourceTree = "<group>"; };
+		8730C0DF1C59B8C0001FC8A6 /* MZCommons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZCommons.h; sourceTree = "<group>"; };
+		8730C0E01C59B8C0001FC8A6 /* MZCommons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZCommons.m; sourceTree = "<group>"; };
 		873537C61B0A9981009244E4 /* Sterrio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sterrio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		873537CA1B0A9981009244E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		873537CB1B0A9981009244E4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -780,6 +783,8 @@
 				873537CA1B0A9981009244E4 /* Info.plist */,
 				873537CB1B0A9981009244E4 /* main.m */,
 				87353A7B1B0AA96F009244E4 /* PrefixHeader.pch */,
+				8730C0DF1C59B8C0001FC8A6 /* MZCommons.h */,
+				8730C0E01C59B8C0001FC8A6 /* MZCommons.m */,
 			);
 			name = "Supporting Files";
 			path = Sterrio;
@@ -2134,6 +2139,7 @@
 				87353A641B0AA334009244E4 /* AutoScrollLabel.m in Sources */,
 				873539C21B0AA1B3009244E4 /* RBBSpringAnimation.m in Sources */,
 				8735387D1B0A9B9E009244E4 /* LQAlbumArtItem.m in Sources */,
+				8730C0E11C59B8C0001FC8A6 /* MZCommons.m in Sources */,
 				87353A531B0AA2F9009244E4 /* MRActivityIndicatorView+AFNetworking.m in Sources */,
 				873539D11B0AA1B3009244E4 /* SDCAlertViewContentView.m in Sources */,
 				8736AA9A1C25F3BF005FAE07 /* EARestrictedScrollView.m in Sources */,
@@ -2258,7 +2264,7 @@
 					"$(PROJECT_DIR)/Pods/Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.5.2",
 				);
 				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
-				GCC_OPTIMIZATION_LEVEL = fast;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Sterrio/PrefixHeader.pch;
 				INFOPLIST_FILE = Sterrio/Info.plist;
