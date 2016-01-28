@@ -95,7 +95,7 @@ short const dummyTabIndex = 2;
                                                  name:MZNewSongLoading
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(dismissPlayerExpandingTip) name:@"shouldDismissPlayerExpandingTip"
+                                             selector:@selector(dismissPlayerExpandingTip:) name:@"shouldDismissPlayerExpandingTip"
                                                object:nil];
 }
 
@@ -821,14 +821,17 @@ static UIImageView *playerExpansionTipView = nil;
     playerExpansionTipView = imgView;
 }
 
-- (void)dismissPlayerExpandingTip
+- (void)dismissPlayerExpandingTip:(NSNotification *)notif
 {
-    [self performSelectorOnMainThread:@selector(dismissPlayerExpandingTipOnGuiThread)
-                           withObject:nil
-                        waitUntilDone:YES];
+    if([notif.name isEqualToString:@"shouldDismissPlayerExpandingTip"]) {
+        NSNumber *userExpandedPlayer = notif.object;
+        [self performSelectorOnMainThread:@selector(dismissPlayerExpandingTipOnGuiThread:)
+                               withObject:userExpandedPlayer
+                            waitUntilDone:YES];
+    }
 }
 
-- (void)dismissPlayerExpandingTipOnGuiThread
+- (void)dismissPlayerExpandingTipOnGuiThread:(NSNumber *)userExpandedPlayer
 {
     [UIView animateWithDuration:0.5
                           delay:0
@@ -839,7 +842,9 @@ static UIImageView *playerExpansionTipView = nil;
                          playerExpansionTipView.alpha = 0;
                      }
                      completion:^(BOOL finished) {
-                         [AppEnvironmentConstants setUserSawExpandingPlayerTip:YES];
+                         if([userExpandedPlayer boolValue]) {
+                             [AppEnvironmentConstants setUserSawExpandingPlayerTip:YES];
+                         }
                          [playerExpansionTipView removeFromSuperview];
                          playerExpansionTipView = nil;
                      }];

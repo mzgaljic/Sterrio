@@ -251,14 +251,40 @@ static UIInterfaceOrientation orientationOnLastRotate;
         
         [UIView animateWithDuration:1
                               delay:0
-             usingSpringWithDamping:0.7
+             usingSpringWithDamping:0.74
               initialSpringVelocity:0.8
                             options:UIViewAnimationOptionAllowUserInteraction
                          animations:^{
                              videoPlayer.frame = currentPlayerFrame;
                              [videoPlayer shrunkenFrameHasChanged];
                              [videoPlayer newAirplayInUseMsgCenter:newCenter];
-                         } completion:nil];
+                             
+                        } completion:nil];
+        
+        UIImageView *swipeUpTipView = nil;
+        if(! [AppEnvironmentConstants userSawExpandingPlayerTip]) {
+            //tip is on screen now. Rotate the swipe-up tip with the player.
+            UIWindow *window = [[[UIApplication sharedApplication] delegate] window];
+            NSArray *subviews = window.subviews;
+            for(UIView *view in subviews) {
+                if([view isMemberOfClass:[UIImageView class]]) {
+                    //imageView with highest index is the tip view.
+                    swipeUpTipView = (UIImageView *)view;
+                    break;
+                }
+            }
+        }
+        if(swipeUpTipView) {
+            swipeUpTipView.center = videoPlayer.center;
+            swipeUpTipView.frame = CGRectMake(swipeUpTipView.frame.origin.x,
+                                              swipeUpTipView.frame.origin.y - (videoPlayer.frame.size.height/2),
+                                              swipeUpTipView.frame.size.width,
+                                              swipeUpTipView.frame.size.height);
+            swipeUpTipView.alpha = 0;
+            [UIView animateWithDuration:0.8 animations:^{
+                swipeUpTipView.alpha = 1;
+            }];
+        }
     }
 }
 

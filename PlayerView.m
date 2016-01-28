@@ -128,6 +128,8 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 
 - (void)userKilledPlayer
 {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"shouldDismissPlayerExpandingTip" object:@NO];
+    
     if(! userDidSwipePlayerOffScreenManually){
         [self movePlayerOffScreenAndKillPlayback];
     }

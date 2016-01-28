@@ -196,7 +196,7 @@
     }
 }
 
-//looks for "ft." and removes everything starting from there to the end of the string.
+//looks for "ft." and removes everything starting from there to the end of the string (within.
 - (void)removeEverythingFromFtToEndOnTarget:(NSMutableString **)aString
 {
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"ft\\..*|feat\\..*"

@@ -27,7 +27,7 @@
 #import "SongPlayerNavController.h"
 #import "MyAlerts.h"
 #import "MyViewController.h"
-#import <MarqueeLabel.h>
+#import "TOMSMorphingLabel.h"
 #import "JAMAccurateSlider.h"
 #import <GCDiscreetNotificationView.h>
 #import "ReachabilitySingleton.h"

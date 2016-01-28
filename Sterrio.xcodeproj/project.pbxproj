@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		8716560F1C30AB41000FF02B /* DiscogsItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8716560E1C30AB41000FF02B /* DiscogsItem.m */; };
 		8727A5791C49EC05008FC03E /* CoreDataEntityMappingUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8727A5781C49EC05008FC03E /* CoreDataEntityMappingUtils.m */; };
+		8730C0D71C5989F9001FC8A6 /* NSString+Morphing.m in Sources */ = {isa = PBXBuildFile; fileRef = 8730C0D41C5989F9001FC8A6 /* NSString+Morphing.m */; };
+		8730C0D81C5989F9001FC8A6 /* TOMSMorphingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8730C0D61C5989F9001FC8A6 /* TOMSMorphingLabel.m */; };
 		873537CC1B0A9981009244E4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 873537CB1B0A9981009244E4 /* main.m */; };
 		873537D71B0A9981009244E4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 873537D61B0A9981009244E4 /* Images.xcassets */; };
 		873537E61B0A9981009244E4 /* SterrioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 873537E51B0A9981009244E4 /* SterrioTests.m */; };
@@ -242,6 +244,10 @@
 		871FE2D01BFACDC000588C2B /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMobileAds.framework; path = "Pods/Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.5.2/GoogleMobileAds.framework"; sourceTree = "<group>"; };
 		8727A5771C49EC05008FC03E /* CoreDataEntityMappingUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataEntityMappingUtils.h; sourceTree = "<group>"; };
 		8727A5781C49EC05008FC03E /* CoreDataEntityMappingUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataEntityMappingUtils.m; sourceTree = "<group>"; };
+		8730C0D31C5989F9001FC8A6 /* NSString+Morphing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Morphing.h"; sourceTree = "<group>"; };
+		8730C0D41C5989F9001FC8A6 /* NSString+Morphing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Morphing.m"; sourceTree = "<group>"; };
+		8730C0D51C5989F9001FC8A6 /* TOMSMorphingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOMSMorphingLabel.h; sourceTree = "<group>"; };
+		8730C0D61C5989F9001FC8A6 /* TOMSMorphingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOMSMorphingLabel.m; sourceTree = "<group>"; };
 		873537C61B0A9981009244E4 /* Sterrio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sterrio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		873537CA1B0A9981009244E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		873537CB1B0A9981009244E4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -716,6 +722,17 @@
 				C79109650D7488FFD1AB95FF /* Pods.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		8730C0D21C5989F9001FC8A6 /* TomsMorphingLabel */ = {
+			isa = PBXGroup;
+			children = (
+				8730C0D31C5989F9001FC8A6 /* NSString+Morphing.h */,
+				8730C0D41C5989F9001FC8A6 /* NSString+Morphing.m */,
+				8730C0D51C5989F9001FC8A6 /* TOMSMorphingLabel.h */,
+				8730C0D61C5989F9001FC8A6 /* TOMSMorphingLabel.m */,
+			);
+			path = TomsMorphingLabel;
 			sourceTree = "<group>";
 		};
 		873537BD1B0A9981009244E4 = {
@@ -1336,6 +1353,7 @@
 		8735397B1B0AA14E009244E4 /* Imported Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				8730C0D21C5989F9001FC8A6 /* TomsMorphingLabel */,
 				876C53CF1C2A136C007AFC3C /* CMPopTipView */,
 				8736AA8F1C25F3BF005FAE07 /* EAIntroView */,
 				87A953651B3E242A002E9872 /* SMWebRequest */,
@@ -2075,6 +2093,8 @@
 				873538E01B0A9D1F009244E4 /* QueueViewController.m in Sources */,
 				873539D81B0AA1B3009244E4 /* UIViewController+Current.m in Sources */,
 				873539181B0A9EF6009244E4 /* AppThemeTableViewController.m in Sources */,
+				8730C0D71C5989F9001FC8A6 /* NSString+Morphing.m in Sources */,
+				8730C0D81C5989F9001FC8A6 /* TOMSMorphingLabel.m in Sources */,
 				873538141B0A9AC1009244E4 /* AppEnvironmentConstants.m in Sources */,
 				873539C61B0AA1B3009244E4 /* SDCAlertControllerCollectionViewFlowLayout.m in Sources */,
 				873539D01B0AA1B3009244E4 /* SDCAlertViewBackgroundView.m in Sources */,
@@ -2238,7 +2258,7 @@
 					"$(PROJECT_DIR)/Pods/Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.5.2",
 				);
 				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_OPTIMIZATION_LEVEL = fast;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Sterrio/PrefixHeader.pch;
 				INFOPLIST_FILE = Sterrio/Info.plist;

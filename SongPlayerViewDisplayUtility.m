@@ -51,7 +51,7 @@ int nearestEvenInt(int to)
         [[SongPlayerCoordinator sharedInstance] begingExpandingVideoPlayer];
 
         if(! [AppEnvironmentConstants userSawExpandingPlayerTip]) {
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"shouldDismissPlayerExpandingTip" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"shouldDismissPlayerExpandingTip" object:@YES];
         }
 
         if(!animate){

@@ -102,8 +102,8 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     }
     
     //clear out garbage values from storyboard
-    _songNameLabel.text = @"";
-    _artistAndAlbumLabel.text = @"";
+    _songNameLabel.text = nil;
+    _artistAndAlbumLabel.text = nil;
     
     //this allows me to discover if AVSValueTrackingSlider changes, even on a new device.
     [_playbackSlider disablePopupSliderCompletely:NO];
@@ -309,6 +309,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
                                 forKey:@"changeTextTransition"];
     [_artistAndAlbumLabel.layer addAnimation:animation
                                       forKey:@"changeTextTransition"];
+     
     
     [self.navigationController.navigationBar.layer addAnimation:animation
                                                          forKey:@"changeTextTransition"];
