@@ -41,6 +41,7 @@
     NSString *temp = [self replaceWhitespacePaddedWordsWithSingleWhitespace:[self.videoName copy]];
     NSMutableString *title = [NSMutableString stringWithString:temp];
     
+    [self removeExtraHypensOnTarget:&title];
     [self removeVideoQualityStuffFromTitleOnTarget:&title];
     [self removeSongDiscInfoOnTarget:&title];
     
@@ -204,8 +205,19 @@
 - (void)removeLiveAtInParensOnTarget:(NSMutableString **)aString
 {
     //matches (live on .....) or (live at .....), etc.
-    NSString *regexExp = @"\\(\\s*live\\s*(at|in|on)\\s*([^\\)]*)\\)";
+    NSString *regexExp = @"\\(\\s*live\\s*(at |in |on )\\s*([^\\)]*)\\)";
     [MZCommons deleteCharsMatchingRegex:regexExp onString:aString];
+}
+
+/* Handles regualr hyphen, en dash, and em dash. */
+- (void)removeExtraHypensOnTarget:(NSMutableString **)aString
+{
+    NSString *hypen = @"-{2,}";
+    NSString *enDash = @"–{2,}";
+    NSString *emDash = @"—{2,}";
+    [MZCommons replaceCharsMatchingRegex:hypen withChars:@"-" onString:aString];
+    [MZCommons replaceCharsMatchingRegex:enDash withChars:@"–" onString:aString];
+    [MZCommons replaceCharsMatchingRegex:emDash withChars:@"—" onString:aString];
 }
 
 - (NSString *)replaceWhitespacePaddedWordsWithSingleWhitespace:(NSString *)aString

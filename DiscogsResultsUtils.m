@@ -80,6 +80,21 @@
         [sanitizedTitle deleteCharactersInRange:NSMakeRange(sanitizedTitle.length-1, 1)];
         [sanitizedTitle deleteCharactersInRange:NSMakeRange(0, 1)];
     }
+    
+    //if after all parsing/logic happens we are left with just a dash,
+    //ignore it and make the song name empty. After all, a dash is not
+    //a real song name. Note: multiple dashes will never happen, they
+    //are removed during the title sanitation process.
+    NSString *hypen = @"-";
+    NSString *enDash = @"–";
+    NSString *emDash = @"—";
+    if([sanitizedTitle isEqualToString:hypen]
+       || [sanitizedTitle isEqualToString:enDash]
+       || [sanitizedTitle isEqualToString:emDash]) {
+        (*discogsItem).songName = @"";
+        return;
+    }
+    
     (*discogsItem).songName = sanitizedTitle;
 }
 
