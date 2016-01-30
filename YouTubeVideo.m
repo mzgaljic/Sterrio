@@ -38,7 +38,7 @@
         return self.cachedSanitizedTitle;
     }
     
-    NSString *temp = [self removeExtraneousWhitespace:[self.videoName copy]];
+    NSString *temp = [self replaceWhitespacePaddedWordsWithSingleWhitespace:[self.videoName copy]];
     NSMutableString *title = [NSMutableString stringWithString:temp];
     
     [self removeVideoQualityStuffFromTitleOnTarget:&title];
@@ -62,9 +62,10 @@
     [self deleteSubstring:@"long version" onTarget:&title];
     [self deleteSubstring:@"full version" onTarget:&title];
     
-    [self deleteSubstring:@"lyrics" onTarget:&title];
-    [self deleteSubstring:@"with lyrics" onTarget:&title];
     [self deleteSubstring:@"w/ lyrics" onTarget:&title];
+    [self deleteSubstring:@"with lyrics" onTarget:&title];
+    [self deleteSubstring:@"lyrics" onTarget:&title];
+    
     [self deleteSubstring:@"~" onTarget:&title];
     [self deleteSubstring:@"performed by" onTarget:&title];
     
@@ -155,7 +156,7 @@
 
 - (void)removeVeryNicheKeywordsOnTarget:(NSMutableString **)aString
 {
-    //justin biebers YT videos (latest album) has this in title.
+    //justin biebers YT video
     [self deleteSubstring:@"purpose : the movement" onTarget:aString];
 }
 
@@ -171,85 +172,47 @@
 
 - (void)removeEmptyParensBracesOrBracketsOnTarget:(NSMutableString **)aString
 {
+    //match on (  ) or (  -  ) or (  \  ) or (  /  ) or ( | ) w/ 0+ spaces
     NSString *parensPattern = @"\\\(\\s*-*\\s*\\/*\\s*\\\\*\\s*\\|*\\s*\\)";
+    
+    //match on [  ] or [  -  ] or [  \  ] or [ /  ] or [ | ] w/ 0+ spaces
     NSString *bracketPattern = @"\\\[\\s*-*\\s*\\/*\\s*\\\\*\\s*\\|*\\s*\\]";
+    
+    //match on {  } or {  -  } or {  \  } or {  /  } or { | } w/ 0+ spaces
     NSString *bracesPattern = @"\\\{\\s*-*\\s*\\/*\\s*\\\\*\\s*\\|*\\s*\\}";
-    NSArray *regexes = @[
-                         //match on (  ) or (  -  ) or (  \  ) or (  /  ) or ( | ) w/ 0+ spaces
-                         [NSRegularExpression regularExpressionWithPattern:parensPattern
-                                                                   options:0
-                                                                     error:nil],
-                         //match on [  ] or [  -  ] or [  \  ] or [ /  ] or [ | ] w/ 0+ spaces
-                         [NSRegularExpression regularExpressionWithPattern:bracketPattern
-                                                                   options:0
-                                                                     error:nil],
-                         //match on {  } or {  -  } or {  \  } or {  /  } or { | } w/ 0+ spaces
-                         [NSRegularExpression regularExpressionWithPattern:bracesPattern
-                                                                   options:0
-                                                                     error:nil]
-                         ];
-    for(NSRegularExpression *regex in regexes) {
-        [regex replaceMatchesInString:*aString
-                              options:0
-                                range:NSMakeRange(0, [*aString length])
-                         withTemplate:@""];
-    }
+    
+    [MZCommons deleteCharsMatchingRegex:parensPattern onString:aString];
+    [MZCommons deleteCharsMatchingRegex:bracketPattern onString:aString];
+    [MZCommons deleteCharsMatchingRegex:bracesPattern onString:aString];
 }
 
 //looks for "ft." and removes everything starting from there to the end of the string (within.
 - (void)removeEverythingFromFtToEndOnTarget:(NSMutableString **)aString
 {
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"ft\\..*|feat\\..*"
-                                                                           options:NSRegularExpressionCaseInsensitive
-                                                                             error:nil];
-    [regex replaceMatchesInString:*aString
-                          options:0
-                            range:NSMakeRange(0, [*aString length])
-                     withTemplate:@""];
+    NSString *regexExp = @"ft\\..*|feat\\..*";
+    [MZCommons deleteCharsMatchingRegex:regexExp onString:aString];
 }
 
 - (void)removeSongDiscInfoOnTarget:(NSMutableString **)aString
 {
-    NSArray *regexes = @[
-                         //match on "disc 1", "Disc 3", etc.
-                         [NSRegularExpression regularExpressionWithPattern:@"(disc|disk) \\d+"
-                                                                   options:NSRegularExpressionCaseInsensitive
-                                                                     error:nil],
-                         //match on "disc 1 of 4", "Disc 3 of 4", etc.
-                         [NSRegularExpression regularExpressionWithPattern:@"(disk|disc) \\d+ of \\d+"
-                                                                   options:NSRegularExpressionCaseInsensitive
-                                                                     error:nil]
-                         ];
-    for(NSRegularExpression *regex in regexes) {
-        [regex replaceMatchesInString:*aString
-                              options:0
-                                range:NSMakeRange(0, [*aString length])
-                         withTemplate:@""];
-    }
+    NSString *regexExp1 = @"(disc|disk) \\d+";
+    NSString *regexExp2 = @"(disk|disc) \\d+ of \\d+";
+    [MZCommons deleteCharsMatchingRegex:regexExp1 onString:aString];
+    [MZCommons deleteCharsMatchingRegex:regexExp2 onString:aString];
 }
 
 - (void)removeLiveAtInParensOnTarget:(NSMutableString **)aString
 {
     //matches (live on .....) or (live at .....), etc.
-    NSString *regexText = @"\\(\\s*live\\s*(at|in|on)\\s*([^\\)]*)\\)";
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexText
-                                                                           options:NSRegularExpressionCaseInsensitive
-                                                                             error:nil];
-    [regex replaceMatchesInString:*aString
-                          options:0
-                            range:NSMakeRange(0, [*aString length])
-                     withTemplate:@""];
+    NSString *regexExp = @"\\(\\s*live\\s*(at|in|on)\\s*([^\\)]*)\\)";
+    [MZCommons deleteCharsMatchingRegex:regexExp onString:aString];
 }
 
-- (NSString *)removeExtraneousWhitespace:(NSString *)aString
+- (NSString *)replaceWhitespacePaddedWordsWithSingleWhitespace:(NSString *)aString
 {
     //from: http://stackoverflow.com/a/12137128/4534674
-    
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"  +" options:NSRegularExpressionCaseInsensitive error:nil];
-    return [regex stringByReplacingMatchesInString:aString
-                                           options:0
-                                             range:NSMakeRange(0, aString.length)
-                                      withTemplate:@" "];
+    NSString *regexExp = @"  +";
+    return [MZCommons replaceCharsMatchingRegex:regexExp withChars:@" " usingString:aString];
 }
 
 @end

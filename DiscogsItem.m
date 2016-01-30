@@ -88,7 +88,7 @@
 {
     //pmatches any numbers within () that are at the end of the string.
     NSString *regex = @" +(\\([0-9]+\\) *)$";  //pattern in quotes:   " +(\([0-9]+\) *)$"
-    return [MZCommons deleteCharsMatchingRegex:regex withString:originalName];
+    return [MZCommons deleteCharsMatchingRegex:regex usingString:originalName];
 }
 
 @end
