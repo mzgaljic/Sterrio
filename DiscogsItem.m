@@ -8,6 +8,7 @@
 
 #import "DiscogsItem.h"
 #import "NSString+HTTP_Char_Escape.h"
+#import "NSString+WhiteSpace_Utility.h"
 
 @implementation DiscogsItem
 
@@ -47,23 +48,32 @@
         //have a "-" in their name (ie: Jay-Z). Notice how the name has a - but no space around it.
         //This is the case 99.99% of the time since Discogs has proper grammer in their titles.
         NSArray *split = [resultTitle componentsSeparatedByString:@" - "];
-        NSString *artistName = (split.count > 0) ? split[0] : nil;
+        NSMutableString *artistName = (split.count > 0) ? [NSMutableString stringWithString:split[0]]
+                                                        : nil;
         
         NSMutableString *albumName = [NSMutableString new];
         for(int i = 1; i < split.count; i++) {
             [albumName appendString:split[i]];
         }
         
+        NSString *tempArtist = [DiscogsItem removeRandomAsteriskAtEndOfNamesIfPresent:artistName];
+        NSString *tempAlbum = [DiscogsItem removeRandomAsteriskAtEndOfNamesIfPresent:albumName];
+        artistName = [NSMutableString stringWithString:tempArtist];
+        albumName = [NSMutableString stringWithString:tempAlbum];
+        [self removeNumberedSuffixRepresentingDuplicateArtistOrAlbumInDiscogs:&artistName];
+        [self removeNumberedSuffixRepresentingDuplicateArtistOrAlbumInDiscogs:&albumName];
+        
         //the DiscogsItem songName is set in YouTubeSongAdderViewController when results are processed.
         DiscogsItem *item = [[DiscogsItem alloc] init];
-        item.artistName = [DiscogsItem removeRandomAsteriskAtEndOfNamesIfPresent:artistName];
-        item.albumName = [DiscogsItem removeRandomAsteriskAtEndOfNamesIfPresent:albumName];
+        item.artistName = artistName;
+        item.albumName = albumName;
         item.releaseYear = year;
         [itemsArray addObject:item];
     }
     return itemsArray;
 }
 
+//actual reason for the asterisk: http://www.discogs.com/help/quick-start-guide.html#ANV
 + (NSString *)removeRandomAsteriskAtEndOfNamesIfPresent:(NSString *)originalName
 {
     NSString *someRegexp = @".*\\*($|[^\\*])";
@@ -73,6 +83,20 @@
     } else {
         return originalName;
     }
+}
+
++ (void)removeNumberedSuffixRepresentingDuplicateArtistOrAlbumInDiscogs:(NSMutableString **)originalName
+{
+    //pattern matches and numbers within parens that are at the end of the string. ie. (3)
+    //pattern in quotes:   " +(\([0-9]+\) *)$"
+    NSString *regexExp = @" +(\\([0-9]+\\) *)$";
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexExp
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:nil];
+    [regex replaceMatchesInString:*originalName
+                          options:0
+                            range:NSMakeRange(0, [*originalName length])
+                     withTemplate:@""];
 }
 
 @end
