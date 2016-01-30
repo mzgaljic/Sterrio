@@ -48,20 +48,19 @@
         //have a "-" in their name (ie: Jay-Z). Notice how the name has a - but no space around it.
         //This is the case 99.99% of the time since Discogs has proper grammer in their titles.
         NSArray *split = [resultTitle componentsSeparatedByString:@" - "];
-        NSMutableString *artistName = (split.count > 0) ? [NSMutableString stringWithString:split[0]]
-                                                        : nil;
+        NSString *albumName = nil, *artistName = nil;
         
-        NSMutableString *albumName = [NSMutableString new];
+        artistName = (split.count > 0) ? split[0] : nil;
+        NSMutableString *albumNameBuilder = [NSMutableString new];
         for(int i = 1; i < split.count; i++) {
-            [albumName appendString:split[i]];
+            [albumNameBuilder appendString:split[i]];
         }
+        albumName = albumNameBuilder;
         
-        NSString *tempArtist = [DiscogsItem removeRandomAsteriskAtEndOfNamesIfPresent:artistName];
-        NSString *tempAlbum = [DiscogsItem removeRandomAsteriskAtEndOfNamesIfPresent:albumName];
-        artistName = [NSMutableString stringWithString:tempArtist];
-        albumName = [NSMutableString stringWithString:tempAlbum];
-        [self removeNumberedSuffixRepresentingDuplicateArtistOrAlbumInDiscogs:&artistName];
-        [self removeNumberedSuffixRepresentingDuplicateArtistOrAlbumInDiscogs:&albumName];
+        artistName = [self removeRandomAsteriskAtEndOfNamesIfPresent:artistName];
+        albumName = [self removeRandomAsteriskAtEndOfNamesIfPresent:albumName];
+        artistName = [self removeNumberedSuffixRepresentingDuplicateArtistOrAlbumInDiscogs:artistName];
+        albumName = [self removeNumberedSuffixRepresentingDuplicateArtistOrAlbumInDiscogs:albumName];
         
         //the DiscogsItem songName is set in YouTubeSongAdderViewController when results are processed.
         DiscogsItem *item = [[DiscogsItem alloc] init];
@@ -85,18 +84,11 @@
     }
 }
 
-+ (void)removeNumberedSuffixRepresentingDuplicateArtistOrAlbumInDiscogs:(NSMutableString **)originalName
++ (NSString *)removeNumberedSuffixRepresentingDuplicateArtistOrAlbumInDiscogs:(NSString *)originalName
 {
-    //pattern matches and numbers within parens that are at the end of the string. ie. (3)
-    //pattern in quotes:   " +(\([0-9]+\) *)$"
-    NSString *regexExp = @" +(\\([0-9]+\\) *)$";
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexExp
-                                                                           options:NSRegularExpressionCaseInsensitive
-                                                                             error:nil];
-    [regex replaceMatchesInString:*originalName
-                          options:0
-                            range:NSMakeRange(0, [*originalName length])
-                     withTemplate:@""];
+    //pmatches any numbers within () that are at the end of the string.
+    NSString *regex = @" +(\\([0-9]+\\) *)$";  //pattern in quotes:   " +(\([0-9]+\) *)$"
+    return [MZCommons deleteCharsMatchingRegex:regex withString:originalName];
 }
 
 @end

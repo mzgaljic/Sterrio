@@ -27,6 +27,7 @@
 }
 @property (nonatomic, assign) id<YouTubeVideoQueryDelegate> queryDelegate;
 @property (nonatomic, assign) id<YouTubeVideoDetailLookupDelegate> vidDurationDelegate;
+@property (nonatomic, strong) NSDateFormatter *ytVideoDateFormatter;
 @end
 
 @implementation YouTubeVideoSearchService
@@ -71,7 +72,13 @@ const int time_out_interval_seconds = 10;
         NEXT_PAGE_QUERY_BASE = @"&pageToken=";
         
         VIDEO_INFO_BASE = @"https://www.googleapis.com/youtube/v3/videos?id=";
-        VIDEO_INFO_APPEND_ME = [NSString stringWithFormat:@"&part=contentDetails&key=%@", API_KEY] ;
+        VIDEO_INFO_APPEND_ME = [NSString stringWithFormat:@"&part=contentDetails&key=%@", API_KEY];
+        
+        _ytVideoDateFormatter = [[NSDateFormatter alloc] init];
+        //all dates from YouTube API use the UTC timezone
+        [_ytVideoDateFormatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
+        [_ytVideoDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
+        [_ytVideoDateFormatter setFormatterBehavior:NSDateFormatterBehaviorDefault];
     }
     return self;
 }
@@ -236,7 +243,7 @@ static NSOperationQueue *autoCompleteRequestQueue = nil;
     NSArray *itemsArray = [allDataDict objectForKey:@"items"];
     allDataDict = nil;
     
-    NSDictionary *itemAtIndexI;
+    NSDictionary *itemDictAtIndexI;
     NSDictionary *snippetAtItemIndex;
     NSDictionary *idDictAtIndex;
     NSDictionary *thumbnailsDict;
@@ -246,6 +253,7 @@ static NSOperationQueue *autoCompleteRequestQueue = nil;
     //target strings
     NSString *videoTitle;
     NSString *channelTitle;
+    NSString *publishedAtText;
     NSString *mediumQualityThumbnailUrl;
     NSString *highQualityThumbnailUrl;
     NSString *videoID;
@@ -259,13 +267,13 @@ static NSOperationQueue *autoCompleteRequestQueue = nil;
         [parsedArray addObject:[[YouTubeVideo alloc] init]];
     
     for(int i = 0; i < itemsArray.count; i++){  //parse json response, extract target strings for each video result.
-        itemAtIndexI = itemsArray[i];
-        snippetAtItemIndex = [itemAtIndexI objectForKey:@"snippet"];
-        idDictAtIndex = [itemAtIndexI objectForKey:@"id"];
+        itemDictAtIndexI = itemsArray[i];
+        snippetAtItemIndex = [itemDictAtIndexI objectForKey:@"snippet"];
+        idDictAtIndex = [itemDictAtIndexI objectForKey:@"id"];
         videoID = [idDictAtIndex objectForKey:@"videoId"];
-        videoTitle = [NSString stringWithUTF8String:[[snippetAtItemIndex objectForKey:@"title"] UTF8String]];
-        //videoTitle = [snippetAtItemIndex objectForKey:@"title"];
+        videoTitle = [snippetAtItemIndex objectForKey:@"title"];
         channelTitle = [snippetAtItemIndex objectForKey:@"channelTitle"];
+        publishedAtText = [snippetAtItemIndex objectForKey:@"publishedAt"];
 
         thumbnailsDict = [snippetAtItemIndex objectForKey:@"thumbnails"];
         mediumQualityThumbnailDict = [thumbnailsDict objectForKey:@"medium"];
@@ -281,6 +289,7 @@ static NSOperationQueue *autoCompleteRequestQueue = nil;
         ytVideo.videoThumbnailUrl = mediumQualityThumbnailUrl;
         ytVideo.videoThumbnailUrlHighQuality = highQualityThumbnailUrl;
         ytVideo.channelTitle = channelTitle;
+        ytVideo.publishDate = [self dateFromISO8601FormattedString:publishedAtText];
     }
     return parsedArray;
 }
@@ -422,6 +431,11 @@ static NSOperationQueue *autoCompleteRequestQueue = nil;
     
     NSTimeInterval interval = ((days * 24 + hours) * 60 + minutes) * 60 + seconds;
     return (NSUInteger)interval;
+}
+
+- (NSDate *)dateFromISO8601FormattedString:(NSString *)string
+{
+    return [_ytVideoDateFormatter dateFromString:string];
 }
 
 /*

@@ -26,7 +26,7 @@
         copy.videoThumbnailUrl = [self.videoThumbnailUrl copyWithZone:zone];
         copy.videoThumbnailUrlHighQuality = [self.videoThumbnailUrlHighQuality copyWithZone:zone];
         copy.channelTitle = [self.channelTitle copyWithZone:zone];
-        
+        copy.publishDate = self.publishDate;
         copy.duration = self.duration;
     }
     return copy;

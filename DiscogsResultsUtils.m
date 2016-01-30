@@ -20,6 +20,15 @@
         BOOL albumNameInTitle = ([videoTitle rangeOfString:item.albumName].location != NSNotFound);
         BOOL artistNameInTitle = ([videoTitle rangeOfString:item.artistName].location != NSNotFound);
         
+        //do a quick sanity check - was the YT video published in an eariler year?
+        //If so, it obviously isn't a match (unless it is 1 year earlier, in which
+        //case we still consider it in case it was a pre-release on VEVO, etc.)
+        int videoPublishYear = [self yearFromNSDate:ytVideo.publishDate];
+        if(videoPublishYear < item.releaseYear && abs(videoPublishYear - item.releaseYear) > 1) {
+            item.matchConfidence = MatchConfidence_LOW;
+            continue;
+        }
+            
         if (albumNameInTitle && artistNameInTitle) {
             item.matchConfidence = MatchConfidence_HIGH;
         } else if(albumNameInTitle || artistNameInTitle){
@@ -98,6 +107,12 @@
                           options:0
                             range:NSMakeRange(0, [*aString length])
                      withTemplate:@""];
+}
+
++ (int)yearFromNSDate:(NSDate *)aDate
+{
+    NSDateComponents *comps = [[NSCalendar currentCalendar] components:NSCalendarUnitYear fromDate:aDate];
+    return (int)[comps year];
 }
 
 @end
