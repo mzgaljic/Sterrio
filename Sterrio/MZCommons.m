@@ -46,15 +46,16 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void))
     return returnMe;
 }
 
-+ (void)deleteCharsMatchingRegex:(NSString *)pattern onString:(NSMutableString **)regexMe
++ (BOOL)deleteCharsMatchingRegex:(NSString *)pattern onString:(NSMutableString **)regexMe
 {
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
                                                                            options:NSRegularExpressionCaseInsensitive
                                                                              error:nil];
-    [regex replaceMatchesInString:*regexMe
-                          options:0
-                            range:NSMakeRange(0, [*regexMe length])
-                     withTemplate:@""];
+    NSUInteger numMatches = [regex replaceMatchesInString:*regexMe
+                                                  options:0
+                                                    range:NSMakeRange(0, [*regexMe length])
+                                             withTemplate:@""];
+    return (numMatches > 0) ? YES : NO;
 }
 
 + (NSString *)deleteCharsMatchingRegex:(NSString *)pattern usingString:(NSString *)regexMe

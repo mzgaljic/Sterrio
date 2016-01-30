@@ -41,6 +41,7 @@
     NSString *temp = [self replaceWhitespacePaddedWordsWithSingleWhitespace:[self.videoName copy]];
     NSMutableString *title = [NSMutableString stringWithString:temp];
     
+    BOOL liveTextFound = NO;
     [self removeExtraHypensOnTarget:&title];
     [self removeVideoQualityStuffFromTitleOnTarget:&title];
     [self removeSongDiscInfoOnTarget:&title];
@@ -80,9 +81,13 @@
     [self deleteSubstring:@"audio & video" onTarget:&title];
     [self deleteSubstring:@"karaoke" onTarget:&title];
     [self deleteSubstring:@"karaoke version" onTarget:&title];
-    [self deleteSubstring:@"live performance" onTarget:&title];
-    [self deleteSubstring:@"[live]" onTarget:&title];
-    [self deleteSubstring:@"(live)" onTarget:&title];
+    if([self deleteSubstring:@"live performance" onTarget:&title]
+       || [self deleteSubstring:@"[live]" onTarget:&title]
+       || [self deleteSubstring:@"(live)" onTarget:&title])
+    {
+        liveTextFound = YES;
+    }
+
     [self deleteSubstring:@"[explicit]" onTarget:&title];
     [self deleteSubstring:@"(explicit)" onTarget:&title];
     [self deleteSubstring:@"[explicit version]" onTarget:&title];
@@ -96,11 +101,17 @@
     [self deleteSubstring:@"(official)" onTarget:&title];
     [self deleteSubstring:@"[official]" onTarget:&title];
     
+    [self removeEmptyParensBracesOrBracketsOnTarget:&title];
     [self removeVeryNicheKeywordsOnTarget:&title];
     [self removeEverythingFromFtToEndOnTarget:&title];
-    [self removeLiveAtInParensOnTarget:&title];
-    
+    if([self removeLiveKeywordsInParensOnTarget:&title]
+       || [self removeLiveKeywordsToTheEndOfTheStringOnTarget:&title])
+    {
+        liveTextFound = YES;
+    }
     [self removeEmptyParensBracesOrBracketsOnTarget:&title];
+    
+    self.isLivePerformance = (liveTextFound) ? YES : NO;
     self.cachedSanitizedTitle = title;
     return title;
 }
@@ -162,13 +173,14 @@
 }
 
 #pragma mark - Utility methods
-- (void)deleteSubstring:(NSString *)subStringToRemove onTarget:(NSMutableString **)aString
+- (BOOL)deleteSubstring:(NSString *)subStringToRemove onTarget:(NSMutableString **)aString
 {
     NSRange range = [*aString rangeOfString:subStringToRemove options:NSCaseInsensitiveSearch];
     if(range.location == NSNotFound) {
-        return;
+        return NO;
     }
     [*aString deleteCharactersInRange:range];
+    return YES;
 }
 
 - (void)removeEmptyParensBracesOrBracketsOnTarget:(NSMutableString **)aString
@@ -202,11 +214,28 @@
     [MZCommons deleteCharsMatchingRegex:regexExp2 onString:aString];
 }
 
-- (void)removeLiveAtInParensOnTarget:(NSMutableString **)aString
+- (BOOL)removeLiveKeywordsInParensOnTarget:(NSMutableString **)aString
 {
-    //matches (live on .....) or (live at .....), etc.
-    NSString *regexExp = @"\\(\\s*live\\s*(at |in |on )\\s*([^\\)]*)\\)";
-    [MZCommons deleteCharsMatchingRegex:regexExp onString:aString];
+    //matches (live on .....) or [live at .....], etc.
+    //pattern:  \s+(\(|\[|{)\s*live\s+(at|@|in|on)\s+([^\)\]\}]*)(\)|\]|\})
+    NSString *regexExp = @"\\s+(\\(|\\[|\\{)\\s*live\\s+(at|@|in|on)\\s+([^\\)\\]\\}]*)(\\)|\\]|\\})";
+    return [MZCommons deleteCharsMatchingRegex:regexExp onString:aString];
+}
+
+- (BOOL)removeLiveKeywordsToTheEndOfTheStringOnTarget:(NSMutableString **)aString
+{
+    //if 'Live at', 'Live in', etc are present in the string (and not surrounded by parens
+    //then remove those keywords and any additional stuff after it in a greedy attempt
+    //to sanitize the string.
+    
+    //pattern: [^\(\[\{](Live at |in |on )
+    NSString *regex = @"[^\\(\\[\\{](Live at |in |on )";
+    NSRange range = [*aString rangeOfString:regex options:NSRegularExpressionSearch];
+    BOOL matches = range.location != NSNotFound;
+    if(matches) {
+       return [MZCommons deleteCharsMatchingRegex:@"\\s+Live\\s+(at|in|on)\\s+.*" onString:aString];
+    }
+    return NO;
 }
 
 /* Handles regualr hyphen, en dash, and em dash. */

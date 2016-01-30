@@ -19,7 +19,7 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void));
                               withChars:(NSString *)replacementChars
                                usingString:(NSString *)regexMe;
 
-+ (void)deleteCharsMatchingRegex:(NSString *)pattern onString:(NSMutableString **)regexMe;
++ (BOOL)deleteCharsMatchingRegex:(NSString *)pattern onString:(NSMutableString **)regexMe;
 + (NSString *)deleteCharsMatchingRegex:(NSString *)pattern usingString:(NSString *)regexMe;
 
 @end

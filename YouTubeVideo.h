@@ -14,6 +14,7 @@
 @property (nonatomic, strong) NSString *videoThumbnailUrl;  //this is really "medium" quality in YT apis
 @property (nonatomic, strong) NSString *videoThumbnailUrlHighQuality;
 @property (nonatomic, strong) NSString *channelTitle;
+@property (nonatomic, assign) BOOL isLivePerformance;
 @property (nonatomic, strong) NSDate *publishDate;
 ///Video duration in seconds.
 @property (nonatomic, assign) NSUInteger duration;
