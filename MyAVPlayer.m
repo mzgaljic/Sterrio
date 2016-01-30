@@ -49,11 +49,8 @@ static ReachabilitySingleton *reachability;
         stallHasOccured = NO;
         _secondsLoaded = 0;
         
-        __weak MyAVPlayer *weakself = self;
-        safeSynchronousDispatchToMainQueue(^{
-            [weakself begingListeningForNotifications];
-            [weakself registerForObservers];
-        });
+        [self begingListeningForNotifications];
+        [self registerForObservers];
     }
     return self;
 }
@@ -139,6 +136,16 @@ static ReachabilitySingleton *reachability;
     //dont want to respond if this was just the preview player.
     if([AppEnvironmentConstants isUserPreviewingAVideo])
         return;
+    
+    NSUInteger currentTime = CMTimeGetSeconds(self.currentItem.currentTime);
+    Song *aSong = [MusicPlaybackController nowPlayingSong];
+    if(aSong != nil) {
+        NSInteger absVal = ABS([aSong.duration integerValue] - currentTime);
+        if(absVal >= 4) {
+            //false alarm, songDidFinishPlaying called when it shouldn't have been. Big bug!
+            return;
+        }
+    }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_DONE_PLAYING object:nil];
     [self dismissAllSpinners];

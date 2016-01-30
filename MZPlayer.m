@@ -472,7 +472,6 @@ static BOOL isHudOnScreen = NO;
         [self.avPlayer pause];
     }
     [self clearTimer];
-    NSLog(@"progress editing began.");
 }
 
 - (void)progressBarChanged:(UISlider *)sender
@@ -483,7 +482,6 @@ static BOOL isHudOnScreen = NO;
         [self.avPlayer seekToTime:seekTime];
     }
     [self setElapsedTimeLabelstringForSliderValue:sender.value];
-    NSLog(@"--progress editing--");
 }
 
 - (void)progressBarChangeEnded:(UISlider *)sender
@@ -497,7 +495,6 @@ static BOOL isHudOnScreen = NO;
     [self.delegate previewPlayerNeedsNowPlayingInfoCenterUpdate];
     [self.avPlayer play];
     [self startAutoHideTimer];
-    NSLog(@"progress editing done.  :D");
 }
 
 //Slider helper stuff
