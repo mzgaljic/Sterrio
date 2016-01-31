@@ -510,14 +510,16 @@ static short numberTimesViewHasBeenShown = 0;
         if(albumArt)
             [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
         
-        [songInfo setObject:[videoDetails valueForKey:MZKeyVideoDuration]
-                     forKey:MPMediaItemPropertyPlaybackDuration];
-        
-        NSUInteger elapsedTime = [self.player elapsedTimeInSec];
-        NSNumber *currentTime = [NSNumber numberWithInteger:elapsedTime];
-        [songInfo setObject:currentTime forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
-        [songInfo setObject:[NSNumber numberWithFloat:self.player.avPlayer.rate]
-                     forKey:MPNowPlayingInfoPropertyPlaybackRate];
+        NSNumber *duration = [videoDetails valueForKey:MZKeyVideoDuration];
+        if(duration) {
+            [songInfo setObject:[videoDetails valueForKey:MZKeyVideoDuration]
+                         forKey:MPMediaItemPropertyPlaybackDuration];
+            NSUInteger elapsedTime = [self.player elapsedTimeInSec];
+            NSNumber *currentTime = [NSNumber numberWithInteger:elapsedTime];
+            [songInfo setObject:currentTime forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+            [songInfo setObject:[NSNumber numberWithFloat:self.player.avPlayer.rate]
+                         forKey:MPNowPlayingInfoPropertyPlaybackRate];
+        }
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
     }
 }
