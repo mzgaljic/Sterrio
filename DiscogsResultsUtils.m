@@ -17,8 +17,16 @@
     NSString *videoTitle = ytVideo.videoName;
     for(NSUInteger i = 0; i < (*discogsItems).count; i++) {
         DiscogsItem *item = (*discogsItems)[i];
-        BOOL albumNameInTitle = ([videoTitle rangeOfString:item.albumName].location != NSNotFound);
-        BOOL artistNameInTitle = ([videoTitle rangeOfString:item.artistName].location != NSNotFound);
+        if(item.matchConfidence != MatchConfidence_UNDEFINED) {
+            continue;
+        }
+        
+        NSRange albumNameRange = [videoTitle rangeOfString:item.albumName
+                                                   options:NSCaseInsensitiveSearch];
+        NSRange artistNameRange = [videoTitle rangeOfString:item.artistName
+                                                    options:NSCaseInsensitiveSearch];
+        BOOL albumNameInTitle = (albumNameRange.location != NSNotFound);
+        BOOL artistNameInTitle = (artistNameRange.location != NSNotFound);
         
         //do a quick sanity check - was the YT video published in an eariler year?
         //If so, it obviously isn't a match (unless it is 1 year earlier, in which
@@ -28,8 +36,18 @@
             item.matchConfidence = MatchConfidence_LOW;
             continue;
         }
-            
-        if (albumNameInTitle && artistNameInTitle) {
+        
+        //does the album name for this suggestion contain the text "live at" or "live in"?
+        //if so, limit the confidence to a max confidence of MEDIUM. We prefer non-live results
+        //if possible.
+        NSRange liveAtRange = [videoTitle rangeOfString:@"live at"
+                                                options:NSCaseInsensitiveSearch];
+        NSRange liveInRange = [videoTitle rangeOfString:@"live in"
+                                                options:NSCaseInsensitiveSearch];
+        
+        if (albumNameInTitle && artistNameInTitle
+            && liveAtRange.location == NSNotFound
+            && liveInRange.location == NSNotFound) {
             item.matchConfidence = MatchConfidence_HIGH;
         } else if(albumNameInTitle || artistNameInTitle){
             item.matchConfidence = MatchConfidence_MEDIUM;
@@ -45,9 +63,11 @@
     NSUInteger firstMediumConfidenceIndex = NSNotFound;
     for(NSUInteger i = 0; i < discogsItems.count; i++) {
         DiscogsItem *item = discogsItems[i];
-        if(item.matchConfidence == MatchConfidence_HIGH) {
+        if(item.matchConfidence == MatchConfidence_HIGH
+           && firstHighConfidenceIndex == NSNotFound) {
             firstHighConfidenceIndex = i;
-        } else if(item.matchConfidence == MatchConfidence_MEDIUM) {
+        } else if(item.matchConfidence == MatchConfidence_MEDIUM
+                  && firstMediumConfidenceIndex == NSNotFound) {
             firstMediumConfidenceIndex = i;
         }
     }
@@ -95,7 +115,25 @@
         return;
     }
     
-    if(ytVideo.isLivePerformance) {
+    //remove '-' from song name if it got there (can be missed by parsing - usually if
+    //video title has poor punctuation.
+    if([sanitizedTitle hasPrefix:hypen]) {
+        [sanitizedTitle deleteCharactersInRange:[sanitizedTitle rangeOfString:hypen]];
+    } else if([sanitizedTitle hasPrefix:enDash]) {
+        [sanitizedTitle deleteCharactersInRange:[sanitizedTitle rangeOfString:enDash]];
+    } else if([sanitizedTitle hasPrefix:emDash]) {
+        [sanitizedTitle deleteCharactersInRange:[sanitizedTitle rangeOfString:emDash]];
+    }
+    
+    [sanitizedTitle removeIrrelevantWhitespace];
+    if(sanitizedTitle.length > 0 && ytVideo.featuredArtists.count > 0) {
+        //lets consider the first one mentioned most important
+        NSString *firstFeaturedArtist = ytVideo.featuredArtists[0];
+        [sanitizedTitle appendString:@" ft. "];
+        [sanitizedTitle appendString:firstFeaturedArtist];
+    }
+    
+    if(sanitizedTitle.length > 0 && ytVideo.isLivePerformance) {
         NSRange range = [sanitizedTitle rangeOfString:@"live" options:NSCaseInsensitiveSearch];
         if(range.location == NSNotFound) {
             //We know the video is a live performance & the keywords 'live' aren't in

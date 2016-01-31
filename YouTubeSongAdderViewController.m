@@ -60,7 +60,9 @@
         //across multiple inits of YouTubeSongAdderViewController.
         ytVideo = [youtubeVideoObject copy];
         NSString *sanitizedTitle = [ytVideo sanitizedTitle];
-        [[DiscogsSearchService sharedInstance] queryWithTitle:sanitizedTitle callbackDelegate:self];
+        [[DiscogsSearchService sharedInstance] queryWithTitle:sanitizedTitle
+                                                      videoId:ytVideo.videoId
+                                             callbackDelegate:self];
         
         //fire off network request for video duration ASAP
         [[YouTubeVideoSearchService sharedInstance] setVideoDetailLookupDelegate:self];
@@ -864,9 +866,14 @@ static BOOL powerByYtHandled = NO;  //needed if user aggressively taps button mo
     [DiscogsResultsUtils applyConfidenceLevelsToDiscogsItemsForResults:&theItems youtubeVideo:ytVideo];
     NSUInteger bestMatchIndex = [DiscogsResultsUtils indexOfBestMatchFromResults:theItems];
     DiscogsItem *item = (bestMatchIndex == NSNotFound) ? nil : theItems[bestMatchIndex];
-    [DiscogsResultsUtils applySongNameToDiscogsItem:&item youtubeVideo:ytVideo];
+    
     
     if(item) {
+        //good suggestion for user found!
+        
+        if(! item.itemGuranteedCorrect) {
+            [DiscogsResultsUtils applySongNameToDiscogsItem:&item youtubeVideo:ytVideo];
+        }
         [self.tableView newSongNameGuessed:item.songName
                                artistGuess:item.artistName
                                 albumGuess:item.albumName];

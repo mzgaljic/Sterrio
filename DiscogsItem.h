@@ -23,6 +23,8 @@ typedef enum {
 @property (nonatomic, strong) NSString *albumName;
 @property (nonatomic, assign) int releaseYear;
 @property (nonatomic, assign) MatchConfidence matchConfidence;
+///if it is created locally on the device from known values, etc.
+@property (nonatomic, assign) BOOL itemGuranteedCorrect;
 
 + (SMWebRequest *)requestForDiscogsItems:(NSString *)query;
 

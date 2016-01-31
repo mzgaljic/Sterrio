@@ -11,6 +11,13 @@
 #import "NSString+WhiteSpace_Utility.h"
 
 @implementation DiscogsItem
+- (instancetype)init
+{
+    if(self = [super init]) {
+        _matchConfidence = MatchConfidence_UNDEFINED;
+    }
+    return self;
+}
 
 + (SMWebRequest *)requestForDiscogsItems:(NSString *)query;
 {

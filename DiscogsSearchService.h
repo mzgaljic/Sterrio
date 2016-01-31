@@ -14,7 +14,9 @@
 + (instancetype)sharedInstance;
 
 //instancetype returned as convenience for chaining the call on 1 line.
-- (instancetype)queryWithTitle:(NSString *)title callbackDelegate:(id<DiscogsSearchDelegate>)delegate;
+- (instancetype)queryWithTitle:(NSString *)title
+                       videoId:(NSString *)anId
+              callbackDelegate:(id<DiscogsSearchDelegate>)delegate;
 - (void)cancelAllPendingRequests;
 
 @end

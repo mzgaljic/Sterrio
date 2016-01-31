@@ -43,6 +43,7 @@
     
     BOOL liveTextFound = NO;
     [self removeExtraHypensOnTarget:&title];
+    [self removeVeryNicheKeywordsOnTarget:&title];
     [self removeVideoQualityStuffFromTitleOnTarget:&title];
     [self removeSongDiscInfoOnTarget:&title];
     
@@ -102,8 +103,7 @@
     [self deleteSubstring:@"[official]" onTarget:&title];
     
     [self removeEmptyParensBracesOrBracketsOnTarget:&title];
-    [self removeVeryNicheKeywordsOnTarget:&title];
-    [self removeEverythingFromFtToEndOnTarget:&title];
+    [self handleFeatKeywordsOnTarget:&title];
     if([self removeLiveKeywordsInParensOnTarget:&title]
        || [self removeLiveKeywordsToTheEndOfTheStringOnTarget:&title])
     {
@@ -170,6 +170,9 @@
 {
     //justin biebers YT video
     [self deleteSubstring:@"purpose : the movement" onTarget:aString];
+    
+    //Frozen song by demi lovato
+    [self deleteSubstring:@"(from \"Frozen\")" onTarget:aString];
 }
 
 #pragma mark - Utility methods
@@ -199,11 +202,69 @@
     [MZCommons deleteCharsMatchingRegex:bracesPattern onString:aString];
 }
 
-//looks for "ft." and removes everything starting from there to the end of the string (within.
-- (void)removeEverythingFromFtToEndOnTarget:(NSMutableString **)aString
+- (void)handleFeatKeywordsOnTarget:(NSMutableString **)aString
 {
-    NSString *regexExp = @"ft\\..*|feat\\..*";
+    NSArray *featArtists = nil;
+    //first handle the case where there are two featured people:
+    featArtists = [self findFeaturedArtistsInVideoTitle:aString];
+    
+    if(featArtists.count == 0) {
+        //now handle the case where there is just one featured person
+        featArtists = [self findFeaturedArtistInVideoTitle:aString];
+    }
+    self.featuredArtists = featArtists;
+    
+    //now that we've extracted the featured artists (if any), finish sanitizing title.
+    //looks for "ft." and removes everything starting from there to the end of the string.
+    //pattern: (\(|\[|\{|\s)(ft\..+|feat\..+)
+    NSString *regexExp = @"(\\(|\\[|\\{|\\s)(ft\\..+|feat\\..+)";
     [MZCommons deleteCharsMatchingRegex:regexExp onString:aString];
+}
+
+- (NSArray *)findFeaturedArtistsInVideoTitle:(NSMutableString **)aString
+{
+    //pattern:  (feat.|ft.)\s*(.+)(&|and)\s*([^\)\]\}\.]+)
+    //Example: YOLO (ft. Adam Levine & Kendrick Lamar)
+    //in example, Adam Levine is capture group # 2. Kendrick Lamar is #4.
+    NSString *regexExp = @"(feat.|ft.)\\s*(.+)(&|and)\\s*([^\\)\\]\\}\\.]+)";
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexExp
+                                                                            options:NSRegularExpressionCaseInsensitive
+                                                                              error:nil];
+    NSArray *matches = [regex matchesInString:*aString
+                                       options:0
+                                         range:NSMakeRange(0, [*aString length])];
+    NSMutableArray *featArtists = [NSMutableArray arrayWithCapacity:2];
+    if(matches.count > 0) {
+        NSTextCheckingResult *match = matches[0];
+        //indecies of the capture groups we care about:
+        int captureGroup1stFeat = 2;  //1st featured artist
+        int captureGroup2ndFeat = 4;  //2nd featured artist
+        
+        [featArtists addObject:[*aString substringWithRange:[match rangeAtIndex:captureGroup1stFeat]]];
+        [featArtists addObject:[*aString substringWithRange:[match rangeAtIndex:captureGroup2ndFeat]]];
+    }
+    return featArtists;
+}
+
+- (NSArray *)findFeaturedArtistInVideoTitle:(NSMutableString **)aString
+{
+    //pattern: (feat.|ft.)\s*([^\)\]\}\.\&]+)
+    //Example: YOLO (feat. Adam Levine )
+    //in example, Adam Levine is capture group #2
+    NSString *regexExp = @"(feat\\.|ft\\.)\\s*([^\\)\\]\\}\\.\\&]+)";
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexExp
+                                                                            options:NSRegularExpressionCaseInsensitive
+                                                                              error:nil];
+    NSArray *matches = [regex matchesInString:*aString
+                              options:0
+                                range:NSMakeRange(0, [*aString length])];
+    if(matches.count > 0) {
+        NSTextCheckingResult *match = matches[0];
+        //index of the capture group we care about:
+        int captureGroupFeatArtist = 2;  //the featured artist
+        return @[[*aString substringWithRange:[match rangeAtIndex:captureGroupFeatArtist]]];
+    }
+    return @[];
 }
 
 - (void)removeSongDiscInfoOnTarget:(NSMutableString **)aString
