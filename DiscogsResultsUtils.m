@@ -101,7 +101,7 @@
             //We know the video is a live performance & the keywords 'live' aren't in
             //the song title. Lets append '(live)' at the end so user can differentiate
             //amongst other stuff in their album.
-            [sanitizedTitle appendString:@" (live)"];
+            [sanitizedTitle appendString:@" [live]"];
         }
     }
     
