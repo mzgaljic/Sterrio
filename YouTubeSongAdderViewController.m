@@ -867,10 +867,8 @@ static BOOL powerByYtHandled = NO;  //needed if user aggressively taps button mo
     NSUInteger bestMatchIndex = [DiscogsResultsUtils indexOfBestMatchFromResults:theItems];
     DiscogsItem *item = (bestMatchIndex == NSNotFound) ? nil : theItems[bestMatchIndex];
     
-    
     if(item) {
         //good suggestion for user found!
-        
         if(! item.itemGuranteedCorrect) {
             [DiscogsResultsUtils applySongNameToDiscogsItem:&item youtubeVideo:ytVideo];
         }
