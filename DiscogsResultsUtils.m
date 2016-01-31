@@ -125,19 +125,12 @@
 + (void)removeRandomHyphensIfPresent:(NSMutableString **)aString
 {
     NSString *parensPattern = @"\\s((-)|(--))\\s";  //matches ...-... or ...--...
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:parensPattern
-                                                                           options:0
-                                                                             error:nil];
-    [regex replaceMatchesInString:*aString
-                          options:0
-                            range:NSMakeRange(0, [*aString length])
-                     withTemplate:@""];
+    [MZCommons deleteCharsMatchingRegex:parensPattern onString:aString];
 }
 
 + (int)yearFromNSDate:(NSDate *)aDate
 {
-    NSDateComponents *comps = [[NSCalendar currentCalendar] components:NSCalendarUnitYear fromDate:aDate];
-    return (int)[comps year];
+    return (int)[[[NSCalendar currentCalendar] components:NSCalendarUnitYear fromDate:aDate] year];
 }
 
 @end
