@@ -11,6 +11,6 @@
 //found at http://rosettacode.org/wiki/Levenshtein_distance#Objective-C
 @interface NSString (Levenshtein_Distance)
 
-- (NSUInteger)levenshteinDistanceToString:(NSString *)string;
+- (NSUInteger)computeLevenshteinDistanceFromSecondString:(NSString *)string;
 
 @end

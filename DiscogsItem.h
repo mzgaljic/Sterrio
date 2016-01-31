@@ -14,8 +14,11 @@
 typedef enum {
     MatchConfidence_UNDEFINED,
     MatchConfidence_LOW,
+    MatchConfidence_MEDIUM_LOW,
     MatchConfidence_MEDIUM,
-    MatchConfidence_HIGH
+    MatchConfidence_MEDIUM_HIGH,
+    MatchConfidence_HIGH,
+    MatchConfidence_VERY_HIGH
 } MatchConfidence;
 
 @property (nonatomic, strong) NSString *songName;
@@ -23,9 +26,14 @@ typedef enum {
 @property (nonatomic, strong) NSString *albumName;
 @property (nonatomic, assign) int releaseYear;
 @property (nonatomic, assign) MatchConfidence matchConfidence;
+@property (nonatomic, strong) NSArray *formats;  //ie: Album, Vinyle, etc. Represented as NSStrings.
 ///if it is created locally on the device from known values, etc.
 @property (nonatomic, assign) BOOL itemGuranteedCorrect;
 
+
 + (SMWebRequest *)requestForDiscogsItems:(NSString *)query;
+
+- (BOOL)containsAlbumOrVinylOrCd;
+- (BOOL)isASingle;
 
 @end

@@ -10,5 +10,7 @@
 
 @interface LevenshteinDistanceItem : NSObject
 @property (nonatomic, strong) NSString *string;
+//if we're computing distances of things other than just strings. Like an album, etc.
+@property (nonatomic, strong) id modelObj;
 @property (nonatomic, assign) NSInteger distance;
 @end

@@ -9,7 +9,7 @@
 #import "NSString+Levenshtein_Distance.h"
 
 @implementation NSString (Levenshtein_Distance)
-- (NSUInteger)levenshteinDistanceToString:(NSString *)string
+- (NSUInteger)computeLevenshteinDistanceFromSecondString:(NSString *)string
 {
     NSString *myself = [self uppercaseStringWithLocale:[NSLocale currentLocale]];
     string = [string uppercaseStringWithLocale:[NSLocale currentLocale]];

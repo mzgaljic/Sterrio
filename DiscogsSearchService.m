@@ -49,7 +49,7 @@ double const DISCOGS_SECONDS_BETWEEN_REQUESTS = 3;
 {
     DiscogsItem *item = [_commonDiscogsItems objectForKey:videoId];
     if(item) {
-        item.matchConfidence = MatchConfidence_HIGH;
+        item.matchConfidence = MatchConfidence_VERY_HIGH;
         item.itemGuranteedCorrect = YES;
         //looks like this video id was stored in the dict! User can avoid hitting the network.
         [delegate performSelectorOnMainThread:@selector(videoSongSuggestionsRequestComplete:)

@@ -45,12 +45,26 @@
         NSRange liveInRange = [videoTitle rangeOfString:@"live in"
                                                 options:NSCaseInsensitiveSearch];
         
-        if (albumNameInTitle && artistNameInTitle
+        //itemIsAlbumOrVinylOrCd must be first in if statement, otherwise it may not be executed.
+        if ([item containsAlbumOrVinylOrCd]
+            && albumNameInTitle && artistNameInTitle
             && liveAtRange.location == NSNotFound
             && liveInRange.location == NSNotFound) {
+            item.matchConfidence = MatchConfidence_VERY_HIGH;
+            
+        } else if([item containsAlbumOrVinylOrCd] && albumNameInTitle && artistNameInTitle) {
             item.matchConfidence = MatchConfidence_HIGH;
-        } else if(albumNameInTitle || artistNameInTitle){
+            
+        } else if([item containsAlbumOrVinylOrCd]
+                  && (albumNameInTitle || artistNameInTitle)) {
+            item.matchConfidence = MatchConfidence_MEDIUM_HIGH;
+            
+        } else if(albumNameInTitle && artistNameInTitle) {
             item.matchConfidence = MatchConfidence_MEDIUM;
+            
+        }  else if(albumNameInTitle || artistNameInTitle) {
+            item.matchConfidence = MatchConfidence_MEDIUM_LOW;
+            
         } else {
             item.matchConfidence = MatchConfidence_LOW;
         }
@@ -59,21 +73,50 @@
 
 + (NSUInteger)indexOfBestMatchFromResults:(NSArray *)discogsItems
 {
+    NSUInteger firstVeryHighConfidenceIndex = NSNotFound;
     NSUInteger firstHighConfidenceIndex = NSNotFound;
+    NSUInteger firstMediumHighConfidenceIndex = NSNotFound;
     NSUInteger firstMediumConfidenceIndex = NSNotFound;
+    NSUInteger firstMediumLowConfidenceIndex = NSNotFound;
     for(NSUInteger i = 0; i < discogsItems.count; i++) {
         DiscogsItem *item = discogsItems[i];
-        if(item.matchConfidence == MatchConfidence_HIGH
+        
+        if(item.matchConfidence == MatchConfidence_VERY_HIGH
+           && firstVeryHighConfidenceIndex == NSNotFound) {
+            firstVeryHighConfidenceIndex = i;
+            
+        } else if(item.matchConfidence == MatchConfidence_HIGH
            && firstHighConfidenceIndex == NSNotFound) {
             firstHighConfidenceIndex = i;
+            
+        } else if(item.matchConfidence == MatchConfidence_MEDIUM_HIGH
+                  && firstMediumHighConfidenceIndex == NSNotFound){
+            firstMediumHighConfidenceIndex = i;
+            
         } else if(item.matchConfidence == MatchConfidence_MEDIUM
                   && firstMediumConfidenceIndex == NSNotFound) {
             firstMediumConfidenceIndex = i;
+            
+        } else if(item.matchConfidence == MatchConfidence_MEDIUM_LOW
+                  && firstMediumLowConfidenceIndex == NSNotFound) {
+            firstMediumLowConfidenceIndex = i;
         }
     }
-    return (firstHighConfidenceIndex == NSNotFound) ?   firstMediumConfidenceIndex
-                                                        :
-                                                        firstHighConfidenceIndex;
+    
+    if(firstVeryHighConfidenceIndex != NSNotFound) {
+        return firstVeryHighConfidenceIndex;
+    }
+    if(firstHighConfidenceIndex != NSNotFound) {
+        return firstHighConfidenceIndex;
+    }
+    if(firstMediumHighConfidenceIndex != NSNotFound) {
+        return firstMediumHighConfidenceIndex;
+    }
+    if(firstMediumConfidenceIndex != NSNotFound) {
+        return firstMediumConfidenceIndex;
+    }
+    
+    return firstMediumLowConfidenceIndex;
 }
 
 + (void)applySongNameToDiscogsItem:(DiscogsItem **)discogsItem youtubeVideo:(YouTubeVideo *)ytVideo
@@ -146,7 +189,7 @@
     (*discogsItem).songName = sanitizedTitle;
 }
 
-#pragma mark - utility method
+#pragma mark - utility methods
 + (void)deleteSubstring:(NSString *)subStringToRemove onTarget:(NSMutableString **)aString
 {
     if(subStringToRemove == nil){

@@ -11,6 +11,8 @@
 #import "NSString+WhiteSpace_Utility.h"
 
 @implementation DiscogsItem
+
+#pragma mark - Public API
 - (instancetype)init
 {
     if(self = [super init]) {
@@ -22,7 +24,7 @@
 + (SMWebRequest *)requestForDiscogsItems:(NSString *)query;
 {
     // Set ourself as the background processing delegate. The caller can still add herself as a listener for the resulting data.
-    NSString *urlString = @"https://api.discogs.com/database/search?format=album&format=vinyl&per_page=6&page=1&q=";
+    NSString *urlString = @"https://api.discogs.com/database/search?type=master&type=album&per_page=6&page=1&q=";
     query = [query stringForHTTPRequest];
     NSURL *myUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", urlString, query]];
     NSMutableURLRequest *mutUrlRequest = [NSMutableURLRequest requestWithURL:myUrl];
@@ -46,7 +48,7 @@
                                                                   error:nil];
     NSArray *resultsArray = [allDataDict objectForKey:@"results"];
     NSMutableArray *itemsArray = [NSMutableArray arrayWithCapacity:allDataDict.count];
-    for(NSUInteger i = 0; i < resultsArray.count; i++) {\
+    for(NSUInteger i = 0; i < resultsArray.count; i++) {
         int year = [[resultsArray[i] objectForKey:@"year"] intValue];
         
         NSString *resultTitle = [resultsArray[i] objectForKey:@"title"];
@@ -71,14 +73,44 @@
         
         //the DiscogsItem songName is set in YouTubeSongAdderViewController when results are processed.
         DiscogsItem *item = [[DiscogsItem alloc] init];
-        item.artistName = artistName;
+        //if we detect a featured artist, the app appends 'ft.' to the end of the song name. But if the
+        //album name contains 'Feat.', we should change it to 'ft.' to keep things consistent!
+        item.artistName = [MZCommons replaceCharsMatchingRegex:@"\\s+Feat\\.\\s+"
+                                                     withChars:@" ft. "
+                                                   usingString:artistName];;
         item.albumName = albumName;
         item.releaseYear = year;
+        item.formats = [resultsArray[i] objectForKey:@"format"];
         [itemsArray addObject:item];
     }
     return itemsArray;
 }
 
+- (BOOL)isAlbumOrVinylOrCd
+{
+    NSArray *formats = self.formats;
+    if([formats containsObject:@"Album"]) {
+        return YES;
+    } else if([formats containsObject:@"Vinyl"]) {
+        return YES;
+    } else if([formats containsObject:@"CD"]) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)isASingle
+{
+    NSArray *formats = self.formats;
+    if([formats containsObject:@"Single"]) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+#pragma mark - Private stuff
 //actual reason for the asterisk: http://www.discogs.com/help/quick-start-guide.html#ANV
 + (NSString *)removeRandomAsteriskAtEndOfNamesIfPresent:(NSString *)originalName
 {

@@ -883,6 +883,8 @@
 				8735386D1B0A9B80009244E4 /* Core Data Utilities */,
 				873538761B0A9B9E009244E4 /* LQAlbumArtItem.h */,
 				873538771B0A9B9E009244E4 /* LQAlbumArtItem.m */,
+				873538811B0A9BCA009244E4 /* LevenshteinDistanceItem.h */,
+				873538821B0A9BCA009244E4 /* LevenshteinDistanceItem.m */,
 				873538781B0A9B9E009244E4 /* PlaybackContext.h */,
 				873538791B0A9B9E009244E4 /* PlaybackContext.m */,
 				8735387A1B0A9B9E009244E4 /* YouTubeVideo.h */,
@@ -929,8 +931,6 @@
 		873538801B0A9BBA009244E4 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				873538811B0A9BCA009244E4 /* LevenshteinDistanceItem.h */,
-				873538821B0A9BCA009244E4 /* LevenshteinDistanceItem.m */,
 				873538831B0A9BCA009244E4 /* MZCoreDataModelDeletionService.h */,
 				873538841B0A9BCA009244E4 /* MZCoreDataModelDeletionService.m */,
 				873538851B0A9BCA009244E4 /* YouTubeVideoDetailLookupDelegate.h */,
