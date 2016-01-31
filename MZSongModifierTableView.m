@@ -323,13 +323,8 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 _lastTappedRow = 0;
                 [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(songNameEditingComplete:)
                                                              name:@"DoneEditingSongField" object:nil];
-                BOOL fullscreen;
-                if(_creatingANewSong)
-                    fullscreen = NO;
-                else
-                    fullscreen = NO;
                 EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:_songIAmEditing.songName
-                    notificationNameToPost:@"DoneEditingSongField" fullScreen:fullscreen];
+                    notificationNameToPost:@"DoneEditingSongField" fullScreen:NO];
                 [self.theDelegate pushThisVC:vc];
                 break;
             }
@@ -351,7 +346,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                                                             [weakself handleActionClickWithButtonIndex:buttonIndex];
                                                         } cancelButtonTitle:@"Cancel"
                                           destructiveButtonTitle:@"Remove From Artist"
-                                               otherButtonTitles:@"Choose Different Artist", @"New Artist", nil];
+                                               otherButtonTitles:@"Choose Different Artist", @"New Artist", @"Rename", nil];
                 }
                 
                 for(UIButton *aButton in popup.buttons){
@@ -386,7 +381,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                                                             [weakself handleActionClickWithButtonIndex:buttonIndex];
                                                         } cancelButtonTitle:@"Cancel"
                                           destructiveButtonTitle:@"Remove Song From Album"
-                                               otherButtonTitles:@"Choose Different Album", @"New Album", nil];
+                                               otherButtonTitles:@"Choose Different Album", @"New Album", @"Rename", nil];
                 } else{
                     //album picker
                     popup = [[IBActionSheet alloc] initWithTitle:@"Album"
@@ -615,6 +610,66 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 [self setContentOffset:bottomOffset animated:YES];
             }
         }
+    });
+}
+
+- (void)artistRenamingComplete:(NSNotification *)notif
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"DoneRenamingArtist" object:nil];
+    NSString *newName = (NSString *)notif.object[0];
+    newName = [newName removeIrrelevantWhitespace];
+    
+    if([_songIAmEditing.artist.artistName isEqualToString:newName])
+        return;
+    if(newName.length == 0){  //was all whitespace, or user gave us an empty string
+        //nothing to do, lets not delete the existing artist. User should explicitly do that.
+        return;
+    }
+    
+    _songIAmEditing.artist.artistName = newName;
+    _songIAmEditing.artist.smartSortArtistName = [newName regularStringToSmartSortString];
+    //edge case, if name is something like 'the', dont remove all characters! Keep original name.
+    if(_songIAmEditing.artist.smartSortArtistName.length == 0)
+        _songIAmEditing.smartSortSongName = newName;
+    
+    __weak MZSongModifierTableView *weakself = self;
+    //animate the artist name in place
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, updateCellWithAnimationFadeDelay * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [weakself beginUpdates];
+        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]]
+                        withRowAnimation:UITableViewRowAnimationFade];
+        [weakself endUpdates];
+    });
+}
+
+- (void)albumRenamingComplete:(NSNotification *)notif
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"DoneRenamingAlbum" object:nil];
+    NSString *newName = (NSString *)notif.object[0];
+    newName = [newName removeIrrelevantWhitespace];
+    
+    if([_songIAmEditing.album.albumName isEqualToString:newName])
+        return;
+    if(newName.length == 0){  //was all whitespace, or user gave us an empty string
+        //nothing to do, lets not delete the existing artist. User should explicitly do that.
+        return;
+    }
+    
+    _songIAmEditing.album.albumName = newName;
+    _songIAmEditing.album.smartSortAlbumName = [newName regularStringToSmartSortString];
+    //edge case, if name is something like 'the', dont remove all characters! Keep original name.
+    if(_songIAmEditing.album.smartSortAlbumName.length == 0)
+        _songIAmEditing.album.smartSortAlbumName = newName;
+    
+    __weak MZSongModifierTableView *weakself = self;
+    //animate the album name in place
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, updateCellWithAnimationFadeDelay * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [weakself beginUpdates];
+        [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
+                        withRowAnimation:UITableViewRowAnimationFade];
+        [weakself endUpdates];
     });
 }
 
@@ -859,18 +914,22 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     //create new artist
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(artistNameCreationCompleteAndSetUpArtist:)
                                                                  name:@"DoneEditingArtistField" object:nil];
-                    BOOL fullscreen;
-                    if(_creatingANewSong)
-                        fullscreen = NO;
-                    else
-                        fullscreen = NO;
-                    
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
                                                                                                   notificationNameToPost:@"DoneEditingArtistField"
-                                                                                                              fullScreen:fullscreen];
+                                                                                                              fullScreen:NO];
                     [self.theDelegate pushThisVC:vc];
                 } else
                     break;
+            }
+            case 3:
+            {
+                //renaming artist
+                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(artistRenamingComplete:)
+                                                             name:@"DoneRenamingArtist" object:nil];
+                EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:_songIAmEditing.artist.artistName
+                                                                                              notificationNameToPost:@"DoneRenamingArtist" fullScreen:NO];
+                [self.theDelegate pushThisVC:vc];
+                break;
             }
             default:
                 break;
@@ -923,17 +982,11 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 if(_songIAmEditing.album){  //create new album
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(albumNameCreationCompleteAndSetUpAlbum:)
                                                                  name:@"DoneEditingAlbumField" object:nil];
-                    BOOL fullscreen;
-                    if(_creatingANewSong)
-                        fullscreen = NO;
-                    else
-                        fullscreen = NO;
-                    
                     EditableCellTableViewController *vc;
                     vc = [[EditableCellTableViewController alloc]
                           initWithEditingString:nil
                           notificationNameToPost:@"DoneEditingAlbumField"
-                          fullScreen:fullscreen];
+                          fullScreen:NO];
                     [self.theDelegate pushThisVC:vc];
                 } else{
                     //remove song from album
@@ -947,6 +1000,16 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     [self endUpdates];
                 }
                 break;
+            case 3:
+            {
+                //rename album
+                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(albumRenamingComplete:)
+                                                             name:@"DoneRenamingAlbum" object:nil];
+                EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:_songIAmEditing.album.albumName
+                                                                                              notificationNameToPost:@"DoneRenamingAlbum" fullScreen:NO];
+                [self.theDelegate pushThisVC:vc];
+                break;
+            }
             default:
                 break;
         }
