@@ -46,6 +46,7 @@
 @property (nonatomic, strong) SSBouncyButton *poweredByYtBtn;
 @property (nonatomic, strong) MZPlayer *player;
 @property (nonatomic, strong) MZSongModifierTableView *tableView;
+@property (nonatomic, strong) DiscogsItem *suggestedItem;  //nil until retrieved from API call.
 @end
 
 @implementation YouTubeSongAdderViewController
@@ -115,6 +116,7 @@
     [self.tableView preDealloc];
     self.tableView = nil;
     lockScreenImg = nil;
+    _suggestedItem = nil;
     url = nil;
     [AppEnvironmentConstants setUserIsPreviewingAVideo:NO];
     
@@ -494,9 +496,17 @@ static short numberTimesViewHasBeenShown = 0;
             albumArt = [[MPMediaItemArtwork alloc] initWithImage:art];
         }
         
-        [songInfo setObject:ytVideo.videoName forKey:MPMediaItemPropertyTitle];
-        if(ytVideo.channelTitle)
+        if(_suggestedItem && _suggestedItem.songName) {
+            [songInfo setObject:_suggestedItem.songName forKey:MPMediaItemPropertyTitle];
+        } else {
+            [songInfo setObject:ytVideo.videoName forKey:MPMediaItemPropertyTitle];
+        }
+        if(_suggestedItem) {
+            NSString *artistAndAlbum = [NSString stringWithFormat:@"%@ - %@", _suggestedItem.artistName, _suggestedItem.albumName];
+            [songInfo setObject:artistAndAlbum forKey:MPMediaItemPropertyArtist];
+        } else if(ytVideo.channelTitle)
             [songInfo setObject:ytVideo.channelTitle forKey:MPMediaItemPropertyArtist];
+        
         if(albumArt)
             [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
         
@@ -875,6 +885,9 @@ static BOOL powerByYtHandled = NO;  //needed if user aggressively taps button mo
         [self.tableView newSongNameGuessed:item.songName
                                artistGuess:item.artistName
                                 albumGuess:item.albumName];
+        _suggestedItem = item;
+        //now lock screen will show the new suggestion data
+        [self setUpLockScreenInfoAndArt];
     }
 }
 
