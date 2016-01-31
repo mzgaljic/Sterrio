@@ -49,8 +49,12 @@
     if(songAlbum)
     {
         if(songAlbum.albumSongs.count == 1){
+            Artist *songArtist = aSong.artist;
+            //song will no longer have an artist after this call, so we reassign it after.
+            //probably has to do with the cascade delete.
             [MZCoreDataModelDeletionService prepareAlbumForDeletion:songAlbum];
             [[CoreDataManager context] deleteObject:songAlbum];
+            aSong.artist = songArtist;
         }
         else
         {
@@ -69,13 +73,6 @@
     Artist *artist = album.artist;
     if(artist)
     {
-        NSMutableSet *mutableSet = [NSMutableSet setWithSet:album.albumSongs];
-        for(Song *albumSong in album.albumSongs)
-        {
-            [mutableSet removeObject:albumSong];
-        }
-        artist.standAloneSongs = mutableSet;
-        
         NSMutableSet *mutableSet2 = [NSMutableSet setWithSet:artist.albums];
         [mutableSet2 removeObject:album];
         artist.albums = mutableSet2;
