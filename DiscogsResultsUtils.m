@@ -46,17 +46,16 @@
                                                 options:NSCaseInsensitiveSearch];
         
         //itemIsAlbumOrVinylOrCd must be first in if statement, otherwise it may not be executed.
-        if ([item containsAlbumOrVinylOrCd]
+        if ([item isAlbumOrVinylOrCd]
             && albumNameInTitle && artistNameInTitle
             && liveAtRange.location == NSNotFound
             && liveInRange.location == NSNotFound) {
             item.matchConfidence = MatchConfidence_VERY_HIGH;
             
-        } else if([item containsAlbumOrVinylOrCd] && albumNameInTitle && artistNameInTitle) {
+        } else if([item isAlbumOrVinylOrCd] && albumNameInTitle && artistNameInTitle) {
             item.matchConfidence = MatchConfidence_HIGH;
             
-        } else if([item containsAlbumOrVinylOrCd]
-                  && (albumNameInTitle || artistNameInTitle)) {
+        } else if([item isAlbumOrVinylOrCd] && (albumNameInTitle || artistNameInTitle)) {
             item.matchConfidence = MatchConfidence_MEDIUM_HIGH;
             
         } else if(albumNameInTitle && artistNameInTitle) {

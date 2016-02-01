@@ -33,7 +33,7 @@ typedef enum {
 
 + (SMWebRequest *)requestForDiscogsItems:(NSString *)query;
 
-- (BOOL)containsAlbumOrVinylOrCd;
+- (BOOL)isAlbumOrVinylOrCd;
 - (BOOL)isASingle;
 
 @end
