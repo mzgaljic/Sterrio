@@ -51,7 +51,6 @@ const int ALBUM_HEADER_HEIGHT = 120;
     self.tableView.allowsSelectionDuringEditing = NO;
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
     self.navBar.title = nil;
-    [self generateAlbumSectionHeaderView];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(nowPlayingSongsHasChanged:)
@@ -105,7 +104,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
     cell.textLabel.text = aSong.songName;
     
     int fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-    cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+    cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                           size:fontSize];
     
     NSUInteger duration = [aSong.duration integerValue];
@@ -125,6 +124,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
         cell.textLabel.textColor = [UIColor blackColor];
     
     cell.delegate = self;
+    [cell layoutSubviews];
     return cell;
 }
 
@@ -167,8 +167,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
     return [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel];
 }
 
-- (NSInteger)tableView:(UITableView *)table
- numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section
 {
     id <NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController.sections objectAtIndex:section];
     return sectionInfo.numberOfObjects;

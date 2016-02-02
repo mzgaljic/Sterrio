@@ -432,13 +432,6 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     }
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
-    UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
-    int headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-    header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                                            size:headerFontSize];
-}
-
 #pragma mark - efficiently updating individual cells as needed
 - (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification
 {

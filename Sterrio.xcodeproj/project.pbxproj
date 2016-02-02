@@ -222,6 +222,7 @@
 		87A9536C1B3E242A002E9872 /* SMURLImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A953681B3E242A002E9872 /* SMURLImageView.m */; };
 		87A9536D1B3E242A002E9872 /* LICENSE_webRequest.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A953691B3E242A002E9872 /* LICENSE_webRequest.txt */; };
 		87A9536E1B3E242A002E9872 /* SMWebRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9536B1B3E242A002E9872 /* SMWebRequest.m */; };
+		87B916C81C60467E00CAEDB8 /* MZRightDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B916C71C60467E00CAEDB8 /* MZRightDetailCell.m */; };
 		87CD5A401C31C0530077CF0C /* DiscogsResultsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 87CD5A3F1C31C0530077CF0C /* DiscogsResultsUtils.m */; };
 		87DAA6C51B8AA9FF008D8684 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 87DAA6C21B8AA9FF008D8684 /* Model.xcdatamodeld */; };
 		87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */; };
@@ -675,6 +676,8 @@
 		87A953691B3E242A002E9872 /* LICENSE_webRequest.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE_webRequest.txt; sourceTree = "<group>"; };
 		87A9536A1B3E242A002E9872 /* SMWebRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMWebRequest.h; sourceTree = "<group>"; };
 		87A9536B1B3E242A002E9872 /* SMWebRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMWebRequest.m; sourceTree = "<group>"; };
+		87B916C61C60467E00CAEDB8 /* MZRightDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZRightDetailCell.h; sourceTree = "<group>"; };
+		87B916C71C60467E00CAEDB8 /* MZRightDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZRightDetailCell.m; sourceTree = "<group>"; };
 		87CD5A3D1C31B22C0077CF0C /* DiscogsSearchDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DiscogsSearchDelegate.h; sourceTree = "<group>"; };
 		87CD5A3E1C31C0530077CF0C /* DiscogsResultsUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscogsResultsUtils.h; sourceTree = "<group>"; };
 		87CD5A3F1C31C0530077CF0C /* DiscogsResultsUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsResultsUtils.m; sourceTree = "<group>"; };
@@ -1277,6 +1280,8 @@
 				873539511B0AA062009244E4 /* CustomYoutubeTableViewCell.m */,
 				873539531B0AA069009244E4 /* MZTableViewCell.h */,
 				873539541B0AA069009244E4 /* MZTableViewCell.m */,
+				87B916C61C60467E00CAEDB8 /* MZRightDetailCell.h */,
+				87B916C71C60467E00CAEDB8 /* MZRightDetailCell.m */,
 			);
 			name = "Tableview Cells";
 			sourceTree = "<group>";
@@ -2120,6 +2125,7 @@
 				873539CC1B0AA1B3009244E4 /* SDCAlertLabel.m in Sources */,
 				873538891B0A9BCA009244E4 /* LevenshteinDistanceItem.m in Sources */,
 				873539C31B0AA1B3009244E4 /* SDCAlertAction.m in Sources */,
+				87B916C81C60467E00CAEDB8 /* MZRightDetailCell.m in Sources */,
 				8716560F1C30AB41000FF02B /* DiscogsItem.m in Sources */,
 				87CD5A401C31C0530077CF0C /* DiscogsResultsUtils.m in Sources */,
 				873538D91B0A9D0B009244E4 /* MusicPlaybackController.m in Sources */,
@@ -2264,7 +2270,7 @@
 					"$(PROJECT_DIR)/Pods/Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.5.2",
 				);
 				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
-				GCC_OPTIMIZATION_LEVEL = fast;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Sterrio/PrefixHeader.pch;
 				INFOPLIST_FILE = Sterrio/Info.plist;
