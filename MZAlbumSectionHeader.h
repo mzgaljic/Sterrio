@@ -13,7 +13,7 @@
 #import "UIImage+colorImages.h"
 #import "AppEnvironmentConstants.h"
 
-@interface MZAlbumSectionHeader : UIView
+@interface MZAlbumSectionHeader : UIView <UITextFieldDelegate>
 
 - (instancetype)initWithFrame:(CGRect)frame album:(Album *)anAlbum;
 

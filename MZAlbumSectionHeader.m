@@ -9,6 +9,9 @@
 #import "MZAlbumSectionHeader.h"
 #import "AlbumAlbumArt+Utilities.h"
 #import "CCColorCube.h"
+#import "NSString+WhiteSpace_Utility.h"
+#import "Album+Utilities.h"
+#import "SDCAlertController.h"
 
 @interface MZAlbumSectionHeader ()
 {
@@ -16,11 +19,12 @@
     UIView *gradientView;
     Album *album;
 }
+@property(nonatomic, strong) UITextField *titleTextField;
 @end
 @implementation MZAlbumSectionHeader
-const short ALBUM_ART_EDGE_PADDING = 10;
-const short LABEL_PADDING_FROM_ART = 15;
-const short ALBUM_NAME_FONT_SIZE = 23;
+const short ALBUM_ART_EDGE_PADDING = 5;
+const short LABEL_PADDING_FROM_ART = 10;
+const short ALBUM_NAME_FONT_SIZE = 25;
 const short DETAIL_LABEL_FONT_SIZE = 17;
 const float SEPERATOR_HEIGHT = 0.5;
 
@@ -51,12 +55,27 @@ const float SEPERATOR_HEIGHT = 0.5;
 - (void)dealloc
 {
     album = nil;
+    _titleTextField.delegate = nil;
+    _titleTextField = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+//manually rotate the subviews (or in this case redraw them since the gradient
+//shouldnt be stretched).
 - (void)orientationChanged
 {
-    //manually rotate the subviews (or in this case redraw them since the gradient shouldnt be stretched).
+    //capture the users currently selected range so it doesn't get lost.
+    BOOL userWasEditingTitle = _titleTextField.isEditing;
+    NSRange selectedRange;
+    if(userWasEditingTitle) {
+        UITextRange *selectedTextRange = _titleTextField.selectedTextRange;
+        NSUInteger location = [_titleTextField offsetFromPosition:_titleTextField.beginningOfDocument
+                                                       toPosition:selectedTextRange.start];
+        NSUInteger length = [_titleTextField offsetFromPosition:selectedTextRange.start
+                                                     toPosition:selectedTextRange.end];
+        selectedRange = NSMakeRange(location, length);
+    }
+    
     [gradientView removeFromSuperview];
     [blurredBaseView removeFromSuperview];
     
@@ -70,6 +89,17 @@ const float SEPERATOR_HEIGHT = 0.5;
     blurredBaseView = blurredView;
     [self addSubview:blurredBaseView];
     [self composeViewElementsUsingAlbum:album];
+    
+    if(userWasEditingTitle) {
+        [_titleTextField becomeFirstResponder];
+        
+        //reset the cursor position back to its original location so user isn't confused.
+        UITextPosition *start = [_titleTextField positionFromPosition:[_titleTextField beginningOfDocument]
+                                                               offset:selectedRange.location];
+        UITextPosition *end = [_titleTextField positionFromPosition:start
+                                                             offset:selectedRange.length];
+        [_titleTextField setSelectedTextRange:[_titleTextField textRangeFromPosition:start toPosition:end]];
+    }
 }
 
 - (void)composeViewElementsUsingAlbum:(Album *)anAlbum
@@ -113,22 +143,26 @@ const float SEPERATOR_HEIGHT = 0.5;
     if(diff > 0){
         //aspect ratio is aspect FIT, which means in this case, the img y origin wont
         //be the same as where the image appears the being (since the image is wide here)
-        yOriginOffset = 18;
+        yOriginOffset = 10;
     }
 
-    UILabel *albumLabel = [UILabel new];
-    albumLabel.numberOfLines = 1;
-    albumLabel.text = anAlbum.albumName;
-    albumLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
-                                      size:ALBUM_NAME_FONT_SIZE];
-    [albumLabel sizeToFit];
+    if(_titleTextField == nil) {
+        _titleTextField = [UITextField new];
+        _titleTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
+        _titleTextField.delegate = self;
+        _titleTextField.text = anAlbum.albumName;
+        _titleTextField.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                               size:ALBUM_NAME_FONT_SIZE];
+        _titleTextField.textColor = [UIColor blackColor];
+    }
+    
+    [_titleTextField sizeToFit];
     int labelXVal = ALBUM_ART_EDGE_PADDING + img.frame.size.width + LABEL_PADDING_FROM_ART;
     CGRect albumLabelFrame = CGRectMake(labelXVal,
                                         img.frame.origin.y + yOriginOffset,
-                                        self.frame.size.width - labelXVal,
-                                        albumLabel.frame.size.height);
-    [albumLabel setFrame:albumLabelFrame];
-    albumLabel.textColor = [UIColor blackColor];
+                                        self.frame.size.width - labelXVal - LABEL_PADDING_FROM_ART,
+                                        _titleTextField.frame.size.height + _titleTextField.frame.size.height);
+    [_titleTextField setFrame:albumLabelFrame];
     
     UILabel *detailLabel = [UILabel new];
     detailLabel.numberOfLines = 1;
@@ -138,10 +172,11 @@ const float SEPERATOR_HEIGHT = 0.5;
     [detailLabel sizeToFit];
     CGRect detailLabelFrame = CGRectMake(labelXVal,
                                          img.frame.origin.y +
-                                         img.frame.size.height - (2 * detailLabel.frame.size.height),
+                                         img.frame.size.height - (2 * detailLabel.frame.size.height) - (yOriginOffset/2),
                                          self.frame.size.width - labelXVal,
                                          detailLabel.frame.size.height);
     [detailLabel setFrame:detailLabelFrame];
+    [detailLabel sizeToFit];
     detailLabel.textColor = [UIColor darkGrayColor];
     
     UIView *seperator = [UIView new];
@@ -150,7 +185,7 @@ const float SEPERATOR_HEIGHT = 0.5;
     seperator.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
     [blurredBaseView addSubview:img];
-    [blurredBaseView addSubview:albumLabel];
+    [blurredBaseView addSubview:_titleTextField];
     [blurredBaseView addSubview:detailLabel];
     [blurredBaseView addSubview:seperator];
 }
@@ -255,5 +290,45 @@ const float SEPERATOR_HEIGHT = 0.5;
         [values addObject:[NSNumber numberWithDouble:i]];
     }
     return values;
+}
+
+#pragma mark - Album Title UITextField Delegate callbacks
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    __weak NSString *prevAlbumName = album.albumName;
+    NSString *newAlbumName = textField.text;
+    [newAlbumName removeIrrelevantWhitespace];
+    
+    if(newAlbumName.length > 0 && ![album.albumName isEqualToString:newAlbumName]) {
+        album.albumName = newAlbumName;
+        album.smartSortAlbumName = [newAlbumName regularStringToSmartSortString];
+        //edge case, if name is something like 'the', dont remove all characters! Keep original name.
+        if(album.smartSortAlbumName.length == 0) {
+            album.smartSortAlbumName = newAlbumName;
+        }
+        
+        NSError *error;
+        if ([[CoreDataManager context] save:&error] == NO) {
+            //save failed
+            NSString *title = @"Save Error";
+            NSString *msg = @"Something bad happened when saving the album name.";
+            SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
+                                                                            message:msg
+                                                                     preferredStyle:SDCAlertControllerStyleAlert];
+            SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK"
+                                                                 style:SDCAlertActionStyleRecommended
+                                                               handler:nil];
+            [alert addAction:okAction];
+            __weak UITextField *weakTitleTxtField = _titleTextField;
+            [alert presentWithCompletion:^{
+                [weakTitleTxtField setText:prevAlbumName];
+            }];
+        } else {
+            //save success, don't do anything.
+        }
+    }
+    
+    [textField endEditing:YES];
+    return YES;
 }
 @end
