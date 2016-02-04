@@ -149,6 +149,7 @@ const float SEPERATOR_HEIGHT = 0.5;
     if(_titleTextField == nil) {
         _titleTextField = [UITextField new];
         _titleTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
+        [_titleTextField setReturnKeyType:UIReturnKeyDone];
         _titleTextField.delegate = self;
         _titleTextField.text = anAlbum.albumName;
         _titleTextField.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]

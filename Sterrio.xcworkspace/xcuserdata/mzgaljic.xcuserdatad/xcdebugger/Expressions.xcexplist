@@ -6,6 +6,14 @@
          contextName = "-[AllArtistsDataSource reflectNowPlayingChangesInTableview:]:AllArtistsDataSource.m">
       </ContextState>
       <ContextState
+         contextName = "+[MZCoreDataModelDeletionService removeAlbumFromItsArtist:]:MZCoreDataModelDeletionService.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "artist.standAloneSongs">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "-[NewSettingsTableViewController viewDidLoad]:NewSettingsTableViewController.m">
       </ContextState>
    </ContextStates>
