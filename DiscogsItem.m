@@ -24,7 +24,7 @@
 + (SMWebRequest *)requestForDiscogsItems:(NSString *)query;
 {
     // Set ourself as the background processing delegate. The caller can still add herself as a listener for the resulting data.
-    NSString *urlString = @"https://api.discogs.com/database/search?type=master&type=album&per_page=6&page=1&q=";
+    NSString *urlString = @"https://api.discogs.com/database/search?type=master&type=album&per_page=8&page=1&q=";
     query = [query stringForHTTPRequest];
     NSURL *myUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", urlString, query]];
     NSMutableURLRequest *mutUrlRequest = [NSMutableURLRequest requestWithURL:myUrl];
@@ -50,7 +50,6 @@
     NSMutableArray *itemsArray = [NSMutableArray arrayWithCapacity:allDataDict.count];
     for(NSUInteger i = 0; i < resultsArray.count; i++) {
         int year = [[resultsArray[i] objectForKey:@"year"] intValue];
-        
         NSString *resultTitle = [resultsArray[i] objectForKey:@"title"];
         
         //space around "-" in seperator is important. Considers the fact that some artists may
@@ -66,18 +65,22 @@
         }
         albumName = albumNameBuilder;
         
-        artistName = [self removeRandomAsteriskAtEndOfNamesIfPresent:artistName];
-        albumName = [self removeRandomAsteriskAtEndOfNamesIfPresent:albumName];
-        artistName = [self removeNumberedSuffixRepresentingDuplicateArtistOrAlbumInDiscogs:artistName];
-        albumName = [self removeNumberedSuffixRepresentingDuplicateArtistOrAlbumInDiscogs:albumName];
+        artistName = [DiscogsItem removeRandomAsteriskAtEndOfNamesIfPresent:artistName];
+        albumName = [DiscogsItem removeRandomAsteriskAtEndOfNamesIfPresent:albumName];
+        artistName = [DiscogsItem removeNumberedSuffixIndicatingDupArtistOrAlbumInDiscogs:artistName];
+        albumName = [DiscogsItem removeNumberedSuffixIndicatingDupArtistOrAlbumInDiscogs:albumName];
+        
+        NSArray *featArtists = [DiscogsItem parseFeatArtists:artistName];
+        
+        //looks for "ft." and removes everything starting from there to the end of the string.
+        //pattern: (\(|\[|\{|\s)(ft\..+|feat\..+)
+        NSString *regexExp = @"(\\(|\\[|\\{|\\s)(ft\\..+|feat\\..+)";
+        artistName = [MZCommons deleteCharsMatchingRegex:regexExp usingString:artistName];
         
         //the DiscogsItem songName is set in YouTubeSongAdderViewController when results are processed.
         DiscogsItem *item = [[DiscogsItem alloc] init];
-        //if we detect a featured artist, the app appends 'ft.' to the end of the song name. But if the
-        //album name contains 'Feat.', we should change it to 'ft.' to keep things consistent!
-        item.artistName = [MZCommons replaceCharsMatchingRegex:@"\\s+Feat\\.\\s+"
-                                                     withChars:@" ft. "
-                                                   usingString:artistName];;
+        item.featuredArtists = featArtists;
+        item.artistName = artistName;
         item.albumName = albumName;
         item.releaseYear = year;
         item.formats = [resultsArray[i] objectForKey:@"format"];
@@ -86,14 +89,16 @@
     return itemsArray;
 }
 
-- (BOOL)isAlbumOrVinylOrCd
+- (BOOL)isAlbumVinylCDOrEP
 {
-    NSArray *formats = self.formats;
+    NSArray *formats = self.formats;    
     if([formats containsObject:@"Album"]) {
         return YES;
     } else if([formats containsObject:@"Vinyl"]) {
         return YES;
     } else if([formats containsObject:@"CD"]) {
+        return YES;
+    } else if([formats containsObject:@"EP"]) {
         return YES;
     } else {
         return NO;
@@ -123,11 +128,78 @@
     }
 }
 
-+ (NSString *)removeNumberedSuffixRepresentingDuplicateArtistOrAlbumInDiscogs:(NSString *)originalName
++ (NSString *)removeNumberedSuffixIndicatingDupArtistOrAlbumInDiscogs:(NSString *)originalName
 {
     //pmatches any numbers within () that are at the end of the string.
     NSString *regex = @" +(\\([0-9]+\\) *)$";  //pattern in quotes:   " +(\([0-9]+\) *)$"
     return [MZCommons deleteCharsMatchingRegex:regex usingString:originalName];
+}
+
++ (NSArray *)parseFeatArtists:(NSString *)artistTitle
+{
+    NSArray *featArtists = nil;
+    //first handle the case where there are two featured people:
+    featArtists = [self findFeaturedArtists:artistTitle];
+    
+    if(featArtists.count == 0) {
+        //now handle the case where there is just one featured person
+        featArtists = [self findFeaturedArtist:artistTitle];
+    }
+    return featArtists;
+}
+
+//WARNING: if updated the regex in this method, update it in YouTubeVideo.m too.
+//There is a similar method that performs this logic in that class.
++ (NSArray *)findFeaturedArtists:(NSString *)artistTitle
+{
+    //Example: YOLO (ft. Adam Levine & Kendrick Lamar)
+    //in example, Adam Levine is capture group # 2. Kendrick Lamar is #4.
+    NSString *regexExp = MZRegexMatchFeaturedArtists;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexExp
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:nil];
+    NSArray *matches = [regex matchesInString:artistTitle
+                                      options:0
+                                        range:NSMakeRange(0, [artistTitle length])];
+    NSMutableArray *featArtists = [NSMutableArray arrayWithCapacity:2];
+    if(matches.count > 0) {
+        NSTextCheckingResult *match = matches[0];
+        //indecies of the capture groups we care about:
+        int captureGroup1stFeat = 2;  //1st featured artist
+        int captureGroup2ndFeat = 4;  //2nd featured artist
+        [featArtists addObject:[artistTitle substringWithRange:[match rangeAtIndex:captureGroup1stFeat]]];
+        [featArtists addObject:[artistTitle substringWithRange:[match rangeAtIndex:captureGroup2ndFeat]]];
+    }
+    return featArtists;
+}
+
+//WARNING: if updated the regex in this method, update it in YouTubeVideo.m too.
+//There is a similar method that performs this logic in that class.
++ (NSArray *)findFeaturedArtist:(NSString *)artistTitle
+{
+    //Example: YOLO (feat. Adam Levine )
+    //in example, Adam Levine is capture group #2
+    NSString *regexExp = MZRegexMatchFeaturedArtist;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexExp
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:nil];
+    NSArray *matches = [regex matchesInString:artistTitle
+                                      options:0
+                                        range:NSMakeRange(0, [artistTitle length])];
+    if(matches.count > 0) {
+        NSTextCheckingResult *match = matches[0];
+        //index of the capture group we care about:
+        int captureGroupFeatArtist = 2;  //the featured artist
+        return @[[artistTitle substringWithRange:[match rangeAtIndex:captureGroupFeatArtist]]];
+    }
+    return @[];
+}
+
++ (NSString *)removeFeatKeywordsAndAnythingAfterward:(NSString *)artistTitle
+{
+    //now that we've extracted the featured artists (if any), finish sanitizing title.
+    NSString *regexExp = MZRegexMatchFeatAndFtToEndOfString;
+    return [MZCommons deleteCharsMatchingRegex:regexExp usingString:artistTitle];
 }
 
 @end

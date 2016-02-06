@@ -883,6 +883,7 @@ static BOOL powerByYtHandled = NO;  //needed if user aggressively taps button mo
         //good suggestion for user found!
         if(! item.itemGuranteedCorrect) {
             [DiscogsResultsUtils applySongNameToDiscogsItem:&item youtubeVideo:ytVideo];
+            [DiscogsResultsUtils applyFinalArtistNameLogicForPresentation:&item];
         }
         [self.tableView newSongNameGuessed:item.songName
                                artistGuess:item.artistName

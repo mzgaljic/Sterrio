@@ -15,6 +15,7 @@
 
 #import "MZCommons.h"
 #import "MZConstants.h"
+#import "MZRegexExp.h"
 #import <Crashlytics/Crashlytics.h>  //for using CLS_LOG(format, ...) from anywhere.
 #import <Ensembles/Ensembles.h>
 #import "MyAlerts.h"  //my custom class for displaying alerts from anywhere

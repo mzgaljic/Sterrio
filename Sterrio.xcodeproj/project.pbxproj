@@ -218,6 +218,7 @@
 		876C53D41C2A1383007AFC3C /* cm_pop_tim_view_license.txt in Resources */ = {isa = PBXBuildFile; fileRef = 876C53D31C2A1383007AFC3C /* cm_pop_tim_view_license.txt */; };
 		876C53D71C2A557A007AFC3C /* PushNotificationsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 876C53D61C2A557A007AFC3C /* PushNotificationsHelper.m */; };
 		8773AE2D1B509A5500C3E64E /* SpotlightHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */; };
+		878488051C6694E200666627 /* MZRegexExp.m in Sources */ = {isa = PBXBuildFile; fileRef = 878488041C6694E200666627 /* MZRegexExp.m */; };
 		87A953621B3E1E54002E9872 /* DiscogsSearchService.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9535E1B3E1E54002E9872 /* DiscogsSearchService.m */; };
 		87A9536C1B3E242A002E9872 /* SMURLImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A953681B3E242A002E9872 /* SMURLImageView.m */; };
 		87A9536D1B3E242A002E9872 /* LICENSE_webRequest.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A953691B3E242A002E9872 /* LICENSE_webRequest.txt */; };
@@ -668,6 +669,8 @@
 		876C53D61C2A557A007AFC3C /* PushNotificationsHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushNotificationsHelper.m; sourceTree = "<group>"; };
 		8773AE2B1B509A5500C3E64E /* SpotlightHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpotlightHelper.h; sourceTree = "<group>"; };
 		8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpotlightHelper.m; sourceTree = "<group>"; };
+		878488031C6694E200666627 /* MZRegexExp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZRegexExp.h; sourceTree = "<group>"; };
+		878488041C6694E200666627 /* MZRegexExp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZRegexExp.m; sourceTree = "<group>"; };
 		87A9535D1B3E1E54002E9872 /* DiscogsSearchService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscogsSearchService.h; sourceTree = "<group>"; };
 		87A9535E1B3E1E54002E9872 /* DiscogsSearchService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsSearchService.m; sourceTree = "<group>"; };
 		87A953601B3E1E54002E9872 /* DiscogsItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscogsItem.h; sourceTree = "<group>"; };
@@ -751,6 +754,8 @@
 				87414BC71B3FB85300FB8252 /* AppDelegate.m */,
 				8735380B1B0A9A9A009244E4 /* MZConstants.h */,
 				8735380C1B0A9A9A009244E4 /* MZConstants.m */,
+				878488031C6694E200666627 /* MZRegexExp.h */,
+				878488041C6694E200666627 /* MZRegexExp.m */,
 				87494D3B1C27476A00AA9637 /* IntroVideoView.h */,
 				87494D3C1C27476A00AA9637 /* IntroVideoView.m */,
 				8735381B1B0A9AD2009244E4 /* Categories */,
@@ -892,6 +897,8 @@
 				873538791B0A9B9E009244E4 /* PlaybackContext.m */,
 				8735387A1B0A9B9E009244E4 /* YouTubeVideo.h */,
 				8735387B1B0A9B9E009244E4 /* YouTubeVideo.m */,
+				87A953601B3E1E54002E9872 /* DiscogsItem.h */,
+				8716560E1C30AB41000FF02B /* DiscogsItem.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -944,7 +951,11 @@
 				873538751B0A9B9E009244E4 /* LQAlbumArtBackgroundUpdater.m */,
 				8773AE2B1B509A5500C3E64E /* SpotlightHelper.h */,
 				8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */,
-				87A953641B3E1E5F002E9872 /* Discogs */,
+				87CD5A3D1C31B22C0077CF0C /* DiscogsSearchDelegate.h */,
+				87A9535D1B3E1E54002E9872 /* DiscogsSearchService.h */,
+				87A9535E1B3E1E54002E9872 /* DiscogsSearchService.m */,
+				87CD5A3E1C31C0530077CF0C /* DiscogsResultsUtils.h */,
+				87CD5A3F1C31C0530077CF0C /* DiscogsResultsUtils.m */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -1713,20 +1724,6 @@
 			path = CMPopTipView;
 			sourceTree = "<group>";
 		};
-		87A953641B3E1E5F002E9872 /* Discogs */ = {
-			isa = PBXGroup;
-			children = (
-				87CD5A3D1C31B22C0077CF0C /* DiscogsSearchDelegate.h */,
-				87A9535D1B3E1E54002E9872 /* DiscogsSearchService.h */,
-				87A9535E1B3E1E54002E9872 /* DiscogsSearchService.m */,
-				87A953601B3E1E54002E9872 /* DiscogsItem.h */,
-				8716560E1C30AB41000FF02B /* DiscogsItem.m */,
-				87CD5A3E1C31C0530077CF0C /* DiscogsResultsUtils.h */,
-				87CD5A3F1C31C0530077CF0C /* DiscogsResultsUtils.m */,
-			);
-			name = Discogs;
-			sourceTree = "<group>";
-		};
 		87A953651B3E242A002E9872 /* SMWebRequest */ = {
 			isa = PBXGroup;
 			children = (
@@ -1967,6 +1964,7 @@
 				87353A271B0AA283009244E4 /* ActionSheetStringPicker.m in Sources */,
 				873538A41B0A9C40009244E4 /* PlayableItem.m in Sources */,
 				87353A481B0AA2C9009244E4 /* MRStopButton.m in Sources */,
+				878488051C6694E200666627 /* MZRegexExp.m in Sources */,
 				873539211B0A9F11009244E4 /* YouTubeSongAdderViewController.m in Sources */,
 				873538531B0A9B23009244E4 /* Stack.m in Sources */,
 				8735388B1B0A9BCA009244E4 /* YouTubeVideoSearchService.m in Sources */,

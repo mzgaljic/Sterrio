@@ -24,6 +24,7 @@ typedef enum {
 @property (nonatomic, strong) NSString *songName;
 @property (nonatomic, strong) NSString *artistName;
 @property (nonatomic, strong) NSString *albumName;
+@property (nonatomic, strong) NSArray *featuredArtists;
 @property (nonatomic, assign) int releaseYear;
 @property (nonatomic, assign) MatchConfidence matchConfidence;
 @property (nonatomic, strong) NSArray *formats;  //ie: Album, Vinyle, etc. Represented as NSStrings.
@@ -33,7 +34,7 @@ typedef enum {
 
 + (SMWebRequest *)requestForDiscogsItems:(NSString *)query;
 
-- (BOOL)isAlbumOrVinylOrCd;
+- (BOOL)isAlbumVinylCDOrEP;
 - (BOOL)isASingle;
 
 @end

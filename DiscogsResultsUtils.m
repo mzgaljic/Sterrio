@@ -46,17 +46,22 @@
                                                 options:NSCaseInsensitiveSearch];
         
         //itemIsAlbumOrVinylOrCd must be first in if statement, otherwise it may not be executed.
-        if ([item isAlbumOrVinylOrCd]
+        if ([item isAlbumVinylCDOrEP] && ![item isASingle]
             && albumNameInTitle && artistNameInTitle
             && liveAtRange.location == NSNotFound
             && liveInRange.location == NSNotFound) {
             item.matchConfidence = MatchConfidence_VERY_HIGH;
             
-        } else if([item isAlbumOrVinylOrCd] && albumNameInTitle && artistNameInTitle) {
+        } else if([item isAlbumVinylCDOrEP] && ![item isASingle]
+                  && albumNameInTitle && artistNameInTitle) {
             item.matchConfidence = MatchConfidence_HIGH;
             
-        } else if([item isAlbumOrVinylOrCd] && (albumNameInTitle || artistNameInTitle)) {
+        } else if([item isAlbumVinylCDOrEP] && ![item isASingle]
+                  && (albumNameInTitle || artistNameInTitle)) {
             item.matchConfidence = MatchConfidence_MEDIUM_HIGH;
+            
+        } else if([item isAlbumVinylCDOrEP] && (albumNameInTitle || artistNameInTitle)) {
+            item.matchConfidence = MatchConfidence_MEDIUM;
             
         } else if(albumNameInTitle && artistNameInTitle) {
             item.matchConfidence = MatchConfidence_MEDIUM;
@@ -122,9 +127,9 @@
 {
     //copy so we don't pollute internal cache
     NSMutableString *sanitizedTitle = [NSMutableString stringWithString:[[[ytVideo sanitizedTitle] removeIrrelevantWhitespace] copy]];
-    [DiscogsResultsUtils removeRandomHyphensIfPresent:&sanitizedTitle];
     [DiscogsResultsUtils deleteSubstring:(*discogsItem).artistName onTarget:&sanitizedTitle];
     [DiscogsResultsUtils deleteSubstring:(*discogsItem).albumName onTarget:&sanitizedTitle];
+    [DiscogsResultsUtils removeRandomHyphensIfPresent:&sanitizedTitle];
     
     //some video titles contain 1 char or more of whitespace in front which the method
     //[NSString removeIrrelevantWhitespace] does not handle for some reason! Handling that now...
@@ -186,6 +191,19 @@
     }
     
     (*discogsItem).songName = sanitizedTitle;
+}
+
++ (void)applyFinalArtistNameLogicForPresentation:(DiscogsItem **)discogsItem
+{
+    NSString *artistSuggestion;
+    if((*discogsItem).featuredArtists.count == 0) {
+        artistSuggestion = (*discogsItem).artistName;
+    } else {
+        artistSuggestion = [NSString stringWithFormat:@"%@ ft. %@",
+                            (*discogsItem).artistName,
+                            (*discogsItem).featuredArtists[0]];
+    }
+    (*discogsItem).artistName = artistSuggestion;
 }
 
 #pragma mark - utility methods

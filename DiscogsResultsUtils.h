@@ -18,4 +18,6 @@
 
 + (void)applySongNameToDiscogsItem:(DiscogsItem **)discogsItem youtubeVideo:(YouTubeVideo *)ytVideo;
 
++ (void)applyFinalArtistNameLogicForPresentation:(DiscogsItem **)discogsItem;
+
 @end

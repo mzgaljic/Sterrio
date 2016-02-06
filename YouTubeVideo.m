@@ -215,18 +215,17 @@
     self.featuredArtists = featArtists;
     
     //now that we've extracted the featured artists (if any), finish sanitizing title.
-    //looks for "ft." and removes everything starting from there to the end of the string.
-    //pattern: (\(|\[|\{|\s)(ft\..+|feat\..+)
-    NSString *regexExp = @"(\\(|\\[|\\{|\\s)(ft\\..+|feat\\..+)";
+    NSString *regexExp = MZRegexMatchFeatAndFtToEndOfString;
     [MZCommons deleteCharsMatchingRegex:regexExp onString:aString];
 }
 
+//WARNING: if updated the regex in this method, update it in DiscogsItem.m too.
+//There is a similar method that performs this logic in that class.
 - (NSArray *)findFeaturedArtistsInVideoTitle:(NSMutableString **)aString
 {
-    //pattern:  (feat.|ft.)\s*(.+)(&|and)\s*([^\)\]\}\.]+)
     //Example: YOLO (ft. Adam Levine & Kendrick Lamar)
     //in example, Adam Levine is capture group # 2. Kendrick Lamar is #4.
-    NSString *regexExp = @"(feat.|ft.)\\s*(.+)(&|and)\\s*([^\\)\\]\\}\\.]+)";
+    NSString *regexExp = MZRegexMatchFeaturedArtists;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexExp
                                                                             options:NSRegularExpressionCaseInsensitive
                                                                               error:nil];
@@ -246,12 +245,13 @@
     return featArtists;
 }
 
+//WARNING: if updated the regex in this method, update it in DiscogResultUtils too.
+//There is a similar method that performs this logic on a DiscogsItem
 - (NSArray *)findFeaturedArtistInVideoTitle:(NSMutableString **)aString
 {
-    //pattern: (feat.|ft.)\s*([^\)\]\}\.\&]+)
     //Example: YOLO (feat. Adam Levine )
     //in example, Adam Levine is capture group #2
-    NSString *regexExp = @"(feat\\.|ft\\.)\\s*([^\\)\\]\\}\\.\\&]+)";
+    NSString *regexExp = MZRegexMatchFeaturedArtist;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexExp
                                                                             options:NSRegularExpressionCaseInsensitive
                                                                               error:nil];
