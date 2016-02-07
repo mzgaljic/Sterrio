@@ -91,6 +91,7 @@ double const DISCOGS_SECONDS_BETWEEN_REQUESTS = 3;
 {
     [self.request removeTarget:self];
     [self.request cancel];
+    self.delegate = nil;
 }
 
 - (void)requestComplete:(NSArray *)theItems

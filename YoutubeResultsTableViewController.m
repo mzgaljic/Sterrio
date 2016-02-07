@@ -296,9 +296,8 @@ static NSDate *timeSinceLastPageLoaded;
 
 - (void)ytVideoAutoCompleteResultsDidDownload:(NSArray *)arrayOfNSStrings
 {
-    //since we're not using an NSOperationQueue or something sophisticated like that,
-    //its possible that this response could come in AFTER the user already pressed the search
-    //button and displayed search results in his table. if thats the case, we simply ignore this.
+    //maybe its possible that this response could come in AFTER the user already pressed the search
+    //button and displayed search results in his table? if thats the case, we simply ignore this.
     if(self.displaySearchResults){
         return;
     }
@@ -527,6 +526,7 @@ static BOOL userClearedTextField = NO;
         if(! self.displaySearchResults)
             self.tableView.scrollEnabled = YES;
         
+        [[YouTubeVideoSearchService sharedInstance] cancelAllYtAutoCompletePendingRequests];
         //fetch auto suggestions
         [[YouTubeVideoSearchService sharedInstance] fetchYouTubeAutoCompleteResultsForString:searchText];
         self.displaySearchResults = NO;

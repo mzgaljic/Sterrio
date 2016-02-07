@@ -32,6 +32,7 @@
          forHTTPHeaderField:@"User-Agent"];
     [mutUrlRequest setValue:@"Discogs token=CHSGmUCKHjNIOeAKgbuaBZUEldBInAopLpRJiGMc"
          forHTTPHeaderField:@"Authorization"];
+    [mutUrlRequest setCachePolicy:NSURLRequestUseProtocolCachePolicy];
     
     
     return [SMWebRequest requestWithURLRequest:mutUrlRequest

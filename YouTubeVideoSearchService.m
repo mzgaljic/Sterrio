@@ -8,7 +8,8 @@
 
 #import "YouTubeVideoSearchService.h"
 #import "YouTubeVideo.h"
-
+#import "SMWebRequest.h"
+#import "YouTubeSearchSuggestion.h"
 
 @interface YouTubeVideoSearchService ()
 {
@@ -25,9 +26,11 @@
     NSString *VIDEO_INFO_BASE;
     NSString *VIDEO_INFO_APPEND_ME;
 }
-@property (nonatomic, assign) id<YouTubeVideoQueryDelegate> queryDelegate;
+@property (nonatomic, assign) NSObject<YouTubeVideoQueryDelegate>* queryDelegate;
 @property (nonatomic, assign) id<YouTubeVideoDetailLookupDelegate> vidDurationDelegate;
 @property (nonatomic, strong) NSDateFormatter *ytVideoDateFormatter;
+
+@property (nonatomic, strong) SMWebRequest *searchTextSuggestionsRequest;
 @end
 
 @implementation YouTubeVideoSearchService
@@ -190,42 +193,39 @@ const int time_out_interval_seconds = 10;
 }
 
 #pragma mark - Query Auto-complete as you type
-static NSOperationQueue *autoCompleteRequestQueue = nil;
+- (void)cancelAllYtAutoCompletePendingRequests
+{
+    [self.searchTextSuggestionsRequest removeTarget:self];
+    [self.searchTextSuggestionsRequest cancel];
+}
+
+- (void)videoSuggestionsRequestComplete:(NSArray *)theItems
+{
+    NSMutableArray *arrayOfStrings = [NSMutableArray arrayWithCapacity:theItems.count];
+    for(YouTubeSearchSuggestion *suggestion in theItems) {
+        [arrayOfStrings addObject:[suggestion.querySuggestion copy]];
+    }
+    [self.queryDelegate performSelectorOnMainThread:@selector(ytVideoAutoCompleteResultsDidDownload:)
+                                         withObject:arrayOfStrings
+                                      waitUntilDone:YES];
+}
+
+- (void)videoSuggestionsRequestError:(NSError *)theError
+{
+    //delegate doesn't have method for failed suggestions, just don't do anything.
+}
+
 - (void)fetchYouTubeAutoCompleteResultsForString:(NSString *)currentString
 {
-    if(currentString){
-        if(autoCompleteRequestQueue == nil) {
-            autoCompleteRequestQueue = [[NSOperationQueue alloc] init];
-        } else {
-            //indirectly cancels the last NSURLRequest.
-            [[autoCompleteRequestQueue.operations lastObject] cancel];
-        }
-        
-        NSMutableString *tempUrl = [NSMutableString stringWithString: QUERY_SUGGESTION_BASE];
-        [tempUrl appendString:[currentString stringForHTTPRequest]];
-        NSString *fullUrl = [NSString stringWithString:tempUrl];
-        __weak YouTubeVideoSearchService *weakSelf = self;
-        
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:fullUrl]
-                                                 cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                             timeoutInterval:time_out_interval_seconds];
-        
-        [NSURLConnection sendAsynchronousRequest:request queue:autoCompleteRequestQueue completionHandler:^
-            (NSURLResponse *response, NSData *data, NSError *connectionError)
-        {
-            if (data == nil)
-            {
-                //don't need to display error to user, not critical to see autosuggestions.
-            } else{
-                // Data received...continue processing
-                NSArray *parsedContent = [self parseYouTubeVideoAutoSuggestResponse:data];
-                dispatch_sync(dispatch_get_main_queue(), ^{
-                    [weakSelf.queryDelegate ytVideoAutoCompleteResultsDidDownload:parsedContent];
-                });
-            }
-        }];
-    } else
-        return;
+    [self.searchTextSuggestionsRequest cancel]; // in case one was running already
+    self.searchTextSuggestionsRequest = [YouTubeSearchSuggestion requestForYouTubeSearchSuggestions:currentString];
+    [self.searchTextSuggestionsRequest addTarget:self
+                                          action:@selector(videoSuggestionsRequestComplete:)
+                                forRequestEvents:SMWebRequestEventComplete];
+    [self.searchTextSuggestionsRequest addTarget:self
+                                          action:@selector(videoSuggestionsRequestError:)
+                                forRequestEvents:SMWebRequestEventError];
+    [self.searchTextSuggestionsRequest start];
 }
 
 
@@ -290,49 +290,6 @@ static NSOperationQueue *autoCompleteRequestQueue = nil;
         ytVideo.videoThumbnailUrlHighQuality = highQualityThumbnailUrl;
         ytVideo.channelTitle = channelTitle;
         ytVideo.publishDate = [self dateFromISO8601FormattedString:publishedAtText];
-    }
-    return parsedArray;
-}
-
-#pragma mark - Parsing Auto-completion response
-//returns array of NSString objects
-- (NSArray *)parseYouTubeVideoAutoSuggestResponse:(NSData *)jsonData
-{
-    //content-type of response is NSISOLatin1StringEncoding
-    NSMutableString *originalData = [[NSMutableString alloc] initWithData:jsonData encoding:NSISOLatin1StringEncoding];
-    
-    if(originalData.length > 0){
-        //delete last character
-        [originalData deleteCharactersInRange:NSMakeRange([originalData length]-1, 1)];
-        
-        //delete first 19 characters - "window.google.ac.h("
-        if([[originalData substringToIndex:19] isEqualToString:@"window.google.ac.h("])
-            [originalData deleteCharactersInRange:NSMakeRange(0, 19)];
-        else{
-            //response from server has changed or an error occured.
-            CLS_LOG(@"%@", @"Google suggestions api response has changed!");
-            return nil;
-        }
-    }
-    //root dictionary
-    if(originalData == nil)
-        return nil;
-    
-    //converting data to NSUTF8StringEncoding so that it can be easily worked with in my app.
-    NSArray *allDataArray = [NSJSONSerialization JSONObjectWithData:[originalData dataUsingEncoding:NSUTF8StringEncoding]
-                                                                options:kNilOptions error:nil];
-    if(allDataArray == nil)
-        return nil;
-    
-    NSArray *suggestionsArray = [allDataArray objectAtIndex:1];
-    allDataArray = nil;
-    originalData = nil;
-    
-    NSMutableArray *parsedArray = [NSMutableArray arrayWithCapacity:suggestionsArray.count];
-    NSArray *reusableArray;
-    for(int i = 0; i < suggestionsArray.count; i++){  //parse json response, extract suggestions.
-        reusableArray = suggestionsArray[i];
-        [parsedArray addObject: reusableArray[0]];
     }
     return parsedArray;
 }

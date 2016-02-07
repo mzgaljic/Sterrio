@@ -109,6 +109,7 @@
         } else {
             return nil;
         }
+        
         NSUInteger distance = [query computeLevenshteinDistanceFromSecondString:modelString];
         LevenshteinDistanceItem *item = [[LevenshteinDistanceItem alloc] init];
         item.distance = distance;

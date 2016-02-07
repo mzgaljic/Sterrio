@@ -225,6 +225,7 @@
 		87A9536E1B3E242A002E9872 /* SMWebRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9536B1B3E242A002E9872 /* SMWebRequest.m */; };
 		87B916C81C60467E00CAEDB8 /* MZRightDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B916C71C60467E00CAEDB8 /* MZRightDetailCell.m */; };
 		87CD5A401C31C0530077CF0C /* DiscogsResultsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 87CD5A3F1C31C0530077CF0C /* DiscogsResultsUtils.m */; };
+		87D3281F1C67F6BD001F2081 /* YouTubeSearchSuggestion.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D3281E1C67F6BD001F2081 /* YouTubeSearchSuggestion.m */; };
 		87DAA6C51B8AA9FF008D8684 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 87DAA6C21B8AA9FF008D8684 /* Model.xcdatamodeld */; };
 		87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */; };
 		87E152671C0041E100C82737 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87E152661C0041E100C82737 /* StoreKit.framework */; };
@@ -684,6 +685,8 @@
 		87CD5A3D1C31B22C0077CF0C /* DiscogsSearchDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DiscogsSearchDelegate.h; sourceTree = "<group>"; };
 		87CD5A3E1C31C0530077CF0C /* DiscogsResultsUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscogsResultsUtils.h; sourceTree = "<group>"; };
 		87CD5A3F1C31C0530077CF0C /* DiscogsResultsUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsResultsUtils.m; sourceTree = "<group>"; };
+		87D3281D1C67F6BD001F2081 /* YouTubeSearchSuggestion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YouTubeSearchSuggestion.h; sourceTree = "<group>"; };
+		87D3281E1C67F6BD001F2081 /* YouTubeSearchSuggestion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YouTubeSearchSuggestion.m; sourceTree = "<group>"; };
 		87DAA6C31B8AA9FF008D8684 /* Model 1.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 1.0.xcdatamodel"; sourceTree = "<group>"; };
 		87DAA6C41B8AA9FF008D8684 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailComposerManager.m; sourceTree = "<group>"; };
@@ -899,6 +902,8 @@
 				8735387B1B0A9B9E009244E4 /* YouTubeVideo.m */,
 				87A953601B3E1E54002E9872 /* DiscogsItem.h */,
 				8716560E1C30AB41000FF02B /* DiscogsItem.m */,
+				87D3281D1C67F6BD001F2081 /* YouTubeSearchSuggestion.h */,
+				87D3281E1C67F6BD001F2081 /* YouTubeSearchSuggestion.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -2135,6 +2140,7 @@
 				87353A5F1B0AA316009244E4 /* MRMethodCopier.m in Sources */,
 				87353A8C1B0AAA36009244E4 /* AlbumAlbumArt+Utilities.m in Sources */,
 				873538461B0A9AF4009244E4 /* UIWindow+VisibleVC.m in Sources */,
+				87D3281F1C67F6BD001F2081 /* YouTubeSearchSuggestion.m in Sources */,
 				873538961B0A9C07009244E4 /* NowPlayingSong.m in Sources */,
 				873538BD1B0A9CB9009244E4 /* MasterSongEditorViewController.m in Sources */,
 				87353A421B0AA2C9009244E4 /* MRActivityIndicatorView.m in Sources */,

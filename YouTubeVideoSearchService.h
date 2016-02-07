@@ -20,6 +20,8 @@
 #pragma mark - Video Queries
 - (void)searchYouTubeForVideosUsingString:(NSString *)searchString;
 - (void)fetchNextYouTubePageUsingLastQueryString;
+
+- (void)cancelAllYtAutoCompletePendingRequests;
 - (void)fetchYouTubeAutoCompleteResultsForString:(NSString *)currentString;
 
 - (void)setVideoQueryDelegate:(id<YouTubeVideoQueryDelegate>)delegate;

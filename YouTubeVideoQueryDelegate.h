@@ -21,7 +21,7 @@
 
 - (void)ytvideoResultsNoMorePagesToView;
 
-- (void)ytVideoAutoCompleteResultsDidDownload:(NSArray *)arrayOfNSStrings;
+- (void)ytVideoAutoCompleteResultsDidDownload:(NSArray *)arrayOfYouTubeVideoSearchSuggestions;
 
 - (void)networkErrorHasOccuredSearchingYoutube;
 

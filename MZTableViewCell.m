@@ -304,7 +304,7 @@ short const dotLabelPadding = 20;
         //go through main thread context.
         __block UIImage *newImage;
         __block id anAlbumArtClassObj;
-        __weak NSManagedObjectID *weakObjId = self.anAlbumArtClassObjId;
+        __unsafe_unretained NSManagedObjectID *weakObjId = self.anAlbumArtClassObjId;
         NSManagedObjectContext *context = [CoreDataManager context];
         [context performBlockAndWait:^{
             anAlbumArtClassObj = [context existingObjectWithID:weakObjId error:nil];
@@ -313,7 +313,7 @@ short const dotLabelPadding = 20;
         if([anAlbumArtClassObj isMemberOfClass:[SongAlbumArt class]])
         {
             SongAlbumArt *tempAlbumArt = (SongAlbumArt *)anAlbumArtClassObj;
-            __weak NSManagedObjectID *albumArtObjId = tempAlbumArt.objectID;
+            __unsafe_unretained NSManagedObjectID *albumArtObjId = tempAlbumArt.objectID;
             
             [context performBlockAndWait:^{
                 SongAlbumArt *albumArt = (SongAlbumArt *)[context existingObjectWithID:albumArtObjId error:nil];
@@ -324,7 +324,7 @@ short const dotLabelPadding = 20;
         {
             CGSize cellImgSize = self.imageView.frame.size;
             AlbumAlbumArt *tempAlbumArt = (AlbumAlbumArt *)anAlbumArtClassObj;
-            __weak NSManagedObjectID *albumArtObjId = tempAlbumArt.objectID;
+            __unsafe_unretained NSManagedObjectID *albumArtObjId = tempAlbumArt.objectID;
             
             [context performBlockAndWait:^{
                 AlbumAlbumArt *albumArt = (AlbumAlbumArt *)[context existingObjectWithID:albumArtObjId error:nil];
