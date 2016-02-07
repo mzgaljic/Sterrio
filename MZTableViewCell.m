@@ -170,7 +170,7 @@ short const dotLabelPadding = 20;
         //there is not detail label, just center this one.
         yOrigin = (self.frame.size.height/2) - (height/2);
     else
-        yOrigin = self.frame.size.height * .12;  //should be 12% down from top
+        yOrigin = self.frame.size.height * .10;  //should be 10% down from top
 
     return CGRectMake(xOrigin, yOrigin, width, height);
 }
@@ -191,7 +191,7 @@ short const dotLabelPadding = 20;
         //there is not detail label, just center this one.
         yOrigin = (self.frame.size.height/2) - (height/2);
     else
-        yOrigin = self.frame.size.height * .12;  //should be 12% down from top
+        yOrigin = self.frame.size.height * .10;  //should be 10% down from top
 
     return CGRectMake(xOrigin, yOrigin, width, height);
 }
@@ -206,7 +206,7 @@ short const dotLabelPadding = 20;
         xOrigin = self.imageView.frame.origin.x + imgViewWidth + textLabelsPaddingFromImgView;
     }
     int width = self.frame.size.width - xOrigin;
-    int yOrigin = self.frame.size.height * .53;  //should be 53% from top
+    int yOrigin = self.frame.size.height * .55;  //should be 55% from top
     int height = self.frame.size.height *[self internalPercentTextLabelIsDecreasedFromTotalCellHeight];
     return CGRectMake(xOrigin,
                       yOrigin,
@@ -224,7 +224,7 @@ short const dotLabelPadding = 20;
         xOrigin = self.imageView.frame.origin.x + imgViewWidth + textLabelsPaddingFromImgView;
     }
     int width = self.frame.size.width - xOrigin - editingModeChevronWidthCompensation;
-    int yOrigin = self.frame.size.height * .53;  //should be 53% from top
+    int yOrigin = self.frame.size.height * .55;  //should be 55% from top
     int height = self.frame.size.height *[self internalPercentTextLabelIsDecreasedFromTotalCellHeight];
 
     return CGRectMake(xOrigin,
