@@ -167,10 +167,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     BOOL isNowPlaying = [[NowPlayingSong sharedInstance].nowPlayingItem isEqualToSong:song
                                                                           withContext:self.playbackContext];
-    if(isNowPlaying)
+    if(isNowPlaying) {
         cell.textLabel.textColor = [super colorForNowPlayingItem];
-    else
+        cell.isRepresentingANowPlayingItem = YES;
+    } else {
         cell.textLabel.textColor = [UIColor blackColor];
+        cell.isRepresentingANowPlayingItem = NO;
+    }
     cell.detailTextLabel.textColor = [UIColor grayColor];
     
     if(self.dataSourceType == SONG_DATA_SRC_TYPE_Playlist_MultiSelect)

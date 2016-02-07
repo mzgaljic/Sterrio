@@ -184,8 +184,10 @@
         
         if(artistHasNowPlaying) {
             cell.textLabel.textColor = [AppEnvironmentConstants nowPlayingItemColor];
+            cell.isRepresentingANowPlayingItem = YES;
         } else {
             cell.textLabel.textColor = [UIColor blackColor];
+            cell.isRepresentingANowPlayingItem = NO;
         }
         cell.detailTextLabel.textColor = [UIColor grayColor];
     }

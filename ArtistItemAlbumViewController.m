@@ -155,27 +155,30 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
         NSArray *albumSongs = [self albumSongsInAlphabeticalOrderGivenAlbum:albumAtSection];
         aSong = albumSongs[indexPath.row];
     }
-    
-    int fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-    cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
-                                          size:fontSize];
-    
     cell.textLabel.text = aSong.songName;
     
     NSUInteger duration = [aSong.duration integerValue];
+    int detailFontSize = [PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize];
     cell.detailTextLabel.text = [AlbumDetailDisplayHelper convertSecondsToPrintableNSStringWithSeconds:duration];
     cell.detailTextLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                                                size:fontSize];
+                                                size:detailFontSize];
     
     NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
     BOOL isNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToSong:aSong withContext:self.playbackContext];
     if(! isNowPlaying){
         isNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToSong:aSong withContext:self.parentVcPlaybackContext];
     }
-    if(isNowPlaying)
+    
+    int labelFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+    if(isNowPlaying) {
         cell.textLabel.textColor = [AppEnvironmentConstants nowPlayingItemColor];
-    else
+        cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                              size:labelFontSize];
+    } else {
         cell.textLabel.textColor = [UIColor blackColor];
+        cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                              size:labelFontSize];
+    }
     
     cell.delegate = self;
     return cell;

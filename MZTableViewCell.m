@@ -41,7 +41,6 @@ short const dotLabelPadding = 20;
 {
     if(self.optOutOfImageView || self.displayQueueSongsMode)
         return NO;
-    
     //cell images get blurry when going from small to big size
     BOOL retVal = NO;
     if(lastSongCellHeight != [AppEnvironmentConstants preferredSongCellHeight]){
@@ -83,25 +82,28 @@ short const dotLabelPadding = 20;
             [self.contentView addSubview:coloredDotLabel];
         }
     }
-    
     [self setLabelsFramesBasedOnEditingMode];
+    
     UIFont *textLabelFont;
     NSString *regularFontName = [AppEnvironmentConstants regularFontName];
-    //NSString *boldFontName = [AppEnvironmentConstants boldFontName];
-    
-    textLabelFont = [MZTableViewCell findAdaptiveFontWithName:regularFontName
-                                               forUILabelSize:self.textLabel.frame.size
-                                              withMinimumSize:16];
-    
+    NSString *boldFontName = [AppEnvironmentConstants boldFontName];
+    if(_isRepresentingANowPlayingItem) {
+        textLabelFont = [MZTableViewCell findAdaptiveFontWithName:boldFontName
+                                                   forUILabelSize:self.textLabel.frame.size
+                                                  withMinimumSize:16];
+    } else {
+        textLabelFont = [MZTableViewCell findAdaptiveFontWithName:regularFontName
+                                                   forUILabelSize:self.textLabel.frame.size withMinimumSize:16];
+    }
     self.textLabel.font = textLabelFont;
+    
     CGSize detailTextSize = self.detailTextLabel.frame.size;
     self.detailTextLabel.font = [MZTableViewCell findAdaptiveFontWithName:regularFontName
                                                            forUILabelSize:detailTextSize
                                                           withMinimumSize:16];
     [self fixiOS7PlusSeperatorBug];
     
-    //if([self shouldReloadCellImages])
-    if(NO)
+    if([self shouldReloadCellImages])
     {
         if(self.anAlbumArtClassObjId)
         {
@@ -139,8 +141,7 @@ short const dotLabelPadding = 20;
             if(newImage){
                 self.imageView.image = nil;
                 self.imageView.image = newImage;
-            } else
-                newImage = nil;
+            }
         }
     }
 }
@@ -165,6 +166,7 @@ short const dotLabelPadding = 20;
     self.optOutOfImageView = NO;
     self.displayQueueSongsMode = NO;
     self.isRepresentingAQueuedSong = NO;
+    self.isRepresentingANowPlayingItem = NO;
     [coloredDotLabel removeFromSuperview];
     [super prepareForReuse];
 }
@@ -172,6 +174,8 @@ short const dotLabelPadding = 20;
 - (void)dealloc
 {
     self.anAlbumArtClassObjId = nil;
+    self.imageView.image = nil;
+    coloredDotLabel = nil;
 }
 
 - (void)setLabelsFramesBasedOnEditingMode

@@ -15,7 +15,7 @@
 #import "Song.h"
 #import "MZAlbumSectionHeader.h"
 #import "MusicPlaybackController.h"
-#import "MGSwipeTableCell.h"
+#import "MZRightDetailCell.h"
 #import "MGSwipeButton.h"
 #import "AlbumDetailDisplayHelper.h"
 #import "PlayableItem.h"
@@ -95,22 +95,19 @@ const int ALBUM_HEADER_HEIGHT = 120;
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     Song *aSong = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
+    MZRightDetailCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
                                                              forIndexPath:indexPath];
     
     if (!cell)
-        cell = [[MGSwipeTableCell alloc] initWithStyle:UITableViewCellStyleValue1
-                                      reuseIdentifier:self.cellReuseId];
+        cell = [[MZRightDetailCell alloc] initWithStyle:UITableViewCellStyleValue1
+                                        reuseIdentifier:self.cellReuseId];
     cell.textLabel.text = aSong.songName;
     
-    int fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-    cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                                          size:fontSize];
-    
     NSUInteger duration = [aSong.duration integerValue];
+    int detailFontSize = [PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize];
     cell.detailTextLabel.text = [AlbumDetailDisplayHelper convertSecondsToPrintableNSStringWithSeconds:duration];
     cell.detailTextLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                                                size:fontSize];
+                                                size:detailFontSize];
     
     NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
     BOOL isNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToSong:aSong withContext:self.playbackContext];
@@ -118,10 +115,17 @@ const int ALBUM_HEADER_HEIGHT = 120;
     if(! isNowPlaying){
         isNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToSong:aSong withContext:self.parentVcPlaybackContext];
     }
-    if(isNowPlaying)
+    
+    int labelFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+    if(isNowPlaying) {
         cell.textLabel.textColor = [AppEnvironmentConstants nowPlayingItemColor];
-    else
+        cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                              size:labelFontSize];
+    } else {
         cell.textLabel.textColor = [UIColor blackColor];
+        cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                              size:labelFontSize];
+    }
     
     cell.delegate = self;
     [cell layoutSubviews];

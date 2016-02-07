@@ -196,7 +196,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     PlaylistItem *item = [self playlistItemForIndexPath:indexPath];
     Song *song = item.song;
     
-    MGSwipeTableCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
+    MZTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:self.cellReuseId
                                                              forIndexPath:indexPath];
     
     if (!cell)
@@ -211,7 +211,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     }
 
     cell.textLabel.text = song.songName;
-    //cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringForSong:song];
     NSMutableString *detailText = [NSMutableString new];
     NSString *artistName = song.artist.artistName;
     NSString *albumName = song.album.albumName;
@@ -232,10 +231,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
     BOOL songIsNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToPlaylistItem:item withContext:self.playbackContext];
     
-    if(songIsNowPlaying)
+    if(songIsNowPlaying) {
         cell.textLabel.textColor = [AppEnvironmentConstants nowPlayingItemColor];
-    else
+        cell.isRepresentingANowPlayingItem = YES;
+    } else {
         cell.textLabel.textColor = [UIColor blackColor];
+        cell.isRepresentingANowPlayingItem = NO;
+    }
     cell.detailTextLabel.textColor = [UIColor grayColor];
     
     // Store a reference to the current cell that will enable the image to be associated with the correct

@@ -142,10 +142,13 @@
             }
         }];
 
-        if(playlistHasNowPlaying)
+        if(playlistHasNowPlaying) {
             cell.textLabel.textColor = [super colorForNowPlayingItem];
-        else
+            cell.isRepresentingANowPlayingItem = YES;
+        } else {
             cell.textLabel.textColor = [UIColor blackColor];
+            cell.isRepresentingANowPlayingItem = NO;
+        }
         cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
                                                           color:[[UIColor defaultAppColorScheme] lighterColor]];
 

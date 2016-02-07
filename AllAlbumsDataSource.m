@@ -214,8 +214,10 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         
         if(albumHasNowPlaying) {
             cell.textLabel.textColor = [super colorForNowPlayingItem];
+            cell.isRepresentingANowPlayingItem = YES;
         } else {
             cell.textLabel.textColor = [UIColor blackColor];
+            cell.isRepresentingANowPlayingItem = NO;
         }
         cell.detailTextLabel.textColor = [UIColor grayColor];
     }

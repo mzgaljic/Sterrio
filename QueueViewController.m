@@ -159,10 +159,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     cell.textLabel.text = song.songName;
     cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringForSong:song];
     
-    if(indexPath.row == 0)
+    if(indexPath.row == 0) {
         cell.textLabel.textColor = localAppTintColor;
-    else
+        cell.isRepresentingANowPlayingItem = YES;
+    } else {
         cell.textLabel.textColor = [UIColor whiteColor];
+        cell.isRepresentingANowPlayingItem = NO;
+    }
     
     cell.isRepresentingAQueuedSong = [self isUpNextSongPresentAtIndexPath:indexPath];
     // Store a reference to the current cell that will enable the image to be associated with the correct

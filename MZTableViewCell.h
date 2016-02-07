@@ -17,6 +17,7 @@
 @property (nonatomic, assign) BOOL optOutOfImageView;
 @property (nonatomic, assign) BOOL displayQueueSongsMode;
 @property (nonatomic, assign) BOOL isRepresentingAQueuedSong;
+@property (nonatomic, assign) BOOL isRepresentingANowPlayingItem;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString *)reuseIdentifier;
