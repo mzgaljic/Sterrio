@@ -154,8 +154,6 @@
 		873539E81B0AA1E2009244E4 /* ProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 873539E41B0AA1E2009244E4 /* ProgressHUD.bundle */; };
 		873539E91B0AA1E2009244E4 /* ProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539E61B0AA1E2009244E4 /* ProgressHUD.m */; };
 		873539EF1B0AA1F4009244E4 /* LICENSE gstouches.txt in Resources */ = {isa = PBXBuildFile; fileRef = 873539ED1B0AA1F4009244E4 /* LICENSE gstouches.txt */; };
-		873539F51B0AA216009244E4 /* MGSwipeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539F21B0AA216009244E4 /* MGSwipeButton.m */; };
-		873539F61B0AA216009244E4 /* MGSwipeTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539F41B0AA216009244E4 /* MGSwipeTableCell.m */; };
 		873539FD1B0AA231009244E4 /* ASValuePopUpView.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539F91B0AA231009244E4 /* ASValuePopUpView.m */; };
 		873539FE1B0AA231009244E4 /* ASValueTrackingSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539FB1B0AA231009244E4 /* ASValueTrackingSlider.m */; };
 		873539FF1B0AA231009244E4 /* LICENSE asvalue tracking slider.txt in Resources */ = {isa = PBXBuildFile; fileRef = 873539FC1B0AA231009244E4 /* LICENSE asvalue tracking slider.txt */; };
@@ -219,6 +217,8 @@
 		876C53D71C2A557A007AFC3C /* PushNotificationsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 876C53D61C2A557A007AFC3C /* PushNotificationsHelper.m */; };
 		8773AE2D1B509A5500C3E64E /* SpotlightHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */; };
 		878488051C6694E200666627 /* MZRegexExp.m in Sources */ = {isa = PBXBuildFile; fileRef = 878488041C6694E200666627 /* MZRegexExp.m */; };
+		879971DC1C66EAF50044BFFF /* MGSwipeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 879971D91C66EAF50044BFFF /* MGSwipeButton.m */; };
+		879971DD1C66EAF50044BFFF /* MGSwipeTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 879971DB1C66EAF50044BFFF /* MGSwipeTableCell.m */; };
 		87A953621B3E1E54002E9872 /* DiscogsSearchService.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9535E1B3E1E54002E9872 /* DiscogsSearchService.m */; };
 		87A9536C1B3E242A002E9872 /* SMURLImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A953681B3E242A002E9872 /* SMURLImageView.m */; };
 		87A9536D1B3E242A002E9872 /* LICENSE_webRequest.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A953691B3E242A002E9872 /* LICENSE_webRequest.txt */; };
@@ -548,10 +548,6 @@
 		873539E51B0AA1E2009244E4 /* ProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProgressHUD.h; sourceTree = "<group>"; };
 		873539E61B0AA1E2009244E4 /* ProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProgressHUD.m; sourceTree = "<group>"; };
 		873539ED1B0AA1F4009244E4 /* LICENSE gstouches.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "LICENSE gstouches.txt"; sourceTree = "<group>"; };
-		873539F11B0AA216009244E4 /* MGSwipeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeButton.h; sourceTree = "<group>"; };
-		873539F21B0AA216009244E4 /* MGSwipeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeButton.m; sourceTree = "<group>"; };
-		873539F31B0AA216009244E4 /* MGSwipeTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeTableCell.h; sourceTree = "<group>"; };
-		873539F41B0AA216009244E4 /* MGSwipeTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeTableCell.m; sourceTree = "<group>"; };
 		873539F81B0AA231009244E4 /* ASValuePopUpView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASValuePopUpView.h; sourceTree = "<group>"; };
 		873539F91B0AA231009244E4 /* ASValuePopUpView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASValuePopUpView.m; sourceTree = "<group>"; };
 		873539FA1B0AA231009244E4 /* ASValueTrackingSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASValueTrackingSlider.h; sourceTree = "<group>"; };
@@ -671,6 +667,10 @@
 		8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpotlightHelper.m; sourceTree = "<group>"; };
 		878488031C6694E200666627 /* MZRegexExp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZRegexExp.h; sourceTree = "<group>"; };
 		878488041C6694E200666627 /* MZRegexExp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZRegexExp.m; sourceTree = "<group>"; };
+		879971D81C66EAF50044BFFF /* MGSwipeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeButton.h; sourceTree = "<group>"; };
+		879971D91C66EAF50044BFFF /* MGSwipeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeButton.m; sourceTree = "<group>"; };
+		879971DA1C66EAF50044BFFF /* MGSwipeTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeTableCell.h; sourceTree = "<group>"; };
+		879971DB1C66EAF50044BFFF /* MGSwipeTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeTableCell.m; sourceTree = "<group>"; };
 		87A9535D1B3E1E54002E9872 /* DiscogsSearchService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscogsSearchService.h; sourceTree = "<group>"; };
 		87A9535E1B3E1E54002E9872 /* DiscogsSearchService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsSearchService.m; sourceTree = "<group>"; };
 		87A953601B3E1E54002E9872 /* DiscogsItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscogsItem.h; sourceTree = "<group>"; };
@@ -1513,10 +1513,10 @@
 		873539F01B0AA201009244E4 /* MGSwipeTableCell */ = {
 			isa = PBXGroup;
 			children = (
-				873539F11B0AA216009244E4 /* MGSwipeButton.h */,
-				873539F21B0AA216009244E4 /* MGSwipeButton.m */,
-				873539F31B0AA216009244E4 /* MGSwipeTableCell.h */,
-				873539F41B0AA216009244E4 /* MGSwipeTableCell.m */,
+				879971D81C66EAF50044BFFF /* MGSwipeButton.h */,
+				879971D91C66EAF50044BFFF /* MGSwipeButton.m */,
+				879971DA1C66EAF50044BFFF /* MGSwipeTableCell.h */,
+				879971DB1C66EAF50044BFFF /* MGSwipeTableCell.m */,
 			);
 			name = MGSwipeTableCell;
 			sourceTree = "<group>";
@@ -1959,7 +1959,6 @@
 				873539051B0A9EBB009244E4 /* PlaylistItemTableViewController.m in Sources */,
 				873539FD1B0AA231009244E4 /* ASValuePopUpView.m in Sources */,
 				873538B81B0A9CB3009244E4 /* ExistingAlbumPickerTableViewController.m in Sources */,
-				873539F51B0AA216009244E4 /* MGSwipeButton.m in Sources */,
 				8735387C1B0A9B9E009244E4 /* LQAlbumArtBackgroundUpdater.m in Sources */,
 				87353A271B0AA283009244E4 /* ActionSheetStringPicker.m in Sources */,
 				873538A41B0A9C40009244E4 /* PlayableItem.m in Sources */,
@@ -1987,6 +1986,7 @@
 				873539881B0AA178009244E4 /* UIImage+BetterAdditions.m in Sources */,
 				873538721B0A9B8B009244E4 /* AlbumArtUtilities.m in Sources */,
 				873539391B0A9FCE009244E4 /* MZSlider.m in Sources */,
+				879971DD1C66EAF50044BFFF /* MGSwipeTableCell.m in Sources */,
 				873539191B0A9EF6009244E4 /* FontSizeTableViewController.m in Sources */,
 				873539E01B0AA1CB009244E4 /* CCLocalMaximum.m in Sources */,
 				8735389A1B0A9C26009244E4 /* MZPlaybackQueue.m in Sources */,
@@ -2109,6 +2109,7 @@
 				87353A241B0AA283009244E4 /* ActionSheetDatePicker.m in Sources */,
 				873538DC1B0A9D0B009244E4 /* VideoPlayerWrapper.m in Sources */,
 				87353A291B0AA283009244E4 /* SWActionSheet.m in Sources */,
+				879971DC1C66EAF50044BFFF /* MGSwipeButton.m in Sources */,
 				87353A301B0AA2B0009244E4 /* MRBlurView.m in Sources */,
 				873538441B0A9AF4009244E4 /* UINavigationController+CustomPushAnimation.m in Sources */,
 				873538FC1B0A9E95009244E4 /* MasterArtistsTableViewController.m in Sources */,
@@ -2117,7 +2118,6 @@
 				873539061B0A9EBB009244E4 /* PlaylistSongAdderTableViewController.m in Sources */,
 				873539E91B0AA1E2009244E4 /* ProgressHUD.m in Sources */,
 				8735387E1B0A9B9E009244E4 /* PlaybackContext.m in Sources */,
-				873539F61B0AA216009244E4 /* MGSwipeTableCell.m in Sources */,
 				87A953621B3E1E54002E9872 /* DiscogsSearchService.m in Sources */,
 				873538E71B0A9D2D009244E4 /* SongPlayerViewDisplayUtility.m in Sources */,
 				873539CC1B0AA1B3009244E4 /* SDCAlertLabel.m in Sources */,

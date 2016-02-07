@@ -482,8 +482,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
              swipeSettings:(MGSwipeSettings*)swipeSettings
          expansionSettings:(MGSwipeExpansionSettings*)expansionSettings
 {
-    swipeSettings.transition = MGSwipeTransitionBorder;
+    swipeSettings.transition = MGSwipeTransitionClipCenter;
+    swipeSettings.keepButtonsSwiped = NO;
     expansionSettings.buttonIndex = 0;
+    expansionSettings.expansionLayout = MGSwipeExpansionLayoutCenter;
+    expansionSettings.threshold = 1.0;
+    expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunctionCubicOut;
+    expansionSettings.fillOnTrigger = NO;
     UIColor *initialExpansionColor = [AppEnvironmentConstants expandingCellGestureInitialColor];
     __weak AllSongsDataSource *weakself = self;
     
@@ -491,35 +496,25 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         //queue
         Song *song = [self.fetchedResultsController objectAtIndexPath:
                       [self.tableView indexPathForCell:cell]];
-        
-        expansionSettings.fillOnTrigger = NO;
-        expansionSettings.threshold = 1;
-        expansionSettings.expansionLayout = MGSwipeExpansionLayoutCenter;
         expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureQueueItemColor];
-        swipeSettings.transition = MGSwipeTransitionClipCenter;
-        swipeSettings.threshold = 99999;
         
         __weak Song *weakSong = song;
         __weak MGSwipeTableCell *weakCell = cell;
         return @[[MGSwipeButton buttonWithTitle:@"Queue"
                                 backgroundColor:initialExpansionColor
-                                        padding:15
+                                        padding:MZCellSpotifyStylePaddingValue
                                        callback:^BOOL(MGSwipeTableCell *sender) {
                                            [MZPlaybackQueue presentQueuedHUD];
                                            PlaybackContext *context = [weakself contextForSpecificSong:weakSong];
                                            [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];
-                                           return YES;
+                                           return NO;
                                        }]];
     } else if(direction == MGSwipeDirectionRightToLeft){
-        expansionSettings.fillOnTrigger = YES;
-        expansionSettings.threshold = 2.7;
         expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
-        swipeSettings.transition = MGSwipeTransitionBorder;
-        
         MGSwipeButton *delete = [MGSwipeButton buttonWithTitle:@"Delete"
-                                               backgroundColor:expansionSettings.expansionColor
-                                                       padding:15
+                                               backgroundColor:initialExpansionColor
+                                                       padding:MZCellSpotifyStylePaddingValue
                                                       callback:^BOOL(MGSwipeTableCell *sender)
                                  {
                                      NSIndexPath *indexPath;
@@ -527,11 +522,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                      [weakself tableView:weakself.tableView
                                       commitEditingStyle:UITableViewCellEditingStyleDelete
                                        forRowAtIndexPath:indexPath];
-                                     return NO; //don't autohide to improve delete animation
+                                     return NO;
                                  }];
         return @[delete];
     }
-    
     return nil;
 }
 

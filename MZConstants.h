@@ -57,6 +57,8 @@ extern short const MZSecondsInAMinute;
 extern short const MZLongestCellularPlayableDuration;
 
 extern float const MZCellImageViewFadeDuration;
+//defines how long u need to swipe for swipe to 'activate'
+extern int const MZCellSpotifyStylePaddingValue;
 extern float const MZSmallPlayerVideoFramePadding;
 extern short const MZSkipToSongBeginningIfBackBtnTappedBoundary;
 

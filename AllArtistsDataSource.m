@@ -415,8 +415,13 @@
              swipeSettings:(MGSwipeSettings*)swipeSettings
          expansionSettings:(MGSwipeExpansionSettings*)expansionSettings
 {
-    swipeSettings.transition = MGSwipeTransitionBorder;
+    swipeSettings.transition = MGSwipeTransitionClipCenter;
+    swipeSettings.keepButtonsSwiped = NO;
     expansionSettings.buttonIndex = 0;
+    expansionSettings.expansionLayout = MGSwipeExpansionLayoutCenter;
+    expansionSettings.threshold = 1.0;
+    expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunctionCubicOut;
+    expansionSettings.fillOnTrigger = NO;
     UIColor *initialExpansionColor = [AppEnvironmentConstants expandingCellGestureInitialColor];
     __weak AllArtistsDataSource *weakSelf = self;
     
@@ -424,35 +429,24 @@
         //queue
         Artist *artist = [self.fetchedResultsController
                           objectAtIndexPath:[self.tableView indexPathForCell:cell]];
-        
-        expansionSettings.fillOnTrigger = NO;
-        expansionSettings.threshold = 1;
-        expansionSettings.expansionLayout = MGSwipeExpansionLayoutCenter;
         expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureQueueItemColor];
-        swipeSettings.transition = MGSwipeTransitionClipCenter;
-        swipeSettings.threshold = 9999;
-        
         __weak Artist *weakArtist = artist;
         __weak MGSwipeTableCell *weakCell = cell;
         return @[[MGSwipeButton buttonWithTitle:@"Queue"
                                 backgroundColor:initialExpansionColor
-                                        padding:15
+                                        padding:MZCellSpotifyStylePaddingValue
                                        callback:^BOOL(MGSwipeTableCell *sender) {
                                            [MZPlaybackQueue presentQueuedHUD];
                                            PlaybackContext *context = [weakSelf contextForSpecificArtist:weakArtist];
                                            [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];
-                                           return YES;
+                                           return NO;
                                        }]];
     } else if(direction == MGSwipeDirectionRightToLeft){
-        expansionSettings.fillOnTrigger = YES;
-        expansionSettings.threshold = 2.7;
         expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
-        swipeSettings.transition = MGSwipeTransitionBorder;
-        
         MGSwipeButton *delete = [MGSwipeButton buttonWithTitle:@"Delete"
-                                               backgroundColor:expansionSettings.expansionColor
-                                                       padding:15
+                                               backgroundColor:initialExpansionColor
+                                                       padding:MZCellSpotifyStylePaddingValue
                                                       callback:^BOOL(MGSwipeTableCell *sender)
                                  {
                                      NSIndexPath *indexPath;
@@ -460,7 +454,7 @@
                                      [weakSelf tableView:weakSelf.tableView
                                       commitEditingStyle:UITableViewCellEditingStyleDelete
                                        forRowAtIndexPath:indexPath];
-                                     return NO; //don't autohide to improve delete animation
+                                     return NO;
                                  }];
         return @[delete];
     }
