@@ -18,6 +18,7 @@
 @property (nonatomic, assign) BOOL displayQueueSongsMode;
 @property (nonatomic, assign) BOOL isRepresentingAQueuedSong;
 @property (nonatomic, assign) BOOL isRepresentingANowPlayingItem;
+@property (nonatomic, assign) BOOL usesOnlyTextLabel;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString *)reuseIdentifier;

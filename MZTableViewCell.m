@@ -5,10 +5,6 @@
 //  Created by Mark Zgaljic on 2/6/15.
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
-//There is a small bug in this implementation. If the font size is changed WHILE the cell
-//is in editing mode, the y origin values of the textlabels will be screwed up until the cells
-//leave editing mode. The simple fix i am using is to basically block the settings page while in
-//editing mode by disabling the button.
 
 #import "MZTableViewCell.h"
 #import "PreferredFontSizeUtility.h"
@@ -101,48 +97,15 @@ short const dotLabelPadding = 20;
     self.detailTextLabel.font = [MZTableViewCell findAdaptiveFontWithName:regularFontName
                                                            forUILabelSize:detailTextSize
                                                           withMinimumSize:16];
+    if([AppEnvironmentConstants isUserOniOS9OrAbove]) {
+        [self.textLabel setAllowsDefaultTighteningForTruncation:YES];
+        [self.detailTextLabel setAllowsDefaultTighteningForTruncation:YES];
+    }
     [self fixiOS7PlusSeperatorBug];
     
     if([self shouldReloadCellImages])
     {
-        if(self.anAlbumArtClassObjId)
-        {
-            //try to load a new copy of the image on disk. Make EVERY core data access
-            //go through main thread context.
-            __block UIImage *newImage;
-            __block id anAlbumArtClassObj;
-            __weak NSManagedObjectID *weakObjId = self.anAlbumArtClassObjId;
-            NSManagedObjectContext *context = [CoreDataManager context];
-            [context performBlockAndWait:^{
-                anAlbumArtClassObj = [context existingObjectWithID:weakObjId error:nil];
-            }];
-            
-            if([anAlbumArtClassObj isMemberOfClass:[SongAlbumArt class]])
-            {
-                SongAlbumArt *tempAlbumArt = (SongAlbumArt *)anAlbumArtClassObj;
-                __weak NSManagedObjectID *albumArtObjId = tempAlbumArt.objectID;
-                
-                [context performBlockAndWait:^{
-                    SongAlbumArt *albumArt = (SongAlbumArt *)[context existingObjectWithID:albumArtObjId error:nil];
-                    newImage = [albumArt imageFromImageData];
-                }];
-            }
-            else if([anAlbumArtClassObj isMemberOfClass:[AlbumAlbumArt class]])
-            {
-                CGSize cellImgSize = self.imageView.frame.size;
-                AlbumAlbumArt *tempAlbumArt = (AlbumAlbumArt *)anAlbumArtClassObj;
-                __weak NSManagedObjectID *albumArtObjId = tempAlbumArt.objectID;
-                
-                [context performBlockAndWait:^{
-                    AlbumAlbumArt *albumArt = (AlbumAlbumArt *)[context existingObjectWithID:albumArtObjId error:nil];
-                    newImage = [albumArt imageWithSize:cellImgSize];
-                }];
-            }
-            if(newImage){
-                self.imageView.image = nil;
-                self.imageView.image = newImage;
-            }
-        }
+        [self reloadMZCellImage];
     }
 }
 
@@ -162,18 +125,19 @@ short const dotLabelPadding = 20;
 
 - (void)prepareForReuse
 {
-    self.anAlbumArtClassObjId = nil;
-    self.optOutOfImageView = NO;
-    self.displayQueueSongsMode = NO;
-    self.isRepresentingAQueuedSong = NO;
-    self.isRepresentingANowPlayingItem = NO;
+    _anAlbumArtClassObjId = nil;
+    _optOutOfImageView = NO;
+    _displayQueueSongsMode = NO;
+    _isRepresentingAQueuedSong = NO;
+    _isRepresentingANowPlayingItem = NO;
+    _usesOnlyTextLabel = NO;
     [coloredDotLabel removeFromSuperview];
     [super prepareForReuse];
 }
 
 - (void)dealloc
 {
-    self.anAlbumArtClassObjId = nil;
+    _anAlbumArtClassObjId = nil;
     self.imageView.image = nil;
     coloredDotLabel = nil;
 }
@@ -192,8 +156,7 @@ short const dotLabelPadding = 20;
 - (CGRect)textLabelFrameWithoutEditingMode
 {
     int xOrigin, yOrigin, width, height;
-    
-    if(self.optOutOfImageView){
+    if(_optOutOfImageView){
         xOrigin = textLabelsPaddingFromImgView;
         width = self.frame.size.width - xOrigin;
     } else{
@@ -202,7 +165,7 @@ short const dotLabelPadding = 20;
         width = self.frame.size.width - xOrigin;
     }
     
-    height = self.frame.size.height * [MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
+    height = self.frame.size.height * [self internalPercentTextLabelIsDecreasedFromTotalCellHeight];
     if(self.detailTextLabel.text == nil)
         //there is not detail label, just center this one.
         yOrigin = (self.frame.size.height/2) - (height/2);
@@ -216,14 +179,14 @@ short const dotLabelPadding = 20;
 {
     int xOrigin, yOrigin, width, height;
     
-    if(self.optOutOfImageView){
+    if(_optOutOfImageView){
         xOrigin = textLabelsPaddingFromImgView;
     } else{
         int imgViewWidth = self.imageView.frame.size.width;
         xOrigin = self.imageView.frame.origin.x + imgViewWidth + textLabelsPaddingFromImgView;
     }
     width = self.frame.size.width - xOrigin - editingModeChevronWidthCompensation;
-    height = self.frame.size.height * [MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
+    height = self.frame.size.height * [self internalPercentTextLabelIsDecreasedFromTotalCellHeight];
     if(self.detailTextLabel.text == nil)
         //there is not detail label, just center this one.
         yOrigin = (self.frame.size.height/2) - (height/2);
@@ -236,7 +199,7 @@ short const dotLabelPadding = 20;
 - (CGRect)detailTextLabelFrameWithoutEditingMode
 {
     int xOrigin;
-    if(self.optOutOfImageView){
+    if(_optOutOfImageView){
         xOrigin = textLabelsPaddingFromImgView;
     } else{
         int imgViewWidth = self.imageView.frame.size.width;
@@ -244,7 +207,7 @@ short const dotLabelPadding = 20;
     }
     int width = self.frame.size.width - xOrigin;
     int yOrigin = self.frame.size.height * .53;  //should be 53% from top
-    int height = self.frame.size.height *[MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
+    int height = self.frame.size.height *[self internalPercentTextLabelIsDecreasedFromTotalCellHeight];
     return CGRectMake(xOrigin,
                       yOrigin,
                       width,
@@ -254,7 +217,7 @@ short const dotLabelPadding = 20;
 - (CGRect)detailTextLabelFrameInEditingMode
 {
     int xOrigin;
-    if(self.optOutOfImageView){
+    if(_optOutOfImageView){
         xOrigin = textLabelsPaddingFromImgView;
     } else{
         int imgViewWidth = self.imageView.frame.size.width;
@@ -262,7 +225,7 @@ short const dotLabelPadding = 20;
     }
     int width = self.frame.size.width - xOrigin - editingModeChevronWidthCompensation;
     int yOrigin = self.frame.size.height * .53;  //should be 53% from top
-    int height = self.frame.size.height *[MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
+    int height = self.frame.size.height *[self internalPercentTextLabelIsDecreasedFromTotalCellHeight];
 
     return CGRectMake(xOrigin,
                       yOrigin,
@@ -317,10 +280,62 @@ short const dotLabelPadding = 20;
     return [UIFont fontWithName:fontName size:mid];
 }
 
+- (float)internalPercentTextLabelIsDecreasedFromTotalCellHeight
+{
+    if(_usesOnlyTextLabel) {
+        return 0.50;  //textLabel height will take up 50% of the contentView.
+    } else {
+        //textLabel height will take up 35% o the contentView
+        //(leaving room for a gap and the detailTextLabel.)
+        return [MZTableViewCell percentTextLabelIsDecreasedFromTotalCellHeight];
+    }
+}
 
 + (float)percentTextLabelIsDecreasedFromTotalCellHeight
 {
     return 0.35;
+}
+
+- (void)reloadMZCellImage
+{
+    if(self.anAlbumArtClassObjId)
+    {
+        //try to load a new copy of the image on disk. Make EVERY core data access
+        //go through main thread context.
+        __block UIImage *newImage;
+        __block id anAlbumArtClassObj;
+        __weak NSManagedObjectID *weakObjId = self.anAlbumArtClassObjId;
+        NSManagedObjectContext *context = [CoreDataManager context];
+        [context performBlockAndWait:^{
+            anAlbumArtClassObj = [context existingObjectWithID:weakObjId error:nil];
+        }];
+        
+        if([anAlbumArtClassObj isMemberOfClass:[SongAlbumArt class]])
+        {
+            SongAlbumArt *tempAlbumArt = (SongAlbumArt *)anAlbumArtClassObj;
+            __weak NSManagedObjectID *albumArtObjId = tempAlbumArt.objectID;
+            
+            [context performBlockAndWait:^{
+                SongAlbumArt *albumArt = (SongAlbumArt *)[context existingObjectWithID:albumArtObjId error:nil];
+                newImage = [albumArt imageFromImageData];
+            }];
+        }
+        else if([anAlbumArtClassObj isMemberOfClass:[AlbumAlbumArt class]])
+        {
+            CGSize cellImgSize = self.imageView.frame.size;
+            AlbumAlbumArt *tempAlbumArt = (AlbumAlbumArt *)anAlbumArtClassObj;
+            __weak NSManagedObjectID *albumArtObjId = tempAlbumArt.objectID;
+            
+            [context performBlockAndWait:^{
+                AlbumAlbumArt *albumArt = (AlbumAlbumArt *)[context existingObjectWithID:albumArtObjId error:nil];
+                newImage = [albumArt imageWithSize:cellImgSize];
+            }];
+        }
+        if(newImage){
+            self.imageView.image = nil;
+            self.imageView.image = newImage;
+        }
+    }
 }
 
 @end

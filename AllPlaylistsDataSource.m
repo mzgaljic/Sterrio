@@ -117,6 +117,7 @@
                                       reuseIdentifier:self.cellReuseId];
     
     cell.optOutOfImageView = YES;
+    cell.usesOnlyTextLabel = YES;
     cell.textLabel.text = playlist.playlistName;
     
     if(self.dataSourceType == PLAYLIST_DATA_SRC_TYPE_Default)
