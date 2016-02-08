@@ -91,8 +91,10 @@ static BOOL haveCheckedCoreDataInit = NO;
 - (void)viewWillAppear:(BOOL)animated
 {
     //order of calls matters here...
-    self.searchBar = [self.tableViewDataSourceAndDelegate setUpSearchBar];
-    [super setSearchBar:self.searchBar];
+    if(! self.searchBar) {
+        self.searchBar = [self.tableViewDataSourceAndDelegate setUpSearchBar];
+        [super setSearchBar:self.searchBar];
+    }
     [super viewWillAppear:animated];  //super class reloads visible cells here.
 }
 

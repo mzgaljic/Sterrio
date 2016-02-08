@@ -119,8 +119,10 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     //order of calls matters here...
-    self.searchBar = [self.tableViewDataSourceAndDelegate setUpSearchBar];
-    [super setSearchBar:self.searchBar];
+    if(! self.searchBar) {
+        self.searchBar = [self.tableViewDataSourceAndDelegate setUpSearchBar];
+        [super setSearchBar:self.searchBar];
+    }
     [super viewWillAppear:animated];
     
     //needed to make UITableViewCellAccessoryCheckmark the nav bar color!
