@@ -69,8 +69,9 @@ const int time_out_interval_seconds = 10;
 - (id)init
 {
     if([super init]){
+        //&fields=items(id,snippet(publishedAt,title,channelTitle,thumbnails))
         API_KEY = @"AIzaSyBAFK0pOUf4IWdfS94dYk_42dO46ssTUH8";
-        QUERY_BASE = [NSString stringWithFormat:@"https://www.googleapis.com/youtube/v3/search?type=video&part=snippet&maxResults=15&key=%@&q=", API_KEY];
+        QUERY_BASE = [NSString stringWithFormat:@"https://www.googleapis.com/youtube/v3/search?type=video&part=snippet&maxResults=15&fields=nextPageToken,items(id(videoId),snippet(publishedAt,title,channelTitle,thumbnails(default(url),medium(url),high(url))))&key=%@&q=", API_KEY];
         QUERY_SUGGESTION_BASE = @"http://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q=";
         NEXT_PAGE_QUERY_BASE = @"&pageToken=";
         
@@ -90,19 +91,23 @@ const int time_out_interval_seconds = 10;
 - (void)searchYouTubeForVideosUsingString:(NSString *)searchString
 {
     if(searchString){
-        NSMutableString *tempUrl = [NSMutableString stringWithString: QUERY_BASE];
-        [tempUrl appendString:[searchString stringForHTTPRequest]];
-        NSString *queryUrl = [NSString stringWithString:tempUrl];
-        originalQueryUrl = queryUrl;
+        NSString *queryText = [searchString stringForHTTPRequest];
+        NSString *fullUrlText = [NSString stringWithFormat:@"%@%@", QUERY_BASE, queryText];
+        originalQueryUrl = fullUrlText;
         __weak YouTubeVideoSearchService *weakSelf = self;
         
-        NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]
-                                                    cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                                timeoutInterval:time_out_interval_seconds];
+        NSURL *myUrl = [NSURL URLWithString:fullUrlText];
+        NSMutableURLRequest *mutableRequest = [NSMutableURLRequest requestWithURL:myUrl];
+        
+        //these two are required to receive a gzip response from the api (saved bandwith)
+        [mutableRequest setValue:@"iOS App (gzip)" forHTTPHeaderField:@"User-Agent"];
+        [mutableRequest setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
+        [mutableRequest setCachePolicy:NSURLRequestUseProtocolCachePolicy];
+        [mutableRequest setTimeoutInterval:time_out_interval_seconds];
         
         //this queue object should not be reused. fix all this messy code in an update
         NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-        [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+        [NSURLConnection sendAsynchronousRequest:mutableRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
         {
             if (data == nil){
                 dispatch_sync(dispatch_get_main_queue(), ^{
@@ -229,6 +234,9 @@ const int time_out_interval_seconds = 10;
 //returns array of YouTubeVideo objects
 - (NSArray *)parseYouTubeVideoResultsResponse:(NSData *)jsonData
 {
+    //NOTE: Not seeing a field you're expecting in the debugger? The query itself is only
+    //asking for particular Obj properties in the response. Check that first if you're confused.
+    
     //root dictionary
     NSDictionary *allDataDict = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:nil];
 

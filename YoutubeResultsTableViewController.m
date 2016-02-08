@@ -24,6 +24,7 @@
 {
     UIActivityIndicatorView *loadingNextPageSpinner;
     UIActivityIndicatorView *loadingResultsIndicator;
+    NSTimer *suggestionsDelayer;
 }
 @property (nonatomic, strong) MySearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray *searchResults;
@@ -89,6 +90,8 @@ static NSDate *timeSinceLastPageLoaded;
     _viewOnTopOfTable = nil;
     start = nil;
     finish = nil;
+    [suggestionsDelayer invalidate];
+    suggestionsDelayer = nil;
     [[YouTubeVideoSearchService sharedInstance] removeVideoQueryDelegate];
     
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
@@ -535,13 +538,20 @@ static BOOL userClearedTextField = NO;
 //User typing as we speak, fetch latest results to populate results as they type
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
+    [suggestionsDelayer invalidate];
+    suggestionsDelayer = nil;
+    [[YouTubeVideoSearchService sharedInstance] cancelAllYtAutoCompletePendingRequests];
+    
     if(searchText.length != 0){
         if(! self.displaySearchResults)
             self.tableView.scrollEnabled = YES;
         
-        [[YouTubeVideoSearchService sharedInstance] cancelAllYtAutoCompletePendingRequests];
-        //fetch auto suggestions
-        [[YouTubeVideoSearchService sharedInstance] fetchYouTubeAutoCompleteResultsForString:searchText];
+        //fetch auto suggestions delayed (in case user types super fast)
+        suggestionsDelayer = [NSTimer scheduledTimerWithTimeInterval:0.14
+                                                         target:self
+                                                            selector:@selector(fetchYtSearchSuggestionsDelayed:)
+                                                       userInfo:searchText
+                                                        repeats:NO];
         self.displaySearchResults = NO;
     }
     else{  //user cleared the textField
@@ -567,6 +577,14 @@ static BOOL userClearedTextField = NO;
         [self.tableView deleteRowsAtIndexPaths:paths withRowAnimation:UITableViewRowAnimationFade];
         [self.tableView endUpdates];
     }
+}
+
+- (void)fetchYtSearchSuggestionsDelayed:(NSTimer *)t
+{
+    assert(t == suggestionsDelayer);
+    NSString *query = suggestionsDelayer.userInfo;
+    [[YouTubeVideoSearchService sharedInstance] fetchYouTubeAutoCompleteResultsForString:query];
+    suggestionsDelayer = nil;
 }
 
 #pragma mark - TableView deleagte
@@ -810,7 +828,7 @@ static BOOL userClearedTextField = NO;
 #pragma mark - TableView custom view toggler/creator
 - (void)showLoadingIndicatorInCenterOfTable:(BOOL)yes
 {
-    if(yes){
+    if(yes && loadingResultsIndicator == nil){
         self.tableView.scrollEnabled = NO;
         [self.searchBar removeFromSuperview];
         _viewOnTopOfTable = [[UIView alloc] initWithFrame:self.view.frame];
@@ -826,7 +844,7 @@ static BOOL userClearedTextField = NO;
         
         [_viewOnTopOfTable addSubview:loadingResultsIndicator];
         self.tableView.tableHeaderView = _viewOnTopOfTable;
-    } else{
+    } else if(!yes && loadingResultsIndicator != nil){
         self.tableView.scrollEnabled = YES;
         [self.searchBar removeFromSuperview];
         [loadingResultsIndicator stopAnimating];
