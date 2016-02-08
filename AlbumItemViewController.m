@@ -50,7 +50,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
     
     self.tableView.allowsSelectionDuringEditing = NO;
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
-    self.navBar.title = nil;
+    self.title = (self.album.artist) ? self.album.artist.artistName : nil;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(nowPlayingSongsHasChanged:)

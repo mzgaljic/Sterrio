@@ -302,22 +302,35 @@ static NSDate *timeSinceLastPageLoaded;
         return;
     }
     
+    if(arrayOfNSStrings.count > 0) {
+        NSString *query = arrayOfNSStrings[0];
+        if(! [_searchBar.text isEqualToString:query]) {
+            //these are old results, don't run the code below to update the tableview - that just
+            //slows down the main thread a lot when the user types fast!!
+            return;
+        }
+    }
+    
+    NSMutableArray *suggestions = [NSMutableArray arrayWithArray:arrayOfNSStrings];
+    [suggestions removeObjectAtIndex:0];  //remove the query text.
+    
     //only going to use 5 of the 10 results returned. 10 is too much (searchSuggestions array is already empty-emptied in search bar text did change)
     int searchSuggestionsCountBefore = (int)self.searchSuggestions.count;
     [self.searchSuggestions removeAllObjects];
     [_lastSuccessfullSuggestions removeAllObjects];
     
     int upperBound = -1;
-    if(arrayOfNSStrings.count >= 5)
+    if(suggestions.count >= 5)
         upperBound = 5;
     else
-        upperBound = (int)arrayOfNSStrings.count;
+        upperBound = (int)suggestions.count;
     
     for(int i = 0; i < upperBound; i++){
-        [self.searchSuggestions addObject:[arrayOfNSStrings[i] copy]];
-        [_lastSuccessfullSuggestions addObject:[arrayOfNSStrings[i] copy]];
+        [self.searchSuggestions addObject:[suggestions[i] copy]];
+        [_lastSuccessfullSuggestions addObject:[suggestions[i] copy]];
     }
     arrayOfNSStrings = nil;
+    suggestions = nil;
     
     if(upperBound != searchSuggestionsCountBefore){
         //animate the change in number of rows

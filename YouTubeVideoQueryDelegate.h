@@ -21,7 +21,8 @@
 
 - (void)ytvideoResultsNoMorePagesToView;
 
-- (void)ytVideoAutoCompleteResultsDidDownload:(NSArray *)arrayOfYouTubeVideoSearchSuggestions;
+//first item in array is actually the query.
+- (void)ytVideoAutoCompleteResultsDidDownload:(NSArray *)arrayOfNSStrings;
 
 - (void)networkErrorHasOccuredSearchingYoutube;
 

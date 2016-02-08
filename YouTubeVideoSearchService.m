@@ -201,12 +201,8 @@ const int time_out_interval_seconds = 10;
 
 - (void)videoSuggestionsRequestComplete:(NSArray *)theItems
 {
-    NSMutableArray *arrayOfStrings = [NSMutableArray arrayWithCapacity:theItems.count];
-    for(YouTubeSearchSuggestion *suggestion in theItems) {
-        [arrayOfStrings addObject:[suggestion.querySuggestion copy]];
-    }
     [self.queryDelegate performSelectorOnMainThread:@selector(ytVideoAutoCompleteResultsDidDownload:)
-                                         withObject:arrayOfStrings
+                                         withObject:theItems
                                       waitUntilDone:YES];
 }
 

@@ -21,7 +21,6 @@
     NSMutableURLRequest *mutUrlRequest = [NSMutableURLRequest requestWithURL:myUrl];
     [mutUrlRequest setCachePolicy:NSURLRequestUseProtocolCachePolicy];
     
-    
     return [SMWebRequest requestWithURLRequest:mutUrlRequest
                                       delegate:(id<SMWebRequestDelegate>)self
                                        context:nil];
@@ -31,7 +30,6 @@
 + (id)webRequest:(SMWebRequest *)webRequest resultObjectForData:(NSData *)jsonData context:(id)context
 {
     // We do this gnarly parsing on a background thread to keep the UI responsive.
-    
     if(jsonData == nil || jsonData.length == 0) {
         CLS_LOG(@"%@", @"Google suggestions api response has changed! Data is nil or length == 0.");
         return @[];
@@ -65,17 +63,16 @@
         return nil;
     
     NSArray *suggestionsArray = [allDataArray objectAtIndex:1];
+    NSMutableArray *parsedArray = [NSMutableArray arrayWithCapacity:suggestionsArray.count + 1];
+    [parsedArray addObject:[allDataArray objectAtIndex:0]];  //add the query text itself in front.
     allDataArray = nil;
     originalData = nil;
     
-    NSMutableArray *parsedArray = [NSMutableArray arrayWithCapacity:suggestionsArray.count];
-    NSArray *reusableArray;
+    NSArray *temp;
     for(int i = 0; i < suggestionsArray.count; i++){  //parse json response, extract suggestions.
-        reusableArray = suggestionsArray[i];
-        NSString *suggestion = reusableArray[0];
-        YouTubeSearchSuggestion *ytSearchSuggestion = [[YouTubeSearchSuggestion alloc] init];
-        ytSearchSuggestion.querySuggestion = suggestion;
-        [parsedArray addObject:ytSearchSuggestion];
+        temp = suggestionsArray[i];
+        NSString *suggestion = temp[0];
+        [parsedArray addObject:suggestion];
     }
     return parsedArray;
 }
