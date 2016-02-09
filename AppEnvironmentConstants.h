@@ -47,7 +47,6 @@ typedef enum{
 
 //runtime configuration
 + (int)usersMajorIosVersion;
-+ (BOOL)isUserOniOS8OrAbove;
 + (BOOL)isUserOniOS9OrAbove;
 
 /**

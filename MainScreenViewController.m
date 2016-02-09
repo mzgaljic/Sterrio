@@ -587,14 +587,11 @@ short const dummyTabIndex = 2;
     self.tabBar = [[UITabBar alloc] init];
     self.tabBar.delegate = self;
     
-    if([AppEnvironmentConstants isUserOniOS8OrAbove])
-    {
-        UIVisualEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
-        visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-        visualEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        [self.tabBarView addSubview:visualEffectView];
-        [self.tabBar setBackgroundImage:[UIImage new]];
-    }
+    UIVisualEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+    visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+    visualEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    [self.tabBarView addSubview:visualEffectView];
+    [self.tabBar setBackgroundImage:[UIImage new]];
     
     self.centerButtonImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
                                                           :[UIImage imageNamed:CENTER_BTN_IMG_NAME]];

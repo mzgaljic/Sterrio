@@ -149,7 +149,7 @@
     
 #warning fix memory leak if i have time. occurs every time user searches in search bar.
     BOOL memoryLeakFixed = NO;
-    if ([AppEnvironmentConstants isUserOniOS8OrAbove] && memoryLeakFixed)
+    if (memoryLeakFixed)
     {
         __weak PlayableDataSearchDataSource *weakself = self;
         __block NSAsynchronousFetchRequest *asynchronousFetchRequest =
