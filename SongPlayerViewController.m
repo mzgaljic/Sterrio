@@ -9,6 +9,7 @@
 #import "SongPlayerViewController.h"
 #import "PlayableItem.h"
 #import "SDCAlertController.h"
+#import <TUSafariActivity.h>
 typedef enum{
     DurationLabelStateNotSet,
     DurationLabelStateMinutes,
@@ -1683,21 +1684,20 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
 {
     Song *nowPlayingSong = [MusicPlaybackController nowPlayingSong];
     if(nowPlayingSong){
-        NSString *youtubeLinkBase = @"www.youtube.com/watch?v=";
-        NSMutableString *shareString = [NSMutableString stringWithString:@"\n"];
-        [shareString appendString:youtubeLinkBase];
-        [shareString appendString:nowPlayingSong.youtube_id];
-        
-        NSArray *activityItems = [NSArray arrayWithObjects:shareString, nil];
+        NSString *youtubeLink = [NSString stringWithFormat:@"http://www.youtube.com/watch?v=%@", nowPlayingSong.youtube_id];
+        NSURL *shareUrl = [NSURL URLWithString:youtubeLink];
+        NSArray *activityItems = @[shareUrl];
         
         //temporarily changing app default colors for the activityviewcontroller.
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         appDelegate.window.tintColor = [UIColor defaultAppColorScheme];
         [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor defaultAppColorScheme], NSForegroundColorAttributeName, nil]];
         
+        TUSafariActivity *openInSafariActivity = [[TUSafariActivity alloc] init];
+        NSArray *activities = @[openInSafariActivity];
         __block UIActivityViewController *activityVC = [[UIActivityViewController alloc]
                                                         initWithActivityItems:activityItems
-                                                        applicationActivities:nil];
+                                                        applicationActivities:activities];
         __weak UIActivityViewController *weakActivityVC = activityVC;
         __weak SongPlayerViewController *weakSelf = self;
         

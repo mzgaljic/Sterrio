@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '6F99577CA79379A879565B2C'
+               BlueprintIdentifier = '98CC70114D0A16CF9BC0B203'
                BlueprintName = 'GCDiscreetNotificationView'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'libGCDiscreetNotificationView.a'>

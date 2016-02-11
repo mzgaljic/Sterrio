@@ -59,6 +59,16 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>TUSafariActivity-TUSafariActivity.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>TUSafariActivity.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Valet.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -82,17 +92,32 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>54BE19778F65524D684FD599FD0C7901</key>
+		<key>2A6CB1B975084342D63755ADD124A046</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>61F97BD2EEC71F73DED9993A276ECB46</key>
+		<key>4A206495D8957105201603F575B2DCD0</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>68272C5BDB2D5E94B1F1CE32883897AA</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>68C46AEF98BF5EE36FDC2F71250DA22C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>68C64A67D266D1B26CD1A3910FDA4833</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>6F7AA1954F55F79BC8EA653DA1836F0C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -107,7 +132,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C54C0AE65EFCF4CD035E625E54E59D99</key>
+		<key>7AAA8823DCE8212E50CBF5E7A2D6CBD7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9A3323EEFC631F1D713912AAB866B7E6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -117,22 +147,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>E6B7049DBFA184E7D92E7EE824859ECD</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>E8C44974B9CF8DBEE10608BC87D9D2A5</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>EE8547F80C85CFE8BB0B9E0E1B26C422</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>EF1F2988129C2C5BF0C6FCCF67C9B192</key>
+		<key>F6E1ECCC5A72E3E121DAB4AF8236E6BF</key>
 		<dict>
 			<key>primary</key>
 			<true/>

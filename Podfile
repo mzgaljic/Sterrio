@@ -48,3 +48,7 @@ pod 'Valet'
 #Fabrio.io stuff (crashlytics & answers)
 pod 'Fabric'
 pod 'Crashlytics'
+
+#Subclass of UIActivity which add the 'open in safari' option to the share
+#sheet.
+pod 'TUSafariActivity', '~> 1.0'

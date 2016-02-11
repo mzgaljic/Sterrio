@@ -37,8 +37,9 @@ PODS:
     - SDWebImage/Core (= 3.7.5)
   - SDWebImage/Core (3.7.5)
   - TBXML (1.5)
+  - TUSafariActivity (1.0.4)
   - Valet (2.2.0)
-  - XCDYouTubeKit (2.5.0)
+  - XCDYouTubeKit (2.5.1)
 
 DEPENDENCIES:
   - AFNetworking (~> 2.5.4)
@@ -54,6 +55,7 @@ DEPENDENCIES:
   - Reachability
   - SDWebImage (~> 3.6)
   - TBXML
+  - TUSafariActivity (~> 1.0)
   - Valet
   - XCDYouTubeKit
 
@@ -71,7 +73,8 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 69c6303e3348fba97e03f65d65d4fbc26740f461
   TBXML: 9f9dadb239f2f2af1dadb87fe43a0ce6e479379a
+  TUSafariActivity: afc55a00965377939107ce4fdc7f951f62454546
   Valet: 774015aec66304d939c43ee0e2ccd4b50542e4ed
-  XCDYouTubeKit: 9db45d0f5af8fb5a47561ac7f2fe6de885f57453
+  XCDYouTubeKit: ee78997dc92d1055f11459d95c492dae1dba909d
 
 COCOAPODS: 0.39.0

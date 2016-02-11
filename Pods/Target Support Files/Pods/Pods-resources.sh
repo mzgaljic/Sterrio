@@ -59,9 +59,11 @@ install_resource()
 }
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_resource "Ensembles/Framework/Resources/CDEEventStoreModel.xcdatamodeld"
+  install_resource "${BUILT_PRODUCTS_DIR}/TUSafariActivity.bundle"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_resource "Ensembles/Framework/Resources/CDEEventStoreModel.xcdatamodeld"
+  install_resource "${BUILT_PRODUCTS_DIR}/TUSafariActivity.bundle"
 fi
 
 mkdir -p "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"

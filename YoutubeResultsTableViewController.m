@@ -25,6 +25,7 @@
     UIActivityIndicatorView *loadingNextPageSpinner;
     UIActivityIndicatorView *loadingResultsIndicator;
     NSTimer *suggestionsDelayer;
+    NSUInteger numLettersUserHasTyped;
 }
 @property (nonatomic, strong) MySearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray *searchResults;
@@ -538,6 +539,7 @@ static BOOL userClearedTextField = NO;
 //User typing as we speak, fetch latest results to populate results as they type
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
+    numLettersUserHasTyped++;
     [suggestionsDelayer invalidate];
     suggestionsDelayer = nil;
     [[YouTubeVideoSearchService sharedInstance] cancelAllYtAutoCompletePendingRequests];
@@ -546,12 +548,18 @@ static BOOL userClearedTextField = NO;
         if(! self.displaySearchResults)
             self.tableView.scrollEnabled = YES;
         
-        //fetch auto suggestions delayed (in case user types super fast)
-        suggestionsDelayer = [NSTimer scheduledTimerWithTimeInterval:0.14
-                                                         target:self
-                                                            selector:@selector(fetchYtSearchSuggestionsDelayed:)
-                                                       userInfo:searchText
-                                                        repeats:NO];
+        if(numLettersUserHasTyped > 8) {
+            [[YouTubeVideoSearchService sharedInstance] fetchYouTubeAutoCompleteResultsForString:searchText];
+        } else {
+            //if user just started typing, delay the first query for suggestions,
+            //otherwise the main thread gets blocked for a bit and lags if they're typing
+            //fast.
+            suggestionsDelayer = [NSTimer scheduledTimerWithTimeInterval:0.18
+                                                                  target:self
+                                                                selector:@selector(fetchYtSearchSuggestionsDelayed:)
+                                                                userInfo:searchText
+                                                                 repeats:NO];
+        }
         self.displaySearchResults = NO;
     }
     else{  //user cleared the textField

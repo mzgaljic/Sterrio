@@ -14,6 +14,7 @@
 #import "DiscogsItem.h"
 #import "DiscogsResultsUtils.h"
 #import "MZPlayer.h"
+#import <TUSafariActivity.h>
 
 @interface YouTubeSongAdderViewController ()
 {
@@ -555,21 +556,21 @@ static short numberTimesViewHasBeenShown = 0;
     didPresentVc = YES;
     YouTubeVideo *currentVideo = ytVideo;
     if(currentVideo){
-        NSString *youtubeLinkBeginning = @"www.youtube.com/watch?v=";
-        NSMutableString *shareString = [NSMutableString stringWithString:@"\n"];
-        [shareString appendString:youtubeLinkBeginning];
-        [shareString appendString:currentVideo.videoId];
-        
-        NSArray *activityItems = [NSArray arrayWithObjects:shareString, nil];
+        NSString *youtubeLink = [NSString stringWithFormat:@"www.youtube.com/watch?v=%@", currentVideo.videoId];
+        NSMutableString *shareString = [NSMutableString stringWithFormat:@"\n%@", youtubeLink];
+        NSURL *shareUrl = [NSURL URLWithString:youtubeLink];
+        NSArray *activityItems = @[shareString, shareUrl];
         
         //temporarily changing app default colors for the activityviewcontroller.
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         appDelegate.window.tintColor = [UIColor defaultAppColorScheme];
         [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor defaultAppColorScheme], NSForegroundColorAttributeName, nil]];
         
+        TUSafariActivity *openInSafariActivity = [[TUSafariActivity alloc] init];
+        NSArray *activities = @[openInSafariActivity];
         __block UIActivityViewController *activityVC = [[UIActivityViewController alloc]
                                                         initWithActivityItems:activityItems
-                                                        applicationActivities:nil];
+                                                        applicationActivities:activities];
         __weak UIActivityViewController *weakActivityVC = activityVC;
         __weak YouTubeSongAdderViewController *weakSelf = self;
         
