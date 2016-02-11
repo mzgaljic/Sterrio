@@ -66,9 +66,7 @@
                                                       videoId:ytVideo.videoId
                                              callbackDelegate:self];
         
-        //fire off network request for video duration ASAP
-        [[YouTubeVideoSearchService sharedInstance] setVideoDetailLookupDelegate:self];
-        [[YouTubeVideoSearchService sharedInstance] fetchDetailsForVideo:ytVideo];
+
         
         MZSongModifierTableView *songEditTable;
         lockScreenImg = img;
@@ -81,6 +79,9 @@
                                             UIViewAutoresizingFlexibleWidth;
         [self.view addSubview:self.tableView];
         [self.tableView initWasCalled];
+        //fire off network request for video duration ASAP
+        [[YouTubeVideoSearchService sharedInstance] setVideoDetailLookupDelegate:self];
+        [[YouTubeVideoSearchService sharedInstance] fetchDetailsForVideo:ytVideo];
 
         //provide default album art (making deep copy of album art)
         [self.tableView provideDefaultAlbumArt:lockScreenImg];
@@ -556,10 +557,9 @@ static short numberTimesViewHasBeenShown = 0;
     didPresentVc = YES;
     YouTubeVideo *currentVideo = ytVideo;
     if(currentVideo){
-        NSString *youtubeLink = [NSString stringWithFormat:@"www.youtube.com/watch?v=%@", currentVideo.videoId];
-        NSMutableString *shareString = [NSMutableString stringWithFormat:@"\n%@", youtubeLink];
+        NSString *youtubeLink = [NSString stringWithFormat:@"http://www.youtube.com/watch?v=%@", currentVideo.videoId];
         NSURL *shareUrl = [NSURL URLWithString:youtubeLink];
-        NSArray *activityItems = @[shareString, shareUrl];
+        NSArray *activityItems = @[shareUrl];
         
         //temporarily changing app default colors for the activityviewcontroller.
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
@@ -577,7 +577,8 @@ static short numberTimesViewHasBeenShown = 0;
         activityVC.excludedActivityTypes = @[UIActivityTypePrint,
                                              UIActivityTypeAssignToContact,
                                              UIActivityTypeSaveToCameraRoll,
-                                             UIActivityTypeAirDrop];
+                                             UIActivityTypeAirDrop,
+                                             UIActivityTypeAddToReadingList];
         //set tint color specifically for this VC so that the text and buttons are visible
         [activityVC.view setTintColor:[UIColor defaultAppColorScheme]];
         

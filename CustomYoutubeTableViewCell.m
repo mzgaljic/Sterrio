@@ -64,10 +64,15 @@
     else
         widthOfScreenRoationIndependant = b;
     
-    int oneThirdDisplayWidth = widthOfScreenRoationIndependant * 0.45;
-    int height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:oneThirdDisplayWidth];
+    //int thumbnailWidth = widthOfScreenRoationIndependant * 0.45;
+    int thumbnailWidth = 140;
+    int thumbnailHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:thumbnailWidth];
+    int yPadding = (self.contentView.frame.size.height - thumbnailHeight) / 2;
     //same size in both orientations
-    self.videoThumbnail.frame = CGRectMake(2, 4, oneThirdDisplayWidth, height);
+    self.videoThumbnail.frame = CGRectMake(2,
+                                           self.contentView.frame.size.height - thumbnailHeight - yPadding,
+                                           thumbnailWidth,
+                                           thumbnailHeight);
     
     self.videoTitle.frame = [self videoTitleFrame];
     self.videoChannel.frame = [self videoChannelFrame];

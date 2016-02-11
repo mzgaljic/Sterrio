@@ -25,7 +25,6 @@
     UIActivityIndicatorView *loadingNextPageSpinner;
     UIActivityIndicatorView *loadingResultsIndicator;
     NSTimer *suggestionsDelayer;
-    NSUInteger numLettersUserHasTyped;
 }
 @property (nonatomic, strong) MySearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray *searchResults;
@@ -49,7 +48,6 @@
 @end
 
 @implementation YoutubeResultsTableViewController
-static BOOL PRODUCTION_MODE;
 static const float MINIMUM_DURATION_OF_LOADING_POPUP = 0.3f;
 static NSString *Network_Error_Loading_More_Results_Msg = @"Network error";
 static NSString *No_More_Results_To_Display_Msg = @"No more results";
@@ -96,11 +94,6 @@ static NSDate *timeSinceLastPageLoaded;
     [[YouTubeVideoSearchService sharedInstance] removeVideoQueryDelegate];
     
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
-}
-
-- (void)setProductionModeValue
-{
-    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
 }
 
 - (void)makeBarButtonGrey:(UIBarButtonItem *)barButton yes:(BOOL)show
@@ -174,13 +167,13 @@ static NSDate *timeSinceLastPageLoaded;
     [super viewDidLoad];
     
     UIImage *poweredByYtLogo = [UIImage imageNamed:@"poweredByYtLight"];
-    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0,
+    UIView *navBarView = [[UIView alloc] initWithFrame:CGRectMake(0,
                                                                   0,
                                                                   poweredByYtLogo.size.width,
                                                                   poweredByYtLogo.size.height)];
     UIImageView * imgView = [[UIImageView alloc] initWithImage:poweredByYtLogo];
-    [footerView addSubview:imgView];
-    self.navigationItem.titleView = footerView;
+    [navBarView addSubview:imgView];
+    self.navigationItem.titleView = navBarView;
     
     self.searchSuggestions = [NSMutableArray array];
     _searchResults = [NSMutableArray array];
@@ -190,7 +183,6 @@ static NSDate *timeSinceLastPageLoaded;
     //_navBar.title = @"Adding Music";
     _cancelButton = [[UIBarButtonItem alloc] initWithTitle:@"Close" style:UIBarButtonItemStyleDone target:self action:@selector(cancelTapped)];
     [self setToolbarItems:@[_cancelButton]];
-    [self setProductionModeValue];
     
     [self setUpSearchBar];
     
@@ -536,6 +528,8 @@ static NSDate *timeSinceLastPageLoaded;
 }
 
 static BOOL userClearedTextField = NO;
+//static since the issue only happens the first time this VC is loaded. Not sure why.
+static NSUInteger numLettersUserHasTyped = 0;
 //User typing as we speak, fetch latest results to populate results as they type
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
@@ -548,13 +542,13 @@ static BOOL userClearedTextField = NO;
         if(! self.displaySearchResults)
             self.tableView.scrollEnabled = YES;
         
-        if(numLettersUserHasTyped > 8) {
+        if(numLettersUserHasTyped > 12) {
             [[YouTubeVideoSearchService sharedInstance] fetchYouTubeAutoCompleteResultsForString:searchText];
         } else {
             //if user just started typing, delay the first query for suggestions,
             //otherwise the main thread gets blocked for a bit and lags if they're typing
             //fast.
-            suggestionsDelayer = [NSTimer scheduledTimerWithTimeInterval:0.18
+            suggestionsDelayer = [NSTimer scheduledTimerWithTimeInterval:0.14
                                                                   target:self
                                                                 selector:@selector(fetchYtSearchSuggestionsDelayed:)
                                                                 userInfo:searchText
@@ -773,12 +767,14 @@ static BOOL userClearedTextField = NO;
             else
                 widthOfScreenRoationIndependant = b;
             
-            int oneThirdDisplayWidth = widthOfScreenRoationIndependant * 0.45;
-            int height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:oneThirdDisplayWidth];
-            return height + 8;
+            //hardcoded in the CustomYoutubeTabeViewCell obj too. Was originally a % of the
+            //screen.
+            int imageWidth = 140;
+            int height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:imageWidth];
+            return height + 16;
         }
         else
-            return 45;  //just returning something since i have to
+            return 60;  //just returning something since i have to
     }
 }
 

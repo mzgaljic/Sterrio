@@ -1704,7 +1704,8 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
         activityVC.excludedActivityTypes = @[UIActivityTypePrint,
                                              UIActivityTypeAssignToContact,
                                              UIActivityTypeSaveToCameraRoll,
-                                             UIActivityTypeAirDrop];
+                                             UIActivityTypeAirDrop,
+                                             UIActivityTypeAddToReadingList];
         //set tint color specifically for this VC so that the text and buttons are visible
         [activityVC.view setTintColor:[UIColor defaultAppColorScheme]];
         
