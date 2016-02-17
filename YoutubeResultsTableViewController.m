@@ -547,8 +547,8 @@ static NSUInteger numLettersUserHasTyped = 0;
         } else {
             //if user just started typing, delay the first query for suggestions,
             //otherwise the main thread gets blocked for a bit and lags if they're typing
-            //fast.
-            suggestionsDelayer = [NSTimer scheduledTimerWithTimeInterval:0.14
+            //fast6
+            suggestionsDelayer = [NSTimer scheduledTimerWithTimeInterval:0.17
                                                                   target:self
                                                                 selector:@selector(fetchYtSearchSuggestionsDelayed:)
                                                                 userInfo:searchText

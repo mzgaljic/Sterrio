@@ -230,6 +230,7 @@
 		87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */; };
 		87E152671C0041E100C82737 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87E152661C0041E100C82737 /* StoreKit.framework */; };
 		87F34FBA1C251D0200BAD73B /* GSTouchesShowingWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F34FB91C251D0200BAD73B /* GSTouchesShowingWindow.m */; };
+		87F84E741C74123C000D7D4E /* AppRatingUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F84E731C74123C000D7D4E /* AppRatingUtils.m */; };
 		CC4EB50DFF2CD80A06134B69 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B206C6594633BB85400EBDC /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -693,6 +694,8 @@
 		87E152661C0041E100C82737 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		87F34FB81C251D0200BAD73B /* GSTouchesShowingWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSTouchesShowingWindow.h; sourceTree = "<group>"; };
 		87F34FB91C251D0200BAD73B /* GSTouchesShowingWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSTouchesShowingWindow.m; sourceTree = "<group>"; };
+		87F84E721C74123C000D7D4E /* AppRatingUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppRatingUtils.h; sourceTree = "<group>"; };
+		87F84E731C74123C000D7D4E /* AppRatingUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppRatingUtils.m; sourceTree = "<group>"; };
 		8B206C6594633BB85400EBDC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		92B6CB546F4E7E88A9974B8F /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		C79109650D7488FFD1AB95FF /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -980,6 +983,8 @@
 				873538A81B0A9C52009244E4 /* ReachabilitySingleton.m */,
 				8755545C1C1DF6EA00259CA8 /* InAppPurchaseUtils.h */,
 				8755545D1C1DF6EA00259CA8 /* InAppPurchaseUtils.m */,
+				87F84E721C74123C000D7D4E /* AppRatingUtils.h */,
+				87F84E731C74123C000D7D4E /* AppRatingUtils.m */,
 			);
 			name = Singletons;
 			sourceTree = "<group>";
@@ -1991,6 +1996,7 @@
 				873539881B0AA178009244E4 /* UIImage+BetterAdditions.m in Sources */,
 				873538721B0A9B8B009244E4 /* AlbumArtUtilities.m in Sources */,
 				873539391B0A9FCE009244E4 /* MZSlider.m in Sources */,
+				87F84E741C74123C000D7D4E /* AppRatingUtils.m in Sources */,
 				879971DD1C66EAF50044BFFF /* MGSwipeTableCell.m in Sources */,
 				873539191B0A9EF6009244E4 /* FontSizeTableViewController.m in Sources */,
 				873539E01B0AA1CB009244E4 /* CCLocalMaximum.m in Sources */,
