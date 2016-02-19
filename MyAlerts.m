@@ -114,7 +114,7 @@ static NSMutableArray *queuedToastBannerOptions;
         case ALERT_TYPE_TroubleSharingVideo:
         {
             NSString *title = @"Whoops";
-            NSString *msg = @"Something went wrong sharing your video.";
+            NSString *msg = @"Something bad happened when trying to share your video.";
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
                                    customActions:nil
@@ -124,7 +124,7 @@ static NSMutableArray *queuedToastBannerOptions;
         case ALERT_TYPE_TroubleSharingLibrarySong:
         {
             NSString *title = @"Whoops";
-            NSString *msg = @"Something went wrong sharing your song.";
+            NSString *msg = @"Something bad happened when trying to share your song.";
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
                                    customActions:nil
