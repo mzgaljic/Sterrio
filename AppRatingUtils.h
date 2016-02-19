@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 
-@interface AppRatingUtils : NSObject
+@interface AppRatingUtils : NSObject <SKStoreProductViewControllerDelegate>
 
 + (instancetype)sharedInstance;
 - (void)showAppRatingModalToUser;

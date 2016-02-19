@@ -5,9 +5,7 @@
 //  Created by Mark Zgaljic on 7/3/14.
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
-#define APP_ALREADY_LAUNCHED_KEY @"AppLaunchedAlready"
 #define LAST_INSTALLED_BUILD @"lastInstalledBuild"
-#define LAST_WhatsNewMsg @"lastSavedWhatsNewMsg"  //prevents displaying a msg twice by accident
 
 //settings keys
 #define PREFERRED_SONG_CELL_HEIGHT_KEY @"preferredSongCellHeight"
@@ -22,6 +20,7 @@
 #define USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF @"userHasAcceptedOrDeclinedPushNotif"
 #define LAST_SUCCESSFUL_ICLOUD_SYNC_KEY @"last date icloud synced"
 #define ARE_ADS_REMOVED_KEYCHAIN_ID @"Have ads been removed?"
+#define USER_HAS_RATED_MY_APP @"mzUserRatedCurrentVersion"
 
 #import <Foundation/Foundation.h>
 
@@ -63,11 +62,9 @@ typedef enum{
 + (BOOL)shouldDisplayWelcomeScreen;
 + (void)markShouldDisplayWelcomeScreenTrue;
 
-//used to avoid accidentally shipping an app with the same whats new message (and displaying it again)
-+ (BOOL)whatsNewMsgIsActuallyNew;
-+ (void)marksWhatsNewMsgAsNew;
++ (BOOL)userHasRatedMyApp;
++ (void)setUserHasRatedMyApp:(BOOL)userDidRateApp;
 
-+ (BOOL)isAppInProductionMode;
 + (BOOL)isFirstTimeAppLaunched;
 + (void)markAppAsLaunchedForFirstTime;
 

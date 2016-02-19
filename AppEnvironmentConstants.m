@@ -21,11 +21,10 @@
 
 @implementation AppEnvironmentConstants
 
-static const BOOL PRODUCTION_MODE = YES;
+static BOOL userHasRatedMyApp = NO;
 static BOOL shouldShowWhatsNewScreen = NO;
 static BOOL shouldDisplayWelcomeScreen = NO;
 static BOOL isFirstTimeAppLaunched = NO;
-static BOOL whatsNewMsgIsNew = NO;
 static BOOL isBadTimeToMergeEnsemble = NO;
 static BOOL userAcceptedOrDeclinedPushNotifications = NO;
 static BOOL didPreviouslyShowUserCellularWarning = NO;
@@ -98,10 +97,13 @@ static BOOL userOnIos9OrAboveCached = NO;
     return lastPlayerViewIndex;
 }
 
-
-+ (BOOL)isAppInProductionMode
++ (BOOL)userHasRatedMyApp
 {
-    return PRODUCTION_MODE;
+    return userHasRatedMyApp;
+}
++ (void)setUserHasRatedMyApp:(BOOL)userDidRateApp
+{
+    userHasRatedMyApp = userDidRateApp;
 }
 
 + (BOOL)shouldDisplayWhatsNewScreen
@@ -122,16 +124,6 @@ static BOOL userOnIos9OrAboveCached = NO;
 + (void)markShouldDisplayWelcomeScreenTrue
 {
     shouldDisplayWelcomeScreen = YES;
-}
-
-+ (BOOL)whatsNewMsgIsActuallyNew
-{
-    return whatsNewMsgIsNew;
-}
-
-+ (void)marksWhatsNewMsgAsNew
-{
-    whatsNewMsgIsNew = YES;
 }
 
 + (BOOL)isFirstTimeAppLaunched

@@ -112,9 +112,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
                                                  name:MZInitAudioSession
                                                object:nil];
     
-    [[NSUserDefaults standardUserDefaults] setInteger:APP_LAUNCHED_ALREADY
-                                               forKey:APP_ALREADY_LAUNCHED_KEY];
-    
     [LQAlbumArtBackgroundUpdater beginWaitingForEfficientMomentsToUpdateAlbumArt];
     [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
     //[AppEnvironmentConstants adsHaveBeenRemoved:NO];   ONLY FOR DEVELOPMENT!!

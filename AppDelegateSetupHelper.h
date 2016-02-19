@@ -9,9 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "AppEnvironmentConstants.h"
 
-static const short APP_LAUNCHED_ALREADY = 1;
-static const short APP_LAUNCHED_FIRST_TIME = 0;
-
 @interface AppDelegateSetupHelper : NSObject
 
 + (void)loadUsersSettingsFromNSUserDefaults;

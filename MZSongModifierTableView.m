@@ -28,7 +28,6 @@
 
 @implementation MZSongModifierTableView
 @synthesize songIAmEditing = _songIAmEditing;
-static BOOL PRODUCTION_MODE;
 float const MAX_ALBUM_ART_CELL_HEIGHT = 160;
 float const updateCellWithAnimationFadeDelay = 0.4;
 
@@ -118,11 +117,6 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 - (void)provideDefaultAlbumArt:(UIImage *)image
 {
     [self setCurrentAlbumArt:image];
-}
-
-- (void)setProductionModeValue
-{
-    PRODUCTION_MODE = [AppEnvironmentConstants isAppInProductionMode];
 }
 
 - (void)viewWillAppear:(BOOL)animated

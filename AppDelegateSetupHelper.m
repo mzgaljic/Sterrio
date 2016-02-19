@@ -35,6 +35,7 @@
         BOOL userSawExpandingPlayerTip = NO;
         BOOL userHasSeenCellDataWarning = NO;
         BOOL userAcceptedOrDeclinedPushNotif = NO;
+        BOOL userRatedMyApp = NO;
         
         [AppEnvironmentConstants setPreferredSongCellHeight:prefSongCellHeight];
         [AppEnvironmentConstants setPreferredWifiStreamSetting:prefWifiStreamQuality];
@@ -43,7 +44,7 @@
         [AppEnvironmentConstants setUserHasSeenCellularDataUsageWarning:userHasSeenCellDataWarning];
         [AppEnvironmentConstants setShouldOnlyAirplayAudio:shouldOnlyAirplayAudio];
         [AppEnvironmentConstants setUserSawExpandingPlayerTip:userSawExpandingPlayerTip];
-        
+        [AppEnvironmentConstants setUserHasRatedMyApp:userRatedMyApp];
         
         [standardDefaults setInteger:prefSongCellHeight
                               forKey:PREFERRED_SONG_CELL_HEIGHT_KEY];
@@ -61,6 +62,7 @@
                            forKey:USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF];
         [standardDefaults setBool:shouldOnlyAirplayAudio
                            forKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY];
+        [standardDefaults setBool:userRatedMyApp forKey:USER_HAS_RATED_MY_APP];
         
         UIColor *color = [AppEnvironmentConstants defaultAppThemeBeforeUserPickedTheme];
         const CGFloat* components = CGColorGetComponents(color.CGColor);
@@ -93,6 +95,7 @@
         [AppEnvironmentConstants setLastSuccessfulSyncDate:
                         [standardDefaults objectForKey:LAST_SUCCESSFUL_ICLOUD_SYNC_KEY]];
         [AppEnvironmentConstants setUserSawExpandingPlayerTip:[standardDefaults boolForKey:USER_SAW_EXPANDING_PLAYER_TIP_VALUE_KEY]];
+        [AppEnvironmentConstants setUserHasRatedMyApp:[standardDefaults boolForKey:USER_HAS_RATED_MY_APP]];
         
         //I manually retrieve App color from NSUserDefaults
         NSArray *defaultColorRep2 = [standardDefaults objectForKey:APP_THEME_COLOR_VALUE_KEY];
@@ -196,52 +199,31 @@
     return dirPath;
 }
 
-static short appLaunchedFirstTimeDefensiveCount = 0;
+static short appLaunchedFirstTimeNumCalls = 0;
 + (BOOL)appLaunchedFirstTime
 {
     //this counter helps us prevent the code beneath from being executed more than once per app launch.
     //doing so would cause the "whats new screen" to be messed up...displayed at wrong times.
-    if(appLaunchedFirstTimeDefensiveCount > 0)
+    if(appLaunchedFirstTimeNumCalls > 0)
         return [AppEnvironmentConstants isFirstTimeAppLaunched];
-    appLaunchedFirstTimeDefensiveCount++;
+    appLaunchedFirstTimeNumCalls++;
     
-    //determine if "whats new" constant in this build is actually new.
-    NSString *lastWhatsNewMsg = [[NSUserDefaults standardUserDefaults] stringForKey:LAST_WhatsNewMsg];
-    if(lastWhatsNewMsg == nil)
-        [AppEnvironmentConstants marksWhatsNewMsgAsNew];
-    else{
-        if(! [lastWhatsNewMsg isEqualToString:MZWhatsNewUserMsg])
-            [AppEnvironmentConstants marksWhatsNewMsgAsNew];
-    }
-    [[NSUserDefaults standardUserDefaults] setObject:MZWhatsNewUserMsg
-                                              forKey:LAST_WhatsNewMsg];
-    
-    //determining whether or not "whats new" screen should be shown on this run of the app
+    //determining whether or not the app has been launched for the first time
     NSString *lastBuild = [[NSUserDefaults standardUserDefaults] stringForKey:LAST_INSTALLED_BUILD];
     NSString *currentBuild = [UIDevice appBuildString];
     if(lastBuild == nil){
         [[NSUserDefaults standardUserDefaults] setObject:currentBuild
                                                   forKey:LAST_INSTALLED_BUILD];
-    } else if(! [lastBuild isEqualToString:currentBuild] &&
-              [AppEnvironmentConstants whatsNewMsgIsActuallyNew]){
-        [AppEnvironmentConstants markShouldDisplayWhatsNewScreenTrue];
-    }
-    
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    
-    NSInteger code = [[NSUserDefaults standardUserDefaults] integerForKey:APP_ALREADY_LAUNCHED_KEY];
-    if(code == APP_LAUNCHED_FIRST_TIME){
-        
-        //I want to only display one or the either, never the same on. Placement of this
-        //if must stay exactly here, placement matters!
-        if(! [AppEnvironmentConstants shouldDisplayWhatsNewScreen])
-            [AppEnvironmentConstants markShouldDisplayWelcomeScreenTrue];
-        
+        [[NSUserDefaults standardUserDefaults] synchronize];
         [AppEnvironmentConstants markAppAsLaunchedForFirstTime];
+        [AppEnvironmentConstants markShouldDisplayWelcomeScreenTrue];
         return YES;
-    }
-    else
+    } else if(! [lastBuild isEqualToString:currentBuild]){
+        [AppEnvironmentConstants markShouldDisplayWhatsNewScreenTrue];
         return NO;
+    } else {
+        return NO;
+    }
 }
 
 //used for debugging
