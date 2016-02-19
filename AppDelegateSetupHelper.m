@@ -62,7 +62,6 @@
                            forKey:USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF];
         [standardDefaults setBool:shouldOnlyAirplayAudio
                            forKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY];
-        [standardDefaults setBool:userRatedMyApp forKey:USER_HAS_RATED_MY_APP];
         
         UIColor *color = [AppEnvironmentConstants defaultAppThemeBeforeUserPickedTheme];
         const CGFloat* components = CGColorGetComponents(color.CGColor);
@@ -95,7 +94,6 @@
         [AppEnvironmentConstants setLastSuccessfulSyncDate:
                         [standardDefaults objectForKey:LAST_SUCCESSFUL_ICLOUD_SYNC_KEY]];
         [AppEnvironmentConstants setUserSawExpandingPlayerTip:[standardDefaults boolForKey:USER_SAW_EXPANDING_PLAYER_TIP_VALUE_KEY]];
-        [AppEnvironmentConstants setUserHasRatedMyApp:[standardDefaults boolForKey:USER_HAS_RATED_MY_APP]];
         
         //I manually retrieve App color from NSUserDefaults
         NSArray *defaultColorRep2 = [standardDefaults objectForKey:APP_THEME_COLOR_VALUE_KEY];

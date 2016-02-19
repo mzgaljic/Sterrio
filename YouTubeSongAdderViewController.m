@@ -556,6 +556,7 @@ static short numberTimesViewHasBeenShown = 0;
 {
     didPresentVc = YES;
     YouTubeVideo *currentVideo = ytVideo;
+    __weak YouTubeVideo *weakCurrentVideo;
     if(currentVideo){
         NSString *youtubeLink = [NSString stringWithFormat:@"http://www.youtube.com/watch?v=%@", currentVideo.videoId];
         NSURL *shareUrl = [NSURL URLWithString:youtubeLink];
@@ -582,8 +583,25 @@ static short numberTimesViewHasBeenShown = 0;
         //set tint color specifically for this VC so that the text and buttons are visible
         [activityVC.view setTintColor:[UIColor defaultAppColorScheme]];
         
-        [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
-            //finish your code when the user finish or dismiss...
+        [activityVC setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed,  NSArray *returnedItems, NSError *activityError) {
+            NSString *regex = @"(UIActivityType)|(TU)|(Activity)|(.*\\.)";
+            NSString *shareMethod = [MZCommons replaceCharsMatchingRegex:regex
+                                                               withChars:@""
+                                                             usingString:activityType];
+            
+            if(completed &&
+               ([shareMethod caseInsensitiveCompare:@"Message"] == NSOrderedSame
+                || [shareMethod caseInsensitiveCompare:@"Mail"] == NSOrderedSame
+                || [shareMethod caseInsensitiveCompare:@"PostToFacebook"] == NSOrderedSame
+                || [shareMethod caseInsensitiveCompare:@"PostToTwitter"] == NSOrderedSame
+                || [shareMethod caseInsensitiveCompare:@"PostToWeibo"] == NSOrderedSame)) {
+                   [Answers logShareWithMethod:shareMethod
+                                   contentName:weakCurrentVideo.videoName
+                                   contentType:@"YouTube Video"
+                                     contentId:weakCurrentVideo.videoId
+                              customAttributes:@{@"VideoFromLibrary" : [NSNumber numberWithBool:NO]}];
+               }
+            
             [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
                 //restoring default button and title font colors in the app.
                 AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];

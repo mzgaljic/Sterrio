@@ -46,7 +46,6 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     self.delegate = self;
     self.dataSource = self;
     
-    [self setProductionModeValue];
     [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:YES];
     userReplacedDefaultYoutubeArt = NO;
     

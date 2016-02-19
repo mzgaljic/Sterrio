@@ -21,7 +21,6 @@
 
 @implementation AppEnvironmentConstants
 
-static BOOL userHasRatedMyApp = NO;
 static BOOL shouldShowWhatsNewScreen = NO;
 static BOOL shouldDisplayWelcomeScreen = NO;
 static BOOL isFirstTimeAppLaunched = NO;
@@ -45,6 +44,7 @@ static int bannerAdHeight;
 static NSInteger lastPlayerViewIndex = NSNotFound;
 
 static VALSynchronizableValet *adsKeychainItem;
+static VALSynchronizableValet *storeRatingKeychainItem;
 
 //setting vars
 static int preferredSongCellHeight;
@@ -97,13 +97,44 @@ static BOOL userOnIos9OrAboveCached = NO;
     return lastPlayerViewIndex;
 }
 
-+ (BOOL)userHasRatedMyApp
+//app rating is stored in keychain with VALSynchronizableValet so that the data is easily
+//stored in icloud.
+static NSString *USER_HAS_RATED_APP_KEY = @"mzUserRatedCurrentVersion";
+static BOOL userRatedAppCachedVal = NO;
+static BOOL didFetchAppRatedKeychainVal = NO;
++ (BOOL)hasUserRatedApp
 {
-    return userHasRatedMyApp;
+    if(didFetchAppRatedKeychainVal) {
+        return userRatedAppCachedVal;
+    }
+    
+    if(storeRatingKeychainItem == nil) {
+        storeRatingKeychainItem = [[VALSynchronizableValet alloc] initWithIdentifier:USER_HAS_RATED_APP_KEY
+                                                               accessibility:VALAccessibilityAfterFirstUnlock];
+    }
+    
+    NSData *data = [storeRatingKeychainItem objectForKey:USER_HAS_RATED_APP_KEY];
+    didFetchAppRatedKeychainVal = YES;
+    int boolAsInt;
+    if(data == nil) {
+        userRatedAppCachedVal = NO;
+        return userRatedAppCachedVal;
+    }
+    [data getBytes:&boolAsInt length:sizeof(boolAsInt)];
+    userRatedAppCachedVal = [[NSNumber numberWithInt:boolAsInt] boolValue];
+    return userRatedAppCachedVal;
 }
 + (void)setUserHasRatedMyApp:(BOOL)userDidRateApp
 {
-    userHasRatedMyApp = userDidRateApp;
+    if(storeRatingKeychainItem == nil) {
+        storeRatingKeychainItem = [[VALSynchronizableValet alloc] initWithIdentifier:USER_HAS_RATED_APP_KEY
+                                                               accessibility:VALAccessibilityAfterFirstUnlock];
+    }
+    
+    int boolAsInt = [[NSNumber numberWithBool:userDidRateApp] intValue];
+    NSData *data = [NSData dataWithBytes:&boolAsInt length:sizeof(boolAsInt)];
+    [storeRatingKeychainItem setObject:data forKey:USER_HAS_RATED_APP_KEY];
+    userRatedAppCachedVal = userDidRateApp;
 }
 
 + (BOOL)shouldDisplayWhatsNewScreen
@@ -279,6 +310,8 @@ static NSString *italicFontName = nil;
 
 
 static NSString *const areAdsRemovedKeychainKey = @"ads removed yet?";
+static BOOL areAdsRemovedCachedVal = NO;
+static BOOL didFetchAreAdsRemovedKeychainVal = NO;
 + (void)adsHaveBeenRemoved:(BOOL)adsRemoved
 {
     if(adsKeychainItem == nil) {
@@ -289,21 +322,28 @@ static NSString *const areAdsRemovedKeychainKey = @"ads removed yet?";
     int boolAsInt = [[NSNumber numberWithBool:adsRemoved] intValue];
     NSData *data = [NSData dataWithBytes:&boolAsInt length:sizeof(boolAsInt)];
     [adsKeychainItem setObject:data forKey:areAdsRemovedKeychainKey];
+    areAdsRemovedCachedVal = adsRemoved;
 }
 + (BOOL)areAdsRemoved
 {
+    if(didFetchAreAdsRemovedKeychainVal) {
+        return areAdsRemovedCachedVal;
+    }
     if(adsKeychainItem == nil) {
         adsKeychainItem = [[VALSynchronizableValet alloc] initWithIdentifier:ARE_ADS_REMOVED_KEYCHAIN_ID
                                                                accessibility:VALAccessibilityAfterFirstUnlock];
     }
     
     NSData *data = [adsKeychainItem objectForKey:areAdsRemovedKeychainKey];
+    didFetchAreAdsRemovedKeychainVal = YES;
     int boolAsInt;
     if(data == nil) {
-        return NO;
+        areAdsRemovedCachedVal = NO;
+        return areAdsRemovedCachedVal;
     }
     [data getBytes:&boolAsInt length:sizeof(boolAsInt)];
-    return [[NSNumber numberWithInt:boolAsInt] boolValue];
+    areAdsRemovedCachedVal = [[NSNumber numberWithInt:boolAsInt] boolValue];
+    return areAdsRemovedCachedVal;
 }
 + (void)setUserSawExpandingPlayerTip:(BOOL)userSawIt
 {

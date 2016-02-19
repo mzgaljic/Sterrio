@@ -1711,9 +1711,27 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
         
         [self removeObservers];
         
-        [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
-            //finish your code when the user finish or dismiss...
+        __weak NSString *videoId = nowPlayingSong.youtube_id;
+        
+        [activityVC setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed,  NSArray *returnedItems, NSError *activityError) {
             [weakSelf restoreTimeObserver];
+            NSString *regex = @"(UIActivityType)|(TU)|(Activity)|(.*\\.)";
+            NSString *shareMethod = [MZCommons replaceCharsMatchingRegex:regex
+                                                                            withChars:@""
+                                                                          usingString:activityType];
+            
+            if(completed &&
+               ([shareMethod caseInsensitiveCompare:@"Message"] == NSOrderedSame
+               || [shareMethod caseInsensitiveCompare:@"Mail"] == NSOrderedSame
+               || [shareMethod caseInsensitiveCompare:@"PostToFacebook"] == NSOrderedSame
+               || [shareMethod caseInsensitiveCompare:@"PostToTwitter"] == NSOrderedSame
+               || [shareMethod caseInsensitiveCompare:@"PostToWeibo"] == NSOrderedSame)) {
+                [Answers logShareWithMethod:shareMethod
+                                contentName:nil
+                                contentType:@"YouTube Video"
+                                  contentId:videoId
+                           customAttributes:@{@"VideoFromLibrary" : [NSNumber numberWithBool:YES]}];
+            }
             
             [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
                 //restoring default button and title font colors in the app.

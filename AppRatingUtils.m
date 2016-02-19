@@ -7,16 +7,12 @@
 //
 
 #import "AppRatingUtils.h"
+#import "AppEnvironmentConstants.h"
+#import <Fabric/Fabric.h>
 
-@interface AppRatingUtils ()
-{
-    NSString *appIdString;
-}
-@end
 @implementation AppRatingUtils
 
-static UIStatusBarStyle _statusBarStyle;
-NSString *const kAppiraterRatedCurrentVersion = @"mzUserRatedCurrentVersion";
+static long const ITUNES_APP_ID = 993519283;
 NSString *templateReviewURL = @"itms-apps://ax.itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=APP_ID";
 
 + (instancetype)sharedInstance
@@ -31,40 +27,19 @@ NSString *templateReviewURL = @"itms-apps://ax.itunes.apple.com/WebObjects/MZSto
 
 - (id)init
 {
-    if(self = [super init]){
-        //[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-    }
+    if(self = [super init]){}
     return self;
 }
 
-- (void)showAppRatingModalToUser
+- (void)redirectToMyAppInAppStore
 {
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    [userDefaults setBool:YES forKey:kAppiraterRatedCurrentVersion];
-    [userDefaults synchronize];
+    //assume they'll actually rate this if they are going to the app store. No way of determining
+    //if they actually rated it for real without nasty hacks.
+    [AppEnvironmentConstants setUserHasRatedMyApp:YES];
+    [Answers logCustomEventWithName:@"AppStore rating/review redirect" customAttributes:nil];
     
-    //Use the in-app StoreKit view if available and imported. This works in the simulator.
-    if (NSStringFromClass([SKStoreProductViewController class]) != nil) {
-        SKStoreProductViewController *storeViewController = [[SKStoreProductViewController alloc] init];
-        NSNumber *appId = [NSNumber numberWithInteger:appIdString.integerValue];
-        [storeViewController loadProductWithParameters:@{SKStoreProductParameterITunesItemIdentifier:appId} completionBlock:nil];
-        [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:storeViewController animated:YES completion:^{
-            //Temporarily use a black status bar to match the StoreKit view.
-            [AppRatingUtils setStatusBarStyle:[UIApplication sharedApplication].statusBarStyle];
-            [[UIApplication sharedApplication]setStatusBarStyle:UIStatusBarStyleLightContent
-                                                       animated:YES];
-        }];
-        
-        //Use the standard openUrl method if StoreKit is unavailable.
-    } else {
-        NSString *reviewURL = [templateReviewURL stringByReplacingOccurrencesOfString:@"APP_ID"
-                                                                           withString:[NSString stringWithFormat:@"%@", appIdString]];
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:reviewURL]];
-    }
+    NSString *urlString = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=%ld", ITUNES_APP_ID];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString]];
 }
 
-#pragma mark - Helpers
-+ (void)setStatusBarStyle:(UIStatusBarStyle)style {
-    _statusBarStyle = style;
-}
 @end

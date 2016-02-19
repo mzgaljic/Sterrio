@@ -9,9 +9,9 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 
-@interface AppRatingUtils : NSObject <SKStoreProductViewControllerDelegate>
+@interface AppRatingUtils : NSObject
 
 + (instancetype)sharedInstance;
-- (void)showAppRatingModalToUser;
+- (void)redirectToMyAppInAppStore;
 
 @end

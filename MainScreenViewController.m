@@ -8,6 +8,7 @@
 
 #import "MainScreenViewController.h"
 #import "PushNotificationsHelper.h"
+#import "AppRatingUtils.h"
 
 NSString * const CENTER_BTN_IMG_NAME = @"plus_sign";
 short const dummyTabIndex = 2;

@@ -20,7 +20,6 @@
 #define USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF @"userHasAcceptedOrDeclinedPushNotif"
 #define LAST_SUCCESSFUL_ICLOUD_SYNC_KEY @"last date icloud synced"
 #define ARE_ADS_REMOVED_KEYCHAIN_ID @"Have ads been removed?"
-#define USER_HAS_RATED_MY_APP @"mzUserRatedCurrentVersion"
 
 #import <Foundation/Foundation.h>
 
@@ -62,7 +61,7 @@ typedef enum{
 + (BOOL)shouldDisplayWelcomeScreen;
 + (void)markShouldDisplayWelcomeScreenTrue;
 
-+ (BOOL)userHasRatedMyApp;
++ (BOOL)hasUserRatedApp;
 + (void)setUserHasRatedMyApp:(BOOL)userDidRateApp;
 
 + (BOOL)isFirstTimeAppLaunched;
