@@ -62,6 +62,7 @@
                            forKey:USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF];
         [standardDefaults setBool:shouldOnlyAirplayAudio
                            forKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY];
+        [standardDefaults setObject:[NSNumber numberWithInteger:1] forKey:NUM_TIMES_APP_LAUNCHED];
         
         UIColor *color = [AppEnvironmentConstants defaultAppThemeBeforeUserPickedTheme];
         const CGFloat* components = CGColorGetComponents(color.CGColor);
@@ -102,6 +103,12 @@
                                                             blue:[defaultColorRep2[2] doubleValue]
                                                            alpha:[defaultColorRep2[3] doubleValue]];
         [UIColor defaultAppColorScheme:usersChosenDefaultColor];
+        
+        //increment and set NUM_TIMES_APP_LAUNCHED
+        NSNumber *numTimesAppLaunched = [standardDefaults objectForKey:NUM_TIMES_APP_LAUNCHED];
+        numTimesAppLaunched = @([numTimesAppLaunched longLongValue] + 1);
+        [standardDefaults setObject:numTimesAppLaunched forKey:NUM_TIMES_APP_LAUNCHED];
+        [standardDefaults synchronize];
     }
 }
 

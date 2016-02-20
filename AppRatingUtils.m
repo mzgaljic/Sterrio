@@ -9,6 +9,7 @@
 #import "AppRatingUtils.h"
 #import "AppEnvironmentConstants.h"
 #import <Fabric/Fabric.h>
+#import "CoreDataManager.h"
 
 @implementation AppRatingUtils
 
@@ -17,6 +18,7 @@ NSString *templateReviewURL = @"itms-apps://ax.itunes.apple.com/WebObjects/MZSto
 
 + (instancetype)sharedInstance
 {
+    NSAssert([NSThread isMainThread], @"AppRatingUtils must only be accessed from the main thread.");
     static dispatch_once_t pred;
     static id sharedInstance = nil;
     dispatch_once(&pred, ^{
@@ -40,6 +42,36 @@ NSString *templateReviewURL = @"itms-apps://ax.itunes.apple.com/WebObjects/MZSto
     
     NSString *urlString = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=%ld", ITUNES_APP_ID];
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString]];
+}
+
+static int numTimesMethodCalled = 0;
++ (BOOL)shouldAskUserIfTheyLikeApp
+{
+    const int minTimesAppMustBeLaunched = 20;
+    const int minSongsInLibCount = 15;
+    if([AppEnvironmentConstants hasUserRatedApp]) {
+        return NO;
+    }
+    
+    numTimesMethodCalled++;
+    if(numTimesMethodCalled % 5 != 0) {
+        //has it been 5 times since this method was called? If not, don't ask the user if they like
+        //the app. This is a nice way of 'rate limiting' how frequently they will see the question
+        //per app session.
+        return NO;
+    }
+    
+    if([AppEnvironmentConstants numberTimesUserLaunchedApp].longValue >= minTimesAppMustBeLaunched) {
+        NSManagedObjectContext *moc = [CoreDataManager context];
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        [request setEntity:[NSEntityDescription entityForName:@"Song" inManagedObjectContext:moc]];
+        [request setIncludesSubentities:NO]; //Omit subentities.
+        NSUInteger count = [moc countForFetchRequest:request error:nil];
+        if(count != NSNotFound && count >= minSongsInLibCount) {
+            return YES;
+        }
+    }
+    return NO;
 }
 
 @end

@@ -20,6 +20,7 @@
 #define USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF @"userHasAcceptedOrDeclinedPushNotif"
 #define LAST_SUCCESSFUL_ICLOUD_SYNC_KEY @"last date icloud synced"
 #define ARE_ADS_REMOVED_KEYCHAIN_ID @"Have ads been removed?"
+#define NUM_TIMES_APP_LAUNCHED @"numberOfTimesAppLaunched"  //on just this device.
 
 #import <Foundation/Foundation.h>
 
@@ -66,6 +67,8 @@ typedef enum{
 
 + (BOOL)isFirstTimeAppLaunched;
 + (void)markAppAsLaunchedForFirstTime;
+
++ (NSNumber *)numberTimesUserLaunchedApp;
 
 + (BOOL)isTabBarHidden;
 + (void)setTabBarHidden:(BOOL)hidden;

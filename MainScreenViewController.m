@@ -8,7 +8,6 @@
 
 #import "MainScreenViewController.h"
 #import "PushNotificationsHelper.h"
-#import "AppRatingUtils.h"
 
 NSString * const CENTER_BTN_IMG_NAME = @"plus_sign";
 short const dummyTabIndex = 2;
@@ -145,9 +144,8 @@ short const dummyTabIndex = 2;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    if(! [AppEnvironmentConstants isFirstTimeAppLaunched]) {
-        //want to ask the 2nd time, not the 1st. User sees the intro the first time,
-        //lets not overload them with stuff to read.
+    if([AppEnvironmentConstants numberTimesUserLaunchedApp].longValue == 2) {
+        //User sees the intro the first time, lets not overload them with stuff to read.
         [PushNotificationsHelper askUserIfTheyAreInterestedInPushNotif];
     }
 }

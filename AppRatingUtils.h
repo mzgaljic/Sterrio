@@ -9,9 +9,14 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 
+/**
+ * Class should only be accessed from the main thread.
+ */
 @interface AppRatingUtils : NSObject
 
 + (instancetype)sharedInstance;
 - (void)redirectToMyAppInAppStore;
+
++ (BOOL)shouldAskUserIfTheyLikeApp;
 
 @end

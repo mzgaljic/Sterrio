@@ -583,7 +583,7 @@ static NSUInteger numLettersUserHasTyped = 0;
 
 - (void)fetchYtSearchSuggestionsDelayed:(NSTimer *)t
 {
-    assert(t == suggestionsDelayer);
+    NSAssert(t == suggestionsDelayer, @"fetchYtSearchSuggestionsDelayed: was called with the wrong timer object. t != suggestionsDelayer.");
     NSString *query = suggestionsDelayer.userInfo;
     [[YouTubeVideoSearchService sharedInstance] fetchYouTubeAutoCompleteResultsForString:query];
     suggestionsDelayer = nil;

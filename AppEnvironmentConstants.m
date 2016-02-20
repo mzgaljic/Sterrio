@@ -167,6 +167,16 @@ static BOOL didFetchAppRatedKeychainVal = NO;
     isFirstTimeAppLaunched = YES;
 }
 
+static NSNumber *numTimesAppLaunched = nil;
++ (NSNumber *)numberTimesUserLaunchedApp
+{
+    if(numTimesAppLaunched) {
+        return numTimesAppLaunched;
+    }
+    numTimesAppLaunched = [[NSUserDefaults standardUserDefaults] objectForKey:NUM_TIMES_APP_LAUNCHED];
+    return numTimesAppLaunched;
+}
+
 + (BOOL)isTabBarHidden
 {
     return tabBarIsHidden;
