@@ -17,6 +17,8 @@
 #import "PreferredFontSizeUtility.h"
 #import "YouTubeSongAdderViewController.h"
 #import "CustomYoutubeTableViewCell.h"
+#import "AppRatingUtils.h"
+#import "AppRatingTableViewCell.h"
 
 //NOTE loadingMoreResultsSpinner is not currently used. To use again, call "reload" on tableview
 //right before loading more results.
@@ -45,12 +47,15 @@
 @property (nonatomic, assign) BOOL noMoreResultsToDisplay;
 @property (nonatomic, assign) BOOL waitingOnNextPageResults;
 @property (nonatomic, assign) BOOL waitingOnYoutubeResults;
+
+@property (nonatomic, assign) BOOL canShowAppRatingCell;
 @end
 
 @implementation YoutubeResultsTableViewController
 static const float MINIMUM_DURATION_OF_LOADING_POPUP = 0.3f;
 static NSString *Network_Error_Loading_More_Results_Msg = @"Network error";
 static NSString *No_More_Results_To_Display_Msg = @"No more results";
+static const int APP_RATING_CELL_ROW_NUM = 2;
 
 //custom setters
 - (void)setDisplaySearchResults:(BOOL)displaySearchResults
@@ -196,6 +201,8 @@ static NSDate *timeSinceLastPageLoaded;
     [_searchBar becomeFirstResponder];
     
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerShouldRespectToolbar];
+    
+    self.canShowAppRatingCell = [AppRatingUtils shouldAskUserIfTheyLikeApp];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -664,10 +671,12 @@ static NSUInteger numLettersUserHasTyped = 0;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if(self.displaySearchResults){
-        if(section == 0)
-            return _searchResults.count;  //number of videos in results
-        else
-            return -1;
+        NSAssert(section == 0, @"YoutubeResultsTableViewController numberOfRowsInSection -> section != 0 when self.displaySearchResults == YES.");
+        NSInteger numRows = _searchResults.count;  //number of videos in results
+        if(self.canShowAppRatingCell) {
+            numRows++;
+        }
+        return numRows;
     }else{
         //user has not pressed "search" yet, only showing autosuggestions
         return self.searchSuggestions.count;
@@ -680,56 +689,70 @@ static NSUInteger numLettersUserHasTyped = 0;
     // Configure the cell...
     YouTubeVideo *ytVideo;
     
-    if(self.displaySearchResults){  //video search results will populate the table
-        if(indexPath.section == 0){
-            BOOL assertCondition = _searchResults.count-1 < indexPath.row;
-            if(assertCondition) {
-                NSString *assertDesc = [NSString stringWithFormat:@"Cell indexpath.row is %li but there are only %lu search results (last index is %lu)", (long)indexPath.row, (unsigned long)_searchResults.count, _searchResults.count-1];
-                CLS_LOG(@"%@", assertDesc);
-                NSAssert(assertCondition, assertDesc);
-            }
-            ytVideo = [_searchResults objectAtIndex:indexPath.row];
-            
-            CustomYoutubeTableViewCell *customCell;
-            customCell = [tableView dequeueReusableCellWithIdentifier:@"youtubeResultCell" forIndexPath:indexPath];
-            customCell.videoChannel.enabled = YES;
-            customCell.videoTitle.enabled = YES;
-            customCell.textLabel.enabled = YES;
-            customCell.detailTextLabel.enabled = YES;
-            customCell.videoTitle.text = ytVideo.videoName;
-            customCell.videoChannel.textColor = [UIColor grayColor];
-            customCell.videoChannel.text = ytVideo.channelTitle;
-            customCell.videoTitle.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                                                        size:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-            customCell.videoChannel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                                                        size:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-            
-            // If an existing cell is being reused, reset the image to the default until it is populated.
-            // Without this code, previous images are displayed against the new cells during rapid scrolling.
-            customCell.videoThumbnail.image = nil;
-            customCell.videoThumbnail.image = [UIImage imageWithColor:[UIColor clearColor]
-                                                           width:customCell.videoThumbnail.frame.size.width
-                                                          height:customCell.videoThumbnail.frame.size.height];
-            
-            // now download the true thumbnail image asynchronously
-            __weak NSString *weakVideoURL = ytVideo.videoThumbnailUrl;
-            [self downloadImageWithURL:[NSURL URLWithString:weakVideoURL] completionBlock:^(BOOL succeeded, UIImage *image)
-            {
-                if (succeeded) {
-                    customCell.videoThumbnail.image = nil;
-                    [UIView transitionWithView:customCell.videoThumbnail
-                                      duration:MZCellImageViewFadeDuration
-                                       options:UIViewAnimationOptionTransitionCrossDissolve
-                                    animations:^{
-                                        customCell.videoThumbnail.image = image;
-                                    } completion:nil];
-                }
-            }];
-            ytVideo = nil;
-            customCell.accessoryType = UITableViewCellAccessoryNone;
-            return customCell;
-            
+    //video search results will populate the table
+    if(self.displaySearchResults){
+        NSAssert(indexPath.section == 0, @"YoutubeResultsTableViewController calling cellForRowAtIndexPath for section > 0 when displaying search results.");
+        
+        int numAppRatingCells = (_canShowAppRatingCell) ? 1 : 0;
+        NSString *assertDesc = [NSString stringWithFormat:@"Cell indexpath.row is %li but there are only %lu search results (+ %i app rating cells). last index is %lu.", (long)indexPath.row, (unsigned long)_searchResults.count, numAppRatingCells, _searchResults.count-1];
+        NSAssert(_searchResults.count-1 + numAppRatingCells >= indexPath.row, assertDesc);
+        
+        if(_canShowAppRatingCell && indexPath.row == APP_RATING_CELL_ROW_NUM) {
+            AppRatingTableViewCell *appRatingCell;
+            appRatingCell = [tableView dequeueReusableCellWithIdentifier:@"appRatingCell"
+                                                            forIndexPath:indexPath];
+            return appRatingCell;
         }
+        
+        NSInteger ytVideoResultsIndex = -1;
+        if(_canShowAppRatingCell) {
+            ytVideoResultsIndex = (indexPath.row >= APP_RATING_CELL_ROW_NUM) ?
+                                        indexPath.row -1 : indexPath.row;
+        } else {
+            ytVideoResultsIndex = indexPath.row;
+        }
+        NSInteger arrayIndex = [self rowNumFromIndexPathTakingAppRatingCellIntoAccount:indexPath];
+        ytVideo = [_searchResults objectAtIndex:arrayIndex];
+        
+        CustomYoutubeTableViewCell *customCell;
+        customCell = [tableView dequeueReusableCellWithIdentifier:@"youtubeResultCell"
+                                                     forIndexPath:indexPath];
+        customCell.videoChannel.enabled = YES;
+        customCell.videoTitle.enabled = YES;
+        customCell.textLabel.enabled = YES;
+        customCell.detailTextLabel.enabled = YES;
+        customCell.videoTitle.text = ytVideo.videoName;
+        customCell.videoChannel.textColor = [UIColor grayColor];
+        customCell.videoChannel.text = ytVideo.channelTitle;
+        customCell.videoTitle.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                     size:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        customCell.videoChannel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                       size:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
+        
+        // If an existing cell is being reused, reset the image to the default until it is populated.
+        // Without this code, previous images are displayed against the new cells during rapid scrolling.
+        customCell.videoThumbnail.image = nil;
+        customCell.videoThumbnail.image = [UIImage imageWithColor:[UIColor clearColor]
+                                                            width:customCell.videoThumbnail.frame.size.width
+                                                           height:customCell.videoThumbnail.frame.size.height];
+        
+        // now download the true thumbnail image asynchronously
+        __weak NSString *weakVideoURL = ytVideo.videoThumbnailUrl;
+        [self downloadImageWithURL:[NSURL URLWithString:weakVideoURL] completionBlock:^(BOOL succeeded, UIImage *image)
+         {
+             if (succeeded) {
+                 customCell.videoThumbnail.image = nil;
+                 [UIView transitionWithView:customCell.videoThumbnail
+                                   duration:MZCellImageViewFadeDuration
+                                    options:UIViewAnimationOptionTransitionCrossDissolve
+                                 animations:^{
+                                     customCell.videoThumbnail.image = image;
+                                 } completion:nil];
+             }
+         }];
+        ytVideo = nil;
+        customCell.accessoryType = UITableViewCellAccessoryNone;
+        return customCell;
     }else{  //auto suggestions will populate the table
         cell = [tableView dequeueReusableCellWithIdentifier:@"youtubeSuggsestCell" forIndexPath:indexPath];
         cell.textLabel.text = [self.searchSuggestions objectAtIndex:indexPath.row];
@@ -758,33 +781,34 @@ static NSUInteger numLettersUserHasTyped = 0;
         return height;
     }
     else{
-        if(indexPath.section == 0){
-            float widthOfScreenRoationIndependant;
-            float  a = [[UIScreen mainScreen] bounds].size.height;
-            float b = [[UIScreen mainScreen] bounds].size.width;
-            if(a < b)
-                widthOfScreenRoationIndependant = a;
-            else
-                widthOfScreenRoationIndependant = b;
-            
-            //hardcoded in the CustomYoutubeTabeViewCell obj too. Was originally a % of the
-            //screen.
-            int imageWidth = 140;
-            int height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:imageWidth];
-            return height + 16;
-        }
+        NSAssert(indexPath.section == 0, @"YoutubeResultsTableViewController asking for height of cell w/ section > 0 when displaying search results!");
+        float widthOfScreenRoationIndependant;
+        float  a = [[UIScreen mainScreen] bounds].size.height;
+        float b = [[UIScreen mainScreen] bounds].size.width;
+        if(a < b)
+            widthOfScreenRoationIndependant = a;
         else
-            return 60;  //just returning something since i have to
+            widthOfScreenRoationIndependant = b;
+        
+        //hardcoded in the CustomYoutubeTabeViewCell obj too. Was originally a % of the
+        //screen.
+        int imageWidth = 140;
+        int height = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:imageWidth];
+        return height + 16;
     }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if(_canShowAppRatingCell && indexPath.row == APP_RATING_CELL_ROW_NUM) {
+        return;  //don't want a selection style for that cell.
+    }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     if(self.displaySearchResults){  //video search results in table
         if(indexPath.section == 0){
-            YouTubeVideo *ytVideo = [_searchResults objectAtIndex:indexPath.row];
+            NSInteger arrayIndex = [self rowNumFromIndexPathTakingAppRatingCellIntoAccount:indexPath];
+            YouTubeVideo *ytVideo = [_searchResults objectAtIndex:arrayIndex];
             CustomYoutubeTableViewCell *cell;
             cell = (CustomYoutubeTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
             UIImage *img = [UIImage imageWithCGImage:cell.videoThumbnail.image.CGImage];
@@ -1022,6 +1046,19 @@ static NSDate *finish;
     else{
         return NO;
     }
+}
+
+#pragma mark - Utils
+- (NSInteger)rowNumFromIndexPathTakingAppRatingCellIntoAccount:(NSIndexPath *)indexPath
+{
+    NSInteger ytVideoResultsIndex = -1;
+    if(_canShowAppRatingCell) {
+        ytVideoResultsIndex = (indexPath.row >= APP_RATING_CELL_ROW_NUM) ?
+        indexPath.row -1 : indexPath.row;
+    } else {
+        ytVideoResultsIndex = indexPath.row;
+    }
+    return ytVideoResultsIndex;
 }
 
 @end

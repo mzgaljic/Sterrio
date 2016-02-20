@@ -47,6 +47,11 @@ NSString *templateReviewURL = @"itms-apps://ax.itunes.apple.com/WebObjects/MZSto
 static int numTimesMethodCalled = 0;
 + (BOOL)shouldAskUserIfTheyLikeApp
 {
+#ifdef DEBUG
+    numTimesMethodCalled++;
+    return (numTimesMethodCalled % 2 == 0);
+#else
+    // Something to log your sensitive data here
     const int minTimesAppMustBeLaunched = 20;
     const int minSongsInLibCount = 15;
     if([AppEnvironmentConstants hasUserRatedApp]) {
@@ -72,6 +77,7 @@ static int numTimesMethodCalled = 0;
         }
     }
     return NO;
+#endif
 }
 
 @end
