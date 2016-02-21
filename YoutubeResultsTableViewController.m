@@ -148,7 +148,7 @@ static NSDate *timeSinceLastPageLoaded;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(orientationChanged:)
-                                                 name:UIDeviceOrientationDidChangeNotification
+                                                 name:UIApplicationDidChangeStatusBarOrientationNotification
                                                object:nil];
     
     //if(self.displaySearchResults)
@@ -160,7 +160,7 @@ static NSDate *timeSinceLastPageLoaded;
 {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter]removeObserver:self
-                                                   name:UIDeviceOrientationDidChangeNotification
+                                                   name:UIApplicationDidChangeStatusBarOrientationNotification
                                                  object:nil];
     //makes sure that if the VC is being popped, the keyboard doesnt dismiss with a huge delay.
     [self.view endEditing:YES];
@@ -203,6 +203,7 @@ static NSDate *timeSinceLastPageLoaded;
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerShouldRespectToolbar];
     
     self.canShowAppRatingCell = [AppRatingUtils shouldAskUserIfTheyLikeApp];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideAppRatingCell) name:MZHideAppRatingCell object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -701,6 +702,7 @@ static NSUInteger numLettersUserHasTyped = 0;
             AppRatingTableViewCell *appRatingCell;
             appRatingCell = [tableView dequeueReusableCellWithIdentifier:@"appRatingCell"
                                                             forIndexPath:indexPath];
+            appRatingCell.selectionStyle = UITableViewCellSelectionStyleNone;
             return appRatingCell;
         }
         
@@ -1059,6 +1061,20 @@ static NSDate *finish;
         ytVideoResultsIndex = indexPath.row;
     }
     return ytVideoResultsIndex;
+}
+
+- (void)hideAppRatingCell
+{
+    NSAssert(_canShowAppRatingCell, @"Was asked to hide app rating cell but it's not showing!");
+    [self performSelector:@selector(hideAppRatingCellDelayed) withObject:nil afterDelay:0.2];
+}
+- (void)hideAppRatingCellDelayed
+{
+    [self.tableView beginUpdates];
+    NSArray *paths = @[[NSIndexPath indexPathForRow:APP_RATING_CELL_ROW_NUM inSection:0]];
+    [self.tableView deleteRowsAtIndexPaths:paths withRowAnimation:UITableViewRowAnimationAutomatic];
+    _canShowAppRatingCell = NO;
+    [self.tableView endUpdates];
 }
 
 @end

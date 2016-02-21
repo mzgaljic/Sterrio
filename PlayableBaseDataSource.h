@@ -34,6 +34,5 @@
 
 //Boring utility methods for subclasses
 - (UIViewController *)topViewController;
-- (UIViewController *)topViewController:(UIViewController *)rootViewController;
 @end
 

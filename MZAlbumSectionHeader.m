@@ -46,7 +46,7 @@ const float SEPERATOR_HEIGHT = 0.5;
         album = anAlbum;
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(orientationChanged)
-                                                     name:UIDeviceOrientationDidChangeNotification
+                                                     name:UIApplicationDidChangeStatusBarOrientationNotification
                                                    object:nil];
     }
     return self;

@@ -18,7 +18,7 @@
     [super awakeFromNib];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(orientationNeedsToChanged)
-                                                 name:UIDeviceOrientationDidChangeNotification object:nil];
+                                                 name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
     self.videoTitle.numberOfLines = 0;
     self.videoChannel.numberOfLines = 0;
     self.videoTitle.lineBreakMode = NSLineBreakByTruncatingTail;

@@ -35,6 +35,7 @@ NSString * const MZAVPlayerStallStateChanged = @"AVPlayer stalls changed";
 NSString * const MZInitAudioSession = @"Init the audio session if it isnt already setup";
 
 NSString * const MZAppIntroComplete = @"Intro on initial app launch has been completed";
+NSString * const MZHideAppRatingCell = @"Can now hide the app rating cell";
 
 NSString * const MZKeyNumLikes = @"numLikes";
 NSString * const MZKeyNumDislikes = @"numDislikes";
@@ -70,7 +71,6 @@ NSString * const MZHideTabBarAnimated = @"Pass @YES in notif to hide tab bar";
 //determined this would work well with smallest font size on largest iphone (iphone 6 plus)
 int MZDefaultCoreDataFetchBatchSize = 35;
 
-NSString * const MZWhatsNewUserMsg = @"Sterrio can now guess the song info for most YouTube videos (w/ a reasonably clean title.) \n\nManually entering information is now a rare occurence.";
 NSString * const MZAppName = @"Sterrio";
 
 @end

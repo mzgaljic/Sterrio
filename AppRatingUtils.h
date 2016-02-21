@@ -15,6 +15,8 @@
 @interface AppRatingUtils : NSObject
 
 + (instancetype)sharedInstance;
+
+- (void)redirectToMyAppInAppStoreWithDelay:(NSTimeInterval)interval;
 - (void)redirectToMyAppInAppStore;
 
 + (BOOL)shouldAskUserIfTheyLikeApp;

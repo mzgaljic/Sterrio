@@ -9,59 +9,212 @@
 #import "AppRatingTableViewCell.h"
 #import "SSBouncyButton.h"
 #import "AppEnvironmentConstants.h"
+#import "TOMSMorphingLabel.h"
+#import "AppRatingUtils.h"
+#import "EmailComposerManager.h"
+
+@interface AppRatingTableViewCell ()
+{
+    BOOL alreadySetupGuiElements;
+    NSString *cachedTitleLabelText;
+}
+@property (nonatomic, strong) SSBouncyButton *yesBtn;
+@property (nonatomic, strong) SSBouncyButton *notReallyBtn;
+@property (nonatomic, strong) TOMSMorphingLabel *titleLabel;
+@end
+
+static const int Y_PADDING = 8;
+static const int X_PADDING = 16;
+static const int BUTTON_WIDTH = 120;
+static NSString * const RATE_US_ON_APP_STORE_TEXT = @"How about rating us on the App Store?";
+static NSString * const GIVE_US_SOME_FEEDBACK_TEXT = @"Would you mind giving us some feedback?";
+static NSString * const OK_SURE_TEXT = @"Ok, sure";
+static NSString * const NO_THANKS_TEXT = @"No, thanks";
 
 @implementation AppRatingTableViewCell
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    NSString *const orientationChangedNotif = UIApplicationDidChangeStatusBarOrientationNotification;
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(orientationChanged)
+                                                 name:orientationChangedNotif object:nil];
+    alreadySetupGuiElements = NO;
+}
+
+- (void)dealloc
+{
+    _yesBtn = nil;
+    _notReallyBtn = nil;
+    _titleLabel = nil;
+}
 
 - (void)layoutSubviews
 {
     [super layoutSubviews];
    
+    if(alreadySetupGuiElements) {
+        return;
+    }
+    [self initialAreYouLikingTheAppQuestion];
+    alreadySetupGuiElements = YES;
+}
+
+- (void)initialAreYouLikingTheAppQuestion
+{
     UIView *view = self.contentView;
-    view.backgroundColor = [UIColor defaultWindowTintColor];
+    view.backgroundColor = [UIColor defaultAppColorScheme];
     view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
     
-    int viewWidth = view.frame.size.width;
-    int viewHeight = view.frame.size.height;
-    int xMid = view.frame.size.width/2;
-    int yMid = view.frame.size.height/2;
-    int padding = 8;
+    _titleLabel = [[TOMSMorphingLabel alloc] initWithFrame:[self titleLabelFrame]];
+    _titleLabel.text = [NSString stringWithFormat:@"Enjoying %@?", MZAppName];
+    cachedTitleLabelText = _titleLabel.text;
+    _titleLabel.textColor = [UIColor defaultWindowTintColor];
+    _titleLabel.textAlignment = NSTextAlignmentCenter;
+    _titleLabel.animationDuration = 0.40;
     
-    int labelHeight = yMid - padding - padding;
-    UILabel *enjoyingAppLabel = [[UILabel alloc] initWithFrame:CGRectMake(padding,
-                                                                          padding + labelHeight,
-                                                                          view.frame.size.width,
-                                                                          labelHeight)];
-    enjoyingAppLabel.text = [NSString stringWithFormat:@"Enjoying %@?", MZAppName];
-    enjoyingAppLabel.textColor = [UIColor defaultAppColorScheme];
-    enjoyingAppLabel.textAlignment = NSTextAlignmentCenter;
+    _notReallyBtn = [[SSBouncyButton alloc] initWithFrame:[self noBtnFrame]];
+    [_notReallyBtn setTitle:@"Not really" forState:UIControlStateNormal];
+    [self applyNoStyleToSSButton:_notReallyBtn];
+    [_notReallyBtn addTarget:self
+                      action:@selector(noTapped)
+            forControlEvents:UIControlEventTouchUpInside];
     
-    int buttonHeight = yMid - padding - padding;
-    int buttonWidth = xMid - padding - padding;
-    SSBouncyButton *notReally;
-    notReally = [[SSBouncyButton alloc] initWithFrame:CGRectMake(padding,
-                                                                 viewHeight - padding,
-                                                                 buttonWidth,
-                                                                 buttonHeight)];
-    [notReally setTitle:@"Not really" forState:UIControlStateNormal];
-    [notReally setTitleColor:[UIColor defaultAppColorScheme] forState:UIControlStateNormal];
-    [notReally setBackgroundColor:[UIColor defaultWindowTintColor]];
-    notReally.titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                                                size:notReally.titleLabel.font.pointSize];
+
+    _yesBtn = [[SSBouncyButton alloc] initWithFrame:[self yesBtnFrame]];
+    [_yesBtn setTitle:@"Yes!" forState:UIControlStateNormal];
+    [self applyYesStyleToSSButton:_yesBtn];
+    [_yesBtn addTarget:self
+                action:@selector(yesTapped)
+      forControlEvents:UIControlEventTouchUpInside];
     
-    SSBouncyButton *yes;
-    yes = [[SSBouncyButton alloc] initWithFrame:CGRectMake(viewWidth - buttonWidth - padding,
-                                                           viewHeight - padding,
-                                                           buttonWidth,
-                                                           buttonHeight)];
-    [yes setTitle:@"Yes!" forState:UIControlStateNormal];
-    [yes setTitleColor:[UIColor defaultAppColorScheme] forState:UIControlStateNormal];
-    [yes setBackgroundColor:[UIColor defaultWindowTintColor]];
-    yes.titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                                          size:notReally.titleLabel.font.pointSize];
+    [view addSubview:_titleLabel];
+    [view addSubview:_notReallyBtn];
+    [view addSubview:_yesBtn];
+}
+
+#pragma mark - Button actions
+- (void)yesTapped
+{
+    if([_titleLabel.text isEqualToString:[NSString stringWithFormat:@"Enjoying %@?", MZAppName]]) {
+        //now ask user if they want to rate the app now.
+        _titleLabel.text = RATE_US_ON_APP_STORE_TEXT;
+        cachedTitleLabelText = _titleLabel.text;
+        [_yesBtn setTitle:OK_SURE_TEXT forState:UIControlStateNormal];
+        [_notReallyBtn setTitle:NO_THANKS_TEXT forState:UIControlStateNormal];
+        
+    } else if([_titleLabel.text isEqualToString:RATE_US_ON_APP_STORE_TEXT]) {
+        [[AppRatingUtils sharedInstance] redirectToMyAppInAppStoreWithDelay:0.25];
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZHideAppRatingCell object:nil];
+    } else if([_titleLabel.text isEqualToString:GIVE_US_SOME_FEEDBACK_TEXT]) {
+        EmailComposerManager *mailComposer;
+        mailComposer = [[EmailComposerManager alloc] initWithEmailComposePurpose:Email_Compose_Purpose_General_Feedback callingVc:[self topViewController]];
+        [mailComposer presentEmailComposerAndOrPhotoPicker];
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZHideAppRatingCell object:nil];
+    }
+}
+
+- (void)noTapped
+{
+    if([_titleLabel.text isEqualToString:[NSString stringWithFormat:@"Enjoying %@?", MZAppName]]) {
+        //user dislikes my app  :O   Ask for feedback.
+        _titleLabel.text = GIVE_US_SOME_FEEDBACK_TEXT;
+        cachedTitleLabelText = _titleLabel.text;
+        [_yesBtn setTitle:OK_SURE_TEXT forState:UIControlStateNormal];
+        [_notReallyBtn setTitle:NO_THANKS_TEXT forState:UIControlStateNormal];
+        
+    } else if([_titleLabel.text isEqualToString:GIVE_US_SOME_FEEDBACK_TEXT]){
+        //user dislikes app and don't want to give
+        //me feedback. Hide this cell and never show again.
+#warning uncomment this line when testing is complete.
+        //[AppEnvironmentConstants setUserHasRatedMyApp:YES];
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZHideAppRatingCell object:nil];
+    } else if([_titleLabel.text isEqualToString:RATE_US_ON_APP_STORE_TEXT]) {
+        //user doesn't want to rate even though they like app, hide cell and never show again.
+#warning uncomment this line when testing is complete.
+        //[AppEnvironmentConstants setUserHasRatedMyApp:YES];
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZHideAppRatingCell object:nil];
+    }
+}
+
+#pragma mark - Orientation
+- (void)orientationChanged
+{
+    //cachedTitleLabelText
+    _titleLabel.frame = [self titleLabelFrame];
+    _notReallyBtn.frame = [self noBtnFrame];
+    _yesBtn.frame = [self yesBtnFrame];
+}
+
+#pragma mark - Util
+- (void)applyYesStyleToSSButton:(SSBouncyButton *)btn
+{
+    btn.selected = YES;
+    [btn setTitleColor:[UIColor defaultAppColorScheme] forState:UIControlStateSelected];
+    btn.tintColor = [UIColor defaultWindowTintColor];
+    btn.titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                          size:btn.titleLabel.font.pointSize];
+}
+
+- (void)applyNoStyleToSSButton:(SSBouncyButton *)btn
+{
+    btn.selected = NO;
+    btn.tintColor = [UIColor defaultWindowTintColor];
+    btn.titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                          size:btn.titleLabel.font.pointSize];
+}
+
+- (CGRect)titleLabelFrame
+{
+    int yMid = self.contentView.frame.size.height/2;
+    int labelHeight = yMid - Y_PADDING - Y_PADDING;
+    return CGRectMake(0,
+                      Y_PADDING,
+                      self.contentView.frame.size.width,
+                      labelHeight);
+}
+
+- (CGRect)yesBtnFrame
+{
+    int xMid = self.contentView.frame.size.width/2;
+    int yMid = self.contentView.frame.size.height/2;
+    int buttonHeight = yMid - Y_PADDING - Y_PADDING;
+    return CGRectMake(xMid + X_PADDING,
+                      yMid + Y_PADDING,
+                      BUTTON_WIDTH,
+                      buttonHeight);
+}
+
+- (CGRect)noBtnFrame
+{
+    int xMid = self.contentView.frame.size.width/2;
+    int yMid = self.contentView.frame.size.height/2;
+    int buttonHeight = yMid - Y_PADDING - Y_PADDING;
+    return CGRectMake(xMid - X_PADDING - BUTTON_WIDTH,
+                      yMid + Y_PADDING,
+                      BUTTON_WIDTH,
+                      buttonHeight);
+}
+
+- (UIViewController *)topViewController
+{
+    return [self topViewController:[UIApplication sharedApplication].keyWindow.rootViewController];
+}
+//from snikch on Github
+- (UIViewController *)topViewController:(UIViewController *)rootViewController
+{
+    if (rootViewController.presentedViewController == nil)
+        return rootViewController;
     
-    [view addSubview:enjoyingAppLabel];
-    [view addSubview:notReally];
-    [view addSubview:yes];
+    if ([rootViewController.presentedViewController isKindOfClass:[UINavigationController class]]) {
+        UINavigationController *navigationController = (UINavigationController *)rootViewController.presentedViewController;
+        UIViewController *lastViewController = [[navigationController viewControllers] lastObject];
+        return [self topViewController:lastViewController];
+    }
+    
+    UIViewController *presentedViewController = (UIViewController *)rootViewController.presentedViewController;
+    return [self topViewController:presentedViewController];
 }
 
 @end

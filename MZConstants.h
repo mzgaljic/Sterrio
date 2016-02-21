@@ -34,6 +34,7 @@ extern NSString * const MZAVPlayerStallStateChanged;
 extern NSString * const MZInitAudioSession;
 
 extern NSString * const MZAppIntroComplete;
+extern NSString * const MZHideAppRatingCell;
 
 extern NSString * const MZKeyNumLikes;
 extern NSString * const MZKeyNumDislikes;
@@ -70,7 +71,6 @@ extern NSString * const MZHideTabBarAnimated;
 //determined this would work well with smallest font size on largest iphone (iphone 6 plus)
 extern int MZDefaultCoreDataFetchBatchSize;
 
-extern NSString * const MZWhatsNewUserMsg;
 extern NSString * const MZAppName;
 
 @end

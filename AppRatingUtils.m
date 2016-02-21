@@ -13,7 +13,8 @@
 
 @implementation AppRatingUtils
 
-static long const ITUNES_APP_ID = 993519283;
+#warning change to our real itunes app id instead of using the angry birds one.
+static long const ITUNES_APP_ID = 343200656;//993519283;
 NSString *templateReviewURL = @"itms-apps://ax.itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=APP_ID";
 
 + (instancetype)sharedInstance
@@ -31,6 +32,11 @@ NSString *templateReviewURL = @"itms-apps://ax.itunes.apple.com/WebObjects/MZSto
 {
     if(self = [super init]){}
     return self;
+}
+
+- (void)redirectToMyAppInAppStoreWithDelay:(NSTimeInterval)interval
+{
+    [self performSelector:@selector(redirectToMyAppInAppStore) withObject:nil afterDelay:interval];
 }
 
 - (void)redirectToMyAppInAppStore
