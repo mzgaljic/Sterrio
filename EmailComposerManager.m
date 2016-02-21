@@ -17,6 +17,7 @@
 @property (nonatomic, strong) UIImage *attachedImage;
 @property (nonatomic, strong) UIImagePickerController *photoPickerController;
 @property (nonatomic, strong) UIViewController *callingVc;
+@property (nonatomic, strong) EmailComposerManager *myself;
 @end
 @implementation EmailComposerManager
 
@@ -48,9 +49,18 @@
 
 - (void)dealloc
 {
+    NSLog(@"Dealloc'ed in %@", NSStringFromClass([self class]));
     self.callingVc = nil;
     self.photoPickerController = nil;
     self.attachedImage = nil;
+}
+
+- (void)preDealloc
+{
+    self.attachedImage = nil;
+    self.photoPickerController = nil;
+    self.callingVc = nil;
+    self.myself = nil;
 }
 
 - (void)callMailComposer
@@ -68,8 +78,16 @@
 }
 
 // Displays an email composition interface inside the application. Populates all the Mail fields.
--(void)displayComposerModalView
+- (void)displayComposerModalView
 {
+    //purposely create a retain cycle. We'll break it once the mail composer is done being used
+    //by the user (cancel or send is tapped.) This allows the callers of this class to be deallocated
+    //without accidentally breaking the functionality. Consider the case where the
+    //AppRatingTableViewCell presents the email composer, and then that cell is deleted from the
+    //tableview. If we didn't retain ourselves, then the mail composer delegate (this class) could
+    //never be called since we'd be deallocated!
+    self.myself = self;
+    
     MFMailComposeViewController *composer = [[MFMailComposeViewController alloc] init];
     
     //for cancel and send button, as well as actionsheet thingy.
@@ -89,8 +107,8 @@
     
     if(self.attachedImage){
         [composer addAttachmentData:UIImagePNGRepresentation(self.attachedImage)
-                         mimeType:@"image/png"
-                         fileName:@"My Screenshot"];
+                                mimeType:@"image/png"
+                                fileName:@"My Screenshot"];
     }
     
     [self.callingVc.navigationController presentViewController:composer
@@ -171,6 +189,8 @@
                                  afterDelay:secondsUntilAutoDismiss];
             }];
     }];
+    //break our intentional retain cycle, allowing us to be deallocated.
+    [self preDealloc];
 }
 
 // Launches the Mail application on the device (when does this occur?)
