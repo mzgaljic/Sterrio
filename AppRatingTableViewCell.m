@@ -105,7 +105,7 @@ static NSString * const NO_THANKS_TEXT = @"No, thanks";
         [_notReallyBtn setTitle:NO_THANKS_TEXT forState:UIControlStateNormal];
         
     } else if([_titleLabel.text isEqualToString:RATE_US_ON_APP_STORE_TEXT]) {
-        [[AppRatingUtils sharedInstance] redirectToMyAppInAppStoreWithDelay:0.25];
+        [[AppRatingUtils sharedInstance] redirectToMyAppInAppStoreWithDelay:0.40];
         [[NSNotificationCenter defaultCenter] postNotificationName:MZHideAppRatingCell object:nil];
     } else if([_titleLabel.text isEqualToString:GIVE_US_SOME_FEEDBACK_TEXT]) {
         EmailComposerManager *mailComposer;

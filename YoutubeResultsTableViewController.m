@@ -1066,7 +1066,7 @@ static NSDate *finish;
 - (void)hideAppRatingCell
 {
     NSAssert(_canShowAppRatingCell, @"Was asked to hide app rating cell but it's not showing!");
-    [self performSelector:@selector(hideAppRatingCellDelayed) withObject:nil afterDelay:0.2];
+    [self performSelector:@selector(hideAppRatingCellDelayed) withObject:nil afterDelay:0.22];
 }
 - (void)hideAppRatingCellDelayed
 {
