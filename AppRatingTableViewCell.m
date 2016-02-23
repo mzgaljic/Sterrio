@@ -12,6 +12,7 @@
 #import "TOMSMorphingLabel.h"
 #import "AppRatingUtils.h"
 #import "EmailComposerManager.h"
+#import "PreferredFontSizeUtility.h"
 
 @interface AppRatingTableViewCell ()
 {
@@ -26,6 +27,7 @@
 static const int Y_PADDING = 8;
 static const int X_PADDING = 16;
 static const int BUTTON_WIDTH = 120;
+static const int IPHONE_4_WIDTH = 320;
 static NSString * const RATE_US_ON_APP_STORE_TEXT = @"How about rating us on the App Store?";
 static NSString * const GIVE_US_SOME_FEEDBACK_TEXT = @"Would you mind giving us some feedback?";
 static NSString * const OK_SURE_TEXT = @"Ok, sure";
@@ -73,6 +75,13 @@ static NSString * const NO_THANKS_TEXT = @"No, thanks";
     _titleLabel.textColor = [UIColor defaultWindowTintColor];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     _titleLabel.animationDuration = 0.40;
+    if(view.frame.size.width <= IPHONE_4_WIDTH) {
+        _titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                           size:15];
+    } else {
+        _titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                           size:17];
+    }
     
     _notReallyBtn = [[SSBouncyButton alloc] initWithFrame:[self noBtnFrame]];
     [_notReallyBtn setTitle:@"Not really" forState:UIControlStateNormal];
@@ -169,9 +178,10 @@ static NSString * const NO_THANKS_TEXT = @"No, thanks";
 {
     int yMid = self.contentView.frame.size.height/2;
     int labelHeight = yMid - Y_PADDING - Y_PADDING;
-    return CGRectMake(0,
+    int titleEdgePadding = 5;
+    return CGRectMake(titleEdgePadding,
                       Y_PADDING,
-                      self.contentView.frame.size.width,
+                      self.contentView.frame.size.width - (2 * titleEdgePadding),
                       labelHeight);
 }
 
