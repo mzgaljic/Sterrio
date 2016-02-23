@@ -293,7 +293,7 @@ static short numberTimesViewHasBeenShown = 0;
     previewIsUnplayable = YES;
     [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView
                                             animated:YES];
-    NSString *headerText = @"This video too long to preview on a cellular connection.";
+    NSString *headerText = @"This video is too long to preview on a cellular connection.";
     UILabel *label = [self createLabelForPlacementOnTableHeaderWithText:headerText];
     [self.tableView.tableHeaderView addSubview:label];
     [self.tableView.tableHeaderView bringSubviewToFront:label];
