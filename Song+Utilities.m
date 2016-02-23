@@ -9,6 +9,30 @@
 #import "Song+Utilities.h"
 
 @implementation Song (Utilities)
+
+/*
+ This is done so that the artist from the songs album is retrieved; and ONLY if the song doesn't
+ have an album (i.e. it's a standlone songs) do we retrieve the songs artist.
+ */
+- (Artist *)artist
+{
+    [self willAccessValueForKey:@"album"];
+    Album *album = [self primitiveValueForKey:@"album"];
+    [self didAccessValueForKey:@"album"];
+    
+    [album willAccessValueForKey:@"artist"];
+    Artist *albumsArtist = [album primitiveValueForKey:@"artist"];
+    [album didAccessValueForKey:@"artist"];
+    if(albumsArtist != nil) {
+        return albumsArtist;
+    } else {
+        [self willAccessValueForKey:@"artist"];
+        Artist *returnMe = [self primitiveValueForKey:@"artist"];
+        [self didAccessValueForKey:@"artist"];
+        return returnMe;
+    }
+}
+
 + (Song *)createNewSongWithName:(NSString *)songName
            inNewOrExistingAlbum:(id)albumOrAlbumName
           byNewOrExistingArtist:(id)artistOrArtistName
@@ -51,7 +75,11 @@
                 newOrExistingAlbum.artist = newOrExistingArtist;
             }
         }
-        newSong.artist = newOrExistingArtist;
+        if(newSong.album) {
+            newSong.album.artist = newOrExistingArtist;
+        } else {
+            newSong.artist = newOrExistingArtist;
+        }
     }
     return newSong;
 }

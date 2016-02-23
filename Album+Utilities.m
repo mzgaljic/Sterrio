@@ -22,22 +22,6 @@ NSString * const ARTIST_KEY = @"artist";
     [self didChangeValueForKey:ALBUM_SONGS_KEY];
 }
 
-- (void)setArtist:(Artist *)artist
-{
-    if(self.albumSongs.count > 0)
-    {
-        //set this new artist to the album songs as well
-        for(Song *aSongInThisAlbum in self.albumSongs)
-        {
-            aSongInThisAlbum.artist = artist;
-        }
-    }
-    
-    [self willChangeValueForKey:ARTIST_KEY];
-    [self setPrimitiveValue:artist forKey:ARTIST_KEY];
-    [self didChangeValueForKey:ARTIST_KEY];
-}
-
 + (void)deleteAlbumWithDelay:(Album *)album
 {
     double delayInSeconds = 1;
