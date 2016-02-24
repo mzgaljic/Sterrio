@@ -54,13 +54,10 @@
         if([self.dependencies[i] isMemberOfClass:[DetermineVideoPlayableOperation class]]){
             DetermineVideoPlayableOperation *completedOperation;
             completedOperation = (DetermineVideoPlayableOperation *)self.dependencies[i];
-            if([completedOperation respondsToSelector:@selector(allowedToPlayVideo)]){
-                allowedToPlayVideo = [completedOperation performSelector:@selector(allowedToPlayVideo)
-                                                              withObject:nil];
-            }
-            else{
-                NSLog(@"WARNING: allowedToPlayVideo var is not being passed between NSOperations anymore.");
-            }
+            
+            NSAssert([completedOperation respondsToSelector:@selector(allowedToPlayVideo)], @"allowedToPlayVideo var is not being passed between NSOperations anymore.");
+            allowedToPlayVideo = [completedOperation performSelector:@selector(allowedToPlayVideo)
+                                                          withObject:nil];
         }
     }
     

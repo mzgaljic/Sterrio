@@ -30,7 +30,6 @@ typedef NS_ENUM(NSUInteger, Connection_State){
 @end
 
 @implementation ReachabilitySingleton
-NSString * const host_Name = @"www.youtube.com";
 
 + (instancetype)sharedInstance
 {
