@@ -70,10 +70,20 @@ static NSMutableArray *queuedToastBannerOptions;
         }
         case ALERT_TYPE_CannotLoadVideo:
         {
-            NSString *msg = @"Video failed to load.";
+            SDCAlertAction *retry = [SDCAlertAction actionWithTitle:@"Try Again"
+                                                              style:SDCAlertActionStyleRecommended
+                                                            handler:^(SDCAlertAction *action) {
+                                                                [MyAlerts retryPlayingCurrentSong];
+                                                            }];
+            SDCAlertAction *ok = [SDCAlertAction actionWithTitle:@"OK"
+                                                           style:SDCAlertActionStyleDefault
+                                                         handler:nil];
+            
+            //actions in array will appear in the same order in the alert on screen...
+            NSArray *actions = @[ok, retry];
             [self launchAlertViewWithDialogTitle:nil
-                                      andMessage:msg
-                                   customActions:nil
+                                      andMessage:@"Video failed to load."
+                                   customActions:actions
                            allowsBasicLocalNotif:YES];
             break;
         }
@@ -154,7 +164,7 @@ static NSMutableArray *queuedToastBannerOptions;
         case ALERT_TYPE_SongSaveHasFailed:
         {
             NSString *title = @"Song Not Saved";
-            NSString *msg = @"Sorry, something went wrong saving your song.";
+            NSString *msg = @"Sorry, something bad happened when trying to save your song.";
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
                                    customActions:nil
