@@ -399,9 +399,30 @@ const int time_out_interval_seconds = 10;
     return [_ytVideoDateFormatter dateFromString:string];
 }
 
-/*
- possibly useful at some point to test if videos exist anymore:
- https://www.googleapis.com/youtube/v3/videos?id=mVp0brA3Hpk&part=contentDetails&key=AIzaSyAhZM3ZPcVq4q7ZdO7Pm44_7Q6U2udxzYo
- */
+#pragma mark - Video Presence on Youtube.com
+//BLOCKS the caller. Does not waste API key quota.
+- (BOOL)doesVideoStillExist:(NSString *)youtubeVideoId
+{
+    //checks the status code without actually downloading the response.  :)
+    NSString *urlString = [NSString stringWithFormat:@"https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=%@&format=json", youtubeVideoId];
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]
+                                                           cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:6.0];
+    [request setHTTPMethod:@"HEAD"];
+    NSHTTPURLResponse* response = nil;
+    NSError* error = nil;
+    [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+    NSInteger statusCode = [response statusCode];
+    
+    //general note: better to lie and say YES than to freak the user out by saying the video is
+    //no longer available.
+    switch (statusCode) {
+        case 404:  //'Not Found'
+            return NO;
+        case 410:  //'Gone'
+            return NO;
+        default:
+            return YES;
+    }
+}
 
 @end

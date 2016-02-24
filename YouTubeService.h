@@ -34,4 +34,14 @@
 - (void)setVideoDetailLookupDelegate:(id<YouTubeVideoDetailLookupDelegate>)delegate;
 - (void)removeVideoDetailLookupDelegate;
 
+#pragma mark - Video Presence on Youtube.com
+/*
+ * Blocks the caller. 
+ *
+ * Will return NO only if the video corresponding to the given videoID is no longer available.
+ * YES will be returned if the video still exists, or if the operation failed (network issue,
+ * the REST endpoint was discontinued, etc.)
+ */
+- (BOOL)doesVideoStillExist:(NSString *)youtubeVideoId;
+
 @end
