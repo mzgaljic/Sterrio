@@ -13,7 +13,7 @@
 #import "YouTubeVideo.h"
 #import "TBXML.h"
 
-@interface YouTubeVideoSearchService : NSObject <NSURLConnectionDelegate>
+@interface YouTubeService : NSObject <NSURLConnectionDelegate>
 
 + (instancetype)sharedInstance;
 
@@ -24,7 +24,7 @@
 - (void)cancelAllYtAutoCompletePendingRequests;
 - (void)fetchYouTubeAutoCompleteResultsForString:(NSString *)currentString;
 
-- (void)setVideoQueryDelegate:(id<YouTubeVideoQueryDelegate>)delegate;
+- (void)setVideoQueryDelegate:(id<YouTubeServiceSearchingDelegate>)delegate;
 - (void)removeVideoQueryDelegate;
 
 

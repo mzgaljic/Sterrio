@@ -54,7 +54,7 @@
 		8735387F1B0A9B9E009244E4 /* YouTubeVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735387B1B0A9B9E009244E4 /* YouTubeVideo.m */; };
 		873538891B0A9BCA009244E4 /* LevenshteinDistanceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538821B0A9BCA009244E4 /* LevenshteinDistanceItem.m */; };
 		8735388A1B0A9BCA009244E4 /* MZCoreDataModelDeletionService.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538841B0A9BCA009244E4 /* MZCoreDataModelDeletionService.m */; };
-		8735388B1B0A9BCA009244E4 /* YouTubeVideoSearchService.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538881B0A9BCA009244E4 /* YouTubeVideoSearchService.m */; };
+		8735388B1B0A9BCA009244E4 /* YouTubeService.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538881B0A9BCA009244E4 /* YouTubeService.m */; };
 		873538901B0A9BEE009244E4 /* EnsembleDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735388F1B0A9BEE009244E4 /* EnsembleDelegate.m */; };
 		873538931B0A9BFF009244E4 /* PreviousNowPlayingInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538921B0A9BFF009244E4 /* PreviousNowPlayingInfo.m */; };
 		873538961B0A9C07009244E4 /* NowPlayingSong.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538951B0A9C07009244E4 /* NowPlayingSong.m */; };
@@ -343,8 +343,8 @@
 		873538841B0A9BCA009244E4 /* MZCoreDataModelDeletionService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZCoreDataModelDeletionService.m; sourceTree = "<group>"; };
 		873538851B0A9BCA009244E4 /* YouTubeVideoDetailLookupDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YouTubeVideoDetailLookupDelegate.h; sourceTree = "<group>"; };
 		873538861B0A9BCA009244E4 /* YouTubeVideoQueryDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YouTubeVideoQueryDelegate.h; sourceTree = "<group>"; };
-		873538871B0A9BCA009244E4 /* YouTubeVideoSearchService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YouTubeVideoSearchService.h; sourceTree = "<group>"; };
-		873538881B0A9BCA009244E4 /* YouTubeVideoSearchService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YouTubeVideoSearchService.m; sourceTree = "<group>"; };
+		873538871B0A9BCA009244E4 /* YouTubeService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YouTubeService.h; sourceTree = "<group>"; };
+		873538881B0A9BCA009244E4 /* YouTubeService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YouTubeService.m; sourceTree = "<group>"; };
 		8735388E1B0A9BEE009244E4 /* EnsembleDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnsembleDelegate.h; sourceTree = "<group>"; };
 		8735388F1B0A9BEE009244E4 /* EnsembleDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EnsembleDelegate.m; sourceTree = "<group>"; };
 		873538911B0A9BFF009244E4 /* PreviousNowPlayingInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreviousNowPlayingInfo.h; sourceTree = "<group>"; };
@@ -956,8 +956,8 @@
 				873538841B0A9BCA009244E4 /* MZCoreDataModelDeletionService.m */,
 				873538851B0A9BCA009244E4 /* YouTubeVideoDetailLookupDelegate.h */,
 				873538861B0A9BCA009244E4 /* YouTubeVideoQueryDelegate.h */,
-				873538871B0A9BCA009244E4 /* YouTubeVideoSearchService.h */,
-				873538881B0A9BCA009244E4 /* YouTubeVideoSearchService.m */,
+				873538871B0A9BCA009244E4 /* YouTubeService.h */,
+				873538881B0A9BCA009244E4 /* YouTubeService.m */,
 				873538741B0A9B9E009244E4 /* LQAlbumArtBackgroundUpdater.h */,
 				873538751B0A9B9E009244E4 /* LQAlbumArtBackgroundUpdater.m */,
 				8773AE2B1B509A5500C3E64E /* SpotlightHelper.h */,
@@ -1981,7 +1981,7 @@
 				878488051C6694E200666627 /* MZRegexExp.m in Sources */,
 				873539211B0A9F11009244E4 /* YouTubeSongAdderViewController.m in Sources */,
 				873538531B0A9B23009244E4 /* Stack.m in Sources */,
-				8735388B1B0A9BCA009244E4 /* YouTubeVideoSearchService.m in Sources */,
+				8735388B1B0A9BCA009244E4 /* YouTubeService.m in Sources */,
 				8755545E1C1DF6EA00259CA8 /* InAppPurchaseUtils.m in Sources */,
 				873539551B0AA069009244E4 /* MZTableViewCell.m in Sources */,
 				873538391B0A9AF4009244E4 /* NSObject+ObjectUUID.m in Sources */,

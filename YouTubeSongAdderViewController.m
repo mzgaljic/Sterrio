@@ -7,7 +7,7 @@
 //
 
 #import "YouTubeSongAdderViewController.h"
-#import "YouTubeVideoSearchService.h"
+#import "YouTubeService.h"
 #import "SDCAlertController.h"
 #import "SSBouncyButton.h"
 #import "DiscogsSearchService.h"
@@ -80,8 +80,8 @@
         [self.view addSubview:self.tableView];
         [self.tableView initWasCalled];
         //fire off network request for video duration ASAP
-        [[YouTubeVideoSearchService sharedInstance] setVideoDetailLookupDelegate:self];
-        [[YouTubeVideoSearchService sharedInstance] fetchDetailsForVideo:ytVideo];
+        [[YouTubeService sharedInstance] setVideoDetailLookupDelegate:self];
+        [[YouTubeService sharedInstance] fetchDetailsForVideo:ytVideo];
 
         //provide default album art (making deep copy of album art)
         [self.tableView provideDefaultAlbumArt:lockScreenImg];
@@ -122,7 +122,7 @@
     url = nil;
     [AppEnvironmentConstants setUserIsPreviewingAVideo:NO];
     
-    [[YouTubeVideoSearchService sharedInstance] removeVideoDetailLookupDelegate];
+    [[YouTubeService sharedInstance] removeVideoDetailLookupDelegate];
     [[DiscogsSearchService sharedInstance] cancelAllPendingRequests];
     
     [MusicPlaybackController obtainRawAVPlayer].allowsExternalPlayback = previousAllowsExternalPlayback;

@@ -8,7 +8,7 @@
 
 #import "YoutubeResultsTableViewController.h"
 
-#import "YouTubeVideoSearchService.h"
+#import "YouTubeService.h"
 #import "UIImage+colorImages.h"
 #import "UIColor+LighterAndDarker.h"
 #import "MRProgress.h"
@@ -96,7 +96,7 @@ static NSDate *timeSinceLastPageLoaded;
     finish = nil;
     [suggestionsDelayer invalidate];
     suggestionsDelayer = nil;
-    [[YouTubeVideoSearchService sharedInstance] removeVideoQueryDelegate];
+    [[YouTubeService sharedInstance] removeVideoQueryDelegate];
     
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
 }
@@ -134,7 +134,7 @@ static NSDate *timeSinceLastPageLoaded;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [[YouTubeVideoSearchService sharedInstance] setVideoQueryDelegate:self];
+    [[YouTubeService sharedInstance] setVideoQueryDelegate:self];
     self.navigationController.toolbarHidden = NO;
     if (self.isMovingToParentViewController == NO)
     {
@@ -482,7 +482,7 @@ static NSDate *timeSinceLastPageLoaded;
     
     [self startTimingExecution];
     
-    [[YouTubeVideoSearchService sharedInstance] searchYouTubeForVideosUsingString: searchBar.text];
+    [[YouTubeService sharedInstance] searchYouTubeForVideosUsingString: searchBar.text];
     _noMoreResultsToDisplay = NO;
     _networkErrorLoadingMoreResults = NO;
 }
@@ -544,14 +544,14 @@ static NSUInteger numLettersUserHasTyped = 0;
     numLettersUserHasTyped++;
     [suggestionsDelayer invalidate];
     suggestionsDelayer = nil;
-    [[YouTubeVideoSearchService sharedInstance] cancelAllYtAutoCompletePendingRequests];
+    [[YouTubeService sharedInstance] cancelAllYtAutoCompletePendingRequests];
     
     if(searchText.length != 0){
         if(! self.displaySearchResults)
             self.tableView.scrollEnabled = YES;
         
         if(numLettersUserHasTyped > 12) {
-            [[YouTubeVideoSearchService sharedInstance] fetchYouTubeAutoCompleteResultsForString:searchText];
+            [[YouTubeService sharedInstance] fetchYouTubeAutoCompleteResultsForString:searchText];
         } else {
             //if user just started typing, delay the first query for suggestions,
             //otherwise the main thread gets blocked for a bit and lags if they're typing
@@ -593,7 +593,7 @@ static NSUInteger numLettersUserHasTyped = 0;
 {
     NSAssert(t == suggestionsDelayer, @"fetchYtSearchSuggestionsDelayed: was called with the wrong timer object. t != suggestionsDelayer.");
     NSString *query = suggestionsDelayer.userInfo;
-    [[YouTubeVideoSearchService sharedInstance] fetchYouTubeAutoCompleteResultsForString:query];
+    [[YouTubeService sharedInstance] fetchYouTubeAutoCompleteResultsForString:query];
     suggestionsDelayer = nil;
 }
 
@@ -956,7 +956,7 @@ static NSUInteger numLettersUserHasTyped = 0;
     [self.tableView setTableFooterView:footer];
 
     //try to load more results
-    [[YouTubeVideoSearchService sharedInstance] fetchNextYouTubePageUsingLastQueryString];
+    [[YouTubeService sharedInstance] fetchNextYouTubePageUsingLastQueryString];
 }
 
 #pragma mark - ToolBar methods

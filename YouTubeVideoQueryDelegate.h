@@ -10,7 +10,7 @@
 #import "YouTubeVideo.h"
 
 
-@protocol YouTubeVideoQueryDelegate <NSObject>
+@protocol YouTubeServiceSearchingDelegate <NSObject>
 
 @required
 /**called after the json response from the YouTube server was parsed successfully.

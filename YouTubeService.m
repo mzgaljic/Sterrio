@@ -6,12 +6,12 @@
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
 
-#import "YouTubeVideoSearchService.h"
+#import "YouTubeService.h"
 #import "YouTubeVideo.h"
 #import "SMWebRequest.h"
 #import "YouTubeSearchSuggestion.h"
 
-@interface YouTubeVideoSearchService ()
+@interface YouTubeService ()
 {
     NSString *nextPageToken; //set and reset when appropriate
     NSString *originalQueryUrl;
@@ -26,14 +26,14 @@
     NSString *VIDEO_INFO_BASE;
     NSString *VIDEO_INFO_APPEND_ME;
 }
-@property (nonatomic, assign) NSObject<YouTubeVideoQueryDelegate>* queryDelegate;
+@property (nonatomic, assign) NSObject<YouTubeServiceSearchingDelegate>* queryDelegate;
 @property (nonatomic, assign) id<YouTubeVideoDetailLookupDelegate> vidDurationDelegate;
 @property (nonatomic, strong) NSDateFormatter *ytVideoDateFormatter;
 
 @property (nonatomic, strong) SMWebRequest *searchTextSuggestionsRequest;
 @end
 
-@implementation YouTubeVideoSearchService
+@implementation YouTubeService
 const int time_out_interval_seconds = 10;
 
 + (instancetype)sharedInstance
@@ -46,7 +46,7 @@ const int time_out_interval_seconds = 10;
     return sharedInstance;
 }
 
-- (void)setVideoQueryDelegate:(id<YouTubeVideoQueryDelegate>)myDelegate;
+- (void)setVideoQueryDelegate:(id<YouTubeServiceSearchingDelegate>)myDelegate;
 {
     self.queryDelegate = myDelegate;
 }
@@ -94,7 +94,7 @@ const int time_out_interval_seconds = 10;
         NSString *queryText = [searchString stringForHTTPRequest];
         NSString *fullUrlText = [NSString stringWithFormat:@"%@%@", QUERY_BASE, queryText];
         originalQueryUrl = fullUrlText;
-        __weak YouTubeVideoSearchService *weakSelf = self;
+        __weak YouTubeService *weakSelf = self;
         
         NSURL *myUrl = [NSURL URLWithString:fullUrlText];
         NSMutableURLRequest *mutableRequest = [NSMutableURLRequest requestWithURL:myUrl];
@@ -133,7 +133,7 @@ const int time_out_interval_seconds = 10;
         [tempUrl appendString:ytVideo.videoId];
         [tempUrl appendString:VIDEO_INFO_APPEND_ME];
         NSString *videoInfoUrl = [NSString stringWithString:tempUrl];
-        __weak YouTubeVideoSearchService *weakSelf = self;
+        __weak YouTubeService *weakSelf = self;
         
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:videoInfoUrl]
                                                     cachePolicy:NSURLRequestUseProtocolCachePolicy
@@ -171,7 +171,7 @@ const int time_out_interval_seconds = 10;
         [tempUrl appendString:NEXT_PAGE_QUERY_BASE];
         [tempUrl appendString:nextPageToken];
         NSString *queryUrl = [NSString stringWithString:tempUrl];
-        __weak YouTubeVideoSearchService *weakSelf = self;
+        __weak YouTubeService *weakSelf = self;
         
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:queryUrl]
                                                  cachePolicy:NSURLRequestUseProtocolCachePolicy
