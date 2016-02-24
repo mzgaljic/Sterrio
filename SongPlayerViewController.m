@@ -1714,6 +1714,9 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
         __weak NSString *videoId = nowPlayingSong.youtube_id;
         
         [activityVC setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed,  NSArray *returnedItems, NSError *activityError) {
+            if(activityType == nil) {
+                activityType = @"";  //set it to an empty string just so we don't crash here.
+            }
             [weakSelf restoreTimeObserver];
             NSString *regex = @"(UIActivityType)|(TU)|(Activity)|(.*\\.)";
             NSString *shareMethod = [MZCommons replaceCharsMatchingRegex:regex

@@ -583,6 +583,9 @@ static short numberTimesViewHasBeenShown = 0;
         //set tint color specifically for this VC so that the text and buttons are visible
         [activityVC.view setTintColor:[UIColor defaultAppColorScheme]];
         [activityVC setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed,  NSArray *returnedItems, NSError *activityError) {
+            if(activityType == nil) {
+                activityType = @"";  //set it to an empty string just so we don't crash here.
+            }
             NSString *regex = @"(UIActivityType)|(TU)|(Activity)|(.*\\.)";
             NSString *shareMethod = [MZCommons replaceCharsMatchingRegex:regex
                                                                withChars:@""
