@@ -1022,7 +1022,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     if([MusicPlaybackController nowPlayingSong].album != nil)
     {
         if([MusicPlaybackController nowPlayingSong].artist != nil)
-            [artistAndAlbum appendString:@" ・ "];
+            [artistAndAlbum appendString:@" – "];
         [artistAndAlbum appendString:[MusicPlaybackController nowPlayingSong].album.albumName];
     }
     return artistAndAlbum;
