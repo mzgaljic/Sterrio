@@ -16,6 +16,7 @@
     BOOL canPostLastSongNotification;
     
     BOOL stallHasOccured;
+    BOOL bufferingBeforeInitialPlayback;
     
     NSString *CURRENT_SONG_DONE_PLAYING;
     NSString *CURRENT_SONG_STOPPED_PLAYBACK;
@@ -48,6 +49,7 @@ static ReachabilitySingleton *reachability;
         movingForward = YES;
         stallHasOccured = NO;
         _secondsLoaded = 0;
+        bufferingBeforeInitialPlayback = !_playbackStarted;
         
         [self begingListeningForNotifications];
         [self registerForObservers];
@@ -64,18 +66,23 @@ static ReachabilitySingleton *reachability;
 
 - (void)begingListeningForNotifications
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(songDidFinishPlaying:)
-                                                 name:AVPlayerItemDidPlayToEndTimeNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(connectionStateChanged)
-                                                 name:MZReachabilityStateChanged
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(currentSongPlaybackMustBeDisabled:)
-                                                 name:MZInterfaceNeedsToBlockCurrentSongPlayback
-                                               object:nil];
+    NSNotificationCenter *notifCenter = [NSNotificationCenter defaultCenter];
+    [notifCenter addObserver:self
+                    selector:@selector(songDidFinishPlaying:)
+                        name:AVPlayerItemDidPlayToEndTimeNotification
+                      object:nil];
+    [notifCenter addObserver:self
+                    selector:@selector(connectionStateChanged)
+                        name:MZReachabilityStateChanged
+                      object:nil];
+    [notifCenter addObserver:self
+                    selector:@selector(connectionStateChanged2)
+                        name:MZReachabilityStateChanged
+                      object:nil];
+    [notifCenter addObserver:self
+                    selector:@selector(currentSongPlaybackMustBeDisabled:)
+                        name:MZInterfaceNeedsToBlockCurrentSongPlayback
+                      object:nil];
 }
 
 #pragma mark - Working with the queue to perform player actions (play, skip, etc)
@@ -203,6 +210,16 @@ static ReachabilitySingleton *reachability;
 }
 
 #pragma mark - responding to current connection state
+- (void)connectionStateChanged2
+{
+    if(bufferingBeforeInitialPlayback && _secondsLoaded == 0) {
+        if([reachability isConnectionCompletelyGone]) {
+            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotLoadVideo];
+        }
+    }
+}
+
+//can also be called directly from the key-value observer method below lol. weird code.
 - (void)connectionStateChanged
 {
     Song *nowPlaying = [MusicPlaybackController nowPlayingSong];
@@ -477,6 +494,9 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                 }
                 
             } else if(context == mloadedTimeRanges){
+                if(!_playbackStarted) {
+                    bufferingBeforeInitialPlayback = YES;
+                }
                 NSUInteger currentTime = CMTimeGetSeconds(self.currentItem.currentTime);
                 CMTimeRange aTimeRange;
                 NSUInteger lowBound;
@@ -514,6 +534,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                 }
                 //check if playback began
                 if(newSecondsBuff > _secondsLoaded && self.rate == 1 && !self.playbackStarted){
+                    bufferingBeforeInitialPlayback = NO;
                     _playbackStarted = YES;
                     [[NSNotificationCenter defaultCenter] postNotificationName:PlaybackHasBegun
                                                                         object:nil];
