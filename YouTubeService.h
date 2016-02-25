@@ -42,6 +42,6 @@
  * YES will be returned if the video still exists, or if the operation failed (network issue,
  * the REST endpoint was discontinued, etc.)
  */
-- (BOOL)doesVideoStillExist:(NSString *)youtubeVideoId;
++ (BOOL)doesVideoStillExist:(NSString *)youtubeVideoId;
 
 @end

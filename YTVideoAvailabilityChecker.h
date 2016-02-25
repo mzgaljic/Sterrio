@@ -10,4 +10,8 @@
 
 @interface YTVideoAvailabilityChecker : NSObject
 
++ (void)warnUserIfVideoNoLongerExistsForSongWithId:(NSString *)videoId
+                                              name:(NSString *)name
+                                        artistName:(NSString *)artistName;
+
 @end

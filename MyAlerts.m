@@ -16,6 +16,7 @@
 #import "PlayableItem.h"
 #import "PreviousNowPlayingInfo.h"
 #import <CRToast.h>
+#import "YouTubeService.h"
 
 @implementation MyAlerts
 
@@ -221,6 +222,16 @@ static NSMutableArray *queuedToastBannerOptions;
     }
 }
 
++ (void)displayVideoNoLongerAvailableOnYtAlertForSong:(NSString *)name
+                                        customActions:(NSArray *)actions
+{
+    NSString *msg = [NSString stringWithFormat:@"It looks like the video for \"%@\" is no longer available on YouTube.", name];
+    [MyAlerts launchAlertViewWithDialogTitle:@"Video Unavailable"
+                                  andMessage:msg
+                               customActions:actions
+                       allowsBasicLocalNotif:YES];
+}
+
 + (void)showAllQueuedBanners
 {
     if(queuedToastBannerOptions.count == 0)
@@ -265,6 +276,7 @@ static NSMutableArray *queuedToastBannerOptions;
         SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
                                                                         message:message
                                                                  preferredStyle:SDCAlertControllerStyleAlert];
+        [alert setActionLayout:SDCAlertControllerActionLayoutAutomatic];
         SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK"
                                                              style:SDCAlertActionStyleRecommended
                                                            handler:nil];
@@ -277,7 +289,5 @@ static NSMutableArray *queuedToastBannerOptions;
         [alert presentWithCompletion:nil];
     }
 }
-
-
 
 @end

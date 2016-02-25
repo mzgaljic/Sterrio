@@ -16,4 +16,5 @@
 @interface YoutubeResultsTableViewController : MyTableViewController <UISearchBarDelegate,
                                                                     YouTubeServiceSearchingDelegate,
                                                                     SDWebImageManagerDelegate>
+- (instancetype)initWithSearchQuery:(NSString *)query;
 @end

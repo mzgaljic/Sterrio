@@ -33,6 +33,10 @@ typedef enum {
 
 + (void)displayAlertWithAlertType:(ALERT_TYPE)type;
 
+//customActions is NSArray of SDCAlertAction objs.
++ (void)displayVideoNoLongerAvailableOnYtAlertForSong:(NSString *)name
+                                        customActions:(NSArray *)actions;
+
 + (void)showAllQueuedBanners;
 
 @end

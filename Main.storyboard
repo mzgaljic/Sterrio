@@ -702,7 +702,7 @@
         <!--Add Music-->
         <scene sceneID="4KX-bh-cq6">
             <objects>
-                <tableViewController storyboardIdentifier="ytVideoFieldEntryAndVideoPlayer" useStoryboardIdentifierAsRestorationIdentifier="YES" id="s8d-Lc-Gkj" customClass="YoutubeResultsTableViewController" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="ytSearchAndResultDisplayVc" id="s8d-Lc-Gkj" customClass="YoutubeResultsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="nPS-et-2lS">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1177,8 +1177,8 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="N5b-x6-rhd"/>
         <segue reference="Rfb-yX-EyF"/>
-        <segue reference="bsh-e9-eUx"/>
+        <segue reference="mNA-W8-wpb"/>
+        <segue reference="N5b-x6-rhd"/>
     </inferredMetricsTieBreakers>
 </document>

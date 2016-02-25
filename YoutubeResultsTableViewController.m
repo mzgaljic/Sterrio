@@ -49,6 +49,9 @@
 @property (nonatomic, assign) BOOL waitingOnYoutubeResults;
 
 @property (nonatomic, assign) BOOL canShowAppRatingCell;
+
+//non-nil if it was specified when VC was created. For opening VC modally and forcing a query.
+@property (nonatomic, strong) NSString *forcedSearchQuery;
 @end
 
 @implementation YoutubeResultsTableViewController
@@ -56,6 +59,14 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 0.3f;
 static NSString *Network_Error_Loading_More_Results_Msg = @"Network error";
 static NSString *No_More_Results_To_Display_Msg = @"No more results";
 static const int APP_RATING_CELL_ROW_NUM = 2;
+
+- (instancetype)initWithSearchQuery:(NSString *)query
+{
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    self = [sb instantiateViewControllerWithIdentifier:@"ytSearchAndResultDisplayVc"];
+    _forcedSearchQuery = query;
+    return self;
+}
 
 //custom setters
 - (void)setDisplaySearchResults:(BOOL)displaySearchResults

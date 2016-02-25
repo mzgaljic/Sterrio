@@ -401,7 +401,7 @@ const int time_out_interval_seconds = 10;
 
 #pragma mark - Video Presence on Youtube.com
 //BLOCKS the caller. Does not waste API key quota.
-- (BOOL)doesVideoStillExist:(NSString *)youtubeVideoId
++ (BOOL)doesVideoStillExist:(NSString *)youtubeVideoId
 {
     //checks the status code without actually downloading the response.  :)
     NSString *urlString = [NSString stringWithFormat:@"https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=%@&format=json", youtubeVideoId];
