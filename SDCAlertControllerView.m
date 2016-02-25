@@ -8,6 +8,9 @@
 
 #import "SDCAlertControllerView.h"
 
+#import "PreferredFontSizeUtility.h"
+#import "SDCAlertControllerTextFieldViewController.h"
+
 #import "SDCAlertController.h"
 #import "SDCAlertViewBackgroundView.h"
 #import "SDCAlertControllerScrollView.h"
@@ -90,12 +93,86 @@ static NSString *const SDCAlertControllerCellReuseIdentifier = @"SDCAlertControl
 	
 	UICollectionViewScrollDirection direction = UICollectionViewScrollDirectionHorizontal;
 	
-	if (actionLayout == SDCAlertControllerActionLayoutVertical || (actionLayout == SDCAlertControllerActionLayoutAutomatic && self.actions.count != 2)) {
+	if (actionLayout == SDCAlertControllerActionLayoutVertical
+        || (actionLayout == SDCAlertControllerActionLayoutAutomatic && self.actions.count != 2)) {
 		direction = UICollectionViewScrollDirectionVertical;
 	}
-	
+    
+    if(actionLayout == SDCAlertControllerActionLayoutAutomatic && self.actions.count == 2) {
+        //should it really be horizontal if the action count is 2? lets find out...
+        
+        //put together a big string with all the action titles combined.
+        //Then, make fake uilabel with the proper font size and see how wide
+        //it would really be. If too wide, make the collectionView vertical!
+        //mush less hackish than just checking the # of actions.
+        NSArray *actions = self.actions;
+        SDCAlertAction *action1 = actions[0];
+        SDCAlertAction *action2 = actions[1];
+        
+        //AWFUL hack to figure out the general frame size of the alert view. The view itself
+        //is not created yet in this method so we need to simulate that.
+        SDCAlertControllerTextFieldViewController *temp = [[SDCAlertControllerTextFieldViewController alloc] initWithTextFields:nil visualStyle:nil];
+        
+        CGRect rect = temp.view.frame;
+        int labelHeight = [self collectionViewHeightGivenHypotheticalLayout:SDCAlertControllerActionLayoutHorizontal];
+        
+        float actionButtonWidth = rect.size.width / 2;
+        
+        UILabel *label1 = [[UILabel alloc] initWithFrame:CGRectMake(rect.origin.x,
+                                                                   rect.origin.y,
+                                                                   1000,
+                                                                   labelHeight)];
+        label1.text = action1.title;
+        label1.numberOfLines = 0;
+        label1.font = [self fontForAction:action1];
+        [label1 sizeToFit];
+        
+        UILabel *label2 = [[UILabel alloc] initWithFrame:CGRectMake(rect.origin.x,
+                                                                    rect.origin.y,
+                                                                    1000,
+                                                                    labelHeight)];
+        label2.text = action2.title;
+        label2.numberOfLines = 0;
+        label2.font = [self fontForAction:action2];
+        [label2 sizeToFit];
+        
+        int longestLabelWidth = label1.frame.size.width;
+        if(label2.frame.size.width > longestLabelWidth) {
+            longestLabelWidth = label2.frame.size.width;
+        }
+        
+        if(longestLabelWidth >= (actionButtonWidth * 0.70)) {
+            //the action with the longer text would appear squished! lets make it vertical after all.
+            _actionLayout = SDCAlertControllerActionLayoutVertical;
+            direction = UICollectionViewScrollDirectionVertical;
+            return;
+        }
+    }
+    
 	self.collectionViewLayout.scrollDirection = direction;
 }
+
+//horrible hack, copy pasted from another class in this lib.
+- (UIFont *)fontForAction:(SDCAlertAction *)action {
+    int fontSize = [PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize];
+    int minFontSize = 17;
+    if(fontSize < minFontSize)
+        fontSize = minFontSize;
+    
+    int maxFontSize = 22;
+    if(fontSize > maxFontSize)
+        fontSize = maxFontSize;
+    
+    UIFont *myFont;
+    if (action.style & SDCAlertActionStyleRecommended) {
+        myFont = [UIFont fontWithName:[AppEnvironmentConstants boldFontName] size:fontSize];
+        return myFont;
+    } else {
+        myFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:fontSize];
+        return myFont;
+    }
+}
+
 
 - (void)setVisualStyle:(id<SDCAlertControllerVisualStyle>)visualStyle {
 	_visualStyle = visualStyle;
@@ -192,6 +269,18 @@ static NSString *const SDCAlertControllerCellReuseIdentifier = @"SDCAlertControl
 }
 
 #pragma mark - UICollectionView
+- (CGFloat)collectionViewHeightGivenHypotheticalLayout:(SDCAlertControllerActionLayout)layout
+{
+    CGFloat horizontalLayoutHeight = self.visualStyle.actionViewHeight;
+    CGFloat verticalLayoutHeight = self.visualStyle.actionViewHeight * [self.actionsCollectionView numberOfItemsInSection:0];
+    
+    switch (layout) {
+        case SDCAlertControllerActionLayoutAutomatic:		return (self.actions.count == 2) ? horizontalLayoutHeight : verticalLayoutHeight;
+        case SDCAlertControllerActionLayoutHorizontal:		return horizontalLayoutHeight;
+        case SDCAlertControllerActionLayoutVertical:		return verticalLayoutHeight;
+    }
+
+}
 
 - (CGFloat)collectionViewHeight {
 	CGFloat horizontalLayoutHeight = self.visualStyle.actionViewHeight;
