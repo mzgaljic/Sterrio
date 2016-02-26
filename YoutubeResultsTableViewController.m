@@ -20,8 +20,6 @@
 #import "AppRatingUtils.h"
 #import "AppRatingTableViewCell.h"
 
-#import "PlayableItem.h"
-
 //NOTE loadingMoreResultsSpinner is not currently used. To use again, call "reload" on tableview
 //right before loading more results.
 @interface YoutubeResultsTableViewController ()
@@ -51,6 +49,11 @@
 @property (nonatomic, assign) BOOL waitingOnYoutubeResults;
 
 @property (nonatomic, assign) BOOL canShowAppRatingCell;
+
+//non-nil if it was specified when VC was created. For opening VC modally and forcing a query.
+@property (nonatomic, strong) NSString *forcedSearchQuery;
+//pass the id of the object for which you are doing a 'forced search query'.
+@property (nonatomic, strong) NSManagedObjectID *replacementObjId;
 @end
 
 @implementation YoutubeResultsTableViewController
@@ -59,12 +62,13 @@ static NSString *Network_Error_Loading_More_Results_Msg = @"Network error";
 static NSString *No_More_Results_To_Display_Msg = @"No more results";
 static const int APP_RATING_CELL_ROW_NUM = 2;
 
-+ (instancetype)initWithSearchQuery:(NSString *)query
++ (instancetype)initWithSearchQuery:(NSString *)query replacementObjId:(NSManagedObjectID *)objId
 {
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     YoutubeResultsTableViewController *ytSearchResultsVc;
     ytSearchResultsVc = [sb instantiateViewControllerWithIdentifier:@"ytSearchAndResultDisplayVc"];
     ytSearchResultsVc.forcedSearchQuery = query;
+    ytSearchResultsVc.replacementObjId = objId;
     return ytSearchResultsVc;
 }
 
@@ -97,6 +101,7 @@ static NSDate *timeSinceLastPageLoaded;
     _searchBar = nil;
     _forcedSearchQuery = nil;
     _searchResults = nil;
+    _replacementObjId = nil;
     self.searchSuggestions = nil;
     _lastSuccessfullSuggestions = nil;
     _cancelButton = nil;
@@ -836,8 +841,24 @@ static NSUInteger numLettersUserHasTyped = 0;
             CustomYoutubeTableViewCell *cell;
             cell = (CustomYoutubeTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
             UIImage *img = [UIImage imageWithCGImage:cell.videoThumbnail.image.CGImage];
-            [self.navigationController pushViewController:[[YouTubeSongAdderViewController alloc] initWithYouTubeVideo:ytVideo thumbnail:img]
-                                                 animated:YES];
+            
+            UIViewController *vc;
+            if(_replacementObjId
+               && [_replacementObjId.entity.managedObjectClassName isEqualToString:@"Song"]) {
+                
+                //user wants to edit and possibly save with an existing core data object.
+                Song *existingSong = (Song *)[self coreDataObjectFromManagedObjId:_replacementObjId];
+                vc = [[YouTubeSongAdderViewController alloc] initWithYouTubeVideo:ytVideo
+                                                                        thumbnail:img
+                                                               existingSongToEdit:existingSong];
+                [self.navigationController pushViewController:vc
+                                                     animated:YES];
+            } else {
+                vc = [[YouTubeSongAdderViewController alloc] initWithYouTubeVideo:ytVideo
+                                                                        thumbnail:img];
+                [self.navigationController pushViewController:vc
+                                                     animated:YES];
+            }
         }
     }
     else{  //auto suggestions in table
@@ -1097,6 +1118,19 @@ static NSDate *finish;
     [self.tableView deleteRowsAtIndexPaths:paths withRowAnimation:UITableViewRowAnimationAutomatic];
     _canShowAppRatingCell = NO;
     [self.tableView endUpdates];
+}
+
+#pragma mark - Replacement Object fetching
+- (NSManagedObject *)coreDataObjectFromManagedObjId:(NSManagedObjectID *)objId
+{
+    __block NSManagedObject *coreDataObj;
+    
+    __unsafe_unretained NSManagedObjectID *weakObjId = objId;
+    NSManagedObjectContext *context = [CoreDataManager context];
+    [context performBlockAndWait:^{
+        coreDataObj = [context existingObjectWithID:weakObjId error:nil];
+    }];
+    return coreDataObj;
 }
 
 @end

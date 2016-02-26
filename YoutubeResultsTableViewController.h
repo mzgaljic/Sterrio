@@ -17,8 +17,5 @@
                                                                     YouTubeServiceSearchingDelegate,
                                                                     SDWebImageManagerDelegate>
 
-//non-nil if it was specified when VC was created. For opening VC modally and forcing a query.
-@property (nonatomic, strong) NSString *forcedSearchQuery;
-
-+ (instancetype)initWithSearchQuery:(NSString *)query;
++ (instancetype)initWithSearchQuery:(NSString *)query replacementObjId:(NSManagedObjectID *)objId;
 @end

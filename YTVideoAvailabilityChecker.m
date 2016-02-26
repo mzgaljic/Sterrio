@@ -20,6 +20,7 @@
 + (BOOL)warnUserIfVideoNoLongerExistsForSongWithId:(NSString *)videoId
                                               name:(NSString *)name
                                         artistName:(NSString *)artistName
+                                   managedObjectId:(NSManagedObjectID *)objId
 {
     if(videoId == nil
        || name == nil
@@ -36,7 +37,7 @@
                                                                         artistName:artistName];
         SDCAlertAction *findNewAction = [SDCAlertAction actionWithTitle:@"Find new video"
                                                                   style:SDCAlertActionStyleRecommended
-                                                                handler:[self findNewActionHandlerWithQuery:ytQuery]];
+                                                                handler:[self findNewActionHandlerWithQuery:ytQuery objId:objId]];
         [MyAlerts displayVideoNoLongerAvailableOnYtAlertForSong:name
                                                   customActions:@[okAction, findNewAction]];
     }
@@ -44,12 +45,14 @@
 }
 
 + (void (^)(SDCAlertAction *))findNewActionHandlerWithQuery:(NSString *)query
+                                                      objId:(NSManagedObjectID *)objectId
 {
     __block NSString *weakQuery = query;
     return ^(SDCAlertAction *action) {
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             YoutubeResultsTableViewController *ytResultsVc;
-            ytResultsVc = [YoutubeResultsTableViewController initWithSearchQuery:weakQuery];
+            ytResultsVc = [YoutubeResultsTableViewController initWithSearchQuery:weakQuery
+                                                                replacementObjId:objectId];
             UINavigationController *wrappingNavVc;
             wrappingNavVc = [[UINavigationController alloc] initWithRootViewController:ytResultsVc];
             UIWindow *appWindow = [[[UIApplication sharedApplication] delegate] window];

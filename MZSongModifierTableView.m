@@ -24,6 +24,8 @@
 @property (nonatomic, strong) UIImage *currentAlbumArt;
 @property (nonatomic, strong) UIImage *currentSmallAlbumArt;
 @property (nonatomic, assign) BOOL creatingANewSong;
+@property (nonatomic, assign) BOOL didSaveCoreData;
+@property (nonatomic, strong) MZSongModifierTableView *selfRetainCycle;
 @end
 
 @implementation MZSongModifierTableView
@@ -35,7 +37,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 #pragma mark - Other stuff
 - (void)initWasCalled
 {
-    if(_songIAmEditing == nil){
+    if(_songIAmEditing == nil && !_userPickingNewYtVideo){
         self.creatingANewSong = YES;
         NSManagedObjectContext *context = [CoreDataManager context];
         _songIAmEditing = [Song createNewSongWithNoNameAndManagedContext:context];
@@ -143,7 +145,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 #pragma mark - Tableview delegate implementations
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    if(_creatingANewSong && _songIAmEditing.songName.length > 0)
+    if((_creatingANewSong || _userPickingNewYtVideo) && _songIAmEditing.songName.length > 0)
         return 2;
     else
         return 1;
@@ -155,9 +157,9 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         //return 5;  removed genre row
         return 4;
     if(section == 1){  //row to delete this song
-        if(_creatingANewSong && _songIAmEditing.songName.length > 0)
+        if((_creatingANewSong || _userPickingNewYtVideo) && _songIAmEditing.songName.length > 0)
             return 1;
-        else if(_creatingANewSong)
+        else if(_creatingANewSong || _userPickingNewYtVideo)
             return 0;
         else
             return 1;
@@ -238,17 +240,25 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                           reuseIdentifier:cellIdentifier];
         if(indexPath.row == 0){
-            if(_creatingANewSong && _songIAmEditing.songName.length > 0
-                      && canShowAddtoLibButton){
+            if(!_userPickingNewYtVideo && _creatingANewSong
+               && _songIAmEditing.songName.length > 0 && canShowAddtoLibButton){
                 cell.textLabel.text = @"Add to library";
                 cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+                cell.selectionStyle = UITableViewCellSelectionStyleDefault;
                 [spinner stopAnimating];
                 spinner = nil;
-                
-            } else if(_creatingANewSong && _songIAmEditing.songName.length > 0){
+            } else if(_userPickingNewYtVideo && _songIAmEditing.songName > 0) {
+                cell.textLabel.text = @"Save";
+                cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+                cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+                [spinner stopAnimating];
+                spinner = nil;
+            } else if((_creatingANewSong || _userPickingNewYtVideo)
+                      && _songIAmEditing.songName.length > 0){
                 //song name provided, but not all video info needed has loaded
                 cell.textLabel.text = @"   Loading additional video info...";
                 cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
                 spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
                 cell.accessoryView = spinner;
                 [spinner startAnimating];
@@ -286,7 +296,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     if(section == 0)
         return 10;
     else{
-        if([SongPlayerCoordinator isPlayerOnScreen] && _creatingANewSong){
+        if([SongPlayerCoordinator isPlayerOnScreen] && (_creatingANewSong || _userPickingNewYtVideo)){
             return [SongPlayerCoordinator heightOfMinimizedPlayer] - 10;  //header is always too big lol
         } else
             return 10;
@@ -305,6 +315,11 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    if(cell.selectionStyle == UITableViewCellSelectionStyleNone) {
+        return;
+    }
+    
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     
     //segue to other areas
@@ -457,7 +472,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     
     if(indexPath.section == 1){
         if(indexPath.row == 0){
-            if(_creatingANewSong){
+            if(_creatingANewSong || _userPickingNewYtVideo){
                 
                 if(self.currentAlbumArt){
                     _songIAmEditing.albumArt.image = [AlbumArtUtilities compressedDataFromUIImage:self.currentAlbumArt];
@@ -473,10 +488,11 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 //some stuff and will look incomplete (only 3 of 4 images will show in collage.)
                 _songIAmEditing.album.albumArt.isDirty = @YES;
                 
-                //save song into library
+                //keep strong ref to self until we're done saving.
+                _selfRetainCycle = self;
+                
                 NSError *error;
                 [self.theDelegate performCleanupBeforeSongIsSaved:_songIAmEditing];
-                
                 if ([[CoreDataManager context] save:&error] == NO) {
                     //save failed
                     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveHasFailed];
@@ -484,8 +500,11 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 else
                 {
                     //save success
-                    
-                    [SpotlightHelper addSongToSpotlightIndex:_songIAmEditing];
+                    if(_creatingANewSong) {
+                        [SpotlightHelper addSongToSpotlightIndex:_songIAmEditing];
+                    } else {
+                        [SpotlightHelper updateSpotlightIndexForSong:_songIAmEditing];
+                    }
                     
                     if(! userReplacedDefaultYoutubeArt){
                         [LQAlbumArtBackgroundUpdater downloadHqAlbumArtWhenConvenientForSongId:_songIAmEditing.uniqueId];
@@ -521,6 +540,9 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     }
                 }
                 
+                [self preDealloc];
+                _selfRetainCycle = nil;  //allow this class to be deallocated.
+                
             }  //end 'creatingNewSong'
         }  //end indexPath.row == 0
         else
@@ -540,7 +562,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     if([_songIAmEditing.songName isEqualToString:newName])
         return;
     if(newName.length == 0){  //was all whitespace, or user gave us an empty string
-        if(_creatingANewSong){
+        if(_creatingANewSong || _userPickingNewYtVideo){
             _songIAmEditing.songName = nil;
             _songIAmEditing.smartSortSongName = nil;
         }
@@ -569,7 +591,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         [weakself beginUpdates];
         [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]]
                     withRowAnimation:UITableViewRowAnimationFade];
-        if(_creatingANewSong){
+        if(_creatingANewSong || _userPickingNewYtVideo){
             if(! [weakself isRowPresentInTableView:0 withSection:1]){
                 UITableViewRowAnimation animation;
                 if(shouldScrollTableview) {
@@ -883,11 +905,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     //create a new artist
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(artistNameCreationCompleteAndSetUpArtist:)
                                                                  name:@"DoneEditingArtistField" object:nil];
-                    BOOL fullscreen;
-                    if(_creatingANewSong)
-                        fullscreen = NO;
-                    else
-                        fullscreen = NO;
+                    BOOL fullscreen = NO;
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
                                                                                                   notificationNameToPost:@"DoneEditingArtistField" fullScreen:fullscreen];
                     [self.theDelegate pushThisVC:vc];
@@ -953,11 +971,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 if(! _songIAmEditing.album){  //create new album
                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(albumNameCreationCompleteAndSetUpAlbum:)
                                                                  name:@"DoneEditingAlbumField" object:nil];
-                    BOOL fullscreen;
-                    if(_creatingANewSong)
-                        fullscreen = NO;
-                    else
-                        fullscreen = NO;
+                    BOOL fullscreen = NO;
                     EditableCellTableViewController *vc = [[EditableCellTableViewController alloc] initWithEditingString:nil
                                                                                                   notificationNameToPost:@"DoneEditingAlbumField" fullScreen:fullscreen];
                     [self.theDelegate pushThisVC:vc];
@@ -1160,6 +1174,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 - (void)songEditingWasSuccessful
 {
     [[CoreDataManager sharedInstance] saveContext]; //saves the context to disk
+    _didSaveCoreData = YES;
     [SpotlightHelper updateSpotlightIndexForSong:_songIAmEditing];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
     [self.VC dismissViewControllerAnimated:YES completion:nil];

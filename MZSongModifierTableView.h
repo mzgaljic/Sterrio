@@ -35,6 +35,7 @@
                                                 UITableViewDataSource,
                                                 ExistingEntityPickerDelegate>
 
+@property (nonatomic, assign) BOOL userPickingNewYtVideo;
 @property (nonatomic, strong) Song *songIAmEditing;
 @property (nonatomic, assign) NSInteger lastTappedRow;  //only used for section 0
 

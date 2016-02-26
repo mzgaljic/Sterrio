@@ -16,6 +16,7 @@
     NSString *ytVideoId;
     NSString *songName;
     NSString *artistName;
+    NSManagedObjectID *objectId;
 }
 @end
 @implementation DetermineVideoPlayableOperation
@@ -25,13 +26,15 @@ static BOOL lastSongWasSkipped = NO;
 - (id)initWithSongDuration:(NSUInteger)songduration
             youtubeVideoId:(NSString *)videoId
                   songName:(NSString *)sName
-                artistName:(NSString *)aName;
+                artistName:(NSString *)aName
+           managedObjectId:(NSManagedObjectID *)objId
 {
     if(self = [super init]){
         duration = songduration;
         ytVideoId = [videoId copy];
         songName = [sName copy];
         artistName = [aName copy];
+        objectId = objId;
     }
     return self;
 }
@@ -84,7 +87,8 @@ static BOOL lastSongWasSkipped = NO;
     //finally, check if video is still present on youtube (note this call is blocking.)
     BOOL exists = [YTVideoAvailabilityChecker warnUserIfVideoNoLongerExistsForSongWithId:ytVideoId
                                                                                     name:songName
-                                                                              artistName:artistName];
+                                                                              artistName:artistName
+                                                                         managedObjectId:objectId];
     if(exists) {
         NSLog(@"YAY! can play video!");
     } else {

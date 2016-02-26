@@ -12,6 +12,7 @@
 
 + (BOOL)warnUserIfVideoNoLongerExistsForSongWithId:(NSString *)videoId
                                               name:(NSString *)name
-                                        artistName:(NSString *)artistName;
+                                        artistName:(NSString *)artistName
+                                   managedObjectId:(NSManagedObjectID *)objId;
 
 @end

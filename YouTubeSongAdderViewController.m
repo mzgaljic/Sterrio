@@ -51,7 +51,24 @@
 @end
 
 @implementation YouTubeSongAdderViewController
-#pragma mark - Custom Initializer
+
+static BOOL skipCertainInitStepsFlag = NO;
+
+#pragma mark - Custom Initializers
+- (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject
+                 thumbnail:(UIImage *)img
+        existingSongToEdit:(Song *)song
+{
+    skipCertainInitStepsFlag = YES;
+    self = [self initWithYouTubeVideo:youtubeVideoObject thumbnail:img];
+    self.tableView.userPickingNewYtVideo = YES;
+    self.tableView.songIAmEditing = song;
+    [self.tableView initWasCalled];
+    //provide default album art (making deep copy of album art)
+    [self.tableView provideDefaultAlbumArt:lockScreenImg];
+    skipCertainInitStepsFlag = NO;
+    return self;
+}
 - (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject thumbnail:(UIImage *)img
 {
     if (self = [super init]) {
@@ -62,12 +79,13 @@
         //across multiple inits of YouTubeSongAdderViewController.
         ytVideo = [youtubeVideoObject copy];
         NSString *sanitizedTitle = [ytVideo sanitizedTitle];
-        [[DiscogsSearchService sharedInstance] queryWithTitle:sanitizedTitle
-                                                      videoId:ytVideo.videoId
-                                             callbackDelegate:self];
         
+        if(! skipCertainInitStepsFlag) {
+            [[DiscogsSearchService sharedInstance] queryWithTitle:sanitizedTitle
+                                                          videoId:ytVideo.videoId
+                                                 callbackDelegate:self];
+        }
 
-        
         MZSongModifierTableView *songEditTable;
         lockScreenImg = img;
         songEditTable = [[MZSongModifierTableView alloc] initWithFrame:self.view.frame
@@ -78,7 +96,10 @@
         self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight |
                                             UIViewAutoresizingFlexibleWidth;
         [self.view addSubview:self.tableView];
-        [self.tableView initWasCalled];
+        if(! skipCertainInitStepsFlag) {
+            [self.tableView initWasCalled];
+        }
+        
         //fire off network request for video duration ASAP
         [[YouTubeService sharedInstance] setVideoDetailLookupDelegate:self];
         [[YouTubeService sharedInstance] fetchDetailsForVideo:ytVideo];
@@ -115,8 +136,7 @@
     if(!userCreatedHisSong)
         [self.tableView cancelEditing];
     
-    [self.tableView preDealloc];
-    self.tableView = nil;
+    self.tableView = nil;  //tableView will pre-dealloc itself.
     lockScreenImg = nil;
     _suggestedItem = nil;
     url = nil;
@@ -758,11 +778,6 @@ static short numberTimesViewHasBeenShown = 0;
     }];
     
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
-}
-
-- (void)destructThisVCDelayed
-{
-
 }
 
 #pragma mark - Preview Player Delegate Implementation

@@ -186,16 +186,21 @@ static ReachabilitySingleton *reachability;
     [operationQueue cancelAllOperations];
     [self showSpinnerForBasicLoading];
     
-    NSOperation *determineVideoPlayableOperation, *fetchVideoInfoOperation;
+    NSOperation *videoPlayableOp, *fetchVideoInfoOp;
     
     NSUInteger songDuration = [aSong.duration integerValue];
     NSString *artistName = (aSong.artist) ? aSong.artist.artistName : nil;
-    determineVideoPlayableOperation = [[DetermineVideoPlayableOperation alloc] initWithSongDuration:songDuration youtubeVideoId:aSong.youtube_id songName:aSong.songName artistName:artistName];
-    fetchVideoInfoOperation = [[FetchVideoInfoOperation alloc] initWithSongsYoutubeId:aSong.youtube_id];
+    NSManagedObjectID *coreDataObjId = aSong.objectID;
+    videoPlayableOp = [[DetermineVideoPlayableOperation alloc] initWithSongDuration:songDuration
+                                                                     youtubeVideoId:aSong.youtube_id
+                                                                           songName:aSong.songName
+                                                                         artistName:artistName
+                                                                    managedObjectId:coreDataObjId];
+    fetchVideoInfoOp = [[FetchVideoInfoOperation alloc] initWithSongsYoutubeId:aSong.youtube_id];
     
-    [fetchVideoInfoOperation addDependency:determineVideoPlayableOperation];
-    [operationQueue addOperation:fetchVideoInfoOperation];
-    [operationQueue addOperation:determineVideoPlayableOperation];
+    [fetchVideoInfoOp addDependency:videoPlayableOp];
+    [operationQueue addOperation:fetchVideoInfoOp];
+    [operationQueue addOperation:videoPlayableOp];
     
     //if player was disabled, see if we can re-enable it
     if([SongPlayerCoordinator isPlayerInDisabledState]){

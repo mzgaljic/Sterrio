@@ -30,4 +30,8 @@
 
 - (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject thumbnail:(UIImage *)img;
 
+- (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject
+                 thumbnail:(UIImage *)img
+        existingSongToEdit:(Song *)song;
+
 @end
