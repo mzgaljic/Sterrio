@@ -13,7 +13,7 @@
 
 @interface DetermineVideoPlayableOperation : NSOperation
 
-- (id)initWithSongDuration:(NSUInteger)songduration;
+- (id)initWithSongDuration:(NSUInteger)songduration youtubeVideoId:(NSString *)videoId songName:(NSString *)songName artistName:(NSString *)artistName;
 - (BOOL)allowedToPlayVideo;  //access by operations dependant on this one (ie: FetchVideoInfoOperation)
 
 @end

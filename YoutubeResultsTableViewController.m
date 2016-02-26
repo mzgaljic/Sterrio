@@ -20,6 +20,8 @@
 #import "AppRatingUtils.h"
 #import "AppRatingTableViewCell.h"
 
+#import "PlayableItem.h"
+
 //NOTE loadingMoreResultsSpinner is not currently used. To use again, call "reload" on tableview
 //right before loading more results.
 @interface YoutubeResultsTableViewController ()
@@ -49,9 +51,6 @@
 @property (nonatomic, assign) BOOL waitingOnYoutubeResults;
 
 @property (nonatomic, assign) BOOL canShowAppRatingCell;
-
-//non-nil if it was specified when VC was created. For opening VC modally and forcing a query.
-@property (nonatomic, strong) NSString *forcedSearchQuery;
 @end
 
 @implementation YoutubeResultsTableViewController
@@ -60,12 +59,13 @@ static NSString *Network_Error_Loading_More_Results_Msg = @"Network error";
 static NSString *No_More_Results_To_Display_Msg = @"No more results";
 static const int APP_RATING_CELL_ROW_NUM = 2;
 
-- (instancetype)initWithSearchQuery:(NSString *)query
++ (instancetype)initWithSearchQuery:(NSString *)query
 {
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    self = [sb instantiateViewControllerWithIdentifier:@"ytSearchAndResultDisplayVc"];
-    _forcedSearchQuery = query;
-    return self;
+    YoutubeResultsTableViewController *ytSearchResultsVc;
+    ytSearchResultsVc = [sb instantiateViewControllerWithIdentifier:@"ytSearchAndResultDisplayVc"];
+    ytSearchResultsVc.forcedSearchQuery = query;
+    return ytSearchResultsVc;
 }
 
 //custom setters
@@ -95,6 +95,7 @@ static NSDate *timeSinceLastPageLoaded;
 {
     _searchBar.delegate = nil;
     _searchBar = nil;
+    _forcedSearchQuery = nil;
     _searchResults = nil;
     self.searchSuggestions = nil;
     _lastSuccessfullSuggestions = nil;
@@ -165,6 +166,13 @@ static NSDate *timeSinceLastPageLoaded;
     //if(self.displaySearchResults)
         //_navBar.title = @"Search Results";
     [self setNeedsStatusBarAppearanceUpdate];
+    
+    //if this VC was initialized with a forcedSearchQuery, fire off to the delegate.
+    if(_forcedSearchQuery != nil && _forcedSearchQuery.length > 0) {
+        numLettersUserHasTyped = _forcedSearchQuery.length;
+        self.searchBar.text = _forcedSearchQuery;
+        [self searchBarSearchButtonClicked:self.searchBar];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -475,6 +483,9 @@ static NSDate *timeSinceLastPageLoaded;
 //user tapped "Search"
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
+    if([searchBar.text isEqualToString: _forcedSearchQuery]) {
+        _forcedSearchQuery = nil;
+    }
     self.displaySearchResults = YES;
     self.waitingOnYoutubeResults = YES;
     self.tableView.scrollEnabled = YES;

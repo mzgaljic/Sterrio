@@ -17,14 +17,14 @@
 /*
  * Blocks the caller.
  */
-+ (void)warnUserIfVideoNoLongerExistsForSongWithId:(NSString *)videoId
++ (BOOL)warnUserIfVideoNoLongerExistsForSongWithId:(NSString *)videoId
                                               name:(NSString *)name
                                         artistName:(NSString *)artistName
 {
     if(videoId == nil
        || name == nil
        || [[ReachabilitySingleton sharedInstance] isConnectionCompletelyGone]) {
-        return;
+        return YES;
     }
     
     BOOL exists = [YouTubeService doesVideoStillExist:videoId];
@@ -40,15 +40,16 @@
         [MyAlerts displayVideoNoLongerAvailableOnYtAlertForSong:name
                                                   customActions:@[okAction, findNewAction]];
     }
+    return exists;
 }
 
 + (void (^)(SDCAlertAction *))findNewActionHandlerWithQuery:(NSString *)query
 {
-    __weak NSString *weakQuery = query;
+    __block NSString *weakQuery = query;
     return ^(SDCAlertAction *action) {
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             YoutubeResultsTableViewController *ytResultsVc;
-            ytResultsVc = [[YoutubeResultsTableViewController alloc] initWithSearchQuery:weakQuery];
+            ytResultsVc = [YoutubeResultsTableViewController initWithSearchQuery:weakQuery];
             UINavigationController *wrappingNavVc;
             wrappingNavVc = [[UINavigationController alloc] initWithRootViewController:ytResultsVc];
             UIWindow *appWindow = [[[UIApplication sharedApplication] delegate] window];

@@ -7,11 +7,15 @@
 //
 
 #import "DetermineVideoPlayableOperation.h"
+#import "YTVideoAvailabilityChecker.h"
 
 @interface DetermineVideoPlayableOperation ()
 {
     NSUInteger duration;
     BOOL allowedToPlayVideo;
+    NSString *ytVideoId;
+    NSString *songName;
+    NSString *artistName;
 }
 @end
 @implementation DetermineVideoPlayableOperation
@@ -19,9 +23,15 @@
 static BOOL lastSongWasSkipped = NO;
 
 - (id)initWithSongDuration:(NSUInteger)songduration
+            youtubeVideoId:(NSString *)videoId
+                  songName:(NSString *)sName
+                artistName:(NSString *)aName;
 {
     if(self = [super init]){
         duration = songduration;
+        ytVideoId = [videoId copy];
+        songName = [sName copy];
+        artistName = [aName copy];
     }
     return self;
 }
@@ -71,7 +81,15 @@ static BOOL lastSongWasSkipped = NO;
         lastSongWasSkipped = NO;
     }
     
-    NSLog(@"YAY! can play video!");
+    //finally, check if video is still present on youtube (note this call is blocking.)
+    BOOL exists = [YTVideoAvailabilityChecker warnUserIfVideoNoLongerExistsForSongWithId:ytVideoId
+                                                                                    name:songName
+                                                                              artistName:artistName];
+    if(exists) {
+        NSLog(@"YAY! can play video!");
+    } else {
+        [self cancel];
+    }
 }
 
 - (BOOL)allowedToPlayVideo

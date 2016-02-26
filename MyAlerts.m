@@ -225,11 +225,15 @@ static NSMutableArray *queuedToastBannerOptions;
 + (void)displayVideoNoLongerAvailableOnYtAlertForSong:(NSString *)name
                                         customActions:(NSArray *)actions
 {
-    NSString *msg = [NSString stringWithFormat:@"It looks like the video for \"%@\" is no longer available on YouTube.", name];
-    [MyAlerts launchAlertViewWithDialogTitle:@"Video Unavailable"
-                                  andMessage:msg
-                               customActions:actions
-                       allowsBasicLocalNotif:YES];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        NSString *msg = [NSString stringWithFormat:@"It looks like this video for \"%@\" is no longer available on YouTube.", name];
+        [MyAlerts launchAlertViewWithDialogTitle:@"Video Unavailable"
+                                      andMessage:msg
+                                   customActions:actions
+                           allowsBasicLocalNotif:YES];
+        MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+        [player dismissAllSpinnersIfPossible];
+    }];
 }
 
 + (void)showAllQueuedBanners

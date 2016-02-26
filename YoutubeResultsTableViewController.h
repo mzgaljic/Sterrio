@@ -16,5 +16,9 @@
 @interface YoutubeResultsTableViewController : MyTableViewController <UISearchBarDelegate,
                                                                     YouTubeServiceSearchingDelegate,
                                                                     SDWebImageManagerDelegate>
-- (instancetype)initWithSearchQuery:(NSString *)query;
+
+//non-nil if it was specified when VC was created. For opening VC modally and forcing a query.
+@property (nonatomic, strong) NSString *forcedSearchQuery;
+
++ (instancetype)initWithSearchQuery:(NSString *)query;
 @end
