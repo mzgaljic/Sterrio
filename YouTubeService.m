@@ -406,7 +406,7 @@ const int time_out_interval_seconds = 10;
     //checks the status code without actually downloading the response.  :)
     NSString *urlString = [NSString stringWithFormat:@"https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=%@&format=json", youtubeVideoId];
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]
-                                                           cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:6.0];
+                                                           cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:3.0];
     [request setHTTPMethod:@"HEAD"];
     NSHTTPURLResponse* response = nil;
     NSError* error = nil;
