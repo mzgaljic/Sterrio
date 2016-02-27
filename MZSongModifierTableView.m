@@ -68,8 +68,10 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 - (void)dealloc
 {
     [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:NO];
-    //doing this just in case. found a bug once where tab bar was gone after this editor closing.
-    [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@NO];
+    if(! _userPickingNewYtVideo) {
+        //doing this just in case. found a bug once where tab bar was gone after this editor closing.
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@NO];
+    }
 }
 
 - (void)preDealloc
