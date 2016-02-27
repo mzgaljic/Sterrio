@@ -74,29 +74,29 @@ short const dummyTabIndex = 2;
     [super viewDidLoad];
     self.currentNavController = self.navControllers[0];
     self.view.backgroundColor = [UIColor clearColor];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(portraitStatusBarStateChanging:)
-                                                 name:MZMainScreenVCStatusBarAlwaysInvisible
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(hideTabBarAnimated:)
-                                                 name:MZHideTabBarAnimated
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(appThemePossiblyChanged)
-                                                 name:@"app theme color has possibly changed"
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(userDoneWithIntro)
-                                                 name:MZAppIntroComplete object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(newSongIsLoading:)
-                                                 name:MZNewSongLoading
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(dismissPlayerExpandingTip:) name:@"shouldDismissPlayerExpandingTip"
-                                               object:nil];
+    NSNotificationCenter *notifCenter = [NSNotificationCenter defaultCenter];
+    [notifCenter addObserver:self
+                    selector:@selector(portraitStatusBarStateChanging:)
+                        name:MZMainScreenVCStatusBarAlwaysInvisible
+                      object:nil];
+    [notifCenter addObserver:self
+                    selector:@selector(hideTabBarAnimated:)
+                        name:MZHideTabBarAnimated
+                      object:nil];
+    [notifCenter addObserver:self
+                    selector:@selector(appThemePossiblyChanged)
+                        name:@"app theme color has possibly changed"
+                      object:nil];
+    [notifCenter addObserver:self
+                    selector:@selector(userDoneWithIntro)
+                        name:MZAppIntroComplete object:nil];
+    [notifCenter addObserver:self
+                    selector:@selector(newSongIsLoading:)
+                        name:MZNewSongLoading
+                      object:nil];
+    [notifCenter addObserver:self
+                    selector:@selector(dismissPlayerExpandingTip:) name:@"shouldDismissPlayerExpandingTip"
+                      object:nil];
 }
 
 - (UIStatusBarStyle) preferredStatusBarStyle
