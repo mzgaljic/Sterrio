@@ -11,6 +11,7 @@
 @interface MyAlerts : NSObject
 
 typedef enum {
+    ALERT_TYPE_SomeVideosNoLongerLoading,  //probably a vevo issue that happens once in a while lol.
     ALERT_TYPE_CannotConnectToYouTube,
     ALERT_TYPE_CannotLoadVideo,
     

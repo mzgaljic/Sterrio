@@ -46,6 +46,14 @@ static NSMutableArray *queuedToastBannerOptions;
 + (void)runDisplayAlertCodeWithAlertType:(ALERT_TYPE)type
 {
     switch (type) {
+        case ALERT_TYPE_SomeVideosNoLongerLoading:
+        {
+            NSString *msg = @"Looks like there's a problem loading certain videos. We've been notified and we're working on fixing this ASAP!";
+            [MyAlerts launchAlertViewWithDialogTitle:@"Problem loading videos"
+                                          andMessage:msg
+                                       customActions:nil
+                               allowsBasicLocalNotif:YES];
+        }
         case ALERT_TYPE_CannotConnectToYouTube:
         {
             //alert user to internet problem

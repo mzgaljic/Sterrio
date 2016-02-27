@@ -29,7 +29,12 @@
     }
     
     BOOL exists = [YouTubeService doesVideoStillExist:videoId];
-    if(! exists) {
+    if(exists) {
+        //looks like videos may not be loading properly anymore?
+        [Answers logCustomEventWithName:@"Unexplained Video Load Failure. ID attached."
+                       customAttributes:@{@"YouTube ID" : videoId}];
+        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SomeVideosNoLongerLoading];
+    } else {
         SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK"
                                                              style:SDCAlertActionStyleDefault
                                                            handler:nil];
