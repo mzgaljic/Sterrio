@@ -121,6 +121,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     waitingForNextOrPrevVideoToLoad = YES;
     [self initAndRegisterAllButtons];
     
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(updateScreenWithInfoForNewSong:)
                                                  name:MZNewSongLoading
@@ -522,12 +523,10 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     return returnString;
 }
 
-- (void)updatePlaybackTimeSlider
+- (void)updatePlaybackTimeSliderWithTimeValue:(Float64) currentTimeValue
 {
     if(sliderIsBeingTouched)
         return;
-    
-    Float64 currentTimeValue = CMTimeGetSeconds([MusicPlaybackController obtainRawAVPlayer].currentItem.currentTime);
     
     //sets slider directly from avplayer. playback can stutter or pause, so we can't just increment by 1...
     if(firstTimeUpdatingSliderSinceShowingPlayer)
@@ -1111,7 +1110,7 @@ static int accomodateInterfaceLabelsCounter = 0;
 #pragma mark - Playback Time Slider
 - (void)positionPlaybackSliderOnScreen
 {
-    NSString *nameOfFontForTimeLabels = [AppEnvironmentConstants regularFontName];
+    NSString *nameOfFontForTimeLabels = @"Menlo";
     short timeLabelFontSize = _currentTimeLabel.font.pointSize;
     if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))
         return;
@@ -1664,7 +1663,10 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
     CMTime timeInterval = CMTimeMake(1, 8);
     [MusicPlaybackController setAVPlayerTimeObserver: [player addPeriodicTimeObserverForInterval:timeInterval queue:nil usingBlock:^(CMTime time){
         //code will be called 10 times a second (ie. every 0.1 seconds)
-        [weakSelf updatePlaybackTimeSlider];
+        
+        Float64 currentTimeValue = CMTimeGetSeconds([MusicPlaybackController obtainRawAVPlayer].currentItem.currentTime);
+        [weakSelf updatePlaybackTimeSliderWithTimeValue:currentTimeValue];
+        [[MusicPlaybackController obtainRawPlayerView] updatePlaybackTimeSliderWithTimeValue:currentTimeValue];
         
         id observer = [MusicPlaybackController avplayerTimeObserver];
         UIApplicationState state = [[UIApplication sharedApplication] applicationState];

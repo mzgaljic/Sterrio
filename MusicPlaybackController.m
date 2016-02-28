@@ -36,6 +36,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 + (void)internalResumePlayaback
 {
     [player play];
+    [playerView playCalled];
 }
 
 /** Playback will be paused immediately */
@@ -50,6 +51,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 + (void)internalPausePlayback
 {
     [player pause];
+    [playerView pauseCalled];
 }
 
 /** Stop playback of current song/track, and begin playback of the next track */

@@ -39,7 +39,7 @@ static BOOL updatingPlayerViewDisabled = NO;
     [newPlayer startPlaybackOfSong:aSong
                       goingForward:forward
                    oldPlayableItem:oldItem];
-    [VideoPlayerWrapper setupAvPlayerViewAgain];
+    //[VideoPlayerWrapper setupAvPlayerViewAgain];
 }
 
 + (void)beginPlaybackWithPlayerItem:(AVPlayerItem *)item

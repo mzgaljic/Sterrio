@@ -229,7 +229,7 @@ static BOOL isHudOnScreen = NO;
             self.elapsedTimeLabel.text = @"00:00:00";
         self.elapsedTimeLabel.textAlignment = NSTextAlignmentRight;
         self.elapsedTimeLabel.textColor = [UIColor whiteColor];
-        self.elapsedTimeLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+        self.elapsedTimeLabel.font = [UIFont fontWithName:@"Menlo"
                                                      size:fontSize];
     }
     [self.elapsedTimeLabel sizeToFit];
@@ -245,7 +245,7 @@ static BOOL isHudOnScreen = NO;
         self.totalTimeLabel.text = totalDurationString;
         self.totalTimeLabel.textAlignment = NSTextAlignmentLeft;
         self.totalTimeLabel.textColor = [UIColor whiteColor];
-        self.totalTimeLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+        self.totalTimeLabel.font = [UIFont fontWithName:@"Menlo"
                                                    size:fontSize];
     }
     [self.totalTimeLabel sizeToFit];

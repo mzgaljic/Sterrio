@@ -68,7 +68,6 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
 
 + (NSManagedObjectContext *)context
 {
-    NSAssert([NSThread isMainThread], @"CoreDataManager + (NSManagedObjectContext *)context -> main thread core data context accessed on wrong thread.");
     CoreDataManager *singleton = [CoreDataManager sharedInstance];
     BOOL coreDataStackIsBeingInitialized = (singleton.isMainThreadContextInitializedYet == NO);
     
@@ -201,7 +200,6 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
 //Saves the Data Model onto the DB
 - (void)saveContext
 {
-    NSAssert([NSThread isMainThread], @"-(void)saveContext -> main thread core data context accessed on wrong thread.");
     NSError *error = nil;
     NSManagedObjectContext *managedObjectContext = self.managedObjectContext;
     if (managedObjectContext != nil) 

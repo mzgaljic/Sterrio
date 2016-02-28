@@ -53,6 +53,7 @@ static NSMutableArray *queuedToastBannerOptions;
                                           andMessage:msg
                                        customActions:nil
                                allowsBasicLocalNotif:YES];
+            break;
         }
         case ALERT_TYPE_CannotConnectToYouTube:
         {

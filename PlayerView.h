@@ -30,6 +30,10 @@
 - (void)showAirPlayInUseMsg:(BOOL)show;
 - (void)newAirplayInUseMsgCenter:(CGPoint)newCenter;
 
-
+//'proxy' for the methods called in MusicPlaybackController.
+//Needed to keep the player 'hud' in sync.
+- (void)playCalled;
+- (void)pauseCalled;
+- (void)updatePlaybackTimeSliderWithTimeValue:(Float64)currentTimeValue;
 
 @end

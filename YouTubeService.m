@@ -401,8 +401,29 @@ const int time_out_interval_seconds = 10;
 
 #pragma mark - Video Presence on Youtube.com
 //BLOCKS the caller. Does not waste API key quota.
+static NSMutableArray *videoExistsCache = nil;
+static const int VIDEO_CACHE_MAX_SIZE = 15;
 + (BOOL)doesVideoStillExist:(NSString *)youtubeVideoId
 {
+    //cache is an array of NSDictionary object (each with only 1 key-value mapping)
+    if(videoExistsCache == nil) {
+        videoExistsCache = [[NSMutableArray alloc] initWithArray:@[]];
+    }
+    
+    //check if its already in the cache to avoid hitting the internet
+    for(NSDictionary *dict in videoExistsCache) {
+        NSString *videoId = [[dict allKeys] lastObject];
+        if([youtubeVideoId isEqualToString: videoId]) {
+            return [[[dict allValues] lastObject] boolValue];
+        }
+    }
+   
+    //reduce cache size if it's reaching the limit
+    if(videoExistsCache.count > 0 && videoExistsCache.count == VIDEO_CACHE_MAX_SIZE) {
+        [videoExistsCache removeObjectAtIndex:videoExistsCache.count-1];
+    }
+    
+    
     //checks the status code without actually downloading the response.  :)
     NSString *urlString = [NSString stringWithFormat:@"https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=%@&format=json", youtubeVideoId];
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]
@@ -415,14 +436,20 @@ const int time_out_interval_seconds = 10;
     
     //general note: better to lie and say YES than to freak the user out by saying the video is
     //no longer available.
+    BOOL retVal;
     switch (statusCode) {
         case 404:  //'Not Found'
-            return NO;
+            retVal =  NO;
+            break;
         case 410:  //'Gone'
-            return NO;
+            retVal =  NO;
+            break;
         default:
-            return YES;
+            retVal = YES;
+            break;
     }
+    [videoExistsCache addObject:@{youtubeVideoId : [NSNumber numberWithBool:retVal]}];
+    return retVal;
 }
 
 @end

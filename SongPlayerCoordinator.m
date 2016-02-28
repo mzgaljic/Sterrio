@@ -76,13 +76,13 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     if(isVideoPlayerExpanded == YES)
         return;
     
+    //I want this to be set "too early", just playing it safe.
+    isVideoPlayerExpanded = YES;
+    
     if([AppEnvironmentConstants isTabBarHidden])
         wasTabBarHiddenBeforePlayerExpansion = YES;
     else
         [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:[NSNumber numberWithBool:YES]];
-    
-    //I want this to be set "too early", just playing it safe.
-    isVideoPlayerExpanded = YES;
     
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     UIWindow *appWindow = [UIApplication sharedApplication].keyWindow;

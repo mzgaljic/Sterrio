@@ -7,6 +7,7 @@
 //
 
 #import "FetchVideoInfoOperation.h"
+#import "YouTubeService.h"
 
 @interface FetchVideoInfoOperation ()
 {
@@ -109,7 +110,6 @@
         //NOTE: the MusicPlaybackController methods called from this completion block have
         //been made thread safe.
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-            
             if ([weakSelf isCancelled]){
                 [weakSelf finishBecauseOfCancel];
                 return;
@@ -126,9 +126,9 @@
                     url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:video.streamURLs];
                 }
                 currentItemLink = url;
-            }
-            else{
-                if([[ReachabilitySingleton sharedInstance] isConnectionCompletelyGone]){
+            } else {
+                ReachabilitySingleton *reachability = [ReachabilitySingleton sharedInstance];
+                if([reachability isConnectionCompletelyGone]){
                     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
                     [MusicPlaybackController playbackExplicitlyPaused];
                     [MusicPlaybackController pausePlayback];
@@ -138,8 +138,19 @@
                     return;
                 } else{
                     //video may no longer exist, or the internet connection is very weak
-                    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotLoadVideo];
-                    [MusicPlaybackController skipToNextTrack];
+                    
+                    BOOL exists = [YouTubeService doesVideoStillExist:weakId];
+                    if(exists) {
+                        //looks like some videos may not be loading properly anymore.
+                        NSString *eventName = @"Unexplained Video Load Failure. ID attached.";
+                        [Answers logCustomEventWithName:eventName
+                                       customAttributes:@{@"YouTube ID" : weakId}];
+                        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SomeVideosNoLongerLoading];
+                    } else {
+                        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotLoadVideo];
+                    }
+                    
+                    //[MusicPlaybackController skipToNextTrack];
                     [weakSelf finishBecauseOfCancel];
                     return;
                 }

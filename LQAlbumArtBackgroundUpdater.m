@@ -21,7 +21,6 @@
 @end
 @implementation LQAlbumArtBackgroundUpdater
 
-const NSUInteger limitPerFetchOnBattery = 4;
 static LQAlbumArtBackgroundUpdater *internalSingleton;
 static NSLock *myLock1;
 static BOOL isAsyncUpdateInProgress = NO;
@@ -212,7 +211,7 @@ static BOOL abortAsyncArtUpdate = NO;
         if(downloadedHqArtSuccessfully || songStillExists == NO)
             [itemsToDelete addObject:lqItem];
         
-        if([self artUpdateLimitBasedOnPowerState] <= counter)
+        if([self artUpdateLimitBasedOnDeviceState] <= counter)
             break;
     }
     
@@ -231,15 +230,26 @@ static BOOL abortAsyncArtUpdate = NO;
     NSLog(@"Updated %i LQ ALbum Art", (int)counter);
 }
 
-- (NSUInteger)artUpdateLimitBasedOnPowerState
+- (NSUInteger)artUpdateLimitBasedOnDeviceState
 {
     UIDeviceBatteryState batteryState = [UIDevice currentDevice].batteryState;
-    if (batteryState == UIDeviceBatteryStateUnplugged
-        || batteryState == UIDeviceBatteryStateUnknown) {
-        return limitPerFetchOnBattery;
-    } else {
-        return NSUIntegerMax;
+    if ((batteryState == UIDeviceBatteryStateUnplugged || batteryState == UIDeviceBatteryStateUnknown))
+    {
+        if([reachability isConnectedToWifi]) {
+            return 5;
+        } else {
+            return 0;
+        }
     }
+    else if(batteryState == UIDeviceBatteryStateCharging || batteryState == UIDeviceBatteryStateFull)
+    {
+        if([reachability isConnectedToWifi]) {
+            return NSUIntegerMax;
+        } else {
+            return 0;
+        }
+    }
+    return 0;
 }
 
 - (NSArray *)highQualityThumbnailUrlsForYoutubeVideoId:(NSString *)videoId

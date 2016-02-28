@@ -22,22 +22,26 @@
                                         artistName:(NSString *)artistName
                                    managedObjectId:(NSManagedObjectID *)objId
 {
+    ReachabilitySingleton *reachability = [ReachabilitySingleton sharedInstance];
     if(videoId == nil
        || name == nil
-       || [[ReachabilitySingleton sharedInstance] isConnectionCompletelyGone]) {
+       || [reachability isConnectionCompletelyGone]) {
         return YES;
     }
     
     BOOL exists = [YouTubeService doesVideoStillExist:videoId];
-    if(exists) {
-        //looks like videos may not be loading properly anymore?
-        [Answers logCustomEventWithName:@"Unexplained Video Load Failure. ID attached."
-                       customAttributes:@{@"YouTube ID" : videoId}];
-        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SomeVideosNoLongerLoading];
-    } else {
+    if(!exists) {
+        //videos seem to no longer be loading correctly.
+        if([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+            [MusicPlaybackController skipToNextTrack];
+        }
         SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK"
                                                              style:SDCAlertActionStyleDefault
-                                                           handler:nil];
+                                                           handler:^(SDCAlertAction *action) {
+                                                               if([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+                                                                   [MusicPlaybackController skipToNextTrack];
+                                                               }
+                                                           }];
         NSString *ytQuery = [YTVideoAvailabilityChecker queryStringForSongWithName:name
                                                                         artistName:artistName];
         SDCAlertAction *findNewAction = [SDCAlertAction actionWithTitle:@"Find new video"
