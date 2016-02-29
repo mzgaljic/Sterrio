@@ -212,8 +212,6 @@
 		87414BC81B3FB85300FB8252 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87414BC71B3FB85300FB8252 /* AppDelegate.m */; };
 		87494D3D1C27476A00AA9637 /* IntroVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87494D3C1C27476A00AA9637 /* IntroVideoView.m */; };
 		8755545E1C1DF6EA00259CA8 /* InAppPurchaseUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8755545D1C1DF6EA00259CA8 /* InAppPurchaseUtils.m */; };
-		875681CE1C82350000FD3E1A /* credits.py in Resources */ = {isa = PBXBuildFile; fileRef = 875681CD1C82350000FD3E1A /* credits.py */; };
-		875681D11C82368600FD3E1A /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 875681D01C82368600FD3E1A /* Settings.bundle */; };
 		876C53D21C2A136C007AFC3C /* CMPopTipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 876C53D11C2A136C007AFC3C /* CMPopTipView.m */; };
 		876C53D41C2A1383007AFC3C /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 876C53D31C2A1383007AFC3C /* LICENSE.txt */; };
 		876C53D71C2A557A007AFC3C /* PushNotificationsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 876C53D61C2A557A007AFC3C /* PushNotificationsHelper.m */; };
@@ -663,8 +661,6 @@
 		87494D3C1C27476A00AA9637 /* IntroVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntroVideoView.m; sourceTree = "<group>"; };
 		8755545C1C1DF6EA00259CA8 /* InAppPurchaseUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppPurchaseUtils.h; sourceTree = "<group>"; };
 		8755545D1C1DF6EA00259CA8 /* InAppPurchaseUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppPurchaseUtils.m; sourceTree = "<group>"; };
-		875681CD1C82350000FD3E1A /* credits.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = credits.py; sourceTree = "<group>"; };
-		875681D01C82368600FD3E1A /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		876C53CC1C2A12A1007AFC3C /* Sterrio-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Sterrio-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
 		876C53D01C2A136C007AFC3C /* CMPopTipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMPopTipView.h; sourceTree = "<group>"; };
 		876C53D11C2A136C007AFC3C /* CMPopTipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMPopTipView.m; sourceTree = "<group>"; };
@@ -764,8 +760,6 @@
 			isa = PBXGroup;
 			children = (
 				87353A651B0AA3F1009244E4 /* Sterrio.entitlements */,
-				875681CD1C82350000FD3E1A /* credits.py */,
-				875681D01C82368600FD3E1A /* Settings.bundle */,
 				873538071B0A9A80009244E4 /* LaunchScreen.storyboard */,
 				873538081B0A9A80009244E4 /* Main.storyboard */,
 				8735380E1B0A9AA2009244E4 /* AppDelegate.h */,
@@ -1895,13 +1889,11 @@
 				8735380A1B0A9A80009244E4 /* Main.storyboard in Resources */,
 				873539FF1B0AA231009244E4 /* LICENSE.txt in Resources */,
 				87353A071B0AA24B009244E4 /* LICENSE.txt in Resources */,
-				875681CE1C82350000FD3E1A /* credits.py in Resources */,
 				873538091B0A9A80009244E4 /* LaunchScreen.storyboard in Resources */,
 				873539801B0AA168009244E4 /* LICENSE.txt in Resources */,
 				87353A0E1B0AA264009244E4 /* LICENSE.txt in Resources */,
 				873539EF1B0AA1F4009244E4 /* LICENSE.txt in Resources */,
 				873539E81B0AA1E2009244E4 /* ProgressHUD.bundle in Resources */,
-				875681D11C82368600FD3E1A /* Settings.bundle in Resources */,
 				87353A4B1B0AA2DE009244E4 /* LICENSE.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1970,7 +1962,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "./credits.py -s \"$SRCROOT\" -o \"$SRCROOT/Settings.bundle/Credits.plist\"";
+			shellScript = "";
 		};
 		C40FBC495E44D2F698A962A2 /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

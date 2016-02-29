@@ -23,6 +23,9 @@
 @property (assign, nonatomic, readonly) BOOL playbackExplicitlyPaused;
 @property (assign, nonatomic, readonly) NSUInteger elapsedTimeInSec;
 
+extern const int CONTROLS_HUD_HEIGHT;
+extern const float AUTO_HIDE_HUD_DELAY;
+
 - (instancetype)initWithFrame:(CGRect)frame videoURL:(NSURL *)videoURL useControlsOverlay:(BOOL)useOverlay;
 - (void)setStallValueChangedDelegate:(id <MZPreviewPlayerStallState>)aDelegate;
 - (void)play;

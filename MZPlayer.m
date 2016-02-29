@@ -27,6 +27,8 @@
     NSUInteger totalDuration;
     NSUInteger secondsLoaded;
     BOOL playbackStarted;
+    
+    BOOL isHudOnScreen;
 }
 
 @property (strong, nonatomic, readwrite) AVPlayer *avPlayer;
@@ -51,7 +53,6 @@
 
 const int CONTROLS_HUD_HEIGHT = 45;
 const float AUTO_HIDE_HUD_DELAY = 4;
-static BOOL isHudOnScreen = NO;
 
 - (void)setFrame:(CGRect)frame
 {

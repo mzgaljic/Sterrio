@@ -30,6 +30,7 @@
     NSUInteger totalDuration;
     NSUInteger secondsLoaded;
     UIVisualEffectView *visualEffectView;
+    BOOL isHudOnScreen;
 }
 //for player hud stuff in landscape mode
 @property (strong,nonatomic) UIView *controlsHud;
@@ -533,10 +534,6 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 
 
 #pragma mark - Hud Control Animations
-const int CONTROLS_HUD_HEIGHT = 45;
-const float AUTO_HIDE_HUD_DELAY = 4;
-static BOOL isHudOnScreen = NO;
-
 - (void)animateHudOntoPlayer
 {
     isHudOnScreen = YES;
