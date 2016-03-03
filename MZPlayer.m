@@ -239,14 +239,13 @@ const float AUTO_HIDE_HUD_DELAY = 4;
                                              self.elapsedTimeLabel.frame.size.height);
     
     //Total Duration Label
-    if(self.totalTimeLabel == nil){
-        self.totalTimeLabel = [[UILabel alloc] init];
-        self.totalTimeLabel.text = totalDurationString;
-        self.totalTimeLabel.textAlignment = NSTextAlignmentLeft;
-        self.totalTimeLabel.textColor = [UIColor whiteColor];
-        self.totalTimeLabel.font = [UIFont fontWithName:@"Menlo"
-                                                   size:fontSize];
-    }
+    self.totalTimeLabel = nil;
+    self.totalTimeLabel = [[UILabel alloc] init];
+    self.totalTimeLabel.text = totalDurationString;
+    self.totalTimeLabel.textAlignment = NSTextAlignmentLeft;
+    self.totalTimeLabel.textColor = [UIColor whiteColor];
+    self.totalTimeLabel.font = [UIFont fontWithName:@"Menlo"
+                                               size:fontSize];
     [self.totalTimeLabel sizeToFit];
 
     int airplayIconWidth = 25;
