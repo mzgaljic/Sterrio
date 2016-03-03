@@ -600,7 +600,12 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 
 - (void)pauseCalled
 {
-    [self startAutoHideTimer];
+    if(! isUserScrubbing) {
+        //this is the hack that was placed in to tie this in to the gui properly
+        //(like if the user pauses from control center, etc.)
+        //
+        [self startAutoHideTimer];
+    }
     [self.playPauseButton setSelected:YES];
 }
 
@@ -614,6 +619,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 
 - (void)progressBarEditingBegan:(UISlider *)sender
 {
+    isUserScrubbing = YES;
     [MusicPlaybackController explicitlyPausePlayback:YES];
     [MusicPlaybackController pausePlayback];
     [self clearTimer];
@@ -631,6 +637,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 
 - (void)progressBarChangeEnded:(UISlider *)sender
 {
+    isUserScrubbing = NO;
     _elapsedTimeInSec = sender.value;
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     if(player.externalPlaybackActive) {
