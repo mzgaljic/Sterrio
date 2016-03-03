@@ -12,7 +12,6 @@
 #import "Artist.h"
 #import "Album.h"
 #import "PlayerView.h"  //custom avplayer view
-#import "ASValueTrackingSlider.h"  //slider
 #import "PreferredFontSizeUtility.h"
 #import "MRProgress.h"
 #import "SDCAlertView.h"  //custom alert view
@@ -47,7 +46,6 @@
 
 @interface SongPlayerViewController : MyViewController <AVAudioSessionDelegate,
                                                         AVAudioPlayerDelegate,
-                                                        ASValueTrackingSliderDataSource,
                                                         VideoPlayerControlInterfaceDelegate,
                                                         UIActionSheetDelegate>
 
@@ -57,7 +55,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *totalDurationLabel;
 @property (weak, nonatomic) IBOutlet MarqueeLabel *songNameLabel;
 @property (weak, nonatomic) IBOutlet MarqueeLabel *artistAndAlbumLabel;
-@property (weak, nonatomic) IBOutlet ASValueTrackingSlider *playbackSlider;
+@property (weak, nonatomic) IBOutlet JAMAccurateSlider *playbackSlider;
 @property (weak, nonatomic) IBOutlet UIView *sliderHintView;
 
 

@@ -84,37 +84,15 @@ static void *kTimeRangesKVO            = &kTimeRangesKVO;
 
 static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 
-- (ASValueTrackingSlider *)playbackSlider
-{
-    return _playbackSlider;
-}
-
 #pragma mark - VC Life Cycle
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     [SongPlayerCoordinator playerWasKilled:NO];
     
-    //make sure ASValueTrackingSlider is still using the superclass JAMAccurateSlider
-    if(! [ASValueTrackingSlider isSubclassOfClass:[JAMAccurateSlider class]]){
-        NSLog(@"ASValueTrackingSlider HAS BEEN UPDATED/CHANGED. THE SUPER CLASS IS NO LONGER JAMAccurateSlider, PLEASE FIX THIS ASAP.");
-        abort();
-    }
-    
     //clear out garbage values from storyboard
     _songNameLabel.text = nil;
     _artistAndAlbumLabel.text = nil;
-    
-    //this allows me to discover if AVSValueTrackingSlider changes, even on a new device.
-    [_playbackSlider disablePopupSliderCompletely:NO];
-    
-    //disabling popup on slider for small screens since the interface is too small
-    int iphone5Height = 568;
-    int phoneHeight = [UIScreen mainScreen].bounds.size.height;
-    if(self.view.frame.size.width > phoneHeight)
-        phoneHeight = [UIScreen mainScreen].bounds.size.width;
-    if(phoneHeight < iphone5Height)
-        [_playbackSlider disablePopupSliderCompletely:YES];
     
     firstTimeUpdatingSliderSinceShowingPlayer = YES;
     colorOfPlaybackButtons = [UIColor defaultAppColorScheme];
@@ -166,11 +144,10 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
                                              selector:@selector(updateSleepTimerIcon)
                                                  name:TIMER_IMG_NEEDS_UPDATE
                                                object:nil];
-    self.playbackSlider.dataSource = self;
     [[SongPlayerCoordinator sharedInstance] setDelegate:self];
     
-    _currentTimeLabel.text = @"--:--";
-    _totalDurationLabel.text = @"--:--";
+    _currentTimeLabel.text = @"0:00";
+    _totalDurationLabel.text = @"00:00";
     _currentTimeLabel.textColor = [UIColor blackColor];
     _totalDurationLabel.textColor = [UIColor blackColor];
     self.navBar.title = [MusicPlaybackController prettyPrintNavBarTitle];
@@ -285,7 +262,6 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     [MusicPlaybackController setAVPlayerTimeObserver:nil];
     [self removeObservers];
     sliderHint = nil;
-    self.playbackSlider.dataSource = nil;
     _totalDurationLabel = nil;
     _currentTimeLabel = nil;
     self.navBar = nil;
@@ -341,9 +317,17 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     [sliderHint setBoldTextFontName:[AppEnvironmentConstants boldFontName]];
     short statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
     short navBarHeight = self.navigationController.navigationBar.frame.size.height;
+    
+    int yOrigin;
+    //if the status bar is expanded (in a call, using navigation, etc.), we need to adjust frame.
+    if([UIApplication sharedApplication].statusBarFrame.size.height > [AppEnvironmentConstants regularStatusBarHeightPortrait]) {
+        yOrigin = navBarHeight - statusBarHeight;
+    } else {
+        yOrigin = navBarHeight + statusBarHeight;
+    }
     CGRect frame = self.sliderHintView.frame;
     CGRect newFrame = CGRectMake(frame.origin.x,
-                                 navBarHeight+statusBarHeight,
+                                 yOrigin,
                                  frame.size.width,
                                  frame.size.height);
     self.sliderHintView.frame = newFrame;
@@ -458,23 +442,26 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 - (IBAction)playbackSliderEditingHasBegun:(id)sender
 {
     BOOL dontShowHint = NO;
-    //if the status bar is expanded (in a call, using navigation, etc.) don't show hint. has bug...
-    if([UIApplication sharedApplication].statusBarFrame.size.height >= [AppEnvironmentConstants regularStatusBarHeightPortrait]) {
+    //if the status bar is expanded (in a call, using navigation, etc.) don't show hint.
+    if([UIApplication sharedApplication].statusBarFrame.size.height > [AppEnvironmentConstants regularStatusBarHeightPortrait]) {
         dontShowHint = YES;
     }
     
     NSString *hint = @"Slide ↑ or ↓ for more accuracy.";
     int presentationMode = GCDiscreetNotificationViewPresentationModeTop;
-    if(! sliderHint && !dontShowHint) {
+    if(!dontShowHint) {
+        [sliderHint removeFromSuperview];
+        sliderHint = nil;
         sliderHint = [[GCDiscreetNotificationView alloc] initWithText:hint
                                                          showActivity:NO
                                                    inPresentationMode:presentationMode
                                                                inView:_sliderHintView];
     }
 
-    _sliderHintView.hidden = NO;
-    if(sliderHint && !dontShowHint)
+    if(sliderHint && !dontShowHint) {
+        _sliderHintView.hidden = NO;
         [sliderHint showAnimated];
+    }
     
     AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
     if(player.rate == 0)
@@ -516,15 +503,10 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     lastScrubbingSeekTime = newTime;
 }
 
-- (NSString *)slider:(ASValueTrackingSlider *)slider stringForValue:(float)value
+- (void)updatePlaybackTimeSliderWithTimeValue:(Float64)currentTimeValue
 {
-    NSString *returnString = [self convertSecondsToPrintableNSStringWithSliderValue:value];
-    _currentTimeLabel.text = returnString;
-    return returnString;
-}
-
-- (void)updatePlaybackTimeSliderWithTimeValue:(Float64) currentTimeValue
-{
+    _currentTimeLabel.text = [self convertSecondsToPrintableNSStringWithSliderValue:currentTimeValue];
+    
     if(sliderIsBeingTouched)
         return;
     
@@ -532,13 +514,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     if(firstTimeUpdatingSliderSinceShowingPlayer)
         [self.playbackSlider setValue:(currentTimeValue) animated:NO];
     else{
-        if([_playbackSlider isPopupSliderCompletelyDisabled]){
-            //popup slider is disabled on devices smaller than iPhone 5. This messes with internals of ASValueTrackingSlider
-            //in this case we want to manually perform animation updates (dont let ASValueTrackingSlider handle it)
-            [_playbackSlider setParentValue:(currentTimeValue) animated:YES];  //custom method i created
-        }
-        else
-            [_playbackSlider setValue:(currentTimeValue) animated:YES];
+        [_playbackSlider setValue:(currentTimeValue) animated:YES];
     }
     
     firstTimeUpdatingSliderSinceShowingPlayer = NO;
@@ -1120,7 +1096,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     CGFloat screenWidth = screenRect.size.width;
     
     //hardcoded because i counted how wide it needs to be to fit our text (67 for including hours)
-    int labelWidth = 43;
+    int labelWidth = 52;
     int labelHeight = 21;
     int padding = 10;
     
@@ -1147,24 +1123,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     
     //slider settings
     _playbackSlider.minimumValue = 0.0f;
-    _playbackSlider.popUpViewCornerRadius = 5.0;
-    [_playbackSlider setMaxFractionDigitsDisplayed:0];
-    _playbackSlider.popUpViewColor = [[UIColor defaultAppColorScheme] lighterColor];
-    _playbackSlider.font = [UIFont fontWithName:nameOfFontForTimeLabels size:24];
-    _playbackSlider.textColor = [UIColor whiteColor];
     _playbackSlider.minimumTrackTintColor = [[UIColor defaultAppColorScheme] lighterColor];
-    
-    //check if device is older than 5, need to disable the popup on small screen sizes
-    //since it doesnt fit well
-    int iphone5Height = 568;
-    int phoneHeight = self.view.frame.size.height;
-    if(self.view.frame.size.width > phoneHeight)
-        phoneHeight = self.view.frame.size.width;
-    BOOL runningiPhone5orNewer = YES;
-    if(phoneHeight < iphone5Height)
-        runningiPhone5orNewer = NO;
-    if(! runningiPhone5orNewer)
-       [_playbackSlider hidePopUpViewAnimated:NO];
     
     //setup total duration label
     labelXValue = xValue + sliderWidth + padding;

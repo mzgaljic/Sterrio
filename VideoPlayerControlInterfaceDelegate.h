@@ -10,7 +10,6 @@
 
 @protocol VideoPlayerControlInterfaceDelegate <NSObject>
 
-- (void)updatePlaybackTimeSlider;
 - (void)playbackHasStopped;
 - (void)playbackHasResumed;
 
