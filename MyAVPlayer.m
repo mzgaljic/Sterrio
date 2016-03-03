@@ -191,12 +191,8 @@ static ReachabilitySingleton *reachability;
     NSUInteger songDuration = [aSong.duration integerValue];
     NSString *artistName = (aSong.artist) ? aSong.artist.artistName : nil;
     NSManagedObjectID *coreDataObjId = aSong.objectID;
-    videoPlayableOp = [[DetermineVideoPlayableOperation alloc] initWithSongDuration:songDuration
-                                                                     youtubeVideoId:aSong.youtube_id
-                                                                           songName:aSong.songName
-                                                                         artistName:artistName
-                                                                    managedObjectId:coreDataObjId];
-    fetchVideoInfoOp = [[FetchVideoInfoOperation alloc] initWithSongsYoutubeId:aSong.youtube_id];
+    videoPlayableOp = [[DetermineVideoPlayableOperation alloc] initWithSongDuration:songDuration];
+    fetchVideoInfoOp = [[FetchVideoInfoOperation alloc] initWithSongsYoutubeId:aSong.youtube_id songName:aSong.songName artistName:artistName managedObjectId:coreDataObjId];
     
     [fetchVideoInfoOp addDependency:videoPlayableOp];
     [operationQueue addOperation:fetchVideoInfoOp];

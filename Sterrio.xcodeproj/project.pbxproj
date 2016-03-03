@@ -217,7 +217,7 @@
 		876C53D71C2A557A007AFC3C /* PushNotificationsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 876C53D61C2A557A007AFC3C /* PushNotificationsHelper.m */; };
 		8773AE2D1B509A5500C3E64E /* SpotlightHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */; };
 		878488051C6694E200666627 /* MZRegexExp.m in Sources */ = {isa = PBXBuildFile; fileRef = 878488041C6694E200666627 /* MZRegexExp.m */; };
-		8796B6951C7EA7E000242587 /* YTVideoAvailabilityChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 8796B6941C7EA7E000242587 /* YTVideoAvailabilityChecker.m */; };
+		8796B6951C7EA7E000242587 /* DeletedYtVideoAlertCreator.m in Sources */ = {isa = PBXBuildFile; fileRef = 8796B6941C7EA7E000242587 /* DeletedYtVideoAlertCreator.m */; };
 		879971DC1C66EAF50044BFFF /* MGSwipeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 879971D91C66EAF50044BFFF /* MGSwipeButton.m */; };
 		879971DD1C66EAF50044BFFF /* MGSwipeTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 879971DB1C66EAF50044BFFF /* MGSwipeTableCell.m */; };
 		87A953621B3E1E54002E9872 /* DiscogsSearchService.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9535E1B3E1E54002E9872 /* DiscogsSearchService.m */; };
@@ -671,8 +671,8 @@
 		8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpotlightHelper.m; sourceTree = "<group>"; };
 		878488031C6694E200666627 /* MZRegexExp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZRegexExp.h; sourceTree = "<group>"; };
 		878488041C6694E200666627 /* MZRegexExp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZRegexExp.m; sourceTree = "<group>"; };
-		8796B6931C7EA7E000242587 /* YTVideoAvailabilityChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YTVideoAvailabilityChecker.h; sourceTree = "<group>"; };
-		8796B6941C7EA7E000242587 /* YTVideoAvailabilityChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTVideoAvailabilityChecker.m; sourceTree = "<group>"; };
+		8796B6931C7EA7E000242587 /* DeletedYtVideoAlertCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeletedYtVideoAlertCreator.h; sourceTree = "<group>"; };
+		8796B6941C7EA7E000242587 /* DeletedYtVideoAlertCreator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeletedYtVideoAlertCreator.m; sourceTree = "<group>"; };
 		879971D81C66EAF50044BFFF /* MGSwipeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeButton.h; sourceTree = "<group>"; };
 		879971D91C66EAF50044BFFF /* MGSwipeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeButton.m; sourceTree = "<group>"; };
 		879971DA1C66EAF50044BFFF /* MGSwipeTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeTableCell.h; sourceTree = "<group>"; };
@@ -1110,8 +1110,8 @@
 				873538CC1B0A9CFD009244E4 /* DetermineVideoPlayableOperation.m */,
 				873538CD1B0A9CFD009244E4 /* FetchVideoInfoOperation.h */,
 				873538CE1B0A9CFD009244E4 /* FetchVideoInfoOperation.m */,
-				8796B6931C7EA7E000242587 /* YTVideoAvailabilityChecker.h */,
-				8796B6941C7EA7E000242587 /* YTVideoAvailabilityChecker.m */,
+				8796B6931C7EA7E000242587 /* DeletedYtVideoAlertCreator.h */,
+				8796B6941C7EA7E000242587 /* DeletedYtVideoAlertCreator.m */,
 			);
 			name = "Video Loading";
 			sourceTree = "<group>";
@@ -2096,7 +2096,7 @@
 				873538411B0A9AF4009244E4 /* UIDevice+DeviceName.m in Sources */,
 				87353A911B0AAA36009244E4 /* SongAlbumArt+Utilities.m in Sources */,
 				87F34FBA1C251D0200BAD73B /* GSTouchesShowingWindow.m in Sources */,
-				8796B6951C7EA7E000242587 /* YTVideoAvailabilityChecker.m in Sources */,
+				8796B6951C7EA7E000242587 /* DeletedYtVideoAlertCreator.m in Sources */,
 				873539C51B0AA1B3009244E4 /* SDCAlertController.m in Sources */,
 				87353A8E1B0AAA36009244E4 /* Playlist+Utilities.m in Sources */,
 				87353A5E1B0AA316009244E4 /* MRMessageInterceptor.m in Sources */,

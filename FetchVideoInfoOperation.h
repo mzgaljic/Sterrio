@@ -14,6 +14,9 @@
 
 @interface FetchVideoInfoOperation : NSOperation
 
-- (id)initWithSongsYoutubeId:(NSString *)youtubeId;
+- (id)initWithSongsYoutubeId:(NSString *)youtubeId
+                    songName:(NSString *)songName
+                  artistName:(NSString *)artistName
+             managedObjectId:(NSManagedObjectID *)objId;
 
 @end

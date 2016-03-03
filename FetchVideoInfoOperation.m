@@ -8,6 +8,7 @@
 
 #import "FetchVideoInfoOperation.h"
 #import "YouTubeService.h"
+#import "DeletedYtVideoAlertCreator.h"
 
 @interface FetchVideoInfoOperation ()
 {
@@ -15,19 +16,28 @@
     BOOL _isFinished;
     BOOL _isCancelled;
     BOOL allowedToPlayVideo;
+    
     NSString *songsYoutubeId;
-    NSURL *currentItemLink;
+    NSString *songName;
+    NSString *artistName;
+    NSManagedObjectID *songObjId;
 }
 @end
 @implementation FetchVideoInfoOperation
 
 - (id)initWithSongsYoutubeId:(NSString *)youtubeId
+                    songName:(NSString *)sName
+                  artistName:(NSString *)aName
+             managedObjectId:(NSManagedObjectID *)objId
 {
     if(self = [super init]){
         _isExecuting = NO;
         _isFinished = NO;
         _isCancelled = NO;
-        songsYoutubeId = youtubeId;
+        songsYoutubeId = [youtubeId copy];
+        songName = [sName copy];
+        artistName = [aName copy];
+        songObjId = [objId copy];
     }
     return self;
 }
@@ -86,6 +96,10 @@
     }
     
     __weak NSString *weakId = songsYoutubeId;
+    __weak NSString *weakSongName = songName;
+    __weak NSString *weakArtistName = artistName;
+    __weak NSManagedObjectID *weakSongObjId = songObjId;
+    
     __weak SongPlayerCoordinator *weakCoordinator = [SongPlayerCoordinator sharedInstance];
     __weak FetchVideoInfoOperation *weakSelf = self;
     
@@ -97,7 +111,22 @@
     }
     
     [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
-        if([[ReachabilitySingleton sharedInstance] isConnectionCompletelyGone]){
+        if([NSThread isMainThread]) {
+            NSLog(@"block returns on main thread!!");
+        }
+        if(error.code == 150) {
+            [DeletedYtVideoAlertCreator createVideoDeletedAlertWithYtVideoId:weakId
+                                                                        name:weakSongName
+                                                                  artistName:weakArtistName
+                                                             managedObjectId:weakSongObjId];
+            [MusicPlaybackController playbackExplicitlyPaused];
+            [MusicPlaybackController pausePlayback];
+            MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+            [player dismissAllSpinners];
+            [weakSelf finishBecauseOfCancel];
+            return;
+            
+        } else if([[ReachabilitySingleton sharedInstance] isConnectionCompletelyGone]){
             [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
             [MusicPlaybackController playbackExplicitlyPaused];
             [MusicPlaybackController pausePlayback];
@@ -110,6 +139,8 @@
         //NOTE: the MusicPlaybackController methods called from this completion block have
         //been made thread safe.
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+            NSURL *currentItemLink;
+            
             if ([weakSelf isCancelled]){
                 [weakSelf finishBecauseOfCancel];
                 return;
@@ -138,7 +169,6 @@
                     return;
                 } else{
                     //video may no longer exist, or the internet connection is very weak
-                    
                     BOOL exists = [YouTubeService doesVideoStillExist:weakId];
                     if(exists) {
                         //looks like some videos may not be loading properly anymore.
@@ -234,7 +264,6 @@
 - (void)cleanupBeforeFinishedOrCancelled
 {
     songsYoutubeId = nil;
-    currentItemLink = nil;
     [self willChangeValueForKey:@"isExecuting"];
     [self willChangeValueForKey:@"isFinished"];
     [self willChangeValueForKey:@"isCancelled"];
