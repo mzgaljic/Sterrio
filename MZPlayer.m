@@ -219,20 +219,18 @@ const float AUTO_HIDE_HUD_DELAY = 4;
     
     //Elapsed Time Label
     float fontSize = playPauseBtnDiameter * 0.85;
-    if(self.elapsedTimeLabel == nil){
-        self.elapsedTimeLabel = [[UILabel alloc] init];
-
-        if(totalDurationString.length <= 4)
-            self.elapsedTimeLabel.text = @"0:00";
-        else if(totalDurationString.length == 5)
-            self.elapsedTimeLabel.text = @"00:00";
-        else
-            self.elapsedTimeLabel.text = @"00:00:00";
-        self.elapsedTimeLabel.textAlignment = NSTextAlignmentRight;
-        self.elapsedTimeLabel.textColor = [UIColor whiteColor];
-        self.elapsedTimeLabel.font = [UIFont fontWithName:@"Menlo"
-                                                     size:fontSize];
-    }
+    self.elapsedTimeLabel = nil;
+    self.elapsedTimeLabel = [[UILabel alloc] init];
+    if(totalDurationString.length <= 4)
+        self.elapsedTimeLabel.text = @"0:00";
+    else if(totalDurationString.length == 5)
+        self.elapsedTimeLabel.text = @"00:00";
+    else
+        self.elapsedTimeLabel.text = @"00:00:00";
+    self.elapsedTimeLabel.textAlignment = NSTextAlignmentRight;
+    self.elapsedTimeLabel.textColor = [UIColor whiteColor];
+    self.elapsedTimeLabel.font = [UIFont fontWithName:@"Menlo"
+                                                 size:fontSize];
     [self.elapsedTimeLabel sizeToFit];
     int buttonAndLabelPadding = playPauseBtnDiameter;
     self.elapsedTimeLabel.frame = CGRectMake(self.playPauseButton.frame.origin.x + playPauseBtnDiameter + buttonAndLabelPadding,
