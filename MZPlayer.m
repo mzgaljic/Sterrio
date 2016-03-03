@@ -123,6 +123,12 @@ const float AUTO_HIDE_HUD_DELAY = 4;
         
         _avPlayer.allowsExternalPlayback = ![AppEnvironmentConstants shouldOnlyAirplayAudio];
         [self setupTimeObserver];
+        
+        NSNotificationCenter *notifCenter = [NSNotificationCenter defaultCenter];
+        [notifCenter addObserver:self
+                        selector:@selector(airplayDevicesAvailableChanged:)
+                            name:MPVolumeViewWirelessRoutesAvailableDidChangeNotification
+                          object:nil];
     }
     return self;
 }
@@ -528,6 +534,21 @@ static int hours;
     else
         secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
     return secondsToStringReturn;
+}
+
+#pragma mark - Hiding/Showing airplay button
+- (void)airplayDevicesAvailableChanged:(NSNotification*)aNotification
+{
+    if(((MPVolumeView*)aNotification.object).isWirelessRouteActive) {
+        [self showAirplayButtonAnimated:YES];
+    } else {
+        [self showAirplayButtonAnimated:NO];
+    }
+}
+
+- (void)showAirplayButtonAnimated:(BOOL)show
+{
+    
 }
 
 #pragma mark - Hud Control Button Targets

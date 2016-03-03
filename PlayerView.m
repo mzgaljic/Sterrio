@@ -66,6 +66,10 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
                                                  selector:@selector(playbackOfVideoHasBegun)
                                                      name:@"PlaybackStartedNotification"
                                                    object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(airplayDevicesAvailableChanged:)
+                                                     name:MPVolumeViewWirelessRoutesAvailableDidChangeNotification
+                                                   object:nil];
         
         lastOrientation = [UIApplication sharedApplication].statusBarOrientation;
         if(UIInterfaceOrientationIsLandscape(lastOrientation)
@@ -908,6 +912,20 @@ static NSTimer *autoHideTimer;
                                               self.controlsHud.frame.size.width,
                                               self.controlsHud.frame.size.height)];
     }
+}
+
+- (void)airplayDevicesAvailableChanged:(NSNotification*)aNotification
+{
+    if(((MPVolumeView*)aNotification.object).isWirelessRouteActive) {
+        [self showAirplayButtonAnimated:YES];
+    } else {
+        [self showAirplayButtonAnimated:NO];
+    }
+}
+
+- (void)showAirplayButtonAnimated:(BOOL)show
+{
+    
 }
 
 //this is the one called from the notification when the player starts, hence it forces the "play"
