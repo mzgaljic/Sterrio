@@ -33,9 +33,6 @@ pod 'FXImageView'
 #Much more robust Reachability library
 pod 'Reachability'
 
-#more more robust than the new ios8 apis. Adds more btns on swipe.
-#pod 'MGSwipeTableCell'  --using dev branch for now...
-
 #needed for MRProgressView...dont ask lol.
 pod "AFNetworking" , '~> 2.5.4'
 

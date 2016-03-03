@@ -113,7 +113,7 @@
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="rJz-c4-T55" customClass="ASValueTrackingSlider">
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="rJz-c4-T55" customClass="JAMAccurateSlider">
                                 <rect key="frame" x="101" y="391" width="118" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <connections>
@@ -297,7 +297,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="existingArtistItemPickerCell" textLabel="qUg-w0-DgB" detailTextLabel="1LC-is-19G" style="IBUITableViewCellStyleSubtitle" id="bjf-8Z-SqL" customClass="MZTableViewCell">
-                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bjf-8Z-SqL" id="LKY-Ib-arj">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -350,7 +350,7 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="existingAlbumCell" textLabel="eWz-JA-Aiu" detailTextLabel="oxl-vF-C9h" style="IBUITableViewCellStyleSubtitle" id="whk-5v-eqZ" customClass="MZTableViewCell">
-                                        <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                                        <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="whk-5v-eqZ" id="4hy-5P-ibk">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -511,7 +511,7 @@
                         <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="checkmark" indentationWidth="10" reuseIdentifier="app theme color cell" textLabel="PRY-rQ-fiX" style="IBUITableViewCellStyleDefault" id="1MQ-as-TJc">
-                                <rect key="frame" x="0.0" y="50" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="114" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1MQ-as-TJc" id="kfA-EZ-fYW">
                                     <rect key="frame" x="0.0" y="0.0" width="281" height="43"/>
@@ -709,7 +709,7 @@
                         <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="youtubeResultCell" rowHeight="77" id="Tmz-oB-veX" customClass="CustomYoutubeTableViewCell">
-                                <rect key="frame" x="0.0" y="114" width="320" height="77"/>
+                                <rect key="frame" x="0.0" y="50" width="320" height="77"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Tmz-oB-veX" id="E6x-Yk-50v">
                                     <rect key="frame" x="0.0" y="0.0" width="287" height="76"/>
@@ -742,7 +742,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="youtubeSuggsestCell" textLabel="TaK-SK-AqN" style="IBUITableViewCellStyleDefault" id="uic-nJ-JbA">
-                                <rect key="frame" x="0.0" y="191" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="127" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="uic-nJ-JbA" id="83B-dR-QPT">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -760,7 +760,7 @@
                                 <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="appRatingCell" id="Qjk-lA-jv4" customClass="AppRatingTableViewCell">
-                                <rect key="frame" x="0.0" y="235" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="171" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Qjk-lA-jv4" id="GYU-00-tZc">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -1094,7 +1094,7 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="checkmark" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="playlistSongItemPickerCell" textLabel="ZF3-vS-Eov" detailTextLabel="m51-Q1-CNR" style="IBUITableViewCellStyleSubtitle" id="XVI-oQ-iEF" customClass="MZTableViewCell">
-                                        <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                                        <rect key="frame" x="0.0" y="66" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="XVI-oQ-iEF" id="IOi-Pn-K0L">
                                             <rect key="frame" x="0.0" y="0.0" width="281" height="43"/>
@@ -1119,7 +1119,7 @@
                                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="checkmark" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="playlistSongItemPickerCell_nilDetail" textLabel="fFg-S5-Wbf" style="IBUITableViewCellStyleDefault" id="Zw3-7d-LWU" customClass="MZTableViewCell">
-                                        <rect key="frame" x="0.0" y="66" width="320" height="44"/>
+                                        <rect key="frame" x="0.0" y="110" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Zw3-7d-LWU" id="r4A-Qf-I5O">
                                             <rect key="frame" x="0.0" y="0.0" width="281" height="43"/>
