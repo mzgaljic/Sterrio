@@ -10,9 +10,10 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import <AVFoundation/AVFoundation.h>
 
-@protocol MZPreviewPlayerStallState <NSObject>
+@protocol MZPreviewPlayerDelegate <NSObject>
 - (void)previewPlayerStallStateChanged;
 - (void)previewPlayerNeedsNowPlayingInfoCenterUpdate;
+- (void)userHasPausedPlayback:(BOOL)paused;
 @end
 
 @interface MZPlayer : UIView
@@ -27,7 +28,7 @@ extern const int CONTROLS_HUD_HEIGHT;
 extern const float AUTO_HIDE_HUD_DELAY;
 
 - (instancetype)initWithFrame:(CGRect)frame videoURL:(NSURL *)videoURL useControlsOverlay:(BOOL)useOverlay;
-- (void)setStallValueChangedDelegate:(id <MZPreviewPlayerStallState>)aDelegate;
+- (void)setStallValueChangedDelegate:(id <MZPreviewPlayerDelegate>)aDelegate;
 - (void)play;
 - (void)pause;
 - (void)playFromBeginning;

@@ -794,11 +794,13 @@ static short numberTimesViewHasBeenShown = 0;
         if(previewPlaybackBegan == NO){
             previewPlaybackBegan = YES;
             [AppEnvironmentConstants setUserIsPreviewingAVideo:YES];
+            if(self.player.isPlaying) {
+                [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
+            }
             
-            //needed to cause an airplay conflict between the two avplayers
+            //needed to avoid causing an airplay conflict between the two avplayers
             previousAllowsExternalPlayback = [MusicPlaybackController obtainRawAVPlayer].allowsExternalPlayback;
             [MusicPlaybackController obtainRawAVPlayer].allowsExternalPlayback = NO;
-            
             
             musicWasPlayingBeforePreviewBegan = ([MusicPlaybackController obtainRawAVPlayer].rate > 0);
             [MusicPlaybackController explicitlyPausePlayback:YES];
@@ -810,6 +812,15 @@ static short numberTimesViewHasBeenShown = 0;
             appDelegate.previewPlayer = self.player;
         }
         [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
+    }
+}
+
+- (void)userHasPausedPlayback:(BOOL)paused
+{
+    if(paused) {
+        [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Paused];
+    } else {
+        [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
     }
 }
 

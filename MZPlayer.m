@@ -47,7 +47,7 @@
 @property (assign, nonatomic, readwrite) BOOL playbackExplicitlyPaused;
 @property (assign, nonatomic, readwrite) BOOL useControlsOverlay;
 
-@property (weak, nonatomic) id <MZPreviewPlayerStallState> delegate;
+@property (weak, nonatomic) id <MZPreviewPlayerDelegate> delegate;
 @end
 @implementation MZPlayer
 
@@ -127,7 +127,7 @@ const float AUTO_HIDE_HUD_DELAY = 4;
     return self;
 }
 
-- (void)setStallValueChangedDelegate:(id <MZPreviewPlayerStallState>)aDelegate
+- (void)setStallValueChangedDelegate:(id <MZPreviewPlayerDelegate>)aDelegate
 {
     self.delegate = aDelegate;
 }
@@ -538,9 +538,11 @@ static int hours;
 {
     if (self.isPlaying){
         [self pause];
+        [self.delegate userHasPausedPlayback:YES];
     }
     else{
         [self play];
+        [self.delegate userHasPausedPlayback:NO];
     }
 }
 

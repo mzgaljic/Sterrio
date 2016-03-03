@@ -25,7 +25,7 @@
 
 @interface YouTubeSongAdderViewController : MyViewController <YouTubeVideoDetailLookupDelegate,
                                                             MZSongModifierDelegate,
-                                                            MZPreviewPlayerStallState,
+                                                            MZPreviewPlayerDelegate,
                                                             DiscogsSearchDelegate>
 
 - (id)initWithYouTubeVideo:(YouTubeVideo *)youtubeVideoObject thumbnail:(UIImage *)img;

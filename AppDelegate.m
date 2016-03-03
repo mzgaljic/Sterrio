@@ -346,7 +346,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
             // • Audio has stopped, already inactive
             // • Change state of UI, etc., to reflect non-playing state
             
-            
             //this notification will also force the playerVC to check the apps playback rate...
             [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged
                                                                 object:nil];
@@ -360,13 +359,15 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
             if (interruptionOption.unsignedIntegerValue == AVAudioSessionInterruptionOptionShouldResume
                 && ![AppEnvironmentConstants isUserCurrentlyOnCall])
             {
-                // Here you should continue playback.
-                
-                if([AppEnvironmentConstants isUserPreviewingAVideo])
+                // Here you should maybe continue playback...
+                if([AppEnvironmentConstants isUserPreviewingAVideo]
+                   && [AppEnvironmentConstants currrentPreviewPlayerState] == PREVIEW_PLAYBACK_STATE_Playing) {
                     [[NSNotificationCenter defaultCenter] postNotificationName:MZPreviewPlayerPlay
                                                                         object:nil];
-                else
+                } else if(! [MusicPlaybackController playbackExplicitlyPaused]) {
                     [MusicPlaybackController resumePlayback];
+                }
+                break;
             }
             break;
         }
