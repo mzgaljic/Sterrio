@@ -34,7 +34,7 @@
 @property (strong, nonatomic, readwrite) AVPlayer *avPlayer;
 @property (strong,nonatomic) UIView *controlsHud;
 
-@property (strong, nonatomic) MPVolumeView *airplayButton;
+@property (strong, nonatomic) MPVolumeView *mpVolumeView;
 @property (strong, nonatomic) SSBouncyButton *playPauseButton;
 @property (strong, nonatomic) MZSlider *progressBar;
 @property (strong, nonatomic) UILabel *elapsedTimeLabel;
@@ -53,6 +53,12 @@
 
 const int CONTROLS_HUD_HEIGHT = 45;
 const float AUTO_HIDE_HUD_DELAY = 4;
+const int VIEW_EDGE_PADDING = 10;
+const int LABEL_AND_SLIDER_PADDING = 5;
+const int PLAY_PAUSE_BTN_DIAMETER = CONTROLS_HUD_HEIGHT * 0.50;
+const int AIRPLAY_ICON_WIDTH = 25;
+const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
+const int WIDTH_SPACAING_FROM_TOTAL_DUR_LABEL_RIGHT_EDGE_TO_VIEW_RIGHT_EDGE = VIEW_EDGE_PADDING +AIRPLAY_ICON_WIDTH + BUTTON_AND_LABEL_PADDING;
 
 - (void)setFrame:(CGRect)frame
 {
@@ -198,7 +204,7 @@ const float AUTO_HIDE_HUD_DELAY = 4;
     [self.controlsHud addSubview:visualEffectView];
     
     //Play-Pause button
-    if(self.playPauseButton == nil){
+    if(self.playPauseButton == nil) {
         self.playPauseButton = [[SSBouncyButton alloc] initAsImage];
         UIImage *pauseImage = [UIImage colorOpaquePartOfImage:[UIColor defaultWindowTintColor]
                                                              :[UIImage imageNamed:@"Pause"]];
@@ -213,18 +219,16 @@ const float AUTO_HIDE_HUD_DELAY = 4;
                        forControlEvents:UIControlEventTouchUpInside];
     }
     
-    int playBtnEdgePadding = 10;
-    int playPauseBtnDiameter = CONTROLS_HUD_HEIGHT * 0.50;
-    self.playPauseButton.frame = CGRectMake(playBtnEdgePadding,
-                                            (CONTROLS_HUD_HEIGHT /2) - (playPauseBtnDiameter/2),
-                                            playPauseBtnDiameter,
-                                            playPauseBtnDiameter);
+    self.playPauseButton.frame = CGRectMake(VIEW_EDGE_PADDING,
+                                            (CONTROLS_HUD_HEIGHT /2) - (PLAY_PAUSE_BTN_DIAMETER/2),
+                                            PLAY_PAUSE_BTN_DIAMETER,
+                                            PLAY_PAUSE_BTN_DIAMETER);
     
     totalDuration = CMTimeGetSeconds(self.avPlayer.currentItem.asset.duration);
     NSString *totalDurationString = [self convertSecondsToPrintableNSStringWithSliderValue:totalDuration];
     
     //Elapsed Time Label
-    float fontSize = playPauseBtnDiameter * 0.85;
+    float fontSize = PLAY_PAUSE_BTN_DIAMETER * 0.85;
     self.elapsedTimeLabel = nil;
     self.elapsedTimeLabel = [[UILabel alloc] init];
     if(totalDurationString.length <= 4)
@@ -238,8 +242,7 @@ const float AUTO_HIDE_HUD_DELAY = 4;
     self.elapsedTimeLabel.font = [UIFont fontWithName:@"Menlo"
                                                  size:fontSize];
     [self.elapsedTimeLabel sizeToFit];
-    int buttonAndLabelPadding = playPauseBtnDiameter;
-    self.elapsedTimeLabel.frame = CGRectMake(self.playPauseButton.frame.origin.x + playPauseBtnDiameter + buttonAndLabelPadding,
+    self.elapsedTimeLabel.frame = CGRectMake(self.playPauseButton.frame.origin.x + PLAY_PAUSE_BTN_DIAMETER + BUTTON_AND_LABEL_PADDING,
                                              (CONTROLS_HUD_HEIGHT /2) - (fontSize/2),
                                              self.elapsedTimeLabel.frame.size.width,
                                              self.elapsedTimeLabel.frame.size.height);
@@ -254,11 +257,7 @@ const float AUTO_HIDE_HUD_DELAY = 4;
                                                size:fontSize];
     [self.totalTimeLabel sizeToFit];
 
-    int airplayIconWidth = 25;
-    int airPlayIconRightEdgePadding = playBtnEdgePadding;
-    int widthSpacingFromTotalDurationLabelRightEdgeToFrameRightEdge = airPlayIconRightEdgePadding + airplayIconWidth + buttonAndLabelPadding;
-    int labelAndSliderPadding = 5;
-    int totalTimeLabelX = self.frame.size.width - widthSpacingFromTotalDurationLabelRightEdgeToFrameRightEdge - self.totalTimeLabel.frame.size.width + labelAndSliderPadding + 1;
+    int totalTimeLabelX = self.frame.size.width - self.totalTimeLabel.frame.size.width  - WIDTH_SPACAING_FROM_TOTAL_DUR_LABEL_RIGHT_EDGE_TO_VIEW_RIGHT_EDGE;
     self.totalTimeLabel.frame = CGRectMake(totalTimeLabelX,
                                            (CONTROLS_HUD_HEIGHT /2) - (fontSize/2),
                                            self.totalTimeLabel.frame.size.width,
@@ -305,41 +304,65 @@ const float AUTO_HIDE_HUD_DELAY = 4;
         initialLayoutXCompensation = -3;
     }
     int progressBarHeight = CONTROLS_HUD_HEIGHT/4;
-    int xOrigin = self.elapsedTimeLabel.frame.origin.x + self.elapsedTimeLabel.frame.size.width + labelAndSliderPadding;
-    int sliderWidth = self.frame.size.width - xOrigin - self.totalTimeLabel.frame.size.width - widthSpacingFromTotalDurationLabelRightEdgeToFrameRightEdge +1;
+    int xOrigin = self.elapsedTimeLabel.frame.origin.x + self.elapsedTimeLabel.frame.size.width + LABEL_AND_SLIDER_PADDING;
+    int sliderWidth = self.frame.size.width - xOrigin - self.totalTimeLabel.frame.size.width - WIDTH_SPACAING_FROM_TOTAL_DUR_LABEL_RIGHT_EDGE_TO_VIEW_RIGHT_EDGE + 1;
     int yOriginCompensation = 2;
-    self.progressBar.frame = CGRectMake(xOrigin,
-                                        (CONTROLS_HUD_HEIGHT /2) - (progressBarHeight/2) + yOriginCompensation,
-                                        sliderWidth,
-                                        progressBarHeight);
     
-    //airplay button
-    if(self.airplayButton == nil){
-        self.airplayButton = [[MPVolumeView alloc] init];
-        [self.airplayButton setShowsVolumeSlider:NO];        
+    CGRect newSliderRect = CGRectMake(xOrigin,
+                                      (CONTROLS_HUD_HEIGHT /2) - (progressBarHeight/2) + yOriginCompensation,
+                                      sliderWidth,
+                                      progressBarHeight);
+    
+    int volumeViewXOrigin = self.totalTimeLabel.frame.origin.x + self.totalTimeLabel.frame.size.width + LABEL_AND_SLIDER_PADDING;
+    int height = CONTROLS_HUD_HEIGHT * 0.85;
+    int volumeViewYOrigin = (CONTROLS_HUD_HEIGHT /2) - (height/2);
+    if(self.mpVolumeView == nil) {
+        self.mpVolumeView = [[MPVolumeView alloc] initWithFrame:CGRectMake(volumeViewXOrigin,
+                                                                           volumeViewYOrigin,
+                                                                           height,
+                                                                           height)];
+        [self.mpVolumeView setShowsVolumeSlider:NO];
+        [self.mpVolumeView setShowsRouteButton:YES];
         UIImage *airplayImg = [UIImage imageNamed:@"airplay_button"];
         UIImage *airplayNormalState = [UIImage colorOpaquePartOfImage:[UIColor whiteColor]
                                                                      :airplayImg];
         UIImage *airplayActiveState = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
-                                                    :airplayImg];
+                                                                     :airplayImg];
         
-        [self.airplayButton setRouteButtonImage:airplayNormalState forState:UIControlStateNormal];
-        [self.airplayButton setRouteButtonImage:airplayNormalState forState:UIControlStateHighlighted];
-        [self.airplayButton setRouteButtonImage:airplayActiveState forState:UIControlStateSelected];
+        [self.mpVolumeView setRouteButtonImage:airplayNormalState forState:UIControlStateNormal];
+        [self.mpVolumeView setRouteButtonImage:airplayNormalState forState:UIControlStateHighlighted];
+        [self.mpVolumeView setRouteButtonImage:airplayActiveState forState:UIControlStateSelected];
+    } else {
+        self.mpVolumeView.frame = CGRectMake(volumeViewXOrigin,
+                                             volumeViewYOrigin,
+                                             height,
+                                             height);
     }
-    [self.airplayButton sizeToFit];
-    self.airplayButton.frame = CGRectMake(self.totalTimeLabel.frame.origin.x + self.totalTimeLabel.frame.size.width - buttonAndLabelPadding/2,
-                                          (CONTROLS_HUD_HEIGHT /2) - (self.airplayButton.frame.size.height/2),
-                                          self.airplayButton.frame.size.width,
-                                          self.airplayButton.frame.size.height);
+    
+    if(self.mpVolumeView.areWirelessRoutesAvailable) {
+        self.mpVolumeView.hidden = NO;
+    } else {
+        //not showing the airplay button...
+        self.mpVolumeView.hidden = YES;
+        int xSliderEnd = self.frame.size.width - VIEW_EDGE_PADDING - self.totalTimeLabel.frame.size.width - LABEL_AND_SLIDER_PADDING;
+        int newSliderWidth = newSliderRect.size.width + (xSliderEnd - newSliderRect.size.width - newSliderRect.origin.x);
+        newSliderRect = CGRectMake(newSliderRect.origin.x,
+                                   newSliderRect.origin.y,
+                                   newSliderWidth,
+                                   newSliderRect.size.height);
+        self.totalTimeLabel.frame = CGRectMake(self.totalTimeLabel.frame.origin.x + self.       totalTimeLabel.frame.size.width,
+                                               self.totalTimeLabel.frame.origin.y,
+                                               self.totalTimeLabel.frame.size.width,
+                                               self.totalTimeLabel.frame.size.height);
+    }
+    self.progressBar.frame = newSliderRect;
     
     [self.controlsHud addSubview:self.playPauseButton];
     [self.controlsHud addSubview:self.elapsedTimeLabel];
     [self.controlsHud addSubview:self.progressBar];
     [self.controlsHud addSubview:self.totalTimeLabel];
-    [self.controlsHud addSubview:self.airplayButton];
+    [self.controlsHud addSubview:self.mpVolumeView];
 
-    
     [self addSubview:self.controlsHud];
     
     if(! isHudOnScreen){
@@ -371,7 +394,7 @@ const float AUTO_HIDE_HUD_DELAY = 4;
     Float64 currentTimeValue = CMTimeGetSeconds(self.avPlayer.currentItem.currentTime);
     _elapsedTimeInSec = currentTimeValue;
     [self.progressBar setValue:(currentTimeValue) animated:YES];
-    [self setElapsedTimeLabelstringForSliderValue:currentTimeValue];
+    self.elapsedTimeLabel.text = [self convertSecondsToPrintableNSStringWithSliderValue:currentTimeValue];
 }
 
 #pragma mark - Hud Control Animations
@@ -485,7 +508,7 @@ const float AUTO_HIDE_HUD_DELAY = 4;
         CMTime seekTime = CMTimeMakeWithSeconds(sender.value, NSEC_PER_SEC);
         [self.avPlayer seekToTime:seekTime];
     }
-    [self setElapsedTimeLabelstringForSliderValue:sender.value];
+    self.elapsedTimeLabel.text = [self convertSecondsToPrintableNSStringWithSliderValue:sender.value];
 }
 
 - (void)progressBarChangeEnded:(UISlider *)sender
@@ -499,12 +522,6 @@ const float AUTO_HIDE_HUD_DELAY = 4;
     [self.delegate previewPlayerNeedsNowPlayingInfoCenterUpdate];
     [self.avPlayer play];
     [self startAutoHideTimer];
-}
-
-//Slider helper stuff
-- (void)setElapsedTimeLabelstringForSliderValue:(float)value
-{
-    self.elapsedTimeLabel.text = [self convertSecondsToPrintableNSStringWithSliderValue:value];
 }
 
 static NSString *secondsToStringReturn = @"";
@@ -539,7 +556,7 @@ static int hours;
 #pragma mark - Hiding/Showing airplay button
 - (void)airplayDevicesAvailableChanged:(NSNotification*)aNotification
 {
-    if(((MPVolumeView*)aNotification.object).isWirelessRouteActive) {
+    if(((MPVolumeView*)aNotification.object).wirelessRoutesAvailable) {
         [self showAirplayButtonAnimated:YES];
     } else {
         [self showAirplayButtonAnimated:NO];
@@ -548,7 +565,51 @@ static int hours;
 
 - (void)showAirplayButtonAnimated:(BOOL)show
 {
+    CGRect sliderRect = self.progressBar.frame;
     
+    CGRect newSliderRect = CGRectNull;
+    CGRect newTotalTimeLabelRect;
+    if(show) {
+        self.mpVolumeView.hidden = NO;
+        int xOrigin = self.elapsedTimeLabel.frame.origin.x + self.elapsedTimeLabel.frame.size.width + LABEL_AND_SLIDER_PADDING;
+        int newSliderWidth = self.frame.size.width - xOrigin - self.totalTimeLabel.frame.size.width - WIDTH_SPACAING_FROM_TOTAL_DUR_LABEL_RIGHT_EDGE_TO_VIEW_RIGHT_EDGE;
+        newSliderRect = CGRectMake(sliderRect.origin.x,
+                                   sliderRect.origin.y,
+                                   newSliderWidth,
+                                   sliderRect.size.height);
+        newTotalTimeLabelRect = CGRectMake(self.totalTimeLabel.frame.origin.x - self.totalTimeLabel.frame.size.width,
+                                         self.totalTimeLabel.frame.origin.y,
+                                         self.totalTimeLabel.frame.size.width,
+                                         self.totalTimeLabel.frame.size.height);
+    } else {
+        self.mpVolumeView.hidden = YES;
+        int xSliderEnd = self.frame.size.width - VIEW_EDGE_PADDING - self.totalTimeLabel.frame.size.width - LABEL_AND_SLIDER_PADDING;
+        int newSliderWidth = sliderRect.size.width + (xSliderEnd - sliderRect.size.width - sliderRect.origin.x);
+        newSliderRect = CGRectMake(sliderRect.origin.x,
+                                   sliderRect.origin.y,
+                                   newSliderWidth,
+                                   sliderRect.size.height);
+        newTotalTimeLabelRect = CGRectMake(self.totalTimeLabel.frame.origin.x + self.totalTimeLabel.frame.size.width,
+                                         self.totalTimeLabel.frame.origin.y,
+                                         self.totalTimeLabel.frame.size.width,
+      
+                                           
+                                           self.totalTimeLabel.frame.size.height);
+    }
+    
+    if(! CGRectIsNull(newSliderRect)) {
+        [UIView animateWithDuration:0.7
+                              delay:0
+                            options:UIViewAnimationOptionAllowAnimatedContent |
+         UIViewAnimationOptionAllowUserInteraction |
+         UIViewAnimationOptionBeginFromCurrentState|
+         UIViewAnimationOptionCurveLinear
+                         animations:^{
+                             self.progressBar.frame = newSliderRect;
+                             self.totalTimeLabel.frame = newTotalTimeLabelRect;
+                         }
+                         completion:nil];
+    }
 }
 
 #pragma mark - Hud Control Button Targets
