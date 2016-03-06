@@ -57,15 +57,15 @@ const int VIEW_EDGE_PADDING = 10;
 const int LABEL_AND_SLIDER_PADDING = 5;
 const int PLAY_PAUSE_BTN_DIAMETER = CONTROLS_HUD_HEIGHT * 0.50;
 const int AIRPLAY_ICON_WIDTH = 25;
+const int LABEL_FONT_SIZE = PLAY_PAUSE_BTN_DIAMETER * 0.85;
 const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
-const int WIDTH_SPACAING_FROM_TOTAL_DUR_LABEL_RIGHT_EDGE_TO_VIEW_RIGHT_EDGE = VIEW_EDGE_PADDING +AIRPLAY_ICON_WIDTH + BUTTON_AND_LABEL_PADDING;
 
 - (void)setFrame:(CGRect)frame
 {
     [super setFrame:frame];
     [playerLayer setFrame:frame];
     if(playbackStarted){
-        [self setupControlsHud];
+        [self setupControlsHudCacheLabels:NO];
     }
 }
 
@@ -175,7 +175,7 @@ const int WIDTH_SPACAING_FROM_TOTAL_DUR_LABEL_RIGHT_EDGE_TO_VIEW_RIGHT_EDGE = VI
         [playerLayer setPlayer:nil];
 }
 
-- (void)setupControlsHud
+- (void)setupControlsHudCacheLabels:(BOOL)cacheLabels
 {
     if(! self.useControlsOverlay) {
         return;
@@ -228,40 +228,39 @@ const int WIDTH_SPACAING_FROM_TOTAL_DUR_LABEL_RIGHT_EDGE_TO_VIEW_RIGHT_EDGE = VI
     NSString *totalDurationString = [self convertSecondsToPrintableNSStringWithSliderValue:totalDuration];
     
     //Elapsed Time Label
-    float fontSize = PLAY_PAUSE_BTN_DIAMETER * 0.85;
-    self.elapsedTimeLabel = nil;
-    self.elapsedTimeLabel = [[UILabel alloc] init];
+    if(! cacheLabels) {
+        self.elapsedTimeLabel = nil;
+        self.elapsedTimeLabel = [[UILabel alloc] init];
+        if(totalDurationString.length <= 4)
+            self.elapsedTimeLabel.text = @"0:00";
+        else if(totalDurationString.length == 5)
+            self.elapsedTimeLabel.text = @"00:00";
+        else
+            self.elapsedTimeLabel.text = @"00:00:00";
+        self.elapsedTimeLabel.textAlignment = NSTextAlignmentRight;
+        self.elapsedTimeLabel.textColor = [UIColor whiteColor];
+        self.elapsedTimeLabel.font = [UIFont fontWithName:@"Menlo"
+                                                     size:LABEL_FONT_SIZE];
+    }
     if(totalDurationString.length <= 4)
         self.elapsedTimeLabel.text = @"0:00";
     else if(totalDurationString.length == 5)
         self.elapsedTimeLabel.text = @"00:00";
     else
         self.elapsedTimeLabel.text = @"00:00:00";
-    self.elapsedTimeLabel.textAlignment = NSTextAlignmentRight;
-    self.elapsedTimeLabel.textColor = [UIColor whiteColor];
-    self.elapsedTimeLabel.font = [UIFont fontWithName:@"Menlo"
-                                                 size:fontSize];
-    [self.elapsedTimeLabel sizeToFit];
-    self.elapsedTimeLabel.frame = CGRectMake(self.playPauseButton.frame.origin.x + PLAY_PAUSE_BTN_DIAMETER + BUTTON_AND_LABEL_PADDING,
-                                             (CONTROLS_HUD_HEIGHT /2) - (fontSize/2),
-                                             self.elapsedTimeLabel.frame.size.width,
-                                             self.elapsedTimeLabel.frame.size.height);
+    self.elapsedTimeLabel.frame = [self elapsedTimeLabelRect];
     
     //Total Duration Label
-    self.totalTimeLabel = nil;
-    self.totalTimeLabel = [[UILabel alloc] init];
-    self.totalTimeLabel.text = totalDurationString;
-    self.totalTimeLabel.textAlignment = NSTextAlignmentLeft;
-    self.totalTimeLabel.textColor = [UIColor whiteColor];
-    self.totalTimeLabel.font = [UIFont fontWithName:@"Menlo"
-                                               size:fontSize];
-    [self.totalTimeLabel sizeToFit];
-
-    int totalTimeLabelX = self.frame.size.width - self.totalTimeLabel.frame.size.width  - WIDTH_SPACAING_FROM_TOTAL_DUR_LABEL_RIGHT_EDGE_TO_VIEW_RIGHT_EDGE;
-    self.totalTimeLabel.frame = CGRectMake(totalTimeLabelX,
-                                           (CONTROLS_HUD_HEIGHT /2) - (fontSize/2),
-                                           self.totalTimeLabel.frame.size.width,
-                                           self.totalTimeLabel.frame.size.height);
+    if(!cacheLabels) {
+        self.totalTimeLabel = nil;
+        self.totalTimeLabel = [[UILabel alloc] init];
+        self.totalTimeLabel.text = totalDurationString;
+        self.totalTimeLabel.textAlignment = NSTextAlignmentLeft;
+        self.totalTimeLabel.textColor = [UIColor whiteColor];
+        self.totalTimeLabel.font = [UIFont fontWithName:@"Menlo"
+                                                   size:LABEL_FONT_SIZE];
+    }
+    self.totalTimeLabel.frame = [self totalTimeLabelRect];
     
     //Seek Time Progress Bar
     int initialLayoutXCompensation = 0;
@@ -303,15 +302,6 @@ const int WIDTH_SPACAING_FROM_TOTAL_DUR_LABEL_RIGHT_EDGE_TO_VIEW_RIGHT_EDGE = VI
         self.progressBar.continuous = YES;
         initialLayoutXCompensation = -3;
     }
-    int progressBarHeight = CONTROLS_HUD_HEIGHT/4;
-    int xOrigin = self.elapsedTimeLabel.frame.origin.x + self.elapsedTimeLabel.frame.size.width + LABEL_AND_SLIDER_PADDING;
-    int sliderWidth = self.frame.size.width - xOrigin - self.totalTimeLabel.frame.size.width - WIDTH_SPACAING_FROM_TOTAL_DUR_LABEL_RIGHT_EDGE_TO_VIEW_RIGHT_EDGE + 1;
-    int yOriginCompensation = 2;
-    
-    CGRect newSliderRect = CGRectMake(xOrigin,
-                                      (CONTROLS_HUD_HEIGHT /2) - (progressBarHeight/2) + yOriginCompensation,
-                                      sliderWidth,
-                                      progressBarHeight);
     
     int volumeViewXOrigin = self.totalTimeLabel.frame.origin.x + self.totalTimeLabel.frame.size.width + LABEL_AND_SLIDER_PADDING;
     int height = CONTROLS_HUD_HEIGHT * 0.85;
@@ -339,23 +329,19 @@ const int WIDTH_SPACAING_FROM_TOTAL_DUR_LABEL_RIGHT_EDGE_TO_VIEW_RIGHT_EDGE = VI
                                              height);
     }
     
+    int progressBarHeight = CONTROLS_HUD_HEIGHT/4;
+    int xOrigin = self.elapsedTimeLabel.frame.origin.x + self.elapsedTimeLabel.frame.size.width + LABEL_AND_SLIDER_PADDING;
+    self.progressBar.frame = CGRectMake(xOrigin,
+                                        (CONTROLS_HUD_HEIGHT /2) - (progressBarHeight/2) + 2,
+                                        [self sliderWidth],
+                                        progressBarHeight);
+    
     if(self.mpVolumeView.areWirelessRoutesAvailable) {
+        //showing airplay button
         self.mpVolumeView.hidden = NO;
     } else {
-        //not showing the airplay button...
         self.mpVolumeView.hidden = YES;
-        int xSliderEnd = self.frame.size.width - VIEW_EDGE_PADDING - self.totalTimeLabel.frame.size.width - LABEL_AND_SLIDER_PADDING;
-        int newSliderWidth = newSliderRect.size.width + (xSliderEnd - newSliderRect.size.width - newSliderRect.origin.x);
-        newSliderRect = CGRectMake(newSliderRect.origin.x,
-                                   newSliderRect.origin.y,
-                                   newSliderWidth,
-                                   newSliderRect.size.height);
-        self.totalTimeLabel.frame = CGRectMake(self.totalTimeLabel.frame.origin.x + self.       totalTimeLabel.frame.size.width,
-                                               self.totalTimeLabel.frame.origin.y,
-                                               self.totalTimeLabel.frame.size.width,
-                                               self.totalTimeLabel.frame.size.height);
     }
-    self.progressBar.frame = newSliderRect;
     
     [self.controlsHud addSubview:self.playPauseButton];
     [self.controlsHud addSubview:self.elapsedTimeLabel];
@@ -437,6 +423,48 @@ const int WIDTH_SPACAING_FROM_TOTAL_DUR_LABEL_RIGHT_EDGE_TO_VIEW_RIGHT_EDGE = VI
                          self.controlsHud.frame = animationFrame;
                      }
                      completion:nil];
+}
+
+#pragma mark - Rect helpers
+- (CGRect)elapsedTimeLabelRect
+{
+    [self.elapsedTimeLabel sizeToFit];
+    int xOrigin = self.playPauseButton.frame.origin.x + PLAY_PAUSE_BTN_DIAMETER + BUTTON_AND_LABEL_PADDING;
+    return CGRectMake(xOrigin,
+                      (CONTROLS_HUD_HEIGHT /2) - (LABEL_FONT_SIZE/2),
+                      self.elapsedTimeLabel.frame.size.width,
+                      self.elapsedTimeLabel.frame.size.height);
+}
+- (CGRect)totalTimeLabelRect
+{
+    [self.totalTimeLabel sizeToFit];
+    
+    if(self.mpVolumeView.wirelessRoutesAvailable) {
+        //showing airplay button
+        int xOrigin = self.frame.size.width - VIEW_EDGE_PADDING - AIRPLAY_ICON_WIDTH - BUTTON_AND_LABEL_PADDING - self.totalTimeLabel.frame.size.width;
+        return CGRectMake(xOrigin,
+                          (CONTROLS_HUD_HEIGHT /2) - (LABEL_FONT_SIZE/2),
+                          self.totalTimeLabel.frame.size.width,
+                          self.totalTimeLabel.frame.size.height);
+    } else {
+        int xOrigin = self.frame.size.width - VIEW_EDGE_PADDING - self.totalTimeLabel.frame.size.width;
+        return CGRectMake(xOrigin,
+                         (CONTROLS_HUD_HEIGHT /2) - (LABEL_FONT_SIZE/2),
+                          self.totalTimeLabel.frame.size.width,
+                          self.totalTimeLabel.frame.size.height);
+    }
+}
+
+- (int)sliderWidth
+{
+    CGRect elapsedLabelRect = [self elapsedTimeLabelRect];
+    CGRect totalTimeLabelRect = [self totalTimeLabelRect];
+    if(self.mpVolumeView.wirelessRoutesAvailable) {
+        //showing airplay button
+        return self.frame.size.width - elapsedLabelRect.origin.x - elapsedLabelRect.size.width - LABEL_AND_SLIDER_PADDING - VIEW_EDGE_PADDING - AIRPLAY_ICON_WIDTH - LABEL_AND_SLIDER_PADDING - totalTimeLabelRect.size.width - LABEL_AND_SLIDER_PADDING - LABEL_AND_SLIDER_PADDING - LABEL_AND_SLIDER_PADDING;
+    } else {
+        return self.frame.size.width - elapsedLabelRect.origin.x - elapsedLabelRect.size.width - LABEL_AND_SLIDER_PADDING - VIEW_EDGE_PADDING - totalTimeLabelRect.size.width - LABEL_AND_SLIDER_PADDING;
+    }
 }
 
 #pragma mark - Hud Controls
@@ -565,51 +593,22 @@ static int hours;
 
 - (void)showAirplayButtonAnimated:(BOOL)show
 {
-    CGRect sliderRect = self.progressBar.frame;
-    
-    CGRect newSliderRect = CGRectNull;
-    CGRect newTotalTimeLabelRect;
     if(show) {
         self.mpVolumeView.hidden = NO;
-        int xOrigin = self.elapsedTimeLabel.frame.origin.x + self.elapsedTimeLabel.frame.size.width + LABEL_AND_SLIDER_PADDING;
-        int newSliderWidth = self.frame.size.width - xOrigin - self.totalTimeLabel.frame.size.width - WIDTH_SPACAING_FROM_TOTAL_DUR_LABEL_RIGHT_EDGE_TO_VIEW_RIGHT_EDGE;
-        newSliderRect = CGRectMake(sliderRect.origin.x,
-                                   sliderRect.origin.y,
-                                   newSliderWidth,
-                                   sliderRect.size.height);
-        newTotalTimeLabelRect = CGRectMake(self.totalTimeLabel.frame.origin.x - self.totalTimeLabel.frame.size.width,
-                                         self.totalTimeLabel.frame.origin.y,
-                                         self.totalTimeLabel.frame.size.width,
-                                         self.totalTimeLabel.frame.size.height);
     } else {
         self.mpVolumeView.hidden = YES;
-        int xSliderEnd = self.frame.size.width - VIEW_EDGE_PADDING - self.totalTimeLabel.frame.size.width - LABEL_AND_SLIDER_PADDING;
-        int newSliderWidth = sliderRect.size.width + (xSliderEnd - sliderRect.size.width - sliderRect.origin.x);
-        newSliderRect = CGRectMake(sliderRect.origin.x,
-                                   sliderRect.origin.y,
-                                   newSliderWidth,
-                                   sliderRect.size.height);
-        newTotalTimeLabelRect = CGRectMake(self.totalTimeLabel.frame.origin.x + self.totalTimeLabel.frame.size.width,
-                                         self.totalTimeLabel.frame.origin.y,
-                                         self.totalTimeLabel.frame.size.width,
-      
-                                           
-                                           self.totalTimeLabel.frame.size.height);
     }
     
-    if(! CGRectIsNull(newSliderRect)) {
-        [UIView animateWithDuration:0.7
-                              delay:0
-                            options:UIViewAnimationOptionAllowAnimatedContent |
-         UIViewAnimationOptionAllowUserInteraction |
-         UIViewAnimationOptionBeginFromCurrentState|
-         UIViewAnimationOptionCurveLinear
-                         animations:^{
-                             self.progressBar.frame = newSliderRect;
-                             self.totalTimeLabel.frame = newTotalTimeLabelRect;
-                         }
-                         completion:nil];
-    }
+    [UIView animateWithDuration:0.7
+                          delay:0
+                        options:UIViewAnimationOptionAllowAnimatedContent |
+     UIViewAnimationOptionAllowUserInteraction |
+     UIViewAnimationOptionBeginFromCurrentState|
+     UIViewAnimationOptionCurveLinear
+                     animations:^{
+                         [self setupControlsHudCacheLabels:YES];
+                     }
+                     completion:nil];
 }
 
 #pragma mark - Hud Control Button Targets
@@ -789,7 +788,7 @@ static void *ksAirplayState = &ksAirplayState;
                     self.isInStall = NO;
                     NSLog(@"Preview playback started");
                     
-                    [self setupControlsHud];
+                    [self setupControlsHudCacheLabels:NO];
                 }
                 secondsLoaded = newSecondsBuff;
             }
