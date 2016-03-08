@@ -1,1 +1,1 @@
-../../../../Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.6.0/GoogleMobileAds.framework/Versions/A/Headers/GADRewardBasedVideoAdDelegate.h
+../../../../Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.7.0/GoogleMobileAds.framework/Versions/A/Headers/GADRewardBasedVideoAdDelegate.h

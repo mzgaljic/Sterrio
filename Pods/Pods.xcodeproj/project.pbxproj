@@ -420,6 +420,7 @@
 		2260689BBB11B2C8188D0B044A90E066 /* nl.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = nl.lproj; path = Pod/Assets/nl.lproj; sourceTree = "<group>"; };
 		23543260DAE73714E51C073E1977623E /* SDImageCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageCache.m; path = SDWebImage/SDImageCache.m; sourceTree = "<group>"; };
 		2370C45EEEAD0E2B3B209C46E4BCF421 /* no.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = no.lproj; path = Pod/Assets/no.lproj; sourceTree = "<group>"; };
+		256504E96C62543206C3C62170C20281 /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMobileAds.framework; path = "GoogleMobileAdsSdkiOS-7.7.0/GoogleMobileAds.framework"; sourceTree = "<group>"; };
 		2582F33DC278DBE3BD99FDB408308536 /* AFURLResponseSerialization.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFURLResponseSerialization.m; path = AFNetworking/AFURLResponseSerialization.m; sourceTree = "<group>"; };
 		26F5873EE92087FD3F9D59887392E2D8 /* UIImage+MultiFormat.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+MultiFormat.m"; path = "SDWebImage/UIImage+MultiFormat.m"; sourceTree = "<group>"; };
 		272643F56613CA0D336AE3DBF19DC404 /* Pods-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-dummy.m"; sourceTree = "<group>"; };
@@ -438,7 +439,6 @@
 		37DB56D75062CC75FCB0966E1C6E8A8E /* Pods-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-acknowledgements.markdown"; sourceTree = "<group>"; };
 		38482B18C3A8BC7832626227410216BA /* FXImageView-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "FXImageView-prefix.pch"; sourceTree = "<group>"; };
 		393E65C58AC3B80681C6FF888446C4D5 /* CDEStoreModificationEvent.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = CDEStoreModificationEvent.m; path = Framework/Source/Model/CDEStoreModificationEvent.m; sourceTree = "<group>"; };
-		3943108B45D977E39AF3C9796C4F4B1F /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMobileAds.framework; path = "GoogleMobileAdsSdkiOS-7.6.0/GoogleMobileAds.framework"; sourceTree = "<group>"; };
 		396CEBD4030C45512F83E3F9ABAF8D5C /* MSCellAccessory-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "MSCellAccessory-dummy.m"; sourceTree = "<group>"; };
 		39740D06316412215550E82E8BAE2720 /* CRToast.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = CRToast.h; path = CRToast/CRToast.h; sourceTree = "<group>"; };
 		3A45240E388B6FE62CCE30C68131086C /* CDEAvailabilityMacros.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = CDEAvailabilityMacros.h; path = Framework/Source/General/CDEAvailabilityMacros.h; sourceTree = "<group>"; };
@@ -1028,6 +1028,14 @@
 			name = Serialization;
 			sourceTree = "<group>";
 		};
+		5AD57F2C12AE6B10D2506DB31E66CC2D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				256504E96C62543206C3C62170C20281 /* GoogleMobileAds.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		5F200D8FD1E15E63F996A310DBED5797 /* UIKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -1186,7 +1194,7 @@
 		91CDB98C57E9D14975A9D4D0B4DFB7DF /* Google-Mobile-Ads-SDK */ = {
 			isa = PBXGroup;
 			children = (
-				CB16173B2981D5452FD7B789EF7DC4BD /* Frameworks */,
+				5AD57F2C12AE6B10D2506DB31E66CC2D /* Frameworks */,
 			);
 			path = "Google-Mobile-Ads-SDK";
 			sourceTree = "<group>";
@@ -1440,14 +1448,6 @@
 				3FD911F7E1A0A6039EDAA2216EFD5E16 /* UIView+WebCacheOperation.m */,
 			);
 			name = Core;
-			sourceTree = "<group>";
-		};
-		CB16173B2981D5452FD7B789EF7DC4BD /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				3943108B45D977E39AF3C9796C4F4B1F /* GoogleMobileAds.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		D3164F889F58B1E839367362B75E7D5C /* Support Files */ = {

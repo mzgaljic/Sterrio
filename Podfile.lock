@@ -29,7 +29,7 @@ PODS:
   - Fabric (1.6.6)
   - FXImageView (1.3.5)
   - GCDiscreetNotificationView (1.0.2)
-  - Google-Mobile-Ads-SDK (7.6.0)
+  - Google-Mobile-Ads-SDK (7.7.0)
   - MarqueeLabel (2.5.0)
   - MSCellAccessory (1.1.2)
   - Reachability (3.2)
@@ -67,7 +67,7 @@ SPEC CHECKSUMS:
   Fabric: 1abc1e59f11fa39ede6f690ef7309d8563e3ec59
   FXImageView: 7d84722b37f0afea9a64f12fdd4a6c7f9ecc4b16
   GCDiscreetNotificationView: b093cce1fe82f6d9784169a156b48ecb1465ad8a
-  Google-Mobile-Ads-SDK: 0290020329c61183c4685304264b73382bc49fb4
+  Google-Mobile-Ads-SDK: d290e523a6e2f223256abcbf8e0c778b55b1f04e
   MarqueeLabel: 6b8ff6915c0536c5099ac30992b7d72f9807df20
   MSCellAccessory: 8265f3cd2386c1f372da00232472605ab11426e4
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
