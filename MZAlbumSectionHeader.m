@@ -272,8 +272,8 @@ const float SEPERATOR_HEIGHT = 0.5;
         maskLayer.anchorPoint = CGPointZero;
         maskLayer.bounds = self.bounds;
         maskLayer.colors = cgColors;
-        maskLayer.startPoint = CGPointMake(0.0, 0.5);
-        maskLayer.endPoint = CGPointMake(0.5, 1);
+        maskLayer.startPoint = CGPointMake(0.5, 0.25);
+        maskLayer.endPoint = CGPointMake(1, 0.45);
         maskLayer.locations = [self evenlyDistributeWithMax:1.0 min:0 arraySize:(int)cgColors.count];
         
         [myGradientView.layer addSublayer:maskLayer];
