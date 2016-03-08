@@ -10,6 +10,8 @@
 #import "PlayableItem.h"
 #import "SDCAlertController.h"
 #import <TUSafariActivity.h>
+#import "SongPlayerViewDisplayUtility.h"
+
 typedef enum{
     DurationLabelStateNotSet,
     DurationLabelStateMinutes,
@@ -505,7 +507,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 
 - (void)updatePlaybackTimeSliderWithTimeValue:(Float64)currentTimeValue
 {
-    _currentTimeLabel.text = [self convertSecondsToPrintableNSStringWithSliderValue:currentTimeValue];
+    _currentTimeLabel.text = [SongPlayerViewDisplayUtility convertSecondsToPrintableNSStringWithSliderValue:currentTimeValue];
     
     if(sliderIsBeingTouched)
         return;
@@ -518,35 +520,6 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     }
     
     firstTimeUpdatingSliderSinceShowingPlayer = NO;
-}
-
-static NSString *secondsToStringReturn = @"";
-static NSUInteger totalSeconds;
-static NSUInteger totalMinutes;
-static int seconds;
-static int minutes;
-static int hours;
-- (NSString *)convertSecondsToPrintableNSStringWithSliderValue:(float)value
-{
-    totalSeconds = value;
-    seconds = (int)(totalSeconds % MZSecondsInAMinute);
-    totalMinutes = totalSeconds / MZSecondsInAMinute;
-    minutes = (int)(totalMinutes % MZMinutesInAnHour);
-    hours = (int)(totalMinutes / MZMinutesInAnHour);
-    
-    if(minutes < 10 && hours == 0)  //we can shorten the text
-        secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
-    
-    else if(hours > 0)
-    {
-        if(hours <= 9)
-            secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d:%02d",hours,minutes,seconds];
-        else
-            secondsToStringReturn = [NSString stringWithFormat:@"%02d:%02d:%02d",hours,minutes, seconds];
-    }
-    else
-        secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
-    return secondsToStringReturn;
 }
 
 static int accomodateInterfaceLabelsCounter = 0;
@@ -1163,7 +1136,7 @@ static int accomodateInterfaceLabelsCounter = 0;
         
         _playbackSlider.maximumValue = durationInSeconds;
         
-        NSString *newText = [self convertSecondsToPrintableNSStringWithSliderValue:durationInSeconds];
+        NSString *newText = [SongPlayerViewDisplayUtility convertSecondsToPrintableNSStringWithSliderValue:durationInSeconds];
         if(stateOfDurationLabels == DurationLabelStateNotSet){
             //figure it out lol
             _totalDurationLabel.text = newText;

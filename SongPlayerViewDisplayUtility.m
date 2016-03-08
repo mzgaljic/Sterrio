@@ -76,4 +76,33 @@ int nearestEvenInt(int to)
     vc.view.hidden = NO;
 }
 
+static NSString *secondsToStringReturn = @"";
+static NSUInteger totalSeconds;
+static NSUInteger totalMinutes;
+static int seconds;
+static int minutes;
+static int hours;
++ (NSString *)convertSecondsToPrintableNSStringWithSliderValue:(float)value
+{
+    totalSeconds = value;
+    seconds = (int)(totalSeconds % MZSecondsInAMinute);
+    totalMinutes = totalSeconds / MZSecondsInAMinute;
+    minutes = (int)(totalMinutes % MZMinutesInAnHour);
+    hours = (int)(totalMinutes / MZMinutesInAnHour);
+    
+    if(minutes < 10 && hours == 0)  //we can shorten the text
+        secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
+    
+    else if(hours > 0)
+    {
+        if(hours <= 9)
+            secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d:%02d",hours,minutes,seconds];
+        else
+            secondsToStringReturn = [NSString stringWithFormat:@"%02d:%02d:%02d",hours,minutes, seconds];
+    }
+    else
+        secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
+    return secondsToStringReturn;
+}
+
 @end

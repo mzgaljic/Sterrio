@@ -26,6 +26,12 @@
 
 extern const int CONTROLS_HUD_HEIGHT;
 extern const float AUTO_HIDE_HUD_DELAY;
+extern const int VIEW_EDGE_PADDING;
+extern const int LABEL_AND_SLIDER_PADDING;
+extern const int PLAY_PAUSE_BTN_DIAMETER;
+extern const int AIRPLAY_ICON_WIDTH;
+extern const int LABEL_FONT_SIZE;
+extern const int BUTTON_AND_LABEL_PADDING;
 
 - (instancetype)initWithFrame:(CGRect)frame videoURL:(NSURL *)videoURL useControlsOverlay:(BOOL)useOverlay;
 - (void)setStallValueChangedDelegate:(id <MZPreviewPlayerDelegate>)aDelegate;

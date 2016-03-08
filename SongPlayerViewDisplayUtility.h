@@ -20,6 +20,8 @@ extern int nearestEvenInt(int to);
 + (void)segueToSongPlayerViewControllerFrom:(UIViewController *)sourceController;
 + (void)animatePlayerIntoMinimzedModeInPrepForPlayback;
 
++ (NSString *)convertSecondsToPrintableNSStringWithSliderValue:(float)value;
+
 @end
 
 

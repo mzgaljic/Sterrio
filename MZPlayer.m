@@ -15,6 +15,7 @@
 #import "AppEnvironmentConstants.h"
 #import "MZSlider.h"
 #import "SSBouncyButton.h"
+#import "SongPlayerViewDisplayUtility.h"
 
 @interface MZPlayer ()
 {
@@ -114,7 +115,7 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
         _avPlayer = [AVPlayer playerWithPlayerItem:playerItem];
         [self initObservers];
         playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.avPlayer];
-        playerLayer.backgroundColor = [[UIColor clearColor] CGColor];
+        playerLayer.backgroundColor = [[UIColor blackColor] CGColor];
         [playerLayer setFrame:self.bounds];
         [self.layer addSublayer:playerLayer];
         [self.layer setMasksToBounds:YES];
@@ -225,7 +226,7 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
                                             PLAY_PAUSE_BTN_DIAMETER);
     
     totalDuration = CMTimeGetSeconds(self.avPlayer.currentItem.asset.duration);
-    NSString *totalDurationString = [self convertSecondsToPrintableNSStringWithSliderValue:totalDuration];
+    NSString *totalDurationString = [SongPlayerViewDisplayUtility convertSecondsToPrintableNSStringWithSliderValue:totalDuration];
     
     //Elapsed Time Label
     if(! cacheLabels) {
@@ -263,7 +264,6 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
     self.totalTimeLabel.frame = [self totalTimeLabelRect];
     
     //Seek Time Progress Bar
-    int initialLayoutXCompensation = 0;
     if(self.progressBar == nil){
         self.progressBar = [[MZSlider alloc] init];
         [self.progressBar addTarget:self
@@ -300,7 +300,6 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
         self.progressBar.minimumTrackTintColor = [[UIColor defaultAppColorScheme] lighterColor];
         self.progressBar.maximumTrackTintColor = [UIColor groupTableViewBackgroundColor];
         self.progressBar.continuous = YES;
-        initialLayoutXCompensation = -3;
     }
     
     int volumeViewXOrigin = self.totalTimeLabel.frame.origin.x + self.totalTimeLabel.frame.size.width + LABEL_AND_SLIDER_PADDING;
@@ -380,7 +379,7 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
     Float64 currentTimeValue = CMTimeGetSeconds(self.avPlayer.currentItem.currentTime);
     _elapsedTimeInSec = currentTimeValue;
     [self.progressBar setValue:(currentTimeValue) animated:YES];
-    self.elapsedTimeLabel.text = [self convertSecondsToPrintableNSStringWithSliderValue:currentTimeValue];
+    self.elapsedTimeLabel.text = [SongPlayerViewDisplayUtility convertSecondsToPrintableNSStringWithSliderValue:currentTimeValue];
 }
 
 #pragma mark - Hud Control Animations
@@ -536,7 +535,7 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
         CMTime seekTime = CMTimeMakeWithSeconds(sender.value, NSEC_PER_SEC);
         [self.avPlayer seekToTime:seekTime];
     }
-    self.elapsedTimeLabel.text = [self convertSecondsToPrintableNSStringWithSliderValue:sender.value];
+    self.elapsedTimeLabel.text = [SongPlayerViewDisplayUtility convertSecondsToPrintableNSStringWithSliderValue:sender.value];
 }
 
 - (void)progressBarChangeEnded:(UISlider *)sender
@@ -550,35 +549,6 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
     [self.delegate previewPlayerNeedsNowPlayingInfoCenterUpdate];
     [self.avPlayer play];
     [self startAutoHideTimer];
-}
-
-static NSString *secondsToStringReturn = @"";
-static NSUInteger totalSeconds;
-static NSUInteger totalMinutes;
-static int seconds;
-static int minutes;
-static int hours;
-- (NSString *)convertSecondsToPrintableNSStringWithSliderValue:(float)value
-{
-    totalSeconds = value;
-    seconds = (int)(totalSeconds % MZSecondsInAMinute);
-    totalMinutes = totalSeconds / MZSecondsInAMinute;
-    minutes = (int)(totalMinutes % MZMinutesInAnHour);
-    hours = (int)(totalMinutes / MZMinutesInAnHour);
-    
-    if(minutes < 10 && hours == 0)  //we can shorten the text
-        secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
-    
-    else if(hours > 0)
-    {
-        if(hours <= 9)
-            secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d:%02d",hours,minutes,seconds];
-        else
-            secondsToStringReturn = [NSString stringWithFormat:@"%02d:%02d:%02d",hours,minutes, seconds];
-    }
-    else
-        secondsToStringReturn = [NSString stringWithFormat:@"%i:%02d", minutes, seconds];
-    return secondsToStringReturn;
 }
 
 #pragma mark - Hiding/Showing airplay button
