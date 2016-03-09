@@ -819,12 +819,12 @@ static NSTimer *autoHideTimer;
                    forControlEvents:UIControlEventTouchCancel];
         //[self.progressBar setThumbImage:[UIImage imageNamed:@"UISliderKnob"] forState:UIControlStateNormal];
         self.progressBar.transform = CGAffineTransformMakeScale(0.80, 0.80);  //make knob smaller
-        self.progressBar.maximumValue = totalDuration;
         self.progressBar.minimumValue = 0;
         self.progressBar.minimumTrackTintColor = [[UIColor defaultAppColorScheme] lighterColor];
         self.progressBar.maximumTrackTintColor = [UIColor groupTableViewBackgroundColor];
         self.progressBar.continuous = YES;
     }
+    self.progressBar.maximumValue = totalDuration;
     
     int volumeViewXOrigin = self.totalTimeLabel.frame.origin.x + self.totalTimeLabel.frame.size.width + LABEL_AND_SLIDER_PADDING;
     int height = CONTROLS_HUD_HEIGHT * 0.85;
