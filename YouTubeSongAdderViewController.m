@@ -802,6 +802,8 @@ static short numberTimesViewHasBeenShown = 0;
                 [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
             }
             
+            [ReachabilitySingleton showCellularStreamingWarningIfApplicable];
+            
             //needed to avoid causing an airplay conflict between the two avplayers
             previousAllowsExternalPlayback = [MusicPlaybackController obtainRawAVPlayer].allowsExternalPlayback;
             [MusicPlaybackController obtainRawAVPlayer].allowsExternalPlayback = NO;

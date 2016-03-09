@@ -21,7 +21,7 @@
     NSString *CURRENT_SONG_DONE_PLAYING;
     NSString *CURRENT_SONG_STOPPED_PLAYBACK;
     NSString *CURRENT_SONG_RESUMED_PLAYBACK;
-    NSString *PlaybackHasBegun;
+    NSString *PLAYBACK_HAS_BEGUN_NOTIF;
 }
 @end
 
@@ -45,7 +45,7 @@ static ReachabilitySingleton *reachability;
         CURRENT_SONG_DONE_PLAYING = @"Current item has finished, update gui please!";
         CURRENT_SONG_STOPPED_PLAYBACK = @"playback has stopped for some unknown reason (stall?)";
         CURRENT_SONG_RESUMED_PLAYBACK = @"playback has resumed from a stall probably";
-        PlaybackHasBegun = @"PlaybackStartedNotification";
+        PLAYBACK_HAS_BEGUN_NOTIF = @"PlaybackStartedNotification";
         movingForward = YES;
         stallHasOccured = NO;
         _secondsLoaded = 0;
@@ -82,6 +82,10 @@ static ReachabilitySingleton *reachability;
     [notifCenter addObserver:self
                     selector:@selector(currentSongPlaybackMustBeDisabled:)
                         name:MZInterfaceNeedsToBlockCurrentSongPlayback
+                      object:nil];
+    [notifCenter addObserver:self
+                    selector:@selector(songDidBeginPlayback)
+                        name:PLAYBACK_HAS_BEGUN_NOTIF
                       object:nil];
 }
 
@@ -171,6 +175,11 @@ static ReachabilitySingleton *reachability;
     }
     //code dealing with reaching the end of the queue should be placed in the
     //MusicPlaybackControllers "SkipToNextSong" method.
+}
+
+- (void)songDidBeginPlayback
+{
+    [ReachabilitySingleton showCellularStreamingWarningIfApplicable];
 }
 
 #pragma mark - initiating playback
@@ -538,7 +547,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                 if(newSecondsBuff > _secondsLoaded && self.rate == 1 && !self.playbackStarted){
                     bufferingBeforeInitialPlayback = NO;
                     _playbackStarted = YES;
-                    [[NSNotificationCenter defaultCenter] postNotificationName:PlaybackHasBegun
+                    [[NSNotificationCenter defaultCenter] postNotificationName:PLAYBACK_HAS_BEGUN_NOTIF
                                                                         object:nil];
                     //places approprate spinners on player if needed...or dismisses spinner.
                     [self connectionStateChanged];

@@ -7,7 +7,10 @@
 //
 
 #import "ReachabilitySingleton.h"
+#import <AVFoundation/AVAudioPlayer.h>
 #import "AppEnvironmentConstants.h"
+#import "MusicPlaybackController.h"
+
 
 typedef NS_ENUM(NSUInteger, Connection_Type) {
     Connection_Type_Wifi,
@@ -85,12 +88,8 @@ typedef NS_ENUM(NSUInteger, Connection_State){
             weakself.connectionType = Connection_Type_Wifi;
         else{
             weakself.connectionType = Connection_Type_Cellular;
-            if(! [AppEnvironmentConstants didPreviouslyShowUserCellularWarning]){
-                [MyAlerts displayAlertWithAlertType:ALERT_TYPE_WarnUserOfCellularDataFees];
-                [AppEnvironmentConstants setUserHasSeenCellularDataUsageWarning:YES];
-                [[NSUserDefaults standardUserDefaults] setBool:YES
-                                                        forKey:USER_HAS_SEEN_CELLULAR_WARNING];
-                [[NSUserDefaults standardUserDefaults] synchronize];
+            if([ReachabilitySingleton shouldShowCelluarStreamingWarning]){
+                   [ReachabilitySingleton handleNeedToShowCellularDataWarning];
             }
         }
         
@@ -110,6 +109,50 @@ typedef NS_ENUM(NSUInteger, Connection_State){
                                                 object:nil];
         }];
     };
+}
+
++ (void)showCellularStreamingWarningIfApplicable
+{
+    safeSynchronousDispatchToMainQueue(^{
+        if([ReachabilitySingleton shouldShowCelluarStreamingWarning]) {
+            [ReachabilitySingleton handleNeedToShowCellularDataWarning];
+        }
+    });
+}
+
+//---- Utils ----
++ (void)handleNeedToShowCellularDataWarning
+{
+    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_WarnUserOfCellularDataFees];
+    [AppEnvironmentConstants setUserHasSeenCellularDataUsageWarning:YES];
+    [[NSUserDefaults standardUserDefaults] setBool:YES
+                                            forKey:USER_HAS_SEEN_CELLULAR_WARNING];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
++ (BOOL)shouldShowCelluarStreamingWarning
+{
+    return (! [AppEnvironmentConstants didPreviouslyShowUserCellularWarning]
+            && ([ReachabilitySingleton isUserPreviewingAndPlayerPlaying]
+                || [ReachabilitySingleton isMainPlayerPlaying]));
+}
+
++ (BOOL)isUserPreviewingAndPlayerPlaying
+{
+    return ([AppEnvironmentConstants isUserPreviewingAVideo]
+            && [AppEnvironmentConstants currrentPreviewPlayerState] == PREVIEW_PLAYBACK_STATE_Playing);
+}
+
++ (BOOL)isMainPlayerPlaying
+{
+    __block BOOL retval;
+    //obtainRawAVPlayer call is NOT thread safe, using main thread...
+    safeSynchronousDispatchToMainQueue(^{
+        AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
+        retval = ([NowPlayingSong sharedInstance].nowPlayingItem != nil
+                  && player.rate > 0);
+    });
+    return retval;
 }
 
 - (void)initEnumStates

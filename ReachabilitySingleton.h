@@ -17,4 +17,6 @@
 - (BOOL)isConnectedToInternet;
 - (BOOL)isConnectionCompletelyGone;
 
++ (void)showCellularStreamingWarningIfApplicable;
+
 @end
