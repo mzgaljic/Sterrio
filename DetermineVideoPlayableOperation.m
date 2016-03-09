@@ -33,8 +33,10 @@ static BOOL lastSongWasSkipped = NO;
     ReachabilitySingleton *reachability = [ReachabilitySingleton sharedInstance];
     if(duration >= MZLongestCellularPlayableDuration){
         //videos of this length may only be played on wifi. Are we on wifi?
-        if(! [reachability isConnectedToWifi])
+        if(! [reachability isConnectedToWifi]) {
             allowedToPlayVideo = NO;
+            [MyAlerts skippedLibrarySongDueToLength];
+        }
     }
     if ([self isCancelled]){
         lastSongWasSkipped = NO;

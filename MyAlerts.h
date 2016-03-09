@@ -38,6 +38,7 @@ typedef enum {
 + (void)displayVideoNoLongerAvailableOnYtAlertForSong:(NSString *)name
                                         customActions:(NSArray *)actions;
 
-+ (void)showAllQueuedBanners;
++ (void)showAlertWithNumSkippedSongs;
++ (void)skippedLibrarySongDueToLength;
 
 @end

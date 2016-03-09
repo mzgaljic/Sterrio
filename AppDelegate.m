@@ -227,7 +227,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         }
     }
     
-    [MyAlerts showAllQueuedBanners];
+    [MyAlerts showAlertWithNumSkippedSongs];
 }
 
 //helpers for the above method

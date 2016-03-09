@@ -150,7 +150,7 @@ static ReachabilitySingleton *reachability;
     
     NSUInteger currentTime = CMTimeGetSeconds(self.currentItem.currentTime);
     Song *aSong = [MusicPlaybackController nowPlayingSong];
-    if(aSong != nil) {
+    if(!_allowSongDidFinishToExecute && aSong != nil) {
         NSInteger absVal = ABS([aSong.duration integerValue] - currentTime);
         if(absVal >= 4) {
             //false alarm, songDidFinishPlaying called when it shouldn't have been. Big bug!
@@ -180,6 +180,7 @@ static ReachabilitySingleton *reachability;
 - (void)songDidBeginPlayback
 {
     [ReachabilitySingleton showCellularStreamingWarningIfApplicable];
+    [MyAlerts showAlertWithNumSkippedSongs];
 }
 
 #pragma mark - initiating playback

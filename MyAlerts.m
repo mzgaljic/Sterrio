@@ -19,15 +19,11 @@
 #import "YouTubeService.h"
 
 @implementation MyAlerts
-
-static BOOL currentlyDisplayingBanner;
-static NSMutableArray *queuedToastBannerOptions;
+static int numSkippedSongs = 0;
 
 + (void)displayAlertWithAlertType:(ALERT_TYPE)type
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if(queuedToastBannerOptions == nil)
-            queuedToastBannerOptions = [NSMutableArray array];
         [MyAlerts runDisplayAlertCodeWithAlertType:type];
     }];
 }
@@ -52,7 +48,8 @@ static NSMutableArray *queuedToastBannerOptions;
             [MyAlerts launchAlertViewWithDialogTitle:@"Problem loading videos"
                                           andMessage:msg
                                        customActions:nil
-                               allowsBasicLocalNotif:YES];
+                               allowsBasicLocalNotif:YES
+                                      makeNotifSound:NO];
             break;
         }
         case ALERT_TYPE_CannotConnectToYouTube:
@@ -75,7 +72,8 @@ static NSMutableArray *queuedToastBannerOptions;
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
                                     customActions:actions
-                           allowsBasicLocalNotif:YES];
+                           allowsBasicLocalNotif:YES
+                                  makeNotifSound:YES];
             break;
         }
         case ALERT_TYPE_CannotLoadVideo:
@@ -94,41 +92,18 @@ static NSMutableArray *queuedToastBannerOptions;
             [self launchAlertViewWithDialogTitle:nil
                                       andMessage:@"Video failed to load."
                                    customActions:actions
-                           allowsBasicLocalNotif:YES];
+                           allowsBasicLocalNotif:YES
+                                  makeNotifSound:YES];
             break;
         }
         case ALERT_TYPE_LongVideoSkippedOnCellular:
         {
-            NSDictionary *options = @{
-                                      kCRToastTextKey : @"Long song(s) skipped.",
-                                      kCRToastTextAlignmentKey : @(NSTextAlignmentLeft),
-                                      kCRToastBackgroundColorKey : [UIColor defaultAppColorScheme],
-                                      kCRToastAnimationInTypeKey : @(CRToastAnimationTypeGravity),
-                                      kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeGravity),
-                                      kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
-                                      kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom),
-                                      kCRToastFontKey   :   [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18],
-                                      kCRToastNotificationTypeKey   : @(CRToastPresentationTypePush),
-                                      kCRToastImageKey  : [UIImage imageNamed:@"alert_exclamation"],
-                                      };
-            [MyAlerts showOrQueueUpCRToastBannerWithOptions:options];
+            [MyAlerts showAlertWithNumSkippedSongs];
             break;
         }
         case ALERT_TYPE_Chosen_Song_Too_Long_For_Cellular:
         {
-            NSDictionary *options = @{
-                                      kCRToastTextKey : @"Song unplayable on LTE/3G, check settings.",
-                                      kCRToastTextAlignmentKey : @(NSTextAlignmentLeft),
-                                      kCRToastBackgroundColorKey : [UIColor defaultAppColorScheme],
-                                      kCRToastAnimationInTypeKey : @(CRToastAnimationTypeGravity),
-                                      kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeGravity),
-                                      kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
-                                      kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom),
-                                      kCRToastFontKey   :   [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18],
-                                      kCRToastNotificationTypeKey   : @(CRToastPresentationTypePush),
-                                      kCRToastImageKey  : [UIImage imageNamed:@"alert_exclamation"],
-                                      };
-            [MyAlerts showOrQueueUpCRToastBannerWithOptions:options];
+            [MyAlerts showAlertWithNumSkippedSongs];
             break;
         }
         case ALERT_TYPE_TroubleSharingVideo:
@@ -138,7 +113,8 @@ static NSMutableArray *queuedToastBannerOptions;
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
                                    customActions:nil
-                           allowsBasicLocalNotif:NO];
+                           allowsBasicLocalNotif:NO
+                                  makeNotifSound:NO];
             break;
         }
         case ALERT_TYPE_TroubleSharingLibrarySong:
@@ -148,7 +124,8 @@ static NSMutableArray *queuedToastBannerOptions;
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
                                    customActions:nil
-                           allowsBasicLocalNotif:NO];
+                           allowsBasicLocalNotif:NO
+                                  makeNotifSound:NO];
             break;
         }
         case ALERT_TYPE_CannotOpenSafariError:
@@ -158,7 +135,8 @@ static NSMutableArray *queuedToastBannerOptions;
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
                                    customActions:nil
-                           allowsBasicLocalNotif:YES];
+                           allowsBasicLocalNotif:YES
+                                  makeNotifSound:NO];
             break;
         }
         case ALERT_TYPE_CannotOpenSelectedImageError:
@@ -168,7 +146,8 @@ static NSMutableArray *queuedToastBannerOptions;
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
                                    customActions:nil
-                           allowsBasicLocalNotif:NO];
+                           allowsBasicLocalNotif:NO
+                                  makeNotifSound:NO];
             break;
         }
         case ALERT_TYPE_SongSaveHasFailed:
@@ -178,7 +157,8 @@ static NSMutableArray *queuedToastBannerOptions;
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
                                    customActions:nil
-                           allowsBasicLocalNotif:NO];
+                           allowsBasicLocalNotif:NO
+                                  makeNotifSound:NO];
             break;
         }
         case ALERT_TYPE_WarnUserOfCellularDataFees:
@@ -188,46 +168,23 @@ static NSMutableArray *queuedToastBannerOptions;
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
                                    customActions:nil
-                           allowsBasicLocalNotif:YES];
+                           allowsBasicLocalNotif:YES
+                                  makeNotifSound:YES];
             break;
         }
         case ALERT_TYPE_NowPlayingSongWasDeletedOnOtherDevice:
         {
             NSString *title = @"Current Song Deleted";
-            NSString *msg = [NSString stringWithFormat:@"The previously playing song was deleted on another one of your devices. This device has synced with iCloud, so the song no longer exists. Skipping ahead..."];
+            NSString *msg = [NSString stringWithFormat:@"The previously playing song was deleted on another one of your devices. This device has synced with iCloud, so the song no longer exists. Skipping..."];
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
                                    customActions:nil
-                           allowsBasicLocalNotif:YES];
+                           allowsBasicLocalNotif:YES
+                                  makeNotifSound:YES];
             break;
         }
         default:
             break;
-    }
-}
-
-+ (void)showOrQueueUpCRToastBannerWithOptions:(NSDictionary *)options
-{
-    BOOL appIsNotActive = [UIApplication sharedApplication].applicationState != UIApplicationStateActive;
-    if(currentlyDisplayingBanner || appIsNotActive)
-        [queuedToastBannerOptions addObject:options];
-    else{
-        currentlyDisplayingBanner = YES;
-        [CRToastManager showNotificationWithOptions:options
-                                    completionBlock:^{
-                                        currentlyDisplayingBanner = NO;
-                                        if(queuedToastBannerOptions.count > 0){
-                                            NSDictionary *options = queuedToastBannerOptions[0];
-                                            [queuedToastBannerOptions removeObjectAtIndex:0];
-                                            
-                                            double delayInSeconds = 0.6;
-                                            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                                            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                                                //code to be executed on the main queue after delay
-                                                [MyAlerts showOrQueueUpCRToastBannerWithOptions:options];
-                                            });
-                                        }
-                                    }];
     }
 }
 
@@ -239,34 +196,37 @@ static NSMutableArray *queuedToastBannerOptions;
         [MyAlerts launchAlertViewWithDialogTitle:@"Video Unavailable"
                                       andMessage:msg
                                    customActions:actions
-                           allowsBasicLocalNotif:YES];
+                           allowsBasicLocalNotif:YES
+                                  makeNotifSound:YES];
         MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
         [player dismissAllSpinnersIfPossible];
     }];
 }
 
-+ (void)showAllQueuedBanners
++ (void)skippedLibrarySongDueToLength
 {
-    if(queuedToastBannerOptions.count == 0)
+    numSkippedSongs++;
+}
+
++ (void)showAlertWithNumSkippedSongs
+{
+    if(numSkippedSongs == 0) {
         return;
-    else{
-        NSDictionary *firstOption = [queuedToastBannerOptions objectAtIndex:0];
-        [queuedToastBannerOptions removeObjectAtIndex:0];
-        [CRToastManager showNotificationWithOptions:firstOption
-                                    completionBlock:^{
-                                        currentlyDisplayingBanner = NO;
-                                        if(queuedToastBannerOptions.count > 0){
-                                            NSDictionary *options = queuedToastBannerOptions[0];
-                                            [queuedToastBannerOptions removeObjectAtIndex:0];
-                                            
-                                            double delayInSeconds = 0.6;
-                                            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-                                            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                                                //code to be executed on the main queue after delay
-                                                [MyAlerts showOrQueueUpCRToastBannerWithOptions:options];
-                                            });
-                                        }
-                                    }];
+    } else {
+        NSString *title = @"Songs Skipped";
+        
+        NSString *msg;
+        if(numSkippedSongs == 1) {
+            msg = @"The previous song was skipped because it was too long for a cellular connection. To change this behavior, go into 'advanced' in the app settings.";
+        } else {
+            msg = [NSString stringWithFormat:@"%i songs were skipped because they were too long for a cellular connection. To change this behavior, go into 'advanced' in the app settings.", numSkippedSongs];
+        }
+        [MyAlerts launchAlertViewWithDialogTitle:title
+                                      andMessage:msg
+                                   customActions:nil
+                           allowsBasicLocalNotif:YES
+                                  makeNotifSound:NO];
+        numSkippedSongs = 0;
     }
 }
 
@@ -274,6 +234,7 @@ static NSMutableArray *queuedToastBannerOptions;
                             andMessage:(NSString *)message
                          customActions:(NSArray *)customAlertActions
                  allowsBasicLocalNotif:(BOOL)allowed
+                        makeNotifSound:(BOOL)makeSound
 {
     UIApplication *app = [UIApplication sharedApplication];
     if(allowed && app.applicationState != UIApplicationStateActive){
@@ -282,7 +243,9 @@ static NSMutableArray *queuedToastBannerOptions;
         [notification setAlertTitle:title];
         [notification setAlertBody:message];
         [notification setTimeZone:[NSTimeZone defaultTimeZone]];
-        //[notification setSoundName:UILocalNotificationDefaultSoundName];
+        if(makeSound) {
+            [notification setSoundName:UILocalNotificationDefaultSoundName];
+        }
         [notification setFireDate:[NSDate dateWithTimeIntervalSinceNow:1]];
         [app scheduleLocalNotification:notification];
     } else {
