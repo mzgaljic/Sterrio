@@ -462,7 +462,14 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     } else {
         if([SongPlayerCoordinator isVideoPlayerExpanded]) {
             _useControlsOverlay = YES;
-            [self setupControlsHudCacheLabels:NO];
+            
+            //setup hud with a delay. If not delayed, you can see the hud during the
+            //rotation animation, which looks tacky.
+            float delayInSeconds = 0.6;
+            __weak PlayerView *weakself = self;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [weakself setupControlsHudCacheLabels:NO];
+            });
         }
     }
     
