@@ -141,6 +141,7 @@ static BOOL skipCertainInitStepsFlag = NO;
     _suggestedItem = nil;
     url = nil;
     [AppEnvironmentConstants setUserIsPreviewingAVideo:NO];
+    [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Uninitialized];
     
     [[YouTubeService sharedInstance] removeVideoDetailLookupDelegate];
     [[DiscogsSearchService sharedInstance] cancelAllPendingRequests];
@@ -229,6 +230,7 @@ static short numberTimesViewHasBeenShown = 0;
             //this fixes a bug where cancelling a "slide to pop" gesture would make the player appear "stuck".
             [self.player pause];
             [self.player play];
+            [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
         }
     }
     
@@ -384,6 +386,7 @@ static short numberTimesViewHasBeenShown = 0;
                                        useControlsOverlay:YES];
             [self.player setStallValueChangedDelegate:self];
             [self.player play];
+            [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
             
             [[NSNotificationCenter defaultCenter] postNotificationName:MZInitAudioSession
                                                                 object:nil];
@@ -445,6 +448,7 @@ static short numberTimesViewHasBeenShown = 0;
                                    useControlsOverlay:YES];
         [self.player setStallValueChangedDelegate:self];
         [self.player play];
+        [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
         
         [[NSNotificationCenter defaultCenter] postNotificationName:MZInitAudioSession
                                                             object:nil];
@@ -897,6 +901,7 @@ static BOOL powerByYtHandled = NO;  //needed if user aggressively taps button mo
         playerWasPlayingBeforeTappingPoweredByYt = YES;
     }
     [self.player pause];
+    [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Paused];
     
     NSString *youtubeLinkBeginning = @"https://www.youtube.com/watch?v=";
     NSMutableString *ytWebUrl = [NSMutableString stringWithString:youtubeLinkBeginning];
@@ -915,6 +920,7 @@ static BOOL powerByYtHandled = NO;  //needed if user aggressively taps button mo
 {
     if(leftAppDuePoweredByYtLogoClick && playerWasPlayingBeforeTappingPoweredByYt) {
         [self.player performSelector:@selector(play) withObject:nil afterDelay:0.2];
+        [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
     }
     leftAppDuePoweredByYtLogoClick = NO;
     playerWasPlayingBeforeTappingPoweredByYt = NO;
