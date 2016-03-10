@@ -17,6 +17,8 @@
     
     UIView *airplaySectionFooterView;
     UILabel *airplaySectionFooterLabel;
+    UIView *limitVideoLengthSectionFooterView;
+    UILabel *limitVideoLengthSectionFooterLabel;
 }
 @end
 @implementation AdvancedOptionsTableViewController
@@ -26,8 +28,10 @@ short const PLAYER_AIRPLAY_OPTIONS_SECTION_NUM = 0;
 short const LIMIT_VIDEO_LENGTH_ON_CELL_SECTION_NUM = 1;
 //short const MUSIC_LIB_SORTING_SECTION_NUM = 2;
 
-int const AIRPLAY_FOOTER_SWITCH_ON_HEIGHT = 110;
-int const AIRPLAY_FOOTER_SWITCH_OFF_HEIGHT = 80;
+int const AIRPLAY_FOOTER_SWITCH_OFF_HEIGHT = 76;
+int const AIRPLAY_FOOTER_SWITCH_ON_HEIGHT = 96;
+
+int const LIMIT_VIDEO_LENGTH_FOOTER_HEIGHT = 72;
 
 NSString * const AIRPLAY_AUDIO_ONLY_ENABLED_FOOTER = @"Video is displayed on this device while audio is streamed to the Airplay receiver. Volume can be controlled from this device.";
 NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are streamed to the airplay receiver. Volume control is not supported.";
@@ -38,7 +42,7 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
     [super viewDidLoad];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(orientationDidChange)
-                                                 name:UIDeviceOrientationDidChangeNotification
+                                                 name:UIApplicationDidChangeStatusBarOrientationNotification
                                                object:nil];
 }
 
@@ -67,7 +71,10 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
         else
             return AIRPLAY_FOOTER_SWITCH_OFF_HEIGHT;
     }
-    else
+    else if(section == LIMIT_VIDEO_LENGTH_ON_CELL_SECTION_NUM)
+    {
+        return LIMIT_VIDEO_LENGTH_FOOTER_HEIGHT;
+    } else
         return 0;
 }
 
@@ -75,9 +82,8 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
 {
     if(section == PLAYER_AIRPLAY_OPTIONS_SECTION_NUM)
     {
-        if(airplaySectionFooterView != nil) {
-            return airplaySectionFooterView;
-        }
+        [airplaySectionFooterView removeFromSuperview];
+        [airplaySectionFooterLabel removeFromSuperview];
         
         NSString *footerText;
         if([AppEnvironmentConstants shouldOnlyAirplayAudio]){
@@ -96,6 +102,22 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
         airplaySectionFooterLabel.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         [airplaySectionFooterView addSubview:airplaySectionFooterLabel];
         return airplaySectionFooterView;
+    }
+    else if(section == LIMIT_VIDEO_LENGTH_ON_CELL_SECTION_NUM)
+    {
+        [limitVideoLengthSectionFooterView removeFromSuperview];
+        [limitVideoLengthSectionFooterLabel removeFromSuperview];
+        
+        limitVideoLengthSectionFooterView = [[UIView alloc] initWithFrame:[self limitVideoLengthSectionFooterViewRect]];
+        limitVideoLengthSectionFooterLabel = [[UILabel alloc] initWithFrame:[self limitVideoLengthSectionFooterLabelRect]];
+        limitVideoLengthSectionFooterLabel.text = [self limitVideoLengthOnCellFooterText];
+        limitVideoLengthSectionFooterLabel.numberOfLines = 0;
+        limitVideoLengthSectionFooterLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                         size:18];
+        limitVideoLengthSectionFooterLabel.textColor = [UIColor grayColor];
+        limitVideoLengthSectionFooterLabel.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        [limitVideoLengthSectionFooterView addSubview:limitVideoLengthSectionFooterLabel];
+        return limitVideoLengthSectionFooterView;
     }
     else
         return nil;
@@ -180,6 +202,8 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
         cell = [tableView dequeueReusableCellWithIdentifier:@"advancedSettingRightDetailCell"
                                                forIndexPath:indexPath];
         if(indexPath.row == 0) {
+            //limiting which videos can be streamed on LTE/3G
+            
             cell.textLabel.text = @"Limit Video Length on LTE/3G";
             cell.detailTextLabel.text = nil;
             
@@ -218,12 +242,11 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-#pragma mark - Helpers
+#pragma mark - Switches Toggled
 - (void)videoDuringAirplaySwitchToggled
 {
     if(onlyAirplayAudioSwitch.isOn == [AppEnvironmentConstants shouldOnlyAirplayAudio])
         return;
-    
     [AppEnvironmentConstants setShouldOnlyAirplayAudio:onlyAirplayAudioSwitch.isOn];
     
     //force footer heights to animate
@@ -241,22 +264,71 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
     if(limitVideoLengthSwtich.isOn == [AppEnvironmentConstants limitVideoLengthOnCellular])
         return;
     [AppEnvironmentConstants setLimitVideoLengthOnCellular:limitVideoLengthSwtich.isOn];
+    
+    //animate (fade) new section footer text
+    CATransition *animation = [CATransition animation];
+    animation.duration = 0.40;
+    animation.type = kCATransitionFade;
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [limitVideoLengthSectionFooterLabel.layer addAnimation:animation
+                                                    forKey:@"changeTextTransition"];
+
+    limitVideoLengthSectionFooterLabel.text = [self limitVideoLengthOnCellFooterText];
 }
 
+#pragma mark - Helpers
 - (void)orientationDidChange
-{
-    [self updateAirplaySectionFooterFrame];
-}
-
-- (void)updateAirplaySectionFooterFrame
 {
     airplaySectionFooterView.frame = [self airplaySectionFooterViewRect];
     airplaySectionFooterLabel.frame = [self airplaySectionFooterLabelRect];
+    
+    CGRect temp = [self limitVideoLengthSectionFooterViewRect];
+    limitVideoLengthSectionFooterView.frame = temp;
+    limitVideoLengthSectionFooterLabel.frame = [self limitVideoLengthSectionFooterLabelRect];
 }
 
+#pragma mark - Footer Utils
+//--- Airplay footer help ----
 - (CGRect)airplaySectionFooterLabelRect
 {
-    CGRect viewRect = airplaySectionFooterView.frame;
+    return [self labelRectGivenFooterView:airplaySectionFooterView];
+}
+- (CGRect)airplaySectionFooterViewRect
+{
+    int footerViewHeight;
+    if([AppEnvironmentConstants shouldOnlyAirplayAudio])
+        footerViewHeight = AIRPLAY_FOOTER_SWITCH_ON_HEIGHT;
+    else
+        footerViewHeight = AIRPLAY_FOOTER_SWITCH_OFF_HEIGHT;
+    int headerHeight = [self tableView:self.tableView heightForHeaderInSection:PLAYER_AIRPLAY_OPTIONS_SECTION_NUM];
+    return [self footerViewRectGivenHeaderHeight:headerHeight footerViewHeight:footerViewHeight];
+}
+
+//--- Limiting video length footer help ----
+- (CGRect)limitVideoLengthSectionFooterLabelRect
+{
+    return [self labelRectGivenFooterView:limitVideoLengthSectionFooterView];
+}
+- (CGRect)limitVideoLengthSectionFooterViewRect
+{
+    int footerViewHeight = LIMIT_VIDEO_LENGTH_FOOTER_HEIGHT;
+    int headerHeight = [self tableView:self.tableView heightForHeaderInSection:LIMIT_VIDEO_LENGTH_ON_CELL_SECTION_NUM];
+    return [self footerViewRectGivenHeaderHeight:headerHeight footerViewHeight:footerViewHeight];
+}
+
+- (CGRect)footerViewRectGivenHeaderHeight:(int)headerHeight footerViewHeight:(int)footerHeight
+{
+    int rowHeight = [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel];
+    int yOrigin = rowHeight + headerHeight;
+    return CGRectMake(0,
+                      yOrigin,
+                      [UIScreen mainScreen].bounds.size.width,
+                      footerHeight);
+}
+
+- (CGRect)labelRectGivenFooterView:(UIView *)footerView
+{
+    CGRect viewRect = footerView.frame;
     float labelWidth = viewRect.size.width * 0.9;
     float labelHeight = viewRect.size.height * 0.9;
     int topPadding = 4;
@@ -267,21 +339,21 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
     return labelRect;
 }
 
-- (CGRect)airplaySectionFooterViewRect
+- (NSString *)limitVideoLengthOnCellFooterText
 {
-    int footerViewHeight;
-    if([AppEnvironmentConstants shouldOnlyAirplayAudio])
-        footerViewHeight = AIRPLAY_FOOTER_SWITCH_ON_HEIGHT;
-    else
-        footerViewHeight = AIRPLAY_FOOTER_SWITCH_OFF_HEIGHT;
-    
-    int rowHeight = [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel];
-    int headerHeight = [self tableView:self.tableView heightForHeaderInSection:PLAYER_AIRPLAY_OPTIONS_SECTION_NUM];
-    int yOrigin = rowHeight + headerHeight;
-    return CGRectMake(0,
-                      yOrigin,
-                      [UIScreen mainScreen].bounds.size.width,
-                      footerViewHeight);
+    if(limitVideoLengthSwtich.isOn) {
+        int maxCellVideoLengthInSec = MZLongestCellularPlayableDuration;
+        int maxCellVideoLengthInMin = [AdvancedOptionsTableViewController secondsToMinutes:maxCellVideoLengthInSec];
+        
+        return [NSString stringWithFormat:@"Videos exceeding %i minutes will not be streamed on an LTE/3G connection.", maxCellVideoLengthInMin];
+    } else {
+        return @"When connected via LTE/3G, all videos are streamable - regardless of their duration.";
+    }
+}
+
++ (int)secondsToMinutes:(int)seconds
+{
+    return seconds/60;
 }
 
 @end
