@@ -31,7 +31,8 @@ short const LIMIT_VIDEO_LENGTH_ON_CELL_SECTION_NUM = 1;
 int const AIRPLAY_FOOTER_SWITCH_OFF_HEIGHT = 76;
 int const AIRPLAY_FOOTER_SWITCH_ON_HEIGHT = 96;
 
-int const LIMIT_VIDEO_LENGTH_FOOTER_HEIGHT = 72;
+int const LIMIT_VIDEO_LENGTH_FOOTER_SWITCH_ON_HEIGHT = 76;
+int const LIMIT_VIDEO_LENGTH_FOOTER_SWITCH_OFF_HEIGHT = 96;
 
 NSString * const AIRPLAY_AUDIO_ONLY_ENABLED_FOOTER = @"Video is displayed on this device while audio is streamed to the Airplay receiver. Volume can be controlled from this device.";
 NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are streamed to the airplay receiver. Volume control is not supported.";
@@ -73,7 +74,10 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
     }
     else if(section == LIMIT_VIDEO_LENGTH_ON_CELL_SECTION_NUM)
     {
-        return LIMIT_VIDEO_LENGTH_FOOTER_HEIGHT;
+        if([AppEnvironmentConstants limitVideoLengthOnCellular])
+            return LIMIT_VIDEO_LENGTH_FOOTER_SWITCH_ON_HEIGHT;
+        else
+            return LIMIT_VIDEO_LENGTH_FOOTER_SWITCH_OFF_HEIGHT;
     } else
         return 0;
 }
@@ -265,13 +269,9 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
         return;
     [AppEnvironmentConstants setLimitVideoLengthOnCellular:limitVideoLengthSwtich.isOn];
     
-    //animate (fade) new section footer text
-    CATransition *animation = [CATransition animation];
-    animation.duration = 0.40;
-    animation.type = kCATransitionFade;
-    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-    [limitVideoLengthSectionFooterLabel.layer addAnimation:animation
-                                                    forKey:@"changeTextTransition"];
+    //force footer heights to animate
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
 
     limitVideoLengthSectionFooterLabel.text = [self limitVideoLengthOnCellFooterText];
 }
@@ -311,7 +311,11 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
 }
 - (CGRect)limitVideoLengthSectionFooterViewRect
 {
-    int footerViewHeight = LIMIT_VIDEO_LENGTH_FOOTER_HEIGHT;
+    int footerViewHeight;
+    if([AppEnvironmentConstants limitVideoLengthOnCellular])
+        footerViewHeight = LIMIT_VIDEO_LENGTH_FOOTER_SWITCH_ON_HEIGHT;
+    else
+        footerViewHeight = LIMIT_VIDEO_LENGTH_FOOTER_SWITCH_OFF_HEIGHT;
     int headerHeight = [self tableView:self.tableView heightForHeaderInSection:LIMIT_VIDEO_LENGTH_ON_CELL_SECTION_NUM];
     return [self footerViewRectGivenHeaderHeight:headerHeight footerViewHeight:footerViewHeight];
 }
@@ -347,7 +351,7 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
         
         return [NSString stringWithFormat:@"Videos exceeding %i minutes will not be streamed on an LTE/3G connection.", maxCellVideoLengthInMin];
     } else {
-        return @"When connected via LTE/3G, all videos are streamable - regardless of their duration.";
+        return @"When connected via LTE/3G, all videos are streamable - regardless of their duration. Fees from your provider may apply.";
     }
 }
 
