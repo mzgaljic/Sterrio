@@ -217,9 +217,9 @@ static int numSkippedSongs = 0;
         
         NSString *msg;
         if(numSkippedSongs == 1) {
-            msg = @"The previous song was skipped because it was too long for a cellular connection. To change this behavior, go into 'advanced' in the app settings.";
+            msg = @"The previous song was skipped because it was too long for a cellular connection. To change this behavior, go into 'Advanced' in the App settings.";
         } else {
-            msg = [NSString stringWithFormat:@"%i songs were skipped because they were too long for a cellular connection. To change this behavior, go into 'advanced' in the app settings.", numSkippedSongs];
+            msg = [NSString stringWithFormat:@"%i songs were skipped because they were too long for a cellular connection. To change this behavior, go into 'Advanced' in the App settings.", numSkippedSongs];
         }
         [MyAlerts launchAlertViewWithDialogTitle:title
                                       andMessage:msg

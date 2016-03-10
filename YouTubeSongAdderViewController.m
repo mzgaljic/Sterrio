@@ -315,7 +315,7 @@ static short numberTimesViewHasBeenShown = 0;
     previewIsUnplayable = YES;
     [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView
                                             animated:YES];
-    NSString *headerText = @"This video is too long to preview on a cellular connection.";
+    NSString *headerText = @"This video is too long to preview on a cellular connection.\n\nTo change this behavior, go into 'Advanced' in the App settings.";
     UILabel *label = [self createLabelForPlacementOnTableHeaderWithText:headerText];
     [self.tableView.tableHeaderView addSubview:label];
     [self.tableView.tableHeaderView bringSubviewToFront:label];
@@ -358,7 +358,7 @@ static short numberTimesViewHasBeenShown = 0;
     label.text = text;
     label.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                  size:[PreferredFontSizeUtility actualDetailLabelFontSizeFromCurrentPreferredSize]];
-    label.numberOfLines = 4;
+    label.numberOfLines = 0;
     label.textAlignment = NSTextAlignmentCenter;
     label.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin   |
                               UIViewAutoresizingFlexibleRightMargin  |
