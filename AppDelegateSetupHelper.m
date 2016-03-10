@@ -32,6 +32,7 @@
         short prefCellStreamQuality = 240;
         BOOL icloudSync = NO;
         BOOL shouldOnlyAirplayAudio = YES;
+        BOOL limitVideoLengthOnCellular = YES;
         BOOL userSawExpandingPlayerTip = NO;
         BOOL userHasSeenCellDataWarning = NO;
         BOOL userAcceptedOrDeclinedPushNotif = NO;
@@ -43,6 +44,7 @@
         [AppEnvironmentConstants set_iCloudSyncEnabled:icloudSync];
         [AppEnvironmentConstants setUserHasSeenCellularDataUsageWarning:userHasSeenCellDataWarning];
         [AppEnvironmentConstants setShouldOnlyAirplayAudio:shouldOnlyAirplayAudio];
+        [AppEnvironmentConstants setLimitVideoLengthOnCellular:limitVideoLengthOnCellular];
         [AppEnvironmentConstants setUserSawExpandingPlayerTip:userSawExpandingPlayerTip];
         [AppEnvironmentConstants setUserHasRatedMyApp:userRatedMyApp];
         
@@ -62,6 +64,8 @@
                            forKey:USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF];
         [standardDefaults setBool:shouldOnlyAirplayAudio
                            forKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY];
+        [standardDefaults setBool:limitVideoLengthOnCellular
+                           forKey:LIMIT_VIDEO_LENGTH_CELLULAR_VALUE_KEY];
         [standardDefaults setObject:[NSNumber numberWithInteger:1] forKey:NUM_TIMES_APP_LAUNCHED];
         
         UIColor *color = [AppEnvironmentConstants defaultAppThemeBeforeUserPickedTheme];
@@ -88,6 +92,8 @@
                         [standardDefaults boolForKey:ICLOUD_SYNC]];
         [AppEnvironmentConstants setShouldOnlyAirplayAudio:
                         [standardDefaults boolForKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY]];
+        [AppEnvironmentConstants setLimitVideoLengthOnCellular:
+                        [standardDefaults boolForKey:LIMIT_VIDEO_LENGTH_CELLULAR_VALUE_KEY]];
         [AppEnvironmentConstants setUserHasSeenCellularDataUsageWarning:
                         [standardDefaults boolForKey:USER_HAS_SEEN_CELLULAR_WARNING]];
         [AppEnvironmentConstants userAcceptedOrDeclinedPushNotif:
@@ -97,11 +103,11 @@
         [AppEnvironmentConstants setUserSawExpandingPlayerTip:[standardDefaults boolForKey:USER_SAW_EXPANDING_PLAYER_TIP_VALUE_KEY]];
         
         //I manually retrieve App color from NSUserDefaults
-        NSArray *defaultColorRep2 = [standardDefaults objectForKey:APP_THEME_COLOR_VALUE_KEY];
-        UIColor *usersChosenDefaultColor = [UIColor colorWithRed:[defaultColorRep2[0] doubleValue]
-                                                           green:[defaultColorRep2[1] doubleValue]
-                                                            blue:[defaultColorRep2[2] doubleValue]
-                                                           alpha:[defaultColorRep2[3] doubleValue]];
+        NSArray *defaultColorRep = [standardDefaults objectForKey:APP_THEME_COLOR_VALUE_KEY];
+        UIColor *usersChosenDefaultColor = [UIColor colorWithRed:[defaultColorRep[0] doubleValue]
+                                                           green:[defaultColorRep[1] doubleValue]
+                                                            blue:[defaultColorRep[2] doubleValue]
+                                                           alpha:[defaultColorRep[3] doubleValue]];
         [UIColor defaultAppColorScheme:usersChosenDefaultColor];
         
         //increment and set NUM_TIMES_APP_LAUNCHED

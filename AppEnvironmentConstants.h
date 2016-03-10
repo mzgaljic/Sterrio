@@ -16,6 +16,7 @@
 #define APP_THEME_COLOR_VALUE_KEY @"appThemeColorValue"
 #define ICLOUD_SYNC @"icloudSettingsSync"
 #define ONLY_AIRPLAY_AUDIO_VALUE_KEY @"shouldOnlyAirplayAudio"
+#define LIMIT_VIDEO_LENGTH_CELLULAR_VALUE_KEY @"limit length of videos when on LTE/3G"
 #define USER_HAS_SEEN_CELLULAR_WARNING @"alreadyShowedUserCellDataUsageWarning"
 #define USER_HAS_ACCEPTED_OR_DECLINED_PUSH_NOTIF @"userHasAcceptedOrDeclinedPushNotif"
 #define LAST_SUCCESSFUL_ICLOUD_SYNC_KEY @"last date icloud synced"
@@ -128,6 +129,9 @@ typedef enum{
 
 + (void)setShouldOnlyAirplayAudio:(BOOL)airplayAudio;
 + (BOOL)shouldOnlyAirplayAudio;
+
++ (void)setLimitVideoLengthOnCellular:(BOOL)limit;
++ (BOOL)limitVideoLengthOnCellular;
 
 + (void)setUserHasSeenCellularDataUsageWarning:(BOOL)hasSeen;
 + (BOOL)didPreviouslyShowUserCellularWarning;

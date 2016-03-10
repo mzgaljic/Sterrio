@@ -28,6 +28,7 @@ static BOOL isBadTimeToMergeEnsemble = NO;
 static BOOL userAcceptedOrDeclinedPushNotifications = NO;
 static BOOL didPreviouslyShowUserCellularWarning = NO;
 static BOOL userIsPreviewingAVideo = NO;
+static BOOL limitVideoLengthOnCellular = NO;
 static BOOL tabBarIsHidden = NO;
 static BOOL isIcloudSwitchWaitingForActionToComplete = NO;
 static BOOL playbackTimerActive = NO;
@@ -432,6 +433,16 @@ static BOOL didFetchAreAdsRemovedKeychainVal = NO;
 + (BOOL)shouldOnlyAirplayAudio
 {
     return shouldOnlyAirplayAudio;
+}
+
++ (void)setLimitVideoLengthOnCellular:(BOOL)limit
+{
+    limitVideoLengthOnCellular = limit;
+}
+
++ (BOOL)limitVideoLengthOnCellular
+{
+    return limitVideoLengthOnCellular;
 }
 
 + (void)setUserHasSeenCellularDataUsageWarning:(BOOL)hasSeen

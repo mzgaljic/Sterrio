@@ -698,6 +698,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
     short prefCellStreamQuality = [AppEnvironmentConstants preferredCellularStreamSetting];
     int prefSongCellHeight = [AppEnvironmentConstants preferredSongCellHeight];
     BOOL audioOnlyAirplay = [AppEnvironmentConstants shouldOnlyAirplayAudio];
+    BOOL limitVideoLengthOnCellular = [AppEnvironmentConstants limitVideoLengthOnCellular];
     
     UIColor *color = [UIColor defaultAppColorScheme];
     const CGFloat* components = CGColorGetComponents(color.CGColor);
@@ -717,6 +718,8 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
                                                forKey:PREFERRED_SONG_CELL_HEIGHT_KEY];
     [[NSUserDefaults standardUserDefaults] setBool:audioOnlyAirplay
                                             forKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY];
+    [[NSUserDefaults standardUserDefaults] setBool:limitVideoLengthOnCellular
+                                            forKey:LIMIT_VIDEO_LENGTH_CELLULAR_VALUE_KEY];
     [[NSUserDefaults standardUserDefaults] setObject:defaultColorRepresentation
                                               forKey:APP_THEME_COLOR_VALUE_KEY];
     
