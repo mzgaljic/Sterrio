@@ -261,7 +261,7 @@ static ReachabilitySingleton *reachability;
         }
         else
         {
-            if([nowPlaying.duration integerValue] >= MZLongestCellularPlayableDuration){
+            if([nowPlaying.duration integerValue] >= MZLongestCellularPlayableDuration && [AppEnvironmentConstants limitVideoLengthOnCellular]){
                 //disable GUI, alert user that he/she needs to be on wifi
 
                 [self showSpinnerForWifiNeeded];

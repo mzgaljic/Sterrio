@@ -315,7 +315,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     }
     
     ReachabilitySingleton *reachability = [ReachabilitySingleton sharedInstance];
-    if([playlistItem.song.duration integerValue] >= MZLongestCellularPlayableDuration){
+    if([playlistItem.song.duration integerValue] >= MZLongestCellularPlayableDuration && [AppEnvironmentConstants limitVideoLengthOnCellular]){
         //videos of this length may only be played on wifi. Are we on wifi?
         if(! [reachability isConnectedToWifi]){
             [MyAlerts displayAlertWithAlertType:ALERT_TYPE_Chosen_Song_Too_Long_For_Cellular];
@@ -354,7 +354,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     }
     
     ReachabilitySingleton *reachability = [ReachabilitySingleton sharedInstance];
-    if([song.duration integerValue] >= MZLongestCellularPlayableDuration){
+    if([song.duration integerValue] >= MZLongestCellularPlayableDuration && [AppEnvironmentConstants limitVideoLengthOnCellular]){
         //videos of this length may only be played on wifi. Are we on wifi?
         if(! [reachability isConnectedToWifi]){
             [MyAlerts displayAlertWithAlertType:ALERT_TYPE_Chosen_Song_Too_Long_For_Cellular];

@@ -491,8 +491,8 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
             Song *nowPlaying;
             while (true){
                 sleep(sleepInterval);
-                if([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground){
-                    //user not in background anymore, this task is pointless.
+                if([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground || ![AppEnvironmentConstants limitVideoLengthOnCellular]){
+                    //user not in background anymore or setting changed, this task is pointless.
                     [app endBackgroundTask:task];
                     task = UIBackgroundTaskInvalid;
                     break;

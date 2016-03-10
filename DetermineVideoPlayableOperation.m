@@ -31,7 +31,7 @@ static BOOL lastSongWasSkipped = NO;
     //do synchronous work
     allowedToPlayVideo = YES;
     ReachabilitySingleton *reachability = [ReachabilitySingleton sharedInstance];
-    if(duration >= MZLongestCellularPlayableDuration){
+    if(duration >= MZLongestCellularPlayableDuration && [AppEnvironmentConstants limitVideoLengthOnCellular]){
         //videos of this length may only be played on wifi. Are we on wifi?
         if(! [reachability isConnectedToWifi]) {
             allowedToPlayVideo = NO;
