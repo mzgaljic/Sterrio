@@ -353,6 +353,10 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         }
         case AVAudioSessionInterruptionTypeEnded:
         {
+            if([[AVAudioSession sharedInstance] isOtherAudioPlaying]) {
+                return;
+            }
+            
             // • Make session active
             // • Update user interface
             // • AVAudioSessionInterruptionOptionShouldResume option
