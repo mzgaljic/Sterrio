@@ -16,7 +16,7 @@
 @class PlayableItem;
 @interface NowPlayingSong : NSObject
 
-@property (nonatomic, strong) PlayableItem *nowPlayingItem;
+@property (nonatomic, strong, readonly) PlayableItem *nowPlayingItem;
 
 + (instancetype)sharedInstance;
 
