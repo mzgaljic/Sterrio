@@ -133,6 +133,7 @@ typedef NS_ENUM(NSUInteger, Connection_State){
 + (BOOL)shouldShowCelluarStreamingWarning
 {
     return (! [AppEnvironmentConstants didPreviouslyShowUserCellularWarning]
+            && [[ReachabilitySingleton sharedInstance] isConnectedToCellular]
             && ([ReachabilitySingleton isUserPreviewingAndPlayerPlaying]
                 || [ReachabilitySingleton isMainPlayerPlaying]));
 }
