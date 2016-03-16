@@ -150,8 +150,16 @@ static ReachabilitySingleton *reachability;
     
     NSUInteger currentTime = CMTimeGetSeconds(self.currentItem.currentTime);
     Song *aSong = [MusicPlaybackController nowPlayingSong];
+    if(!_allowSongDidFinishToExecute){
+        NSLog(@"allow song did finish to execute is NO");
+    }
+    if(aSong != nil) {
+        NSLog(@"aSong != nil");
+    }
+    
     if(!_allowSongDidFinishToExecute && aSong != nil) {
         NSInteger absVal = ABS([aSong.duration integerValue] - currentTime);
+        NSLog(@"Abs value is %li", (long)absVal);
         if(absVal >= 4) {
             //false alarm, songDidFinishPlaying called when it shouldn't have been. Big bug!
             return;
