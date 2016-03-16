@@ -821,29 +821,22 @@ static UIImageView *playerExpansionTipView = nil;
 {
     if([notif.name isEqualToString:@"shouldDismissPlayerExpandingTip"]) {
         NSNumber *userExpandedPlayer = notif.object;
-        [self performSelectorOnMainThread:@selector(dismissPlayerExpandingTipOnGuiThread:)
-                               withObject:userExpandedPlayer
-                            waitUntilDone:YES];
-    }
-}
-
-- (void)dismissPlayerExpandingTipOnGuiThread:(NSNumber *)userExpandedPlayer
-{
-    [UIView animateWithDuration:0.5
-                          delay:0
-         usingSpringWithDamping:1
-          initialSpringVelocity:0.6
-                        options:UIViewAnimationOptionCurveEaseOut
-                     animations:^{
-                         playerExpansionTipView.alpha = 0;
-                     }
-                     completion:^(BOOL finished) {
-                         if([userExpandedPlayer boolValue]) {
-                             [AppEnvironmentConstants setUserSawExpandingPlayerTip:YES];
+        [UIView animateWithDuration:0.5
+                              delay:0
+             usingSpringWithDamping:1
+              initialSpringVelocity:0.6
+                            options:UIViewAnimationOptionCurveEaseOut
+                         animations:^{
+                             playerExpansionTipView.alpha = 0;
                          }
-                         [playerExpansionTipView removeFromSuperview];
-                         playerExpansionTipView = nil;
-                     }];
+                         completion:^(BOOL finished) {
+                             if([userExpandedPlayer boolValue]) {
+                                 [AppEnvironmentConstants setUserSawExpandingPlayerTip:YES];
+                             }
+                             [playerExpansionTipView removeFromSuperview];
+                             playerExpansionTipView = nil;
+                         }];
+    }
 }
 
 @end
