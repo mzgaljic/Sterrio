@@ -44,12 +44,13 @@ static int numSkippedSongs = 0;
     switch (type) {
         case ALERT_TYPE_SomeVideosNoLongerLoading:
         {
-            NSString *msg = @"Looks like there's a problem loading certain videos. We've been notified and we're working on fixing this ASAP!";
-            [MyAlerts launchAlertViewWithDialogTitle:@"Problem loading videos"
+            NSString *msg = @"Looks like there's a problem loading this video. We've been notified and we're working on fixing this ASAP!";
+            [MyAlerts launchAlertViewWithDialogTitle:@"Problem loading video"
                                           andMessage:msg
                                        customActions:nil
                                allowsBasicLocalNotif:YES
-                                      makeNotifSound:NO];
+                                      makeNotifSound:NO
+                                    useAlertAndNotif:YES];
             break;
         }
         case ALERT_TYPE_CannotConnectToYouTube:
@@ -73,7 +74,10 @@ static int numSkippedSongs = 0;
                                       andMessage:msg
                                     customActions:actions
                            allowsBasicLocalNotif:YES
-                                  makeNotifSound:YES];
+                                  makeNotifSound:YES
+                                useAlertAndNotif:NO];
+            //userAlertAndNotif is no since when the app is backgrounded the app will just skip
+            //to the next song (I think).
             break;
         }
         case ALERT_TYPE_CannotLoadVideo:
@@ -93,7 +97,10 @@ static int numSkippedSongs = 0;
                                       andMessage:@"Video failed to load."
                                    customActions:actions
                            allowsBasicLocalNotif:YES
-                                  makeNotifSound:YES];
+                                  makeNotifSound:YES
+                                useAlertAndNotif:NO];
+            //userAlertAndNotif is no since when the app is backgrounded the app will just skip
+            //to the next song (I think).
             break;
         }
         case ALERT_TYPE_LongVideoSkippedOnCellular:
@@ -114,7 +121,8 @@ static int numSkippedSongs = 0;
                                       andMessage:msg
                                    customActions:nil
                            allowsBasicLocalNotif:NO
-                                  makeNotifSound:NO];
+                                  makeNotifSound:NO
+                                useAlertAndNotif:NO];
             break;
         }
         case ALERT_TYPE_TroubleSharingLibrarySong:
@@ -125,7 +133,8 @@ static int numSkippedSongs = 0;
                                       andMessage:msg
                                    customActions:nil
                            allowsBasicLocalNotif:NO
-                                  makeNotifSound:NO];
+                                  makeNotifSound:NO
+                                useAlertAndNotif:NO];
             break;
         }
         case ALERT_TYPE_CannotOpenSafariError:
@@ -136,7 +145,8 @@ static int numSkippedSongs = 0;
                                       andMessage:msg
                                    customActions:nil
                            allowsBasicLocalNotif:YES
-                                  makeNotifSound:NO];
+                                  makeNotifSound:NO
+                                useAlertAndNotif:NO];
             break;
         }
         case ALERT_TYPE_CannotOpenSelectedImageError:
@@ -147,7 +157,8 @@ static int numSkippedSongs = 0;
                                       andMessage:msg
                                    customActions:nil
                            allowsBasicLocalNotif:NO
-                                  makeNotifSound:NO];
+                                  makeNotifSound:NO
+                                useAlertAndNotif:NO];
             break;
         }
         case ALERT_TYPE_SongSaveHasFailed:
@@ -158,7 +169,8 @@ static int numSkippedSongs = 0;
                                       andMessage:msg
                                    customActions:nil
                            allowsBasicLocalNotif:NO
-                                  makeNotifSound:NO];
+                                  makeNotifSound:NO
+                                useAlertAndNotif:NO];
             break;
         }
         case ALERT_TYPE_WarnUserOfCellularDataFees:
@@ -169,7 +181,8 @@ static int numSkippedSongs = 0;
                                       andMessage:msg
                                    customActions:nil
                            allowsBasicLocalNotif:YES
-                                  makeNotifSound:YES];
+                                  makeNotifSound:YES
+                                useAlertAndNotif:YES];
             break;
         }
         case ALERT_TYPE_NowPlayingSongWasDeletedOnOtherDevice:
@@ -180,7 +193,8 @@ static int numSkippedSongs = 0;
                                       andMessage:msg
                                    customActions:nil
                            allowsBasicLocalNotif:YES
-                                  makeNotifSound:YES];
+                                  makeNotifSound:YES
+                                useAlertAndNotif:YES];
             break;
         }
         default:
@@ -197,7 +211,8 @@ static int numSkippedSongs = 0;
                                       andMessage:msg
                                    customActions:actions
                            allowsBasicLocalNotif:YES
-                                  makeNotifSound:YES];
+                                  makeNotifSound:YES
+                                useAlertAndNotif:YES];
         MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
         [player dismissAllSpinnersIfPossible];
     }];
@@ -208,6 +223,9 @@ static int numSkippedSongs = 0;
     numSkippedSongs++;
 }
 
+//will show an alert AND local notif when this occurs. Will show the num songs skipped while
+//the app tried to skip to the next song. NOT just the stuff skipped since the user had the app
+//backgrounded.
 + (void)showAlertWithNumSkippedSongs
 {
     if(numSkippedSongs == 0) {
@@ -225,7 +243,8 @@ static int numSkippedSongs = 0;
                                       andMessage:msg
                                    customActions:nil
                            allowsBasicLocalNotif:YES
-                                  makeNotifSound:NO];
+                                  makeNotifSound:NO
+                                useAlertAndNotif:YES];
         numSkippedSongs = 0;
     }
 }
@@ -235,7 +254,23 @@ static int numSkippedSongs = 0;
                          customActions:(NSArray *)customAlertActions
                  allowsBasicLocalNotif:(BOOL)allowed
                         makeNotifSound:(BOOL)makeSound
+                      useAlertAndNotif:(BOOL)useBoth
 {
+    //setup the alert in case we want to show it...
+    SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
+                                                                    message:message
+                                                             preferredStyle:SDCAlertControllerStyleAlert];
+    [alert setActionLayout:SDCAlertControllerActionLayoutAutomatic];
+    SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK"
+                                                         style:SDCAlertActionStyleRecommended
+                                                       handler:nil];
+    if(customAlertActions){
+        for(SDCAlertAction *someAction in customAlertActions)
+            [alert addAction:someAction];
+    } else {
+        [alert addAction:okAction];
+    }
+    
     UIApplication *app = [UIApplication sharedApplication];
     if(allowed && app.applicationState != UIApplicationStateActive){
         UILocalNotification *notification = [[UILocalNotification alloc]init];
@@ -248,20 +283,10 @@ static int numSkippedSongs = 0;
         }
         [notification setFireDate:[NSDate dateWithTimeIntervalSinceNow:1]];
         [app scheduleLocalNotification:notification];
-    } else {
-        SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
-                                                                        message:message
-                                                                 preferredStyle:SDCAlertControllerStyleAlert];
-        [alert setActionLayout:SDCAlertControllerActionLayoutAutomatic];
-        SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK"
-                                                             style:SDCAlertActionStyleRecommended
-                                                           handler:nil];
-        if(customAlertActions){
-            for(SDCAlertAction *someAction in customAlertActions)
-                [alert addAction:someAction];
+        if(useBoth) {
+            [alert presentWithCompletion:nil];
         }
-        else
-            [alert addAction:okAction];
+    } else {
         [alert presentWithCompletion:nil];
     }
 }

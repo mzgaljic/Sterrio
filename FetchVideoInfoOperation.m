@@ -111,20 +111,11 @@
     }
     
     [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
-        if([NSThread isMainThread]) {
-            NSLog(@"block returns on main thread!!");
-        }
+        //block returns on main thread.
+        
+        __block BOOL videoPossiblyDoesntExist = NO;
         if(error.code == 150) {
-            [DeletedYtVideoAlertCreator createVideoDeletedAlertWithYtVideoId:weakId
-                                                                        name:weakSongName
-                                                                  artistName:weakArtistName
-                                                             managedObjectId:weakSongObjId];
-            [MusicPlaybackController playbackExplicitlyPaused];
-            [MusicPlaybackController pausePlayback];
-            MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-            [player dismissAllSpinners];
-            [weakSelf finishBecauseOfCancel];
-            return;
+            videoPossiblyDoesntExist = YES;
             
         } else if([[ReachabilitySingleton sharedInstance] isConnectionCompletelyGone]){
             [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
@@ -139,8 +130,20 @@
         //NOTE: the MusicPlaybackController methods called from this completion block have
         //been made thread safe.
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-            NSURL *currentItemLink;
             
+            NSURL *currentItemLink;
+            if(videoPossiblyDoesntExist && ![YouTubeService doesVideoStillExist:weakId]) {
+                [DeletedYtVideoAlertCreator createVideoDeletedAlertWithYtVideoId:weakId
+                                                                            name:weakSongName
+                                                                      artistName:weakArtistName
+                                                                 managedObjectId:weakSongObjId];
+                [MusicPlaybackController playbackExplicitlyPaused];
+                [MusicPlaybackController pausePlayback];
+                MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+                [player dismissAllSpinners];
+                [weakSelf finishBecauseOfCancel];
+                return;
+            }
             if ([weakSelf isCancelled]){
                 [weakSelf finishBecauseOfCancel];
                 return;
@@ -167,18 +170,13 @@
                     [player dismissAllSpinners];
                     [weakSelf finishBecauseOfCancel];
                     return;
-                } else{
+                } else if([YouTubeService doesVideoStillExist:weakId]) {
                     //video may no longer exist, or the internet connection is very weak
-                    BOOL exists = [YouTubeService doesVideoStillExist:weakId];
-                    if(exists) {
-                        //looks like some videos may not be loading properly anymore.
-                        NSString *eventName = @"Unexplained Video Load Failure. ID attached.";
-                        [Answers logCustomEventWithName:eventName
-                                       customAttributes:@{@"YouTube ID" : weakId}];
-                        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SomeVideosNoLongerLoading];
-                    } else {
-                        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotLoadVideo];
-                    }
+                    //looks like some videos may not be loading properly anymore.
+                    NSString *eventName = @"Unexplained Video Load Failure. ID attached.";
+                    [Answers logCustomEventWithName:eventName
+                                   customAttributes:@{@"YouTube ID" : weakId}];
+                    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SomeVideosNoLongerLoading];
                     
                     //[MusicPlaybackController skipToNextTrack];
                     [weakSelf finishBecauseOfCancel];
