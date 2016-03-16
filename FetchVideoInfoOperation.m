@@ -162,11 +162,12 @@
                 currentItemLink = url;
             } else {
                 ReachabilitySingleton *reachability = [ReachabilitySingleton sharedInstance];
+                MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+                
                 if([reachability isConnectionCompletelyGone]){
                     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
                     [MusicPlaybackController playbackExplicitlyPaused];
                     [MusicPlaybackController pausePlayback];
-                    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
                     [player dismissAllSpinners];
                     [weakSelf finishBecauseOfCancel];
                     return;
@@ -177,8 +178,7 @@
                     [Answers logCustomEventWithName:eventName
                                    customAttributes:@{@"YouTube ID" : weakId}];
                     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SomeVideosNoLongerLoading];
-                    
-                    //[MusicPlaybackController skipToNextTrack];
+                    [player dismissAllSpinners];
                     [weakSelf finishBecauseOfCancel];
                     return;
                 }
@@ -201,7 +201,7 @@
             
             AVURLAsset *asset = [AVURLAsset assetWithURL: currentItemLink];
             
-            if(allowedToPlayVideo && video != nil){
+            if(allowedToPlayVideo && video != nil && asset != nil){
                 MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
                 [player allowSongDidFinishNotificationToProceed:YES];
                 if ([weakSelf isCancelled]){ 
