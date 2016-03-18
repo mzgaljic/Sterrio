@@ -89,7 +89,7 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:AVPlayerItemDidPlayToEndTimeNotification
-                                                  object:nil];
+                                                  object:self.avPlayer.currentItem];
     if(loopPlaybackForever) {
          __weak typeof(self) weakSelf = self; // prevent memory cycle
         [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemDidPlayToEndTimeNotification
@@ -150,6 +150,9 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
     [self.avPlayer replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
     [self removeTimeObserver];
     [self removeObservers];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:AVPlayerItemDidPlayToEndTimeNotification
+                                                  object:self.avPlayer.currentItem];
     self.avPlayer = nil;
 }
 

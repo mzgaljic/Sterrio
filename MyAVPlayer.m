@@ -70,7 +70,7 @@ static ReachabilitySingleton *reachability;
     [notifCenter addObserver:self
                     selector:@selector(songDidFinishPlaying:)
                         name:AVPlayerItemDidPlayToEndTimeNotification
-                      object:nil];
+                      object:self];
     [notifCenter addObserver:self
                     selector:@selector(connectionStateChanged)
                         name:MZReachabilityStateChanged
@@ -147,16 +147,6 @@ static ReachabilitySingleton *reachability;
     //dont want to respond if this was just the preview player.
     if([AppEnvironmentConstants isUserPreviewingAVideo])
         return;
-    
-    NSUInteger currentTime = CMTimeGetSeconds(self.currentItem.currentTime);
-    Song *aSong = [MusicPlaybackController nowPlayingSong];
-    if(!_allowSongDidFinishToExecute && aSong != nil) {
-        NSInteger absVal = ABS([aSong.duration integerValue] - currentTime);
-        if(absVal >= 4) {
-            //false alarm, songDidFinishPlaying called when it shouldn't have been. Big bug!
-            return;
-        }
-    }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_DONE_PLAYING object:nil];
     [self dismissAllSpinners];
