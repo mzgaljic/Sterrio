@@ -117,7 +117,6 @@
 		8735396D1B0AA0FB009244E4 /* AllAlbumsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735396C1B0AA0FB009244E4 /* AllAlbumsDataSource.m */; };
 		873539711B0AA10F009244E4 /* AllSongsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539701B0AA10F009244E4 /* AllSongsDataSource.m */; };
 		873539761B0AA135009244E4 /* PlayableDataSearchDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539741B0AA135009244E4 /* PlayableDataSearchDataSource.m */; };
-		873539801B0AA168009244E4 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8735397D1B0AA168009244E4 /* LICENSE.txt */; };
 		873539811B0AA168009244E4 /* SSBouncyButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735397F1B0AA168009244E4 /* SSBouncyButton.m */; };
 		873539871B0AA178009244E4 /* UIColor+Hex.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539841B0AA178009244E4 /* UIColor+Hex.m */; };
 		873539881B0AA178009244E4 /* UIImage+BetterAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539861B0AA178009244E4 /* UIImage+BetterAdditions.m */; };
@@ -149,19 +148,14 @@
 		873539D81B0AA1B3009244E4 /* UIViewController+Current.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539BE1B0AA1B3009244E4 /* UIViewController+Current.m */; };
 		873539DF1B0AA1CB009244E4 /* CCColorCube.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539DB1B0AA1CB009244E4 /* CCColorCube.m */; };
 		873539E01B0AA1CB009244E4 /* CCLocalMaximum.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539DD1B0AA1CB009244E4 /* CCLocalMaximum.m */; };
-		873539E11B0AA1CB009244E4 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 873539DE1B0AA1CB009244E4 /* LICENSE.txt */; };
 		873539E71B0AA1E2009244E4 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 873539E31B0AA1E2009244E4 /* LICENSE.txt */; };
 		873539E81B0AA1E2009244E4 /* ProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 873539E41B0AA1E2009244E4 /* ProgressHUD.bundle */; };
 		873539E91B0AA1E2009244E4 /* ProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539E61B0AA1E2009244E4 /* ProgressHUD.m */; };
-		873539EF1B0AA1F4009244E4 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 873539ED1B0AA1F4009244E4 /* LICENSE.txt */; };
 		873539FD1B0AA231009244E4 /* ASValuePopUpView.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539F91B0AA231009244E4 /* ASValuePopUpView.m */; };
 		873539FE1B0AA231009244E4 /* ASValueTrackingSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539FB1B0AA231009244E4 /* ASValueTrackingSlider.m */; };
-		873539FF1B0AA231009244E4 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 873539FC1B0AA231009244E4 /* LICENSE.txt */; };
 		87353A061B0AA24B009244E4 /* AFBlurSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A021B0AA24B009244E4 /* AFBlurSegue.m */; };
-		87353A071B0AA24B009244E4 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87353A031B0AA24B009244E4 /* LICENSE.txt */; };
 		87353A081B0AA24B009244E4 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A051B0AA24B009244E4 /* UIImage+ImageEffects.m */; };
 		87353A0D1B0AA264009244E4 /* IBActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A0B1B0AA264009244E4 /* IBActionSheet.m */; };
-		87353A0E1B0AA264009244E4 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87353A0C1B0AA264009244E4 /* LICENSE.txt */; };
 		87353A221B0AA283009244E4 /* AbstractActionSheetPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A111B0AA283009244E4 /* AbstractActionSheetPicker.m */; };
 		87353A231B0AA283009244E4 /* ActionSheetCustomPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A131B0AA283009244E4 /* ActionSheetCustomPicker.m */; };
 		87353A241B0AA283009244E4 /* ActionSheetDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A161B0AA283009244E4 /* ActionSheetDatePicker.m */; };
@@ -179,7 +173,6 @@
 		87353A461B0AA2C9009244E4 /* MRProgressOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A3C1B0AA2C9009244E4 /* MRProgressOverlayView.m */; };
 		87353A471B0AA2C9009244E4 /* MRProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A3E1B0AA2C9009244E4 /* MRProgressView.m */; };
 		87353A481B0AA2C9009244E4 /* MRStopButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A411B0AA2C9009244E4 /* MRStopButton.m */; };
-		87353A4B1B0AA2DE009244E4 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87353A4A1B0AA2DE009244E4 /* LICENSE.txt */; };
 		87353A531B0AA2F9009244E4 /* MRActivityIndicatorView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A4E1B0AA2F9009244E4 /* MRActivityIndicatorView+AFNetworking.m */; };
 		87353A541B0AA2F9009244E4 /* MRProgressOverlayView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A501B0AA2F9009244E4 /* MRProgressOverlayView+AFNetworking.m */; };
 		87353A551B0AA2F9009244E4 /* MRProgressView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A521B0AA2F9009244E4 /* MRProgressView+AFNetworking.m */; };
@@ -1834,7 +1827,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "Mark Zgaljic Apps";
 				TargetAttributes = {
 					873537C51B0A9981009244E4 = {
@@ -1881,20 +1874,13 @@
 			files = (
 				8736AA9B1C25F3BF005FAE07 /* LICENSE.txt in Resources */,
 				873539E71B0AA1E2009244E4 /* LICENSE.txt in Resources */,
-				873539E11B0AA1CB009244E4 /* LICENSE.txt in Resources */,
 				876C53D41C2A1383007AFC3C /* LICENSE.txt in Resources */,
 				87A9536D1B3E242A002E9872 /* LICENSE.txt in Resources */,
 				8735390B1B0A9ED2009244E4 /* iOSDeviceModelMapping.plist in Resources */,
 				873537D71B0A9981009244E4 /* Images.xcassets in Resources */,
 				8735380A1B0A9A80009244E4 /* Main.storyboard in Resources */,
-				873539FF1B0AA231009244E4 /* LICENSE.txt in Resources */,
-				87353A071B0AA24B009244E4 /* LICENSE.txt in Resources */,
 				873538091B0A9A80009244E4 /* LaunchScreen.storyboard in Resources */,
-				873539801B0AA168009244E4 /* LICENSE.txt in Resources */,
-				87353A0E1B0AA264009244E4 /* LICENSE.txt in Resources */,
-				873539EF1B0AA1F4009244E4 /* LICENSE.txt in Resources */,
 				873539E81B0AA1E2009244E4 /* ProgressHUD.bundle in Resources */,
-				87353A4B1B0AA2DE009244E4 /* LICENSE.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
