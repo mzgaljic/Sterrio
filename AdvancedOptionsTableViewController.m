@@ -41,6 +41,7 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.title = @"Advanced";
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(orientationDidChange)
                                                  name:UIApplicationDidChangeStatusBarOrientationNotification
