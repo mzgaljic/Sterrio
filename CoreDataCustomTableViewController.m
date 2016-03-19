@@ -444,6 +444,10 @@ typedef enum{
     NSArray *visiblePaths = tableView.indexPathsForVisibleRows;
     for(NSIndexPath *visiblePath in visiblePaths){
         UITableViewCell *cell = [tableView cellForRowAtIndexPath:visiblePath];
+        if(cell.editingAccessoryView != nil) {
+            cell.editingAccessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
+                                                                     color:[[UIColor defaultAppColorScheme] lighterColor]];
+        }
         if(! [cell.textLabel.textColor isEqualToColor:[UIColor blackColor]]){
             //this song is unique, it's the now playing. update textcolor in case
             //app theme changed.
