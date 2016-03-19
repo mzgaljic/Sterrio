@@ -829,7 +829,7 @@ static NSUInteger numLettersUserHasTyped = 0;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(_canShowAppRatingCell && indexPath.row == APP_RATING_CELL_ROW_NUM) {
+    if(_displaySearchResults && _canShowAppRatingCell && indexPath.row == APP_RATING_CELL_ROW_NUM) {
         return;  //don't want a selection style for that cell.
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
