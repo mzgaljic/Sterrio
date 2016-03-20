@@ -219,13 +219,20 @@
 		87A9536E1B3E242A002E9872 /* SMWebRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9536B1B3E242A002E9872 /* SMWebRequest.m */; };
 		87B8219D1C7915A000640BF6 /* AppRatingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B8219C1C7915A000640BF6 /* AppRatingTableViewCell.m */; };
 		87B916C81C60467E00CAEDB8 /* MZRightDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B916C71C60467E00CAEDB8 /* MZRightDetailCell.m */; };
+		87C67B8B1C9F1FCF00E2FCB8 /* Licenses.plist in Resources */ = {isa = PBXBuildFile; fileRef = 87C67B8A1C9F1FCF00E2FCB8 /* Licenses.plist */; };
+		87C67B901C9F208F00E2FCB8 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 87C67B8D1C9F208F00E2FCB8 /* .gitignore */; };
+		87C67B911C9F208F00E2FCB8 /* credits.py in Resources */ = {isa = PBXBuildFile; fileRef = 87C67B8E1C9F208F00E2FCB8 /* credits.py */; };
+		87C67B921C9F208F00E2FCB8 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87C67B8F1C9F208F00E2FCB8 /* LICENSE.txt */; };
+		87C67B981C9F22FD00E2FCB8 /* MZLicense.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C67B971C9F22FD00E2FCB8 /* MZLicense.m */; };
+		87C67B9B1C9F266600E2FCB8 /* AboutSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C67B9A1C9F266600E2FCB8 /* AboutSettingsTableViewController.m */; };
+		87C67B9F1C9F26A000E2FCB8 /* LicensesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C67B9E1C9F26A000E2FCB8 /* LicensesViewController.m */; };
 		87CD5A401C31C0530077CF0C /* DiscogsResultsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 87CD5A3F1C31C0530077CF0C /* DiscogsResultsUtils.m */; };
 		87D3281F1C67F6BD001F2081 /* YouTubeSearchSuggestion.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D3281E1C67F6BD001F2081 /* YouTubeSearchSuggestion.m */; };
 		87DAA6C51B8AA9FF008D8684 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 87DAA6C21B8AA9FF008D8684 /* Model.xcdatamodeld */; };
 		87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */; };
 		87E152671C0041E100C82737 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87E152661C0041E100C82737 /* StoreKit.framework */; };
 		87F34FBA1C251D0200BAD73B /* GSTouchesShowingWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F34FB91C251D0200BAD73B /* GSTouchesShowingWindow.m */; };
-		87F5A87E1C9E5FD800C64376 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 87F5A87D1C9E5FD800C64376 /* Settings.bundle */; };
+		87F5A8801C9E68FB00C64376 /* credits.py in Resources */ = {isa = PBXBuildFile; fileRef = 87F5A87F1C9E68FB00C64376 /* credits.py */; };
 		87F84E741C74123C000D7D4E /* AppRatingUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F84E731C74123C000D7D4E /* AppRatingUtils.m */; };
 		CC4EB50DFF2CD80A06134B69 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B206C6594633BB85400EBDC /* libPods.a */; };
 /* End PBXBuildFile section */
@@ -683,6 +690,16 @@
 		87B8219C1C7915A000640BF6 /* AppRatingTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppRatingTableViewCell.m; sourceTree = "<group>"; };
 		87B916C61C60467E00CAEDB8 /* MZRightDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZRightDetailCell.h; sourceTree = "<group>"; };
 		87B916C71C60467E00CAEDB8 /* MZRightDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZRightDetailCell.m; sourceTree = "<group>"; };
+		87C67B8A1C9F1FCF00E2FCB8 /* Licenses.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Licenses.plist; sourceTree = "<group>"; };
+		87C67B8D1C9F208F00E2FCB8 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		87C67B8E1C9F208F00E2FCB8 /* credits.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = credits.py; sourceTree = "<group>"; };
+		87C67B8F1C9F208F00E2FCB8 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		87C67B961C9F22FD00E2FCB8 /* MZLicense.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZLicense.h; sourceTree = "<group>"; };
+		87C67B971C9F22FD00E2FCB8 /* MZLicense.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZLicense.m; sourceTree = "<group>"; };
+		87C67B991C9F266600E2FCB8 /* AboutSettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutSettingsTableViewController.h; sourceTree = "<group>"; };
+		87C67B9A1C9F266600E2FCB8 /* AboutSettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutSettingsTableViewController.m; sourceTree = "<group>"; };
+		87C67B9D1C9F26A000E2FCB8 /* LicensesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LicensesViewController.h; sourceTree = "<group>"; };
+		87C67B9E1C9F26A000E2FCB8 /* LicensesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LicensesViewController.m; sourceTree = "<group>"; };
 		87CD5A3D1C31B22C0077CF0C /* DiscogsSearchDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DiscogsSearchDelegate.h; sourceTree = "<group>"; };
 		87CD5A3E1C31C0530077CF0C /* DiscogsResultsUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscogsResultsUtils.h; sourceTree = "<group>"; };
 		87CD5A3F1C31C0530077CF0C /* DiscogsResultsUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsResultsUtils.m; sourceTree = "<group>"; };
@@ -694,7 +711,7 @@
 		87E152661C0041E100C82737 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		87F34FB81C251D0200BAD73B /* GSTouchesShowingWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSTouchesShowingWindow.h; sourceTree = "<group>"; };
 		87F34FB91C251D0200BAD73B /* GSTouchesShowingWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSTouchesShowingWindow.m; sourceTree = "<group>"; };
-		87F5A87D1C9E5FD800C64376 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		87F5A87F1C9E68FB00C64376 /* credits.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = credits.py; sourceTree = "<group>"; };
 		87F84E721C74123C000D7D4E /* AppRatingUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppRatingUtils.h; sourceTree = "<group>"; };
 		87F84E731C74123C000D7D4E /* AppRatingUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppRatingUtils.m; sourceTree = "<group>"; };
 		8B206C6594633BB85400EBDC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -754,7 +771,8 @@
 		873537BD1B0A9981009244E4 = {
 			isa = PBXGroup;
 			children = (
-				87F5A87D1C9E5FD800C64376 /* Settings.bundle */,
+				87F5A87F1C9E68FB00C64376 /* credits.py */,
+				87C67B8A1C9F1FCF00E2FCB8 /* Licenses.plist */,
 				87353A651B0AA3F1009244E4 /* Sterrio.entitlements */,
 				873538071B0A9A80009244E4 /* LaunchScreen.storyboard */,
 				873538081B0A9A80009244E4 /* Main.storyboard */,
@@ -909,6 +927,8 @@
 				8716560E1C30AB41000FF02B /* DiscogsItem.m */,
 				87D3281D1C67F6BD001F2081 /* YouTubeSearchSuggestion.h */,
 				87D3281E1C67F6BD001F2081 /* YouTubeSearchSuggestion.m */,
+				87C67B961C9F22FD00E2FCB8 /* MZLicense.h */,
+				87C67B971C9F22FD00E2FCB8 /* MZLicense.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -1182,6 +1202,7 @@
 				873539141B0A9EF6009244E4 /* FontSizeTableViewController.m */,
 				873539151B0A9EF6009244E4 /* StreamQualityPickerTableViewController.h */,
 				873539161B0A9EF6009244E4 /* StreamQualityPickerTableViewController.m */,
+				87C67B9C1C9F267C00E2FCB8 /* About */,
 			);
 			name = "Settings VC";
 			sourceTree = "<group>";
@@ -1390,6 +1411,7 @@
 		8735397B1B0AA14E009244E4 /* Imported Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				87C67B8C1C9F208F00E2FCB8 /* LicenseGenerator */,
 				8730C0D21C5989F9001FC8A6 /* TomsMorphingLabel */,
 				876C53CF1C2A136C007AFC3C /* CMPopTipView */,
 				8736AA8F1C25F3BF005FAE07 /* EAIntroView */,
@@ -1760,6 +1782,27 @@
 			path = Extras;
 			sourceTree = "<group>";
 		};
+		87C67B8C1C9F208F00E2FCB8 /* LicenseGenerator */ = {
+			isa = PBXGroup;
+			children = (
+				87C67B8D1C9F208F00E2FCB8 /* .gitignore */,
+				87C67B8E1C9F208F00E2FCB8 /* credits.py */,
+				87C67B8F1C9F208F00E2FCB8 /* LICENSE.txt */,
+			);
+			path = LicenseGenerator;
+			sourceTree = "<group>";
+		};
+		87C67B9C1C9F267C00E2FCB8 /* About */ = {
+			isa = PBXGroup;
+			children = (
+				87C67B991C9F266600E2FCB8 /* AboutSettingsTableViewController.h */,
+				87C67B9A1C9F266600E2FCB8 /* AboutSettingsTableViewController.m */,
+				87C67B9D1C9F26A000E2FCB8 /* LicensesViewController.h */,
+				87C67B9E1C9F26A000E2FCB8 /* LicensesViewController.m */,
+			);
+			name = About;
+			sourceTree = "<group>";
+		};
 		95A486A0294577F099EF7326 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -1877,12 +1920,16 @@
 			files = (
 				8736AA9B1C25F3BF005FAE07 /* LICENSE.txt in Resources */,
 				873539E71B0AA1E2009244E4 /* LICENSE.txt in Resources */,
-				87F5A87E1C9E5FD800C64376 /* Settings.bundle in Resources */,
 				876C53D41C2A1383007AFC3C /* LICENSE.txt in Resources */,
 				87A9536D1B3E242A002E9872 /* LICENSE.txt in Resources */,
+				87C67B901C9F208F00E2FCB8 /* .gitignore in Resources */,
+				87C67B911C9F208F00E2FCB8 /* credits.py in Resources */,
+				87C67B921C9F208F00E2FCB8 /* LICENSE.txt in Resources */,
 				8735390B1B0A9ED2009244E4 /* iOSDeviceModelMapping.plist in Resources */,
 				873537D71B0A9981009244E4 /* Images.xcassets in Resources */,
 				8735380A1B0A9A80009244E4 /* Main.storyboard in Resources */,
+				87C67B8B1C9F1FCF00E2FCB8 /* Licenses.plist in Resources */,
+				87F5A8801C9E68FB00C64376 /* credits.py in Resources */,
 				873538091B0A9A80009244E4 /* LaunchScreen.storyboard in Resources */,
 				873539E81B0AA1E2009244E4 /* ProgressHUD.bundle in Resources */,
 			);
@@ -1943,16 +1990,16 @@
 		};
 		875681CF1C82356D00FD3E1A /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputPaths = (
 			);
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "";
+			shellScript = "./credits.py -s \"$SRCROOT\" -o \"$SRCROOT/Licenses.plist\"";
 		};
 		C40FBC495E44D2F698A962A2 /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1976,6 +2023,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87C67B9F1C9F26A000E2FCB8 /* LicensesViewController.m in Sources */,
 				87A9536E1B3E242A002E9872 /* SMWebRequest.m in Sources */,
 				873538A21B0A9C40009244E4 /* MZPrivateMainPlaybackQueue.m in Sources */,
 				87353A231B0AA283009244E4 /* ActionSheetCustomPicker.m in Sources */,
@@ -2106,6 +2154,7 @@
 				8735383B1B0A9AF4009244E4 /* NSString+Levenshtein_Distance.m in Sources */,
 				8727A5791C49EC05008FC03E /* CoreDataEntityMappingUtils.m in Sources */,
 				873539C01B0AA1B3009244E4 /* RBBBlockBasedArray.m in Sources */,
+				87C67B981C9F22FD00E2FCB8 /* MZLicense.m in Sources */,
 				873539451B0AA027009244E4 /* MySearchBar.m in Sources */,
 				87353A061B0AA24B009244E4 /* AFBlurSegue.m in Sources */,
 				873538DB1B0A9D0B009244E4 /* PlayerView.m in Sources */,
@@ -2174,6 +2223,7 @@
 				8730C0E11C59B8C0001FC8A6 /* MZCommons.m in Sources */,
 				87353A531B0AA2F9009244E4 /* MRActivityIndicatorView+AFNetworking.m in Sources */,
 				873539D11B0AA1B3009244E4 /* SDCAlertViewContentView.m in Sources */,
+				87C67B9B1C9F266600E2FCB8 /* AboutSettingsTableViewController.m in Sources */,
 				8736AA9A1C25F3BF005FAE07 /* EARestrictedScrollView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

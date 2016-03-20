@@ -23,7 +23,14 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    CGFloat accessoryWidth = (self.accessoryType == UITableViewCellAccessoryNone) ? 10 : 35.0f;
+    CGFloat accessoryWidth = 10.0f;
+    if(self.accessoryType != UITableViewCellAccessoryNone) {
+        accessoryWidth = 35.0f;  //the built in chevron and checkmarks are all this width.
+    }
+    if(self.accessoryView != nil) {
+        accessoryWidth = self.accessoryView.frame.size.width + 4;  //4 for padding.
+    }
+    
     CGFloat detailTextLabelWidth = [self.detailTextLabel.text sizeWithFont:self.detailTextLabel.font].width;
     CGRect detailTextLabelFrame;
     if(CGRectIsEmpty(originalDetailTextLabelFrame)) {

@@ -34,7 +34,7 @@ short REMOVE_ADS_SECTION_NUM;
 short ICLOUD_SYNC_SECTION_NUM;
 short MUSIC_QUALITY_SECTION_NUM;
 short APPEARANCE_SECTION_NUM;
-short ADVANCED_SECTION_NUM;
+short ADVANCED_AND_ABOUT_SECTION_NUM;
 short FEEDBACK_SECTION_NUM;
 
 int const FEEDBACK_CELL_ACTION_SHEET_TAG = 101;
@@ -50,7 +50,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
         ICLOUD_SYNC_SECTION_NUM = 0;
         MUSIC_QUALITY_SECTION_NUM = 1;
         APPEARANCE_SECTION_NUM = 2;
-        ADVANCED_SECTION_NUM = 3;
+        ADVANCED_AND_ABOUT_SECTION_NUM = 3;
         FEEDBACK_SECTION_NUM = 4;
         
         NUM_SECTIONS = 5;
@@ -59,7 +59,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
         ICLOUD_SYNC_SECTION_NUM = 1;
         MUSIC_QUALITY_SECTION_NUM = 2;
         APPEARANCE_SECTION_NUM = 3;
-        ADVANCED_SECTION_NUM = 4;
+        ADVANCED_AND_ABOUT_SECTION_NUM = 4;
         FEEDBACK_SECTION_NUM = 5;
         
         NUM_SECTIONS = 6;
@@ -130,8 +130,8 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
         return 2;
     } else if(section == APPEARANCE_SECTION_NUM) {
         return 2;
-    } else if(section == ADVANCED_SECTION_NUM) {
-        return 1;
+    } else if(section == ADVANCED_AND_ABOUT_SECTION_NUM) {
+        return 2;
     } else if(section == FEEDBACK_SECTION_NUM) {
         return 1;
     } else {
@@ -328,10 +328,14 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
         
         cell.selectionStyle = UITableViewCellSelectionStyleDefault;
     }
-    else if(indexPath.section == ADVANCED_SECTION_NUM)
+    else if(indexPath.section == ADVANCED_AND_ABOUT_SECTION_NUM)
     {
         cell = [tableView dequeueReusableCellWithIdentifier:@"settingRightDetailCell"
                                                forIndexPath:indexPath];
+        short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
+        UIColor *appTheme = [UIColor defaultAppColorScheme];
+        MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
+                                                                                   color:appTheme];
         if(indexPath.row == 0)
         {
             //advanced settings
@@ -342,11 +346,15 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             UIImage *advancedImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
                                                                   :[UIImage imageNamed:@"advanced"]];
             cell.imageView.image = advancedImg;
+            cell.accessoryView = coloredDisclosureIndicator;
+        } else if(indexPath.row == 1) {
+            //about section of settings
             
-            short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
-            UIColor *appTheme = [UIColor defaultAppColorScheme];
-            MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
-                                                                                       color:appTheme];
+            cell.textLabel.text = @"About";
+            cell.detailTextLabel.text = nil;
+
+            UIImage *appIcon = [UIImage imageNamed:@"app-logo-settings"];
+            cell.imageView.image = appIcon;
             cell.accessoryView = coloredDisclosureIndicator;
         }
         
@@ -435,12 +443,17 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
                                       sender:[NSNumber numberWithShort:streamType]];
         }
     }
-    else if(indexPath.section == ADVANCED_SECTION_NUM)
+    else if(indexPath.section == ADVANCED_AND_ABOUT_SECTION_NUM)
     {
         if(indexPath.row == 0)
         {
             //advanced
             [self performSegueWithIdentifier:@"advancedSettingsSegue" sender:nil];
+        }
+        else if(indexPath.row == 1)
+        {
+            //about section of settings
+            [self performSegueWithIdentifier:@"aboutSettingsVcSegue" sender:nil];
         }
     }
     else if(indexPath.section == FEEDBACK_SECTION_NUM)
