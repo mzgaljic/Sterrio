@@ -45,7 +45,7 @@
         NSRange liveInRange = [videoTitle rangeOfString:@"live in"
                                                 options:NSCaseInsensitiveSearch];
         
-        //itemIsAlbumOrVinylOrCd must be first in if statement, otherwise it may not be executed.
+        //isAlbumVinylCDOrEP must be first in if statement, otherwise it may not be executed.
         if ([item isAlbumVinylCDOrEP] && ![item isASingle]
             && albumNameInTitle && artistNameInTitle
             && liveAtRange.location == NSNotFound
@@ -54,7 +54,13 @@
             
         } else if([item isAlbumVinylCDOrEP] && ![item isASingle]
                   && albumNameInTitle && artistNameInTitle) {
-            item.matchConfidence = MatchConfidence_HIGH;
+            item.matchConfidence = MatchConfidence_HIGH_HIGH;
+            
+        } else if([item isAlbumVinylCDOrEP] && ![item isASingle] && artistNameInTitle) {
+            item.matchConfidence = MatchConfidence_HIGH_MEDIUM;
+            
+        } else if([item isAlbumVinylCDOrEP] && albumNameInTitle && artistNameInTitle) {
+            item.matchConfidence = MatchConfidence_HIGH_LOW;
             
         } else if([item isAlbumVinylCDOrEP] && ![item isASingle]
                   && (albumNameInTitle || artistNameInTitle)) {
@@ -78,7 +84,9 @@
 + (NSUInteger)indexOfBestMatchFromResults:(NSArray *)discogsItems
 {
     NSUInteger firstVeryHighConfidenceIndex = NSNotFound;
-    NSUInteger firstHighConfidenceIndex = NSNotFound;
+    NSUInteger firstHighHighConfidenceIndex = NSNotFound;
+    NSUInteger firstHighMediumConfidenceIndex = NSNotFound;
+    NSUInteger firstHighLowConfidenceIndex = NSNotFound;
     NSUInteger firstMediumHighConfidenceIndex = NSNotFound;
     NSUInteger firstMediumConfidenceIndex = NSNotFound;
     NSUInteger firstMediumLowConfidenceIndex = NSNotFound;
@@ -86,12 +94,19 @@
         DiscogsItem *item = discogsItems[i];
         
         if(item.matchConfidence == MatchConfidence_VERY_HIGH
-           && firstVeryHighConfidenceIndex == NSNotFound) {
+                && firstVeryHighConfidenceIndex == NSNotFound) {
             firstVeryHighConfidenceIndex = i;
             
-        } else if(item.matchConfidence == MatchConfidence_HIGH
-           && firstHighConfidenceIndex == NSNotFound) {
-            firstHighConfidenceIndex = i;
+        } else if(item.matchConfidence == MatchConfidence_HIGH_HIGH
+                  && firstHighHighConfidenceIndex == NSNotFound) {
+            firstHighHighConfidenceIndex = i;
+            
+        } else if(item.matchConfidence == MatchConfidence_HIGH_MEDIUM
+                  && firstHighMediumConfidenceIndex == NSNotFound) {
+        
+        } else if(item.matchConfidence == MatchConfidence_HIGH_LOW
+                  && firstHighLowConfidenceIndex == NSNotFound) {
+            firstHighLowConfidenceIndex = i;
             
         } else if(item.matchConfidence == MatchConfidence_MEDIUM_HIGH
                   && firstMediumHighConfidenceIndex == NSNotFound){
@@ -110,8 +125,14 @@
     if(firstVeryHighConfidenceIndex != NSNotFound) {
         return firstVeryHighConfidenceIndex;
     }
-    if(firstHighConfidenceIndex != NSNotFound) {
-        return firstHighConfidenceIndex;
+    if(firstHighHighConfidenceIndex != NSNotFound) {
+        return firstHighHighConfidenceIndex;
+    }
+    if(firstHighMediumConfidenceIndex != NSNotFound) {
+        return firstHighMediumConfidenceIndex;
+    }
+    if(firstHighLowConfidenceIndex != NSNotFound) {
+        return firstHighLowConfidenceIndex;
     }
     if(firstMediumHighConfidenceIndex != NSNotFound) {
         return firstMediumHighConfidenceIndex;

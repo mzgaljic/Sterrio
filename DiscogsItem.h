@@ -17,7 +17,9 @@ typedef enum {
     MatchConfidence_MEDIUM_LOW,
     MatchConfidence_MEDIUM,
     MatchConfidence_MEDIUM_HIGH,
-    MatchConfidence_HIGH,
+    MatchConfidence_HIGH_LOW,
+    MatchConfidence_HIGH_MEDIUM,
+    MatchConfidence_HIGH_HIGH,
     MatchConfidence_VERY_HIGH
 } MatchConfidence;
 
