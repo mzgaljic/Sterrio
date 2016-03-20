@@ -714,11 +714,7 @@ static void *ksAirplayState = &ksAirplayState;
                 if(newSecondsBuff == secondsLoaded && secondsLoaded != totalDuration && !self.isInStall){
                     NSLog(@"Preview is in stall");
                     self.isInStall = YES;
-                    
-                    if(self.avPlayer.rate > 0){
-                        self.isPlaying = NO;
-                        [self.avPlayer pause];
-                    }
+                    self.isPlaying = NO;
                 }
                 
             } else if(context == ksLoadedTimeRanges){
@@ -738,20 +734,13 @@ static void *ksAirplayState = &ksAirplayState;
                 if(! inALoadedRange && !self.isInStall){
                     NSLog(@"Preview is in stall");
                     self.isInStall = YES;
-                    
-                    if(self.avPlayer.rate > 0){
-                        self.isPlaying = NO;
-                        [self.avPlayer pause];
-                    }
+                    self.isPlaying = NO;
                     
                 } else if(newSecondsBuff > secondsLoaded && self.isInStall && [[ReachabilitySingleton sharedInstance] isConnectedToInternet]){
                     NSLog(@"Preview has left stall");
                     self.isInStall = NO;
+                    self.isPlaying = YES;
                     
-                    if(! self.playbackExplicitlyPaused){
-                        self.isPlaying = YES;
-                        [self.avPlayer play];
-                    }
                 }
                 //check if playback began
                 if(newSecondsBuff > secondsLoaded && self.avPlayer.rate == 1 && !playbackStarted){

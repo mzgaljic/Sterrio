@@ -479,8 +479,6 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                     NSLog(@"In stall");
                     stallHasOccured = YES;
                     [MusicPlaybackController setPlayerInStall:YES];
-                    if(self.rate > 0)
-                        [MusicPlaybackController pausePlayback];
                     [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_STOPPED_PLAYBACK
                                                                         object:nil];
 
@@ -510,8 +508,6 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                     NSLog(@"In stall");
                     stallHasOccured = YES;
                     [MusicPlaybackController setPlayerInStall:YES];
-                    if(self.rate > 0)
-                        [MusicPlaybackController pausePlayback];
                     [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_STOPPED_PLAYBACK
                                                                         object:nil];
                     [self connectionStateChanged];  //let this method figure out which spinner to show
