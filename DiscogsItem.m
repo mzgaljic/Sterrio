@@ -75,8 +75,8 @@
         
         //looks for "ft." and removes everything starting from there to the end of the string.
         //pattern: (\(|\[|\{|\s)(ft\..+|feat\..+)
-        NSString *regexExp = @"(\\(|\\[|\\{|\\s)(ft\\..+|feat\\..+)";
-        artistName = [MZCommons deleteCharsMatchingRegex:regexExp usingString:artistName];
+        artistName = [MZCommons deleteCharsMatchingRegex:MZRegexMatchFeatAndFtToEndOfString
+                                             usingString:artistName];
         
         //the DiscogsItem songName is set in YouTubeSongAdderViewController when results are processed.
         DiscogsItem *item = [[DiscogsItem alloc] init];
@@ -194,13 +194,6 @@
         return @[[artistTitle substringWithRange:[match rangeAtIndex:captureGroupFeatArtist]]];
     }
     return @[];
-}
-
-+ (NSString *)removeFeatKeywordsAndAnythingAfterward:(NSString *)artistTitle
-{
-    //now that we've extracted the featured artists (if any), finish sanitizing title.
-    NSString *regexExp = MZRegexMatchFeatAndFtToEndOfString;
-    return [MZCommons deleteCharsMatchingRegex:regexExp usingString:artistTitle];
 }
 
 @end
