@@ -225,6 +225,7 @@
 		87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */; };
 		87E152671C0041E100C82737 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87E152661C0041E100C82737 /* StoreKit.framework */; };
 		87F34FBA1C251D0200BAD73B /* GSTouchesShowingWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F34FB91C251D0200BAD73B /* GSTouchesShowingWindow.m */; };
+		87F5A87E1C9E5FD800C64376 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 87F5A87D1C9E5FD800C64376 /* Settings.bundle */; };
 		87F84E741C74123C000D7D4E /* AppRatingUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F84E731C74123C000D7D4E /* AppRatingUtils.m */; };
 		CC4EB50DFF2CD80A06134B69 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B206C6594633BB85400EBDC /* libPods.a */; };
 /* End PBXBuildFile section */
@@ -693,6 +694,7 @@
 		87E152661C0041E100C82737 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		87F34FB81C251D0200BAD73B /* GSTouchesShowingWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSTouchesShowingWindow.h; sourceTree = "<group>"; };
 		87F34FB91C251D0200BAD73B /* GSTouchesShowingWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSTouchesShowingWindow.m; sourceTree = "<group>"; };
+		87F5A87D1C9E5FD800C64376 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		87F84E721C74123C000D7D4E /* AppRatingUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppRatingUtils.h; sourceTree = "<group>"; };
 		87F84E731C74123C000D7D4E /* AppRatingUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppRatingUtils.m; sourceTree = "<group>"; };
 		8B206C6594633BB85400EBDC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -752,6 +754,7 @@
 		873537BD1B0A9981009244E4 = {
 			isa = PBXGroup;
 			children = (
+				87F5A87D1C9E5FD800C64376 /* Settings.bundle */,
 				87353A651B0AA3F1009244E4 /* Sterrio.entitlements */,
 				873538071B0A9A80009244E4 /* LaunchScreen.storyboard */,
 				873538081B0A9A80009244E4 /* Main.storyboard */,
@@ -1874,6 +1877,7 @@
 			files = (
 				8736AA9B1C25F3BF005FAE07 /* LICENSE.txt in Resources */,
 				873539E71B0AA1E2009244E4 /* LICENSE.txt in Resources */,
+				87F5A87E1C9E5FD800C64376 /* Settings.bundle in Resources */,
 				876C53D41C2A1383007AFC3C /* LICENSE.txt in Resources */,
 				87A9536D1B3E242A002E9872 /* LICENSE.txt in Resources */,
 				8735390B1B0A9ED2009244E4 /* iOSDeviceModelMapping.plist in Resources */,

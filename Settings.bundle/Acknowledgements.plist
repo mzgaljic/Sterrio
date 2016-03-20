@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+        <key>StringsTable</key>
+        <string>Acknowledgements</string>
+        <key>PreferenceSpecifiers</key>
+        <array>
+        <dict>
+        <key>Type</key>
+        <string>PSGroupSpecifier</string>
+        <key>FooterText</key>
+        <string>SMWebRequest</string>
+        </dict>
+        <dict>
+        <key>Type</key>
+        <string>PSGroupSpecifier</string>
+        <key>FooterText</key>
+        <string>SMWebRequest2</string>
+        </dict>
+        <dict>
+        <key>Type</key>
+        <string>PSGroupSpecifier</string>
+        <key>FooterText</key>
+        <string>SMWebRequest3</string>
+        </dict>
+        <dict>
+        <key>Type</key>
+        <string>PSGroupSpecifier</string>
+        <key>FooterText</key>
+        <string>SMWebRequest4</string>
+        </dict>
+        <dict>
+        <key>Type</key>
+        <string>PSGroupSpecifier</string>
+        <key>FooterText</key>
+        <string>popTipView</string>
+        </dict>
+        <dict>
+        <key>Type</key>
+        <string>PSGroupSpecifier</string>
+        <key>FooterText</key>
+        <string>popTipView2</string>
+        </dict>
+        <dict>
+        <key>Type</key>
+        <string>PSGroupSpecifier</string>
+        <key>FooterText</key>
+        <string>popTipView3</string>
+        </dict>
+        <dict>
+        <key>Type</key>
+        <string>PSGroupSpecifier</string>
+        <key>FooterText</key>
+        <string>popTipView4</string>
+        </dict>
+        </array>
+</dict>
+</plist>
