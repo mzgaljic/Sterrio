@@ -103,7 +103,8 @@
             
         } else if(item.matchConfidence == MatchConfidence_HIGH_MEDIUM
                   && firstHighMediumConfidenceIndex == NSNotFound) {
-        
+            firstHighMediumConfidenceIndex = i;
+            
         } else if(item.matchConfidence == MatchConfidence_HIGH_LOW
                   && firstHighLowConfidenceIndex == NSNotFound) {
             firstHighLowConfidenceIndex = i;
