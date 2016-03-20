@@ -43,4 +43,6 @@
 - (BOOL)allowSongDidFinishValue;
 - (void)allowSongDidFinishNotificationToProceed:(BOOL)proceed;
 
+- (void)songDidFinishPlaying:(NSNotification *)notification;
+
 @end

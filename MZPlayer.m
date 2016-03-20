@@ -147,12 +147,12 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
 
 - (void)destroyPlayer
 {
-    [self.avPlayer replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
-    [self removeTimeObserver];
-    [self removeObservers];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:AVPlayerItemDidPlayToEndTimeNotification
                                                   object:self.avPlayer.currentItem];
+    [self.avPlayer replaceCurrentItemWithPlayerItem:nil];
+    [self removeTimeObserver];
+    [self removeObservers];
     self.avPlayer = nil;
 }
 

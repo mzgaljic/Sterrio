@@ -21,7 +21,5 @@
             oldPlayableItem:(PlayableItem *)oldItem;
 
 + (void)beginPlaybackWithPlayerItem:(AVPlayerItem *)item;
-+ (void)setupAvPlayerViewAgain;
-+ (void)temporarilyDisableUpdatingPlayerView:(BOOL)disable;
 
 @end

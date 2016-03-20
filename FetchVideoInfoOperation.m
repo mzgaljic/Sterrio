@@ -211,6 +211,13 @@
                 [weakCoordinator enablePlayerAgain];
                 __block AVPlayerItem *weakPlayerItem = [AVPlayerItem playerItemWithAsset:asset];
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+                    NSNotificationCenter *notifCenter = [NSNotificationCenter defaultCenter];
+                    [notifCenter removeObserver:player name:AVPlayerItemDidPlayToEndTimeNotification object:player.currentItem];
+                    [notifCenter addObserver:player
+                                    selector:@selector(songDidFinishPlaying:)
+                                        name:AVPlayerItemDidPlayToEndTimeNotification
+                                      object:weakPlayerItem];
                     // update the UI here
                     [VideoPlayerWrapper beginPlaybackWithPlayerItem:weakPlayerItem];
                 }];

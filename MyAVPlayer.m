@@ -59,6 +59,10 @@ static ReachabilitySingleton *reachability;
 
 - (void)dealloc
 {
+    if([MusicPlaybackController avplayerTimeObserver] != nil) {
+        [self removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
+    }
+    [MusicPlaybackController setAVPlayerTimeObserver:nil];
     [self deregisterForObservers];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([self class]));
@@ -67,10 +71,6 @@ static ReachabilitySingleton *reachability;
 - (void)begingListeningForNotifications
 {
     NSNotificationCenter *notifCenter = [NSNotificationCenter defaultCenter];
-    [notifCenter addObserver:self
-                    selector:@selector(songDidFinishPlaying:)
-                        name:AVPlayerItemDidPlayToEndTimeNotification
-                      object:self];
     [notifCenter addObserver:self
                     selector:@selector(connectionStateChanged)
                         name:MZReachabilityStateChanged
@@ -104,7 +104,7 @@ static ReachabilitySingleton *reachability;
         [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
     } else{
         //make sure last song doesnt continue playing...
-        [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+        [self replaceCurrentItemWithPlayerItem:nil];
         [self dismissAllSpinners];
         
         if([MusicPlaybackController numMoreSongsInQueue] == 0)
@@ -142,7 +142,7 @@ static ReachabilitySingleton *reachability;
 }
 
 //Will be called when MyAVPlayer finishes playing an item
-- (void)songDidFinishPlaying:(NSNotification *) notification
+- (void)songDidFinishPlaying:(NSNotification *)notification
 {
     //dont want to respond if this was just the preview player.
     if([AppEnvironmentConstants isUserPreviewingAVideo])
@@ -238,10 +238,7 @@ static ReachabilitySingleton *reachability;
             if(stallHasOccured)
             {
                 [self showSpinnerForBasicLoading];
-                //try to resume playback...
-                if(! [MusicPlaybackController playbackExplicitlyPaused]){
-                    [MusicPlaybackController resumePlayback];
-                }
+                //avplayer automatically tries to resume playback is pause wasnt called...
                 return;
             }
 
@@ -262,10 +259,7 @@ static ReachabilitySingleton *reachability;
             if(stallHasOccured)
             {
                 [self showSpinnerForBasicLoading];
-                //try to resume playback...
-                if(! [MusicPlaybackController playbackExplicitlyPaused]){
-                    [MusicPlaybackController resumePlayback];
-                }
+                //avplayer automatically tres to resume playback is pause wasnt called...
                 return;
             }
             //otherwise no problems could possibly occur at this point...
@@ -302,7 +296,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
             valOfAllowSongDidFinishToExecuteBeforeDisabling = _allowSongDidFinishToExecute;
             _allowSongDidFinishToExecute = NO;
             //force playback to stop (only way that seems to work)
-            [self replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:nil]];
+            [self replaceCurrentItemWithPlayerItem:nil];
             
         } else{
             //re-insert the disabled player item, with the loaded buffers intact.
@@ -529,8 +523,6 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                     stallHasOccured = NO;
                     [MusicPlaybackController setPlayerInStall:NO];
                     [self dismissAllSpinnersIfPossible];
-                    if(! [MusicPlaybackController playbackExplicitlyPaused])
-                        [MusicPlaybackController resumePlayback];
                     [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_RESUMED_PLAYBACK object:nil];
                     [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
                 }
@@ -587,8 +579,6 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
             stallHasOccured = NO;
             [MusicPlaybackController setPlayerInStall:NO];
             [self dismissAllSpinnersIfPossible];
-            if(! [MusicPlaybackController playbackExplicitlyPaused])
-                [MusicPlaybackController resumePlayback];
             [[NSNotificationCenter defaultCenter] postNotificationName:CURRENT_SONG_RESUMED_PLAYBACK object:nil];
             [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
         }

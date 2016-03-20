@@ -127,10 +127,6 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
                                                  name:MZInterfaceNeedsToBlockCurrentSongPlayback
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(restoreTimeObserver)
-                                                 name:MZNewTimeObserverCanBeAdded
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(killTimeObserver)
                                                  name:MZAppWasBackgrounded
                                                object:nil];
@@ -260,7 +256,10 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 
 - (void)preDealloc
 {
-    [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
+    if([MusicPlaybackController avplayerTimeObserver] != nil) {
+            [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
+    }
+    
     [MusicPlaybackController setAVPlayerTimeObserver:nil];
     [self removeObservers];
     sliderHint = nil;
@@ -376,9 +375,6 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     _sliderHintView.hidden = YES;
     short cancelButtonIndex = 2;
     [popup dismissWithClickedButtonIndex:cancelButtonIndex animated:NO];
-    //in case the timer picker is on screen...need to do this since it cant "cancel" itself
-    //and run the appropriate cancel code simply when the screen rotates. sadly...
-    [VideoPlayerWrapper temporarilyDisableUpdatingPlayerView:NO];
     
     if(UIInterfaceOrientationIsLandscape(lastKnownOrientation)
        && UIInterfaceOrientationIsLandscape(toInterfaceOrientation))
@@ -709,7 +705,6 @@ static int accomodateInterfaceLabelsCounter = 0;
     
     [playButton setImage:pauseImg forState:UIControlStateNormal];
     [MusicPlaybackController explicitlyPausePlayback:NO];
-    [MusicPlaybackController resumePlayback];
 }
 
 #pragma mark - Initializing & Registering Buttons
@@ -1164,7 +1159,6 @@ static BOOL goingToAnimateTimerPicker = NO;
 {
     if(goingToAnimateTimerPicker)
         return;
-    [VideoPlayerWrapper temporarilyDisableUpdatingPlayerView:YES];
     
     if([AppEnvironmentConstants isPlaybackTimerActive] && !userReplacingExistingTimer){
         [self performSelector:@selector(showTimerActionSheeet)

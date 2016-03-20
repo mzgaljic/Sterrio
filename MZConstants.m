@@ -23,7 +23,6 @@ NSString * const MZPreviewPlayerTogglePlayPause = @"togglePlayPauseVideoPreviewP
 NSString * const MZPreviewPlayerPlay = @"playVideoPreviewPlayer";
 NSString * const MZPreviewPlayerPause = @"pauseVideoPreviewPlayer";
 NSString * const MZAppWasBackgrounded = @"appEnteredBackgroundState";
-NSString * const MZNewTimeObserverCanBeAdded = @"new avplayer has been created.";
 
 NSString * const MZPlayerToggledOnScreenStatus = @"the status has been toggled";
 NSString * const MZMainScreenVCStatusBarAlwaysInvisible = @"status bar should always be invisible";

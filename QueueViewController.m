@@ -41,7 +41,6 @@ short const SECTION_EMPTY = -1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [VideoPlayerWrapper temporarilyDisableUpdatingPlayerView:YES];
     stackController = [[StackController alloc] init];
     localAppTintColor = [[[UIColor defaultAppColorScheme] lighterColor] lighterColor];
     
@@ -88,7 +87,6 @@ short const SECTION_EMPTY = -1;
 
 - (void)dealloc
 {
-    [VideoPlayerWrapper temporarilyDisableUpdatingPlayerView:NO];
     self.tableView.delegate = nil;
     self.tableView = nil;
     cellBackgroundBlurView = nil;
