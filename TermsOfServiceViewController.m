@@ -14,6 +14,7 @@
 @property (nonatomic, strong) UIActivityIndicatorView *spinner;
 @end
 NSString * const TOS_LINK = @"https://dl.dropbox.com/s/3x5house6be4et4/Fabric%20TOS.pdf?dl=0";
+#warning before releasing, put together a better PDF.
 
 @implementation TermsOfServiceViewController
 
