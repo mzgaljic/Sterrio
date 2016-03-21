@@ -19,7 +19,7 @@
     }
     
     [AppEnvironmentConstants userAcceptedOrDeclinedPushNotif:YES];
-    NSString *msg = @"We're about to ask you for permission to send infrequent push notifications. This will help us get in touch if an issue arises.\n\nWe won't annoy you again, promise!";
+    NSString *msg = @"We're about to ask you for permission to send push notifications. Responding with \"Allow\" helps us notify you when issues occur.";
     
     SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:@"Push notifications"
                                                                     message:msg

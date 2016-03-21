@@ -211,7 +211,7 @@
     switch (purpose)
     {
         case Email_Compose_Purpose_General_Feedback:
-            return @"Feedback";
+            return [NSString stringWithFormat:@"%@ Feedback", MZAppName];
         
         case Email_Compose_Purpose_ScreenshotBugReport:
         case Email_Compose_Purpose_SimpleBugReport:
