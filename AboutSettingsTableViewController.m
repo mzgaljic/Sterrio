@@ -11,12 +11,14 @@
 #import "UIDevice+DeviceName.h"
 #import "LicensesViewController.h"
 #import "MZLicense.h"
+#import "TermsOfServiceViewController.h"
 
 @implementation AboutSettingsTableViewController
-int const NUMBER_OF_SECTIONS = 2;
+int const NUMBER_OF_SECTIONS = 3;
 
 int const APP_VERSION_SECTION_NUM = 0;
 int const LICENSES_SECTION_NUM = 1;
+int const TOS_SECTION_NUM = 2;
 
 - (void)viewDidLoad
 {
@@ -46,6 +48,7 @@ int const LICENSES_SECTION_NUM = 1;
     {
         case APP_VERSION_SECTION_NUM    :   return 1;
         case LICENSES_SECTION_NUM       :   return 1;
+        case TOS_SECTION_NUM            :   return 1;
             
         default:    return -1;
     }
@@ -91,6 +94,23 @@ int const LICENSES_SECTION_NUM = 1;
                                                   size:fontSize];
         }
     }
+    else if(indexPath.section == TOS_SECTION_NUM)
+    {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"aboutSettingRightDetailCell"
+                                               forIndexPath:indexPath];
+        if(indexPath.row == 0)
+        {
+            //cell that opens app TOS
+            
+            cell.textLabel.text = @"Show Terms & Conditions";
+            cell.detailTextLabel.text = nil;
+            cell.imageView.image = nil;
+            cell.textLabel.textAlignment = NSTextAlignmentCenter;
+            cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+            cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                                  size:fontSize];
+        }
+    }
     
     cell.detailTextLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                                 size:fontSize];
@@ -113,6 +133,15 @@ int const LICENSES_SECTION_NUM = 1;
                                         target:licensesVc
                                         action:@selector(dismiss)];
         licensesVc.navigationItem.rightBarButtonItem = doneButton;
+        [self presentViewController:navVc animated:YES completion:nil];
+    } else if(indexPath.section == TOS_SECTION_NUM && indexPath.row == 0) {
+        TermsOfServiceViewController *tosVc = [TermsOfServiceViewController new];
+        UINavigationController *navVc = [[UINavigationController alloc] initWithRootViewController:tosVc];
+        UIBarButtonItem *doneButton = [[UIBarButtonItem alloc]
+                                       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                       target:tosVc
+                                       action:@selector(dismiss)];
+        tosVc.navigationItem.rightBarButtonItem = doneButton;
         [self presentViewController:navVc animated:YES completion:nil];
     }
 }

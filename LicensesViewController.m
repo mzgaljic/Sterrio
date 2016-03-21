@@ -73,12 +73,12 @@
     
     NSMutableString *text = [[NSMutableString alloc] initWithString:@""];
     [text appendFormat:@"The following software has helped %@ ", MZAppName];
-    [text appendFormat:@"get to where it is today:\n\n"];
+    [text appendFormat:@"get to where it is today:\n"];
     NSRange licenseIntro = NSMakeRange(0, text.length);
     int temp = (int)text.length;
     for(int i = 0; i < licenses.count; i++) {
         NSString *title = [((MZLicense *)licenses[i]).title removeIrrelevantWhitespace];
-        [text appendFormat:@"• %@\n", title];
+        [text appendFormat:@"\n• %@", title];
     }
     NSRange licenseBulletsSection = NSMakeRange(temp, text.length);
     [text appendString:newParagraph];

@@ -200,6 +200,7 @@
 		8796B6951C7EA7E000242587 /* DeletedYtVideoAlertCreator.m in Sources */ = {isa = PBXBuildFile; fileRef = 8796B6941C7EA7E000242587 /* DeletedYtVideoAlertCreator.m */; };
 		879971DC1C66EAF50044BFFF /* MGSwipeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 879971D91C66EAF50044BFFF /* MGSwipeButton.m */; };
 		879971DD1C66EAF50044BFFF /* MGSwipeTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 879971DB1C66EAF50044BFFF /* MGSwipeTableCell.m */; };
+		87A3F0B61C9FA2AD00A2AEDA /* TermsOfServiceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A3F0B51C9FA2AD00A2AEDA /* TermsOfServiceViewController.m */; };
 		87A953621B3E1E54002E9872 /* DiscogsSearchService.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9535E1B3E1E54002E9872 /* DiscogsSearchService.m */; };
 		87A9536C1B3E242A002E9872 /* SMURLImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A953681B3E242A002E9872 /* SMURLImageView.m */; };
 		87A9536D1B3E242A002E9872 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A953691B3E242A002E9872 /* LICENSE.txt */; };
@@ -647,6 +648,8 @@
 		879971D91C66EAF50044BFFF /* MGSwipeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeButton.m; sourceTree = "<group>"; };
 		879971DA1C66EAF50044BFFF /* MGSwipeTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeTableCell.h; sourceTree = "<group>"; };
 		879971DB1C66EAF50044BFFF /* MGSwipeTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeTableCell.m; sourceTree = "<group>"; };
+		87A3F0B41C9FA2AD00A2AEDA /* TermsOfServiceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermsOfServiceViewController.h; sourceTree = "<group>"; };
+		87A3F0B51C9FA2AD00A2AEDA /* TermsOfServiceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermsOfServiceViewController.m; sourceTree = "<group>"; };
 		87A9535D1B3E1E54002E9872 /* DiscogsSearchService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscogsSearchService.h; sourceTree = "<group>"; };
 		87A9535E1B3E1E54002E9872 /* DiscogsSearchService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsSearchService.m; sourceTree = "<group>"; };
 		87A953601B3E1E54002E9872 /* DiscogsItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscogsItem.h; sourceTree = "<group>"; };
@@ -1726,6 +1729,8 @@
 				87C67B9A1C9F266600E2FCB8 /* AboutSettingsTableViewController.m */,
 				87C67B9D1C9F26A000E2FCB8 /* LicensesViewController.h */,
 				87C67B9E1C9F26A000E2FCB8 /* LicensesViewController.m */,
+				87A3F0B41C9FA2AD00A2AEDA /* TermsOfServiceViewController.h */,
+				87A3F0B51C9FA2AD00A2AEDA /* TermsOfServiceViewController.m */,
 			);
 			name = About;
 			sourceTree = "<group>";
@@ -2038,6 +2043,7 @@
 				878488051C6694E200666627 /* MZRegexExp.m in Sources */,
 				873539211B0A9F11009244E4 /* YouTubeSongAdderViewController.m in Sources */,
 				873538531B0A9B23009244E4 /* Stack.m in Sources */,
+				87A3F0B61C9FA2AD00A2AEDA /* TermsOfServiceViewController.m in Sources */,
 				8735388B1B0A9BCA009244E4 /* YouTubeService.m in Sources */,
 				8755545E1C1DF6EA00259CA8 /* InAppPurchaseUtils.m in Sources */,
 				873539551B0AA069009244E4 /* MZTableViewCell.m in Sources */,
