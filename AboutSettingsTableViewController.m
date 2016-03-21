@@ -14,7 +14,7 @@
 #import "TermsOfServiceViewController.h"
 
 @implementation AboutSettingsTableViewController
-int const NUMBER_OF_SECTIONS = 3;
+int const NUMBER_OF_ABOUT_SECTIONS = 3;
 
 int const APP_VERSION_SECTION_NUM = 0;
 int const LICENSES_SECTION_NUM = 1;
@@ -29,7 +29,7 @@ int const TOS_SECTION_NUM = 2;
 #pragma mark - Table view data source
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return NUMBER_OF_SECTIONS;
+    return NUMBER_OF_ABOUT_SECTIONS;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
