@@ -86,6 +86,12 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
 {
     [super viewWillAppear:animated];
     [self.tableView reloadData];
+    //need this for loop. Changing the font size to a very big one
+    //will cause the cell textlabels to look odd after coming back to
+    //this VC. This seems to only be an issue with my custom MZRightDetailCell.
+    for(UITableViewCell *cell in self.tableView.visibleCells) {
+        [cell.contentView setNeedsLayout];
+    }
 }
 
 - (void)dealloc
@@ -374,7 +380,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
             cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                                   size:fontSize];
-            cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+            //cell.textLabel.textColor = [UIColor defaultAppColorScheme];
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.detailTextLabel.text = nil;
             cell.imageView.image = nil;
@@ -393,7 +399,8 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
         cell.textLabel.numberOfLines = 2;
         cell.detailTextLabel.numberOfLines = 1;
     }
-    
+
+    [cell.contentView setNeedsDisplay];
     return cell;
 }
 

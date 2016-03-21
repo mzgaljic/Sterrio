@@ -35,6 +35,11 @@ int const LICENSES_SECTION_NUM = 1;
     return [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel];
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 26;
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     switch (section)
@@ -49,6 +54,7 @@ int const LICENSES_SECTION_NUM = 1;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell;
+    float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
     
     if(indexPath.section == APP_VERSION_SECTION_NUM)
     {
@@ -64,6 +70,8 @@ int const LICENSES_SECTION_NUM = 1;
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%@.%@", appVersion, buildNum];
             cell.imageView.image = nil;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
+                                                  size:fontSize];
         }
     }
     else if(indexPath.section == LICENSES_SECTION_NUM)
@@ -79,11 +87,11 @@ int const LICENSES_SECTION_NUM = 1;
             cell.imageView.image = nil;
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+            cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                                  size:fontSize];
         }
     }
-    float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-    cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
-                                          size:fontSize];
+    
     cell.detailTextLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                                 size:fontSize];
     cell.textLabel.numberOfLines = 2;
