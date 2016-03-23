@@ -63,8 +63,11 @@ int const MZCellSpotifyStylePaddingValue = 34;
 float const MZSmallPlayerVideoFramePadding = 6.0f;
 short const MZSkipToSongBeginningIfBackBtnTappedBoundary = 3;
 
-//Tab bar
+//GUI Constants
 short const MZTabBarHeight = 50;
+float const MZLargeSpinnerDownScaleAmount = 0.85f;
+
+//Tab bar
 NSString * const MZHideTabBarAnimated = @"Pass @YES in notif to hide tab bar";
 
 //determined this would work well with smallest font size on largest iphone (iphone 6 plus)

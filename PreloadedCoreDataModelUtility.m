@@ -53,8 +53,12 @@ static NSInteger const SONG7_DURATION = 137;
     NSManagedObjectContext *context = [CoreDataManager context];
     if(importHugeDataSetForTesting){
         int songCreationCount = 2000;
+        
+        NSString *leonaLewisSpiritAlbumArtUrl = @"http://goo.gl/KpS0cJ";
+        NSURL *url = [NSURL URLWithString:leonaLewisSpiritAlbumArtUrl];
+        UIImage *art = [UIImage imageWithData:[NSData dataWithContentsOfURL:url]];
+        
         Song *someSong;
-        //UIImage *art = [UIImage imageNamed:@"testAlbumArt"];
         int stopToPrint = 0;
         for(int i = 0; i < songCreationCount; i++){
             
@@ -65,8 +69,7 @@ static NSInteger const SONG7_DURATION = 137;
                                                             partOfAlbumNamed:ALBUM2_NAME
                                                                    youtubeID:SONG2_YTID
                                                                videoDuration:SONG2_DURATION];
-                UIImage *someImage = [UIImage imageNamed:@"testAlbumArt"];
-                someSong.albumArt = [SongAlbumArt createNewAlbumArtWithUIImage:someImage withContext:context];
+                someSong.albumArt = [SongAlbumArt createNewAlbumArtWithUIImage:art withContext:context];
                 someSong.nonDefaultArtSpecified = @YES;
 
             } else {

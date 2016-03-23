@@ -63,8 +63,11 @@ extern float const MZSmallPlayerVideoFramePadding;
 extern short const MZSkipToSongBeginningIfBackBtnTappedBoundary;
 
 
-//Tab bar
+//GUI Constants
 extern short const MZTabBarHeight;
+extern float const MZLargeSpinnerDownScaleAmount;
+
+//Tab bar
 extern NSString * const MZHideTabBarAnimated;
 
 //determined this would work well with smallest font size on largest iphone (iphone 6 plus)

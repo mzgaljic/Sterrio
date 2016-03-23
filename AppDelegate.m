@@ -10,6 +10,7 @@
 
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
+#import "MZLaunchScreen.h"
 #import "GSTouchesShowingWindow.h"
 #import "PreloadedCoreDataModelUtility.h"
 #import <CoreSpotlight/CoreSpotlight.h>
@@ -36,6 +37,7 @@
 }
 @property (nonatomic, strong) EAIntroView *intro;
 @property (nonatomic, strong) MainScreenViewController *mainVC;
+@property (nonatomic, strong) MZLaunchScreen *mzLaunchScreen;
 @end
 
 @implementation AppDelegate
@@ -65,9 +67,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    //set up Crashlytics immediately so any crashes are recorded.
-    [Fabric with:@[[Answers class], [Crashlytics class]]];
-    
     BOOL showUserTouchesOnScreen = NO;
     if(showUserTouchesOnScreen) {
         self.window = [self windowShowingTouches];
@@ -76,12 +75,23 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
         self.window.frame = [[UIScreen mainScreen] bounds];
     }
     self.window.backgroundColor = [UIColor whiteColor];
+    [AppDelegateSetupHelper loadUsersSettingsFromNSUserDefaults];
+    self.mzLaunchScreen = [[MZLaunchScreen alloc] init];
+    UINavigationController *navVc = [[UINavigationController alloc] initWithRootViewController:self.mzLaunchScreen];
+    [self.window setRootViewController:navVc];
     [self.window makeKeyAndVisible];
+    //set up Crashlytics immediately so any crashes are recorded.
+    [Fabric with:@[[Answers class], [Crashlytics class]]];
+    [self performSelectorOnMainThread:@selector(setupApplicationAndMainVc)
+                           withObject:nil waitUntilDone:NO];
+    return YES;
+}
+
+- (void)setupApplicationAndMainVc
+{
+    [self setupMainVC];
     
     [AppDelegateSetupHelper setupDiskAndMemoryWebCache];
-    [AppDelegateSetupHelper loadUsersSettingsFromNSUserDefaults];
-    
-    [self setupMainVC];
     if([AppDelegateSetupHelper appLaunchedFirstTime]){
         //do stuff that you'd want to see the first time you launch!
         [PreloadedCoreDataModelUtility createCoreDataSampleMusicData];
@@ -99,8 +109,8 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [ReachabilitySingleton sharedInstance];  //init reachability class
     [InAppPurchaseUtils sharedInstance];  //sets up transaction observers
     
-    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
     UIApplication *myApp = [UIApplication sharedApplication];
+    [myApp setIdleTimerDisabled:NO];
     [myApp setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -116,8 +126,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
     //[AppEnvironmentConstants adsHaveBeenRemoved:NO];   ONLY FOR DEVELOPMENT!!
     //[AppEnvironmentConstants setUserHasRatedMyApp:NO];  ONLY FOR DEVELOPMENT!!
-    
-    return YES;
 }
 
 - (void)setupMainVC
@@ -145,7 +153,17 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
                                          correspondingViewControllers:@[vc1, vc2, vc3, vc4]
                                            tabBarUnselectedImageNames:unselectedImgNames
                                              tabBarselectedImageNames:selectedImgNames];
+    self.mainVC.view.alpha = 0;  //UIViewControllers lazy-load views. Forces load.
+    [self.mzLaunchScreen dismissAnimatedAndDealloc];
+    self.mzLaunchScreen = nil;
     [self.window setRootViewController:self.mainVC];
+    [UIView animateWithDuration:0.65
+                          delay:0
+                        options:UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         self.mainVC.view.alpha = 1;
+                     }
+                     completion:nil];
     if([AppEnvironmentConstants shouldDisplayWelcomeScreen]) {
         self.mainVC.introOnScreen = YES;
         [self performSelector:@selector(showIntroTutorial) withObject:nil afterDelay:0.7 ];
@@ -594,7 +612,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 + (void)upgradeLibraryToUseSpotlightIfApplicable
 {
     if(! [AppEnvironmentConstants isUserOniOS9OrAbove]) {
-        return;  //users device is below ios 9 right now. no change spotlight is possible.
+        return;  //users device is below ios 9 right now. no change in spotlight is possible.
     }
     
     int lastKnownUserIosVersionNumber = (int)[[NSUserDefaults standardUserDefaults] integerForKey:USERS_LAST_KNOWN_MAJOR_IOS_VERS_VALUE_KEY];

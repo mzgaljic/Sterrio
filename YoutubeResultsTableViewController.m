@@ -907,6 +907,8 @@ static NSUInteger numLettersUserHasTyped = 0;
         _viewOnTopOfTable = [[UIView alloc] initWithFrame:self.view.frame];
         CGRect screenFrame = [UIScreen mainScreen].bounds;
         loadingResultsIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        float scale = MZLargeSpinnerDownScaleAmount;
+        loadingResultsIndicator.transform = CGAffineTransformMakeScale(scale, scale);  //make smaller
         int indicatorSize = loadingResultsIndicator.frame.size.width;
         loadingResultsIndicator.frame = CGRectMake(screenFrame.size.width/2 - indicatorSize/2,
                                                    screenFrame.size.height/2 - indicatorSize/2 - [AppEnvironmentConstants navBarHeight],

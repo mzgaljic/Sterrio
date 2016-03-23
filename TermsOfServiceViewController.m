@@ -39,13 +39,10 @@ NSString * const TOS_LINK = @"https://dl.dropbox.com/s/3x5house6be4et4/Fabric%20
 {
     [super viewWillAppear:animated];
     
-    CGRect screenFrame = [UIScreen mainScreen].bounds;
     self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-    int indicatorSize = self.spinner.frame.size.width;
-    self.spinner.frame = CGRectMake(screenFrame.size.width/2 - indicatorSize/2,
-                                               screenFrame.size.height/2 - indicatorSize/2,
-                                               indicatorSize,
-                                               indicatorSize);
+    float scale = MZLargeSpinnerDownScaleAmount;
+    self.spinner.transform = CGAffineTransformMakeScale(scale, scale);  //make smaller
+    self.spinner.frame = [self spinnerFrame];
     self.spinner.color = [UIColor defaultAppColorScheme];
     [self.spinner startAnimating];
     [self.view addSubview:self.spinner];
@@ -79,6 +76,7 @@ NSString * const TOS_LINK = @"https://dl.dropbox.com/s/3x5house6be4et4/Fabric%20
 - (void)orientationDidChange
 {
     self.webView.frame = [self webViewFrame];
+    self.spinner.frame = [self spinnerFrame];
 }
 
 - (CGRect)webViewFrame
@@ -94,6 +92,16 @@ NSString * const TOS_LINK = @"https://dl.dropbox.com/s/3x5house6be4et4/Fabric%20
                           self.view.frame.origin.y + navBarHeight,
                           self.view.frame.size.width, self.view.frame.size.height - navBarHeight);
     }
+}
+
+- (CGRect)spinnerFrame
+{
+    CGRect screenFrame = [UIScreen mainScreen].bounds;
+    int indicatorSize = self.spinner.frame.size.width;
+    return CGRectMake(screenFrame.size.width/2 - indicatorSize/2,
+                      screenFrame.size.height/2 - indicatorSize/2,
+                      indicatorSize,
+                      indicatorSize);
 }
 
 @end

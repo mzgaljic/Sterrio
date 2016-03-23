@@ -205,6 +205,7 @@
 		87A9536C1B3E242A002E9872 /* SMURLImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A953681B3E242A002E9872 /* SMURLImageView.m */; };
 		87A9536D1B3E242A002E9872 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 87A953691B3E242A002E9872 /* LICENSE.txt */; };
 		87A9536E1B3E242A002E9872 /* SMWebRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9536B1B3E242A002E9872 /* SMWebRequest.m */; };
+		87B723651CA2462800370CA3 /* MZLaunchScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B723641CA2462800370CA3 /* MZLaunchScreen.m */; };
 		87B8219D1C7915A000640BF6 /* AppRatingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B8219C1C7915A000640BF6 /* AppRatingTableViewCell.m */; };
 		87B916C81C60467E00CAEDB8 /* MZRightDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B916C71C60467E00CAEDB8 /* MZRightDetailCell.m */; };
 		87C67B8B1C9F1FCF00E2FCB8 /* Licenses.plist in Resources */ = {isa = PBXBuildFile; fileRef = 87C67B8A1C9F1FCF00E2FCB8 /* Licenses.plist */; };
@@ -658,6 +659,8 @@
 		87A953691B3E242A002E9872 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		87A9536A1B3E242A002E9872 /* SMWebRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMWebRequest.h; sourceTree = "<group>"; };
 		87A9536B1B3E242A002E9872 /* SMWebRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMWebRequest.m; sourceTree = "<group>"; };
+		87B723631CA2462800370CA3 /* MZLaunchScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZLaunchScreen.h; sourceTree = "<group>"; };
+		87B723641CA2462800370CA3 /* MZLaunchScreen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZLaunchScreen.m; sourceTree = "<group>"; };
 		87B8219B1C7915A000640BF6 /* AppRatingTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppRatingTableViewCell.h; sourceTree = "<group>"; };
 		87B8219C1C7915A000640BF6 /* AppRatingTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppRatingTableViewCell.m; sourceTree = "<group>"; };
 		87B916C61C60467E00CAEDB8 /* MZRightDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZRightDetailCell.h; sourceTree = "<group>"; };
@@ -1051,6 +1054,8 @@
 			children = (
 				873538AB1B0A9C6F009244E4 /* MyAlerts.h */,
 				873538AC1B0A9C70009244E4 /* MyAlerts.m */,
+				87B723631CA2462800370CA3 /* MZLaunchScreen.h */,
+				87B723641CA2462800370CA3 /* MZLaunchScreen.m */,
 				873538AF1B0A9C92009244E4 /* MainScreenViewController.h */,
 				873538B01B0A9C92009244E4 /* MainScreenViewController.m */,
 				873538B11B0A9C92009244E4 /* MainScreenViewControllerDelegate.h */,
@@ -2117,6 +2122,7 @@
 				87C67BD11C9F449E00E2FCB8 /* MRWeakProxy.m in Sources */,
 				8735386A1B0A9B6D009244E4 /* PlaylistItem.m in Sources */,
 				873538731B0A9B8B009244E4 /* CoreDataManager.m in Sources */,
+				87B723651CA2462800370CA3 /* MZLaunchScreen.m in Sources */,
 				8735386B1B0A9B6D009244E4 /* Song.m in Sources */,
 				873539201B0A9F11009244E4 /* YoutubeResultsTableViewController.m in Sources */,
 				8735380D1B0A9A9A009244E4 /* MZConstants.m in Sources */,
