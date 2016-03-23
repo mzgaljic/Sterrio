@@ -31,6 +31,9 @@
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     [player replaceCurrentItemWithPlayerItem:item];
     [MusicPlaybackController resumePlayback];
+    //this setter sets the appropriate fields on the AVPlayer variable.
+    [AppEnvironmentConstants setShouldOnlyAirplayAudio:[AppEnvironmentConstants shouldOnlyAirplayAudio]];
+    
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     if(! [SongPlayerCoordinator isVideoPlayerExpanded])
         [playerView touchesCancelled:nil withEvent:nil];
