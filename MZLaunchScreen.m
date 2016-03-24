@@ -77,10 +77,10 @@ static MZLaunchScreen *retainSelf = nil;
 
 - (CGRect)spinnerFrame
 {
-    CGRect screenFrame = [UIScreen mainScreen].bounds;
+    CGRect viewFrame = self.view.frame;
     int indicatorSize = self.spinner.frame.size.width;
-    return CGRectMake(screenFrame.size.width/2 - indicatorSize/2,
-                      screenFrame.size.height/2 - indicatorSize/2,
+    return CGRectMake(viewFrame.size.width/2 - indicatorSize/2,
+                      viewFrame.size.height/2 - indicatorSize/2,
                       indicatorSize,
                       indicatorSize);
 }
