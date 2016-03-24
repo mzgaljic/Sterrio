@@ -18,7 +18,7 @@
                                                                     YouTubeServiceSearchingDelegate,
                                                                     SDWebImageManagerDelegate>
 {
-    StackController *stackController;
+    StackController *thumbnailStackController;
 }
 + (instancetype)initWithSearchQuery:(NSString *)query replacementObjId:(NSManagedObjectID *)objId;
 @end

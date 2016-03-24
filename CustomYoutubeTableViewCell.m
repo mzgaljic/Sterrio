@@ -11,27 +11,32 @@
 @interface CustomYoutubeTableViewCell ()
 @end
 
+//This custom cell does not handle orientation at all due to performance concerns.
+//The VC managing the tableview should just reload the visible cells on rotation.
 @implementation CustomYoutubeTableViewCell
 
 - (void)awakeFromNib
 {
     [super awakeFromNib];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(orientationNeedsToChanged)
+                                             selector:@selector(orientationNeedsToChange)
                                                  name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
-    self.videoTitle.numberOfLines = 0;
-    self.videoChannel.numberOfLines = 0;
-    self.videoTitle.lineBreakMode = NSLineBreakByTruncatingTail;
-    self.videoChannel.lineBreakMode = NSLineBreakByTruncatingTail;
+    _videoTitle.numberOfLines = 0;
+    _videoChannel.numberOfLines = 0;
+    _videoTitle.lineBreakMode = NSLineBreakByTruncatingTail;
+    _videoChannel.lineBreakMode = NSLineBreakByTruncatingTail;
     if([AppEnvironmentConstants isUserOniOS9OrAbove]) {
-        [self.videoChannel setAllowsDefaultTighteningForTruncation:YES];
-        [self.videoTitle setAllowsDefaultTighteningForTruncation:YES];
+        [_videoChannel setAllowsDefaultTighteningForTruncation:YES];
+        [_videoTitle setAllowsDefaultTighteningForTruncation:YES];
     }
 }
 
 - (void)prepareForReuse
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    _videoThumbnail.image = nil;
+    _videoTitle = nil;
+    _videoChannel = nil;
 }
 
 - (void)layoutSubviews
@@ -42,14 +47,7 @@
     [self adjustViewsForOrientation];
 }
 
-- (UIEdgeInsets)layoutMargins
-{
-    //it should match the padding (created in the method above), so the line starts exactly where
-    //the album art starts
-    return UIEdgeInsetsMake(0, 2, 0, 0);
-}
-
-- (void)orientationNeedsToChanged
+- (void)orientationNeedsToChange
 {
     [self adjustViewsForOrientation];
 }
@@ -57,8 +55,9 @@
 - (void)adjustViewsForOrientation
 {
     float widthOfScreenRoationIndependant;
-    float  a = [[UIScreen mainScreen] bounds].size.height;
-    float b = [[UIScreen mainScreen] bounds].size.width;
+    CGRect mainScreenBounds = [[UIScreen mainScreen] bounds];
+    float  a = mainScreenBounds.size.height;
+    float b = mainScreenBounds.size.width;
     if(a < b)
         widthOfScreenRoationIndependant = a;
     else
@@ -67,15 +66,16 @@
     //int thumbnailWidth = widthOfScreenRoationIndependant * 0.45;
     int thumbnailWidth = 140;
     int thumbnailHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:thumbnailWidth];
-    int yPadding = (self.contentView.frame.size.height - thumbnailHeight) / 2;
+    int contentViewHeight = self.contentView.frame.size.height;
+    int yPadding = (contentViewHeight - thumbnailHeight) / 2;
     //same size in both orientations
-    self.videoThumbnail.frame = CGRectMake(2,
-                                           self.contentView.frame.size.height - thumbnailHeight - yPadding,
-                                           thumbnailWidth,
-                                           thumbnailHeight);
+    _videoThumbnail.frame = CGRectMake(2,
+                                       contentViewHeight - thumbnailHeight - yPadding,
+                                       thumbnailWidth,
+                                       thumbnailHeight);
     
-    self.videoTitle.frame = [self videoTitleFrame];
-    self.videoChannel.frame = [self videoChannelFrame];
+    _videoTitle.frame = [self videoTitleFrame];
+    _videoChannel.frame = [self videoChannelFrame];
     
     float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
     int minFontSize = 18;
@@ -84,20 +84,28 @@
     
     UIFont *font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                    size:fontSize];
-    self.videoTitle.font = font;
-    self.videoChannel.font = font;
+    _videoTitle.font = font;
+    _videoChannel.font = font;
+}
+
+- (UIEdgeInsets)layoutMargins
+{
+    //it should match the padding (created in the method above), so the line starts exactly where
+    //the album art starts
+    return UIEdgeInsetsMake(0, 2, 0, 0);
 }
 
 - (CGRect)videoTitleFrame
 {
     int textLabelsPaddingFromImgView = 4;
     int xOrigin, yOrigin, width, height;
-    int imgViewWidth = self.videoThumbnail.frame.size.width;
-    xOrigin = self.videoThumbnail.frame.origin.x + imgViewWidth + textLabelsPaddingFromImgView;
-    width = self.frame.size.width - xOrigin;
+    int imgViewWidth = _videoThumbnail.frame.size.width;
+    xOrigin = _videoThumbnail.frame.origin.x + imgViewWidth + textLabelsPaddingFromImgView;
+    CGSize selfFrameSize = self.frame.size;
+    width = selfFrameSize.width - xOrigin;
     
-    height = self.frame.size.height * [self percentTextLabelIsDecreasedFromTotalCellHeight];
-    yOrigin = self.frame.size.height * .12;  //should be 12% down from top
+    height = selfFrameSize.height * [self percentTextLabelIsDecreasedFromTotalCellHeight];
+    yOrigin = selfFrameSize.height * .12;  //should be 12% down from top
     
     return CGRectMake(xOrigin, yOrigin, width, height);
 }
@@ -105,11 +113,12 @@
 - (CGRect)videoChannelFrame
 {
     int textLabelsPaddingFromImgView = 6;
-    int imgViewWidth = self.videoThumbnail.frame.size.width;
-    int xOrigin = self.videoThumbnail.frame.origin.x + imgViewWidth + textLabelsPaddingFromImgView;
-    int width = self.frame.size.width - xOrigin;
-    int yOrigin = self.frame.size.height * .53;  //should be 53% from top
-    int height = self.frame.size.height * [self percentTextLabelIsDecreasedFromTotalCellHeight];
+    int imgViewWidth = _videoThumbnail.frame.size.width;
+    int xOrigin = _videoThumbnail.frame.origin.x + imgViewWidth + textLabelsPaddingFromImgView;
+    CGSize selfFrameSize = self.frame.size;
+    int width = selfFrameSize.width - xOrigin;
+    int yOrigin = selfFrameSize.height * .53;  //should be 53% from top
+    int height = selfFrameSize.height * [self percentTextLabelIsDecreasedFromTotalCellHeight];
     return CGRectMake(xOrigin,
                       yOrigin,
                       width,

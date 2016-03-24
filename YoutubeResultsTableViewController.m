@@ -97,7 +97,7 @@ static NSDate *timeSinceLastPageLoaded;
 - (void)myPreDealloc
 {
     cachedPlaceHolderImage = nil;
-    stackController = nil;
+    thumbnailStackController = nil;
     _searchBar.delegate = nil;
     _searchBar = nil;
     _forcedSearchQuery = nil;
@@ -192,7 +192,7 @@ static NSDate *timeSinceLastPageLoaded;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    stackController = [[StackController alloc] init];
+    thumbnailStackController = [[StackController alloc] init];
     
     UIImage *poweredByYtLogo = [UIImage imageNamed:@"poweredByYtLight"];
     UIView *navBarView = [[UIView alloc] initWithFrame:CGRectMake(0,
@@ -230,6 +230,8 @@ static NSDate *timeSinceLastPageLoaded;
                                              selector:@selector(hideAppRatingCell)
                                                  name:MZHideAppRatingCell
                                                object:nil];
+    [self.tableView registerClass:[UITableViewCell class]
+           forCellReuseIdentifier:@"youtubeQuerySuggestCell"];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -691,8 +693,6 @@ static UIImage *cachedPlaceHolderImage = nil;
 static char ytCellIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell;
-    // Configure the cell...
     YouTubeVideo *ytVideo;
     
     //video search results will populate the table
@@ -759,7 +759,7 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
         // Queue a block that obtains/creates the image and then loads it into the cell.
         // The code block will be run asynchronously in a last-in-first-out queue, so that when
         // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
-        [stackController addBlock:^{
+        [thumbnailStackController addBlock:^{
             NSURL *url = [NSURL URLWithString:weakVideoURL];
             NSData *data = [NSData dataWithContentsOfURL:url];
             __block UIImage *thumbnail = [UIImage imageWithData:data];
@@ -784,15 +784,18 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
         ytVideo = nil;
         customCell.accessoryType = UITableViewCellAccessoryNone;
         return customCell;
-    }else{  //auto suggestions will populate the table
-        cell = [tableView dequeueReusableCellWithIdentifier:@"youtubeSuggsestCell" forIndexPath:indexPath];
+        
+    } else {
+        //auto suggestions will populate the table
+        UITableViewCell *cell;
+        cell = [tableView dequeueReusableCellWithIdentifier:@"youtubeQuerySuggestCell"
+                                               forIndexPath:indexPath];
         cell.textLabel.text = [self.searchSuggestions objectAtIndex:indexPath.row];
         cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                               size:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
         cell.imageView.image = nil;
+        return cell;
     }
-    ytVideo = nil;
-    return cell;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
