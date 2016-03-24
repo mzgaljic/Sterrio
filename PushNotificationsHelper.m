@@ -19,12 +19,12 @@
     }
     
     [AppEnvironmentConstants userAcceptedOrDeclinedPushNotif:YES];
-    NSString *msg = @"We're about to ask you for permission to send push notifications. Responding with \"Allow\" helps us notify you when issues occur.";
+    NSString *msg = @"We're about to ask for permission to send push notifications. Responding with \"Allow\" lets us notify you when problems occur.";
     
     SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:@"Push notifications"
                                                                     message:msg
                                                              preferredStyle:SDCAlertControllerStyleAlert];
-    SDCAlertAction *act = [SDCAlertAction actionWithTitle:@"I've decided"
+    SDCAlertAction *act = [SDCAlertAction actionWithTitle:@"I'm Ready"
                                                    style:SDCAlertActionStyleRecommended
                                                  handler:^(SDCAlertAction *action) {
                                                      [PushNotificationsHelper promptSystemPushNotifRequest];
