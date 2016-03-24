@@ -30,6 +30,8 @@ extern NSString * const MZFileNameOfLqAlbumArtObjs;
 extern NSString * const MZNewSongLoading;
 extern NSString * const MZAVPlayerStallStateChanged;
 
+extern NSString * const MZAnswersEventLogRestApiConsumptionProblemName;
+
 extern NSString * const MZInitAudioSession;
 
 extern NSString * const MZAppIntroComplete;

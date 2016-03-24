@@ -26,7 +26,6 @@
 {
     UIActivityIndicatorView *loadingNextPageSpinner;
     UIActivityIndicatorView *loadingResultsIndicator;
-    NSTimer *suggestionsDelayer;
 }
 @property (nonatomic, strong) MySearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray *searchResults;
@@ -97,6 +96,8 @@ static NSDate *timeSinceLastPageLoaded;
 
 - (void)myPreDealloc
 {
+    cachedPlaceHolderImage = nil;
+    stackController = nil;
     _searchBar.delegate = nil;
     _searchBar = nil;
     _forcedSearchQuery = nil;
@@ -111,8 +112,6 @@ static NSDate *timeSinceLastPageLoaded;
     _viewOnTopOfTable = nil;
     start = nil;
     finish = nil;
-    [suggestionsDelayer invalidate];
-    suggestionsDelayer = nil;
     [[YouTubeService sharedInstance] removeVideoQueryDelegate];
     
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
@@ -174,7 +173,6 @@ static NSDate *timeSinceLastPageLoaded;
     
     //if this VC was initialized with a forcedSearchQuery, fire off to the delegate.
     if(_forcedSearchQuery != nil && _forcedSearchQuery.length > 0) {
-        numLettersUserHasTyped = _forcedSearchQuery.length;
         self.searchBar.text = _forcedSearchQuery;
         [self searchBarSearchButtonClicked:self.searchBar];
     }
@@ -194,6 +192,7 @@ static NSDate *timeSinceLastPageLoaded;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    stackController = [[StackController alloc] init];
     
     UIImage *poweredByYtLogo = [UIImage imageNamed:@"poweredByYtLight"];
     UIView *navBarView = [[UIView alloc] initWithFrame:CGRectMake(0,
@@ -227,7 +226,10 @@ static NSDate *timeSinceLastPageLoaded;
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerShouldRespectToolbar];
     
     self.canShowAppRatingCell = [AppRatingUtils shouldAskUserIfTheyLikeApp];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideAppRatingCell) name:MZHideAppRatingCell object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(hideAppRatingCell)
+                                                 name:MZHideAppRatingCell
+                                               object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -495,9 +497,7 @@ static NSDate *timeSinceLastPageLoaded;
     self.waitingOnYoutubeResults = YES;
     self.tableView.scrollEnabled = YES;
     _lastSuccessfullSearchString = searchBar.text;
-    //setting it both ways, do to nav bar title bug
     self.navigationController.navigationBar.topItem.title = @"Search Results";
-    //_navBar.title = @"Search Results";
     [_searchBar resignFirstResponder];
     
     [self showLoadingIndicatorInCenterOfTable:YES];
@@ -518,14 +518,13 @@ static NSDate *timeSinceLastPageLoaded;
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     if(! self.searchInitiatedAlready){
+        [[YouTubeService sharedInstance] cancelAllYtAutoCompletePendingRequests];
         [self myPreDealloc];
         [self dismissViewControllerAnimated:YES completion:^{
             [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
          }];
     }else{
-        //setting it both ways, due to nav bar title bug
         self.navigationController.navigationBar.topItem.title = @"Search Results";
-        //_navBar.title = @"Search Results";
         
         //restore state of search bar and table before uncommited search bar edit began
         [_searchBar setText:_lastSuccessfullSearchString];
@@ -563,32 +562,16 @@ static NSDate *timeSinceLastPageLoaded;
 }
 
 static BOOL userClearedTextField = NO;
-//static since the issue only happens the first time this VC is loaded. Not sure why.
-static NSUInteger numLettersUserHasTyped = 0;
 //User typing as we speak, fetch latest results to populate results as they type
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    numLettersUserHasTyped++;
-    [suggestionsDelayer invalidate];
-    suggestionsDelayer = nil;
     [[YouTubeService sharedInstance] cancelAllYtAutoCompletePendingRequests];
     
     if(searchText.length != 0){
         if(! self.displaySearchResults)
             self.tableView.scrollEnabled = YES;
         
-        if(numLettersUserHasTyped > 12) {
-            [[YouTubeService sharedInstance] fetchYouTubeAutoCompleteResultsForString:searchText];
-        } else {
-            //if user just started typing, delay the first query for suggestions,
-            //otherwise the main thread gets blocked for a bit and lags if they're typing
-            //fast6
-            suggestionsDelayer = [NSTimer scheduledTimerWithTimeInterval:0.17
-                                                                  target:self
-                                                                selector:@selector(fetchYtSearchSuggestionsDelayed:)
-                                                                userInfo:searchText
-                                                                 repeats:NO];
-        }
+        [[YouTubeService sharedInstance] fetchYouTubeAutoCompleteResultsForString:searchText];
         self.displaySearchResults = NO;
     }
     else{  //user cleared the textField
@@ -614,14 +597,6 @@ static NSUInteger numLettersUserHasTyped = 0;
         [self.tableView deleteRowsAtIndexPaths:paths withRowAnimation:UITableViewRowAnimationFade];
         [self.tableView endUpdates];
     }
-}
-
-- (void)fetchYtSearchSuggestionsDelayed:(NSTimer *)t
-{
-    NSAssert(t == suggestionsDelayer, @"fetchYtSearchSuggestionsDelayed: was called with the wrong timer object. t != suggestionsDelayer.");
-    NSString *query = suggestionsDelayer.userInfo;
-    [[YouTubeService sharedInstance] fetchYouTubeAutoCompleteResultsForString:query];
-    suggestionsDelayer = nil;
 }
 
 #pragma mark - TableView deleagte
@@ -711,6 +686,9 @@ static NSUInteger numLettersUserHasTyped = 0;
     }
 }
 
+//works because youtube images are almost always the same size. the placeholder is fine.
+static UIImage *cachedPlaceHolderImage = nil;
+static char ytCellIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell;
@@ -761,24 +739,48 @@ static NSUInteger numLettersUserHasTyped = 0;
         // If an existing cell is being reused, reset the image to the default until it is populated.
         // Without this code, previous images are displayed against the new cells during rapid scrolling.
         customCell.videoThumbnail.image = nil;
-        customCell.videoThumbnail.image = [UIImage imageWithColor:[UIColor clearColor]
-                                                            width:customCell.videoThumbnail.frame.size.width
-                                                           height:customCell.videoThumbnail.frame.size.height];
+        if(cachedPlaceHolderImage == nil) {
+            cachedPlaceHolderImage = [UIImage imageWithColor:[UIColor clearColor]
+                                                       width:customCell.videoThumbnail.frame.size.width
+                                                      height:customCell.videoThumbnail.frame.size.height];
+        }
+        customCell.videoThumbnail.image = cachedPlaceHolderImage;
         
-        // now download the true thumbnail image asynchronously
+        // Store a reference to the current cell that will enable the image to be associated with
+        //the correct cell, when the image is subsequently loaded asynchronously.
+        objc_setAssociatedObject(customCell,
+                                 &ytCellIndexPathAssociationKey,
+                                 indexPath,
+                                 OBJC_ASSOCIATION_RETAIN);
+        
         __weak NSString *weakVideoURL = ytVideo.videoThumbnailUrl;
-        [self downloadImageWithURL:[NSURL URLWithString:weakVideoURL] completionBlock:^(BOOL succeeded, UIImage *image)
-         {
-             if (succeeded) {
-                 customCell.videoThumbnail.image = nil;
-                 [UIView transitionWithView:customCell.videoThumbnail
-                                   duration:MZCellImageViewFadeDuration
-                                    options:UIViewAnimationOptionTransitionCrossDissolve
-                                 animations:^{
-                                     customCell.videoThumbnail.image = image;
-                                 } completion:nil];
-             }
-         }];
+        __weak CustomYoutubeTableViewCell *weakCell = customCell;
+        
+        // Queue a block that obtains/creates the image and then loads it into the cell.
+        // The code block will be run asynchronously in a last-in-first-out queue, so that when
+        // rapid scrolling finishes, the current cells being displayed will be the next to be updated.
+        [stackController addBlock:^{
+            NSURL *url = [NSURL URLWithString:weakVideoURL];
+            NSData *data = [NSData dataWithContentsOfURL:url];
+            __block UIImage *thumbnail = [UIImage imageWithData:data];
+            
+            // The block will be processed on a background Grand Central Dispatch queue.
+            // Therefore, ensure that this code that updates the UI will run on the main queue.
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSIndexPath *cellIndexPath = (NSIndexPath *)objc_getAssociatedObject(customCell, &ytCellIndexPathAssociationKey);
+                if ([indexPath isEqual:cellIndexPath]) {
+                    // Only set cell image if the cell currently being displayed is the one that actually required this image.
+                    // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
+                    [UIView transitionWithView:weakCell.videoThumbnail
+                                      duration:MZCellImageViewFadeDuration
+                                       options:UIViewAnimationOptionTransitionCrossDissolve
+                                    animations:^{
+                                        weakCell.videoThumbnail.image = thumbnail;
+                                    } completion:nil];
+                }
+            });
+        }];
+        
         ytVideo = nil;
         customCell.accessoryType = UITableViewCellAccessoryNone;
         return customCell;
@@ -879,22 +881,6 @@ static NSUInteger numLettersUserHasTyped = 0;
     int headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
     header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                             size:headerFontSize];
-}
-
-- (void)downloadImageWithURL:(NSURL *)url completionBlock:(void (^)(BOOL succeeded, UIImage *image))completionBlock
-{
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:[NSOperationQueue mainQueue]
-                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-                               if ( !error )
-                               {
-                                   UIImage *image = [UIImage imageWithData:data];
-                                   completionBlock(YES, image);
-                               } else{
-                                   completionBlock(NO, nil);
-                               }
-                           }];
 }
 
 

@@ -31,7 +31,9 @@
 {
     // We do this gnarly parsing on a background thread to keep the UI responsive.
     if(jsonData == nil || jsonData.length == 0) {
-        CLS_LOG(@"%@", @"Google suggestions api response has changed! Data is nil or length == 0.");
+        [Answers logCustomEventWithName:MZAnswersEventLogRestApiConsumptionProblemName
+                       customAttributes:@{@"Rest Api Consumption Problem"
+                                          : @"YT Search Suggestions. Data is nil or length == 0."}];
         return @[];
     }
     //content-type of response is NSISOLatin1StringEncoding
@@ -48,6 +50,9 @@
         else{
             //response from server has changed or an error occured.
             CLS_LOG(@"%@", @"Google suggestions api response has changed! Parsing 'window.google.ac.h(' is not working properly");
+            [Answers logCustomEventWithName:MZAnswersEventLogRestApiConsumptionProblemName
+                           customAttributes:@{@"Rest Api Consumption Problem"
+                                              : @"YT Search Suggestions. Parsing 'window.google.ac.h(' is not working properly"}];
             return @[];
         }
     }

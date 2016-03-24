@@ -125,6 +125,7 @@ const int time_out_interval_seconds = 10;
 }
 
 #pragma mark - Fetching Video duration
+static NSOperationQueue *fetchDetailsForVideoQueue = nil;
 - (void)fetchDetailsForVideo:(YouTubeVideo *)ytVideo
 {
     if(ytVideo){
@@ -138,9 +139,16 @@ const int time_out_interval_seconds = 10;
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:videoInfoUrl]
                                                     cachePolicy:NSURLRequestUseProtocolCachePolicy
                                                 timeoutInterval:time_out_interval_seconds];
-        NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+        if(fetchDetailsForVideoQueue == nil) {
+            fetchDetailsForVideoQueue = [NSOperationQueue new];
+            [fetchDetailsForVideoQueue setMaxConcurrentOperationCount:1];
+        } else {
+            [fetchDetailsForVideoQueue cancelAllOperations];
+        }
         
-        [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^
+        [NSURLConnection sendAsynchronousRequest:request
+                                           queue:fetchDetailsForVideoQueue
+                               completionHandler:^
          (NSURLResponse *response, NSData *data, NSError *connectionError)
          {
              if (data == nil){
@@ -208,7 +216,7 @@ const int time_out_interval_seconds = 10;
 {
     [self.queryDelegate performSelectorOnMainThread:@selector(ytVideoAutoCompleteResultsDidDownload:)
                                          withObject:theItems
-                                      waitUntilDone:YES];
+                                      waitUntilDone:NO];
 }
 
 - (void)videoSuggestionsRequestError:(NSError *)theError
@@ -234,6 +242,11 @@ const int time_out_interval_seconds = 10;
 //returns array of YouTubeVideo objects
 - (NSArray *)parseYouTubeVideoResultsResponse:(NSData *)jsonData
 {
+    if(jsonData == nil || jsonData.length == 0) {
+        [Answers logCustomEventWithName:MZAnswersEventLogRestApiConsumptionProblemName
+                       customAttributes:@{@"Rest Api Consumption Problem"
+                                          : @"YT Search API V3. Data is nil or length == 0."}];
+    }
     //NOTE: Not seeing a field you're expecting in the debugger? The query itself is only
     //asking for particular Obj properties in the response. Check that first if you're confused.
     
@@ -325,36 +338,6 @@ const int time_out_interval_seconds = 10;
     }
 
     return details;
-    
-    //-----old XML parsing code-----
-    /*
-    NSError *error;
-    TBXML *tbxml = [TBXML tbxmlWithXMLData:XMLdata error:&error];
-    
-    if (error) {
-        //dont care what error is, just return so that the app doesnt crash
-        return nil;
-    } else {
-
-        TBXMLElement *root = tbxml.rootXMLElement;
-        
-        //getting duration
-        TBXMLElement *mediaGroup = [TBXML childElementNamed:@"media:group"
-                                              parentElement:root];
-        TBXMLElement *mediaContent = [TBXML childElementNamed:@"media:content"
-                                                parentElement:mediaGroup];
-        NSString *durationText = [TBXML valueOfAttributeNamed:@"duration"
-                                                   forElement:mediaContent];
-        
-        //getting view count
-        TBXMLElement *stats = [TBXML childElementNamed:@"yt:statistics"
-                                              parentElement:root];
-        NSString *viewCountText = [TBXML valueOfAttributeNamed:@"viewCount"
-                                                   forElement:stats];
-//#warning extracted video view count...do something with this lol.
-        return details;
-    }
-     */
 }
 
 //Accepts a string (duration) from the youtube api in ISO 8601 format duration

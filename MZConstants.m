@@ -31,6 +31,8 @@ NSString * const MZFileNameOfLqAlbumArtObjs = @"Pending Album Art Updates.txt";
 NSString * const MZNewSongLoading = @"AVPlayer will try to load a new song now";
 NSString * const MZAVPlayerStallStateChanged = @"AVPlayer stalls changed";
 
+NSString * const MZAnswersEventLogRestApiConsumptionProblemName = @"an api is not being consumed correctly anymore.";
+
 NSString * const MZInitAudioSession = @"Init the audio session if it isnt already setup";
 
 NSString * const MZAppIntroComplete = @"Intro on initial app launch has been completed";

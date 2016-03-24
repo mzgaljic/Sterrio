@@ -12,10 +12,13 @@
 #import "UIImageView+WebCache.h"
 #import "MyTableViewController.h"
 #import "SongPlayerCoordinator.h"
+@class StackController;
 
 @interface YoutubeResultsTableViewController : MyTableViewController <UISearchBarDelegate,
                                                                     YouTubeServiceSearchingDelegate,
                                                                     SDWebImageManagerDelegate>
-
+{
+    StackController *stackController;
+}
 + (instancetype)initWithSearchQuery:(NSString *)query replacementObjId:(NSManagedObjectID *)objId;
 @end

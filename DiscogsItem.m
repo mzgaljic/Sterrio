@@ -43,6 +43,12 @@
 // This method is called on a background thread. Don't touch your instance members!
 + (id)webRequest:(SMWebRequest *)webRequest resultObjectForData:(NSData *)data context:(id)context
 {
+    if(data == nil || data.length == 0) {
+        [Answers logCustomEventWithName:MZAnswersEventLogRestApiConsumptionProblemName
+                       customAttributes:@{@"Rest Api Consumption Problem"
+                                          : @"Discogs Item response. Data is nil or length == 0."}];
+    }
+    
     // We do this gnarly parsing on a background thread to keep the UI responsive.
     NSDictionary *allDataDict = [NSJSONSerialization JSONObjectWithData:data
                                                                 options:kNilOptions
