@@ -93,11 +93,12 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
 {
     [super viewWillAppear:animated];
     [self.tableView reloadData];
+    
     //need this for loop. Changing the font size to a very big one
     //will cause the cell textlabels to look odd after coming back to
     //this VC. This seems to only be an issue with my custom MZRightDetailCell.
     for(UITableViewCell *cell in self.tableView.visibleCells) {
-        [cell.contentView setNeedsLayout];
+        [cell setNeedsLayout];
     }
 }
 
