@@ -23,7 +23,6 @@
     [[MusicPlaybackController obtainRawPlayerView] removeFromSuperview];
     UIWindow *appWindow = [[[UIApplication sharedApplication] delegate] window];
     [appWindow addSubview:[MusicPlaybackController obtainRawPlayerView]];
-    [AppEnvironmentConstants recordIndexOfPlayerView:[[appWindow subviews] indexOfObject:[MusicPlaybackController obtainRawPlayerView]]];
     [super viewWillAppear:animated];
 }
 

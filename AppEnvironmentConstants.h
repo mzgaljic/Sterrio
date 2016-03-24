@@ -54,9 +54,6 @@ typedef enum{
  */
 + (BOOL)isUserCurrentlyOnCall;
 
-+ (void)recordIndexOfPlayerView:(NSUInteger)index;
-+ (NSUInteger)lastIndexOfPlayerView;
-
 + (BOOL)shouldDisplayWhatsNewScreen;
 + (void)markShouldDisplayWhatsNewScreenTrue;
 

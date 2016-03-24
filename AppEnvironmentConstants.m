@@ -42,7 +42,6 @@ static PREVIEW_PLAYBACK_STATE currentPreviewPlayerState = PREVIEW_PLAYBACK_STATE
 static int navBarHeight;
 static int statusBarHeight;
 static int bannerAdHeight;
-static NSInteger lastPlayerViewIndex = NSNotFound;
 
 static VALSynchronizableValet *adsKeychainItem;
 static VALSynchronizableValet *storeRatingKeychainItem;
@@ -88,15 +87,6 @@ static BOOL userOnIos9OrAboveCached = NO;
     return NO;
 }
 
-+ (void)recordIndexOfPlayerView:(NSUInteger)index
-{
-    lastPlayerViewIndex = index;
-}
-
-+ (NSUInteger)lastIndexOfPlayerView
-{
-    return lastPlayerViewIndex;
-}
 
 //app rating is stored in keychain with VALSynchronizableValet so that the data is easily
 //stored in icloud.

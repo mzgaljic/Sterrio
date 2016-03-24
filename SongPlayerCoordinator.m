@@ -96,7 +96,6 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
         [MusicPlaybackController setRawPlayerView:playerView];
         [playerView setBackgroundColor:[UIColor blackColor]];
         [appWindow addSubview:playerView];
-        [AppEnvironmentConstants recordIndexOfPlayerView:[[appWindow subviews] indexOfObject:playerView]];
         //setting a temp frame in the bottom right corner for now
         [playerView setFrame:CGRectMake(appWindow.frame.size.width, appWindow.frame.size.height, 1, 1)];
         //real playerView frame set below...
@@ -203,7 +202,6 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
     currentPlayerFrame = [self smallPlayerFrameBasedOnCurrentOrientation];
     playerView.frame = currentPlayerFrame;
     [appWindow addSubview:playerView];
-    [AppEnvironmentConstants recordIndexOfPlayerView:[[appWindow subviews] indexOfObject:playerView]];
     
     [UIView animateWithDuration:1
                           delay:0
