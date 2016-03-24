@@ -64,15 +64,20 @@
     return height;
 }
 
+static int MAX_FONT_SIZE_PREF_FONT_UTILS = -1;
 + (UIFont *)findAdaptiveFontWithName:(NSString *)fontName
                       forUILabelSize:(CGSize)labelSize
                      withMinimumSize:(NSInteger)minSize
 {
+    if(MAX_FONT_SIZE_PREF_FONT_UTILS == -1) {
+        MAX_FONT_SIZE_PREF_FONT_UTILS = [AppEnvironmentConstants maximumSongCellHeight];
+    }
+    
     UIFont *tempFont = nil;
     NSString *testString = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     
     NSInteger tempMin = minSize;
-    NSInteger tempMax = 256;
+    NSInteger tempMax = MAX_FONT_SIZE_PREF_FONT_UTILS;
     NSInteger mid = 0;
     NSInteger difference = 0;
     
