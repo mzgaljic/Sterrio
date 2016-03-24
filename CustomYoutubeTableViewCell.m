@@ -11,8 +11,6 @@
 @interface CustomYoutubeTableViewCell ()
 @end
 
-//This custom cell does not handle orientation at all due to performance concerns.
-//The VC managing the tableview should just reload the visible cells on rotation.
 @implementation CustomYoutubeTableViewCell
 
 - (void)awakeFromNib
