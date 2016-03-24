@@ -448,39 +448,59 @@ static BOOL didFetchAreAdsRemovedKeychainVal = NO;
     return didPreviouslyShowUserCellularWarning;
 }
 
-+ (BOOL)icloudSyncEnabled
-{
-    return icloudSyncEnabled;
-}
-
+static NSLock *icloudSwitchWaitingForActionToFinishLock;
 + (BOOL)isIcloudSwitchWaitingForActionToFinish
 {
-    return isIcloudSwitchWaitingForActionToComplete;
+    BOOL retVal;
+    [icloudSwitchWaitingForActionToFinishLock lock];
+    retVal = isIcloudSwitchWaitingForActionToComplete;
+    [icloudSwitchWaitingForActionToFinishLock unlock];
+    return retVal;
 }
 
-static int icloudEnabledCounter = 0;
-+ (void)set_iCloudSyncEnabled:(BOOL)enabled
+static NSLock *icloudSyncEnabledLock;
++ (BOOL)icloudSyncEnabled
 {
-    icloudEnabledCounter++;
-    if(icloudEnabledCounter != 1){
-        //the icloud switch is disabled from touches (in interface) until the action
-        //succeeds or fails.
-        isIcloudSwitchWaitingForActionToComplete = YES;
+    BOOL retVal;
+    [icloudSyncEnabledLock lock];
+    retVal = icloudSyncEnabled;
+    [icloudSyncEnabledLock unlock];
+    return retVal;
+}
+
+//blindlySet should only be used when loading settings from disk.
++ (void)set_iCloudSyncEnabled:(BOOL)enabled tryToBlindlySet:(BOOL)blindySet
+{
+    if(blindySet) {
+        [icloudSyncEnabledLock lock];
+        icloudSyncEnabled = enabled;
+        [icloudSyncEnabledLock unlock];
+        return;
     }
+    
+    //the icloud switch is disabled from touches (in interface) until the action
+    //succeeds or fails.
+    [icloudSwitchWaitingForActionToFinishLock lock];
+    isIcloudSwitchWaitingForActionToComplete = YES;
+    [icloudSwitchWaitingForActionToFinishLock unlock];
 
     if(enabled)
         [AppEnvironmentConstants tryToLeechMainContextEnsemble];
     else
         [AppEnvironmentConstants tryToDeleechMainContextEnsemble];
     
+    [icloudSyncEnabledLock lock];
     icloudSyncEnabled = enabled;
+    [icloudSyncEnabledLock unlock];
 }
 
 + (void)tryToDeleechMainContextEnsemble
 {
     CDEPersistentStoreEnsemble *ensemble =[[CoreDataManager sharedInstance] ensembleForMainContext];
     if(! ensemble.isLeeched){
+        [icloudSwitchWaitingForActionToFinishLock lock];
         isIcloudSwitchWaitingForActionToComplete = NO;
+        [icloudSwitchWaitingForActionToFinishLock unlock];
         return;
     }
     
@@ -496,6 +516,7 @@ static int icloudEnabledCounter = 0;
                                                            style:SDCAlertActionStyleDefault
                                                          handler:^(SDCAlertAction *action) {
                                                              [AppEnvironmentConstants notifyThatIcloudSyncFailedToDisable];
+                                                             [AppEnvironmentConstants notifyThatAppsIcloudStateChanged];
                                                          }];
             SDCAlertAction *tryAgain = [SDCAlertAction actionWithTitle:@"Try Again"
                                                                  style:SDCAlertActionStyleRecommended
@@ -513,10 +534,9 @@ static int icloudEnabledCounter = 0;
         else
         {
             [AppEnvironmentConstants notifyThatIcloudSyncSuccessfullyDisabled];
+            [AppEnvironmentConstants notifyThatAppsIcloudStateChanged];
             NSLog(@"De-leeched ensemble successfuly");
         }
-        
-        isIcloudSwitchWaitingForActionToComplete = NO;
     }];
 }
 
@@ -524,7 +544,9 @@ static int icloudEnabledCounter = 0;
 {
     CDEPersistentStoreEnsemble *ensemble = [[CoreDataManager sharedInstance] ensembleForMainContext];
     if(ensemble.isLeeched){
+        [icloudSwitchWaitingForActionToFinishLock lock];
         isIcloudSwitchWaitingForActionToComplete = NO;
+        [icloudSwitchWaitingForActionToFinishLock unlock];
         return;
     }
     
@@ -540,6 +562,7 @@ static int icloudEnabledCounter = 0;
                                                            style:SDCAlertActionStyleDefault
                                                          handler:^(SDCAlertAction *action) {
                                                              [AppEnvironmentConstants notifyThatIcloudSyncFailedToEnable];
+                                                             [AppEnvironmentConstants notifyThatAppsIcloudStateChanged];
                                                          }];
             SDCAlertAction *tryAgain = [SDCAlertAction actionWithTitle:@"Try Again"
                                                                  style:SDCAlertActionStyleRecommended
@@ -568,33 +591,43 @@ static int icloudEnabledCounter = 0;
                     NSLog(@"Just merged successfully.");
                     [AppEnvironmentConstants setLastSuccessfulSyncDate:[[NSDate alloc] init]];
                 }
+                //notifying here because the reciever of the notification cares about the last
+                //successful sync date (set above)
+                [AppEnvironmentConstants notifyThatAppsIcloudStateChanged];
             }];
         }
-        
-        isIcloudSwitchWaitingForActionToComplete = NO;
     }];
 }
 
+static NSLock *lastSuccessfulSyncDateLock;
 + (void)setLastSuccessfulSyncDate:(NSDate *)date
 {
+    [lastSuccessfulSyncDateLock lock];
     [[NSUserDefaults standardUserDefaults] setObject:date forKey:LAST_SUCCESSFUL_ICLOUD_SYNC_KEY];
     lastSuccessfulSyncDate = date;
     [[NSUserDefaults standardUserDefaults] synchronize];
+    [lastSuccessfulSyncDateLock unlock];
 }
 
 + (NSDate *)lastSuccessfulSyncDate
 {
-    return lastSuccessfulSyncDate;
+    NSDate *retVal;
+    [lastSuccessfulSyncDateLock lock];
+    retVal = lastSuccessfulSyncDate;
+    [lastSuccessfulSyncDateLock unlock];
+    return retVal;
 }
 
 //returns a date in a nice user readable format, such as "Yesterday at 1:15 PM".
 + (NSString *)humanReadableLastSyncTime
 {
-    if(lastSuccessfulSyncDate == nil)
+    if(lastSuccessfulSyncDate == nil
+       || [AppEnvironmentConstants isIcloudSwitchWaitingForActionToFinish])
         return nil;
     
     //if any of these cases are true, use that instead of the date AND time.
-    NSTimeInterval secs = [[[NSDate alloc] init] timeIntervalSinceDate:lastSuccessfulSyncDate];
+    NSDate *threadSafeLastSyncDate = [AppEnvironmentConstants lastSuccessfulSyncDate];
+    NSTimeInterval secs = [[[NSDate alloc] init] timeIntervalSinceDate:threadSafeLastSyncDate];
     if(secs < 60){
         return @"Just Now";
     } else if(secs < 3600){
@@ -619,8 +652,8 @@ static int icloudEnabledCounter = 0;
     else
         [timeFormatter setDateFormat:@"h:mm a"];
     
-    NSString *prettyDateString = [dateFormatter stringFromDate:lastSuccessfulSyncDate];
-    NSString *timeString = [timeFormatter stringFromDate:lastSuccessfulSyncDate];
+    NSString *prettyDateString = [dateFormatter stringFromDate:threadSafeLastSyncDate];
+    NSString *timeString = [timeFormatter stringFromDate:threadSafeLastSyncDate];
     
     return [NSString stringWithFormat:@"%@ at %@", prettyDateString, timeString];
 }
@@ -642,7 +675,9 @@ static int icloudEnabledCounter = 0;
 #pragma mark - Notifying user interface about success or failure of icloud operations.
 + (void)notifyThatIcloudSyncFailedToEnable
 {
+    [icloudSyncEnabledLock lock];
     icloudSyncEnabled = NO;
+    [icloudSyncEnabledLock unlock];
     [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
         [[NSNotificationCenter defaultCenter] postNotificationName:MZTurningOnIcloudFailed object:nil];
     }];
@@ -650,7 +685,9 @@ static int icloudEnabledCounter = 0;
 
 + (void)notifyThatIcloudSyncFailedToDisable
 {
+    [icloudSyncEnabledLock lock];
     icloudSyncEnabled = YES;
+    [icloudSyncEnabledLock unlock];
     [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
         [[NSNotificationCenter defaultCenter] postNotificationName:MZTurningOffIcloudFailed object:nil];
     }];
@@ -658,7 +695,9 @@ static int icloudEnabledCounter = 0;
 
 + (void)notifyThatIcloudSyncSuccessfullyEnabled
 {
+    [icloudSyncEnabledLock lock];
     icloudSyncEnabled = YES;
+    [icloudSyncEnabledLock unlock];
     [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
         [[NSNotificationCenter defaultCenter] postNotificationName:MZTurningOnIcloudSuccess object:nil];
     }];
@@ -666,12 +705,28 @@ static int icloudEnabledCounter = 0;
 
 + (void)notifyThatIcloudSyncSuccessfullyDisabled
 {
+    [icloudSyncEnabledLock lock];
     icloudSyncEnabled = NO;
+    [icloudSyncEnabledLock unlock];
     [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
         [[NSNotificationCenter defaultCenter] postNotificationName:MZTurningOffIcloudSuccess object:nil];
     }];
 }
 
+//called to basically say "hey, the GUI should re-query the icloud state of the app".
++ (void)notifyThatAppsIcloudStateChanged
+{
+    [icloudSwitchWaitingForActionToFinishLock lock];
+    isIcloudSwitchWaitingForActionToComplete = NO;
+    [icloudSwitchWaitingForActionToFinishLock unlock];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZIcloudSyncStateHasChanged
+                                                            object:nil];
+    }];
+}
+
+
+#pragma mark - Other GUI junk
 + (void)setAppTheme:(UIColor *)appThemeColor
 {
     const CGFloat* components = CGColorGetComponents(appThemeColor.CGColor);

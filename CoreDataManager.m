@@ -366,7 +366,7 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
 - (NSManagedObjectContext *)deleteOldStoreAndMakeNewOne
 {
     BOOL icloudOriginallyActive = [AppEnvironmentConstants icloudSyncEnabled];
-    [AppEnvironmentConstants set_iCloudSyncEnabled:NO];
+    [AppEnvironmentConstants set_iCloudSyncEnabled:NO tryToBlindlySet:NO];
     //delete the old sqlite DB file
     NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString *coreDataFolder = [libPath stringByAppendingPathComponent:@"Core Data"];
@@ -376,7 +376,7 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
         return nil;
     
     NSManagedObjectContext *newContext = [self managedObjectContext];
-    [AppEnvironmentConstants set_iCloudSyncEnabled:icloudOriginallyActive];
+    [AppEnvironmentConstants set_iCloudSyncEnabled:icloudOriginallyActive tryToBlindlySet:NO];
     return newContext;
 }
 

@@ -122,7 +122,7 @@ typedef enum{
 
 + (BOOL)isIcloudSwitchWaitingForActionToFinish;
 + (BOOL)icloudSyncEnabled;
-+ (void)set_iCloudSyncEnabled:(BOOL)enabled;
++ (void)set_iCloudSyncEnabled:(BOOL)enabled tryToBlindlySet:(BOOL)blindySet;
 
 + (void)setShouldOnlyAirplayAudio:(BOOL)airplayAudio;
 + (BOOL)shouldOnlyAirplayAudio;

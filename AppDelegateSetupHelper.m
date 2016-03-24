@@ -41,7 +41,8 @@
         [AppEnvironmentConstants setPreferredSongCellHeight:prefSongCellHeight];
         [AppEnvironmentConstants setPreferredWifiStreamSetting:prefWifiStreamQuality];
         [AppEnvironmentConstants setPreferredCellularStreamSetting:prefCellStreamQuality];
-        [AppEnvironmentConstants set_iCloudSyncEnabled:icloudSync];
+        [AppEnvironmentConstants set_iCloudSyncEnabled:icloudSync
+                                       tryToBlindlySet:YES];
         [AppEnvironmentConstants setUserHasSeenCellularDataUsageWarning:userHasSeenCellDataWarning];
         [AppEnvironmentConstants setShouldOnlyAirplayAudio:shouldOnlyAirplayAudio];
         [AppEnvironmentConstants setLimitVideoLengthOnCellular:limitVideoLengthOnCellular];
@@ -89,7 +90,7 @@
         [AppEnvironmentConstants setPreferredCellularStreamSetting:
                         [standardDefaults integerForKey:PREFERRED_CELL_VALUE_KEY]];
         [AppEnvironmentConstants set_iCloudSyncEnabled:
-                        [standardDefaults boolForKey:ICLOUD_SYNC]];
+                        [standardDefaults boolForKey:ICLOUD_SYNC] tryToBlindlySet:YES];
         [AppEnvironmentConstants setShouldOnlyAirplayAudio:
                         [standardDefaults boolForKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY]];
         [AppEnvironmentConstants setLimitVideoLengthOnCellular:

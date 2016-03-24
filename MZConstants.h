@@ -51,6 +51,7 @@ extern NSString * const MZTurningOnIcloudFailed;
 extern NSString * const MZTurningOffIcloudSuccess;
 extern NSString * const MZTurningOffIcloudFailed;
 extern NSString * const MZTurningOnIcloudSuccess;
+extern NSString * const MZIcloudSyncStateHasChanged;
 
 extern short const MZMinutesInAnHour;
 extern short const MZSecondsInAMinute;

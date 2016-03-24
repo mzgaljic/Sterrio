@@ -16,6 +16,7 @@
 #import "EmailComposerManager.h"
 #import "StreamQualityPickerTableViewController.h"
 #import "InAppPurchaseUtils.h"
+#import "TOMSMorphingLabel.h"
 
 @interface NewSettingsTableViewController ()
 {
@@ -24,6 +25,8 @@
     IBActionSheet *bugFoundActionSheet;
     EmailComposerManager *mailComposer;
     UITableViewCell *icloudCell;
+    
+    TOMSMorphingLabel *icloudSectionFooterLabel;
 }
 @end
 
@@ -80,6 +83,10 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(icloudSwitchMustBeTurnedOff)
                                                  name:MZTurningOffIcloudSuccess
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(icloudSyncStateHasChanged)
+                                                 name:MZIcloudSyncStateHasChanged
                                                object:nil];
 }
 - (void)viewWillAppear:(BOOL)animated
@@ -148,29 +155,28 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
 {
     if(section == ICLOUD_SYNC_SECTION_NUM) {
-        if(! [AppEnvironmentConstants icloudSyncEnabled])
-            return nil;
-        
         static UIView *footerView;
-        
-        NSString *syncDateString = [AppEnvironmentConstants humanReadableLastSyncTime];
-        NSString *footerText = [NSString stringWithFormat:@"Last Synced %@", syncDateString];
-        if(syncDateString == nil){
-            footerText = @"Still trying to sync...";
-        }
+        NSString *footerText = [self icloudSyncStateUserReadableText];
         float footerWidth = [UIScreen mainScreen].bounds.size.width;
         float padding = 10.0f; // an arbitrary amount to center the label in the container
-        footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, footerWidth, 44.0f)];
-        footerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        if(footerView.superview == nil) {
+            footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, footerWidth, 44.0f)];
+            footerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        }
         
-        // create the label centered in the container, then set the appropriate autoresize mask
-        UILabel *footerLabel = [[UILabel alloc] initWithFrame:CGRectMake(padding, 0, footerWidth - 2.0f * padding, 44.0f)];
-        footerLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-        footerLabel.textAlignment = NSTextAlignmentCenter;
-        footerLabel.text = footerText;
-        footerLabel.textColor = [UIColor darkGrayColor];
+        if(icloudSectionFooterLabel == nil) {
+            // create the label centered in the container, then set the appropriate autoresize mask
+            icloudSectionFooterLabel = [[TOMSMorphingLabel alloc] initWithFrame:CGRectMake(padding, 0, footerWidth - 2.0f * padding, 44.0f)];
+            icloudSectionFooterLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+            icloudSectionFooterLabel.textAlignment = NSTextAlignmentCenter;
+            icloudSectionFooterLabel.text = footerText;
+            icloudSectionFooterLabel.textColor = [UIColor darkGrayColor];
+        }
+        icloudSectionFooterLabel.text = footerText;
         
-        [footerView addSubview:footerLabel];
+        if(icloudSectionFooterLabel.superview == nil) {
+            [footerView addSubview:icloudSectionFooterLabel];
+        }
         
         return footerView;
     } else {
@@ -400,7 +406,6 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
         cell.detailTextLabel.numberOfLines = 1;
     }
 
-    [cell.contentView setNeedsDisplay];
     return cell;
 }
 
@@ -580,10 +585,9 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
     icloudCell.textLabel.enabled = NO;
     blockSwitch.enabled = NO;
     
-    
     if(switchNowInOnState)
     {
-        [AppEnvironmentConstants set_iCloudSyncEnabled:switchNowInOnState];
+        [AppEnvironmentConstants set_iCloudSyncEnabled:switchNowInOnState tryToBlindlySet:NO];
     }
     else
     {
@@ -600,7 +604,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
                                                                    weakCell.userInteractionEnabled = NO;
                                                                    weakCell.textLabel.enabled = NO;
                                                                    blockSwitch.enabled = NO;
-                                                                   [AppEnvironmentConstants set_iCloudSyncEnabled:switchNowInOnState];
+                                                                   [AppEnvironmentConstants set_iCloudSyncEnabled:switchNowInOnState tryToBlindlySet:NO];
                                                                }];
                                                            }];
         SDCAlertAction *cancel = [SDCAlertAction actionWithTitle:@"Cancel"
@@ -617,6 +621,12 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
         [alert addAction:stopSync];
         [alert presentWithCompletion:nil];
     }
+    [self icloudSyncStateHasChanged];
+}
+
+- (void)icloudSyncStateHasChanged
+{
+    icloudSectionFooterLabel.text = [self icloudSyncStateUserReadableText];
 }
 
 - (void)icloudSwitchMustBeTurnedOff
@@ -633,6 +643,22 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
     icloudCell.textLabel.enabled = YES;
     icloudCell.userInteractionEnabled = YES;
     [icloudSwitch setOn:YES animated:YES];
+}
+
+- (NSString *)icloudSyncStateUserReadableText
+{
+    if(! [AppEnvironmentConstants icloudSyncEnabled]
+       && ![AppEnvironmentConstants isIcloudSwitchWaitingForActionToFinish]) {
+        return @"iCloud Sync Disabled";
+    }
+    if([AppEnvironmentConstants isIcloudSwitchWaitingForActionToFinish]) {
+        return icloudSwitch.isOn ? @"Still trying to sync..." : @"Shutting off sync...";
+    }
+
+    //YES, syncDateString can == nil in practice (somehow.) Just leave that check here.
+    NSString *syncDateString = [AppEnvironmentConstants humanReadableLastSyncTime];
+    return syncDateString == nil    ? @"Still trying to sync..."
+                                    : [NSString stringWithFormat:@"Last Synced %@", syncDateString];
 }
 
 - (IBActionSheet *)actionSheetForBugFound
