@@ -7,13 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MZAppTheme.h"
 
 @interface IntroVideoView : UIView
 
 - (instancetype)initWithFrame:(CGRect)frame
                         title:(NSString *)title
                   description:(NSString *)desc
-                     videoUrl:(NSURL *)url;
+                     videoUrl:(NSURL *)url
+                   mzAppTheme:(MZAppTheme *)anAppTheme;
 - (void)startVideoLooping;
 - (void)stopPlaybackAndResetToBeginning;
 

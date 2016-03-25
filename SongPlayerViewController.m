@@ -97,7 +97,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     _artistAndAlbumLabel.text = nil;
     
     firstTimeUpdatingSliderSinceShowingPlayer = YES;
-    colorOfPlaybackButtons = [UIColor defaultAppColorScheme];
+    colorOfPlaybackButtons = [AppEnvironmentConstants appTheme].mainGuiTint;
     waitingForNextOrPrevVideoToLoad = YES;
     [self initAndRegisterAllButtons];
     
@@ -842,7 +842,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     else
         btnImgName = TIMER_INACTIVE;
     short paddingFromScreenBottom = 5;
-    UIColor *appTint = [UIColor defaultAppColorScheme];
+    UIColor *appTint = [AppEnvironmentConstants appTheme].mainGuiTint;
     UIImage *timerImg = [UIImage colorOpaquePartOfImage:appTint :[UIImage imageNamed:btnImgName]];
     CGRect timerBtnFrame = CGRectMake(screenWidth/2 - timerImg.size.width/2,
                                       screenHeight - timerImg.size.height - paddingFromScreenBottom - extraStatusBarHeight,
@@ -870,7 +870,7 @@ static int accomodateInterfaceLabelsCounter = 0;
                                            bottomTextButtonsHeight);
     repeatModeButton.frame = repeatModeBtnFrame;
     repeatModeButton.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
-    repeatModeButton.tintColor = [UIColor defaultAppColorScheme];
+    repeatModeButton.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     repeatModeButton.alpha = 0;
     [repeatModeButton setHitTestEdgeInsets:UIEdgeInsetsMake(-15, -25, -15, -25)];
     [self.view addSubview:repeatModeButton];
@@ -889,7 +889,7 @@ static int accomodateInterfaceLabelsCounter = 0;
                                            bottomTextButtonsHeight);
     shuffleModeButton.frame = shuffleModeBtnFrame;
     shuffleModeButton.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
-    shuffleModeButton.tintColor = [UIColor defaultAppColorScheme];
+    shuffleModeButton.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     shuffleModeButton.alpha = 0;
     [shuffleModeButton setHitTestEdgeInsets:UIEdgeInsetsMake(-15, -25, -15, -25)];
     [self.view addSubview:shuffleModeButton];
@@ -1091,7 +1091,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     
     //slider settings
     _playbackSlider.minimumValue = 0.0f;
-    _playbackSlider.minimumTrackTintColor = [[UIColor defaultAppColorScheme] lighterColor];
+    _playbackSlider.minimumTrackTintColor = [[AppEnvironmentConstants appTheme].mainGuiTint lighterColor];
     
     //setup total duration label
     labelXValue = xValue + sliderWidth + padding;
@@ -1213,7 +1213,7 @@ static BOOL goingToAnimateTimerPicker = NO;
         aButton.titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                                   size:20];
     }
-    [popup setButtonTextColor:[UIColor defaultAppColorScheme]];
+    [popup setButtonTextColor:[AppEnvironmentConstants appTheme].mainGuiTint];
     short destructiveButtonIndex = 0;
     [popup setButtonTextColor:[UIColor redColor] forButtonAtIndex:destructiveButtonIndex];
     [popup setTitleTextColor:[UIColor darkGrayColor]];
@@ -1291,7 +1291,7 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
         btnImgName = TIMER_ACTIVE;
     else
         btnImgName = TIMER_INACTIVE;
-    UIColor *appTint = [UIColor defaultAppColorScheme];
+    UIColor *appTint = [AppEnvironmentConstants appTheme].mainGuiTint;
     UIImage *timerImg = [UIImage colorOpaquePartOfImage:appTint :[UIImage imageNamed:btnImgName]];
     [UIView animateWithDuration:1
                           delay:0
@@ -1618,8 +1618,8 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
         
         //temporarily changing app default colors for the activityviewcontroller.
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        appDelegate.window.tintColor = [UIColor defaultAppColorScheme];
-        [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor defaultAppColorScheme], NSForegroundColorAttributeName, nil]];
+        appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+        [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[AppEnvironmentConstants appTheme].mainGuiTint, NSForegroundColorAttributeName, nil]];
         
         TUSafariActivity *openInSafariActivity = [[TUSafariActivity alloc] init];
         NSArray *activities = @[openInSafariActivity];
@@ -1635,7 +1635,7 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
                                              UIActivityTypeAirDrop,
                                              UIActivityTypeAddToReadingList];
         //set tint color specifically for this VC so that the text and buttons are visible
-        [activityVC.view setTintColor:[UIColor defaultAppColorScheme]];
+        [activityVC.view setTintColor:[AppEnvironmentConstants appTheme].mainGuiTint];
         
         [self removeObservers];
         
@@ -1667,10 +1667,10 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
             [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
                 //restoring default button and title font colors in the app.
                 AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-                appDelegate.window.tintColor = [UIColor defaultWindowTintColor];
-                [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor defaultWindowTintColor], NSForegroundColorAttributeName, nil]];
+                appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
+                [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint, NSForegroundColorAttributeName, nil]];
                 [weakSelf.navigationController.navigationBar setTitleTextAttributes:
-                 @{NSForegroundColorAttributeName:[UIColor defaultWindowTintColor]}];
+                 @{NSForegroundColorAttributeName:[AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint}];
             }];
         }];
         [self presentViewController:activityVC

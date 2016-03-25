@@ -336,7 +336,7 @@ typedef enum{
 {
     [super viewWillAppear:animated];
     
-    self.navigationController.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
+    self.navigationController.navigationBar.barTintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     //set nav bar title color and transparency
     self.navigationController.navigationBar.translucent = YES;
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;  //makes status bar text light and readable
@@ -446,12 +446,12 @@ typedef enum{
         UITableViewCell *cell = [tableView cellForRowAtIndexPath:visiblePath];
         if(cell.editingAccessoryView != nil) {
             cell.editingAccessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
-                                                                     color:[[UIColor defaultAppColorScheme] lighterColor]];
+                                                                     color:[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor]];
         }
         if(! [cell.textLabel.textColor isEqualToColor:[UIColor blackColor]]){
             //this song is unique, it's the now playing. update textcolor in case
             //app theme changed.
-            cell.textLabel.textColor = [[UIColor defaultAppColorScheme] lighterColor];
+            cell.textLabel.textColor = [[AppEnvironmentConstants appTheme].mainGuiTint lighterColor];
         }
     }
     [tableView endUpdates];

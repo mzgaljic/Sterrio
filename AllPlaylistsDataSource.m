@@ -151,7 +151,7 @@
             cell.isRepresentingANowPlayingItem = NO;
         }
         cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
-                                                          color:[[UIColor defaultAppColorScheme] lighterColor]];
+                                                          color:[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor]];
 
     }
     
@@ -362,14 +362,14 @@
     expansionSettings.threshold = 1.0;
     expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunctionCubicOut;
     expansionSettings.fillOnTrigger = NO;
-    UIColor *initialExpansionColor = [AppEnvironmentConstants expandingCellGestureInitialColor];
+    UIColor *initialExpansionColor = [MZAppTheme expandingCellGestureInitialColor];
     __weak AllPlaylistsDataSource *weakSelf = self;
     
     if(direction == MGSwipeDirectionLeftToRight){
         //queue
         Playlist *playlist = [self.fetchedResultsController
                               objectAtIndexPath:[self.tableView indexPathForCell:cell]];
-        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureQueueItemColor];
+        expansionSettings.expansionColor = [MZAppTheme expandingCellGestureQueueItemColor];
         __weak Playlist *weakPlaylist = playlist;
         __weak MGSwipeTableCell *weakCell = cell;
         return @[[MGSwipeButton buttonWithTitle:@"Queue"
@@ -383,7 +383,7 @@
                                            return NO;
                                        }]];
     } else if(direction == MGSwipeDirectionRightToLeft){
-        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
+        expansionSettings.expansionColor = [MZAppTheme expandingCellGestureDeleteItemColor];
         MGSwipeButton *delete = [MGSwipeButton buttonWithTitle:@"Delete"
                                                backgroundColor:initialExpansionColor
                                                        padding:MZCellSpotifyStylePaddingValue

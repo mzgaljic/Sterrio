@@ -8,15 +8,15 @@
 
 #import "AppThemeTableViewController.h"
 #import "PreferredFontSizeUtility.h"
+#import "AppDelegateSetupHelper.h"
 
 #define Rgb2UIColor(r, g, b, a)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:(a)]
 #define STEP_DURATION 0.001
 
 @interface AppThemeTableViewController ()
 {
-    NSArray *tableColors;
     NSArray *tableColorNames;
-    NSArray *actualColors;
+    NSArray *themes;
     int currentlySelectedIndex;
     int defaultIndex;
     int currentRowHeights;
@@ -57,7 +57,7 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if(section == APP_THEME_COLORS_SECTION_NUM)
-        return tableColors.count;
+        return themes.count;
     else if(section == RESET_DEFUALTS_SECTION_NUM && currentlySelectedIndex != defaultIndex)
         return 1;
     else
@@ -89,7 +89,7 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
     
     if(indexPath.section == APP_THEME_COLORS_SECTION_NUM)
     {
-        cell.textLabel.text = tableColorNames[indexPath.row];
+        //cell.textLabel.text = tableColorNames[indexPath.row];
         cell.textLabel.textColor = [UIColor blackColor];
         cell.textLabel.textAlignment = NSTextAlignmentNatural;
         cell.imageView.image = [self coloredImageForCellIndex:(int) indexPath.row];
@@ -105,7 +105,7 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
     else if(indexPath.section == RESET_DEFUALTS_SECTION_NUM)
     {
         cell.textLabel.text = @"Restore Default";
-        cell.textLabel.textColor = actualColors[currentlySelectedIndex];
+        cell.textLabel.textColor = ((MZAppTheme *)themes[currentlySelectedIndex]).mainGuiTint;
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         cell.detailTextLabel.text = nil;
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -115,7 +115,7 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
         cell.imageView.image = nil;
     }
     
-    cell.tintColor = actualColors[currentlySelectedIndex];
+    cell.tintColor = ((MZAppTheme *)themes[currentlySelectedIndex]).mainGuiTint;
     return cell;
 }
 
@@ -204,65 +204,51 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
         [self.tableView endUpdates];
     }
     
-    UIColor *oldColor = [UIColor defaultAppColorScheme];
-    UIColor *newColor = actualColors[indexPath.row];
-    [AppEnvironmentConstants setAppTheme:newColor];
+    //MZAppTheme *oldTheme = [AppEnvironmentConstants appTheme];
+    MZAppTheme *newTheme = themes[indexPath.row];
+    [AppEnvironmentConstants setAppTheme:newTheme saveInUserDefaults:NO];
+    [AppDelegateSetupHelper setGlobalFontsAndColorsForAppGUIComponents];
+    UIColor *newMainColor = newTheme.mainGuiTint;
+
+    CAGradientLayer *gradient = [CAGradientLayer layer];
+    gradient.frame = CGRectMake(0, 0, self.navigationController.navigationBar.frame.size.width, self.navigationController.navigationBar.bounds.size.height + [AppEnvironmentConstants statusBarHeight]);
+    gradient.colors = @[(id)[newMainColor CGColor], (id)[[newMainColor lighterColor] CGColor]];
+    UIImage *navBarImage = [self imageFromLayer:gradient];
     
-    if(operationQueue == nil)
-        operationQueue = [[NSOperationQueue alloc] init];
+    //animate the background image change.
+    CATransition *transition = [CATransition animation];
+    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
+    transition.type = kCATransitionFade;
+    transition.duration = 0.5;
+    [self.navigationController.navigationBar.layer addAnimation:transition forKey:nil];
+    //will affect all future instances, not the current one.
+    [[UINavigationBar appearance] setBackgroundImage:navBarImage forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setBackgroundImage:navBarImage
+                                                  forBarMetrics:UIBarMetricsDefault];
+}
+
+- (UIImage *)imageFromLayer:(CALayer *)layer
+{
+    UIGraphicsBeginImageContextWithOptions(layer.frame.size, NO, 0);
     
-    [operationQueue cancelAllOperations];
-    __weak AppThemeTableViewController *weakself = self;
-    NSOperation *newOperation = nil;
-    newOperation = [NSBlockOperation blockOperationWithBlock:^{
-        [weakself animateNavigationBarFromColor:oldColor
-                                        toColor:newColor
-                                       duration:0.5
-                                      operation:newOperation];
-    }];
+    [layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
     
-    [operationQueue addOperation:newOperation];
+    UIGraphicsEndImageContext();
+    
+    return outputImage;
 }
 
 
 #pragma mark - Helpers
 - (void)initColorArrays
 {
-    tableColors = @[
-                    //orange
-                    Rgb2UIColor(227, 136, 91, 1),
-                    
-                    //green
-                    Rgb2UIColor(97, 131, 111, 1),
-                    
-                    //pink
-                    Rgb2UIColor(237, 138, 182, 1),
-                    
-                    //blue
-                    Rgb2UIColor(89, 130, 196, 1),
-                    
-                    //purple
-                    Rgb2UIColor(127, 121, 176, 1),
-                    
-                    //yellow
-                    Rgb2UIColor(249, 205, 90, 1)
-                    ];
+    themes = [MZAppTheme allAppThemes];
     
-    tableColorNames = @[
-                        @"Vibrant Orange",
-                        @"Forest Green",
-                        @"Bubblegum Pink",
-                        @"Mighty Blue",
-                        @"Dashing Purple",
-                        @"Dandelion Yellow"
-                        ];
-    
-    actualColors = [AppEnvironmentConstants appThemeColors];
-    
-    UIColor *aColor = [UIColor defaultAppColorScheme];
-    for(int i = 0; i < actualColors.count; i++)
+    MZAppTheme *currentTheme = [AppEnvironmentConstants appTheme];
+    for(int i = 0; i < themes.count; i++)
     {
-        if([self color:aColor isEqualToColor:actualColors[i] withTolerance:0.15]){
+        if([currentTheme equalToAppTheme:themes[i]]){
             currentlySelectedIndex = i;
             break;
         }
@@ -271,109 +257,12 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
 
 - (UIImage *)coloredImageForCellIndex:(int)anIndex
 {
-    UIColor *aColor = tableColors[anIndex];
+    UIColor *aColor = ((MZAppTheme *)themes[anIndex]).mainGuiTint;
     int edgePadding = 8;
     
     return [UIImage imageWithColor:aColor
                              width:currentRowHeights - edgePadding
                             height:currentRowHeights - edgePadding];
-}
-
-- (void)animateNavigationBarFromColor:(UIColor *)fromColor
-                              toColor:(UIColor *)toColor
-                             duration:(NSTimeInterval)duration
-                            operation:(NSOperation *)thisOperation
-{
-    if(thisOperation.isCancelled)
-        return;
-    
-    NSUInteger steps = duration / STEP_DURATION;
-    
-    CGFloat fromRed;
-    CGFloat fromGreen;
-    CGFloat fromBlue;
-    CGFloat fromAlpha;
-    
-    [fromColor getRed:&fromRed green:&fromGreen blue:&fromBlue alpha:&fromAlpha];
-    
-    if(thisOperation.isCancelled)
-        return;
-    
-    CGFloat toRed;
-    CGFloat toGreen;
-    CGFloat toBlue;
-    CGFloat toAlpha;
-    
-    [toColor getRed:&toRed green:&toGreen blue:&toBlue alpha:&toAlpha];
-    
-    CGFloat diffRed = toRed - fromRed;
-    CGFloat diffGreen = toGreen - fromGreen;
-    CGFloat diffBlue = toBlue - fromBlue;
-    CGFloat diffAlpha = toAlpha - fromAlpha;
-    
-    if(thisOperation.isCancelled)
-        return;
-    
-    NSMutableArray *colorArray = [NSMutableArray array];
-    
-    [colorArray addObject:fromColor];
-    
-    for (NSUInteger i = 0; i < steps - 1; ++i) {
-        CGFloat red = fromRed + diffRed / steps * (i + 1);
-        CGFloat green = fromGreen + diffGreen / steps * (i + 1);
-        CGFloat blue = fromBlue + diffBlue / steps * (i + 1);
-        CGFloat alpha = fromAlpha + diffAlpha / steps * (i + 1);
-        
-        UIColor *color = [UIColor colorWithRed:red green:green blue:blue alpha:alpha];
-        [colorArray addObject:color];
-    }
-    
-    if(thisOperation.isCancelled)
-        return;
-    
-    [colorArray addObject:toColor];
-    
-    [self animateWithArray:colorArray operation:thisOperation];
-}
-
-- (void)animateWithArray:(NSMutableArray *)array operation:(NSOperation *)thisOperation
-{
-    NSUInteger counter = 0;
-    
-    if(thisOperation.isCancelled)
-        return;
-    
-    for(int i = 0; i < array.count; i++){
-        UIColor *aColor = array[i];
-        
-        if(i == array.count-1){
-            //update again in case user tapped a different cell in the meantime.
-            [UIColor defaultAppColorScheme:aColor];
-        }
-        
-        if(thisOperation.isCancelled)
-            return;
-        
-        double delayInSeconds = STEP_DURATION * counter++;
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            [UIView animateWithDuration:STEP_DURATION animations:^{
-                self.navigationController.navigationBar.barTintColor = aColor;
-            }];
-        });
-    }
-}
-
-- (BOOL)color:(UIColor *)color1 isEqualToColor:(UIColor *)color2 withTolerance:(CGFloat)tolerance
-{
-    CGFloat r1, g1, b1, a1, r2, g2, b2, a2;
-    [color1 getRed:&r1 green:&g1 blue:&b1 alpha:&a1];
-    [color2 getRed:&r2 green:&g2 blue:&b2 alpha:&a2];
-    return
-    fabs(r1 - r2) <= tolerance &&
-    fabs(g1 - g2) <= tolerance &&
-    fabs(b1 - b2) <= tolerance &&
-    fabs(a1 - a2) <= tolerance;
 }
 
 @end

@@ -126,7 +126,7 @@
     [super viewWillAppear:animated];
     
     //needed to make UITableViewCellAccessoryCheckmark the nav bar color!
-    self.tableView.tintColor = [UIColor defaultAppColorScheme];
+    self.tableView.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     if(isUserCreatingNewPlaylist){
         UIBarButtonItem *btn = [[UIBarButtonItem alloc] initWithTitle:@"Add Later"
                                                                 style:UIBarButtonItemStyleDone

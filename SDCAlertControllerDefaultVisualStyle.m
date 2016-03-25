@@ -132,7 +132,7 @@
 	if (action.style & SDCAlertActionStyleDestructive) {
 		return [UIColor redColor];
 	} else {
-		return [UIColor defaultAppColorScheme];
+		return [AppEnvironmentConstants appTheme].mainGuiTint;
 	}
 }
 

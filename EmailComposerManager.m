@@ -38,8 +38,8 @@
         self.photoPickerController = [[UIImagePickerController alloc] init];
         self.photoPickerController.delegate = self;
         //set tint color specifically for this VC so that the cancel buttons are invisible
-        self.photoPickerController.view.tintColor = [UIColor defaultWindowTintColor];
-        self.photoPickerController.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
+        self.photoPickerController.view.tintColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
+        self.photoPickerController.navigationBar.barTintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
         [self.callingVc presentViewController:self.photoPickerController animated:YES completion:nil];
     }
     else{
@@ -91,11 +91,11 @@
     MFMailComposeViewController *composer = [[MFMailComposeViewController alloc] init];
     
     //for cancel and send button, as well as actionsheet thingy.
-    composer.view.tintColor = [UIColor defaultAppColorScheme];
+    composer.view.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     
     
     //title color
-    composer.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor defaultAppColorScheme]};
+    composer.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[AppEnvironmentConstants appTheme].mainGuiTint};
     
     composer.mailComposeDelegate = self;
     NSString *emailSubject = [self emailSubjectForComposePurpose:self.composePurpose];

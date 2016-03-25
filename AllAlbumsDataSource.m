@@ -183,7 +183,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     {
         //Set up other aspects of the cell content.
         short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
-        UIColor *appTheme = [[UIColor defaultAppColorScheme] lighterColor];
+        UIColor *appTheme = [[AppEnvironmentConstants appTheme].mainGuiTint lighterColor];
         MSCellAccessory *chevron = [MSCellAccessory accessoryWithType:flatIndicator
                                                                 color:appTheme];
         //cell.editingAccessoryView = chevron;
@@ -226,7 +226,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         BOOL isCurrentlySelectedAlbum = [self.selectedAlbum.uniqueId isEqualToString:album.uniqueId];
         
         if(isCurrentlySelectedAlbum){
-            UIColor *appThemeSuperLight = [[[[[UIColor defaultAppColorScheme] lighterColor] lighterColor] lighterColor] lighterColor];
+            UIColor *appThemeSuperLight = [[[[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor] lighterColor] lighterColor] lighterColor];
             cell.backgroundColor = appThemeSuperLight;
             [cell setUserInteractionEnabled:NO];
             cell.textLabel.textColor = [UIColor whiteColor];
@@ -490,7 +490,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     expansionSettings.threshold = 1.0;
     expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunctionCubicOut;
     expansionSettings.fillOnTrigger = NO;
-    UIColor *initialExpansionColor = [AppEnvironmentConstants expandingCellGestureInitialColor];
+    UIColor *initialExpansionColor = [MZAppTheme expandingCellGestureInitialColor];
     NSIndexPath *cellPath = [self.tableView indexPathForCell:cell];
     __weak NSIndexPath *weakPath = cellPath;
     __weak AllAlbumsDataSource *weakSelf = self;
@@ -498,7 +498,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     if(direction == MGSwipeDirectionLeftToRight){
         //queue
         Album *album = [self.fetchedResultsController objectAtIndexPath:cellPath];
-        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureQueueItemColor];
+        expansionSettings.expansionColor = [MZAppTheme expandingCellGestureQueueItemColor];
         __weak Album *weakAlbum = album;
         __weak MGSwipeTableCell *weakCell = cell;
         return @[[MGSwipeButton buttonWithTitle:@"Queue"
@@ -513,7 +513,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
                                            return NO;
                                        }]];
     } else if(direction == MGSwipeDirectionRightToLeft){
-        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
+        expansionSettings.expansionColor = [MZAppTheme expandingCellGestureDeleteItemColor];
         MGSwipeButton *delete = [MGSwipeButton buttonWithTitle:@"Delete"
                                                backgroundColor:initialExpansionColor
                                                        padding:MZCellSpotifyStylePaddingValue

@@ -13,6 +13,7 @@
 
 @interface IntroVideoView ()
 @property (nonatomic, strong) MZPlayer *player;
+@property (nonatomic, strong) MZAppTheme *anAppTheme;
 @end
 
 @implementation IntroVideoView
@@ -22,8 +23,10 @@ static int const paddingFromScreenEdge = 25;
                         title:(NSString *)title
                   description:(NSString *)desc
                      videoUrl:(NSURL *)url
+                   mzAppTheme:(MZAppTheme *)anAppTheme
 {
     if(self = [super initWithFrame:frame]) {
+        _anAppTheme = anAppTheme;
         [self helpSetupVideoPlayerWithUrl:url];
         [self helpSetupViewTitle:title];
         [self helpSetupViewDescription:desc];
@@ -44,7 +47,7 @@ static int const paddingFromScreenEdge = 25;
     title.textAlignment = NSTextAlignmentCenter;
     title.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                  size:28];
-    title.textColor = [UIColor whiteColor];
+    title.textColor = _anAppTheme.contrastingTextOrNavBarTint;
     [self addSubview:title];
 }
 
@@ -63,7 +66,7 @@ static int const paddingFromScreenEdge = 25;
     desc.textAlignment = NSTextAlignmentCenter;
     desc.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                 size:18];
-    desc.textColor = [UIColor whiteColor];
+    desc.textColor = _anAppTheme.contrastingTextOrNavBarTint;
     [self addSubview:desc];
 }
 
@@ -115,6 +118,7 @@ static int const paddingFromScreenEdge = 25;
 {
     [_player destroyPlayer];
     _player = nil;
+    _anAppTheme = nil;
 }
 
 @end

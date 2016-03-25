@@ -232,7 +232,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
         if(airplayMsgView == nil){
             [self removeLayerFromPlayer];
             UIImage *airplayImg = [UIImage imageNamed:@"airplay"];
-            airplayImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+            airplayImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                         :airplayImg];
             
             airplayMsgView = [[UIImageView alloc] initWithImage:airplayImg];
@@ -757,9 +757,9 @@ static NSTimer *autoHideTimer;
     //Play-Pause button
     if(self.playPauseButton == nil) {
         self.playPauseButton = [[SSBouncyButton alloc] initAsImage];
-        UIImage *pauseImage = [UIImage colorOpaquePartOfImage:[UIColor defaultWindowTintColor]
+        UIImage *pauseImage = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint
                                                              :[UIImage imageNamed:@"Pause"]];
-        UIImage *playImage = [UIImage colorOpaquePartOfImage:[UIColor defaultWindowTintColor]
+        UIImage *playImage = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint
                                                             :[UIImage imageNamed:@"Play"]];
         [self.playPauseButton setImage:pauseImage forState:UIControlStateNormal];
         [self.playPauseButton setImage:playImage forState:UIControlStateSelected];
@@ -847,7 +847,7 @@ static NSTimer *autoHideTimer;
         //[self.progressBar setThumbImage:[UIImage imageNamed:@"UISliderKnob"] forState:UIControlStateNormal];
         self.progressBar.transform = CGAffineTransformMakeScale(0.80, 0.80);  //make knob smaller
         self.progressBar.minimumValue = 0;
-        self.progressBar.minimumTrackTintColor = [[UIColor defaultAppColorScheme] lighterColor];
+        self.progressBar.minimumTrackTintColor = [[AppEnvironmentConstants appTheme].mainGuiTint lighterColor];
         self.progressBar.maximumTrackTintColor = [UIColor groupTableViewBackgroundColor];
         self.progressBar.continuous = YES;
     }
@@ -866,7 +866,7 @@ static NSTimer *autoHideTimer;
         UIImage *airplayImg = [UIImage imageNamed:@"airplay_button"];
         UIImage *airplayNormalState = [UIImage colorOpaquePartOfImage:[UIColor whiteColor]
                                                                      :airplayImg];
-        UIImage *airplayActiveState = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+        UIImage *airplayActiveState = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                                      :airplayImg];
         
         [self.mpVolumeView setRouteButtonImage:airplayNormalState forState:UIControlStateNormal];

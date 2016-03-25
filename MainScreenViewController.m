@@ -52,7 +52,7 @@ short const dummyTabIndex = 2;
         self.viewControllers = viewControllers;
         self.tabBarUnselectedImageNames = unSelectNames;
         self.tabBarSelectedImageNames = selectNames;
-        [[UITabBar appearance] setTintColor:[[UIColor defaultAppColorScheme] lighterColor]];
+        [[UITabBar appearance] setTintColor:[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor]];
         numTimesViewHasAppeared = 0;
         [AppEnvironmentConstants setTabBarHidden:NO];
         tabBarAnimationInProgress = NO;
@@ -139,6 +139,21 @@ short const dummyTabIndex = 2;
     
     [self setTabBarItems];
     self.edgesForExtendedLayout = UIRectEdgeNone;
+    
+    
+
+    
+    /*
+    if ([[UIScreen mainScreen] scale])
+        UIGraphicsBeginImageContextWithOptions([layer frame].size, NO, [UIScreen mainScreen].scale);
+    else
+        UIGraphicsBeginImageContext([layer frame].size);
+    
+    [layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+     */
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -244,7 +259,7 @@ short const dummyTabIndex = 2;
                                    (adBanner.frame.size.height / 2.0) - (indicatorSize/2),
                                    indicatorSize,
                                    indicatorSize);
-        spinner.color = [UIColor defaultAppColorScheme];
+        spinner.color = [AppEnvironmentConstants appTheme].mainGuiTint;
         [spinner startAnimating];
         [spinnerView addSubview:spinner];
     }
@@ -306,7 +321,7 @@ short const dummyTabIndex = 2;
         [self.tabBar setTranslucent:YES];
         self.tabBar.delegate = self;
         
-        self.centerButtonImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+        self.centerButtonImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                               :[UIImage imageNamed:CENTER_BTN_IMG_NAME]];
         self.centerButton = [[SSBouncyButton alloc] initAsImage];
         [self.centerButton setImage:self.centerButtonImg forState:UIControlStateNormal];
@@ -561,7 +576,7 @@ short const dummyTabIndex = 2;
                                (adBanner.frame.size.height / 2.0) - (indicatorSize/2),
                                indicatorSize,
                                indicatorSize);
-    spinner.color = [UIColor defaultAppColorScheme];
+    spinner.color = [AppEnvironmentConstants appTheme].mainGuiTint;
     [spinner startAnimating];
     [newSpinnerView addSubview:spinner];
 }
@@ -573,7 +588,7 @@ short const dummyTabIndex = 2;
 
 - (void)forceTabBarToRedrawFromScratch
 {
-    [[UITabBar appearance] setTintColor:[[UIColor defaultAppColorScheme] lighterColor]];
+    [[UITabBar appearance] setTintColor:[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor]];
     
     UIVisualEffectView *visualEffectView;
     [self.centerButton removeFromSuperview];
@@ -592,7 +607,7 @@ short const dummyTabIndex = 2;
     [self.tabBarView addSubview:visualEffectView];
     [self.tabBar setBackgroundImage:[UIImage new]];
     
-    self.centerButtonImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+    self.centerButtonImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                           :[UIImage imageNamed:CENTER_BTN_IMG_NAME]];
     self.centerButton = [[SSBouncyButton alloc] initAsImage];
     [self.centerButton setImage:self.centerButtonImg forState:UIControlStateNormal];
@@ -755,7 +770,7 @@ short const dummyTabIndex = 2;
 {
     CMPopTipView *tipView = [[CMPopTipView alloc] initWithMessage:@"Tap to get started."];
     tipView.delegate = self;
-    tipView.backgroundColor = [UIColor defaultAppColorScheme];
+    tipView.backgroundColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     tipView.textColor = [UIColor whiteColor];
     tipView.has3DStyle = NO;
     tipView.hasGradientBackground = NO;

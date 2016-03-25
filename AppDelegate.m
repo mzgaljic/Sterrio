@@ -707,18 +707,19 @@ static NSDate *finish;
 - (void)showIntroTutorial
 {
     NSArray *pages = @[[EAIntroPage page], [EAIntroPage page], [EAIntroPage page], [EAIntroPage page]];
-    NSArray *appColors = [AppEnvironmentConstants appThemeColors];
+    NSArray *appThemes = [MZAppTheme allAppThemes];
     NSBundle *mainBundle = [NSBundle mainBundle];
     NSURL *videoUrl = nil;
     NSMutableArray *pickedIndexes = [NSMutableArray arrayWithCapacity:pages.count];
     for(int i = 0; i < pages.count; i++) {
         EAIntroPage *page = pages[i];
-        
+        MZAppTheme *someAppTheme;
         if(i == 0) {
-            //make the color match the current app theme.
+            //make the page color match the current app theme.
             
-            page.bgColor = [UIColor defaultAppColorScheme];
-            [pickedIndexes addObject:[NSNumber numberWithInt:(int)[appColors indexOfObject:page.bgColor]]];
+            someAppTheme = [AppEnvironmentConstants appTheme];
+            page.bgColor = someAppTheme.mainGuiTint;
+            [pickedIndexes addObject:[NSNumber numberWithInt:(int)[appThemes indexOfObject:page.bgColor]]];
             
         } else {
             //pick one of the app theme colors at random. Each page has a unique one.
@@ -732,8 +733,8 @@ static NSDate *finish;
                     break;
                 }
             }
-            UIColor *someAppColor = [appColors objectAtIndex:[randIndex intValue]];
-            page.bgColor = someAppColor;
+            someAppTheme = [appThemes objectAtIndex:[randIndex intValue]];
+            page.bgColor = someAppTheme.mainGuiTint;
         }
         
         switch (i) {
@@ -750,7 +751,8 @@ static NSDate *finish;
                 page.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
                                                                   title:@"Queing Up Songs"
                                                             description:desc
-                                                               videoUrl:videoUrl];
+                                                               videoUrl:videoUrl
+                                                             mzAppTheme:someAppTheme];
             }
                 break;
             case 2:
@@ -761,7 +763,8 @@ static NSDate *finish;
                 page.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
                                                                   title:@"Editing a Song"
                                                             description:desc
-                                                               videoUrl:videoUrl];
+                                                               videoUrl:videoUrl
+                                                             mzAppTheme:someAppTheme];
             }
                 break;
             case 3:
@@ -772,7 +775,8 @@ static NSDate *finish;
                 page.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
                                                                   title:@"Closing the Player"
                                                             description:desc
-                                                               videoUrl:videoUrl];
+                                                               videoUrl:videoUrl
+                                                             mzAppTheme:someAppTheme];
             }
                 break;
             case 4:
@@ -804,7 +808,7 @@ static NSDate *finish;
     title.text = [NSString stringWithFormat:@"Welcome to %@.", MZAppName];
     title.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                   size:30];
-    title.textColor = [UIColor whiteColor];
+    title.textColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
     title.numberOfLines = 0;
     title.textAlignment = NSTextAlignmentCenter;
     int descLabelY = [IntroVideoView descriptionYValueForViewSize:CGSizeMake(width, height)];
@@ -815,7 +819,7 @@ static NSDate *finish;
     description.text = @"Swipe for introduction.";
     description.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                        size:20];
-    description.textColor = [UIColor whiteColor];
+    description.textColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
     description.numberOfLines = 0;
     description.textAlignment = NSTextAlignmentCenter;
     

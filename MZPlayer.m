@@ -210,9 +210,9 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
     //Play-Pause button
     if(self.playPauseButton == nil) {
         self.playPauseButton = [[SSBouncyButton alloc] initAsImage];
-        UIImage *pauseImage = [UIImage colorOpaquePartOfImage:[UIColor defaultWindowTintColor]
+        UIImage *pauseImage = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint
                                                              :[UIImage imageNamed:@"Pause"]];
-        UIImage *playImage = [UIImage colorOpaquePartOfImage:[UIColor defaultWindowTintColor]
+        UIImage *playImage = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint
                                                             :[UIImage imageNamed:@"Play"]];
         [self.playPauseButton setImage:pauseImage forState:UIControlStateNormal];
         [self.playPauseButton setImage:playImage forState:UIControlStateSelected];
@@ -299,7 +299,7 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
         //[self.progressBar setThumbImage:[UIImage imageNamed:@"UISliderKnob"] forState:UIControlStateNormal];
         self.progressBar.transform = CGAffineTransformMakeScale(0.80, 0.80);  //make knob smaller
         self.progressBar.minimumValue = 0;
-        self.progressBar.minimumTrackTintColor = [[UIColor defaultAppColorScheme] lighterColor];
+        self.progressBar.minimumTrackTintColor = [[AppEnvironmentConstants appTheme].mainGuiTint lighterColor];
         self.progressBar.maximumTrackTintColor = [UIColor groupTableViewBackgroundColor];
         self.progressBar.continuous = YES;
     }
@@ -318,7 +318,7 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
         UIImage *airplayImg = [UIImage imageNamed:@"airplay_button"];
         UIImage *airplayNormalState = [UIImage colorOpaquePartOfImage:[UIColor whiteColor]
                                                                      :airplayImg];
-        UIImage *airplayActiveState = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+        UIImage *airplayActiveState = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                                      :airplayImg];
         
         [self.mpVolumeView setRouteButtonImage:airplayNormalState forState:UIControlStateNormal];
@@ -604,7 +604,7 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
         if(airplayLogoView == nil){
             [self removePlayerFromLayer];
             UIImage *airplayImg = [UIImage imageNamed:@"airplay"];
-            airplayImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+            airplayImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                         :airplayImg];
             
             airplayLogoView = [[UIImageView alloc] initWithImage:airplayImg];

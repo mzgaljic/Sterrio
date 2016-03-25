@@ -233,6 +233,8 @@
 		87DAA6C51B8AA9FF008D8684 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 87DAA6C21B8AA9FF008D8684 /* Model.xcdatamodeld */; };
 		87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */; };
 		87E152671C0041E100C82737 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87E152661C0041E100C82737 /* StoreKit.framework */; };
+		87EF52551CA4D4EC00D8364D /* UIColor+Strings.m in Sources */ = {isa = PBXBuildFile; fileRef = 87EF52541CA4D4EC00D8364D /* UIColor+Strings.m */; };
+		87EF52581CA4D7DD00D8364D /* MZAppTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 87EF52571CA4D7DD00D8364D /* MZAppTheme.m */; };
 		87F34FBA1C251D0200BAD73B /* GSTouchesShowingWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F34FB91C251D0200BAD73B /* GSTouchesShowingWindow.m */; };
 		87F5A8801C9E68FB00C64376 /* credits.py in Resources */ = {isa = PBXBuildFile; fileRef = 87F5A87F1C9E68FB00C64376 /* credits.py */; };
 		87F84E741C74123C000D7D4E /* AppRatingUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F84E731C74123C000D7D4E /* AppRatingUtils.m */; };
@@ -715,6 +717,10 @@
 		87DAA6C41B8AA9FF008D8684 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailComposerManager.m; sourceTree = "<group>"; };
 		87E152661C0041E100C82737 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		87EF52531CA4D4EC00D8364D /* UIColor+Strings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Strings.h"; sourceTree = "<group>"; };
+		87EF52541CA4D4EC00D8364D /* UIColor+Strings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Strings.m"; sourceTree = "<group>"; };
+		87EF52561CA4D7DD00D8364D /* MZAppTheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZAppTheme.h; sourceTree = "<group>"; };
+		87EF52571CA4D7DD00D8364D /* MZAppTheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZAppTheme.m; sourceTree = "<group>"; };
 		87F34FB81C251D0200BAD73B /* GSTouchesShowingWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSTouchesShowingWindow.h; sourceTree = "<group>"; };
 		87F34FB91C251D0200BAD73B /* GSTouchesShowingWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSTouchesShowingWindow.m; sourceTree = "<group>"; };
 		87F5A87F1C9E68FB00C64376 /* credits.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = credits.py; sourceTree = "<group>"; };
@@ -886,6 +892,8 @@
 				8735382A1B0A9AF4009244E4 /* UIColor+ColorComparison.m */,
 				8735382B1B0A9AF4009244E4 /* UIColor+SystemTintColor.h */,
 				8735382C1B0A9AF4009244E4 /* UIColor+SystemTintColor.m */,
+				87EF52531CA4D4EC00D8364D /* UIColor+Strings.h */,
+				87EF52541CA4D4EC00D8364D /* UIColor+Strings.m */,
 				8735382D1B0A9AF4009244E4 /* UIDevice+DeviceName.h */,
 				8735382E1B0A9AF4009244E4 /* UIDevice+DeviceName.m */,
 				8735382F1B0A9AF4009244E4 /* UIImage+colorImages.h */,
@@ -935,6 +943,8 @@
 				87D3281E1C67F6BD001F2081 /* YouTubeSearchSuggestion.m */,
 				87C67B961C9F22FD00E2FCB8 /* MZLicense.h */,
 				87C67B971C9F22FD00E2FCB8 /* MZLicense.m */,
+				87EF52561CA4D7DD00D8364D /* MZAppTheme.h */,
+				87EF52571CA4D7DD00D8364D /* MZAppTheme.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -2107,6 +2117,7 @@
 				873539CE1B0AA1B3009244E4 /* SDCAlertTextFieldTableViewCell.m in Sources */,
 				873538C81B0A9CEB009244E4 /* SongPlayerNavController.m in Sources */,
 				87494D3D1C27476A00AA9637 /* IntroVideoView.m in Sources */,
+				87EF52581CA4D7DD00D8364D /* MZAppTheme.m in Sources */,
 				873538A31B0A9C40009244E4 /* MZPrivateUpNextPlaybackQueue.m in Sources */,
 				873538DA1B0A9D0B009244E4 /* MyAVPlayer.m in Sources */,
 				873539871B0AA178009244E4 /* UIColor+Hex.m in Sources */,
@@ -2123,6 +2134,7 @@
 				8735386A1B0A9B6D009244E4 /* PlaylistItem.m in Sources */,
 				873538731B0A9B8B009244E4 /* CoreDataManager.m in Sources */,
 				87B723651CA2462800370CA3 /* MZLaunchScreen.m in Sources */,
+				87EF52551CA4D4EC00D8364D /* UIColor+Strings.m in Sources */,
 				8735386B1B0A9B6D009244E4 /* Song.m in Sources */,
 				873539201B0A9F11009244E4 /* YoutubeResultsTableViewController.m in Sources */,
 				8735380D1B0A9A9A009244E4 /* MZConstants.m in Sources */,

@@ -170,9 +170,9 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
                                  forControlEvents:UIControlEventValueChanged];
             }
             
-            [onlyAirplayAudioSwitch setOnTintColor:[[UIColor defaultAppColorScheme] lighterColor]];
+            [onlyAirplayAudioSwitch setOnTintColor:[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor]];
             cell.accessoryView = onlyAirplayAudioSwitch;
-            UIImage *cloudImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+            UIImage *cloudImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                                :[UIImage imageNamed:@"airplay settings"]];
             cell.imageView.image = cloudImg;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -191,12 +191,12 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
             cell.textLabel.text = @"Alphabetical Sorting Rules";
             cell.detailTextLabel.text = nil;
             
-            UIImage *sortingImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+            UIImage *sortingImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                                  :[UIImage imageNamed:@"sorting"]];
             cell.imageView.image = sortingImg;
             
             short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
-            UIColor *appTheme = [UIColor defaultAppColorScheme];
+            UIColor *appTheme = [AppEnvironmentConstants appTheme].mainGuiTint;
             MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
                                                                                        color:appTheme];
             cell.accessoryView = coloredDisclosureIndicator;
@@ -222,9 +222,9 @@ NSString * const AIRPLAY_AUDIO_ONLY_DISABLED_FOOTER = @"Both video and audio are
                                  forControlEvents:UIControlEventValueChanged];
             }
             
-            [limitVideoLengthSwtich setOnTintColor:[[UIColor defaultAppColorScheme] lighterColor]];
+            [limitVideoLengthSwtich setOnTintColor:[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor]];
             cell.accessoryView = limitVideoLengthSwtich;
-            UIImage *cellTower = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+            UIImage *cellTower = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                               :[UIImage imageNamed:@"cellular tower"]];
             cell.imageView.image = cellTower;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;

@@ -96,7 +96,7 @@ int const RESET_DEFUALT_SECTION_NUM = 1;
         
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
         if(qualityForRow == currentStreamQualitySelection)
-            cell.tintColor = [UIColor defaultAppColorScheme];
+            cell.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
         else
             cell.tintColor = [UIColor clearColor];
 
@@ -107,11 +107,11 @@ int const RESET_DEFUALT_SECTION_NUM = 1;
     else if(indexPath.section == RESET_DEFUALT_SECTION_NUM)
     {
         cell.textLabel.text = @"Restore Default";
-        cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+        cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         cell.detailTextLabel.text = nil;
         cell.accessoryType = UITableViewCellAccessoryNone;
-        cell.tintColor = [UIColor defaultAppColorScheme];
+        cell.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
         cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                               size:fontSize];
     }

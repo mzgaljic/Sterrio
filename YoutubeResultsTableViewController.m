@@ -903,7 +903,7 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
                                                    screenFrame.size.height/2 - indicatorSize/2 - [AppEnvironmentConstants navBarHeight],
                                                    indicatorSize,
                                                    indicatorSize);
-        loadingResultsIndicator.color = [UIColor defaultAppColorScheme];
+        loadingResultsIndicator.color = [AppEnvironmentConstants appTheme].mainGuiTint;
         [loadingResultsIndicator startAnimating];
         
         [_viewOnTopOfTable addSubview:loadingResultsIndicator];
@@ -980,7 +980,7 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
                                                (footerHeight / 2.0) - (indicatorSize/2),
                                                indicatorSize,
                                                indicatorSize);
-    loadingNextPageSpinner.color = [UIColor defaultAppColorScheme];
+    loadingNextPageSpinner.color = [AppEnvironmentConstants appTheme].mainGuiTint;
     [loadingNextPageSpinner startAnimating];
     UIView *footer = [[UIView alloc] initWithFrame:CGRectMake(0,
                                                              0,

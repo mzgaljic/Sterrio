@@ -42,7 +42,7 @@ short const SECTION_EMPTY = -1;
 {
     [super viewDidLoad];
     stackController = [[StackController alloc] init];
-    localAppTintColor = [[[UIColor defaultAppColorScheme] lighterColor] lighterColor];
+    localAppTintColor = [[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor] lighterColor];
     
     queue = [MZPlaybackQueue sharedInstance];
     mainQueueItemsComingUp = [queue tableViewOptimizedArrayOfMainQueueItemsComingUp];

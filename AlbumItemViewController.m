@@ -118,7 +118,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
     
     int labelFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
     if(isNowPlaying) {
-        cell.textLabel.textColor = [AppEnvironmentConstants nowPlayingItemColor];
+        cell.textLabel.textColor = [MZAppTheme nowPlayingItemColor];
         cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                               size:labelFontSize];
     } else {
@@ -196,13 +196,13 @@ const int ALBUM_HEADER_HEIGHT = 120;
     expansionSettings.threshold = 1.0;
     expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunctionCubicOut;
     expansionSettings.fillOnTrigger = NO;
-    UIColor *initialExpansionColor = [AppEnvironmentConstants expandingCellGestureInitialColor];
+    UIColor *initialExpansionColor = [MZAppTheme expandingCellGestureInitialColor];
     
     if(direction == MGSwipeDirectionLeftToRight){
         //queue
         Song *aSong = [self.fetchedResultsController
                         objectAtIndexPath:[self.tableView indexPathForCell:cell]];
-        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureQueueItemColor];
+        expansionSettings.expansionColor = [MZAppTheme expandingCellGestureQueueItemColor];
         
         __weak AlbumItemViewController *weakself = self;
         __weak Song *weakSong = aSong;
@@ -218,7 +218,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
                                            return NO;
                                        }]];
     } else if(direction == MGSwipeDirectionRightToLeft){
-        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
+        expansionSettings.expansionColor = [MZAppTheme expandingCellGestureDeleteItemColor];
         __weak AlbumItemViewController *weakSelf = self;
         MGSwipeButton *delete = [MGSwipeButton buttonWithTitle:@"Delete"
                                                backgroundColor:initialExpansionColor

@@ -135,11 +135,11 @@ CG_INLINE BOOL isIPhone4()
 
         if ( [origin isKindOfClass:[UIBarButtonItem class]] ){
             self.barButtonItem = origin;
-            self.barButtonItem.tintColor = [UIColor defaultAppColorScheme];
+            self.barButtonItem.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
         }
         else if ( [origin isKindOfClass:[UIView class]] ){
             self.containerView = origin;
-            self.containerView.tintColor = [UIColor defaultAppColorScheme];
+            self.containerView.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
         }
         else
             NSAssert(NO, @"Invalid origin provided to ActionSheetPicker ( %@ )", origin);
@@ -198,9 +198,9 @@ CG_INLINE BOOL isIPhone4()
         masterView.backgroundColor = [UIColor colorWithRed:0.97 green:0.97 blue:0.97 alpha:1.0];
     }
     self.toolbar = [self createPickerToolbarWithTitle:self.title];
-    self.toolbar.tintColor = [UIColor defaultAppColorScheme];
+    self.toolbar.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     [masterView addSubview:self.toolbar];
-    masterView.tintColor = [UIColor defaultAppColorScheme];
+    masterView.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
 
     //ios7 picker draws a darkened alpha-only region on the first and last 8 pixels horizontally, but blurs the rest of its background.  To make the whole popup appear to be edge-to-edge, we have to add blurring to the remaining left and right edges.
     if ( NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1 )
@@ -453,7 +453,7 @@ CG_INLINE BOOL isIPhone4()
         {
             button = [[UIBarButtonItem alloc] initWithTitle:buttonTitle style:UIBarButtonItemStylePlain
                                                      target:self action:@selector(customButtonPressed:)];
-            button.tintColor = [UIColor defaultAppColorScheme];
+            button.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
         }
         else
         {
@@ -483,7 +483,7 @@ CG_INLINE BOOL isIPhone4()
     [barItems addObject:self.doneBarButtonItem];
 
     [pickerToolbar setItems:barItems animated:NO];
-    pickerToolbar.tintColor = [UIColor defaultAppColorScheme];
+    pickerToolbar.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     return pickerToolbar;
 }
 
@@ -492,7 +492,7 @@ CG_INLINE BOOL isIPhone4()
                               andAttributedTitle:(NSAttributedString *)attributedTitle
 {
     UILabel *toolBarItemLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 180, 30)];
-    toolBarItemLabel.textColor = [UIColor defaultAppColorScheme];
+    toolBarItemLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     [toolBarItemLabel setTextAlignment:NSTextAlignmentCenter];
     [toolBarItemLabel setBackgroundColor:[UIColor clearColor]];
 

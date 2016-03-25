@@ -588,8 +588,8 @@ static short numberTimesViewHasBeenShown = 0;
         
         //temporarily changing app default colors for the activityviewcontroller.
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        appDelegate.window.tintColor = [UIColor defaultAppColorScheme];
-        [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor defaultAppColorScheme], NSForegroundColorAttributeName, nil]];
+        appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+        [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[AppEnvironmentConstants appTheme].mainGuiTint, NSForegroundColorAttributeName, nil]];
         
         TUSafariActivity *openInSafariActivity = [[TUSafariActivity alloc] init];
         NSArray *activities = @[openInSafariActivity];
@@ -605,7 +605,7 @@ static short numberTimesViewHasBeenShown = 0;
                                              UIActivityTypeAirDrop,
                                              UIActivityTypeAddToReadingList];
         //set tint color specifically for this VC so that the text and buttons are visible
-        [activityVC.view setTintColor:[UIColor defaultAppColorScheme]];
+        [activityVC.view setTintColor:[AppEnvironmentConstants appTheme].mainGuiTint];
         [activityVC setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed,  NSArray *returnedItems, NSError *activityError) {
             if(activityType == nil) {
                 activityType = @"";  //set it to an empty string just so we don't crash here.
@@ -631,10 +631,10 @@ static short numberTimesViewHasBeenShown = 0;
             [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
                 //restoring default button and title font colors in the app.
                 AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-                appDelegate.window.tintColor = [UIColor defaultWindowTintColor];
-                [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor defaultWindowTintColor], NSForegroundColorAttributeName, nil]];
+                appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+                [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[AppEnvironmentConstants appTheme].mainGuiTint, NSForegroundColorAttributeName, nil]];
                 [weakSelf.navigationController.navigationBar setTitleTextAttributes:
-                 @{NSForegroundColorAttributeName:[UIColor defaultWindowTintColor]}];
+                 @{NSForegroundColorAttributeName:[AppEnvironmentConstants appTheme].mainGuiTint}];
             }];
         }];
         [self presentViewController:activityVC

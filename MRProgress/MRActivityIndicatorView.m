@@ -9,7 +9,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "MRActivityIndicatorView.h"
 #import "MRStopButton.h"
-
+#import "AppEnvironmentConstants.h"
 
 static NSString *const MRActivityIndicatorViewSpinAnimationKey = @"MRActivityIndicatorViewSpinAnimationKey";
 
@@ -133,7 +133,7 @@ static NSString *const MRActivityIndicatorViewSpinAnimationKey = @"MRActivityInd
 
 - (void)tintColorDidChange  {
     [super tintColorDidChange];
-    self.shapeLayer.strokeColor = [UIColor defaultAppColorScheme].CGColor;
+    self.shapeLayer.strokeColor = [AppEnvironmentConstants appTheme].mainGuiTint.CGColor;
     self.stopButton.tintColor = self.tintColor;
 }
 

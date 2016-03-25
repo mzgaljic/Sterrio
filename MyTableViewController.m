@@ -7,6 +7,7 @@
 //
 
 #import "MyTableViewController.h"
+#import "AppEnvironmentConstants.h"
 
 @implementation MyTableViewController
 
@@ -22,7 +23,7 @@
 {
     [super viewWillAppear:animated];
     
-    self.navigationController.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
+    self.navigationController.navigationBar.barTintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     
     //force tableview to hide empty extra cells
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];

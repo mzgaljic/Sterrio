@@ -154,7 +154,7 @@
     
     if(self.dataSourceType == ARTIST_DATA_SRC_TYPE_Default)
     {
-        UIColor *appTheme = [[UIColor defaultAppColorScheme] lighterColor];
+        UIColor *appTheme = [[AppEnvironmentConstants appTheme].mainGuiTint lighterColor];
         short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
         MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
                                                                                    color:appTheme];
@@ -183,7 +183,7 @@
         }
         
         if(artistHasNowPlaying) {
-            cell.textLabel.textColor = [AppEnvironmentConstants nowPlayingItemColor];
+            cell.textLabel.textColor = [MZAppTheme nowPlayingItemColor];
             cell.isRepresentingANowPlayingItem = YES;
         } else {
             cell.textLabel.textColor = [UIColor blackColor];
@@ -197,7 +197,7 @@
                                             equalToArtist:artist];
         
         if(isCurrentlySelectedArtist){
-            UIColor *appThemeSuperLight = [[[[[UIColor defaultAppColorScheme] lighterColor] lighterColor] lighterColor] lighterColor];
+            UIColor *appThemeSuperLight = [[[[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor] lighterColor] lighterColor] lighterColor];
             cell.backgroundColor = appThemeSuperLight;
             [cell setUserInteractionEnabled:NO];
             cell.textLabel.textColor = [UIColor whiteColor];
@@ -424,14 +424,14 @@
     expansionSettings.threshold = 1.0;
     expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunctionCubicOut;
     expansionSettings.fillOnTrigger = NO;
-    UIColor *initialExpansionColor = [AppEnvironmentConstants expandingCellGestureInitialColor];
+    UIColor *initialExpansionColor = [MZAppTheme expandingCellGestureInitialColor];
     __weak AllArtistsDataSource *weakSelf = self;
     
     if(direction == MGSwipeDirectionLeftToRight){
         //queue
         Artist *artist = [self.fetchedResultsController
                           objectAtIndexPath:[self.tableView indexPathForCell:cell]];
-        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureQueueItemColor];
+        expansionSettings.expansionColor = [MZAppTheme expandingCellGestureQueueItemColor];
         __weak Artist *weakArtist = artist;
         __weak MGSwipeTableCell *weakCell = cell;
         return @[[MGSwipeButton buttonWithTitle:@"Queue"
@@ -445,7 +445,7 @@
                                            return NO;
                                        }]];
     } else if(direction == MGSwipeDirectionRightToLeft){
-        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
+        expansionSettings.expansionColor = [MZAppTheme expandingCellGestureDeleteItemColor];
         MGSwipeButton *delete = [MGSwipeButton buttonWithTitle:@"Delete"
                                                backgroundColor:initialExpansionColor
                                                        padding:MZCellSpotifyStylePaddingValue

@@ -17,9 +17,9 @@
 #import <CoreTelephony/CTCall.h>
 #import <Valet/VALSynchronizableValet.h>
 
-#define Rgb2UIColor(r, g, b, a)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:(a)]
-
 @implementation AppEnvironmentConstants
+
+static MZAppTheme *currentAppTheme;
 
 static BOOL shouldShowWhatsNewScreen = NO;
 static BOOL shouldDisplayWelcomeScreen = NO;
@@ -727,26 +727,21 @@ static NSLock *lastSuccessfulSyncDateLock;
 
 
 #pragma mark - Other GUI junk
-+ (void)setAppTheme:(UIColor *)appThemeColor
++ (void)setAppTheme:(MZAppTheme *)appTheme saveInUserDefaults:(BOOL)save
 {
-    const CGFloat* components = CGColorGetComponents(appThemeColor.CGColor);
-    NSNumber *red = [NSNumber numberWithFloat:components[0]];
-    NSNumber *green = [NSNumber numberWithFloat:components[1]];
-    NSNumber *blue = [NSNumber numberWithFloat:components[2]];
-    NSNumber *alpha = [NSNumber numberWithFloat:components[3]];
-    
-    NSArray *defaultColorRepresentation = @[red, green, blue, alpha];
-    [[NSUserDefaults standardUserDefaults] setObject:defaultColorRepresentation
-                                              forKey:APP_THEME_COLOR_VALUE_KEY];
-    
-    [UIColor defaultAppColorScheme:appThemeColor];
+    currentAppTheme = appTheme;
     [AppDelegateSetupHelper setGlobalFontsAndColorsForAppGUIComponents];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    if(save) {
+        NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
+        [standardDefaults setObject:[appTheme nsUserDefaultsCompatibleDictFromTheme]
+                             forKey:[MZAppTheme nsUserDefaultsKeyAppThemeDict]];
+        [standardDefaults synchronize];
+    }
 }
 
-+ (UIColor *)defaultAppThemeBeforeUserPickedTheme
++ (MZAppTheme *)appTheme
 {
-    return Rgb2UIColor(240, 110, 50, 1);
+    return currentAppTheme;
 }
 
 + (int)navBarHeight
@@ -782,52 +777,6 @@ static NSLock *lastSuccessfulSyncDateLock;
 + (int)bannerAdHeight
 {
     return bannerAdHeight;
-}
-
-
-
-//color stuff
-+ (UIColor *)expandingCellGestureInitialColor
-{
-    return [UIColor lightGrayColor];
-}
-
-+ (UIColor *)expandingCellGestureQueueItemColor
-{
-    return Rgb2UIColor(114, 218, 58, 1);
-}
-
-+ (UIColor *)expandingCellGestureDeleteItemColor
-{
-    return Rgb2UIColor(255, 39, 39, 1);
-}
-
-+ (UIColor *)nowPlayingItemColor
-{
-    return [[UIColor defaultAppColorScheme] lighterColor];
-}
-
-+ (NSArray *)appThemeColors
-{
-    return  @[
-              //orange
-              [AppEnvironmentConstants defaultAppThemeBeforeUserPickedTheme],
-              
-              //green
-              [Rgb2UIColor(74, 153, 118, 1) darkerColor],
-              
-              //pink
-              [Rgb2UIColor(233, 91, 152, 1) lighterColor],
-              
-              //blue
-              Rgb2UIColor(57, 104, 190, 1),
-              
-              //purple
-              Rgb2UIColor(111, 91, 164, 1),
-              
-              //yellow
-              Rgb2UIColor(254, 200, 45, 1)
-              ];
 }
 
 @end

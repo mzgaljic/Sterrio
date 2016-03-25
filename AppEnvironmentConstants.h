@@ -13,7 +13,6 @@
 #define PREFERRED_CELL_VALUE_KEY @"preferredCellularStreamValue"
 #define USERS_LAST_KNOWN_MAJOR_IOS_VERS_VALUE_KEY @"the users last known major ios version number"
 #define USER_SAW_EXPANDING_PLAYER_TIP_VALUE_KEY @"user already saw the swipe up gesture tips"
-#define APP_THEME_COLOR_VALUE_KEY @"appThemeColorValue"
 #define ICLOUD_SYNC @"icloudSettingsSync"
 #define ONLY_AIRPLAY_AUDIO_VALUE_KEY @"shouldOnlyAirplayAudio"
 #define LIMIT_VIDEO_LENGTH_CELLULAR_VALUE_KEY @"limit length of videos when on LTE/3G"
@@ -24,6 +23,7 @@
 #define NUM_TIMES_APP_LAUNCHED @"numberOfTimesAppLaunched"  //on just this device.
 
 #import <Foundation/Foundation.h>
+#import "MZAppTheme.h"
 
 //states of the preview player
 typedef enum {
@@ -133,7 +133,8 @@ typedef enum{
 + (void)setUserHasSeenCellularDataUsageWarning:(BOOL)hasSeen;
 + (BOOL)didPreviouslyShowUserCellularWarning;
 
-+ (void)setAppTheme:(UIColor *)appTheme;
++ (void)setAppTheme:(MZAppTheme *)appTheme saveInUserDefaults:(BOOL)save;
++ (MZAppTheme *)appTheme;
 //-----End of app settings------
 
 + (void)setLastSuccessfulSyncDate:(NSDate *)date;
@@ -143,8 +144,6 @@ typedef enum{
 
 
 //Other stuff
-+ (UIColor *)defaultAppThemeBeforeUserPickedTheme;
-
 + (int)navBarHeight;
 + (void)setNavBarHeight:(int)height;
 + (int)statusBarHeight;
@@ -152,13 +151,5 @@ typedef enum{
 + (void)setStatusBarHeight:(int)height;
 + (void)setBannerAdHeight:(int)height;
 + (int)bannerAdHeight;
-
-+ (UIColor *)expandingCellGestureInitialColor;
-+ (UIColor *)expandingCellGestureQueueItemColor;
-+ (UIColor *)expandingCellGestureDeleteItemColor;
-
-+ (UIColor *)nowPlayingItemColor;
-
-+ (NSArray *)appThemeColors;
 
 @end

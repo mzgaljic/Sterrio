@@ -171,7 +171,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
     
     int labelFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
     if(isNowPlaying) {
-        cell.textLabel.textColor = [AppEnvironmentConstants nowPlayingItemColor];
+        cell.textLabel.textColor = [MZAppTheme nowPlayingItemColor];
         cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                               size:labelFontSize];
     } else {
@@ -338,7 +338,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
     expansionSettings.threshold = 1.0;
     expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunctionCubicOut;
     expansionSettings.fillOnTrigger = NO;
-    UIColor *initialExpansionColor = [AppEnvironmentConstants expandingCellGestureInitialColor];
+    UIColor *initialExpansionColor = [MZAppTheme expandingCellGestureInitialColor];
     __weak ArtistItemAlbumViewController *weakself = self;
     
     if(direction == MGSwipeDirectionLeftToRight){
@@ -358,7 +358,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
             NSArray *albumSongs = [self albumSongsInAlphabeticalOrderGivenAlbum:albumAtSection];
             aSong = albumSongs[path.row];
         }
-        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureQueueItemColor];
+        expansionSettings.expansionColor = [MZAppTheme expandingCellGestureQueueItemColor];
         __weak Song *weakSong = aSong;
         __weak MGSwipeTableCell *weakCell = cell;
         return @[[MGSwipeButton buttonWithTitle:@"Queue"
@@ -372,7 +372,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
                                            return NO;
                                        }]];
     } else if(direction == MGSwipeDirectionRightToLeft){
-        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
+        expansionSettings.expansionColor = [MZAppTheme expandingCellGestureDeleteItemColor];
         MGSwipeButton *delete = [MGSwipeButton buttonWithTitle:@"Delete"
                                                backgroundColor:initialExpansionColor
                                                        padding:MZCellSpotifyStylePaddingValue

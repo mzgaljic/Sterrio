@@ -15,6 +15,7 @@
 #import "UIDevice+DeviceName.h"
 #import "SDWebImageManager.h"
 #import "UIColor+LighterAndDarker.h"
+#import "MZAppTheme.h"
 
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
@@ -69,17 +70,10 @@
                            forKey:LIMIT_VIDEO_LENGTH_CELLULAR_VALUE_KEY];
         [standardDefaults setObject:[NSNumber numberWithInteger:1] forKey:NUM_TIMES_APP_LAUNCHED];
         
-        UIColor *color = [AppEnvironmentConstants defaultAppThemeBeforeUserPickedTheme];
-        const CGFloat* components = CGColorGetComponents(color.CGColor);
-        NSNumber *red = [NSNumber numberWithDouble:components[0]];
-        NSNumber *green = [NSNumber numberWithDouble:components[1]];
-        NSNumber *blue = [NSNumber numberWithDouble:components[2]];
-        NSNumber *alpha = [NSNumber numberWithDouble:components[3]];
-        NSArray *defaultColorRepresentation = @[red, green, blue, alpha];
-        [standardDefaults setObject:defaultColorRepresentation
-                             forKey:APP_THEME_COLOR_VALUE_KEY];
-        [UIColor defaultAppColorScheme:color];
-        
+        MZAppTheme *appTheme = [MZAppTheme defaultAppThemeBeforeUserPickedTheme];
+        [AppEnvironmentConstants setAppTheme:appTheme saveInUserDefaults:NO];
+        [standardDefaults setObject:[appTheme nsUserDefaultsCompatibleDictFromTheme]
+                             forKey:[MZAppTheme nsUserDefaultsKeyAppThemeDict]];
         [standardDefaults synchronize];
     } else{
         //load users last settings from disk before setting these values.
@@ -103,13 +97,9 @@
                         [standardDefaults objectForKey:LAST_SUCCESSFUL_ICLOUD_SYNC_KEY]];
         [AppEnvironmentConstants setUserSawExpandingPlayerTip:[standardDefaults boolForKey:USER_SAW_EXPANDING_PLAYER_TIP_VALUE_KEY]];
         
-        //I manually retrieve App color from NSUserDefaults
-        NSArray *defaultColorRep = [standardDefaults objectForKey:APP_THEME_COLOR_VALUE_KEY];
-        UIColor *usersChosenDefaultColor = [UIColor colorWithRed:[defaultColorRep[0] doubleValue]
-                                                           green:[defaultColorRep[1] doubleValue]
-                                                            blue:[defaultColorRep[2] doubleValue]
-                                                           alpha:[defaultColorRep[3] doubleValue]];
-        [UIColor defaultAppColorScheme:usersChosenDefaultColor];
+        NSDictionary *dict = [standardDefaults objectForKey:[MZAppTheme nsUserDefaultsKeyAppThemeDict]];
+        MZAppTheme *appTheme = [[MZAppTheme alloc] initWithNsUserDefaultsCompatibleDict:dict];
+        [AppEnvironmentConstants setAppTheme:appTheme saveInUserDefaults:NO];
         
         //increment and set NUM_TIMES_APP_LAUNCHED
         NSNumber *numTimesAppLaunched = [standardDefaults objectForKey:NUM_TIMES_APP_LAUNCHED];
@@ -122,13 +112,17 @@
 + (void)setGlobalFontsAndColorsForAppGUIComponents
 {
     //set global default "AppColorScheme"
+    MZAppTheme *appTheme = [AppEnvironmentConstants appTheme];
+    UIColor *textOrNavBarTint = appTheme.contrastingTextOrNavBarTint;
+    UIColor *mainColor = appTheme.mainGuiTint;
+    
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    appDelegate.window.tintColor = [UIColor whiteColor];
+    appDelegate.window.tintColor = textOrNavBarTint;
     
     //cancel button color of all uisearchbars
     [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             [[UIColor defaultAppColorScheme] lighterColor],NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
+                             mainColor,NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
     
     //tab bar font
     UIFont *tabBarFont = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
@@ -137,21 +131,21 @@
     
     UIFont *barButtonFonts = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:17];
     NSDictionary *barButtonAttributes = @{
-                                          NSForegroundColorAttributeName : [UIColor defaultWindowTintColor],
+                                          NSForegroundColorAttributeName : textOrNavBarTint,
                                           NSFontAttributeName : barButtonFonts
                                           };
     
     //toolbar button colors
     [[UIBarButtonItem appearanceWhenContainedIn:[UIToolbar class], nil]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             [[UIColor defaultAppColorScheme] lighterColor],
+                             mainColor,
                              NSForegroundColorAttributeName,
                              barButtonFonts, NSFontAttributeName, nil] forState:UIControlStateNormal];
     
     //nav bar attributes
     UIFont *navBarFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:20];
     NSDictionary *navBarTitleAttributes = @{
-                                            NSForegroundColorAttributeName : [UIColor defaultWindowTintColor],
+                                            NSForegroundColorAttributeName : textOrNavBarTint,
                                             NSFontAttributeName : navBarFont
                                             };
     [[UINavigationBar appearance] setTitleTextAttributes:navBarTitleAttributes];
@@ -235,23 +229,6 @@ static short appLaunchedFirstTimeNumCalls = 0;
         return NO;
     } else {
         return NO;
-    }
-}
-
-//used for debugging
-+ (void)logGlobalAppTintColor
-{
-    UIColor *uicolor = [UIColor defaultAppColorScheme];
-    CGColorRef color = [uicolor CGColor];
-    int numComponents = (int)CGColorGetNumberOfComponents(color);
-    if (numComponents == 4)
-    {
-        const CGFloat *components = CGColorGetComponents(color);
-        CGFloat red = components[0] *255;
-        CGFloat green = components[1]*255;
-        CGFloat blue = components[2]*255;
-        CGFloat alpha = components[3];
-        NSLog(@"Default RGB tint color:\nred:%f, green:%f, blue:%f, alpha:%f", red, green, blue, alpha);
     }
 }
 

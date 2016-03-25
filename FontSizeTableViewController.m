@@ -91,8 +91,8 @@ short const PREVIEW_SONG_SECTION_NUM = 1;
         slider.maximumValue = cellMaxHeight;
         slider.minimumValue = cellMinHeight;
         slider.value = [AppEnvironmentConstants preferredSongCellHeight];;
-        slider.minimumTrackTintColor = [UIColor defaultAppColorScheme];
-        slider.maximumTrackTintColor = [UIColor defaultAppColorScheme];
+        slider.minimumTrackTintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+        slider.maximumTrackTintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
         
         UIFont *largeFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:30];
         slider.maximumValueImage = [self imageFromText:@"A"

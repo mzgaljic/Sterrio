@@ -27,7 +27,7 @@
                               searchBarWidth,
                               searchBarHeight);
     if(self = [super initWithFrame:frame]){
-        textColor = [[UIColor defaultAppColorScheme] lighterColor];
+        textColor = [[AppEnvironmentConstants appTheme].mainGuiTint lighterColor];
         self.placeholder = text;
         self.keyboardType = UIKeyboardTypeASCIICapable;
 
@@ -53,7 +53,7 @@
     
     //blinking cursor color
     self.tintColor = [UIColor darkGrayColor];
-    self.barTintColor = [UIColor defaultWindowTintColor];
+    self.barTintColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
 }
 
 - (void)setFontSizeBasedOnUserSettings

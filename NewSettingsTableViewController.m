@@ -203,7 +203,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
             cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                                   size:fontSize];
-            cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+            cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.detailTextLabel.text = nil;
             cell.imageView.image = nil;
@@ -215,7 +215,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
             cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                                   size:fontSize];
-            cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+            cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.detailTextLabel.text = nil;
             cell.imageView.image = nil;
@@ -240,7 +240,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
                        forControlEvents:UIControlEventValueChanged];
             }
             
-            [icloudSwitch setOnTintColor:[[UIColor defaultAppColorScheme] lighterColor]];
+            [icloudSwitch setOnTintColor:[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor]];
             
             if([AppEnvironmentConstants isIcloudSwitchWaitingForActionToFinish]){
                 icloudCell.userInteractionEnabled = NO;
@@ -254,7 +254,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             
             cell.accessoryView = icloudSwitch;
             
-            UIImage *cloudImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+            UIImage *cloudImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                                :[UIImage imageNamed:@"cloud"]];
             cell.imageView.image = cloudImg;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -273,11 +273,11 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             short cellularVidQuality = [AppEnvironmentConstants preferredCellularStreamSetting];
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%ip", cellularVidQuality];
             
-            UIImage *cellImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+            UIImage *cellImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                               :[UIImage imageNamed:@"cellular tower"]];
             cell.imageView.image = cellImg;
             short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
-            UIColor *appTheme = [UIColor defaultAppColorScheme];
+            UIColor *appTheme = [AppEnvironmentConstants appTheme].mainGuiTint;
             MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
                                                                                        color:appTheme];
             cell.accessoryView = coloredDisclosureIndicator;
@@ -290,11 +290,11 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             short wifiVidQuality = [AppEnvironmentConstants preferredWifiStreamSetting];
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%ip", wifiVidQuality];
             
-            UIImage *wifiImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+            UIImage *wifiImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                               :[UIImage imageNamed:@"wifi"]];
             cell.imageView.image = wifiImg;
             short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
-            UIColor *appTheme = [UIColor defaultAppColorScheme];
+            UIColor *appTheme = [AppEnvironmentConstants appTheme].mainGuiTint;
             MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
                                                                                        color:appTheme];
             cell.accessoryView = coloredDisclosureIndicator;
@@ -314,12 +314,12 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             cell.textLabel.text = @"App Theme";
             cell.detailTextLabel.text = nil;
             
-            UIImage *colorPaletteImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+            UIImage *colorPaletteImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                                       :[UIImage imageNamed:@"color palette icon"]];
             cell.imageView.image = colorPaletteImg;
             
             short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
-            UIColor *appTheme = [UIColor defaultAppColorScheme];
+            UIColor *appTheme = [AppEnvironmentConstants appTheme].mainGuiTint;
             MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
                                                                                        color:appTheme];
             cell.accessoryView = coloredDisclosureIndicator;
@@ -333,7 +333,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             cell.imageView.image = [self imageForFontSizeCell];
             
             short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
-            UIColor *appTheme = [UIColor defaultAppColorScheme];
+            UIColor *appTheme = [AppEnvironmentConstants appTheme].mainGuiTint;
             MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
                                                                                        color:appTheme];
             cell.accessoryView = coloredDisclosureIndicator;
@@ -346,7 +346,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
         cell = [tableView dequeueReusableCellWithIdentifier:@"settingRightDetailCell"
                                                forIndexPath:indexPath];
         short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
-        UIColor *appTheme = [UIColor defaultAppColorScheme];
+        UIColor *appTheme = [AppEnvironmentConstants appTheme].mainGuiTint;
         MSCellAccessory *coloredDisclosureIndicator = [MSCellAccessory accessoryWithType:flatIndicator
                                                                                    color:appTheme];
         if(indexPath.row == 0)
@@ -356,7 +356,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             cell.textLabel.text = @"Advanced";
             cell.detailTextLabel.text = nil;
             
-            UIImage *advancedImg = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme]
+            UIImage *advancedImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                                   :[UIImage imageNamed:@"advanced"]];
             cell.imageView.image = advancedImg;
             cell.accessoryView = coloredDisclosureIndicator;
@@ -387,7 +387,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
             cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                                   size:fontSize];
-            //cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+            //cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.detailTextLabel.text = nil;
             cell.imageView.image = nil;
@@ -628,6 +628,15 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
 - (void)icloudSyncStateHasChanged
 {
     icloudSectionFooterLabel.text = [self icloudSyncStateUserReadableText];
+    if([AppEnvironmentConstants isIcloudSwitchWaitingForActionToFinish]){
+        icloudCell.userInteractionEnabled = NO;
+        icloudCell.textLabel.enabled = NO;
+        icloudSwitch.enabled = NO;
+    } else{
+        icloudCell.userInteractionEnabled = YES;
+        icloudCell.textLabel.enabled = YES;
+        icloudSwitch.enabled = YES;
+    }
 }
 
 - (void)icloudSwitchMustBeTurnedOff
@@ -677,7 +686,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
                                                   size:20];
     }
     mySheet.tag = BUG_FOUND_ACTION_SHEET_TAG;
-    [mySheet setButtonTextColor:[UIColor defaultAppColorScheme]];
+    [mySheet setButtonTextColor:[AppEnvironmentConstants appTheme].mainGuiTint];
     [mySheet setTitleTextColor:[UIColor darkGrayColor]];
     [mySheet setCancelButtonFont:[UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                                      size:20]];
@@ -700,7 +709,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
                                                   size:20];
     }
     mySheet.tag = FEEDBACK_CELL_ACTION_SHEET_TAG;
-    [mySheet setButtonTextColor:[UIColor defaultAppColorScheme]];
+    [mySheet setButtonTextColor:[AppEnvironmentConstants appTheme].mainGuiTint];
     [mySheet setTitleTextColor:[UIColor darkGrayColor]];
     [mySheet setCancelButtonFont:[UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                                      size:20]];
@@ -722,7 +731,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
     UIGraphicsEndImageContext();
     
     
-    return [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme] :tempImage];
+    return [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint :tempImage];
 }
 
 - (IBAction)doneDismissButtonTapped:(id)sender
@@ -747,14 +756,6 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
     BOOL audioOnlyAirplay = [AppEnvironmentConstants shouldOnlyAirplayAudio];
     BOOL limitVideoLengthOnCellular = [AppEnvironmentConstants limitVideoLengthOnCellular];
     
-    UIColor *color = [UIColor defaultAppColorScheme];
-    const CGFloat* components = CGColorGetComponents(color.CGColor);
-    NSNumber *red = [NSNumber numberWithDouble:components[0]];
-    NSNumber *green = [NSNumber numberWithDouble:components[1]];
-    NSNumber *blue = [NSNumber numberWithDouble:components[2]];
-    NSNumber *alpha = [NSNumber numberWithDouble:components[3]];
-    NSArray *defaultColorRepresentation = @[red, green, blue, alpha];
-    
     [[NSUserDefaults standardUserDefaults] setBool:icloudSyncEnabled
                                             forKey:ICLOUD_SYNC];
     [[NSUserDefaults standardUserDefaults] setInteger:prefWifiStreamQuality
@@ -767,10 +768,9 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
                                             forKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY];
     [[NSUserDefaults standardUserDefaults] setBool:limitVideoLengthOnCellular
                                             forKey:LIMIT_VIDEO_LENGTH_CELLULAR_VALUE_KEY];
-    [[NSUserDefaults standardUserDefaults] setObject:defaultColorRepresentation
-                                              forKey:APP_THEME_COLOR_VALUE_KEY];
-    
     [[NSUserDefaults standardUserDefaults] synchronize];
+    [AppEnvironmentConstants setAppTheme:[AppEnvironmentConstants appTheme]
+                      saveInUserDefaults:YES];
 }
 
 #pragma mark - Rotation and status bar methods

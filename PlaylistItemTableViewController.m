@@ -75,7 +75,7 @@
     self.emptyTableUserMessage = @"Playlist Empty";
     [self setUpNavBarItems];
     self.navBar = self.navigationItem;
-    [[UITextField appearance] setTintColor:[[UIColor defaultAppColorScheme] lighterColor]];  //sets the cursor color of the playlist name textbox editor
+    [[UITextField appearance] setTintColor:[AppEnvironmentConstants appTheme].mainGuiTint];  //sets the cursor color of the playlist name textbox editor
     
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -134,7 +134,7 @@
     UINavigationController *parentNav = (UINavigationController *)self.parentViewController;
     MainScreenViewController *mainVc = (MainScreenViewController *)parentNav.parentViewController;
     UIImage *img = mainVc.centerButtonImg;
-    img = [UIImage colorOpaquePartOfImage:[UIColor defaultAppColorScheme] :img];
+    img = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint :img];
     self.centerButton = [[SSBouncyButton alloc] initAsImage];
     [self.centerButton setImage:img forState:UIControlStateNormal];
     [self.centerButton setHitTestEdgeInsets:UIEdgeInsetsMake(-10, -10, -10, -10)];
@@ -232,7 +232,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     BOOL songIsNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToPlaylistItem:item withContext:self.playbackContext];
     
     if(songIsNowPlaying) {
-        cell.textLabel.textColor = [AppEnvironmentConstants nowPlayingItemColor];
+        cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
         cell.isRepresentingANowPlayingItem = YES;
     } else {
         cell.textLabel.textColor = [UIColor blackColor];
@@ -483,14 +483,14 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     expansionSettings.threshold = 1.0;
     expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunctionCubicOut;
     expansionSettings.fillOnTrigger = NO;
-    UIColor *initialExpansionColor = [AppEnvironmentConstants expandingCellGestureInitialColor];
+    UIColor *initialExpansionColor = [MZAppTheme expandingCellGestureInitialColor];
     
     if(direction == MGSwipeDirectionLeftToRight){
         //queue
         NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
         PlaylistItem *item = [self playlistItemForIndexPath:indexPath];
         __weak PlaylistItem *weakItem = item;
-        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureQueueItemColor];
+        expansionSettings.expansionColor = [MZAppTheme expandingCellGestureQueueItemColor];
         __weak PlaylistItemTableViewController *weakself = self;
         __weak MGSwipeTableCell *weakCell = cell;
         return @[[MGSwipeButton buttonWithTitle:@"Queue"
@@ -504,7 +504,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                            return NO;
                                        }]];
     } else if(direction == MGSwipeDirectionRightToLeft){
-        expansionSettings.expansionColor = [AppEnvironmentConstants expandingCellGestureDeleteItemColor];
+        expansionSettings.expansionColor = [MZAppTheme expandingCellGestureDeleteItemColor];
         __weak PlaylistItemTableViewController *weakSelf = self;
         MGSwipeButton *delete = [MGSwipeButton buttonWithTitle:@"Delete"
                                                backgroundColor:initialExpansionColor

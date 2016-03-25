@@ -66,13 +66,13 @@ static NSString * const NO_THANKS_TEXT = @"No, thanks";
 - (void)initialAreYouLikingTheAppQuestion
 {
     UIView *view = self.contentView;
-    view.backgroundColor = [UIColor defaultAppColorScheme];
+    view.backgroundColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
     
     _titleLabel = [[TOMSMorphingLabel alloc] initWithFrame:[self titleLabelFrame]];
     _titleLabel.text = [NSString stringWithFormat:@"Enjoying %@?", MZAppName];
     cachedTitleLabelText = _titleLabel.text;
-    _titleLabel.textColor = [UIColor defaultWindowTintColor];
+    _titleLabel.textColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     _titleLabel.animationDuration = 0.40;
     if(view.frame.size.width <= IPHONE_4_WIDTH) {
@@ -160,8 +160,8 @@ static NSString * const NO_THANKS_TEXT = @"No, thanks";
 - (void)applyYesStyleToSSButton:(SSBouncyButton *)btn
 {
     btn.selected = YES;
-    [btn setTitleColor:[UIColor defaultAppColorScheme] forState:UIControlStateSelected];
-    btn.tintColor = [UIColor defaultWindowTintColor];
+    [btn setTitleColor:[AppEnvironmentConstants appTheme].mainGuiTint forState:UIControlStateSelected];
+    btn.tintColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
     btn.titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                           size:btn.titleLabel.font.pointSize];
 }
@@ -169,7 +169,7 @@ static NSString * const NO_THANKS_TEXT = @"No, thanks";
 - (void)applyNoStyleToSSButton:(SSBouncyButton *)btn
 {
     btn.selected = NO;
-    btn.tintColor = [UIColor defaultWindowTintColor];
+    btn.tintColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
     btn.titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                           size:btn.titleLabel.font.pointSize];
 }

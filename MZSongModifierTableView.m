@@ -195,10 +195,10 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             }
             else{
                 cell.detailTextLabel.text = @"name needed";
-                cell.detailTextLabel.textColor = [UIColor defaultAppColorScheme];
+                cell.detailTextLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
             }
             
-            cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[UIColor defaultAppColorScheme] lighterColor]];
+            cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor]];
             
         } else if(indexPath.row == 1){  //artist
             cell.textLabel.text = @"Artist";
@@ -245,13 +245,13 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             if(!_userPickingNewYtVideo && _creatingANewSong
                && _songIAmEditing.songName.length > 0 && canShowAddtoLibButton){
                 cell.textLabel.text = @"Add to library";
-                cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+                cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
                 cell.selectionStyle = UITableViewCellSelectionStyleDefault;
                 [spinner stopAnimating];
                 spinner = nil;
             } else if(_userPickingNewYtVideo && _songIAmEditing.songName > 0) {
                 cell.textLabel.text = @"Save";
-                cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+                cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
                 cell.selectionStyle = UITableViewCellSelectionStyleDefault;
                 [spinner stopAnimating];
                 spinner = nil;
@@ -259,7 +259,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                       && _songIAmEditing.songName.length > 0){
                 //song name provided, but not all video info needed has loaded
                 cell.textLabel.text = @"   Loading additional video info...";
-                cell.textLabel.textColor = [UIColor defaultAppColorScheme];
+                cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
                 spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
                 cell.accessoryView = spinner;
@@ -364,7 +364,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     aButton.titleLabel.font = [UIFont fontWithName:regularFont
                                                               size:20];
                 }
-                [popup setButtonTextColor:[UIColor defaultAppColorScheme]];
+                [popup setButtonTextColor:[AppEnvironmentConstants appTheme].mainGuiTint];
                 [popup setTitleTextColor:[UIColor darkGrayColor]];
                 
                 BOOL hasDestructiveButton = (_songIAmEditing.artist);
@@ -407,7 +407,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     aButton.titleLabel.font = [UIFont fontWithName:regularFont
                                                               size:20];
                 }
-                [popup setButtonTextColor:[UIColor defaultAppColorScheme]];
+                [popup setButtonTextColor:[AppEnvironmentConstants appTheme].mainGuiTint];
                 
                 BOOL hasDestructiveButton = (_songIAmEditing.album);
                 if(hasDestructiveButton)
@@ -452,7 +452,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     aButton.titleLabel.font = [UIFont fontWithName:regularFont
                                                               size:20];
                 }
-                [popup setButtonTextColor:[UIColor defaultAppColorScheme]];
+                [popup setButtonTextColor:[AppEnvironmentConstants appTheme].mainGuiTint];
                 
                 BOOL hasDestructiveButton = (_currentAlbumArt);
                 if(hasDestructiveButton)
@@ -1076,8 +1076,8 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     UIImagePickerController *photoPickerController = [[UIImagePickerController alloc] init];
     photoPickerController.delegate = self;
     //set tint color specifically for this VC so that the cancel buttons are invisible
-    photoPickerController.view.tintColor = [UIColor defaultWindowTintColor];
-    photoPickerController.navigationBar.barTintColor = [UIColor defaultAppColorScheme];
+    photoPickerController.view.tintColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
+    photoPickerController.navigationBar.barTintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     [self.theDelegate pushThisVC:photoPickerController];
 }
 

@@ -69,7 +69,7 @@
 - (void)setAndStyleTextViewsText
 {
     NSString *newParagraph = @"\n\n\n\n";
-    textView.tintColor = [UIColor defaultAppColorScheme];
+    textView.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     
     NSMutableString *text = [[NSMutableString alloc] initWithString:@""];
     [text appendFormat:@"The following software has helped %@ ", MZAppName];

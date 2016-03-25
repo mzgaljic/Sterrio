@@ -13,7 +13,6 @@
 
 + (void)loadUsersSettingsFromNSUserDefaults;
 + (void)setGlobalFontsAndColorsForAppGUIComponents;
-+ (void)logGlobalAppTintColor;
 
 + (void)reduceEncryptionStrengthOnRelevantDirs __attribute__((deprecated));
 + (void)setupDiskAndMemoryWebCache;

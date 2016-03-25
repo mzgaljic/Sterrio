@@ -70,7 +70,7 @@
 
 - (UIColor *)colorForNowPlayingItem
 {
-    return [[UIColor defaultAppColorScheme] lighterColor];
+    return [[AppEnvironmentConstants appTheme].mainGuiTint lighterColor];
 }
 
 #pragma mark - Boring utility methods for subclasses

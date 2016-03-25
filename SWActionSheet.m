@@ -143,7 +143,7 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
 {
     // Make sheet window visible and active
     UIWindow *sheetWindow = [self window];
-    sheetWindow.tintColor = [UIColor defaultAppColorScheme];
+    sheetWindow.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     if (![sheetWindow isKeyWindow])
         [sheetWindow makeKeyAndVisible];
     sheetWindow.hidden = NO;

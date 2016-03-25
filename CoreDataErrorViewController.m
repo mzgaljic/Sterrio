@@ -48,7 +48,7 @@
     _alertView.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
     _alertView.normalButtonFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
     _alertView.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    _alertView.buttonTextColor = [UIColor defaultAppColorScheme];
+    _alertView.buttonTextColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     _alertView.tag = originalAlertTag;
     [_alertView show];
 }
@@ -76,7 +76,7 @@
             _alertView.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
             _alertView.tag = coreDataPromptUserSecondtimeToBeSafeAlertTag;
             _alertView.titleLabelTextColor = [UIColor redColor];
-            _alertView.buttonTextColor = [UIColor defaultAppColorScheme];
+            _alertView.buttonTextColor = [AppEnvironmentConstants appTheme].mainGuiTint;
             [_alertView show];
         }
         else if(buttonIndex == 0)
@@ -119,7 +119,7 @@
         _alertView.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
         _alertView.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
         _alertView.normalButtonFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        _alertView.buttonTextColor = [UIColor defaultAppColorScheme];
+        _alertView.buttonTextColor = [AppEnvironmentConstants appTheme].mainGuiTint;
         _alertView.tag = coreDataDBRecreatedAttemptAlertTag;
         [_alertView show];
     } else{
@@ -133,7 +133,7 @@
         _alertView.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
         _alertView.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
         _alertView.normalButtonFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-        _alertView.buttonTextColor = [UIColor defaultAppColorScheme];
+        _alertView.buttonTextColor = [AppEnvironmentConstants appTheme].mainGuiTint;
         _alertView.tag = coreDataDBRecreatedAttemptAlertTag;
         [_alertView show];
     }
@@ -171,7 +171,7 @@
     [composer.navigationBar setTintColor:[UIColor blackColor]];
     
     //title color
-    composer.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor defaultAppColorScheme]};
+    composer.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[AppEnvironmentConstants appTheme].mainGuiTint};
     
     composer.mailComposeDelegate = self;
     NSString *emailSubject = @"CoreData DB init issue";
@@ -253,7 +253,7 @@
     _alertView.messageLabelFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
     _alertView.suggestedButtonFont = [UIFont boldSystemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
     _alertView.normalButtonFont = [UIFont systemFontOfSize:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
-    _alertView.buttonTextColor = [UIColor defaultAppColorScheme];
+    _alertView.buttonTextColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     _alertView.tag = emailAlertTag;
     [_alertView show];
 }

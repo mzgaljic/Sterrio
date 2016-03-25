@@ -73,7 +73,7 @@ short const dotLabelPadding = 20;
                                                                         frame.size.height/2 - 10,
                                                                         20, 20)];
             coloredDotLabel.text = @"•";
-            coloredDotLabel.textColor = [UIColor defaultAppColorScheme];
+            coloredDotLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
             coloredDotLabel.font = [UIFont systemFontOfSize:40];
             [self.contentView addSubview:coloredDotLabel];
         }
