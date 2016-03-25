@@ -422,6 +422,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [view reattachLayerToPlayer];
 }
 
+#pragma mark - Random
 - (void)attemptEnsembleMergeInBackgroundTaskIfAppropriate
 {
     if(! [AppEnvironmentConstants icloudSyncEnabled])

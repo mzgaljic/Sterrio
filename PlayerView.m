@@ -127,8 +127,28 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 - (void)reattachLayerToPlayer
 {
     AVPlayerLayer *playerLayer = (AVPlayerLayer *)[self layer];
-    if([playerLayer player] == nil)
+    if([playerLayer player] == nil) {
+        //do a nice fade-in animation without any stutters/"flashes" on screen.
+        __block UIView *blackPlaceHolder = [[UIView alloc] initWithFrame:self.frame];
+        blackPlaceHolder.backgroundColor = [UIColor blackColor];
+        [[UIApplication sharedApplication].keyWindow insertSubview:blackPlaceHolder
+                                                      belowSubview:self];
+        self.alpha = 0;
         [playerLayer setPlayer:[MusicPlaybackController obtainRawAVPlayer]];
+        [UIView animateWithDuration:1.8
+                              delay:0
+                            options:UIViewAnimationOptionAllowAnimatedContent
+                                    | UIViewAnimationOptionAllowUserInteraction
+                                    | UIViewAnimationOptionCurveEaseOut
+                         animations:^{
+                             blackPlaceHolder.alpha = 0;
+                             self.alpha = 1;
+                         }
+                         completion:^(BOOL finished) {
+                             [blackPlaceHolder removeFromSuperview];
+                             blackPlaceHolder = nil;
+                         }];
+    }
 }
 
 - (AVPlayer *)player {
