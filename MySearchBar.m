@@ -53,7 +53,7 @@
     
     //blinking cursor color
     self.tintColor = [UIColor darkGrayColor];
-    self.barTintColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
+    self.barTintColor = [UIColor whiteColor];
 }
 
 - (void)setFontSizeBasedOnUserSettings
