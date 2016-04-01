@@ -225,6 +225,7 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
     [[UINavigationBar appearance] setBackgroundImage:navBarImage forBarMetrics:UIBarMetricsDefault];
     [self.navigationController.navigationBar setBackgroundImage:navBarImage
                                                   forBarMetrics:UIBarMetricsDefault];
+    [[UIApplication sharedApplication] ignoreSnapshotOnNextApplicationLaunch];
 }
 
 - (UIImage *)imageFromLayer:(CALayer *)layer

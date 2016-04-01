@@ -583,12 +583,10 @@ static BOOL userClearedTextField = NO;
         
         int numSearchSuggestions = (int)self.searchSuggestions.count;
         
-        if([searchBar isFirstResponder])  //keyboard on screen
-            [self.searchSuggestions removeAllObjects];
-        else{
+        if(! [searchBar isFirstResponder]) {
             [searchBar becomeFirstResponder];  //bring up keyboard
-            [self.searchSuggestions removeAllObjects];
         }
+        [self.searchSuggestions removeAllObjects];
         self.displaySearchResults = NO;
         
         NSMutableArray *paths = [NSMutableArray array];
