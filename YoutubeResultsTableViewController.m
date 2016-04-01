@@ -26,6 +26,7 @@
 {
     UIActivityIndicatorView *loadingNextPageSpinner;
     UIActivityIndicatorView *loadingResultsIndicator;
+    BOOL dismissingVc;
 }
 @property (nonatomic, strong) MySearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray *searchResults;
@@ -91,11 +92,13 @@ static NSDate *timeSinceLastPageLoaded;
 #pragma mark - Miscellaneous
 - (void)dealloc
 {
+    self.tableView = nil;
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([self class]));
 }
 
 - (void)myPreDealloc
 {
+    dismissingVc = YES;
     cachedPlaceHolderImage = nil;
     thumbnailStackController = nil;
     _searchBar.delegate = nil;
@@ -113,7 +116,6 @@ static NSDate *timeSinceLastPageLoaded;
     start = nil;
     finish = nil;
     [[YouTubeService sharedInstance] removeVideoQueryDelegate];
-    
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
 }
 
@@ -152,6 +154,10 @@ static NSDate *timeSinceLastPageLoaded;
     [super viewWillAppear:animated];
     [[YouTubeService sharedInstance] setVideoQueryDelegate:self];
     self.navigationController.toolbarHidden = NO;
+    self.navigationController.toolbar.barTintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+    self.navigationController.toolbar.translucent = YES;
+    UIImage *toolBarImg = [AppEnvironmentConstants navBarBackgroundImageFromFrame:self.navigationController.toolbar.frame];
+    [self.navigationController.toolbar setBackgroundImage:toolBarImg forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsDefault];
     if (self.isMovingToParentViewController == NO)
     {
         // we're already on the navigation stack, another controller must have been popped off.
@@ -697,9 +703,13 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
     if(self.displaySearchResults){
         NSAssert(indexPath.section == 0, @"YoutubeResultsTableViewController calling cellForRowAtIndexPath for section > 0 when displaying search results.");
         
-        int numAppRatingCells = (_canShowAppRatingCell) ? 1 : 0;
-        NSString *assertDesc = [NSString stringWithFormat:@"Cell indexpath.row is %li but there are only %lu search results (+ %i app rating cells). last index is %lu.", (long)indexPath.row, (unsigned long)_searchResults.count, numAppRatingCells, _searchResults.count-1];
-        NSAssert(_searchResults.count-1 + numAppRatingCells >= indexPath.row, assertDesc);
+        //this check needed, assert would fail if user dismissed VC while tableview was
+        //still scrolling.
+        if(! dismissingVc) {
+            int numAppRatingCells = (_canShowAppRatingCell) ? 1 : 0;
+            NSString *assertDesc = [NSString stringWithFormat:@"Cell indexpath.row is %li but there are only %lu search results (+ %i app rating cells). last index is %lu.", (long)indexPath.row, (unsigned long)_searchResults.count, numAppRatingCells, _searchResults.count-1];
+            NSAssert(_searchResults.count-1 + numAppRatingCells >= indexPath.row, assertDesc);
+        }
         
         if(_canShowAppRatingCell && indexPath.row == APP_RATING_CELL_ROW_NUM) {
             AppRatingTableViewCell *appRatingCell;

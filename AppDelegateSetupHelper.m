@@ -138,7 +138,7 @@
     //toolbar button colors
     [[UIBarButtonItem appearanceWhenContainedIn:[UIToolbar class], nil]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             mainColor,
+                             textOrNavBarTint,
                              NSForegroundColorAttributeName,
                              barButtonFonts, NSFontAttributeName, nil] forState:UIControlStateNormal];
     
