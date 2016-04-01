@@ -166,7 +166,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
                      completion:nil];
     if([AppEnvironmentConstants shouldDisplayWelcomeScreen]) {
         self.mainVC.introOnScreen = YES;
-        [self performSelector:@selector(showIntroTutorial) withObject:nil afterDelay:0.7 ];
+        [self performSelector:@selector(showIntroTutorial) withObject:nil afterDelay:0.4];
     }
 }
 

@@ -210,10 +210,8 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
     [AppDelegateSetupHelper setGlobalFontsAndColorsForAppGUIComponents];
     UIColor *newMainColor = newTheme.mainGuiTint;
 
-    CAGradientLayer *gradient = [CAGradientLayer layer];
-    gradient.frame = CGRectMake(0, 0, self.navigationController.navigationBar.frame.size.width, self.navigationController.navigationBar.bounds.size.height + [AppEnvironmentConstants statusBarHeight]);
-    gradient.colors = @[(id)[newMainColor CGColor], (id)[[newMainColor lighterColor] CGColor]];
-    UIImage *navBarImage = [self imageFromLayer:gradient];
+    CGRect navBarFrame = CGRectMake(0, 0, self.navigationController.navigationBar.frame.size.width, self.navigationController.navigationBar.bounds.size.height + [AppEnvironmentConstants statusBarHeight]);
+    UIImage *navBarImage = [AppEnvironmentConstants navBarBackgroundImageFromFrame:navBarFrame];
     
     //animate the background image change.
     CATransition *transition = [CATransition animation];
@@ -226,18 +224,6 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
     [self.navigationController.navigationBar setBackgroundImage:navBarImage
                                                   forBarMetrics:UIBarMetricsDefault];
     [[UIApplication sharedApplication] ignoreSnapshotOnNextApplicationLaunch];
-}
-
-- (UIImage *)imageFromLayer:(CALayer *)layer
-{
-    UIGraphicsBeginImageContextWithOptions(layer.frame.size, NO, 0);
-    
-    [layer renderInContext:UIGraphicsGetCurrentContext()];
-    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
-    
-    UIGraphicsEndImageContext();
-    
-    return outputImage;
 }
 
 

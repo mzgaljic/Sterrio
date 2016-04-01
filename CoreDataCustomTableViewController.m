@@ -336,7 +336,11 @@ typedef enum{
 {
     [super viewWillAppear:animated];
     
-    self.navigationController.navigationBar.barTintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+    CGRect navBarFrame = CGRectMake(0, 0, self.navigationController.navigationBar.frame.size.width, self.navigationController.navigationBar.bounds.size.height + [AppEnvironmentConstants statusBarHeight]);
+    UIImage *navBarImage = [AppEnvironmentConstants navBarBackgroundImageFromFrame:navBarFrame];
+    [self.navigationController.navigationBar setBackgroundImage:navBarImage
+                                                  forBarMetrics:UIBarMetricsDefault];
+    
     //set nav bar title color and transparency
     self.navigationController.navigationBar.translucent = YES;
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;  //makes status bar text light and readable

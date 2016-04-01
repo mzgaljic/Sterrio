@@ -779,4 +779,24 @@ static NSLock *lastSuccessfulSyncDateLock;
     return bannerAdHeight;
 }
 
++ (UIImage *)navBarBackgroundImageFromFrame:(CGRect)frame
+{
+    UIColor *mainBarBackgroundBackground = [AppEnvironmentConstants appTheme].mainGuiTint;
+    CAGradientLayer *gradient = [CAGradientLayer layer];
+    gradient.frame = CGRectMake(0, 0, frame.size.width, frame.size.height + [AppEnvironmentConstants statusBarHeight]);
+    gradient.colors = @[(id)[mainBarBackgroundBackground CGColor],
+                        (id)[[mainBarBackgroundBackground lighterColor] CGColor]];
+    UIImage *navBarImage = [AppEnvironmentConstants imageFromLayer:gradient];
+    return navBarImage;
+}
+
++ (UIImage *)imageFromLayer:(CALayer *)layer
+{
+    UIGraphicsBeginImageContextWithOptions(layer.frame.size, NO, 0);
+    [layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return outputImage;
+}
+
 @end

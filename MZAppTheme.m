@@ -43,8 +43,8 @@ NSString * const MZAppThemeContrastTextOrNavBarColorKey = @"Contrasting Text/Nav
 {
     NSString *mainGuiColorString = [self.mainGuiTint stringFromColor];
     NSString *contrastingTextOrNavColorString = [self.contrastingTextOrNavBarTint stringFromColor];
-    return @{ mainGuiColorString                  : MZAppThemeMainGuiColorKey,
-              contrastingTextOrNavColorString     : MZAppThemeContrastTextOrNavBarColorKey };
+    return @{ MZAppThemeMainGuiColorKey                 : mainGuiColorString,
+              MZAppThemeContrastTextOrNavBarColorKey    : contrastingTextOrNavColorString };
 }
 
 - (BOOL)equalToAppTheme:(MZAppTheme *)anotherTheme

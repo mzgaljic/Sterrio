@@ -139,21 +139,6 @@ short const dummyTabIndex = 2;
     
     [self setTabBarItems];
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    
-    
-
-    
-    /*
-    if ([[UIScreen mainScreen] scale])
-        UIGraphicsBeginImageContextWithOptions([layer frame].size, NO, [UIScreen mainScreen].scale);
-    else
-        UIGraphicsBeginImageContext([layer frame].size);
-    
-    [layer renderInContext:UIGraphicsGetCurrentContext()];
-    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
-    
-    UIGraphicsEndImageContext();
-     */
 }
 
 - (void)viewDidAppear:(BOOL)animated

@@ -151,5 +151,6 @@ typedef enum{
 + (void)setStatusBarHeight:(int)height;
 + (void)setBannerAdHeight:(int)height;
 + (int)bannerAdHeight;
++ (UIImage *)navBarBackgroundImageFromFrame:(CGRect)frame;
 
 @end
