@@ -33,8 +33,14 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     _videoThumbnail.image = nil;
-    _videoTitle = nil;
-    _videoChannel = nil;
+    _videoTitle.text = @"";
+    _videoChannel.text = @"";
+}
+
+- (void)dealloc
+{
+    _videoTitle.text = nil;
+    _videoChannel.text = nil;
 }
 
 - (void)layoutSubviews

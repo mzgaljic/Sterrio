@@ -73,6 +73,8 @@
 {
     originalTextLabelFrame = CGRectNull;
     originalDetailTextLabelFrame = CGRectNull;
+    self.textLabel.text = @"";
+    self.detailTextLabel.text = @"";
     [super prepareForReuse];
 }
 

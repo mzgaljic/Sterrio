@@ -131,6 +131,8 @@ short const dotLabelPadding = 20;
     _isRepresentingAQueuedSong = NO;
     _isRepresentingANowPlayingItem = NO;
     _usesOnlyTextLabel = NO;
+    self.textLabel.text = @"";
+    self.detailTextLabel.text = @"";
     [coloredDotLabel removeFromSuperview];
     [super prepareForReuse];
 }
