@@ -1075,8 +1075,8 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 {
     UIImagePickerController *photoPickerController = [[UIImagePickerController alloc] init];
     photoPickerController.delegate = self;
-    //set tint color specifically for this VC so that the cancel buttons are invisible
-    photoPickerController.view.tintColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
+    //set tint color specifically for this VC so that the cancel buttons are not invisible
+    photoPickerController.view.tintColor = [AppEnvironmentConstants appTheme].contrastingTextColor;
     photoPickerController.navigationBar.barTintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     [self.theDelegate pushThisVC:photoPickerController];
 }

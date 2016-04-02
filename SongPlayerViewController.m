@@ -1667,10 +1667,10 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
             [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
                 //restoring default button and title font colors in the app.
                 AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-                appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
-                [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint, NSForegroundColorAttributeName, nil]];
+                appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].navBarToolbarTextTint;
+                [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[AppEnvironmentConstants appTheme].navBarToolbarTextTint, NSForegroundColorAttributeName, nil]];
                 [weakSelf.navigationController.navigationBar setTitleTextAttributes:
-                 @{NSForegroundColorAttributeName:[AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint}];
+                 @{NSForegroundColorAttributeName:[AppEnvironmentConstants appTheme].navBarToolbarTextTint}];
             }];
         }];
         [self presentViewController:activityVC

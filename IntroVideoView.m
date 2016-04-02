@@ -47,7 +47,7 @@ static int const paddingFromScreenEdge = 25;
     title.textAlignment = NSTextAlignmentCenter;
     title.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                  size:28];
-    title.textColor = _anAppTheme.contrastingTextOrNavBarTint;
+    title.textColor = _anAppTheme.navBarToolbarTextTint;
     [self addSubview:title];
 }
 
@@ -66,7 +66,7 @@ static int const paddingFromScreenEdge = 25;
     desc.textAlignment = NSTextAlignmentCenter;
     desc.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                 size:18];
-    desc.textColor = _anAppTheme.contrastingTextOrNavBarTint;
+    desc.textColor = _anAppTheme.navBarToolbarTextTint;
     [self addSubview:desc];
 }
 

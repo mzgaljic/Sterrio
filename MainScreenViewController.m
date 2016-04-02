@@ -99,9 +99,13 @@ short const dummyTabIndex = 2;
                       object:nil];
 }
 
-- (UIStatusBarStyle) preferredStatusBarStyle
+- (UIStatusBarStyle)preferredStatusBarStyle
 {
-    return UIStatusBarStyleLightContent;
+    if([AppEnvironmentConstants appTheme].useWhiteStatusBar) {
+        return UIStatusBarStyleLightContent;
+    } else {
+        return UIStatusBarStyleDefault;
+    }
 }
 
 //this is called when Sterrio itself is hiding and showing the status bar. this is NOT called
@@ -139,6 +143,7 @@ short const dummyTabIndex = 2;
     
     [self setTabBarItems];
     self.edgesForExtendedLayout = UIRectEdgeNone;
+    self.navigationController.navigationBar.translucent = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated

@@ -22,7 +22,13 @@
     
     //set nav bar title color and transparency
     self.navigationController.navigationBar.translucent = YES;
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;  //makes status bar text light and readable
+    
+    self.navigationController.navigationBar.translucent = YES;
+    if([AppEnvironmentConstants appTheme].useWhiteStatusBar) {
+        self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+    } else {
+        self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+    }
 }
 
 @end

@@ -210,9 +210,9 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
     //Play-Pause button
     if(self.playPauseButton == nil) {
         self.playPauseButton = [[SSBouncyButton alloc] initAsImage];
-        UIImage *pauseImage = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint
+        UIImage *pauseImage = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].navBarToolbarTextTint
                                                              :[UIImage imageNamed:@"Pause"]];
-        UIImage *playImage = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint
+        UIImage *playImage = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].navBarToolbarTextTint
                                                             :[UIImage imageNamed:@"Play"]];
         [self.playPauseButton setImage:pauseImage forState:UIControlStateNormal];
         [self.playPauseButton setImage:playImage forState:UIControlStateSelected];

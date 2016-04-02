@@ -10,10 +10,20 @@
 
 @interface MZAppTheme : NSObject
 @property (nonatomic, strong, readonly) UIColor *mainGuiTint;
-@property (nonatomic, strong, readonly) UIColor *contrastingTextOrNavBarTint;
+@property (nonatomic, strong, readonly) UIColor *navBarToolbarTextTint;
+/** 
+ Contrasting text color for a background color that is NOT the same as the main gui tint. 
+ Specify this if for example the mainGuiTint is a bright yellow, and it's hard to see on a
+ bright background.
+ */
+@property (nonatomic, strong, readonly) UIColor *contrastingTextColor;
+@property (nonatomic, assign, readonly) BOOL useWhiteStatusBar;
 
 - (instancetype)initWithMainGuiTint:(UIColor *)mainGuiColor
-         constrastingTextOrNavColor:(UIColor *)contrastingColor;
+                     useWhiteStatusBar:(BOOL)whiteStatusBar
+              navBarToolbarTextTint:(UIColor *)navBarToolBarTint
+               contrastingTextColor:(UIColor *)contrastingColor;
+
 - (instancetype)initWithNsUserDefaultsCompatibleDict:(NSDictionary *)dict;
 - (NSDictionary *)nsUserDefaultsCompatibleDictFromTheme;
 

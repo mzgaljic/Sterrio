@@ -113,11 +113,11 @@
 {
     //set global default "AppColorScheme"
     MZAppTheme *appTheme = [AppEnvironmentConstants appTheme];
-    UIColor *textOrNavBarTint = appTheme.contrastingTextOrNavBarTint;
+    UIColor *navBarToolbarTextTint = appTheme.navBarToolbarTextTint;
     UIColor *mainColor = appTheme.mainGuiTint;
     
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    appDelegate.window.tintColor = textOrNavBarTint;
+    appDelegate.window.tintColor = navBarToolbarTextTint;
     
     //cancel button color of all uisearchbars
     [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil]
@@ -131,21 +131,21 @@
     
     UIFont *barButtonFonts = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:17];
     NSDictionary *barButtonAttributes = @{
-                                          NSForegroundColorAttributeName : textOrNavBarTint,
+                                          NSForegroundColorAttributeName : navBarToolbarTextTint,
                                           NSFontAttributeName : barButtonFonts
                                           };
     
     //toolbar button colors
     [[UIBarButtonItem appearanceWhenContainedIn:[UIToolbar class], nil]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             textOrNavBarTint,
+                             navBarToolbarTextTint,
                              NSForegroundColorAttributeName,
                              barButtonFonts, NSFontAttributeName, nil] forState:UIControlStateNormal];
     
     //nav bar attributes
     UIFont *navBarFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:20];
     NSDictionary *navBarTitleAttributes = @{
-                                            NSForegroundColorAttributeName : textOrNavBarTint,
+                                            NSForegroundColorAttributeName : navBarToolbarTextTint,
                                             NSFontAttributeName : navBarFont
                                             };
     [[UINavigationBar appearance] setTitleTextAttributes:navBarTitleAttributes];

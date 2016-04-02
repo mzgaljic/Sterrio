@@ -12,20 +12,29 @@
 
 @interface MZAppTheme ()
 @property (nonatomic, strong, readwrite) UIColor *mainGuiTint;
-@property (nonatomic, strong, readwrite) UIColor *contrastingTextOrNavBarTint;
+@property (nonatomic, strong, readwrite) UIColor *navBarToolbarTextTint;
+@property (nonatomic, strong, readwrite) UIColor *contrastingTextColor;
+@property (nonatomic, assign, readwrite) BOOL useWhiteStatusBar;
 @end
 
 @implementation MZAppTheme
 #define Rgb2UIColor(r, g, b, a)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:(a)]
 NSString * const MZAppThemeMainGuiColorKey = @"Main Gui Tint";
-NSString * const MZAppThemeContrastTextOrNavBarColorKey = @"Contrasting Text/Nav Color";
+NSString * const MZAppThemeUseWhiteStatusBarKey = @"use a white status bar color";
+NSString * const MZAppThemeNavBarToolBarTextTintKey = @"text of nav bar and toolbar text";
+NSString * const MZAppThemeContrastingTextColor = @"contrasting text color";
+
 
 - (instancetype)initWithMainGuiTint:(UIColor *)mainGuiColor
-         constrastingTextOrNavColor:(UIColor *)contrastingColor
+                     useWhiteStatusBar:(BOOL)whiteStatusBar
+              navBarToolbarTextTint:(UIColor *)navBarToolBarTint
+               contrastingTextColor:(UIColor *)contrastingColor
 {
     if(self = [super init]) {
         _mainGuiTint = mainGuiColor;
-        _contrastingTextOrNavBarTint = contrastingColor;
+        _useWhiteStatusBar = whiteStatusBar;
+        _navBarToolbarTextTint = navBarToolBarTint;
+        _contrastingTextColor = contrastingColor;
     }
     return self;
 }
@@ -34,17 +43,22 @@ NSString * const MZAppThemeContrastTextOrNavBarColorKey = @"Contrasting Text/Nav
 {
     if(self = [super init]) {
         _mainGuiTint = [UIColor colorWithString:[dict objectForKey:MZAppThemeMainGuiColorKey]];
-        _contrastingTextOrNavBarTint = [UIColor colorWithString:[dict objectForKey:MZAppThemeContrastTextOrNavBarColorKey]];
+        _useWhiteStatusBar = [[dict objectForKey:MZAppThemeUseWhiteStatusBarKey] boolValue];
+        _navBarToolbarTextTint = [UIColor colorWithString:[dict objectForKey:MZAppThemeNavBarToolBarTextTintKey]];
+        _contrastingTextColor = [UIColor colorWithString:[dict objectForKey:MZAppThemeContrastingTextColor]];
     }
     return self;
 }
 
 - (NSDictionary *)nsUserDefaultsCompatibleDictFromTheme
 {
-    NSString *mainGuiColorString = [self.mainGuiTint stringFromColor];
-    NSString *contrastingTextOrNavColorString = [self.contrastingTextOrNavBarTint stringFromColor];
-    return @{ MZAppThemeMainGuiColorKey                 : mainGuiColorString,
-              MZAppThemeContrastTextOrNavBarColorKey    : contrastingTextOrNavColorString };
+    NSString *mainGuiColorString = [_mainGuiTint stringFromColor];
+    NSString *navbarToolbarTextTint = [_navBarToolbarTextTint stringFromColor];
+    NSString *contrastingTextColor = [_contrastingTextColor stringFromColor];
+    return @{ MZAppThemeMainGuiColorKey             : mainGuiColorString,
+              MZAppThemeUseWhiteStatusBarKey       : [NSNumber numberWithBool:_useWhiteStatusBar],
+              MZAppThemeNavBarToolBarTextTintKey    : navbarToolbarTextTint,
+              MZAppThemeContrastingTextColor        : contrastingTextColor};
 }
 
 - (BOOL)equalToAppTheme:(MZAppTheme *)anotherTheme
@@ -58,10 +72,18 @@ NSString * const MZAppThemeContrastTextOrNavBarColorKey = @"Contrasting Text/Nav
     NSString *anotherThemeMainGuiColorString = [anotherTheme.mainGuiTint stringFromColor];
     NSString *myThemeMainGuiColorString = [_mainGuiTint stringFromColor];
     
-    NSString *anotherThemeContrastColorString = [anotherTheme.contrastingTextOrNavBarTint stringFromColor];
-    NSString *myThemeContrastColorString = [_contrastingTextOrNavBarTint stringFromColor];
+    NSString *anotherThemeNavbarToolbarString = [anotherTheme.navBarToolbarTextTint stringFromColor];
+    NSString *myThemeNavbarToolbarString = [_navBarToolbarTextTint stringFromColor];
     
-    return [anotherThemeMainGuiColorString isEqualToString:myThemeMainGuiColorString]
+    NSString *anotherThemeContrastColorString = [anotherTheme.contrastingTextColor stringFromColor];
+    NSString *myThemeContrastColorString = [_contrastingTextColor stringFromColor];
+    
+    BOOL otherThemeMainGuiTintIsDark = anotherTheme.useWhiteStatusBar;
+    BOOL myThemeMainGuiTintIsDark = _useWhiteStatusBar;
+    
+    return otherThemeMainGuiTintIsDark == myThemeMainGuiTintIsDark
+        && [anotherThemeMainGuiColorString isEqualToString:myThemeMainGuiColorString]
+        && [anotherThemeNavbarToolbarString isEqualToString:myThemeNavbarToolbarString]
         && [anotherThemeContrastColorString isEqualToString:myThemeContrastColorString];
 }
 
@@ -69,9 +91,11 @@ NSString * const MZAppThemeContrastTextOrNavBarColorKey = @"Contrasting Text/Nav
 + (MZAppTheme *)defaultAppThemeBeforeUserPickedTheme
 {
     UIColor *mainGuiTint = Rgb2UIColor(240, 110, 50, 1);
-    UIColor *contrastingTextColor = [UIColor whiteColor];
+    UIColor *navbarToolbarTextTint = [UIColor whiteColor];
     MZAppTheme *defaultAppTheme = [[MZAppTheme alloc] initWithMainGuiTint:mainGuiTint
-                                               constrastingTextOrNavColor:contrastingTextColor];
+                                                           useWhiteStatusBar:YES
+                                                    navBarToolbarTextTint:navbarToolbarTextTint
+                                                     contrastingTextColor:mainGuiTint];
     return defaultAppTheme;
 }
 + (UIColor *)expandingCellGestureInitialColor
@@ -113,28 +137,35 @@ NSString * const MZAppThemeContrastTextOrNavBarColorKey = @"Contrasting Text/Nav
      Rgb2UIColor(254, 200, 45, 1)
      ];
      */
+    
     UIColor *whiteColor = [UIColor whiteColor];
-    UIColor *blackColor = [UIColor blackColor];
     return  @[
               //orange
               [MZAppTheme defaultAppThemeBeforeUserPickedTheme],
               
-              //From top left, going down, and then back up, in zig-zag motion, from left -> right
-              //on app logo.
-              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(169, 96, 143, 1) constrastingTextOrNavColor:whiteColor],
-              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(101, 103, 201, 1) constrastingTextOrNavColor:whiteColor],
-              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(188, 97, 143, 1) constrastingTextOrNavColor:whiteColor],
-              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(225, 152, 89, 1)constrastingTextOrNavColor:whiteColor],
-              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(229, 185, 78, 1)constrastingTextOrNavColor:blackColor],
-              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(218, 100, 90, 1)constrastingTextOrNavColor:whiteColor],
-              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(119, 103, 202, 1)constrastingTextOrNavColor:whiteColor],
-              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(159, 85, 227, 1)constrastingTextOrNavColor:whiteColor],
-              //default orange here, skipped since it's the first element in array.
-              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(188, 81, 170, 1)constrastingTextOrNavColor:whiteColor],
-              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(221, 141, 94, 1)constrastingTextOrNavColor:whiteColor],
-              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(188, 97, 143, 1)constrastingTextOrNavColor:whiteColor],
-              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(119, 190, 168, 1)constrastingTextOrNavColor:blackColor],
-              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(109, 180, 205, 1)constrastingTextOrNavColor:blackColor],
+              //Bright red, with a hint of orange
+              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(228, 58, 21, 1)
+                                      useWhiteStatusBar:YES
+                                navBarToolbarTextTint:whiteColor
+                                 contrastingTextColor:Rgb2UIColor(228, 58, 21, 1)],
+              
+              //Dark-ish Green Lime
+              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(106, 145, 19, 1)
+                                    useWhiteStatusBar:YES
+                                navBarToolbarTextTint:whiteColor
+                                 contrastingTextColor:Rgb2UIColor(106, 145, 19, 1)],
+              
+              //purple
+              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(123, 67, 151, 1)
+                                    useWhiteStatusBar:YES
+                                navBarToolbarTextTint:whiteColor
+                                 contrastingTextColor:Rgb2UIColor(123, 67, 151, 1)],
+              
+              //darker yellow
+              [[MZAppTheme alloc] initWithMainGuiTint:Rgb2UIColor(255, 179, 71, 1)
+                                    useWhiteStatusBar:NO
+                                navBarToolbarTextTint:[UIColor darkGrayColor]
+                                 contrastingTextColor:Rgb2UIColor(255, 179, 71, 1)]
               ];
 }
 

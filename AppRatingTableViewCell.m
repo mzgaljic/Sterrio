@@ -72,7 +72,7 @@ static NSString * const NO_THANKS_TEXT = @"No, thanks";
     _titleLabel = [[TOMSMorphingLabel alloc] initWithFrame:[self titleLabelFrame]];
     _titleLabel.text = [NSString stringWithFormat:@"Enjoying %@?", MZAppName];
     cachedTitleLabelText = _titleLabel.text;
-    _titleLabel.textColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
+    _titleLabel.textColor = [AppEnvironmentConstants appTheme].navBarToolbarTextTint;
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     _titleLabel.animationDuration = 0.40;
     if(view.frame.size.width <= IPHONE_4_WIDTH) {
@@ -161,7 +161,7 @@ static NSString * const NO_THANKS_TEXT = @"No, thanks";
 {
     btn.selected = YES;
     [btn setTitleColor:[AppEnvironmentConstants appTheme].mainGuiTint forState:UIControlStateSelected];
-    btn.tintColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
+    btn.tintColor = [AppEnvironmentConstants appTheme].navBarToolbarTextTint;
     btn.titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                           size:btn.titleLabel.font.pointSize];
 }
@@ -169,7 +169,7 @@ static NSString * const NO_THANKS_TEXT = @"No, thanks";
 - (void)applyNoStyleToSSButton:(SSBouncyButton *)btn
 {
     btn.selected = NO;
-    btn.tintColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
+    btn.tintColor = [AppEnvironmentConstants appTheme].navBarToolbarTextTint;
     btn.titleLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                           size:btn.titleLabel.font.pointSize];
 }

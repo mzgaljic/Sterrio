@@ -716,10 +716,9 @@ static NSDate *finish;
         MZAppTheme *someAppTheme;
         if(i == 0) {
             //make the page color match the current app theme.
-            
             someAppTheme = [AppEnvironmentConstants appTheme];
             page.bgColor = someAppTheme.mainGuiTint;
-            [pickedIndexes addObject:[NSNumber numberWithInt:(int)[appThemes indexOfObject:page.bgColor]]];
+            [pickedIndexes addObject:[NSNumber numberWithInt:0]];
             
         } else {
             //pick one of the app theme colors at random. Each page has a unique one.
@@ -808,7 +807,7 @@ static NSDate *finish;
     title.text = [NSString stringWithFormat:@"Welcome to %@.", MZAppName];
     title.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                   size:30];
-    title.textColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
+    title.textColor = [AppEnvironmentConstants appTheme].navBarToolbarTextTint;
     title.numberOfLines = 0;
     title.textAlignment = NSTextAlignmentCenter;
     int descLabelY = [IntroVideoView descriptionYValueForViewSize:CGSizeMake(width, height)];
@@ -819,7 +818,7 @@ static NSDate *finish;
     description.text = @"Swipe for introduction.";
     description.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                        size:20];
-    description.textColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
+    description.textColor = [AppEnvironmentConstants appTheme].navBarToolbarTextTint;
     description.numberOfLines = 0;
     description.textAlignment = NSTextAlignmentCenter;
     

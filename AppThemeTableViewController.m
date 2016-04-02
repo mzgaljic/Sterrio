@@ -209,6 +209,13 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
     [AppEnvironmentConstants setAppTheme:newTheme saveInUserDefaults:NO];
     [AppDelegateSetupHelper setGlobalFontsAndColorsForAppGUIComponents];
     UIColor *newMainColor = newTheme.mainGuiTint;
+    
+    //update status bar color based on app theme settings
+    if(newTheme.useWhiteStatusBar) {
+        self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+    } else {
+        self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+    }
 
     CGRect navBarFrame = CGRectMake(0, 0, self.navigationController.navigationBar.frame.size.width, self.navigationController.navigationBar.bounds.size.height + [AppEnvironmentConstants statusBarHeight]);
     UIImage *navBarImage = [AppEnvironmentConstants navBarBackgroundImageFromFrame:navBarFrame];
@@ -219,10 +226,21 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
     transition.type = kCATransitionFade;
     transition.duration = 0.5;
     [self.navigationController.navigationBar.layer addAnimation:transition forKey:nil];
-    //will affect all future instances, not the current one.
+
+    //update nav bar gradient
     [[UINavigationBar appearance] setBackgroundImage:navBarImage forBarMetrics:UIBarMetricsDefault];
     [self.navigationController.navigationBar setBackgroundImage:navBarImage
                                                   forBarMetrics:UIBarMetricsDefault];
+    
+    //also update nav bar text for this particular nav controller (the method above that sets
+    //global font colors doesn't work on this vc for some reason.)
+    //nav bar attributes
+    UIFont *navBarFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:20];
+    NSDictionary *navBarTitleAttributes = @{
+                                            NSForegroundColorAttributeName : newTheme.navBarToolbarTextTint,
+                                            NSFontAttributeName : navBarFont
+                                            };
+    self.navigationController.navigationBar.titleTextAttributes = navBarTitleAttributes;
     [[UIApplication sharedApplication] ignoreSnapshotOnNextApplicationLaunch];
 }
 

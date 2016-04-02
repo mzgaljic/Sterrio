@@ -37,8 +37,8 @@
         //in this case the image picker is presented first. on its dismissal, we present the mail vc.
         self.photoPickerController = [[UIImagePickerController alloc] init];
         self.photoPickerController.delegate = self;
-        //set tint color specifically for this VC so that the cancel buttons are invisible
-        self.photoPickerController.view.tintColor = [AppEnvironmentConstants appTheme].contrastingTextOrNavBarTint;
+        //set tint color specifically for this VC so that the cancel buttons are not invisible
+        self.photoPickerController.view.tintColor = [AppEnvironmentConstants appTheme].contrastingTextColor;
         self.photoPickerController.navigationBar.barTintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
         [self.callingVc presentViewController:self.photoPickerController animated:YES completion:nil];
     }
