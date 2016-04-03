@@ -235,6 +235,7 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
     //also update nav bar text for this particular nav controller (the method above that sets
     //global font colors doesn't work on this vc for some reason.)
     //nav bar attributes
+    self.navigationController.navigationBar.tintColor = newTheme.navBarToolbarTextTint;
     UIFont *navBarFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:20];
     NSDictionary *navBarTitleAttributes = @{
                                             NSForegroundColorAttributeName : newTheme.navBarToolbarTextTint,
