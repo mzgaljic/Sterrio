@@ -115,6 +115,7 @@
     MZAppTheme *appTheme = [AppEnvironmentConstants appTheme];
     UIColor *navBarToolbarTextTint = appTheme.navBarToolbarTextTint;
     UIColor *mainColor = appTheme.mainGuiTint;
+    UIColor *contrastingColor = appTheme.contrastingTextColor;
     
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     appDelegate.window.tintColor = navBarToolbarTextTint;
@@ -127,7 +128,9 @@
     //tab bar font
     UIFont *tabBarFont = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                          size:10];
-    [[UITabBarItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:tabBarFont, NSFontAttributeName, nil] forState:UIControlStateNormal];
+    [[UITabBarItem appearance] setTitleTextAttributes:@{NSFontAttributeName : tabBarFont,
+                                                        NSForegroundColorAttributeName : contrastingColor}
+                                             forState:UIControlStateNormal];
     
     UIFont *barButtonFonts = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:17];
     NSDictionary *barButtonAttributes = @{

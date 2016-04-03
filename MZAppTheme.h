@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @interface MZAppTheme : NSObject
+@property (nonatomic, strong, readonly) NSString *themeName;
 @property (nonatomic, strong, readonly) UIColor *mainGuiTint;
 @property (nonatomic, strong, readonly) UIColor *navBarToolbarTextTint;
 /** 
@@ -19,10 +20,11 @@
 @property (nonatomic, strong, readonly) UIColor *contrastingTextColor;
 @property (nonatomic, assign, readonly) BOOL useWhiteStatusBar;
 
-- (instancetype)initWithMainGuiTint:(UIColor *)mainGuiColor
-                     useWhiteStatusBar:(BOOL)whiteStatusBar
-              navBarToolbarTextTint:(UIColor *)navBarToolBarTint
-               contrastingTextColor:(UIColor *)contrastingColor;
+- (instancetype)initWithThemeName:(NSString *)name
+                      mainGuiTint:(UIColor *)mainGuiColor
+                useWhiteStatusBar:(BOOL)whiteStatusBar
+            navBarToolbarTextTint:(UIColor *)navBarToolBarTint
+             contrastingTextColor:(UIColor *)contrastingColor;
 
 - (instancetype)initWithNsUserDefaultsCompatibleDict:(NSDictionary *)dict;
 - (NSDictionary *)nsUserDefaultsCompatibleDictFromTheme;

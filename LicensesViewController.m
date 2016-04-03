@@ -44,7 +44,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"Licenses";
+    self.title = @"Credits & Licenses";
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(orientationDidChange)
                                                  name:UIApplicationDidChangeStatusBarOrientationNotification
@@ -68,14 +68,29 @@
 #pragma mark - Helpers
 - (void)setAndStyleTextViewsText
 {
+    int temp = -1;
     NSString *newParagraph = @"\n\n\n\n";
     textView.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     
     NSMutableString *text = [[NSMutableString alloc] initWithString:@""];
-    [text appendFormat:@"The following software has helped %@ ", MZAppName];
-    [text appendFormat:@"get to where it is today:\n"];
-    NSRange licenseIntro = NSMakeRange(0, text.length);
-    int temp = (int)text.length;
+    temp = (int)text.length;
+    [text appendString:@"Credits\n\n"];
+    NSRange creditsTitleRange = NSMakeRange(temp, text.length);
+    temp = (int)text.length;
+    [text appendFormat:@"A special thank you to my amazing girlfriend Sharanne for putting up with all the time I spend working on %@.\n\n", MZAppName];
+    NSRange thanksSharanneRange = NSMakeRange(temp, text.length);
+    temp = (int)text.length;
+    [text appendString:@"Icon Designer"];
+    [text appendString:@": Luca Burgio\n\n\n\n"];
+    NSRange iconDesignerRange = NSMakeRange(temp, text.length);
+    temp = (int)text.length;
+    [text appendString:@"Licenses"];
+    NSRange licensesTitleRange = NSMakeRange(temp, @"Licenses".length);
+    temp = (int)text.length;
+    [text appendFormat:@"\n\nThe following software has helped %@ get to where it is today:\n",MZAppName];
+    NSRange licenseIntro = NSMakeRange(temp, text.length);
+    temp = (int)text.length;
+    
     for(int i = 0; i < licenses.count; i++) {
         NSString *title = [((MZLicense *)licenses[i]).title removeIrrelevantWhitespace];
         [text appendFormat:@"\n• %@", title];
@@ -103,8 +118,15 @@
                                         size:prefFontSize + 2];
     UIFont *regularFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                           size:prefFontSize];
+    UIFont *boldFont = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                       size:prefFontSize + 2];
     
+    //Customize the look and feel (alignment, colors, fonts, etc.)
     [textView.textStorage beginEditing];
+    [textView.textStorage setAttributes:@{NSFontAttributeName : introFont}
+                                  range:thanksSharanneRange];
+    [textView.textStorage setAttributes:@{NSFontAttributeName : introFont}
+                                  range:iconDesignerRange];
     [textView.textStorage setAttributes:@{NSFontAttributeName : introFont}
                                   range:licenseIntro];
     [textView.textStorage setAttributes:@{NSFontAttributeName               : regularFont,
@@ -113,9 +135,6 @@
     
     //style the title for each license
     for(NSValue *val in titleRanges) {
-        int titleFontSize = prefFontSize + 2;
-        UIFont *boldFont = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
-                                           size:titleFontSize];
         NSDictionary *dict = @{NSFontAttributeName : boldFont};
         [textView.textStorage setAttributes:dict range:[val rangeValue]];
     }
@@ -126,6 +145,28 @@
                                NSForegroundColorAttributeName   : [UIColor grayColor]};
         [textView.textStorage setAttributes:dict range:[val rangeValue]];
     }
+    [textView.textStorage endEditing];
+    
+    //Doing the following operations in separeate editing sequences because of a UITextView bug.
+    
+    //Make 'Credits' title centered and bold.
+    [textView.textStorage beginEditing];
+    NSMutableParagraphStyle *centerAlignStyle = [NSMutableParagraphStyle new];
+    [centerAlignStyle setAlignment:NSTextAlignmentCenter];
+    [textView.textStorage setAttributes:@{NSFontAttributeName : boldFont}
+                                  range:creditsTitleRange];
+    [textView.textStorage addAttribute:NSParagraphStyleAttributeName
+                                 value:centerAlignStyle
+                                 range:creditsTitleRange];
+    [textView.textStorage endEditing];
+    
+    //Make 'Licenses' title centered and bold
+    [textView.textStorage beginEditing];
+    [textView.textStorage setAttributes:@{NSFontAttributeName : boldFont}
+                                  range:licensesTitleRange];
+    [textView.textStorage addAttribute:NSParagraphStyleAttributeName
+                                 value:centerAlignStyle
+                                 range:licensesTitleRange];
     [textView.textStorage endEditing];
 }
 

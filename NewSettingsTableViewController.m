@@ -203,7 +203,6 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
             cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                                   size:fontSize];
-            cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.detailTextLabel.text = nil;
             cell.imageView.image = nil;
@@ -215,7 +214,6 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
             cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                                   size:fontSize];
-            cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.detailTextLabel.text = nil;
             cell.imageView.image = nil;
@@ -387,7 +385,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
             cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                                   size:fontSize];
-            //cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+            cell.textLabel.textColor = [UIColor blackColor];
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.detailTextLabel.text = nil;
             cell.imageView.image = nil;
@@ -737,7 +735,6 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
 - (IBAction)doneDismissButtonTapped:(id)sender
 {
     [self commitAllSettingChangesToNSUserDefaults];
-    [[UIApplication sharedApplication] ignoreSnapshotOnNextApplicationLaunch];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZUserAboutToDismissFromSettings
                                                         object:nil];
     [self dismissViewControllerAnimated:YES completion:^{

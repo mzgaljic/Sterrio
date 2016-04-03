@@ -85,7 +85,7 @@ int const TOS_SECTION_NUM = 2;
         {
             //cell that opens modal VC with license info.
             
-            cell.textLabel.text = @"Show Licenses";
+            cell.textLabel.text = @"Show Credits & Licenses";
             cell.detailTextLabel.text = nil;
             cell.imageView.image = nil;
             cell.textLabel.textAlignment = NSTextAlignmentCenter;

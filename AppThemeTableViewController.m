@@ -15,13 +15,10 @@
 
 @interface AppThemeTableViewController ()
 {
-    NSArray *tableColorNames;
     NSArray *themes;
     int currentlySelectedIndex;
     int defaultIndex;
     int currentRowHeights;
-    
-    NSOperationQueue *operationQueue;
 }
 @end
 @implementation AppThemeTableViewController
@@ -73,10 +70,7 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if(section == APP_THEME_COLORS_SECTION_NUM)
-        return [UIScreen mainScreen].bounds.size.height * 0.06;
-    else
-        return [UIScreen mainScreen].bounds.size.height * 0.13;
+    return 35;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -89,7 +83,7 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
     
     if(indexPath.section == APP_THEME_COLORS_SECTION_NUM)
     {
-        //cell.textLabel.text = tableColorNames[indexPath.row];
+        cell.textLabel.text = [self themeNameForCellIndex:(int)indexPath.row];
         cell.textLabel.textColor = [UIColor blackColor];
         cell.textLabel.textAlignment = NSTextAlignmentNatural;
         cell.imageView.image = [self coloredImageForCellIndex:(int) indexPath.row];
@@ -242,6 +236,11 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
                                             NSFontAttributeName : navBarFont
                                             };
     self.navigationController.navigationBar.titleTextAttributes = navBarTitleAttributes;
+    
+    //update tab bar item text color
+    [[UITabBarItem appearance] setTitleTextAttributes:@{ NSForegroundColorAttributeName : newTheme.contrastingTextColor }
+                                             forState:UIControlStateNormal];
+    
     [[UIApplication sharedApplication] ignoreSnapshotOnNextApplicationLaunch];
 }
 
@@ -269,6 +268,11 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
     return [UIImage imageWithColor:aColor
                              width:currentRowHeights - edgePadding
                             height:currentRowHeights - edgePadding];
+}
+
+- (NSString *)themeNameForCellIndex:(int)index
+{
+    return ((MZAppTheme *)themes[index]).themeName;
 }
 
 @end
