@@ -107,7 +107,7 @@ int const RESET_DEFUALT_SECTION_NUM = 1;
     else if(indexPath.section == RESET_DEFUALT_SECTION_NUM)
     {
         cell.textLabel.text = @"Restore Default";
-        cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+        cell.textLabel.textColor = [UIColor blackColor];
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         cell.detailTextLabel.text = nil;
         cell.accessoryType = UITableViewCellAccessoryNone;

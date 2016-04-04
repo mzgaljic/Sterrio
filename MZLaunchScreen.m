@@ -26,7 +26,7 @@
     self.spinner.frame = [self spinnerFrame];
     float scale = MZLargeSpinnerDownScaleAmount;
     self.spinner.transform = CGAffineTransformMakeScale(scale, scale);  //make smaller
-    self.spinner.color = [AppEnvironmentConstants appTheme].mainGuiTint;
+    self.spinner.color = [AppEnvironmentConstants appTheme].contrastingTextColor;
     self.spinner.alpha = 0;
     [self.view addSubview:self.spinner];
     self.view.backgroundColor = [UIColor clearColor];

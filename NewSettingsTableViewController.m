@@ -251,8 +251,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             }
             
             cell.accessoryView = icloudSwitch;
-            
-            UIImage *cloudImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
+            UIImage *cloudImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].contrastingTextColor
                                                                :[UIImage imageNamed:@"cloud"]];
             cell.imageView.image = cloudImg;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -271,7 +270,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             short cellularVidQuality = [AppEnvironmentConstants preferredCellularStreamSetting];
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%ip", cellularVidQuality];
             
-            UIImage *cellImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
+            UIImage *cellImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].contrastingTextColor
                                                               :[UIImage imageNamed:@"cellular tower"]];
             cell.imageView.image = cellImg;
             short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
@@ -288,7 +287,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             short wifiVidQuality = [AppEnvironmentConstants preferredWifiStreamSetting];
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%ip", wifiVidQuality];
             
-            UIImage *wifiImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
+            UIImage *wifiImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].contrastingTextColor
                                                               :[UIImage imageNamed:@"wifi"]];
             cell.imageView.image = wifiImg;
             short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
@@ -307,14 +306,11 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
         
         if(indexPath.row == 0)
         {
-            //app theme color
+            //font size
             
-            cell.textLabel.text = @"App Theme";
+            cell.textLabel.text = @"Text Size";
             cell.detailTextLabel.text = nil;
-            
-            UIImage *colorPaletteImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
-                                                                      :[UIImage imageNamed:@"color palette icon"]];
-            cell.imageView.image = colorPaletteImg;
+            cell.imageView.image = [self imageForFontSizeCell];
             
             short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
             UIColor *appTheme = [AppEnvironmentConstants appTheme].mainGuiTint;
@@ -324,11 +320,13 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
         }
         else if(indexPath.row == 1)
         {
-            //font size
+            //app theme color
             
-            cell.textLabel.text = @"Font Size";
+            cell.textLabel.text = @"App Theme";
             cell.detailTextLabel.text = nil;
-            cell.imageView.image = [self imageForFontSizeCell];
+            
+            UIImage *colorPaletteImg = [UIImage imageNamed:@"color palette icon"];
+            cell.imageView.image = colorPaletteImg;
             
             short flatIndicator = FLAT_DISCLOSURE_INDICATOR;
             UIColor *appTheme = [AppEnvironmentConstants appTheme].mainGuiTint;
@@ -354,7 +352,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             cell.textLabel.text = @"Advanced";
             cell.detailTextLabel.text = nil;
             
-            UIImage *advancedImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
+            UIImage *advancedImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].contrastingTextColor
                                                                   :[UIImage imageNamed:@"advanced"]];
             cell.imageView.image = advancedImg;
             cell.accessoryView = coloredDisclosureIndicator;
@@ -423,20 +421,6 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             [self userWantsToRestoreAllPurchases];
         }
     }
-    else if(indexPath.section == APPEARANCE_SECTION_NUM)
-    {
-        if(indexPath.row == 0)
-        {
-            //app theme color
-            [self performSegueWithIdentifier:@"pick new app theme segue" sender:nil];
-        }
-        else if(indexPath.row == 1)
-        {
-            //font size
-            [self performSegueWithIdentifier:@"changeFontSizeSegue" sender:nil];
-        }
-
-    }
     else if(indexPath.section == MUSIC_QUALITY_SECTION_NUM)
     {
         if(indexPath.row == 0)
@@ -453,6 +437,20 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
             [self performSegueWithIdentifier:@"pickStreamQualitySegue"
                                       sender:[NSNumber numberWithShort:streamType]];
         }
+    }
+    else if(indexPath.section == APPEARANCE_SECTION_NUM)
+    {
+        if(indexPath.row == 0)
+        {
+            //font size
+            [self performSegueWithIdentifier:@"changeFontSizeSegue" sender:nil];
+        }
+        else if(indexPath.row == 1)
+        {
+            //app theme color
+            [self performSegueWithIdentifier:@"pick new app theme segue" sender:nil];
+        }
+        
     }
     else if(indexPath.section == ADVANCED_AND_ABOUT_SECTION_NUM)
     {
@@ -707,7 +705,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
                                                   size:20];
     }
     mySheet.tag = FEEDBACK_CELL_ACTION_SHEET_TAG;
-    [mySheet setButtonTextColor:[AppEnvironmentConstants appTheme].mainGuiTint];
+    [mySheet setButtonTextColor:[AppEnvironmentConstants appTheme].contrastingTextColor];
     [mySheet setTitleTextColor:[UIColor darkGrayColor]];
     [mySheet setCancelButtonFont:[UIFont fontWithName:[AppEnvironmentConstants boldFontName]
                                                      size:20]];
@@ -728,8 +726,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
     UIImage *tempImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    
-    return [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint :tempImage];
+    return [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].contrastingTextColor :tempImage];
 }
 
 - (IBAction)doneDismissButtonTapped:(id)sender

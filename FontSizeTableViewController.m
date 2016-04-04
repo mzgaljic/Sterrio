@@ -35,7 +35,7 @@ short const PREVIEW_SONG_SECTION_NUM = 1;
     cellMaxHeight = [AppEnvironmentConstants maximumSongCellHeight];
     cellMinHeight = [AppEnvironmentConstants minimumSongCellHeight];
     self.tableView.allowsSelection = NO;
-    self.title = @"Font Size";
+    self.title = @"Text Size";
     slider = [[UISlider alloc] init];
 }
 

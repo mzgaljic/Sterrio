@@ -99,7 +99,7 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
     else if(indexPath.section == RESET_DEFUALTS_SECTION_NUM)
     {
         cell.textLabel.text = @"Restore Default";
-        cell.textLabel.textColor = ((MZAppTheme *)themes[currentlySelectedIndex]).mainGuiTint;
+        cell.textLabel.textColor = [UIColor blackColor];
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         cell.detailTextLabel.text = nil;
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -240,7 +240,6 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
     //update tab bar item text color
     [[UITabBarItem appearance] setTitleTextAttributes:@{ NSForegroundColorAttributeName : newTheme.contrastingTextColor }
                                              forState:UIControlStateNormal];
-    
     [[UIApplication sharedApplication] ignoreSnapshotOnNextApplicationLaunch];
 }
 
