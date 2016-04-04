@@ -72,10 +72,7 @@ int const RESET_DEFUALT_SECTION_NUM = 1;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if(section == STREAM_QUALITY_OPTIONS_SECTION_NUM)
-        return [UIScreen mainScreen].bounds.size.height * 0.06;
-    else
-        return [UIScreen mainScreen].bounds.size.height * 0.13;
+    return 35.0f;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
