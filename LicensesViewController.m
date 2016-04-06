@@ -81,8 +81,11 @@
     [text appendFormat:@"A special thank you to my girlfriend Sharanne for putting up with all the time I spent working on %@.\n\n", MZAppName];
     NSRange thanksSharanneRange = NSMakeRange(temp, text.length - temp);
     temp = (int)text.length;
-    [text appendString:@"Icon Designer: Luca Burgio\n\n\n\n"];
+    [text appendFormat:@"%@ Icon Designer: Luca Burgio", MZAppName];
     NSRange iconDesignerRange = NSMakeRange(temp, text.length - temp);
+    temp = (int)text.length;
+    [text appendString:@"\nOther image credits below...\n\n\n"];
+    NSRange otherImageCreditsTextRange = NSMakeRange(temp, text.length - temp);
     temp = (int)text.length;
     [text appendString:@"Licenses"];
     NSRange licensesTitleRange = NSMakeRange(temp, @"Licenses".length);
@@ -158,6 +161,9 @@
                                   range:thanksSharanneRange];
     [textView.textStorage addAttributes:@{NSFontAttributeName : introFont}
                                   range:iconDesignerRange];
+    [textView.textStorage addAttributes:@{NSForegroundColorAttributeName    : [UIColor grayColor],
+                                          NSFontAttributeName               : regularFont}
+                                  range:otherImageCreditsTextRange];
     [textView.textStorage addAttributes:@{NSFontAttributeName : introFont}
                                   range:licenseIntro];
     [textView.textStorage addAttributes:@{NSFontAttributeName               : regularFont,
@@ -185,30 +191,32 @@
 - (NSString *)imageCreditsText
 {
     NSMutableString *text = [[NSMutableString alloc] initWithString:textView.text];
+    [text appendString:@"\nCreative Commons 2.5 License:\nhttp://creativecommons.org/licenses/by/2.5/\n\n"];
+    [text appendString:@"Creative Commons 3.0 License:\nhttp://creativecommons.org/licenses/by-sa/3.0/us/"];
+    
     //Tab Bar
-    [text appendString:@"\nSongs Tab: \n"];
-    [text appendString:@"Albums Tab: \n"];
-    [text appendString:@"Artists Tab: \n"];
-    [text appendString:@"Playlist Tab: \n"];
-    [text appendString:@"'Add' Tab Bar Button: \n"];
+    [text appendString:@"\n\n•Songs Tab:\nJoseph Wain, http://glyphish.com"];
+    [text appendString:@"\n\n•Albums Tab:\nSergei Kokota, http://goo.gl/sk08jX - (modified)"];
+    [text appendString:@"\n\n•Playlist Tab:\nJoseph Wain, http://glyphish.com"];
+    [text appendString:@"\n\n•'Add' Tab Bar Button:\nMagnus Emil Liisberg Helding, http://goo.gl/4ZqVXH"];
     
     //Player VC
-    [text appendString:@"Sleep Timer: \n"];
-    [text appendString:@"Playback Queue: \n"];
+    [text appendString:@"\n\n•Sleep Timer:\nJoseph Wain, http://glyphish.com"];
+    [text appendString:@"\n\n•Playback Queue:\nJoseph Wain, http://glyphish.com"];
     
     //miscellaneous stuff throughout the app
-    [text appendString:@"Airplay: \n"];
-    [text appendString:@"Swipe-up video hint: \n"];
+    [text appendString:@"\n\n•Airplay:\nIcojamView, http://goo.gl/s3D67t"];
+    [text appendString:@"\n\n•Swipe-up video hint:\n GestureWorks, http://goo.gl/wxwYvA - CC 3.0 (unmodified)"];
     
     //UIBarButtonItem's on nav bars
-    [text appendString:@"Settings: \n"];
+    [text appendString:@"\n\n•Settings:\nJayson Lane, http://jlane.co/ios-8-line-icons/"];
     
     //Settings page
-    [text appendString:@"iCloud Setting: \n"];
-    [text appendString:@"Cellular Video Quality Setting: \n"];
-    [text appendString:@"WiFi Video Quality Setting: \n"];
-    [text appendString:@"App Theme Setting: \n"];
-    [text appendString:@"Advanced Setting: \n"];
+    [text appendString:@"\n\n•iCloud Setting:\nJoseph Wain, http://glyphish.com"];
+    [text appendString:@"\n\n•Cellular Quality Setting:\nCreative Stall, http://goo.gl/AIAxk4"];
+    [text appendString:@"\n\n•WiFi Quality Setting:\nJayson Lane, http://jlane.co/ios-8-line-icons/"];
+    [text appendString:@"\n\n•App Theme Setting:\nSergei Kokota, http://goo.gl/XzaOSm - CC 2.5 (unmodified)"];
+    [text appendString:@"\n\n•Advanced Setting:\nDesign Revision, http://goo.gl/l80dr6"];
     return text;
 }
 
