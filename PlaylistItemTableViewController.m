@@ -838,8 +838,8 @@ static BOOL hidingCenterBtnAnimationComplete = YES;
                                                                        self.tableView.bounds.size.width,
                                                                        self.tableView.bounds.size.height)];
     if(text == nil)
-        text = @"";
-    tableViewEmptyMsgLabel.text = text;
+        text = [[NSAttributedString alloc] initWithString:@""];
+    tableViewEmptyMsgLabel.attributedText = text;
     tableViewEmptyMsgLabel.textColor = [UIColor darkGrayColor];
     //multi lines strings ARE possible, this is just a weird api detail
     tableViewEmptyMsgLabel.numberOfLines = 0;
