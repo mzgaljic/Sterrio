@@ -236,10 +236,6 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
                                             NSFontAttributeName : navBarFont
                                             };
     self.navigationController.navigationBar.titleTextAttributes = navBarTitleAttributes;
-    
-    //update tab bar item text color
-    [[UITabBarItem appearance] setTitleTextAttributes:@{ NSForegroundColorAttributeName : newTheme.contrastingTextColor }
-                                             forState:UIControlStateNormal];
     [[UIApplication sharedApplication] ignoreSnapshotOnNextApplicationLaunch];
 }
 

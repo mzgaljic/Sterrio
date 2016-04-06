@@ -52,7 +52,7 @@ existingEntityPickerDelegate:(id <ExistingEntityPickerDelegate>)delegate
     self.tableViewDataSourceAndDelegate.tableView = self.tableView;
     self.tableViewDataSourceAndDelegate.playbackContext = self.playbackContext;
     self.tableViewDataSourceAndDelegate.cellReuseId = @"existingArtistItemPickerCell";
-    self.tableViewDataSourceAndDelegate.emptyTableUserMessage = @"No Artists";
+    self.tableViewDataSourceAndDelegate.emptyTableUserMessage = [[NSAttributedString alloc] initWithString:@"No Artists"];
     self.tableViewDataSourceAndDelegate.actionableArtistDelegate = self;
     self.tableView.dataSource = self.tableViewDataSourceAndDelegate;
     self.tableView.delegate = self.tableViewDataSourceAndDelegate;

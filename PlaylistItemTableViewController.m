@@ -30,7 +30,7 @@
 @property (nonatomic, strong) SSBouncyButton *centerButton;
 
 @property (nonatomic, strong) NSString *playbackContextUniqueId;
-@property (nonatomic, strong) NSString *emptyTableUserMessage;
+@property (nonatomic, strong) NSAttributedString *emptyTableUserMessage;
 @property (nonatomic, strong) NSString *cellReuseId;
 @property (nonatomic, strong) PlaybackContext *playbackContext;
 
@@ -72,7 +72,7 @@
     [uniqueID appendString:self.playlist.uniqueId];
     self.playbackContextUniqueId = uniqueID;
     
-    self.emptyTableUserMessage = @"Playlist Empty";
+    self.emptyTableUserMessage = [[NSAttributedString alloc] initWithString:@"Playlist Empty"];
     [self setUpNavBarItems];
     self.navBar = self.navigationItem;
     [[UITextField appearance] setTintColor:[AppEnvironmentConstants appTheme].mainGuiTint];  //sets the cursor color of the playlist name textbox editor
@@ -356,7 +356,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     if(self.playlist.playlistItems.count == 0){
-        NSString *text = self.emptyTableUserMessage;
+        NSAttributedString *text = self.emptyTableUserMessage;
         [self displayEmptyTableUserMessageWithText:text];
     } else
         [self removeEmptyTableUserMessage];
@@ -809,7 +809,7 @@ static BOOL hidingCenterBtnAnimationComplete = YES;
                                                contextId:self.playbackContextUniqueId];
 }
 
-- (void)displayEmptyTableUserMessageWithText:(NSString *)text
+- (void)displayEmptyTableUserMessageWithText:(NSAttributedString *)text
 {
     UILabel *aLabel = (UILabel *)[self friendlyTableUserMessageWithText:text];
     self.tableView.backgroundView = [[UIView alloc] initWithFrame:self.view.bounds];
@@ -826,7 +826,7 @@ static BOOL hidingCenterBtnAnimationComplete = YES;
     
 }
 
-- (UIView *)friendlyTableUserMessageWithText:(NSString *)text
+- (UIView *)friendlyTableUserMessageWithText:(NSAttributedString *)text
 {
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     if(tableViewEmptyMsgLabel){

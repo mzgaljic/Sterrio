@@ -18,7 +18,7 @@
     SongPlayerViewController *vc = (SongPlayerViewController *)[storyboard instantiateViewControllerWithIdentifier:@"songItemView"];
     [self pushViewController:vc animated:NO];
     
-    self.navigationController.navigationBar.translucent = YES;
+    self.navigationController.navigationBar.translucent = NO;
     if([AppEnvironmentConstants appTheme].useWhiteStatusBar) {
         self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     } else {

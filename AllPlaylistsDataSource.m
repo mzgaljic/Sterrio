@@ -101,6 +101,11 @@
         return nil;
 }
 
+- (NSUInteger)tableObjectsCount
+{
+    return [self numObjectsInTable];
+}
+
 #pragma mark - UITableViewDataSource
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -260,7 +265,7 @@
             return 1;
         }
         else{
-            NSString *text = @"No Search Results";
+            NSAttributedString *text = [[NSAttributedString alloc] initWithString:@"No Search Results"];
             [playableSearchBarDataSourceDelegate displayEmptyTableUserMessageWithText:text];
             return 0;
         }
@@ -268,10 +273,11 @@
     else
     {
         if([self numObjectsInTable] == 0){
-            NSString *text = self.emptyTableUserMessage;
+            NSAttributedString *text = self.emptyTableUserMessage;
             [playableSearchBarDataSourceDelegate displayEmptyTableUserMessageWithText:text];
-        } else
+        } else {
             [playableSearchBarDataSourceDelegate removeEmptyTableUserMessage];
+        }
         
         return self.fetchedResultsController.sections.count;
     }

@@ -180,7 +180,7 @@
 }
 
 #pragma mark - Empty Table User Message stuff
-- (void)displayEmptyTableUserMessageWithText:(NSString *)text
+- (void)displayEmptyTableUserMessageWithText:(NSAttributedString *)text
 {
     UILabel *aLabel = (UILabel *)[self friendlyTableUserMessageWithText:text];
     self.tableView.backgroundView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -188,7 +188,6 @@
     CGPoint newLabelCenter;
     if(((PlayableBaseDataSource *)self.playableDataSearchDataSourceDelegate).displaySearchResults == NO){
         newLabelCenter = self.tableView.backgroundView.center;
-        newLabelCenter = CGPointMake(newLabelCenter.x, newLabelCenter.y);
     } else
         newLabelCenter = CGPointMake(self.tableView.backgroundView.center.x,
                                      self.tableView.backgroundView.center.y - emptyTableMsgKeyboardPadding);
@@ -202,7 +201,7 @@
     
 }
 
-- (UIView *)friendlyTableUserMessageWithText:(NSString *)text
+- (UIView *)friendlyTableUserMessageWithText:(NSAttributedString *)text
 {
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     if(tableViewEmptyMsgLabel){
@@ -214,8 +213,8 @@
                                                                        self.tableView.bounds.size.width,
                                                                        self.tableView.bounds.size.height)];
     if(text == nil)
-        text = @"";
-    tableViewEmptyMsgLabel.text = text;
+        text = [[NSAttributedString alloc] initWithString:@""];
+    tableViewEmptyMsgLabel.attributedText = text;
     tableViewEmptyMsgLabel.textColor = [UIColor darkGrayColor];
     //multi lines strings ARE possible, this is just a weird api detail
     tableViewEmptyMsgLabel.numberOfLines = 0;

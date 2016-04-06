@@ -21,9 +21,8 @@
                                                   forBarMetrics:UIBarMetricsDefault];
     
     //set nav bar title color and transparency
-    self.navigationController.navigationBar.translucent = YES;
+    self.navigationController.navigationBar.translucent = NO;
     
-    self.navigationController.navigationBar.translucent = YES;
     if([AppEnvironmentConstants appTheme].useWhiteStatusBar) {
         self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     } else {

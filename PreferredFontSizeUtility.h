@@ -11,6 +11,7 @@
 
 @interface PreferredFontSizeUtility : NSObject
 
++ (UIFont *)actualLabelFontFromCurrentPreferredSize;
 + (float)actualLabelFontSizeFromCurrentPreferredSize;
 + (float)hypotheticalLabelFontSizeForPreferredSize:(int)aSongCellHeight;
 + (float)actualDetailLabelFontSizeFromCurrentPreferredSize;

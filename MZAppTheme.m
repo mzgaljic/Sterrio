@@ -193,14 +193,14 @@ NSString * const MZDefaultAppThemeSunriseOrange = @"Sunrise Orange";
               [[MZAppTheme alloc] initWithThemeName:@"Hot Pink"
                                         mainGuiTint:Rgb2UIColor(241, 95, 121, 1)
                                   useWhiteStatusBar:YES
-                              navBarToolbarTextTint:[Rgb2UIColor(94, 113, 119, 1) darkerColor]
-                               contrastingTextColor:[Rgb2UIColor(94, 113, 119, 1) darkerColor]],
+                              navBarToolbarTextTint:Rgb2UIColor(38, 64, 99, 1)
+                               contrastingTextColor:Rgb2UIColor(38, 64, 99, 1)],
               
               [[MZAppTheme alloc] initWithThemeName:@"Luxurious Pink"
                                         mainGuiTint:Rgb2UIColor(242, 148, 146, 1)
-                                  useWhiteStatusBar:YES
-                              navBarToolbarTextTint:[Rgb2UIColor(94, 113, 119, 1) darkerColor]
-                               contrastingTextColor:[Rgb2UIColor(94, 113, 119, 1) darkerColor]]
+                                  useWhiteStatusBar:NO
+                              navBarToolbarTextTint:[Rgb2UIColor(98, 117, 123, 1) darkerColor]
+                               contrastingTextColor:[Rgb2UIColor(98, 117, 123, 1) darkerColor]]
               ];
 }
 

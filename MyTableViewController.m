@@ -31,9 +31,7 @@
     //force tableview to hide empty extra cells
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     //set nav bar title color and transparency
-    self.navigationController.navigationBar.translucent = YES;
-    
-    self.navigationController.navigationBar.translucent = YES;
+    self.navigationController.navigationBar.translucent = NO;
     if([AppEnvironmentConstants appTheme].useWhiteStatusBar) {
         self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     } else {

@@ -18,7 +18,7 @@
 - (instancetype)initWithTableView:(UITableView *)tableView playableDataSearchDataSourceDelegate:(id<PlayableDataSearchDataSourceDelegate>)delegate1
       searchBarDataSourceDelegate:(id <SearchBarDataSourceDelegate>)delegate2;
 
-- (void)displayEmptyTableUserMessageWithText:(NSString *)text;
+- (void)displayEmptyTableUserMessageWithText:(NSAttributedString *)text;
 - (void)removeEmptyTableUserMessage;
 
 - (MySearchBar *)setUpSearchBar;

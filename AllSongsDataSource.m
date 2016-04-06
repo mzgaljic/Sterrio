@@ -110,6 +110,11 @@
         return nil;
 }
 
+- (NSUInteger)tableObjectsCount
+{
+    return [self numObjectsInTable];
+}
+
 #pragma mark - UITableViewDataSource
 static char songIndexPathAssociationKey;  //used to associate cells with images when scrolling
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -411,7 +416,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             return 1;
         }
         else{
-            NSString *text = @"No Search Results";
+            NSAttributedString *text = [[NSAttributedString alloc] initWithString:@"No Search Results"];
             [playableSearchBarDataSourceDelegate displayEmptyTableUserMessageWithText:text];
             return 0;
         }
@@ -419,7 +424,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     else
     {
         if([self numObjectsInTable] == 0){
-            NSString *text = self.emptyTableUserMessage;
+            NSAttributedString *text = self.emptyTableUserMessage;
             [playableSearchBarDataSourceDelegate displayEmptyTableUserMessageWithText:text];
         } else
             [playableSearchBarDataSourceDelegate removeEmptyTableUserMessage];

@@ -167,8 +167,7 @@ typedef enum{
         numObjsInTable = [self numObjectsInTable];
         
         if(numObjsInTable == 0){
-            NSString *text = self.emptyTableUserMessage;
-            tableView.backgroundView = [self friendlyTableEmptyUserMessageWithText:text];
+            tableView.backgroundView = [self friendlyTableEmptyUserMessageWithText:self.emptyTableUserMessage];
         } else
             [self removeEmptyTableUserMessage];
     }
@@ -212,7 +211,7 @@ typedef enum{
 }
 
 #pragma  mark - TableView helpers
-- (UIView *)friendlyTableEmptyUserMessageWithText:(NSString *)text
+- (UIView *)friendlyTableEmptyUserMessageWithText:(NSAttributedString *)text
 {
     tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0,
@@ -220,8 +219,8 @@ typedef enum{
                                                                self.view.bounds.size.width,
                                                                self.view.bounds.size.height)];
     if(text == nil)
-        text = @"";
-    label.text = text;
+        text = [[NSAttributedString alloc] initWithString:@""];
+    label.attributedText = text;
     label.textColor = [UIColor darkGrayColor];
     //multi lines strings ARE possible, this is just a weird api detail
     label.numberOfLines = 0;
@@ -342,7 +341,7 @@ typedef enum{
                                                   forBarMetrics:UIBarMetricsDefault];
     
     //set nav bar title color and transparency
-    self.navigationController.navigationBar.translucent = YES;
+    self.navigationController.navigationBar.translucent = NO;
     if([AppEnvironmentConstants appTheme].useWhiteStatusBar) {
         self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     } else {

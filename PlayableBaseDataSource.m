@@ -73,6 +73,11 @@
     return [[AppEnvironmentConstants appTheme].mainGuiTint lighterColor];
 }
 
+- (NSUInteger)tableObjectsCount
+{
+    return NSNotFound;
+}
+
 #pragma mark - Boring utility methods for subclasses
 - (UIViewController *)topViewController
 {

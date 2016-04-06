@@ -143,7 +143,6 @@ short const dummyTabIndex = 2;
     
     [self setTabBarItems];
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    self.navigationController.navigationBar.translucent = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -249,7 +248,7 @@ short const dummyTabIndex = 2;
                                    (adBanner.frame.size.height / 2.0) - (indicatorSize/2),
                                    indicatorSize,
                                    indicatorSize);
-        spinner.color = [AppEnvironmentConstants appTheme].mainGuiTint;
+        spinner.color = [AppEnvironmentConstants appTheme].contrastingTextColor;
         [spinner startAnimating];
         [spinnerView addSubview:spinner];
     }
@@ -295,15 +294,12 @@ short const dummyTabIndex = 2;
 //general setup when not rotating the screen
 - (void)setupTabBarAndTabBarView
 {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    [self setupTabBarAndTabBarViewUsingOrientation:orientation];
+    [self forceTabBarToRedrawFromScratch];
 }
 
 //helper for setupTabBarAndTabBarView, and used for screen rotation
 - (void)setupTabBarAndTabBarViewUsingOrientation:(UIInterfaceOrientation)orientation
 {
-    UIVisualEffectView *visualEffectView;
-    
     if(self.tabBarView == nil){
         self.tabBarView = [[UIView alloc] init];
         
@@ -335,9 +331,7 @@ short const dummyTabIndex = 2;
     self.tabBar.frame = CGRectMake(0, 0, self.tabBarView.frame.size.width, self.tabBarView.frame.size.height);
     self.centerButton.frame = [self centerBtnFrameGivenTabBarViewFrame:self.tabBarView.frame
                                                           centerBtnImg:self.centerButtonImg];
-    if(visualEffectView){
-        visualEffectView.frame = self.tabBarView.bounds;
-    }
+
     [self.tabBarView addSubview:self.tabBar];
     [self.tabBarView addSubview:self.centerButton];
     [self.tabBarView setMultipleTouchEnabled:NO];
@@ -591,7 +585,7 @@ short const dummyTabIndex = 2;
     self.tabBar = [[UITabBar alloc] init];
     self.tabBar.delegate = self;
     
-    UIVisualEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+    UIVisualEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
     visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
     visualEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [self.tabBarView addSubview:visualEffectView];

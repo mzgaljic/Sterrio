@@ -135,6 +135,11 @@
         return nil;
 }
 
+- (NSUInteger)tableObjectsCount
+{
+    return [self numObjectsInTable];
+}
+
 #pragma mark - Custom stuff
 //exposed so that the Album VC can check if any visible Album cells contain "dirty" album art.
 - (Album *)albumAtIndexPath:(NSIndexPath *)indexPath
@@ -407,7 +412,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
             return 1;
         }
         else{
-            NSString *text = @"No Search Results";
+            NSAttributedString *text = [[NSAttributedString alloc] initWithString:@"No Search Results"];
             [playableSearchBarDataSourceDelegate displayEmptyTableUserMessageWithText:text];
             return 0;
         }
@@ -415,7 +420,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     else
     {
         if([self numObjectsInTable] == 0){
-            NSString *text = self.emptyTableUserMessage;
+            NSAttributedString *text = self.emptyTableUserMessage;
             [playableSearchBarDataSourceDelegate displayEmptyTableUserMessageWithText:text];
         } else
             [playableSearchBarDataSourceDelegate removeEmptyTableUserMessage];

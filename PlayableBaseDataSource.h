@@ -23,7 +23,7 @@
 
 @property (nonatomic, assign) BOOL displaySearchResults;
 @property (nonatomic, assign) id <SearchBarDataSourceDelegate> searchBarDataSourceDelegate;
-@property (nonatomic, strong) NSString *emptyTableUserMessage;
+@property (nonatomic, strong) NSAttributedString *emptyTableUserMessage;
 
 
 - (UIColor *)colorForNowPlayingItem;
@@ -31,6 +31,7 @@
 - (void)searchResultsShouldBeDisplayed:(BOOL)displaySearchResults;
 - (MySearchBar *)setUpSearchBar;
 - (NSIndexPath *)indexPathInSearchTableForObject:(id)someObject;
+- (NSUInteger)tableObjectsCount;
 
 //Boring utility methods for subclasses
 - (UIViewController *)topViewController;

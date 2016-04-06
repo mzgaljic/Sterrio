@@ -11,7 +11,7 @@
 
 @implementation PreferredFontSizeUtility
 
-+ (float)actualLabelFontSizeFromCurrentPreferredSize
++ (UIFont *)actualLabelFontFromCurrentPreferredSize
 {
     int prefSongCellHeight = [AppEnvironmentConstants preferredSongCellHeight];
     
@@ -23,7 +23,12 @@
     UIFont *font = [PreferredFontSizeUtility findAdaptiveFontWithName:fontName
                                                        forUILabelSize:labelSize
                                                       withMinimumSize:16];
-    return font.pointSize;
+    return font;
+}
+
++ (float)actualLabelFontSizeFromCurrentPreferredSize
+{
+    return [PreferredFontSizeUtility actualLabelFontFromCurrentPreferredSize].pointSize;
 }
 
 + (float)hypotheticalLabelFontSizeForPreferredSize:(int)aSize
