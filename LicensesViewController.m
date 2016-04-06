@@ -63,6 +63,7 @@
     //to the top before the user starts using it. Otherwise it doesn't quite start where it should.
     CGPoint desiredOffset = CGPointMake(0, -textView.contentInset.top);
     [textView setContentOffset:desiredOffset animated:NO];
+    [textView setSelectable:NO];
 }
 
 #pragma mark - Helpers
@@ -75,27 +76,26 @@
     NSMutableString *text = [[NSMutableString alloc] initWithString:@""];
     temp = (int)text.length;
     [text appendString:@"Credits\n\n"];
-    NSRange creditsTitleRange = NSMakeRange(temp, text.length);
+    NSRange creditsTitleRange = NSMakeRange(temp, text.length - temp);
     temp = (int)text.length;
-    [text appendFormat:@"A special thank you to my amazing girlfriend Sharanne for putting up with all the time I spend working on %@.\n\n", MZAppName];
-    NSRange thanksSharanneRange = NSMakeRange(temp, text.length);
+    [text appendFormat:@"A special thank you to my girlfriend Sharanne for putting up with all the time I spent working on %@.\n\n", MZAppName];
+    NSRange thanksSharanneRange = NSMakeRange(temp, text.length - temp);
     temp = (int)text.length;
-    [text appendString:@"Icon Designer"];
-    [text appendString:@": Luca Burgio\n\n\n\n"];
-    NSRange iconDesignerRange = NSMakeRange(temp, text.length);
+    [text appendString:@"Icon Designer: Luca Burgio\n\n\n\n"];
+    NSRange iconDesignerRange = NSMakeRange(temp, text.length - temp);
     temp = (int)text.length;
     [text appendString:@"Licenses"];
     NSRange licensesTitleRange = NSMakeRange(temp, @"Licenses".length);
     temp = (int)text.length;
     [text appendFormat:@"\n\nThe following software has helped %@ get to where it is today:\n",MZAppName];
-    NSRange licenseIntro = NSMakeRange(temp, text.length);
+    NSRange licenseIntro = NSMakeRange(temp, text.length - temp);
     temp = (int)text.length;
     
     for(int i = 0; i < licenses.count; i++) {
         NSString *title = [((MZLicense *)licenses[i]).title removeIrrelevantWhitespace];
         [text appendFormat:@"\n• %@", title];
     }
-    NSRange licenseBulletsSection = NSMakeRange(temp, text.length);
+    NSRange licenseBulletsSection = NSMakeRange(temp, text.length - temp);
     [text appendString:newParagraph];
     
     NSMutableArray *titleRanges = [NSMutableArray arrayWithCapacity:licenses.count];
@@ -112,7 +112,17 @@
         [bodyRanges addObject:[NSValue valueWithRange:NSMakeRange(text.length, body.length)]];
         [text appendString:body];
     }
+    
+    [text appendString:newParagraph];
+    temp = (int)text.length;
+    [text appendString:@"Image Credits"];
+    NSRange imageCreditsTitleRange = NSMakeRange(temp, @"Image Credits".length);
+    [text appendString:@"\n"];
+    temp = (int)text.length;
+    [text appendString:[self imageCreditsText]];
+    NSRange imageCreditsRange = NSMakeRange(temp, text.length - temp);
     [textView setText:text];
+    
     float prefFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
     UIFont *introFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                         size:prefFontSize + 2];
@@ -123,51 +133,83 @@
     
     //Customize the look and feel (alignment, colors, fonts, etc.)
     [textView.textStorage beginEditing];
-    [textView.textStorage setAttributes:@{NSFontAttributeName : introFont}
+    
+    //Make 'Credits' title centered and bold.
+    NSMutableParagraphStyle *centerAlignStyle = [NSMutableParagraphStyle new];
+    [centerAlignStyle setAlignment:NSTextAlignmentCenter];
+    [textView.textStorage addAttributes:@{NSFontAttributeName : boldFont}
+                                  range:creditsTitleRange];
+    [textView.textStorage addAttributes:@{NSParagraphStyleAttributeName : centerAlignStyle}
+                                  range:creditsTitleRange];
+    
+    //Make 'Licenses' title centered and bold
+    [textView.textStorage addAttributes:@{NSFontAttributeName : boldFont}
+                                  range:licensesTitleRange];
+    [textView.textStorage addAttributes:@{NSParagraphStyleAttributeName : centerAlignStyle}
+                                  range:licensesTitleRange];
+    
+    //Make 'Image Credits' title centered and bold
+    [textView.textStorage addAttributes:@{NSFontAttributeName : boldFont}
+                                  range:imageCreditsTitleRange];
+    [textView.textStorage addAttributes:@{NSParagraphStyleAttributeName : centerAlignStyle}
+                                  range:imageCreditsTitleRange];
+    
+    [textView.textStorage addAttributes:@{NSFontAttributeName : introFont}
                                   range:thanksSharanneRange];
-    [textView.textStorage setAttributes:@{NSFontAttributeName : introFont}
+    [textView.textStorage addAttributes:@{NSFontAttributeName : introFont}
                                   range:iconDesignerRange];
-    [textView.textStorage setAttributes:@{NSFontAttributeName : introFont}
+    [textView.textStorage addAttributes:@{NSFontAttributeName : introFont}
                                   range:licenseIntro];
-    [textView.textStorage setAttributes:@{NSFontAttributeName               : regularFont,
+    [textView.textStorage addAttributes:@{NSFontAttributeName               : regularFont,
                                           NSForegroundColorAttributeName    : [UIColor grayColor]}
                                   range:licenseBulletsSection];
     
     //style the title for each license
     for(NSValue *val in titleRanges) {
         NSDictionary *dict = @{NSFontAttributeName : boldFont};
-        [textView.textStorage setAttributes:dict range:[val rangeValue]];
+        [textView.textStorage addAttributes:dict range:[val rangeValue]];
     }
     
     //style the body for each license
     for(NSValue *val in bodyRanges) {
         NSDictionary *dict = @{NSFontAttributeName              : regularFont,
                                NSForegroundColorAttributeName   : [UIColor grayColor]};
-        [textView.textStorage setAttributes:dict range:[val rangeValue]];
+        [textView.textStorage addAttributes:dict range:[val rangeValue]];
     }
+    [textView.textStorage addAttributes:@{NSFontAttributeName              : regularFont,
+                                          NSForegroundColorAttributeName   : [UIColor grayColor]}
+                                  range:imageCreditsRange];
     [textView.textStorage endEditing];
+}
+
+- (NSString *)imageCreditsText
+{
+    NSMutableString *text = [[NSMutableString alloc] initWithString:textView.text];
+    //Tab Bar
+    [text appendString:@"\nSongs Tab: \n"];
+    [text appendString:@"Albums Tab: \n"];
+    [text appendString:@"Artists Tab: \n"];
+    [text appendString:@"Playlist Tab: \n"];
+    [text appendString:@"'Add' Tab Bar Button: \n"];
     
-    //Doing the following operations in separeate editing sequences because of a UITextView bug.
+    //Player VC
+    [text appendString:@"Sleep Timer: \n"];
+    [text appendString:@"Playback Queue: \n"];
     
-    //Make 'Credits' title centered and bold.
-    [textView.textStorage beginEditing];
-    NSMutableParagraphStyle *centerAlignStyle = [NSMutableParagraphStyle new];
-    [centerAlignStyle setAlignment:NSTextAlignmentCenter];
-    [textView.textStorage setAttributes:@{NSFontAttributeName : boldFont}
-                                  range:creditsTitleRange];
-    [textView.textStorage addAttribute:NSParagraphStyleAttributeName
-                                 value:centerAlignStyle
-                                 range:creditsTitleRange];
-    [textView.textStorage endEditing];
+    //miscellaneous stuff throughout the app
+    [text appendString:@"Airplay: \n"];
+    [text appendString:@"Swipe-up video hint: \n"];
     
-    //Make 'Licenses' title centered and bold
-    [textView.textStorage beginEditing];
-    [textView.textStorage setAttributes:@{NSFontAttributeName : boldFont}
-                                  range:licensesTitleRange];
-    [textView.textStorage addAttribute:NSParagraphStyleAttributeName
-                                 value:centerAlignStyle
-                                 range:licensesTitleRange];
-    [textView.textStorage endEditing];
+    //UIBarButtonItem's on nav bars
+    [text appendString:@"Settings: \n"];
+    
+    //Settings page
+    [text appendString:@"iCloud Setting: \n"];
+    [text appendString:@"Cellular Video Quality Setting: \n"];
+    [text appendString:@"WiFi Video Quality Setting: \n"];
+    [text appendString:@"App Theme Setting: \n"];
+    [text appendString:@"Advanced Setting: \n"];
+    return text;
 }
 
 - (void)orientationDidChange
