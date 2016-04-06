@@ -15,7 +15,6 @@
 @interface QueueViewController ()
 {
     UINavigationBar *navBar;
-    UIColor *localAppTintColor;  //specific for this VC (its been made brighter)
     
     MZPlaybackQueue *queue;
     
@@ -42,7 +41,6 @@ short const SECTION_EMPTY = -1;
 {
     [super viewDidLoad];
     stackController = [[StackController alloc] init];
-    localAppTintColor = [[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor] lighterColor];
     
     queue = [MZPlaybackQueue sharedInstance];
     mainQueueItemsComingUp = [queue tableViewOptimizedArrayOfMainQueueItemsComingUp];
@@ -107,6 +105,10 @@ short const SECTION_EMPTY = -1;
     int vcWidth = self.view.frame.size.width;
     int navBarHeight = [AppEnvironmentConstants navBarHeight];
     navBar = [[UINavigationBar alloc]initWithFrame:CGRectMake(0, y, vcWidth, navBarHeight)];
+    
+    //this VC has a very dark theme, make nav bar buttons and text white.
+    navBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor whiteColor]};
+    navBar.tintColor = [UIColor whiteColor];
     [self.view addSubview:navBar];
     
     //make nav bar transparent, let blurred one show through.
@@ -158,7 +160,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringForSong:song];
     
     if(indexPath.row == 0) {
-        cell.textLabel.textColor = localAppTintColor;
+        cell.textLabel.textColor = [[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor] lighterColor];
         cell.isRepresentingANowPlayingItem = YES;
     } else {
         cell.textLabel.textColor = [UIColor whiteColor];
