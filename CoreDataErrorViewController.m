@@ -123,7 +123,7 @@
         _alertView.tag = coreDataDBRecreatedAttemptAlertTag;
         [_alertView show];
     } else{
-        NSString *msg = @"There was an issue recreating your library. There is a larger issue with your app, consider reinstalling it.";
+        NSString *msg = [NSString stringWithFormat:@"An unexpected problem occurred recreating your library. Consider reinstalling %@.", MZAppName];
         _alertView = [[SDCAlertView alloc] initWithTitle:@"Failure"
                                                  message:msg
                                                 delegate:self
