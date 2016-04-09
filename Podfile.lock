@@ -23,14 +23,11 @@ PODS:
   - Crashlytics (3.7.0):
     - Fabric (~> 1.6.3)
   - CRToast (0.0.9)
-  - Ensembles (1.5):
-    - Ensembles/Core (= 1.5)
-  - Ensembles/Core (1.5)
-  - Fabric (1.6.6)
+  - Fabric (1.6.7)
   - FXImageView (1.3.5)
   - GCDiscreetNotificationView (1.0.2)
-  - Google-Mobile-Ads-SDK (7.7.0)
-  - MarqueeLabel (2.5.0)
+  - Google-Mobile-Ads-SDK (7.7.1)
+  - MarqueeLabel (2.5.2)
   - MSCellAccessory (1.1.2)
   - Reachability (3.2)
   - SDWebImage (3.7.5):
@@ -45,7 +42,6 @@ DEPENDENCIES:
   - AFNetworking (~> 2.5.4)
   - Crashlytics
   - CRToast (~> 0.0.7)
-  - Ensembles (~> 1.0)
   - Fabric
   - FXImageView
   - GCDiscreetNotificationView
@@ -63,12 +59,11 @@ SPEC CHECKSUMS:
   AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
   Crashlytics: c3a2333dea9e2733d2777f730910321fc9e25c0d
   CRToast: 5a78c22b921c5ed3487488af605bc403a9c92fed
-  Ensembles: 33c81244812b7d568a7fa76255708327efc66a4a
-  Fabric: 1abc1e59f11fa39ede6f690ef7309d8563e3ec59
+  Fabric: caf7580c725e64db144f610ac65cd60956911dc7
   FXImageView: 7d84722b37f0afea9a64f12fdd4a6c7f9ecc4b16
   GCDiscreetNotificationView: b093cce1fe82f6d9784169a156b48ecb1465ad8a
-  Google-Mobile-Ads-SDK: d290e523a6e2f223256abcbf8e0c778b55b1f04e
-  MarqueeLabel: 6b8ff6915c0536c5099ac30992b7d72f9807df20
+  Google-Mobile-Ads-SDK: e27569901b58881d9a94b42f2c642739cfe3970a
+  MarqueeLabel: c82ca09a3a969b4d34ce5d65f0f82840525ab259
   MSCellAccessory: 8265f3cd2386c1f372da00232472605ab11426e4
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 69c6303e3348fba97e03f65d65d4fbc26740f461

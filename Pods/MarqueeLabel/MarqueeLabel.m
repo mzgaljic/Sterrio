@@ -168,6 +168,10 @@ CGPoint MLOffsetCGPoint(CGPoint point, CGFloat offset);
 - (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx {
     // Do NOT call super, to prevent UILabel superclass from drawing into context
     // Label drawing is handled by sublabel and CAReplicatorLayer layer class
+    
+    // Draw only background color
+    CGContextSetFillColorWithColor(ctx, self.backgroundColor.CGColor);
+    CGContextFillRect(ctx, layer.bounds);
 }
 
 - (void)forwardPropertiesToSubLabel {
@@ -229,26 +233,9 @@ CGPoint MLOffsetCGPoint(CGPoint point, CGFloat offset);
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(labelsShouldLabelize:) name:kMarqueeLabelShouldLabelizeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(labelsShouldAnimate:) name:kMarqueeLabelShouldAnimateNotification object:nil];
     
-    // UINavigationController view controller change notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(observedViewControllerChange:) name:@"UINavigationControllerDidShowViewControllerNotification" object:nil];
-    
     // UIApplication state notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(restartLabel) name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(shutdownLabel) name:UIApplicationDidEnterBackgroundNotification object:nil];
-}
-
-- (void)observedViewControllerChange:(NSNotification *)notification {
-    NSDictionary *userInfo = [notification userInfo];
-    id fromController = [userInfo objectForKey:@"UINavigationControllerLastVisibleViewController"];
-    id toController = [userInfo objectForKey:@"UINavigationControllerNextVisibleViewController"];
-    
-    id ownController = [self firstAvailableViewController];
-    if ([fromController isEqual:ownController]) {
-        [self shutdownLabel];
-    }
-    else if ([toController isEqual:ownController]) {
-        [self restartLabel];
-    }
 }
 
 - (void)minimizeLabelFrameWithMaximumSize:(CGSize)maxSize adjustHeight:(BOOL)adjustHeight {
@@ -290,7 +277,9 @@ CGPoint MLOffsetCGPoint(CGPoint point, CGFloat offset);
 }
 
 - (void)didMoveToWindow {
-    if (self.window) {
+    if (!self.window) {
+        [self shutdownLabel];
+    } else {
         [self updateSublabel];
     }
 }
@@ -593,6 +582,13 @@ CGPoint MLOffsetCGPoint(CGPoint point, CGFloat offset);
 }
 
 - (void)scrollContinuousWithInterval:(NSTimeInterval)interval after:(NSTimeInterval)delayAmount {
+    [self scrollContinuousWithInterval:interval after:delayAmount labelAnimation:nil gradientAnimation:nil];
+}
+
+- (void)scrollContinuousWithInterval:(NSTimeInterval)interval
+                               after:(NSTimeInterval)delayAmount
+                      labelAnimation:(CAKeyframeAnimation *)labelAnimation
+                   gradientAnimation:(CAKeyframeAnimation *)gradientAnimation {
     // Check for conditions which would prevent scrolling
     if (![self labelReadyForScroll]) {
         return;
@@ -612,10 +608,26 @@ CGPoint MLOffsetCGPoint(CGPoint point, CGFloat offset);
     
     // Create animation for gradient, if needed
     if (self.fadeLength != 0.0f) {
-        CAKeyframeAnimation *gradAnim = [self keyFrameAnimationForGradientFadeLength:self.fadeLength
-                                                                            interval:interval
-                                                                               delay:delayAmount];
-        [self.layer.mask addAnimation:gradAnim forKey:@"gradient"];
+        if (!gradientAnimation) {
+            gradientAnimation = [self keyFrameAnimationForGradientFadeLength:self.fadeLength
+                                                                    interval:interval
+                                                                       delay:delayAmount];
+        }
+        [self.layer.mask addAnimation:gradientAnimation forKey:@"gradient"];
+    }
+    
+    // Create animation for sublabel positions, if needed
+    if (!labelAnimation) {
+        CGPoint homeOrigin = self.homeLabelFrame.origin;
+        CGPoint awayOrigin = MLOffsetCGPoint(self.homeLabelFrame.origin, self.awayOffset);
+        NSArray *values = @[[NSValue valueWithCGPoint:homeOrigin],      // Initial location, home
+                            [NSValue valueWithCGPoint:homeOrigin],      // Initial delay, at home
+                            [NSValue valueWithCGPoint:awayOrigin]];     // Animation to home
+        
+        labelAnimation = [self keyFrameAnimationForProperty:@"position"
+                                                     values:values
+                                                   interval:interval
+                                                      delay:delayAmount];
     }
     
     MLAnimationCompletionBlock completionBlock = ^(BOOL finished) {
@@ -633,27 +645,20 @@ CGPoint MLOffsetCGPoint(CGPoint point, CGFloat offset);
         if (self.window && ![self.subLabel.layer animationForKey:@"position"]) {
             // Begin again, if conditions met
             if (self.labelShouldScroll && !self.tapToScroll && !self.holdScrolling) {
-                [self scrollContinuousWithInterval:interval after:delayAmount];
+                [self scrollContinuousWithInterval:interval
+                                             after:delayAmount
+                                    labelAnimation:labelAnimation
+                                 gradientAnimation:gradientAnimation];
             }
         }
     };
     
-    // Create animation for sublabel positions
-    CGPoint homeOrigin = self.homeLabelFrame.origin;
-    CGPoint awayOrigin = MLOffsetCGPoint(self.homeLabelFrame.origin, self.awayOffset);
-    NSArray *values = @[[NSValue valueWithCGPoint:homeOrigin],      // Initial location, home
-                        [NSValue valueWithCGPoint:homeOrigin],      // Initial delay, at home
-                        [NSValue valueWithCGPoint:awayOrigin]];     // Animation to home
     
-    CAKeyframeAnimation *awayAnim = [self keyFrameAnimationForProperty:@"position"
-                                                                values:values
-                                                              interval:interval
-                                                                 delay:delayAmount];
     // Attach completion block
-    [awayAnim setValue:completionBlock forKey:kMarqueeLabelAnimationCompletionBlock];
+    [labelAnimation setValue:completionBlock forKey:kMarqueeLabelAnimationCompletionBlock];
     
     // Add animation
-    [self.subLabel.layer addAnimation:awayAnim forKey:@"position"];
+    [self.subLabel.layer addAnimation:labelAnimation forKey:@"position"];
     
     [CATransaction commit];
 }
@@ -1064,6 +1069,16 @@ CGPoint MLOffsetCGPoint(CGPoint point, CGFloat offset);
 #pragma mark - Modified UILabel Methods/Getters/Setters
 
 - (UIView *)viewForBaselineLayout {
+    // Use subLabel view for handling baseline layouts
+    return self.subLabel;
+}
+
+- (UIView *)viewForLastBaselineLayout {
+    // Use subLabel view for handling baseline layouts
+    return self.subLabel;
+}
+
+- (UIView *)viewForFirstBaselineLayout {
     // Use subLabel view for handling baseline layouts
     return self.subLabel;
 }

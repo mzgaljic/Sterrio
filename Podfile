@@ -1,8 +1,5 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
-#Ensembles 1.0
-pod "Ensembles", "~> 1.0"
-
 #youtube id video url extractor
 pod 'XCDYouTubeKit'
 

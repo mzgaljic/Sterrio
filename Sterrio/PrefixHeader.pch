@@ -12,12 +12,11 @@
 // Include any system framework and library headers here that should be included in all compilation units.
 // You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
 
-
+#import <Ensembles/Ensembles.h>
 #import "MZCommons.h"
 #import "MZConstants.h"
 #import "MZRegexExp.h"
 #import <Crashlytics/Crashlytics.h>  //for using CLS_LOG(format, ...) from anywhere.
-#import <Ensembles/Ensembles.h>
 #import "MyAlerts.h"  //my custom class for displaying alerts from anywhere
 
 //helps to segue to video player view from anywhere,

@@ -14,11 +14,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Ensembles.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>FXImageView.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -82,6 +77,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>0B478E03E3A5BCC04F8448D2C26EC8D6</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>1A3155A1CE86FD415A2FA193545BAB2E</key>
 		<dict>
 			<key>primary</key>
@@ -92,32 +92,27 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2A6CB1B975084342D63755ADD124A046</key>
+		<key>2BD1A107974C4023B7994ED0AB23A922</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4A206495D8957105201603F575B2DCD0</key>
+		<key>30EF27EC1F6FD9100D4D7D385CE2AC3E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>68272C5BDB2D5E94B1F1CE32883897AA</key>
+		<key>37D6A7F7BA3854C1EC10CDD9D2AD2462</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>68C46AEF98BF5EE36FDC2F71250DA22C</key>
+		<key>45E08337269AA4B28C88A6DBF9652BB1</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>68C64A67D266D1B26CD1A3910FDA4833</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>6F7AA1954F55F79BC8EA653DA1836F0C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -132,12 +127,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>7AAA8823DCE8212E50CBF5E7A2D6CBD7</key>
+		<key>8F2051EFD8D029D8851B104E6C709247</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9A3323EEFC631F1D713912AAB866B7E6</key>
+		<key>D01242D0C048B76CB525CBD0049E85D7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -147,12 +142,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>EE8547F80C85CFE8BB0B9E0E1B26C422</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>F6E1ECCC5A72E3E121DAB4AF8236E6BF</key>
+		<key>D8D9870328F5B9E3E4A6A69628F178F1</key>
 		<dict>
 			<key>primary</key>
 			<true/>

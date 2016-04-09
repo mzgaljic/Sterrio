@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		87164E291CB8B3EB0006D53B /* Ensembles.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 87164E271CB8B3EB0006D53B /* Ensembles.bundle */; };
+		87164E2A1CB8B3EB0006D53B /* Ensembles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87164E281CB8B3EB0006D53B /* Ensembles.framework */; };
 		8716560F1C30AB41000FF02B /* DiscogsItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8716560E1C30AB41000FF02B /* DiscogsItem.m */; };
 		8727A5791C49EC05008FC03E /* CoreDataEntityMappingUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8727A5781C49EC05008FC03E /* CoreDataEntityMappingUtils.m */; };
 		8730C0D71C5989F9001FC8A6 /* NSString+Morphing.m in Sources */ = {isa = PBXBuildFile; fileRef = 8730C0D41C5989F9001FC8A6 /* NSString+Morphing.m */; };
@@ -252,6 +254,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		87164E271CB8B3EB0006D53B /* Ensembles.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Ensembles.bundle; sourceTree = "<group>"; };
+		87164E281CB8B3EB0006D53B /* Ensembles.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Ensembles.framework; sourceTree = "<group>"; };
 		8716560E1C30AB41000FF02B /* DiscogsItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsItem.m; sourceTree = "<group>"; };
 		871FE2D01BFACDC000588C2B /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMobileAds.framework; path = "Pods/Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.5.2/GoogleMobileAds.framework"; sourceTree = "<group>"; };
 		8727A5771C49EC05008FC03E /* CoreDataEntityMappingUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataEntityMappingUtils.h; sourceTree = "<group>"; };
@@ -745,6 +749,7 @@
 				87353A6A1B0AA57F009244E4 /* QuartzCore.framework in Frameworks */,
 				87353A6C1B0AA587009244E4 /* CoreData.framework in Frameworks */,
 				87353A6E1B0AA599009244E4 /* AVFoundation.framework in Frameworks */,
+				87164E2A1CB8B3EB0006D53B /* Ensembles.framework in Frameworks */,
 				87353A721B0AA5B6009244E4 /* MessageUI.framework in Frameworks */,
 				CC4EB50DFF2CD80A06134B69 /* libPods.a in Frameworks */,
 			);
@@ -804,6 +809,7 @@
 				8735388C1B0A9BD5009244E4 /* Singletons */,
 				873538AE1B0A9C7E009244E4 /* GUI & GUI Controllers */,
 				8735397B1B0AA14E009244E4 /* Imported Libraries */,
+				874D99501CB8AD4100FA6BCA /* Ensembles */,
 				873537D61B0A9981009244E4 /* Images.xcassets */,
 				873537C91B0A9981009244E4 /* Supporting Files */,
 				873537E21B0A9981009244E4 /* SterrioTests */,
@@ -1697,6 +1703,15 @@
 			path = EARestrictedScrollView;
 			sourceTree = "<group>";
 		};
+		874D99501CB8AD4100FA6BCA /* Ensembles */ = {
+			isa = PBXGroup;
+			children = (
+				87164E271CB8B3EB0006D53B /* Ensembles.bundle */,
+				87164E281CB8B3EB0006D53B /* Ensembles.framework */,
+			);
+			name = Ensembles;
+			sourceTree = "<group>";
+		};
 		876C53CF1C2A136C007AFC3C /* CMPopTipView */ = {
 			isa = PBXGroup;
 			children = (
@@ -1943,6 +1958,7 @@
 				876C53D41C2A1383007AFC3C /* LICENSE.txt in Resources */,
 				87C67BC31C9F449E00E2FCB8 /* LICENSE.txt in Resources */,
 				87A9536D1B3E242A002E9872 /* LICENSE.txt in Resources */,
+				87164E291CB8B3EB0006D53B /* Ensembles.bundle in Resources */,
 				8735390B1B0A9ED2009244E4 /* iOSDeviceModelMapping.plist in Resources */,
 				873537D71B0A9981009244E4 /* Images.xcassets in Resources */,
 				8735380A1B0A9A80009244E4 /* Main.storyboard in Resources */,
