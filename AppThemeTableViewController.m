@@ -202,7 +202,6 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
     MZAppTheme *newTheme = themes[indexPath.row];
     [AppEnvironmentConstants setAppTheme:newTheme saveInUserDefaults:NO];
     [AppDelegateSetupHelper setGlobalFontsAndColorsForAppGUIComponents];
-    UIColor *newMainColor = newTheme.mainGuiTint;
     
     //update status bar color based on app theme settings
     if(newTheme.useWhiteStatusBar) {

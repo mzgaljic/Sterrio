@@ -43,7 +43,7 @@ NSString * const ARTIST_KEY = @"artist";
     album.smartSortAlbumName = [name regularStringToSmartSortString];
     if(album.smartSortAlbumName.length == 0)  //edge case,if name itself is something like 'the', dont remove all chars! Keep original name.
         album.smartSortAlbumName = name;
-    album.albumArt = [NSEntityDescription insertNewObjectForEntityForName:@"AlbumAlbumArt"
+    album.albumArt = (AlbumAlbumArt *)[NSEntityDescription insertNewObjectForEntityForName:@"AlbumAlbumArt"
                                                    inManagedObjectContext:context];
     return album;
 }

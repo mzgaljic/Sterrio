@@ -265,10 +265,15 @@ short const PREVIEW_SONG_SECTION_NUM = 1;
 - (UIImage *)imageFromText:(NSString *)text font:(UIFont *)aFont
 {
     float leftSidePadding = 10;
-    CGSize tempSize = [text sizeWithFont:aFont];
-    CGSize size = CGSizeMake(tempSize.width + leftSidePadding, tempSize.height);
+    CGRect tempSize = [text boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)
+                                         options:NSStringDrawingUsesLineFragmentOrigin
+                                      attributes:@{NSFontAttributeName : aFont}
+                                         context:nil];
+    
+    CGSize size = CGSizeMake(tempSize.size.width + leftSidePadding, tempSize.size.height);
     UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
-    [text drawAtPoint:CGPointMake(leftSidePadding, 0.0) withFont:aFont];
+    [text drawAtPoint:CGPointMake(leftSidePadding, 0.0)
+       withAttributes:@{NSFontAttributeName : aFont}];
     
     // transfer image
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();

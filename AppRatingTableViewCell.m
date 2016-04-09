@@ -136,13 +136,15 @@ static NSString * const NO_THANKS_TEXT = @"No, thanks";
     } else if([_titleLabel.text isEqualToString:GIVE_US_SOME_FEEDBACK_TEXT]){
         //user dislikes app and don't want to give
         //me feedback. Hide this cell and never show again.
-#warning uncomment this line when testing is complete.
-        //[AppEnvironmentConstants setUserHasRatedMyApp:YES];
+        
+        //comment this line if testing is desired.
+        [AppEnvironmentConstants setUserHasRatedMyApp:YES];
         [[NSNotificationCenter defaultCenter] postNotificationName:MZHideAppRatingCell object:nil];
     } else if([_titleLabel.text isEqualToString:RATE_US_ON_APP_STORE_TEXT]) {
         //user doesn't want to rate even though they like app, hide cell and never show again.
-#warning uncomment this line when testing is complete.
-        //[AppEnvironmentConstants setUserHasRatedMyApp:YES];
+        
+        //comment this line if testing is desired.
+        [AppEnvironmentConstants setUserHasRatedMyApp:YES];
         [[NSNotificationCenter defaultCenter] postNotificationName:MZHideAppRatingCell object:nil];
     }
 }

@@ -716,11 +716,17 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
 - (UIImage *)imageForFontSizeCell
 {
     UIFont *aFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:23];
-    CGSize tempSize = [@"A" sizeWithFont:aFont];
+    
+    CGSize cgSizeMax = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
+    CGSize tempSize = [@"A" boundingRectWithSize:cgSizeMax
+                                         options:NSStringDrawingUsesLineFragmentOrigin
+                                      attributes:@{NSFontAttributeName : aFont}
+                                         context:nil].size;
     int edgePadding = 3;
     CGSize size = CGSizeMake(tempSize.width + (2 * edgePadding), tempSize.height + (2 * edgePadding));
     UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
-    [@"A" drawAtPoint:CGPointMake(edgePadding, edgePadding) withFont:aFont];
+    [@"A" drawAtPoint:CGPointMake(edgePadding, edgePadding)
+       withAttributes:@{NSFontAttributeName : aFont}];
     
     // transfer image
     UIImage *tempImage = UIGraphicsGetImageFromCurrentImageContext();

@@ -221,7 +221,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
 //jumps back to index 0 in the main queue. if shuffle is on, it reshuffles before jumping to index 0.
 - (PlayableItem *)skipToBeginningOfQueueReshufflingIfNeeded
 {
-#warning incomplete implementation
+#warning Missing shuffle implementation.
     //dont take into account shuffle mode here
     
     PlayableItem *item = [mainQueue skipToBeginningOfQueue];

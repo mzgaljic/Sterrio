@@ -536,6 +536,8 @@ static NSLock *icloudSyncEnabledLock;
             [AppEnvironmentConstants notifyThatIcloudSyncSuccessfullyDisabled];
             [AppEnvironmentConstants notifyThatAppsIcloudStateChanged];
             NSLog(@"De-leeched ensemble successfuly");
+            [ensemble dismantle];
+            NSLog(@"Dismantled ensemble.");
         }
     }];
 }

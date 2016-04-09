@@ -31,7 +31,15 @@
         accessoryWidth = self.accessoryView.frame.size.width + 4;  //4 for padding.
     }
     
-    CGFloat detailTextLabelWidth = [self.detailTextLabel.text sizeWithFont:self.detailTextLabel.font].width;
+    CGSize cgSizeMax = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
+    UIFont *currFont = self.detailTextLabel.font;
+    CGRect detailTextLabelRect;
+    detailTextLabelRect = [self.detailTextLabel.text boundingRectWithSize:cgSizeMax
+                                                           options:NSStringDrawingUsesLineFragmentOrigin
+                                                        attributes:@{NSFontAttributeName : currFont}
+                                                           context:nil];
+    CGFloat detailTextLabelWidth = detailTextLabelRect.size.width;
+    
     CGRect detailTextLabelFrame;
     if(CGRectIsEmpty(originalDetailTextLabelFrame)) {
         detailTextLabelFrame = self.detailTextLabel.frame;

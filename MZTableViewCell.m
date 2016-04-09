@@ -260,7 +260,11 @@ short const dotLabelPadding = 20;
         @autoreleasepool {
             mid = tempMin + (tempMax - tempMin) / 2;
             tempFont = [UIFont fontWithName:fontName size:mid];
-            difference = labelSize.height - [testString sizeWithFont:tempFont].height;
+            CGRect rect = [testString boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)
+                                                   options:NSStringDrawingUsesLineFragmentOrigin
+                                                attributes:@{NSFontAttributeName: tempFont}
+                                                   context:nil];
+            difference = labelSize.height - ceil(rect.size.height);
             
             if (mid == tempMin || mid == tempMax) {
                 if (difference < 0) {

@@ -442,8 +442,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     
     CDEPersistentStoreEnsemble *ensemble = [[CoreDataManager sharedInstance] ensembleForMainContext];
     if(! ensemble.isLeeched
-       || [AppEnvironmentConstants isABadTimeToMergeEnsemble])
-    {
+       || [AppEnvironmentConstants isABadTimeToMergeEnsemble]) {
         return;
     }
     

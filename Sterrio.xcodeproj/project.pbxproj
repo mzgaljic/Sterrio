@@ -138,9 +138,9 @@
 		873539CC1B0AA1B3009244E4 /* SDCAlertLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539A51B0AA1B3009244E4 /* SDCAlertLabel.m */; };
 		873539CD1B0AA1B3009244E4 /* SDCAlertPresentationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539A71B0AA1B3009244E4 /* SDCAlertPresentationController.m */; };
 		873539CE1B0AA1B3009244E4 /* SDCAlertTextFieldTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539A91B0AA1B3009244E4 /* SDCAlertTextFieldTableViewCell.m */; };
-		873539CF1B0AA1B3009244E4 /* SDCAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539AB1B0AA1B3009244E4 /* SDCAlertView.m */; };
+		873539CF1B0AA1B3009244E4 /* SDCAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539AB1B0AA1B3009244E4 /* SDCAlertView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		873539D01B0AA1B3009244E4 /* SDCAlertViewBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539AD1B0AA1B3009244E4 /* SDCAlertViewBackgroundView.m */; };
-		873539D11B0AA1B3009244E4 /* SDCAlertViewContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539AF1B0AA1B3009244E4 /* SDCAlertViewContentView.m */; };
+		873539D11B0AA1B3009244E4 /* SDCAlertViewContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539AF1B0AA1B3009244E4 /* SDCAlertViewContentView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		873539D21B0AA1B3009244E4 /* SDCAlertViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539B11B0AA1B3009244E4 /* SDCAlertViewController.m */; };
 		873539D31B0AA1B3009244E4 /* SDCAlertViewCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539B31B0AA1B3009244E4 /* SDCAlertViewCoordinator.m */; };
 		873539D41B0AA1B3009244E4 /* SDCDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 873539B61B0AA1B3009244E4 /* SDCDemoViewController.m */; };
@@ -164,7 +164,7 @@
 		87353A261B0AA283009244E4 /* ActionSheetLocalePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A1A1B0AA283009244E4 /* ActionSheetLocalePicker.m */; };
 		87353A271B0AA283009244E4 /* ActionSheetStringPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A1D1B0AA283009244E4 /* ActionSheetStringPicker.m */; };
 		87353A281B0AA283009244E4 /* DistancePickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A1F1B0AA283009244E4 /* DistancePickerView.m */; };
-		87353A291B0AA283009244E4 /* SWActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A211B0AA283009244E4 /* SWActionSheet.m */; };
+		87353A291B0AA283009244E4 /* SWActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A211B0AA283009244E4 /* SWActionSheet.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		87353A641B0AA334009244E4 /* AutoScrollLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A631B0AA334009244E4 /* AutoScrollLabel.m */; };
 		87353A681B0AA576009244E4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87353A671B0AA576009244E4 /* Foundation.framework */; };
 		87353A6A1B0AA57F009244E4 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87353A691B0AA57F009244E4 /* QuartzCore.framework */; };
@@ -218,11 +218,11 @@
 		87C67BC41C9F449E00E2FCB8 /* MRActivityIndicatorView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C67BA31C9F449E00E2FCB8 /* MRActivityIndicatorView+AFNetworking.m */; };
 		87C67BC51C9F449E00E2FCB8 /* MRActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C67BA51C9F449E00E2FCB8 /* MRActivityIndicatorView.m */; };
 		87C67BC61C9F449E00E2FCB8 /* MRBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C67BA71C9F449E00E2FCB8 /* MRBlurView.m */; };
-		87C67BC71C9F449E00E2FCB8 /* MRCircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C67BA91C9F449E00E2FCB8 /* MRCircularProgressView.m */; };
+		87C67BC71C9F449E00E2FCB8 /* MRCircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C67BA91C9F449E00E2FCB8 /* MRCircularProgressView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		87C67BC81C9F449E00E2FCB8 /* MRIconView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C67BAB1C9F449E00E2FCB8 /* MRIconView.m */; };
 		87C67BC91C9F449E00E2FCB8 /* MRMessageInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C67BAD1C9F449E00E2FCB8 /* MRMessageInterceptor.m */; };
 		87C67BCA1C9F449E00E2FCB8 /* MRMethodCopier.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C67BAF1C9F449E00E2FCB8 /* MRMethodCopier.m */; };
-		87C67BCB1C9F449E00E2FCB8 /* MRNavigationBarProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C67BB11C9F449E00E2FCB8 /* MRNavigationBarProgressView.m */; };
+		87C67BCB1C9F449E00E2FCB8 /* MRNavigationBarProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C67BB11C9F449E00E2FCB8 /* MRNavigationBarProgressView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		87C67BCC1C9F449E00E2FCB8 /* MRProgressOverlayView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C67BB51C9F449E00E2FCB8 /* MRProgressOverlayView+AFNetworking.m */; };
 		87C67BCD1C9F449E00E2FCB8 /* MRProgressOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C67BB71C9F449E00E2FCB8 /* MRProgressOverlayView.m */; };
 		87C67BCE1C9F449E00E2FCB8 /* MRProgressView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C67BB91C9F449E00E2FCB8 /* MRProgressView+AFNetworking.m */; };

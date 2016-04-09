@@ -35,14 +35,9 @@
 
 + (void)promptSystemPushNotifRequest
 {
-    if([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
-        [[UIApplication sharedApplication] registerForRemoteNotifications];
-        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert) categories:nil];
-        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-        
-    } else {
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge];
-    }
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
+    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert) categories:nil];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
 }
 
 @end

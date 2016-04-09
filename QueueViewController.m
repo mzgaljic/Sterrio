@@ -356,7 +356,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             }
             
             //now need to refresh the model so everything matches up
-#warning would be more efficient to manually delete the relevant objects within these data sources.
+#warning Inefficient code
+            //would be more efficient to manually delete the relevant objects within these data sources.
             mainQueueItemsComingUp = [queue tableViewOptimizedArrayOfMainQueueItemsComingUp];
             mainQueueContext = [queue mainQueuePlaybackContext];
             upNextItems = [queue tableViewOptimizedArrayOfUpNextItems];
@@ -461,7 +462,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         return;
     
     if(mainQueueItemsComingUp.count + upNextItems.count > 0){
-#warning would be more efficient to manually delete the relevant objects within these data sources.
+#warning Inefficient code
+        //would be more efficient to manually delete the relevant objects within these data sources.
         mainQueueItemsComingUp = [queue tableViewOptimizedArrayOfMainQueueItemsComingUp];
         upNextItems = [queue tableViewOptimizedArrayOfUpNextItems];
         upNextPlaybackContexts = [queue tableViewOptimizedArrayOfUpNextItemsContexts];

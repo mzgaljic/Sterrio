@@ -1135,7 +1135,6 @@ static int accomodateInterfaceLabelsCounter = 0;
         if(stateOfDurationLabels == DurationLabelStateNotSet){
             //figure it out lol
             _totalDurationLabel.text = newText;
-#warning may be able to remove weird counter code in this accomodateinterface method. check.
             [self accomodateInterfaceBasedOnDurationLabelSize:_totalDurationLabel];
         }
         
@@ -1373,7 +1372,8 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
     [alert presentWithCompletion:nil];
     return;
     
-#warning eventually add shuffle capability.
+#warning Shuffle feature unfinished.
+    /*
     switch ([AppEnvironmentConstants shuffleState])
     {
         case SHUFFLE_STATE_Disabled:
@@ -1390,6 +1390,7 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
             break;
     }
     [self updateShuffleButtonGivenNewShuffleState];
+    */
 }
 
 - (void)updateShuffleButtonGivenNewShuffleState
