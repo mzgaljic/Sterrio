@@ -42,6 +42,7 @@ extern NSString * const MZKeyNumDislikes;
 extern NSString * const MZKeyVideoDuration;
 
 extern NSString * const MZEmailBugReport;
+extern NSString * const MZEmailFeedback;
 extern NSString * const MZAddSongToUpNextString;
 extern NSString * const MZUserCanTransitionToMainInterface;
 extern NSString * const MZUserAboutToDismissFromSettings;

@@ -102,7 +102,7 @@
     [composer setSubject:emailSubject];
     
     // Set up recipients
-    [composer setToRecipients:@[MZEmailBugReport]];
+    [composer setToRecipients:@[[self emailRecipientForComposePurpose:self.composePurpose]]];
     [composer setMessageBody:[self emailBodyForComposePurpose:self.composePurpose] isHTML:NO];
     
     if(self.attachedImage){
@@ -205,6 +205,22 @@
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:email]];
 }
 
+
+- (NSString *)emailRecipientForComposePurpose:(Email_Compose_Purpose)purpose
+{
+    switch (purpose)
+    {
+        case Email_Compose_Purpose_General_Feedback:
+            return MZEmailFeedback;
+            
+        case Email_Compose_Purpose_ScreenshotBugReport:
+        case Email_Compose_Purpose_SimpleBugReport:
+            return MZEmailBugReport;
+            
+        default:
+            return @"";
+    }
+}
 
 - (NSString *)emailSubjectForComposePurpose:(Email_Compose_Purpose)purpose
 {
