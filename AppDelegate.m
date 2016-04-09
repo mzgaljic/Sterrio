@@ -112,6 +112,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     UIApplication *myApp = [UIApplication sharedApplication];
     [myApp setIdleTimerDisabled:NO];
     [myApp setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+    [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(startupBackgroundTask)
@@ -458,18 +459,33 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
                 [managedObjectContext save:NULL];
             }
             
-            [weakEnsemble mergeWithCompletion:^(NSError *error) {
-                if(error){
-                   NSLog(@"Ensemble failed to merge in background.");
-                }
-                else{
-                    [AppEnvironmentConstants setLastSuccessfulSyncDate:[[NSDate alloc] init]];
-                    NSLog(@"Ensemble merged in background.");
-                }
-                
-                [[UIApplication sharedApplication] endBackgroundTask:mergeEnsembleTask];
-                ensembleBackgroundMergeIsRunning = NO;
-            }];
+            float batteryLevel = [[UIDevice currentDevice] batteryLevel];
+            batteryLevel *= 100;
+            
+            if(batteryLevel >= 35
+               || [[UIDevice currentDevice] batteryState] == UIDeviceBatteryStateCharging) {
+                [weakEnsemble mergeWithCompletion:^(NSError *error) {
+                    if(error){
+                        NSLog(@"Ensemble failed to merge in background.");
+                    }
+                    else{
+                        [AppEnvironmentConstants setLastSuccessfulSyncDate:[[NSDate alloc] init]];
+                        NSLog(@"Ensemble merged in background.");
+                    }
+                }];
+            } else {
+                // processPendingChangesWithCompletion is a less expensive operation.
+                [weakEnsemble processPendingChangesWithCompletion:^(NSError *error) {
+                    if(error){
+                        NSLog(@"Ensemble failed to complete queued tasks and save data to disk (in background.)");
+                    } else{
+                        [AppEnvironmentConstants setLastSuccessfulSyncDate:[[NSDate alloc] init]];
+                        NSLog(@"Ensemble completed queued tasks and saved data to disk (in background.)");
+                    }
+                }];
+            }
+            [[UIApplication sharedApplication] endBackgroundTask:mergeEnsembleTask];
+            ensembleBackgroundMergeIsRunning = NO;
         }];
     });
 }
