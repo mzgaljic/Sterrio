@@ -61,7 +61,9 @@
 + (void)performBlock:(void (^)())block
 {
     @autoreleasepool {
-        block();
+        if(block) {
+            block();
+        }
     }
 }
 
