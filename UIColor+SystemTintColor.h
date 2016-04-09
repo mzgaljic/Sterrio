@@ -11,9 +11,6 @@
 
 @interface UIColor (SystemTintColor)
 
-//+ (UIColor*)defaultWindowTintColor;
-//+ (UIColor*)defaultAppColorScheme;
-//+ (void)defaultAppColorScheme:(UIColor *)color;
 + (UIColor *)standardIOS7PlusTintColor;
 
 @end
