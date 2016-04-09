@@ -574,7 +574,6 @@ short const dummyTabIndex = 2;
 {
     [[UITabBar appearance] setTintColor:[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor]];
     
-    UIVisualEffectView *visualEffectView;
     [self.centerButton removeFromSuperview];
     [self.tabBar removeFromSuperview];
     [self.tabBarView removeFromSuperview];
@@ -584,12 +583,6 @@ short const dummyTabIndex = 2;
     self.tabBarView = [[UIView alloc] init];
     self.tabBar = [[UITabBar alloc] init];
     self.tabBar.delegate = self;
-    
-    UIVisualEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-    visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-    visualEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    [self.tabBarView addSubview:visualEffectView];
-    [self.tabBar setBackgroundImage:[UIImage new]];
     
     self.centerButtonImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                           :[UIImage imageNamed:CENTER_BTN_IMG_NAME]];
@@ -614,9 +607,6 @@ short const dummyTabIndex = 2;
     self.tabBar.frame = CGRectMake(0, 0, self.tabBarView.frame.size.width, self.tabBarView.frame.size.height);
     self.centerButton.frame = [self centerBtnFrameGivenTabBarViewFrame:self.tabBarView.frame
                                                           centerBtnImg:self.centerButtonImg];
-    if(visualEffectView){
-        visualEffectView.frame = self.tabBarView.bounds;
-    }
     [self.tabBarView addSubview:self.tabBar];
     [self.tabBarView addSubview:self.centerButton];
     [self.tabBarView setMultipleTouchEnabled:NO];
