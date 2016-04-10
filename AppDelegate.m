@@ -67,6 +67,9 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    //[AppEnvironmentConstants adsHaveBeenRemoved:NO];   //ONLY FOR DEVELOPMENT!!
+    //[AppEnvironmentConstants setUserHasRatedMyApp:NO];  ONLY FOR DEVELOPMENT!!
+    
     BOOL showUserTouchesOnScreen = NO;
     if(showUserTouchesOnScreen) {
         self.window = [self windowShowingTouches];
@@ -125,8 +128,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     
     [LQAlbumArtBackgroundUpdater beginWaitingForEfficientMomentsToUpdateAlbumArt];
     [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
-    //[AppEnvironmentConstants adsHaveBeenRemoved:NO];   ONLY FOR DEVELOPMENT!!
-    //[AppEnvironmentConstants setUserHasRatedMyApp:NO];  ONLY FOR DEVELOPMENT!!
 }
 
 - (void)setupMainVC
