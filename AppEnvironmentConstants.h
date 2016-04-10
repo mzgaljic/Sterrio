@@ -152,5 +152,7 @@ typedef enum{
 + (void)setBannerAdHeight:(int)height;
 + (int)bannerAdHeight;
 + (UIImage *)navBarBackgroundImageFromFrame:(CGRect)frame;
++ (BOOL)isAppStoreBuild;
++ (NSString *)testingAdMobDeviceId;
 
 @end

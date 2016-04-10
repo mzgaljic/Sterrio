@@ -13,6 +13,10 @@
 #import "SDCAlertController.h"
 #import "MusicPlaybackController.h"
 
+//for generating admob test device id.
+#import <AdSupport/ASIdentifierManager.h>
+#include <CommonCrypto/CommonDigest.h>
+
 #import <CoreTelephony/CTCallCenter.h>
 #import <CoreTelephony/CTCall.h>
 #import <Valet/VALSynchronizableValet.h>
@@ -799,6 +803,36 @@ static NSLock *lastSuccessfulSyncDateLock;
     UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return outputImage;
+}
+
++ (BOOL)isAppStoreBuild
+{
+#ifdef DEBUG
+    return NO;
+#else
+    BOOL isTestFlightBuild;
+    #ifdef DEBUG
+    isTestFlightBuild = NO;
+    #else
+    NSURL *appStoreReceiptURL = NSBundle.mainBundle.appStoreReceiptURL;
+    NSString *appStoreReceiptLastComponent = appStoreReceiptURL.lastPathComponent;
+    isTestFlightBuild = [appStoreReceiptLastComponent isEqualToString:@"sandboxReceipt"];
+    #endif
+    return ([UIApplication isTestFlightBuild] == NO);
+#endif
+}
+
++ (NSString *)testingAdMobDeviceId
+{
+    NSUUID *adid = [[ASIdentifierManager sharedManager] advertisingIdentifier];
+    const char *cStr = [adid.UUIDString UTF8String];
+    unsigned char digest[16];
+    CC_MD5(cStr, strlen(cStr), digest);
+    NSMutableString *output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
+    for(int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
+        [output appendFormat:@"%02x", digest[i]];
+    }
+    return  output;
 }
 
 @end
