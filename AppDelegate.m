@@ -724,34 +724,16 @@ static NSDate *finish;
 - (void)showIntroTutorial
 {
     NSArray *pages = @[[EAIntroPage page], [EAIntroPage page], [EAIntroPage page], [EAIntroPage page]];
-    NSArray *appThemes = [MZAppTheme allAppThemes];
+    NSArray *desiredThemes = @[@"Sunrise", @"Forest", @"Sapphire", @"Bumblebee"];
+    NSArray *introAppThemes = [MZAppTheme appThemesMatchingThemeNames:desiredThemes];
+    NSAssert(introAppThemes.count == desiredThemes.count, @"An app theme name has changed, causing showIntroTutorial() to break.");
+    
     NSBundle *mainBundle = [NSBundle mainBundle];
     NSURL *videoUrl = nil;
-    NSMutableArray *pickedIndexes = [NSMutableArray arrayWithCapacity:pages.count];
     for(int i = 0; i < pages.count; i++) {
         EAIntroPage *page = pages[i];
-        MZAppTheme *someAppTheme;
-        if(i == 0) {
-            //make the page color match the current app theme.
-            someAppTheme = [AppEnvironmentConstants appTheme];
-            page.bgColor = someAppTheme.mainGuiTint;
-            [pickedIndexes addObject:[NSNumber numberWithInt:0]];
-            
-        } else {
-            //pick one of the app theme colors at random. Each page has a unique one.
-            
-            NSNumber *randIndex = nil;
-            //loop until we get a new random color.
-            while(true) {
-                randIndex = [NSNumber numberWithInt:arc4random() % [pages count]];
-                if([pickedIndexes indexOfObject:randIndex] == NSNotFound) {
-                    [pickedIndexes addObject:randIndex];
-                    break;
-                }
-            }
-            someAppTheme = [appThemes objectAtIndex:[randIndex intValue]];
-            page.bgColor = someAppTheme.mainGuiTint;
-        }
+        MZAppTheme *theme = introAppThemes[i];
+        page.bgColor = theme.mainGuiTint;
         
         switch (i) {
             case 0:
@@ -768,7 +750,7 @@ static NSDate *finish;
                                                                   title:@"Queing Up Songs"
                                                             description:desc
                                                                videoUrl:videoUrl
-                                                             mzAppTheme:someAppTheme];
+                                                             mzAppTheme:theme];
             }
                 break;
             case 2:
@@ -780,7 +762,7 @@ static NSDate *finish;
                                                                   title:@"Editing a Song"
                                                             description:desc
                                                                videoUrl:videoUrl
-                                                             mzAppTheme:someAppTheme];
+                                                             mzAppTheme:theme];
             }
                 break;
             case 3:
@@ -792,7 +774,7 @@ static NSDate *finish;
                                                                   title:@"Closing the Player"
                                                             description:desc
                                                                videoUrl:videoUrl
-                                                             mzAppTheme:someAppTheme];
+                                                             mzAppTheme:theme];
             }
                 break;
             case 4:

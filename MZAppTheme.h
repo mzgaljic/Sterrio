@@ -38,6 +38,7 @@
 + (UIColor *)nowPlayingItemColor;
 + (NSUInteger)defaultThemeIndex;
 + (NSArray *)allAppThemes;
++ (NSArray *)appThemesMatchingThemeNames:(NSArray *)themeNames;
 + (NSString *)nsUserDefaultsKeyAppThemeDict;
 
 @end

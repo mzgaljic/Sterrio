@@ -84,7 +84,7 @@
     [text appendFormat:@"%@ Icon Designer: Luca Burgio", MZAppName];
     NSRange iconDesignerRange = NSMakeRange(temp, text.length - temp);
     temp = (int)text.length;
-    [text appendString:@"\nOther image credits below...\n\n\n"];
+    [text appendString:@"\nMore image credits below...\n\n\n"];
     NSRange otherImageCreditsTextRange = NSMakeRange(temp, text.length - temp);
     temp = (int)text.length;
     [text appendString:@"Licenses"];
