@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+@import GoogleMobileAds;
 
 @interface MZCommons : NSObject
 
@@ -21,5 +22,7 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void));
 
 + (BOOL)deleteCharsMatchingRegex:(NSString *)pattern onString:(NSMutableString **)regexMe;
 + (NSString *)deleteCharsMatchingRegex:(NSString *)pattern usingString:(NSString *)regexMe;
+
++ (GADRequest *)getNewAdmobRequest;
 
 @end

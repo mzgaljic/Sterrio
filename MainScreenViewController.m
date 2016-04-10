@@ -124,14 +124,14 @@ short const dummyTabIndex = 2;
     
     if(! [AppEnvironmentConstants areAdsRemoved] && self.adBanner) {
         //get new ad.
-        [self.adBanner loadRequest:[self getNewAdmobRequest]];
+        [self.adBanner loadRequest:[MZCommons getNewAdmobRequest]];
     }
     
     if(numTimesViewHasAppeared != 0)
         [self replaceNavControllerOnScreenWithNavController:self.currentNavController];
     else{
         //initial launch...replaceNavController method optimizes and checks if the viewcontrollers
-        //match. need to avoid the optimization the first time...will set the current nav controller too.
+        //match. need to avoid the optimization the first time. setting current nav controller too.
         self.currentNavController = nil;
         [self replaceNavControllerOnScreenWithNavController:self.navControllers[0]];
     }
@@ -233,7 +233,7 @@ short const dummyTabIndex = 2;
         adBanner.alpha = 0;
         adBanner.frame = CGRectMake(0, yStartOfAdBanner, adBanner.frame.size.width, adBanner.frame.size.height);
         //get the ad
-        [adBanner loadRequest:[self getNewAdmobRequest]];
+        [adBanner loadRequest:[MZCommons getNewAdmobRequest]];
         [self.view addSubview:adBanner];
         self.adBanner = adBanner;
         
@@ -826,16 +826,6 @@ static UIImageView *playerExpansionTipView = nil;
                              playerExpansionTipView = nil;
                          }];
     }
-}
-
-#pragma mark - Utils
-- (GADRequest *)getNewAdmobRequest
-{
-    GADRequest *request = [GADRequest request];
-    if(! [AppEnvironmentConstants isAppStoreBuild]) {
-        request.testDevices = @[kGADSimulatorID, [AppEnvironmentConstants testingAdMobDeviceId]];
-    }
-    return request;
 }
 
 @end

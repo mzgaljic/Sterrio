@@ -7,6 +7,7 @@
 //
 
 #import "MZCommons.h"
+#import "AppEnvironmentConstants.h"
 
 @implementation MZCommons
 
@@ -63,6 +64,16 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void))
     NSMutableString *returnMe = [NSMutableString stringWithString:regexMe];
     [MZCommons deleteCharsMatchingRegex:pattern onString:&returnMe];
     return returnMe;
+}
+
+#pragma mark - AdMob requests
++ (GADRequest *)getNewAdmobRequest
+{
+    GADRequest *request = [GADRequest request];
+    if(! [AppEnvironmentConstants isAppStoreBuild]) {
+        request.testDevices = @[kGADSimulatorID, [AppEnvironmentConstants testingAdMobDeviceId]];
+    }
+    return request;
 }
 
 @end
