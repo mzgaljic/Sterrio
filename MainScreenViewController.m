@@ -124,7 +124,7 @@ short const dummyTabIndex = 2;
     
     if(! [AppEnvironmentConstants areAdsRemoved] && self.adBanner) {
         //get new ad.
-        [self.adBanner loadRequest:[GADRequest request]];
+        [self.adBanner loadRequest:[self getNewAdmobRequest]];
     }
     
     if(numTimesViewHasAppeared != 0)
@@ -225,15 +225,15 @@ short const dummyTabIndex = 2;
         adBanner.delegate = self;
         
         adBanner.rootViewController = self;
-        //real ad unit for production: ca-app-pub-3961646861945951/6727549027
-        adBanner.adUnitID = @"ca-app-pub-3940256099942544/2934735716";  //test ad unit
+        adBanner.adUnitID = MZAdMobUnitId;
         
         heightOfAdBanner = adBanner.frame.size.height;
         [AppEnvironmentConstants setBannerAdHeight:(int)heightOfAdBanner];
         int yStartOfAdBanner = self.view.frame.size.height - heightOfAdBanner;
         adBanner.alpha = 0;
         adBanner.frame = CGRectMake(0, yStartOfAdBanner, adBanner.frame.size.width, adBanner.frame.size.height);
-        [adBanner loadRequest:[GADRequest request]];
+        //get the ad
+        [adBanner loadRequest:[self getNewAdmobRequest]];
         [self.view addSubview:adBanner];
         self.adBanner = adBanner;
         
@@ -248,7 +248,7 @@ short const dummyTabIndex = 2;
                                    (adBanner.frame.size.height / 2.0) - (indicatorSize/2),
                                    indicatorSize,
                                    indicatorSize);
-        spinner.color = [AppEnvironmentConstants appTheme].contrastingTextColor;
+        spinner.tintColor = [AppEnvironmentConstants appTheme].contrastingTextColor;
         [spinner startAnimating];
         [spinnerView addSubview:spinner];
     }
@@ -560,7 +560,7 @@ short const dummyTabIndex = 2;
                                (adBanner.frame.size.height / 2.0) - (indicatorSize/2),
                                indicatorSize,
                                indicatorSize);
-    spinner.color = [AppEnvironmentConstants appTheme].mainGuiTint;
+    spinner.tintColor = [AppEnvironmentConstants appTheme].contrastingTextColor;
     [spinner startAnimating];
     [newSpinnerView addSubview:spinner];
 }
@@ -826,6 +826,16 @@ static UIImageView *playerExpansionTipView = nil;
                              playerExpansionTipView = nil;
                          }];
     }
+}
+
+#pragma mark - Utils
+- (GADRequest *)getNewAdmobRequest
+{
+    GADRequest *request = [GADRequest request];
+    if(! [AppEnvironmentConstants isAppStoreBuild]) {
+        request.testDevices = @[kGADSimulatorID, [AppEnvironmentConstants testingAdMobDeviceId]];
+    }
+    return request;
 }
 
 @end

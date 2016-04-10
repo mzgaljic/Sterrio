@@ -42,6 +42,8 @@ NSString * const MZKeyNumLikes = @"numLikes";
 NSString * const MZKeyNumDislikes = @"numDislikes";
 NSString * const MZKeyVideoDuration = @"videoDuration";
 
+NSString * const MZAdMobUnitId = @"ca-app-pub-3961646861945951/6727549027";
+
 NSString * const MZEmailBugReport = @"bug-report@sterrio.com";
 NSString * const MZEmailFeedback = @"feedback@sterrio.com";
 NSString * const MZAddSongToUpNextString = @"Play Next";

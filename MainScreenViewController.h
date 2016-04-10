@@ -16,7 +16,7 @@
 #import "SSBouncyButton.h"
 #import "SongPlayerCoordinator.h"
 #import "CMPopTipView.h"
-@import GoogleMobileAds;  //#import "GADBannerView.h"
+@import GoogleMobileAds;
 
 @interface MainScreenViewController : UIViewController <UITabBarDelegate,
                                                         GADBannerViewDelegate,
