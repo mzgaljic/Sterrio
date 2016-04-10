@@ -505,7 +505,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
 - (void)segueToPlayerViewControllerIfAppropriate:(BOOL)swiped
 {
     BOOL expandingNow = ![SongPlayerCoordinator isVideoPlayerExpanded];
-    [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:[self topViewController]];
+    [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:[MZCommons topViewController]];
     if(expandingNow && UIInterfaceOrientationIsLandscape(lastOrientation)) {
         //want user to see the hud as soon as the player is opened in landscape.
         _useControlsOverlay = YES;
@@ -541,30 +541,6 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
         isHudOnScreen = NO;
     }
 }
-
-
-
-#pragma mark - Boring utility methods
-- (UIViewController *)topViewController{
-    return [self topViewController:[UIApplication sharedApplication].keyWindow.rootViewController];
-}
-
-//from snikch on Github
-- (UIViewController *)topViewController:(UIViewController *)rootViewController
-{
-    if (rootViewController.presentedViewController == nil)
-        return rootViewController;
-    
-    if ([rootViewController.presentedViewController isKindOfClass:[UINavigationController class]]) {
-        UINavigationController *navigationController = (UINavigationController *)rootViewController.presentedViewController;
-        UIViewController *lastViewController = [[navigationController viewControllers] lastObject];
-        return [self topViewController:lastViewController];
-    }
-    
-    UIViewController *presentedViewController = (UIViewController *)rootViewController.presentedViewController;
-    return [self topViewController:presentedViewController];
-}
-
 
 #pragma mark - Hud Control Animations
 - (void)animateHudOntoPlayer

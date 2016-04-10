@@ -76,4 +76,26 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void))
     return request;
 }
 
+#pragma mark - GUI Helpers
++ (UIViewController *)topViewController
+{
+    return [self topViewController:[UIApplication sharedApplication].keyWindow.rootViewController];
+}
+
+//from snikch on Github
++ (UIViewController *)topViewController:(UIViewController *)rootViewController
+{
+    if (rootViewController.presentedViewController == nil)
+        return rootViewController;
+    
+    if ([rootViewController.presentedViewController isKindOfClass:[UINavigationController class]]) {
+        UINavigationController *navigationController = (UINavigationController *)rootViewController.presentedViewController;
+        UIViewController *lastViewController = [[navigationController viewControllers] lastObject];
+        return [self topViewController:lastViewController];
+    }
+    
+    UIViewController *presentedViewController = (UIViewController *)rootViewController.presentedViewController;
+    return [self topViewController:presentedViewController];
+}
+
 @end

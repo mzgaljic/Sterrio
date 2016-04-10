@@ -11,8 +11,10 @@
 
 @interface MZCommons : NSObject
 
+#pragma mark - Threads
 void safeSynchronousDispatchToMainQueue(void (^block)(void));
 
+#pragma mark - Regex Helpers
 + (void)replaceCharsMatchingRegex:(NSString *)pattern
                         withChars:(NSString *)replacementChars
                          onString:(NSMutableString **)regexMe;
@@ -23,6 +25,10 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void));
 + (BOOL)deleteCharsMatchingRegex:(NSString *)pattern onString:(NSMutableString **)regexMe;
 + (NSString *)deleteCharsMatchingRegex:(NSString *)pattern usingString:(NSString *)regexMe;
 
+#pragma mark - AdMob requests
 + (GADRequest *)getNewAdmobRequest;
+
+#pragma mark - GUI Helpers
++ (UIViewController *)topViewController;
 
 @end

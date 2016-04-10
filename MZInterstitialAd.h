@@ -9,10 +9,21 @@
 #import <Foundation/Foundation.h>
 @import GoogleMobileAds;
 
+typedef void (^AdDismissed)();
+
 @interface MZInterstitialAd : NSObject
 
 + (instancetype)sharedInstance;
-- (GADInterstitial *)createAndLoadNewInterstitial;
-- (GADInterstitial *)currentInterstitial;
+- (void)loadNewInterstitialIfNecessary;
+
+/*
+ * Presents the Interstitial on a specific VC.
+ */
+- (void)presentIfReadyWithRootVc:(UIViewController *)vc withDismissAction:(AdDismissed)dismissBlock;
+
+/*
+ * Convenience method, presents the Interstitial on the top-most (visible) VC.
+ */
+- (void)presentIfReadyWithDismissAction:(AdDismissed)dismissBlock;
 
 @end

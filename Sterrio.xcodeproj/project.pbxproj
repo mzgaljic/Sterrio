@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		870D06901CB9C61700395F38 /* MZInterstitialAd.m in Sources */ = {isa = PBXBuildFile; fileRef = 870D068F1CB9C61700395F38 /* MZInterstitialAd.m */; };
 		87164E291CB8B3EB0006D53B /* Ensembles.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 87164E271CB8B3EB0006D53B /* Ensembles.bundle */; };
 		87164E2A1CB8B3EB0006D53B /* Ensembles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87164E281CB8B3EB0006D53B /* Ensembles.framework */; };
 		8716560F1C30AB41000FF02B /* DiscogsItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8716560E1C30AB41000FF02B /* DiscogsItem.m */; };
@@ -254,6 +255,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		870D068E1CB9C61700395F38 /* MZInterstitialAd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZInterstitialAd.h; sourceTree = "<group>"; };
+		870D068F1CB9C61700395F38 /* MZInterstitialAd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZInterstitialAd.m; sourceTree = "<group>"; };
 		87164E271CB8B3EB0006D53B /* Ensembles.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Ensembles.bundle; sourceTree = "<group>"; };
 		87164E281CB8B3EB0006D53B /* Ensembles.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Ensembles.framework; sourceTree = "<group>"; };
 		8716560E1C30AB41000FF02B /* DiscogsItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsItem.m; sourceTree = "<group>"; };
@@ -1029,6 +1032,8 @@
 				8755545D1C1DF6EA00259CA8 /* InAppPurchaseUtils.m */,
 				87F84E721C74123C000D7D4E /* AppRatingUtils.h */,
 				87F84E731C74123C000D7D4E /* AppRatingUtils.m */,
+				870D068E1CB9C61700395F38 /* MZInterstitialAd.h */,
+				870D068F1CB9C61700395F38 /* MZInterstitialAd.m */,
 			);
 			name = Singletons;
 			sourceTree = "<group>";
@@ -2184,6 +2189,7 @@
 				873539D41B0AA1B3009244E4 /* SDCDemoViewController.m in Sources */,
 				873538491B0A9AFC009244E4 /* UIColor+LighterAndDarker.m in Sources */,
 				873539D51B0AA1B3009244E4 /* SDCIntrinsicallySizedView.m in Sources */,
+				870D06901CB9C61700395F38 /* MZInterstitialAd.m in Sources */,
 				8735394B1B0AA037009244E4 /* MyViewController.m in Sources */,
 				8736AA981C25F3BF005FAE07 /* EAIntroPage.m in Sources */,
 				8735383B1B0A9AF4009244E4 /* NSString+Levenshtein_Distance.m in Sources */,

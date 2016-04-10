@@ -346,7 +346,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             BOOL nowPlayingAndActive = (isNowPlaying && playerEnabled && playerOnScreen);
             
             if(nowPlayingAndActive){
-                UIViewController *visibleVc = [super topViewController];
+                UIViewController *visibleVc = [MZCommons topViewController];
                 [SongPlayerViewDisplayUtility segueToSongPlayerViewControllerFrom:visibleVc];
             }
             

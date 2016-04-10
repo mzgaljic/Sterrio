@@ -118,7 +118,7 @@ static NSString * const NO_THANKS_TEXT = @"No, thanks";
         [[NSNotificationCenter defaultCenter] postNotificationName:MZHideAppRatingCell object:nil];
     } else if([_titleLabel.text isEqualToString:GIVE_US_SOME_FEEDBACK_TEXT]) {
         EmailComposerManager *mailComposer;
-        mailComposer = [[EmailComposerManager alloc] initWithEmailComposePurpose:Email_Compose_Purpose_General_Feedback callingVc:[self topViewController]];
+        mailComposer = [[EmailComposerManager alloc] initWithEmailComposePurpose:Email_Compose_Purpose_General_Feedback callingVc:[MZCommons topViewController]];
         [mailComposer presentEmailComposerAndOrPhotoPicker];
         [[NSNotificationCenter defaultCenter] postNotificationName:MZHideAppRatingCell object:nil];
     }
@@ -207,26 +207,6 @@ static NSString * const NO_THANKS_TEXT = @"No, thanks";
                       yMid + Y_PADDING,
                       BUTTON_WIDTH,
                       buttonHeight);
-}
-
-- (UIViewController *)topViewController
-{
-    return [self topViewController:[UIApplication sharedApplication].keyWindow.rootViewController];
-}
-//from snikch on Github
-- (UIViewController *)topViewController:(UIViewController *)rootViewController
-{
-    if (rootViewController.presentedViewController == nil)
-        return rootViewController;
-    
-    if ([rootViewController.presentedViewController isKindOfClass:[UINavigationController class]]) {
-        UINavigationController *navigationController = (UINavigationController *)rootViewController.presentedViewController;
-        UIViewController *lastViewController = [[navigationController viewControllers] lastObject];
-        return [self topViewController:lastViewController];
-    }
-    
-    UIViewController *presentedViewController = (UIViewController *)rootViewController.presentedViewController;
-    return [self topViewController:presentedViewController];
 }
 
 @end

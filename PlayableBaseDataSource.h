@@ -33,7 +33,5 @@
 - (NSIndexPath *)indexPathInSearchTableForObject:(id)someObject;
 - (NSUInteger)tableObjectsCount;
 
-//Boring utility methods for subclasses
-- (UIViewController *)topViewController;
 @end
 

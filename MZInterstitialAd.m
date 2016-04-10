@@ -10,6 +10,7 @@
 
 @interface MZInterstitialAd () <GADInterstitialDelegate>
 @property (nonatomic, strong) GADInterstitial *interstitialAd;
+@property (copy) AdDismissed adDismissBlock;
 @end
 @implementation MZInterstitialAd
 
@@ -24,27 +25,35 @@
     return sharedInstance;
 }
 
-- (GADInterstitial *)createAndLoadNewInterstitial
+- (void)loadNewInterstitialIfNecessary
 {
     if(self.interstitialAd == nil) {
         self.interstitialAd = [[GADInterstitial alloc] initWithAdUnitID:MZAdMobUnitId];
         self.interstitialAd.delegate = self;
+        [self.interstitialAd loadRequest:[MZCommons getNewAdmobRequest]];
     }
-    [self.interstitialAd loadRequest:[MZCommons getNewAdmobRequest]];
-    return self.interstitialAd;
-}
-- (GADInterstitial *)currentInterstitial
-{
-    return self.interstitialAd;
 }
 
-- (void)interstitialDidDismissScreen:(GADInterstitial *)interstitial {
-    self.interstitialAd = [self createAndLoadNewInterstitial];
+- (void)presentIfReadyWithRootVc:(UIViewController *)vc withDismissAction:(AdDismissed)dismissBlock
+{
+    if(self.interstitialAd != nil && self.interstitialAd.isReady) {
+        [self.interstitialAd presentFromRootViewController:vc];
+        self.adDismissBlock = dismissBlock;
+    }
 }
 
-- (void)interstitialDidReceiveAd:(GADInterstitial *)ad
+- (void)presentIfReadyWithDismissAction:(AdDismissed)dismissBlock
 {
-    
+    [self presentIfReadyWithRootVc:[MZCommons topViewController] withDismissAction:dismissBlock];
+}
+
+#pragma mark - Delegate methods
+- (void)interstitialDidDismissScreen:(GADInterstitial *)ad
+{
+    if(self.adDismissBlock) {
+        self.adDismissBlock();
+    }
+    self.adDismissBlock = nil;
 }
 
 @end
