@@ -53,7 +53,7 @@
     // Remove braces
     cString = [cString substringFromIndex:1];
     cString = [cString substringToIndex:([cString length] - 1)];
-    CFShow((__bridge CFTypeRef)(cString));
+    //CFShow((__bridge CFTypeRef)(cString));
     
     // Separate into components by removing commas and spaces
     NSArray *components = [cString componentsSeparatedByString:@", "];
