@@ -21,10 +21,31 @@
 
 
 @implementation AppDelegateSetupHelper
+static NSUserDefaults *standardDefaults;
+
+//this exists for efficiency purposes...(loading LaunchScreen as fast as possible)
++ (void)loadAppThemeUserSettingFromNSUserDefaults
+{
+    if(standardDefaults == nil) {
+        standardDefaults = [NSUserDefaults standardUserDefaults];
+    }
+    
+    NSDictionary *dict = [standardDefaults objectForKey:[MZAppTheme nsUserDefaultsKeyAppThemeDict]];
+    if(dict == nil) {
+        //app launched first time
+        MZAppTheme *appTheme = [MZAppTheme defaultAppThemeBeforeUserPickedTheme];
+        [AppEnvironmentConstants setAppTheme:appTheme saveInUserDefaults:NO];
+    } else {
+        MZAppTheme *appTheme = [[MZAppTheme alloc] initWithNsUserDefaultsCompatibleDict:dict];
+        [AppEnvironmentConstants setAppTheme:appTheme saveInUserDefaults:NO];
+    }
+}
 
 + (void)loadUsersSettingsFromNSUserDefaults
 {
-    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
+    if(standardDefaults == nil) {
+        standardDefaults = [NSUserDefaults standardUserDefaults];
+    }
     
     if([AppDelegateSetupHelper appLaunchedFirstTime]){
         //these are the default settings
@@ -71,10 +92,16 @@
         [standardDefaults setObject:[NSNumber numberWithInteger:1] forKey:NUM_TIMES_APP_LAUNCHED];
         [standardDefaults setObject:@0 forKey:NUM_TIMES_SONG_ADDED_TO_LIB];
         
-        MZAppTheme *appTheme = [MZAppTheme defaultAppThemeBeforeUserPickedTheme];
-        [AppEnvironmentConstants setAppTheme:appTheme saveInUserDefaults:NO];
+        MZAppTheme *appTheme = [AppEnvironmentConstants appTheme];
+        if(appTheme == nil) {
+            //loadAppThemeUserSettingFromNSUserDefaults not called yet...
+            appTheme = [MZAppTheme defaultAppThemeBeforeUserPickedTheme];
+            [AppEnvironmentConstants setAppTheme:appTheme saveInUserDefaults:NO];
+        }
         [standardDefaults setObject:[appTheme nsUserDefaultsCompatibleDictFromTheme]
                              forKey:[MZAppTheme nsUserDefaultsKeyAppThemeDict]];
+
+        
         [standardDefaults synchronize];
     } else{
         //load users last settings from disk before setting these values.

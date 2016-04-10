@@ -74,17 +74,15 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     if(showUserTouchesOnScreen) {
         self.window = [self windowShowingTouches];
     } else {
-        self.window = [UIWindow new];
-        self.window.frame = [[UIScreen mainScreen] bounds];
+        self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     }
     self.window.backgroundColor = [UIColor whiteColor];
-    [AppDelegateSetupHelper loadUsersSettingsFromNSUserDefaults];
+    
+    [AppDelegateSetupHelper loadAppThemeUserSettingFromNSUserDefaults];
     self.mzLaunchScreen = [[MZLaunchScreen alloc] init];
     UINavigationController *navVc = [[UINavigationController alloc] initWithRootViewController:self.mzLaunchScreen];
     [self.window setRootViewController:navVc];
     [self.window makeKeyAndVisible];
-    //set up Crashlytics immediately so any crashes are recorded.
-    [Fabric with:@[[Answers class], [Crashlytics class]]];
     [self performSelectorOnMainThread:@selector(setupApplicationAndMainVc)
                            withObject:nil waitUntilDone:NO];
     return YES;
@@ -92,6 +90,9 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 - (void)setupApplicationAndMainVc
 {
+    //set up Crashlytics immediately so any crashes are recorded.
+    [Fabric with:@[[Answers class], [Crashlytics class]]];
+    [AppDelegateSetupHelper loadUsersSettingsFromNSUserDefaults];
     [self setupMainVC];
     
     [AppDelegateSetupHelper setupDiskAndMemoryWebCache];

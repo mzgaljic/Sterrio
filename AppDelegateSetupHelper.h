@@ -11,6 +11,7 @@
 
 @interface AppDelegateSetupHelper : NSObject
 
++ (void)loadAppThemeUserSettingFromNSUserDefaults;
 + (void)loadUsersSettingsFromNSUserDefaults;
 + (void)setGlobalFontsAndColorsForAppGUIComponents;
 
