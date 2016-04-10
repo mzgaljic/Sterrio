@@ -18,6 +18,7 @@
 #import "PlaylistItem+Utilities.h"
 #import "PlayableItem.h"
 #import "PreviousNowPlayingInfo.h"
+#import "MainScreenViewController.h"
 
 @interface PlaylistItemTableViewController()
 {

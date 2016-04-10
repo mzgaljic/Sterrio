@@ -19,6 +19,7 @@
 #import "CustomYoutubeTableViewCell.h"
 #import "AppRatingUtils.h"
 #import "AppRatingTableViewCell.h"
+#import "MZInterstitialAd.h"
 
 //NOTE loadingMoreResultsSpinner is not currently used. To use again, call "reload" on tableview
 //right before loading more results.
@@ -230,6 +231,7 @@ static NSDate *timeSinceLastPageLoaded;
     [_searchBar becomeFirstResponder];
     
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerShouldRespectToolbar];
+    [[MZInterstitialAd sharedInstance] loadNewInterstitialIfNecessary];
     
     self.canShowAppRatingCell = [AppRatingUtils shouldAskUserIfTheyLikeApp];
     [[NSNotificationCenter defaultCenter] addObserver:self

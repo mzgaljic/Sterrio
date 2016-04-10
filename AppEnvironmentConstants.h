@@ -21,6 +21,7 @@
 #define LAST_SUCCESSFUL_ICLOUD_SYNC_KEY @"last date icloud synced"
 #define ARE_ADS_REMOVED_KEYCHAIN_ID @"Have ads been removed?"
 #define NUM_TIMES_APP_LAUNCHED @"numberOfTimesAppLaunched"  //on just this device.
+#define NUM_TIMES_SONG_ADDED_TO_LIB @"numberOfTimesSongAddedToLib"  //on just this device.
 
 #import <Foundation/Foundation.h>
 #import "MZAppTheme.h"
@@ -67,6 +68,9 @@ typedef enum{
 + (void)markAppAsLaunchedForFirstTime;
 
 + (NSNumber *)numberTimesUserLaunchedApp;
+
++ (NSNumber *)numberTimesUserAddedSongToLib;
++ (void)incrementNumTimesUserAddedSongToLibCount;
 
 + (BOOL)isTabBarHidden;
 + (void)setTabBarHidden:(BOOL)hidden;

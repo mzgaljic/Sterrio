@@ -69,6 +69,7 @@
         [standardDefaults setBool:limitVideoLengthOnCellular
                            forKey:LIMIT_VIDEO_LENGTH_CELLULAR_VALUE_KEY];
         [standardDefaults setObject:[NSNumber numberWithInteger:1] forKey:NUM_TIMES_APP_LAUNCHED];
+        [standardDefaults setObject:@0 forKey:NUM_TIMES_SONG_ADDED_TO_LIB];
         
         MZAppTheme *appTheme = [MZAppTheme defaultAppThemeBeforeUserPickedTheme];
         [AppEnvironmentConstants setAppTheme:appTheme saveInUserDefaults:NO];

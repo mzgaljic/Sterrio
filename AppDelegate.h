@@ -21,22 +21,21 @@
 #import "MusicPlaybackController.h"
 #import "OperationQueuesSingeton.h"
 #import "LQAlbumArtBackgroundUpdater.h"
-
-#import "MainScreenViewController.h"
 #import "MasterSongsTableViewController.h"
 #import "MasterAlbumsTableViewController.h"
 #import "MasterArtistsTableViewController.h"
 #import "MasterPlaylistTableViewController.h"
-
 #import "MZPlayer.h"
 
-
+@class MainScreenViewController;
 @interface AppDelegate : UIResponder <UIApplicationDelegate,
                                         AVAudioSessionDelegate,
                                         AVAudioPlayerDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
-
 @property (strong, nonatomic) MZPlayer *previewPlayer;
 
+//use ONLY if absolutely necessary. Better to use [MZCommons topViewController],
+//since this introduces coupling.
+@property (nonatomic, strong, readonly) MainScreenViewController *mainVC;
 @end

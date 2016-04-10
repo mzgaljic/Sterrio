@@ -7,6 +7,7 @@
 //
 
 #import "MZInterstitialAd.h"
+#import "AppEnvironmentConstants.h"
 
 @interface MZInterstitialAd () <GADInterstitialDelegate>
 @property (nonatomic, strong) GADInterstitial *interstitialAd;
@@ -27,7 +28,13 @@
 
 - (void)loadNewInterstitialIfNecessary
 {
-    if(self.interstitialAd == nil) {
+    if([AppEnvironmentConstants areAdsRemoved]) {
+        return;
+    }
+    long long numTimesSongAddedToLib = [[AppEnvironmentConstants numberTimesUserAddedSongToLib] longLongValue];
+    if(self.interstitialAd == nil
+       && numTimesSongAddedToLib != 0  //bad experience to show it on the very 1st time!
+       && numTimesSongAddedToLib % 5 == 0) {
         self.interstitialAd = [[GADInterstitial alloc] initWithAdUnitID:MZAdMobUnitId];
         self.interstitialAd.delegate = self;
         [self.interstitialAd loadRequest:[MZCommons getNewAdmobRequest]];
@@ -44,6 +51,9 @@
 
 - (void)presentIfReadyWithDismissAction:(AdDismissed)dismissBlock
 {
+    if([AppEnvironmentConstants areAdsRemoved]) {
+        return;
+    }
     [self presentIfReadyWithRootVc:[MZCommons topViewController] withDismissAction:dismissBlock];
 }
 
@@ -54,6 +64,23 @@
         self.adDismissBlock();
     }
     self.adDismissBlock = nil;
+    self.interstitialAd.delegate = nil;
+    self.interstitialAd = nil;
+}
+
+- (void)interstitialWillLeaveApplication:(GADInterstitial *)ad
+{
+    //manually close the full screen ad
+    [self performSelector:@selector(dismissInterstitialDelayed) withObject:nil afterDelay:1];
+}
+
+- (void)dismissInterstitialDelayed
+{
+    __weak MZInterstitialAd *weakself = self;
+    __weak GADInterstitial *weakAd = self.interstitialAd;
+    [[MZCommons topViewController] dismissViewControllerAnimated:YES completion:^{
+        [weakself interstitialDidDismissScreen:weakAd];
+    }];
 }
 
 @end

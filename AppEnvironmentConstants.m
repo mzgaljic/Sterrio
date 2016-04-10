@@ -172,6 +172,25 @@ static NSNumber *numTimesAppLaunched = nil;
     return numTimesAppLaunched;
 }
 
+static NSNumber *numTimesUserAddedSongToLib = nil;
++ (NSNumber *)numberTimesUserAddedSongToLib
+{
+    if(numTimesUserAddedSongToLib) {
+        return numTimesUserAddedSongToLib;
+    }
+    numTimesUserAddedSongToLib = [[NSUserDefaults standardUserDefaults] objectForKey:NUM_TIMES_SONG_ADDED_TO_LIB];
+    return numTimesUserAddedSongToLib;
+}
+
++ (void)incrementNumTimesUserAddedSongToLibCount
+{
+    NSNumber *temp = [AppEnvironmentConstants numberTimesUserAddedSongToLib];
+    temp = @([temp longLongValue] + 1);
+    numTimesUserAddedSongToLib = temp;
+    [[NSUserDefaults standardUserDefaults] setObject:numTimesUserAddedSongToLib
+                                              forKey:NUM_TIMES_SONG_ADDED_TO_LIB];
+}
+
 + (BOOL)isTabBarHidden
 {
     return tabBarIsHidden;

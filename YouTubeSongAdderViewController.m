@@ -15,6 +15,7 @@
 #import "DiscogsResultsUtils.h"
 #import "MZPlayer.h"
 #import <TUSafariActivity.h>
+#import "MZInterstitialAd.h"
 
 @interface YouTubeSongAdderViewController ()
 {
@@ -777,11 +778,16 @@ static short numberTimesViewHasBeenShown = 0;
     
     [self preDealloc];
     [self.navigationController dismissViewControllerAnimated:YES completion:^{
-        if([MusicPlaybackController nowPlayingSong])
+        if([MusicPlaybackController nowPlayingSong]) {
             [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+        }
     }];
-    
     [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
+    
+    [AppEnvironmentConstants incrementNumTimesUserAddedSongToLibCount];
+    MainScreenViewController *mainScreenVc = ((AppDelegate *)[[UIApplication sharedApplication] delegate]).mainVC;
+    [[MZInterstitialAd sharedInstance] presentIfReadyWithRootVc:(UIViewController *)mainScreenVc
+                                              withDismissAction:nil];
 }
 
 #pragma mark - Preview Player Delegate Implementation

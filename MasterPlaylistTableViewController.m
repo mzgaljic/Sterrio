@@ -12,6 +12,7 @@
 #import "SDCAlertController.h"
 #import "UIImage+ImageEffects.h"
 #include <tgmath.h>
+#import "MainScreenViewController.h"
 
 @interface MasterPlaylistTableViewController ()
 {

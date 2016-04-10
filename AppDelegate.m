@@ -10,7 +10,6 @@
 
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
-#import "MZLaunchScreen.h"
 #import "GSTouchesShowingWindow.h"
 #import "PreloadedCoreDataModelUtility.h"
 #import <CoreSpotlight/CoreSpotlight.h>
@@ -21,7 +20,8 @@
 #import "EAIntroView.h"
 #import "AppDelegateUtils.h"
 #import "MZPlayer.h"
-
+#import "MainScreenViewController.h"
+#import "MZLaunchScreen.h"
 #import "IntroVideoView.h"
 
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
@@ -36,7 +36,7 @@
     BOOL ensembleBackgroundMergeIsRunning;
 }
 @property (nonatomic, strong) EAIntroView *intro;
-@property (nonatomic, strong) MainScreenViewController *mainVC;
+@property (nonatomic, strong, readwrite) MainScreenViewController *mainVC;
 @property (nonatomic, strong) MZLaunchScreen *mzLaunchScreen;
 @end
 

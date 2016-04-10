@@ -17,6 +17,7 @@
 #import "UINavigationController+CustomPushAnimation.h"
 #import "MusicPlaybackController.h"
 #import <FXImageView/UIImage+FX.h>
+#import "MyViewController.h"
 
 @class StackController;
 @interface PlaylistItemTableViewController : MyViewController
