@@ -178,7 +178,6 @@
     PlaybackContext *aContext;
     NSFetchRequest *aRequest;
     PlayableItem *desiredItem;
-    PlaybackContext *desiredItemContext;
     //iterate until we find a next song
     for(int i = 0; i < playbackContexts.count; i++)
     {
@@ -192,7 +191,6 @@
         NSNumber *indexNumObj = [fetchRequestIndexes objectAtIndex:i];
         songIndex = [indexNumObj integerValue];
         desiredItem = [self itemAtIndex:songIndex inArray:&array withContext:aContext];
-        desiredItemContext = aContext;
     }
     return desiredItem;
 }

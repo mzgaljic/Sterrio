@@ -448,7 +448,7 @@ static NSString * kUIImageSize = @"kUIImageSize";
     if (![borderAttributes isEqual:[NSNull null]]) {
         UIColor *borderColor = borderAttributes[NSStrokeColorAttributeName];
         NSNumber *borderWidth = borderAttributes[NSStrokeWidthAttributeName];
-        [string appendFormat:@"<%@:%ld%f>", kUIImageBorderAttributes, borderColor.hash, borderWidth.floatValue];
+        [string appendFormat:@"<%@:%ld%f>", kUIImageBorderAttributes, (unsigned long)borderColor.hash, borderWidth.floatValue];
     }
     
     [string appendFormat:@"<%@:%ld>",kUIImageTintColor,(long)[[descriptors valueForKey:kUIImageTintColor] hash]];

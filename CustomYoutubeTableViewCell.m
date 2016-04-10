@@ -57,16 +57,7 @@
 }
 
 - (void)adjustViewsForOrientation
-{
-    float widthOfScreenRoationIndependant;
-    CGRect mainScreenBounds = [[UIScreen mainScreen] bounds];
-    float  a = mainScreenBounds.size.height;
-    float b = mainScreenBounds.size.width;
-    if(a < b)
-        widthOfScreenRoationIndependant = a;
-    else
-        widthOfScreenRoationIndependant = b;
-    
+{    
     //int thumbnailWidth = widthOfScreenRoationIndependant * 0.45;
     int thumbnailWidth = 140;
     int thumbnailHeight = [SongPlayerViewDisplayUtility videoHeightInSixteenByNineAspectRatioGivenWidth:thumbnailWidth];

@@ -721,13 +721,6 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
             return appRatingCell;
         }
         
-        NSInteger ytVideoResultsIndex = -1;
-        if(_canShowAppRatingCell) {
-            ytVideoResultsIndex = (indexPath.row >= APP_RATING_CELL_ROW_NUM) ?
-                                        indexPath.row -1 : indexPath.row;
-        } else {
-            ytVideoResultsIndex = indexPath.row;
-        }
         NSInteger arrayIndex = [self rowNumFromIndexPathTakingAppRatingCellIntoAccount:indexPath];
         ytVideo = [_searchResults objectAtIndex:arrayIndex];
         
@@ -826,13 +819,6 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
     }
     else{
         NSAssert(indexPath.section == 0, @"YoutubeResultsTableViewController asking for height of cell w/ section > 0 when displaying search results!");
-        float widthOfScreenRoationIndependant;
-        float  a = [[UIScreen mainScreen] bounds].size.height;
-        float b = [[UIScreen mainScreen] bounds].size.width;
-        if(a < b)
-            widthOfScreenRoationIndependant = a;
-        else
-            widthOfScreenRoationIndependant = b;
         
         //hardcoded in the CustomYoutubeTabeViewCell obj too. Was originally a % of the
         //screen.

@@ -837,7 +837,7 @@ static NSLock *lastSuccessfulSyncDateLock;
     NSString *appStoreReceiptLastComponent = appStoreReceiptURL.lastPathComponent;
     isTestFlightBuild = [appStoreReceiptLastComponent isEqualToString:@"sandboxReceipt"];
     #endif
-    return ([UIApplication isTestFlightBuild] == NO);
+    return (isTestFlightBuild == NO);
 #endif
 }
 

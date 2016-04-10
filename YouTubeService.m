@@ -68,7 +68,7 @@ const int time_out_interval_seconds = 10;
 
 - (id)init
 {
-    if([super init]){
+    if(self  = [super init]){
         //&fields=items(id,snippet(publishedAt,title,channelTitle,thumbnails))
         API_KEY = @"AIzaSyBAFK0pOUf4IWdfS94dYk_42dO46ssTUH8";
         QUERY_BASE = [NSString stringWithFormat:@"https://www.googleapis.com/youtube/v3/search?type=video&part=snippet&maxResults=15&fields=nextPageToken,items(id(videoId),snippet(publishedAt,title,channelTitle,thumbnails(default(url),medium(url),high(url))))&key=%@&q=", API_KEY];
