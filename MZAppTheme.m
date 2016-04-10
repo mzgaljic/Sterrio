@@ -27,7 +27,7 @@ NSString * const MZAppThemeUseWhiteStatusBarKey = @"use a white status bar color
 NSString * const MZAppThemeNavBarToolBarTextTintKey = @"text of nav bar and toolbar text";
 NSString * const MZAppThemeContrastingTextColor = @"contrasting text color";
 
-NSString * const MZDefaultAppThemeSunriseOrange = @"Sunrise Orange";
+NSString * const MZDefaultAppThemeSunriseOrange = @"Sunrise";
 
 
 - (instancetype)initWithThemeName:(NSString *)name
@@ -125,76 +125,97 @@ NSString * const MZDefaultAppThemeSunriseOrange = @"Sunrise Orange";
 {
     return [AppEnvironmentConstants appTheme].mainGuiTint;
 }
++ (NSUInteger)defaultThemeIndex
+{
+    return 2;
+}
 + (NSArray *)allAppThemes
 {
     return  @[
-              //default theme MUST be first, stupid implementation detail of the settings theme VC
+              [[MZAppTheme alloc] initWithThemeName:@"Cinnabar"
+                                        mainGuiTint:Rgb2UIColor(231, 76, 60, 1)
+                                  useWhiteStatusBar:YES
+                              navBarToolbarTextTint:[UIColor whiteColor]
+                               contrastingTextColor:Rgb2UIColor(231, 76, 60, 1)],
+              
+              //Bright red, with a hint of orange
+              [[MZAppTheme alloc] initWithThemeName:@"Rose"
+                                        mainGuiTint:Rgb2UIColor(228, 58, 21, 1)
+                                  useWhiteStatusBar:YES
+                              navBarToolbarTextTint:[UIColor whiteColor]
+                               contrastingTextColor:Rgb2UIColor(228, 58, 21, 1)],
+              
               [[MZAppTheme alloc] initWithThemeName:MZDefaultAppThemeSunriseOrange
                                         mainGuiTint:Rgb2UIColor(255, 128, 8, 1)
                                   useWhiteStatusBar:YES
                               navBarToolbarTextTint:[UIColor whiteColor]
                                contrastingTextColor:Rgb2UIColor(255, 128, 8, 1)],
               
-              //Bright red, with a hint of orange
-              [[MZAppTheme alloc] initWithThemeName:@"Passion Red"
-                                        mainGuiTint:Rgb2UIColor(228, 58, 21, 1)
-                                  useWhiteStatusBar:YES
-                              navBarToolbarTextTint:[UIColor whiteColor]
-                               contrastingTextColor:Rgb2UIColor(228, 58, 21, 1)],
-              
-              [[MZAppTheme alloc] initWithThemeName:@"Cinnabar Red"
-                                        mainGuiTint:Rgb2UIColor(231, 76, 60, 1)
-                                  useWhiteStatusBar:YES
-                              navBarToolbarTextTint:[UIColor whiteColor]
-                               contrastingTextColor:Rgb2UIColor(231, 76, 60, 1)],
-              
-              [[MZAppTheme alloc] initWithThemeName:@"Lime Green"
-                                        mainGuiTint:Rgb2UIColor(106, 145, 19, 1)
-                                  useWhiteStatusBar:YES
-                              navBarToolbarTextTint:[UIColor whiteColor]
-                               contrastingTextColor:Rgb2UIColor(106, 145, 19, 1)],
-              
-              [[MZAppTheme alloc] initWithThemeName:@"Forest Green"
-                                        mainGuiTint:Rgb2UIColor(44, 119, 68, 1)
-                                  useWhiteStatusBar:YES
-                              navBarToolbarTextTint:[UIColor whiteColor]
-                               contrastingTextColor:Rgb2UIColor(44, 119, 68, 1)],
-              
-              [[MZAppTheme alloc] initWithThemeName:@"Deep Sky Blue"
-                                        mainGuiTint:Rgb2UIColor(69, 127, 202, 1)
-                                  useWhiteStatusBar:YES
-                              navBarToolbarTextTint:[UIColor whiteColor]
-                               contrastingTextColor:Rgb2UIColor(69, 127, 202, 1)],
-
-              [[MZAppTheme alloc] initWithThemeName:@"Sapphire Blue"
-                                        mainGuiTint:Rgb2UIColor(42, 82, 152, 1)
-                                  useWhiteStatusBar:YES
-                              navBarToolbarTextTint:[UIColor whiteColor]
-                               contrastingTextColor:Rgb2UIColor(42, 82, 152, 1)],
-              //Bluish-grey color
-              [[MZAppTheme alloc] initWithThemeName:@"Dark Skies"
-                                        mainGuiTint:Rgb2UIColor(75, 121, 161, 1)
-                                  useWhiteStatusBar:YES
-                              navBarToolbarTextTint:[UIColor whiteColor]
-                               contrastingTextColor:Rgb2UIColor(75, 121, 161, 1)],
-              
-              [[MZAppTheme alloc] initWithThemeName:@"Orchid Purple"
-                                        mainGuiTint:Rgb2UIColor(123, 67, 151, 1)
-                                  useWhiteStatusBar:YES
-                              navBarToolbarTextTint:[UIColor whiteColor]
-                               contrastingTextColor:Rgb2UIColor(123, 67, 151, 1)],
-              
-              [[MZAppTheme alloc] initWithThemeName:@"Bumblebee Yellow"
+              [[MZAppTheme alloc] initWithThemeName:@"Bumblebee"
                                         mainGuiTint:Rgb2UIColor(240, 203, 53, 1)
                                   useWhiteStatusBar:NO
                               navBarToolbarTextTint:[UIColor blackColor]
                                contrastingTextColor:[UIColor blackColor]],
               
+              [[MZAppTheme alloc] initWithThemeName:@"Lime"
+                                        mainGuiTint:Rgb2UIColor(106, 145, 19, 1)
+                                  useWhiteStatusBar:YES
+                              navBarToolbarTextTint:[UIColor whiteColor]
+                               contrastingTextColor:Rgb2UIColor(106, 145, 19, 1)],
+              
+              [[MZAppTheme alloc] initWithThemeName:@"Forest"
+                                        mainGuiTint:Rgb2UIColor(44, 119, 68, 1)
+                                  useWhiteStatusBar:YES
+                              navBarToolbarTextTint:[UIColor whiteColor]
+                               contrastingTextColor:Rgb2UIColor(44, 119, 68, 1)],
+              
+              [[MZAppTheme alloc] initWithThemeName:@"Deep Sky"
+                                        mainGuiTint:Rgb2UIColor(69, 127, 202, 1)
+                                  useWhiteStatusBar:YES
+                              navBarToolbarTextTint:[UIColor whiteColor]
+                               contrastingTextColor:Rgb2UIColor(69, 127, 202, 1)],
+              
+              [[MZAppTheme alloc] initWithThemeName:@"Sapphire"
+                                        mainGuiTint:Rgb2UIColor(0, 103, 165, 1)
+                                  useWhiteStatusBar:YES
+                              navBarToolbarTextTint:[UIColor whiteColor]
+                               contrastingTextColor:Rgb2UIColor(0, 103, 165, 1)],
+              
+              [[MZAppTheme alloc] initWithThemeName:@"Rich Blue"
+                                        mainGuiTint:Rgb2UIColor(0, 114, 255, 1)
+                                  useWhiteStatusBar:YES
+                              navBarToolbarTextTint:[UIColor whiteColor]
+                               contrastingTextColor:Rgb2UIColor(0, 114, 255, 1)],
+              
+              [[MZAppTheme alloc] initWithThemeName:@"Lilac"
+                                        mainGuiTint:Rgb2UIColor(171, 101, 200, 1)
+                                  useWhiteStatusBar:YES
+                              navBarToolbarTextTint:[UIColor whiteColor]
+                               contrastingTextColor:Rgb2UIColor(171, 101, 200, 1)],
+              
+              [[MZAppTheme alloc] initWithThemeName:@"Orchid"
+                                        mainGuiTint:Rgb2UIColor(146, 87, 153, 1)
+                                  useWhiteStatusBar:YES
+                              navBarToolbarTextTint:[UIColor whiteColor]
+                               contrastingTextColor:Rgb2UIColor(146, 87, 153, 1)],
+              
+              [[MZAppTheme alloc] initWithThemeName:@"Violet"
+                                        mainGuiTint:Rgb2UIColor(123, 67, 151, 1)
+                                  useWhiteStatusBar:YES
+                              navBarToolbarTextTint:[UIColor whiteColor]
+                               contrastingTextColor:Rgb2UIColor(123, 67, 151, 1)],
+              
+              [[MZAppTheme alloc] initWithThemeName:@"Bubblegum"
+                                        mainGuiTint:Rgb2UIColor(216, 98, 165, 1)
+                                  useWhiteStatusBar:YES
+                              navBarToolbarTextTint:[UIColor whiteColor]
+                               contrastingTextColor:Rgb2UIColor(216, 98, 165, 1)],
+              
               [[MZAppTheme alloc] initWithThemeName:@"Hot Pink"
                                         mainGuiTint:Rgb2UIColor(241, 95, 121, 1)
                                   useWhiteStatusBar:YES
-                              navBarToolbarTextTint:Rgb2UIColor(38, 64, 99, 1)
-                               contrastingTextColor:Rgb2UIColor(38, 64, 99, 1)],
+                              navBarToolbarTextTint:[UIColor whiteColor]
+                               contrastingTextColor:Rgb2UIColor(38, 64, 99, 1)]
               ];
 }
 

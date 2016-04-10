@@ -36,6 +36,7 @@
 + (UIColor *)expandingCellGestureQueueItemColor;
 + (UIColor *)expandingCellGestureDeleteItemColor;
 + (UIColor *)nowPlayingItemColor;
++ (NSUInteger)defaultThemeIndex;
 + (NSArray *)allAppThemes;
 + (NSString *)nsUserDefaultsKeyAppThemeDict;
 

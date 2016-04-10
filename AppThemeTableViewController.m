@@ -16,8 +16,8 @@
 @interface AppThemeTableViewController ()
 {
     NSArray *themes;
-    int currentlySelectedIndex;
-    int defaultIndex;
+    NSUInteger currentlySelectedIndex;
+    NSUInteger defaultIndex;
     int currentRowHeights;
 }
 @end
@@ -31,7 +31,7 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
 {
     [super viewDidLoad];
     self.title = @"App Theme";
-    defaultIndex = 0;
+    defaultIndex = [MZAppTheme defaultThemeIndex];
     [self initColorArrays];
 }
 
@@ -117,7 +117,7 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    int oldRow = currentlySelectedIndex;
+    NSUInteger oldRow = currentlySelectedIndex;
     currentlySelectedIndex = (int)indexPath.row;
     
     if(indexPath.section == APP_THEME_COLORS_SECTION_NUM)
@@ -178,18 +178,22 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
     }
     else if(indexPath.section == RESET_DEFUALTS_SECTION_NUM)
     {
-        int newRow = (int)indexPath.row;
-        
         [self.tableView beginUpdates];
+        currentlySelectedIndex = defaultIndex;
         [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:RESET_DEFUALTS_SECTION_NUM]
                       withRowAnimation:UITableViewRowAnimationFade];
         [self.tableView endUpdates];
+        
+        NSIndexPath *defaultItemPath = [NSIndexPath indexPathForRow:defaultIndex
+                                                          inSection:APP_THEME_COLORS_SECTION_NUM];
+        [self.tableView scrollToRowAtIndexPath:defaultItemPath
+                              atScrollPosition:UITableViewScrollPositionTop animated:YES];
         
         [self.tableView beginUpdates];
         NSArray *paths = @[
                            [NSIndexPath indexPathForRow:oldRow
                                               inSection:APP_THEME_COLORS_SECTION_NUM],
-                           [NSIndexPath indexPathForRow:newRow
+                           [NSIndexPath indexPathForRow:defaultIndex
                                               inSection:APP_THEME_COLORS_SECTION_NUM]
                            ];
         
