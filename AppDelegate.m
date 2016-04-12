@@ -723,6 +723,18 @@ static NSDate *finish;
 #pragma mark - App Intro
 - (void)showIntroTutorial
 {
+    //Mix audio with other apps for now...don't want intro videos to turn other audio off that the user may
+    //have playing right now. If user decides to play an actual video from YouTube, MZInitAudiSession
+    //notification will be fired, causing audio from other apps to be paused at that time.
+    
+    audioSession = nil;
+    audioSession = [AVAudioSession sharedInstance];
+    [audioSession setCategory:AVAudioSessionCategoryAmbient
+                  withOptions:AVAudioSessionCategoryOptionMixWithOthers
+     | AVAudioSessionCategoryOptionDefaultToSpeaker
+                        error:nil];
+    [audioSession setActive:YES error:nil];
+    
     NSArray *pages = @[[EAIntroPage page], [EAIntroPage page], [EAIntroPage page], [EAIntroPage page]];
     NSArray *desiredThemes = @[@"Sunrise", @"Forest", @"Sapphire", @"Bumblebee"];
     NSArray *introAppThemes = [MZAppTheme appThemesMatchingThemeNames:desiredThemes];
