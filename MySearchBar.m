@@ -27,7 +27,7 @@
                               searchBarWidth,
                               searchBarHeight);
     if(self = [super initWithFrame:frame]){
-        textColor = [[AppEnvironmentConstants appTheme].mainGuiTint lighterColor];
+        textColor = [AppEnvironmentConstants appTheme].contrastingTextColor;
         self.placeholder = text;
         self.keyboardType = UIKeyboardTypeASCIICapable;
 

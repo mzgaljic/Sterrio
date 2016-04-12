@@ -43,7 +43,7 @@ NSString * const TOS_LINK = @"https://dl.dropbox.com/s/3x5house6be4et4/Fabric%20
     float scale = MZLargeSpinnerDownScaleAmount;
     self.spinner.transform = CGAffineTransformMakeScale(scale, scale);  //make smaller
     self.spinner.frame = [self spinnerFrame];
-    self.spinner.color = [AppEnvironmentConstants appTheme].mainGuiTint;
+    self.spinner.color = [AppEnvironmentConstants appTheme].contrastingTextColor;
     [self.spinner startAnimating];
     [self.view addSubview:self.spinner];
 }
