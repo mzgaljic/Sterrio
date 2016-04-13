@@ -10,7 +10,8 @@
 #import "AppEnvironmentConstants.h"
 
 @interface TermsOfServiceViewController ()
-@property (weak, nonatomic) IBOutlet UIWebView *webView;
+//@property (weak, nonatomic) IBOutlet UIWebView *webView;
+@property (nonatomic, strong) UIWebView *webView;
 @property (nonatomic, strong) UIActivityIndicatorView *spinner;
 @end
 
@@ -18,15 +19,17 @@
 #pragma mark - Lifecyle
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //self.edgesForExtendedLayout = UIRectEdgeNone;
-    self.title = @"Terms Of Service";
+    self.title = @"Terms & Conditions";
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(orientationDidChange)
                                                  name:UIApplicationDidChangeStatusBarOrientationNotification
                                                object:nil];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:MZAppTermsPdfLink]];
+    self.webView = [[UIWebView alloc] initWithFrame:self.view.frame];
     self.webView.delegate = self;
     [self.webView loadRequest:request];
+    self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:self.webView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -68,7 +71,6 @@
 #pragma mark - Utils
 - (void)orientationDidChange
 {
-    //self.webView.frame = self.view.frame;
     self.spinner.frame = [self spinnerFrame];
 }
 

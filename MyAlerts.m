@@ -261,8 +261,7 @@ static int numSkippedSongs = 0;
             [navVc setNavigationBarHidden:YES];  //hide my navigation bar and use the SFSafariController one.
             [[MZCommons topViewController] presentViewController:navVc animated:YES completion:NULL];
         } else {
-            NSString *tosVcStoryBoardId = @"ios 8 terms of service VC";
-            TermsOfServiceViewController *tosVc =[[MZCommons mainStoryboard] instantiateViewControllerWithIdentifier:tosVcStoryBoardId];
+            TermsOfServiceViewController *tosVc = [TermsOfServiceViewController new];
             UINavigationController *navVc = [[UINavigationController alloc] initWithRootViewController:tosVc];
             UIBarButtonItem *doneButton = [[UIBarButtonItem alloc]
                                            initWithBarButtonSystemItem:UIBarButtonSystemItemDone

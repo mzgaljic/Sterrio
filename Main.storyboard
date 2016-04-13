@@ -1218,31 +1218,6 @@
             </objects>
             <point key="canvasLocation" x="1713" y="3371"/>
         </scene>
-        <!--Terms Of Service View Controller-->
-        <scene sceneID="EQO-Pq-WuS">
-            <objects>
-                <viewController storyboardIdentifier="ios 8 terms of service VC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="ecf-KV-Lxu" customClass="TermsOfServiceViewController" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="LUp-f8-KgL">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <webView contentMode="scaleToFill" allowsInlineMediaPlayback="NO" mediaPlaybackRequiresUserAction="NO" mediaPlaybackAllowsAirPlay="NO" keyboardDisplayRequiresUserAction="NO" id="yQz-OA-2MP">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
-                                <dataDetectorType key="dataDetectorTypes" link="YES"/>
-                            </webView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                    <connections>
-                        <outlet property="webView" destination="yQz-OA-2MP" id="eJa-pJ-BWc"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="KuC-mk-WFG" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1667" y="4081"/>
-        </scene>
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="Rfb-yX-EyF"/>
