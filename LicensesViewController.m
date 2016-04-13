@@ -51,6 +51,7 @@
                                                object:nil];
     
     textView = [[UITextView alloc] initWithFrame:self.view.frame];
+    textView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     textView.editable = NO;
     [self setAndStyleTextViewsText];
     [self.view addSubview:textView];
@@ -222,7 +223,7 @@
 
 - (void)orientationDidChange
 {
-    textView.frame = self.view.frame;
+    //textView.frame = self.view.frame;
 }
 
 @end
