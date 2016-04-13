@@ -27,13 +27,12 @@ PODS:
   - FXImageView (1.3.5)
   - GCDiscreetNotificationView (1.0.2)
   - Google-Mobile-Ads-SDK (7.7.1)
-  - MarqueeLabel (2.5.2)
+  - MarqueeLabel (2.5.3)
   - MSCellAccessory (1.1.2)
   - Reachability (3.2)
   - SDWebImage (3.7.5):
     - SDWebImage/Core (= 3.7.5)
   - SDWebImage/Core (3.7.5)
-  - TBXML (1.5)
   - TUSafariActivity (1.0.4)
   - Valet (2.2.1)
   - XCDYouTubeKit (2.5.1)
@@ -50,7 +49,6 @@ DEPENDENCIES:
   - MSCellAccessory (~> 1.1)
   - Reachability
   - SDWebImage (~> 3.6)
-  - TBXML
   - TUSafariActivity (~> 1.0)
   - Valet
   - XCDYouTubeKit
@@ -63,11 +61,10 @@ SPEC CHECKSUMS:
   FXImageView: 7d84722b37f0afea9a64f12fdd4a6c7f9ecc4b16
   GCDiscreetNotificationView: b093cce1fe82f6d9784169a156b48ecb1465ad8a
   Google-Mobile-Ads-SDK: e27569901b58881d9a94b42f2c642739cfe3970a
-  MarqueeLabel: c82ca09a3a969b4d34ce5d65f0f82840525ab259
+  MarqueeLabel: 75141981dd9a09e591e34268753b45cb29f28cff
   MSCellAccessory: 8265f3cd2386c1f372da00232472605ab11426e4
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 69c6303e3348fba97e03f65d65d4fbc26740f461
-  TBXML: 9f9dadb239f2f2af1dadb87fe43a0ce6e479379a
   TUSafariActivity: afc55a00965377939107ce4fdc7f951f62454546
   Valet: 8873c1f797822a513b5b3b18d19955fc39b22aab
   XCDYouTubeKit: ee78997dc92d1055f11459d95c492dae1dba909d

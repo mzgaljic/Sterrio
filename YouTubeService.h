@@ -11,7 +11,6 @@
 #import "YouTubeVideoQueryDelegate.h"
 #import "YouTubeVideoDetailLookupDelegate.h"
 #import "YouTubeVideo.h"
-#import "TBXML.h"
 
 @interface YouTubeService : NSObject <NSURLConnectionDelegate>
 
