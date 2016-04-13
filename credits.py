@@ -83,7 +83,10 @@ def plistFromDir(dir, excludes):
     os.chdir(sys.path[0])
     for root, dirs, files in os.walk(dir):
         for file in files:
-            if file.startswith("LICENSE"):
+            """
+            Some devs are stupid, a few 3rd party libs spell License as Licence.
+            """
+            if file.startswith("LICENSE") or file.startswith("LICENCE"):
                 plistPath = os.path.join(root, file)
                 if not excludePath(plistPath, excludes):
                     license = plistFromFile(plistPath)
