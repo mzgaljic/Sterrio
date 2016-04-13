@@ -212,7 +212,7 @@ static MRProgressOverlayView *hud;
 - (void)showRestoreSuccessAlert
 {
     NSString *msg = @"Your purchase has been restored.";
-    [self showAlertWithTitle:@"Success" message:msg btnText:@"Okay"];
+    [self showAlertWithTitle:@"Success" message:msg btnText:@"OK"];
 }
 
 - (void)showNothingToRestoreAlert
@@ -220,7 +220,7 @@ static MRProgressOverlayView *hud;
     NSLog(@"There are no purchases to restore.");
     NSString *title = @"Restore failed";
     NSString *msg = @"There are no purchases to restore.";
-    [self showAlertWithTitle:title message:msg btnText:@"Okay"];
+    [self showAlertWithTitle:title message:msg btnText:@"OK"];
 }
 
 - (void)showItemUnavailableOnStoreAlert
@@ -228,7 +228,7 @@ static MRProgressOverlayView *hud;
     NSLog(@"This item is currently unavailable on the App Store.");
     NSString *title = @"Item unavailable";
     NSString *message = @"This item is currently unavailable on the App Store.";
-    [self showAlertWithTitle:title message:message btnText:@"Okay"];
+    [self showAlertWithTitle:title message:message btnText:@"OK"];
 }
 
 - (void)showPurchaseFailedAlert
@@ -236,7 +236,7 @@ static MRProgressOverlayView *hud;
     NSLog(@"Purchase failed: This is likely due to parental control settings on this device.");
     NSString *title = @"Purchase failed";
     NSString *message = @"This is likely due to parental control settings on this device.";
-    [self showAlertWithTitle:title message:message btnText:@"Okay"];
+    [self showAlertWithTitle:title message:message btnText:@"OK"];
 }
 
 - (void)showAlertWithTitle:(NSString *)title message:(NSString *)msg btnText:(NSString *)btnText

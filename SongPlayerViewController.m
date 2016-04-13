@@ -1366,7 +1366,7 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
     SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:@"Shuffle"
                                                                     message:msg
                                                              preferredStyle:SDCAlertControllerStyleAlert];
-    [alert addAction:[SDCAlertAction actionWithTitle:@"Okay"
+    [alert addAction:[SDCAlertAction actionWithTitle:@"OK"
                                                style:SDCAlertActionStyleRecommended
                                              handler:nil]];
     [alert presentWithCompletion:nil];
