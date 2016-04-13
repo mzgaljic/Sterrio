@@ -10,35 +10,28 @@
 #import "AppEnvironmentConstants.h"
 
 @interface TermsOfServiceViewController ()
-@property (nonatomic, strong) UIWebView *webView;
+@property (weak, nonatomic) IBOutlet UIWebView *webView;
 @property (nonatomic, strong) UIActivityIndicatorView *spinner;
 @end
-NSString * const TOS_LINK = @"https://dl.dropbox.com/s/3x5house6be4et4/Fabric%20TOS.pdf?dl=0";
-#warning before releasing, put together a better PDF.
 
 @implementation TermsOfServiceViewController
-
 #pragma mark - Lifecyle
 - (void)viewDidLoad {
     [super viewDidLoad];
+    //self.edgesForExtendedLayout = UIRectEdgeNone;
     self.title = @"Terms Of Service";
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(orientationDidChange)
                                                  name:UIApplicationDidChangeStatusBarOrientationNotification
                                                object:nil];
-    
-    self.webView = [[UIWebView alloc] initWithFrame:[self webViewFrame]];
-    NSURL *targetURL = [NSURL URLWithString:TOS_LINK];
-    NSURLRequest *request = [NSURLRequest requestWithURL:targetURL];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:MZAppTermsPdfLink]];
     self.webView.delegate = self;
     [self.webView loadRequest:request];
-    [self.view addSubview:self.webView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
     self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     float scale = MZLargeSpinnerDownScaleAmount;
     self.spinner.transform = CGAffineTransformMakeScale(scale, scale);  //make smaller
@@ -75,23 +68,8 @@ NSString * const TOS_LINK = @"https://dl.dropbox.com/s/3x5house6be4et4/Fabric%20
 #pragma mark - Utils
 - (void)orientationDidChange
 {
-    self.webView.frame = [self webViewFrame];
+    //self.webView.frame = self.view.frame;
     self.spinner.frame = [self spinnerFrame];
-}
-
-- (CGRect)webViewFrame
-{
-    int navBarHeight = [AppEnvironmentConstants navBarHeight];
-    if(UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)) {
-        return CGRectMake(0,
-                          self.view.frame.origin.y + navBarHeight,
-                          self.view.frame.size.width, self.view.frame.size.height - [AppEnvironmentConstants navBarHeight]);
-    } else {
-        navBarHeight = navBarHeight/2;
-        return CGRectMake(0,
-                          self.view.frame.origin.y + navBarHeight,
-                          self.view.frame.size.width, self.view.frame.size.height - navBarHeight);
-    }
 }
 
 - (CGRect)spinnerFrame

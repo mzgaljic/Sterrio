@@ -14,7 +14,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UIStoryboard *storyboard = [MZCommons mainStoryboard];
     SongPlayerViewController *vc = (SongPlayerViewController *)[storyboard instantiateViewControllerWithIdentifier:@"songItemView"];
     [self pushViewController:vc animated:NO];
     

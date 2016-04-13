@@ -45,6 +45,8 @@ extern NSString * const MZAdMobUnitId;
 
 extern NSString * const MZEmailBugReport;
 extern NSString * const MZEmailFeedback;
+#warning before releasing, put together a better PDF.
+extern NSString * const MZAppTermsPdfLink;
 extern NSString * const MZAddSongToUpNextString;
 extern NSString * const MZUserCanTransitionToMainInterface;
 extern NSString * const MZUserAboutToDismissFromSettings;
@@ -80,5 +82,6 @@ extern NSString * const MZHideTabBarAnimated;
 extern int MZDefaultCoreDataFetchBatchSize;
 
 extern NSString * const MZAppName;
+extern int MZCurrentTosVersion;  //The Terms of Service version for this build.
 
 @end

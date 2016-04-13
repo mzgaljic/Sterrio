@@ -8,6 +8,9 @@
 
 #import "MyViewController.h"
 
+/**
+ * Intended to be used only on devices running 8.0...since they don't support SFSafariViewController.
+ */
 @interface TermsOfServiceViewController : MyViewController <UIWebViewDelegate>
 
 - (void)dismiss;

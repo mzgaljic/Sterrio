@@ -46,6 +46,7 @@ NSString * const MZAdMobUnitId = @"ca-app-pub-3961646861945951/6727549027";
 
 NSString * const MZEmailBugReport = @"bug-report@sterrio.com";
 NSString * const MZEmailFeedback = @"feedback@sterrio.com";
+NSString * const MZAppTermsPdfLink = @"https://dl.dropbox.com/s/3x5house6be4et4/Fabric%20TOS.pdf?dl=0";
 NSString * const MZAddSongToUpNextString = @"Play Next";
 NSString * const MZUserCanTransitionToMainInterface = @"user can transition to main interface";
 NSString * const MZUserAboutToDismissFromSettings = @"User going to dismiss Settings VC";
@@ -80,5 +81,6 @@ NSString * const MZHideTabBarAnimated = @"Pass @YES in notif to hide tab bar";
 int MZDefaultCoreDataFetchBatchSize = 35;
 
 NSString * const MZAppName = @"Sterrio";
+int MZCurrentTosVersion = 1;  //The Terms of Service version for this build.
 
 @end

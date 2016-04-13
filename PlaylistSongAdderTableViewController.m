@@ -32,7 +32,7 @@
 
 - (instancetype)initWithPlaylistsUniqueId:(NSString *)uniqueId playlistName:(NSString *)name;
 {
-    UIStoryboard*  sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UIStoryboard *sb = [MZCommons mainStoryboard];
     PlaylistSongAdderTableViewController* vc = [sb instantiateViewControllerWithIdentifier:@"playlistSongAdderView"];
     self = vc;
     if (self) {

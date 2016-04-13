@@ -17,6 +17,8 @@
 #import "PreviousNowPlayingInfo.h"
 #import <CRToast.h>
 #import "YouTubeService.h"
+#import "TermsOfServiceViewController.h"
+@import SafariServices;
 
 @implementation MyAlerts
 static int numSkippedSongs = 0;
@@ -197,9 +199,79 @@ static int numSkippedSongs = 0;
                                 useAlertAndNotif:YES];
             break;
         }
+        case ALERT_TYPE_TosAndPrivacyPolicy:
+        case ALERT_TYPE_NEWTosAndPrivacyPolicy:
+        {
+            NSString *title, *msg;
+            if(type == ALERT_TYPE_TosAndPrivacyPolicy) {
+                title = @"Terms";
+                msg = [NSString stringWithFormat:@"Please take a minute to review %@'s Terms and Conditions. By tapping \"Accept\", you agree to the terms.", MZAppName];
+            } else {
+                title = @"Updated Terms";
+                msg = @"There are new Terms and Conditions, please take a minute to review them. By tapping \"Accept\", you agree to these updates.";
+            }
+            SDCAlertAction *accept = [SDCAlertAction actionWithTitle:@"Accept"
+                                                               style:SDCAlertActionStyleRecommended
+                                                             handler:^(SDCAlertAction *action) {
+                                                                 [MyAlerts markTermsAccepted];
+                                                             }];
+            SDCAlertAction *tos = [SDCAlertAction actionWithTitle:@"View Terms"
+                                                            style:SDCAlertActionStyleDefault
+                                                          handler:nil];
+            SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
+                                                                            message:msg
+                                                                     preferredStyle:SDCAlertControllerStyleAlert];
+            //tos is the left button here.
+            [alert addAction:tos];
+            [alert addAction:accept];
+            alert.actionLayout = SDCAlertControllerActionLayoutAutomatic;
+            alert.shouldDismissBlock = ^ BOOL(SDCAlertAction *action) {
+                if([action.title isEqualToString:@"Accept"]) {
+                    return YES;
+                } else {
+                    [MyAlerts presentAppTermsModally];
+                    return NO;
+                }
+            };
+            [alert presentWithCompletion:nil];
+            break;
+        }
         default:
             break;
     }
+}
+
++ (void)markTermsAccepted
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSNumber *tosVerAccepted = [NSNumber numberWithInteger:MZCurrentTosVersion];
+        [AppEnvironmentConstants setHighestTosVersionUserAccepted:tosVerAccepted updateNsDefaults:YES];
+    });
+}
+
++ (void)presentAppTermsModally
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if([AppEnvironmentConstants isUserOniOS9OrAbove]) {
+            SFSafariViewController *safController = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:MZAppTermsPdfLink]];
+            //set toolbar & navbar button color
+            safController.view.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+            UINavigationController *navVc = [[UINavigationController alloc] initWithRootViewController:safController];
+            navVc.navigationBar.barStyle = UIBarStyleBlack;
+            [navVc setNavigationBarHidden:YES];  //hide my navigation bar and use the SFSafariController one.
+            [[MZCommons topViewController] presentViewController:navVc animated:YES completion:NULL];
+        } else {
+            NSString *tosVcStoryBoardId = @"ios 8 terms of service VC";
+            TermsOfServiceViewController *tosVc =[[MZCommons mainStoryboard] instantiateViewControllerWithIdentifier:tosVcStoryBoardId];
+            UINavigationController *navVc = [[UINavigationController alloc] initWithRootViewController:tosVc];
+            UIBarButtonItem *doneButton = [[UIBarButtonItem alloc]
+                                           initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                           target:tosVc
+                                           action:@selector(dismiss)];
+            tosVc.navigationItem.leftBarButtonItem = doneButton;
+            [[MZCommons topViewController] presentViewController:navVc animated:YES completion:nil];
+        }
+    });
 }
 
 + (void)displayVideoNoLongerAvailableOnYtAlertForSong:(NSString *)name

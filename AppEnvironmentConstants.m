@@ -25,7 +25,7 @@
 
 static MZAppTheme *currentAppTheme;
 
-static BOOL shouldShowWhatsNewScreen = NO;
+static NSNumber *highestTosVersionUserAccepted = nil;
 static BOOL shouldDisplayWelcomeScreen = NO;
 static BOOL isFirstTimeAppLaunched = NO;
 static BOOL isBadTimeToMergeEnsemble = NO;
@@ -130,16 +130,6 @@ static BOOL didFetchAppRatedKeychainVal = NO;
     NSData *data = [NSData dataWithBytes:&boolAsInt length:sizeof(boolAsInt)];
     [storeRatingKeychainItem setObject:data forKey:USER_HAS_RATED_APP_KEY];
     userRatedAppCachedVal = userDidRateApp;
-}
-
-+ (BOOL)shouldDisplayWhatsNewScreen
-{
-    return shouldShowWhatsNewScreen;
-}
-
-+ (void)markShouldDisplayWhatsNewScreenTrue
-{
-    shouldShowWhatsNewScreen = YES;
 }
 
 + (BOOL)shouldDisplayWelcomeScreen
@@ -391,6 +381,29 @@ static BOOL didFetchAreAdsRemovedKeychainVal = NO;
     userAcceptedOrDeclinedPushNotifications = something;
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
+
+
++ (void)setHighestTosVersionUserAccepted:(NSNumber *)tosVersion updateNsDefaults:(BOOL)update
+{
+    highestTosVersionUserAccepted = tosVersion;
+    if(update) {
+        NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
+        [standardDefaults setObject:highestTosVersionUserAccepted forKey:HIGHEST_TOS_VERSION_ACCEPTED];
+        [standardDefaults synchronize];
+    }
+}
++ (NSNumber *)highestTosVersionUserAccepted
+{
+    if(highestTosVersionUserAccepted == nil) {
+        if([AppEnvironmentConstants isFirstTimeAppLaunched]) {
+            highestTosVersionUserAccepted = @0;
+        } else {
+            highestTosVersionUserAccepted = [[NSUserDefaults standardUserDefaults] objectForKey:HIGHEST_TOS_VERSION_ACCEPTED];
+        }
+    }
+    return highestTosVersionUserAccepted;
+}
+
 //app settings  --these are saved in nsuserdefaults once user leaves settings page.
 + (int)preferredSongCellHeight
 {

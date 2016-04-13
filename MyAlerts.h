@@ -22,14 +22,12 @@ typedef enum {
     ALERT_TYPE_TroubleSharingLibrarySong,
     
     ALERT_TYPE_CannotOpenSafariError,
-    
     ALERT_TYPE_CannotOpenSelectedImageError,
-    
     ALERT_TYPE_SongSaveHasFailed,
-    
     ALERT_TYPE_WarnUserOfCellularDataFees,
-    
-    ALERT_TYPE_NowPlayingSongWasDeletedOnOtherDevice
+    ALERT_TYPE_NowPlayingSongWasDeletedOnOtherDevice,
+    ALERT_TYPE_TosAndPrivacyPolicy,
+    ALERT_TYPE_NEWTosAndPrivacyPolicy
 } ALERT_TYPE;
 
 + (void)displayAlertWithAlertType:(ALERT_TYPE)type;
@@ -40,5 +38,11 @@ typedef enum {
 
 + (void)showAlertWithNumSkippedSongs;
 + (void)skippedLibrarySongDueToLength;
+
+/**
+ * Displays app Terms (terms of service, privacy policy, etc.)
+ * using the SFSafariViewController
+ */
++ (void)presentAppTermsModally;
 
 @end

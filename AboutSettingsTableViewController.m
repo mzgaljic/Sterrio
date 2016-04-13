@@ -11,7 +11,6 @@
 #import "UIDevice+DeviceName.h"
 #import "LicensesViewController.h"
 #import "MZLicense.h"
-#import "TermsOfServiceViewController.h"
 
 @implementation AboutSettingsTableViewController
 int const NUMBER_OF_ABOUT_SECTIONS = 3;
@@ -135,14 +134,7 @@ int const TOS_SECTION_NUM = 2;
         licensesVc.navigationItem.rightBarButtonItem = doneButton;
         [self presentViewController:navVc animated:YES completion:nil];
     } else if(indexPath.section == TOS_SECTION_NUM && indexPath.row == 0) {
-        TermsOfServiceViewController *tosVc = [TermsOfServiceViewController new];
-        UINavigationController *navVc = [[UINavigationController alloc] initWithRootViewController:tosVc];
-        UIBarButtonItem *doneButton = [[UIBarButtonItem alloc]
-                                       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                       target:tosVc
-                                       action:@selector(dismiss)];
-        tosVc.navigationItem.rightBarButtonItem = doneButton;
-        [self presentViewController:navVc animated:YES completion:nil];
+        [MyAlerts presentAppTermsModally];
     }
 }
 

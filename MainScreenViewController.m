@@ -8,6 +8,7 @@
 
 #import "MainScreenViewController.h"
 #import "PushNotificationsHelper.h"
+#import "TermsOfServiceViewController.h"
 
 NSString * const CENTER_BTN_IMG_NAME = @"plus_sign";
 short const dummyTabIndex = 2;
@@ -148,9 +149,17 @@ short const dummyTabIndex = 2;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    if([AppEnvironmentConstants numberTimesUserLaunchedApp].longValue == 2) {
-        //User sees the intro the first time, lets not overload them with stuff to read.
+    NSInteger highestTosVerUserAccepted = [[AppEnvironmentConstants highestTosVersionUserAccepted] integerValue];
+    long long numAppLaunches = [AppEnvironmentConstants numberTimesUserLaunchedApp].longLongValue;
+    
+    //only ask for push notifications if user launched the app at least once AND they
+    //accepted the current TOS. Will only show dialog if they didn't previously accept/decline.
+    if(numAppLaunches >= 2 && highestTosVerUserAccepted == MZCurrentTosVersion) {
         [PushNotificationsHelper askUserIfTheyAreInterestedInPushNotif];
+    }
+    if(![AppEnvironmentConstants isFirstTimeAppLaunched]
+       && highestTosVerUserAccepted != MZCurrentTosVersion) {
+        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_NEWTosAndPrivacyPolicy];
     }
 }
 
@@ -738,6 +747,7 @@ short const dummyTabIndex = 2;
     [self performSelector:@selector(showAddSongsGettingStartedTip)
                withObject:nil
                afterDelay:0.2];
+    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_TosAndPrivacyPolicy];
 }
 
 - (void)showAddSongsGettingStartedTip

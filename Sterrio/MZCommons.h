@@ -30,5 +30,6 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void));
 
 #pragma mark - GUI Helpers
 + (UIViewController *)topViewController;
++ (UIStoryboard *)mainStoryboard;
 
 @end

@@ -5,7 +5,6 @@
 //  Created by Mark Zgaljic on 7/3/14.
 //  Copyright (c) 2014 Mark Zgaljic. All rights reserved.
 //
-#define LAST_INSTALLED_BUILD @"lastInstalledBuild"
 
 //settings keys
 #define PREFERRED_SONG_CELL_HEIGHT_KEY @"preferredSongCellHeight"
@@ -22,6 +21,7 @@
 #define ARE_ADS_REMOVED_KEYCHAIN_ID @"Have ads been removed?"
 #define NUM_TIMES_APP_LAUNCHED @"numberOfTimesAppLaunched"  //on just this device.
 #define NUM_TIMES_SONG_ADDED_TO_LIB @"numberOfTimesSongAddedToLib"  //on just this device.
+#define HIGHEST_TOS_VERSION_ACCEPTED @"highest vers of the terms of service user agreed to." //on just this device.
 
 #import <Foundation/Foundation.h>
 #import "MZAppTheme.h"
@@ -54,9 +54,6 @@ typedef enum{
  Returns YES if the user is currently on a phone call
  */
 + (BOOL)isUserCurrentlyOnCall;
-
-+ (BOOL)shouldDisplayWhatsNewScreen;
-+ (void)markShouldDisplayWhatsNewScreenTrue;
 
 + (BOOL)shouldDisplayWelcomeScreen;
 + (void)markShouldDisplayWelcomeScreenTrue;
@@ -112,6 +109,8 @@ typedef enum{
 + (BOOL)userSawExpandingPlayerTip;
 + (BOOL)userAcceptedOrDeclinedPushNotifications;
 + (void)userAcceptedOrDeclinedPushNotif:(BOOL)something;
++ (void)setHighestTosVersionUserAccepted:(NSNumber *)tosVersion updateNsDefaults:(BOOL)update;
++ (NSNumber *)highestTosVersionUserAccepted;
 //----app settings---
 + (int)preferredSongCellHeight;
 + (void)setPreferredSongCellHeight:(int)cellHeight;

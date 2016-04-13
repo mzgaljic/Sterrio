@@ -30,7 +30,7 @@
 - (id)initWithCurrentAlbum:(Album *)anAlbum
 existingEntityPickerDelegate:(id <ExistingEntityPickerDelegate>)delegate
 {
-    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UIStoryboard *sb = [MZCommons mainStoryboard];
     ExistingAlbumPickerTableViewController* vc = [sb instantiateViewControllerWithIdentifier:@"browseExistingAlbumsVC"];
     self = vc;
     if (self) {

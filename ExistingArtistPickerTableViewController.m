@@ -31,7 +31,7 @@
 - (id)initWithCurrentArtist:(Artist *)anArtist
 existingEntityPickerDelegate:(id <ExistingEntityPickerDelegate>)delegate
 {
-    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UIStoryboard *sb = [MZCommons mainStoryboard];
     ExistingArtistPickerTableViewController* vc = [sb instantiateViewControllerWithIdentifier:@"browseExistingArtistsVC"];
     self = vc;
     if (self) {

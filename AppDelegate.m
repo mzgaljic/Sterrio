@@ -44,7 +44,6 @@
 
 static NSDate *nextEarliestAlbumArtUpdateForceTime;
 static MRProgressOverlayView *hud;
-static NSString * const storyboardFileName = @"Main";
 static NSString * const songsVcSbId = @"songs view controller storyboard ID";
 static NSString * const albumsVcSbId = @"albums view controller storyboard ID";
 static NSString * const artistsVcSbId = @"artists view controller storyboard ID";
@@ -133,12 +132,11 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 
 - (void)setupMainVC
 {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:storyboardFileName bundle: nil];
-    
-    MasterSongsTableViewController *vc1 = [storyboard instantiateViewControllerWithIdentifier:songsVcSbId];
-    MasterAlbumsTableViewController *vc2 = [storyboard instantiateViewControllerWithIdentifier:albumsVcSbId];
-    MasterArtistsTableViewController *vc3 = [storyboard instantiateViewControllerWithIdentifier:artistsVcSbId];
-    MasterPlaylistTableViewController *vc4 = [storyboard instantiateViewControllerWithIdentifier:playlistsVcSbId];
+    UIStoryboard *sb = [MZCommons mainStoryboard];
+    MasterSongsTableViewController *vc1 = [sb instantiateViewControllerWithIdentifier:songsVcSbId];
+    MasterAlbumsTableViewController *vc2 = [sb instantiateViewControllerWithIdentifier:albumsVcSbId];
+    MasterArtistsTableViewController *vc3 = [sb instantiateViewControllerWithIdentifier:artistsVcSbId];
+    MasterPlaylistTableViewController *vc4 = [sb instantiateViewControllerWithIdentifier:playlistsVcSbId];
     
     vc1.tabBarItem = [[UITabBarItem alloc]initWithTabBarSystemItem:UITabBarSystemItemRecents tag:0];
     UINavigationController *nav1 = [[UINavigationController alloc]initWithRootViewController:vc1];
@@ -789,17 +787,13 @@ static NSDate *finish;
                                                              mzAppTheme:theme];
             }
                 break;
-            case 4:
-            {
-                
-            }
             default:
                 break;
         }
     }
     self.intro = [[EAIntroView alloc] initWithFrame:self.mainVC.view.frame
                                            andPages:pages];
-    self.intro.hideSkipButton = YES;
+    self.intro.hideSkipButton = NO;
     self.intro.delegate = self;
     [self.intro showInView:self.mainVC.view animateDuration:1.5];
 }
@@ -851,6 +845,7 @@ static BOOL introAlreadyFinished = NO;
     [self.intro hideWithFadeOutDuration:2];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZAppIntroComplete object:nil];
 }
+
 static NSUInteger lastScrollingPageIndex = -1;
 - (void)intro:(EAIntroView *)introView pageEndScrolling:(EAIntroPage *)page withIndex:(NSUInteger)pageIndex
 {

@@ -47,6 +47,8 @@ static NSUserDefaults *standardDefaults;
         standardDefaults = [NSUserDefaults standardUserDefaults];
     }
     
+    [AppEnvironmentConstants highestTosVersionUserAccepted];
+    
     if([AppDelegateSetupHelper appLaunchedFirstTime]){
         //these are the default settings
         int prefSongCellHeight = [AppEnvironmentConstants defaultSongCellHeight];
@@ -89,18 +91,17 @@ static NSUserDefaults *standardDefaults;
                            forKey:ONLY_AIRPLAY_AUDIO_VALUE_KEY];
         [standardDefaults setBool:limitVideoLengthOnCellular
                            forKey:LIMIT_VIDEO_LENGTH_CELLULAR_VALUE_KEY];
-        [standardDefaults setObject:[NSNumber numberWithInteger:1] forKey:NUM_TIMES_APP_LAUNCHED];
+        [standardDefaults setObject:@1 forKey:NUM_TIMES_APP_LAUNCHED];
         [standardDefaults setObject:@0 forKey:NUM_TIMES_SONG_ADDED_TO_LIB];
         
         MZAppTheme *appTheme = [AppEnvironmentConstants appTheme];
         if(appTheme == nil) {
-            //loadAppThemeUserSettingFromNSUserDefaults not called yet...
+            //loadAppThemeUserSettingFromNSUserDefaults() not called yet...
             appTheme = [MZAppTheme defaultAppThemeBeforeUserPickedTheme];
             [AppEnvironmentConstants setAppTheme:appTheme saveInUserDefaults:NO];
         }
         [standardDefaults setObject:[appTheme nsUserDefaultsCompatibleDictFromTheme]
                              forKey:[MZAppTheme nsUserDefaultsKeyAppThemeDict]];
-
         
         [standardDefaults synchronize];
     } else{
@@ -133,7 +134,7 @@ static NSUserDefaults *standardDefaults;
         NSNumber *numTimesAppLaunched = [standardDefaults objectForKey:NUM_TIMES_APP_LAUNCHED];
         numTimesAppLaunched = @([numTimesAppLaunched longLongValue] + 1);
         [standardDefaults setObject:numTimesAppLaunched forKey:NUM_TIMES_APP_LAUNCHED];
-        [standardDefaults synchronize];
+        [standardDefaults synchronize];  //just for saving NUM_TIMES_APP_LAUNCHED
     }
 }
 
@@ -245,19 +246,10 @@ static short appLaunchedFirstTimeNumCalls = 0;
         return [AppEnvironmentConstants isFirstTimeAppLaunched];
     appLaunchedFirstTimeNumCalls++;
     
-    //determining whether or not the app has been launched for the first time
-    NSString *lastBuild = [[NSUserDefaults standardUserDefaults] stringForKey:LAST_INSTALLED_BUILD];
-    NSString *currentBuild = [UIDevice appBuildString];
-    if(lastBuild == nil){
-        [[NSUserDefaults standardUserDefaults] setObject:currentBuild
-                                                  forKey:LAST_INSTALLED_BUILD];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+    if([[NSUserDefaults standardUserDefaults] objectForKey:NUM_TIMES_APP_LAUNCHED] == nil){
         [AppEnvironmentConstants markAppAsLaunchedForFirstTime];
         [AppEnvironmentConstants markShouldDisplayWelcomeScreenTrue];
         return YES;
-    } else if(! [lastBuild isEqualToString:currentBuild]){
-        [AppEnvironmentConstants markShouldDisplayWhatsNewScreenTrue];
-        return NO;
     } else {
         return NO;
     }

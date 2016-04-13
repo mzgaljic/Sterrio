@@ -25,8 +25,8 @@ short const fontSizeIncrease = 4;
      notificationNameToPost:(NSString *)notifName
                  fullScreen:(BOOL)full
 {
-    UIStoryboard*  sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    EditableCellTableViewController* vc = [sb instantiateViewControllerWithIdentifier:@"editingCellItemView"];
+    UIStoryboard *sb = [MZCommons mainStoryboard];
+    EditableCellTableViewController *vc = [sb instantiateViewControllerWithIdentifier:@"editingCellItemView"];
     self = vc;
     if (self) {
         if(_stringUserIsEditing == nil)

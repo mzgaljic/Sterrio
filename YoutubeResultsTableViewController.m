@@ -65,7 +65,7 @@ static const int APP_RATING_CELL_ROW_NUM = 2;
 
 + (instancetype)initWithSearchQuery:(NSString *)query replacementObjId:(NSManagedObjectID *)objId
 {
-    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UIStoryboard *sb = [MZCommons mainStoryboard];
     YoutubeResultsTableViewController *ytSearchResultsVc;
     ytSearchResultsVc = [sb instantiateViewControllerWithIdentifier:@"ytSearchAndResultDisplayVc"];
     ytSearchResultsVc.forcedSearchQuery = query;

@@ -98,4 +98,15 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void))
     return [self topViewController:presentedViewController];
 }
 
+static UIStoryboard *mainStoryBoard = nil;
++ (UIStoryboard *)mainStoryboard
+{
+    NSAssert([NSThread isMainThread], @"Accesing main UIStoryboard off the main thread!");
+    if(mainStoryBoard == nil) {
+        mainStoryBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        NSAssert(mainStoryBoard != nil, @"Cannot find main storyboard file. Was file name changed?");
+    }
+    return mainStoryBoard;
+}
+
 @end
