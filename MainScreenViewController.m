@@ -123,7 +123,10 @@ short const dummyTabIndex = 2;
 {
     [super viewWillAppear:animated];
     
-    if(! [AppEnvironmentConstants areAdsRemoved] && self.adBanner) {
+    if([AppEnvironmentConstants areAdsRemoved] && self.adBanner) {
+        self.adBanner.delegate = nil;
+        self.adBanner = nil;
+    } else if(! [AppEnvironmentConstants areAdsRemoved] && self.adBanner) {
         //get new ad.
         [self.adBanner loadRequest:[MZCommons getNewAdmobRequest]];
     }
