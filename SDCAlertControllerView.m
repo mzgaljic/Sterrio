@@ -29,6 +29,9 @@ static NSString *const SDCAlertControllerCellReuseIdentifier = @"SDCAlertControl
 @property (nonatomic, strong) UICollectionView *actionsCollectionView;
 @property (nonatomic, strong) SDCAlertControllerCollectionViewFlowLayout *collectionViewLayout;
 @property (nonatomic, strong) NSLayoutConstraint *maximumHeightConstraint;
+
+//fixed bug when showing App terms using SFSafariController, dismissing it, and then dismiss the alert.
+@property (nonatomic, assign) BOOL addedKeyValueObservers;
 @end
 
 @implementation SDCAlertControllerView
@@ -65,9 +68,11 @@ static NSString *const SDCAlertControllerCellReuseIdentifier = @"SDCAlertControl
 }
 
 - (void)dealloc {
-	[self.actions enumerateObjectsUsingBlock:^(SDCAlertAction *action, NSUInteger idx, BOOL *stop) {
-		[action removeObserver:self forKeyPath:@"enabled"];
-	}];
+    if(_addedKeyValueObservers) {
+        [self.actions enumerateObjectsUsingBlock:^(SDCAlertAction *action, NSUInteger idx, BOOL *stop) {
+            [action removeObserver:self forKeyPath:@"enabled"];
+        }];
+    }
 }
 
 #pragma mark - Getters & Setters
@@ -253,9 +258,12 @@ static NSString *const SDCAlertControllerCellReuseIdentifier = @"SDCAlertControl
 #pragma mark - KVO
 
 - (void)observeActions {
-	[self.actions enumerateObjectsUsingBlock:^(SDCAlertAction *action, NSUInteger idx, BOOL *stop) {
-		[action addObserver:self forKeyPath:@"enabled" options:0 context:NULL];
-	}];
+    if(! _addedKeyValueObservers) {
+        [self.actions enumerateObjectsUsingBlock:^(SDCAlertAction *action, NSUInteger idx, BOOL *stop) {
+            [action addObserver:self forKeyPath:@"enabled" options:0 context:NULL];
+        }];
+    }
+    _addedKeyValueObservers = YES;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
