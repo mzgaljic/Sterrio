@@ -131,7 +131,7 @@ int const TOS_SECTION_NUM = 2;
                                         initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                         target:licensesVc
                                         action:@selector(dismiss)];
-        licensesVc.navigationItem.rightBarButtonItem = doneButton;
+        licensesVc.navigationItem.leftBarButtonItem = doneButton;
         [self presentViewController:navVc animated:YES completion:nil];
     } else if(indexPath.section == TOS_SECTION_NUM && indexPath.row == 0) {
         [MyAlerts presentAppTermsModally];
