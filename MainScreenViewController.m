@@ -295,10 +295,8 @@ short const dummyTabIndex = 2;
     self.currentNavController = newNavController;
     
     //init these constants only once.
-    if(! newNavController.navigationBarHidden && [AppEnvironmentConstants navBarHeight] == 0){
-        int navBarHeight = newNavController.navigationBar.frame.size.height;
+    if(! newNavController.navigationBarHidden && [AppEnvironmentConstants statusBarHeight] == 0){
         int statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
-        [AppEnvironmentConstants setNavBarHeight:navBarHeight];
         [AppEnvironmentConstants setStatusBarHeight:statusBarHeight];
     }
 }

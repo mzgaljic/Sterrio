@@ -89,7 +89,12 @@ static BOOL skipCertainInitStepsFlag = NO;
 
         MZSongModifierTableView *songEditTable;
         lockScreenImg = img;
-        songEditTable = [[MZSongModifierTableView alloc] initWithFrame:self.view.frame
+        int navAndStatusHeight = [AppEnvironmentConstants navBarHeight];
+        if(UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)) {
+            navAndStatusHeight += [AppEnvironmentConstants statusBarHeight];
+        }
+        CGRect rect = CGRectMake(0, 0 - navAndStatusHeight, self.view.bounds.size.width, self.view.bounds.size.height + navAndStatusHeight);
+        songEditTable = [[MZSongModifierTableView alloc] initWithFrame:rect
                                                                  style:UITableViewStyleGrouped];
         songEditTable.VC = self;
         self.tableView = songEditTable;

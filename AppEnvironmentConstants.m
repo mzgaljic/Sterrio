@@ -43,7 +43,6 @@ static PLABACK_REPEAT_MODE repeatType;
 static SHUFFLE_STATE shuffleState;
 static PREVIEW_PLAYBACK_STATE currentPreviewPlayerState = PREVIEW_PLAYBACK_STATE_Uninitialized;
 
-static int navBarHeight;
 static int statusBarHeight;
 static int bannerAdHeight;
 
@@ -784,12 +783,11 @@ static NSLock *lastSuccessfulSyncDateLock;
 
 + (int)navBarHeight
 {
-    return navBarHeight;
-}
-
-+ (void)setNavBarHeight:(int)height
-{
-    navBarHeight = height;
+    if(UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)) {
+        return 44;
+    } else {
+        return 32;
+    }
 }
 
 + (int)statusBarHeight
