@@ -2338,7 +2338,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/Pods/Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.5.2",
 				);
 				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2369,7 +2368,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/Pods/Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.5.2",
 				);
 				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
 				GCC_OPTIMIZATION_LEVEL = fast;
