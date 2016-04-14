@@ -89,8 +89,8 @@ short const dummyTabIndex = 2;
                         name:@"app theme color has possibly changed"
                       object:nil];
     [notifCenter addObserver:self
-                    selector:@selector(userDoneWithIntro)
-                        name:MZAppIntroComplete object:nil];
+                    selector:@selector(userDoneWithIntroAndTermsAccepted)
+                        name:MZAppIntroCompleteAndAppTermsAccepted object:nil];
     [notifCenter addObserver:self
                     selector:@selector(newSongIsLoading:)
                         name:MZNewSongLoading
@@ -745,12 +745,11 @@ short const dummyTabIndex = 2;
     }
 }
 
-- (void)userDoneWithIntro
+- (void)userDoneWithIntroAndTermsAccepted
 {
     [self performSelector:@selector(showAddSongsGettingStartedTip)
                withObject:nil
                afterDelay:0.2];
-    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_TosAndPrivacyPolicy];
 }
 
 - (void)showAddSongsGettingStartedTip

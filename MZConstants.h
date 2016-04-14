@@ -34,7 +34,7 @@ extern NSString * const MZAnswersEventLogRestApiConsumptionProblemName;
 
 extern NSString * const MZInitAudioSession;
 
-extern NSString * const MZAppIntroComplete;
+extern NSString * const MZAppIntroCompleteAndAppTermsAccepted;
 extern NSString * const MZHideAppRatingCell;
 
 extern NSString * const MZKeyNumLikes;

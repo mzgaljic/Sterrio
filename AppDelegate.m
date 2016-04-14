@@ -843,7 +843,7 @@ static BOOL introAlreadyFinished = NO;
     else
         introAlreadyFinished = YES;
     [self.intro hideWithFadeOutDuration:2];
-    [[NSNotificationCenter defaultCenter] postNotificationName:MZAppIntroComplete object:nil];
+    [MyAlerts displayAlertWithAlertType:ALERT_TYPE_TosAndPrivacyPolicy];
 }
 
 static NSUInteger lastScrollingPageIndex = -1;

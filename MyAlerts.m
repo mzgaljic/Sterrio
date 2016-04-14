@@ -241,38 +241,6 @@ static int numSkippedSongs = 0;
     }
 }
 
-+ (void)markTermsAccepted
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSNumber *tosVerAccepted = [NSNumber numberWithInteger:MZCurrentTosVersion];
-        [AppEnvironmentConstants setHighestTosVersionUserAccepted:tosVerAccepted updateNsDefaults:YES];
-    });
-}
-
-+ (void)presentAppTermsModally
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if([AppEnvironmentConstants isUserOniOS9OrAbove]) {
-            SFSafariViewController *safController = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:MZAppTermsPdfLink]];
-            //set toolbar & navbar button color
-            safController.view.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
-            UINavigationController *navVc = [[UINavigationController alloc] initWithRootViewController:safController];
-            navVc.navigationBar.barStyle = UIBarStyleBlack;
-            [navVc setNavigationBarHidden:YES];  //hide my navigation bar and use the SFSafariController one.
-            [[MZCommons topViewController] presentViewController:navVc animated:YES completion:NULL];
-        } else {
-            TermsOfServiceViewController *tosVc = [TermsOfServiceViewController new];
-            UINavigationController *navVc = [[UINavigationController alloc] initWithRootViewController:tosVc];
-            UIBarButtonItem *doneButton = [[UIBarButtonItem alloc]
-                                           initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                           target:tosVc
-                                           action:@selector(dismiss)];
-            tosVc.navigationItem.leftBarButtonItem = doneButton;
-            [[MZCommons topViewController] presentViewController:navVc animated:YES completion:nil];
-        }
-    });
-}
-
 + (void)displayVideoNoLongerAvailableOnYtAlertForSong:(NSString *)name
                                         customActions:(NSArray *)actions
 {
@@ -360,6 +328,41 @@ static int numSkippedSongs = 0;
     } else {
         [alert presentWithCompletion:nil];
     }
+}
+
+#pragma mark - App Terms stuff
++ (void)presentAppTermsModally
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if([AppEnvironmentConstants isUserOniOS9OrAbove]) {
+            SFSafariViewController *safController = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:MZAppTermsPdfLink]];
+            //set toolbar & navbar button color
+            safController.view.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+            UINavigationController *navVc = [[UINavigationController alloc] initWithRootViewController:safController];
+            navVc.navigationBar.barStyle = UIBarStyleBlack;
+            [navVc setNavigationBarHidden:YES];  //hide my navigation bar and use the SFSafariController one.
+            [[MZCommons topViewController] presentViewController:navVc animated:YES completion:NULL];
+        } else {
+            TermsOfServiceViewController *tosVc = [TermsOfServiceViewController new];
+            UINavigationController *navVc = [[UINavigationController alloc] initWithRootViewController:tosVc];
+            UIBarButtonItem *doneButton = [[UIBarButtonItem alloc]
+                                           initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                           target:tosVc
+                                           action:@selector(dismiss)];
+            tosVc.navigationItem.leftBarButtonItem = doneButton;
+            [[MZCommons topViewController] presentViewController:navVc animated:YES completion:nil];
+        }
+    });
+}
+
+//private helper method
++ (void)markTermsAccepted
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSNumber *tosVerAccepted = [NSNumber numberWithInteger:MZCurrentTosVersion];
+        [AppEnvironmentConstants setHighestTosVersionUserAccepted:tosVerAccepted updateNsDefaults:YES];
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZAppIntroCompleteAndAppTermsAccepted object:nil];
+    });
 }
 
 @end

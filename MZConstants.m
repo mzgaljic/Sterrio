@@ -35,7 +35,7 @@ NSString * const MZAnswersEventLogRestApiConsumptionProblemName = @"an api is no
 
 NSString * const MZInitAudioSession = @"Init the audio session if it isnt already setup";
 
-NSString * const MZAppIntroComplete = @"Intro on initial app launch has been completed";
+NSString * const MZAppIntroCompleteAndAppTermsAccepted = @"Intro on app launch has been completed & app terms were accepted.";
 NSString * const MZHideAppRatingCell = @"Can now hide the app rating cell";
 
 NSString * const MZKeyNumLikes = @"numLikes";
