@@ -637,10 +637,10 @@ static short numberTimesViewHasBeenShown = 0;
             [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
                 //restoring default button and title font colors in the app.
                 AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-                appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
-                [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[AppEnvironmentConstants appTheme].mainGuiTint, NSForegroundColorAttributeName, nil]];
+                appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].navBarToolbarTextTint;
+                [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[AppEnvironmentConstants appTheme].navBarToolbarTextTint, NSForegroundColorAttributeName, nil]];
                 [weakSelf.navigationController.navigationBar setTitleTextAttributes:
-                 @{NSForegroundColorAttributeName:[AppEnvironmentConstants appTheme].mainGuiTint}];
+                 @{NSForegroundColorAttributeName:[AppEnvironmentConstants appTheme].navBarToolbarTextTint}];
             }];
         }];
         [self presentViewController:activityVC

@@ -214,7 +214,6 @@ static NSDate *timeSinceLastPageLoaded;
     _searchResults = [NSMutableArray array];
     _lastSuccessfullSuggestions = [NSMutableArray array];
     
-    self.navigationController.toolbarHidden = NO;
     //_navBar.title = @"Adding Music";
     _cancelButton = [[UIBarButtonItem alloc] initWithTitle:@"Close" style:UIBarButtonItemStyleDone target:self action:@selector(cancelTapped)];
     [self setToolbarItems:@[_cancelButton]];
@@ -477,6 +476,7 @@ static NSDate *timeSinceLastPageLoaded;
 //User tapped the search box textField
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
+    self.navigationController.toolbarHidden = YES;
     if(searchBar.text.length == 0)
         self.tableView.scrollEnabled = NO;
     
@@ -509,6 +509,7 @@ static NSDate *timeSinceLastPageLoaded;
     _lastSuccessfullSearchString = searchBar.text;
     self.navigationController.navigationBar.topItem.title = @"Search Results";
     [_searchBar resignFirstResponder];
+    self.navigationController.toolbarHidden = NO;
     
     [self showLoadingIndicatorInCenterOfTable:YES];
     
@@ -533,8 +534,9 @@ static NSDate *timeSinceLastPageLoaded;
         [self dismissViewControllerAnimated:YES completion:^{
             [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
          }];
-    }else{
-        self.navigationController.navigationBar.topItem.title = @"Search Results";
+    } else {
+        //self.navigationController.navigationBar.topItem.title = @"Search Results";
+        self.navigationController.toolbarHidden = NO;
         
         //restore state of search bar and table before uncommited search bar edit began
         [_searchBar setText:_lastSuccessfullSearchString];
@@ -545,8 +547,6 @@ static NSDate *timeSinceLastPageLoaded;
         if(self.displaySearchResults == NO && _searchResults.count > 0){  //bring user back to previous results
             //restore state of search bar before uncommited search bar edit began
             [_searchBar setText:_lastSuccessfullSearchString];
-            
-            //[self.searchSuggestions removeAllObjects];
             
             [_searchBar resignFirstResponder];
             self.displaySearchResults = YES;
