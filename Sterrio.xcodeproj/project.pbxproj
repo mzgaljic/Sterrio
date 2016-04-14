@@ -691,6 +691,7 @@
 		87A8FCFB1CBF2A7800A43637 /* UIColor+Hex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Hex.m"; sourceTree = "<group>"; };
 		87A8FCFC1CBF2A7800A43637 /* UIImage+BetterAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+BetterAdditions.h"; sourceTree = "<group>"; };
 		87A8FCFD1CBF2A7800A43637 /* UIImage+BetterAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+BetterAdditions.m"; sourceTree = "<group>"; };
+		87A8FD021CBF368200A43637 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		87A9535D1B3E1E54002E9872 /* DiscogsSearchService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscogsSearchService.h; sourceTree = "<group>"; };
 		87A9535E1B3E1E54002E9872 /* DiscogsSearchService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsSearchService.m; sourceTree = "<group>"; };
 		87A953601B3E1E54002E9872 /* DiscogsItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscogsItem.h; sourceTree = "<group>"; };
@@ -1585,6 +1586,7 @@
 				87A8FC491CBF214E00A43637 /* NSString+Morphing.m */,
 				87A8FC4A1CBF214E00A43637 /* TOMSMorphingLabel.h */,
 				87A8FC4B1CBF214E00A43637 /* TOMSMorphingLabel.m */,
+				87A8FD021CBF368200A43637 /* LICENSE */,
 			);
 			name = TomsMorphingLabel;
 			path = "3rd Party Libraries/TomsMorphingLabel";
