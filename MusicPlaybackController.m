@@ -156,15 +156,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 
 + (void)internalReturnToPreviousTrack
 {
-    if(! [MusicPlaybackController shouldSeekToStartOnBackPress]){
-        [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
-        PlayableItem *oldItem = [NowPlayingSong sharedInstance].nowPlayingItem;
-        Song *previousSong = [playbackQueue skipToPrevious].songForItem;
-        
-        [VideoPlayerWrapper startPlaybackOfSong:previousSong
-                                   goingForward:NO
-                                oldPlayableItem:oldItem];
-    } else{
+    if([MusicPlaybackController shouldSeekToStartOnBackPress]){
         [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
         [MusicPlaybackController resumePlayback];
         [[NSNotificationCenter defaultCenter] postNotificationName:MZAVPlayerStallStateChanged
@@ -177,18 +169,34 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
             //code to be executed on the main queue after delay
             [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
         });
+    } else{
+        [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
+        PlayableItem *oldItem = [NowPlayingSong sharedInstance].nowPlayingItem;
+        Song *previousSong = [playbackQueue skipToPrevious].songForItem;
+        
+        [VideoPlayerWrapper startPlaybackOfSong:previousSong
+                                   goingForward:NO
+                                oldPlayableItem:oldItem];
     }
 }
 
 + (BOOL)shouldSeekToStartOnBackPress
 {
     short boundary = MZSkipToSongBeginningIfBackBtnTappedBoundary;
-    if(player.secondsLoaded == 0
-       || ([self playerElapsedTime] <= boundary && nowPlayingObject.nowPlayingItem != nil)
-       || (isnan([self playerElapsedTime]) && nowPlayingObject.nowPlayingItem == nil)){
+    if(nowPlayingObject.nowPlayingItem == nil) {
+        //impossible to seek if the current item is null (end of queue?). Go back to prev song.
         return NO;
-    } else
+    } else if(player.secondsLoaded == 0) {
+        //don't seek back to start if video didn't start fully streaming yet!
+        return NO;
+    } else if([self playerElapsedTime] <= boundary) {
+        //we only seek back to start if the elapsed time is > boundary.
+        return NO;
+    } else {
+        //otherwise, the playerItem isn't nil, the video began streaming, and we're past the
+        //boudnary. Definitely makes sense to seek back to the beginning.
         return YES;
+    }
 }
 
 + (NSUInteger)playerElapsedTime
