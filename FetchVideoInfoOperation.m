@@ -67,7 +67,7 @@
             completedOperation = (DetermineVideoPlayableOperation *)self.dependencies[i];
             
             NSAssert([completedOperation respondsToSelector:@selector(allowedToPlayVideo)], @"allowedToPlayVideo var is not being passed between NSOperations anymore.");
-            allowedToPlayVideo = [completedOperation performSelector:@selector(allowedToPlayVideo)
+            allowedToPlayVideo = (BOOL)[completedOperation performSelector:@selector(allowedToPlayVideo)
                                                           withObject:nil];
         }
     }

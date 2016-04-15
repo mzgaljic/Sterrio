@@ -367,7 +367,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 [popup setButtonTextColor:[AppEnvironmentConstants appTheme].mainGuiTint];
                 [popup setTitleTextColor:[UIColor darkGrayColor]];
                 
-                BOOL hasDestructiveButton = (_songIAmEditing.artist);
+                BOOL hasDestructiveButton = (_songIAmEditing.artist != nil);
                 if(hasDestructiveButton)
                     [popup setButtonTextColor:[UIColor redColor]
                              forButtonAtIndex:0];
@@ -409,7 +409,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 }
                 [popup setButtonTextColor:[AppEnvironmentConstants appTheme].mainGuiTint];
                 
-                BOOL hasDestructiveButton = (_songIAmEditing.album);
+                BOOL hasDestructiveButton = (_songIAmEditing.album != nil);
                 if(hasDestructiveButton)
                     [popup setButtonTextColor:[UIColor redColor]
                              forButtonAtIndex:0];
@@ -454,7 +454,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 }
                 [popup setButtonTextColor:[AppEnvironmentConstants appTheme].mainGuiTint];
                 
-                BOOL hasDestructiveButton = (_currentAlbumArt);
+                BOOL hasDestructiveButton = (_currentAlbumArt != nil);
                 if(hasDestructiveButton)
                     [popup setButtonTextColor:[UIColor redColor]
                              forButtonAtIndex:0];
@@ -560,7 +560,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     NSString *newName = (NSString *)notification.object[0];
     newName = [newName removeIrrelevantWhitespace];
     
-    BOOL songHadNameBeforeUpdate = (_songIAmEditing.songName);
+    BOOL songHadNameBeforeUpdate = (_songIAmEditing.songName != nil);
     if([_songIAmEditing.songName isEqualToString:newName])
         return;
     if(newName.length == 0){  //was all whitespace, or user gave us an empty string

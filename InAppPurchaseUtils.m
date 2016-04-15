@@ -90,7 +90,7 @@
 - (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
 {
     NSUInteger numTransactionsToRestore = queue.transactions.count;
-    NSLog(@"received restored transactions: %lu", numTransactionsToRestore);
+    NSLog(@"received restored transactions: %lu", (unsigned long)numTransactionsToRestore);
     if(numTransactionsToRestore == 0) {
         [self hideSpinner];
         [self showNothingToRestoreAlert];
