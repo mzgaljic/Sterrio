@@ -98,6 +98,10 @@ short const dummyTabIndex = 2;
     [notifCenter addObserver:self
                     selector:@selector(dismissPlayerExpandingTip:) name:@"shouldDismissPlayerExpandingTip"
                       object:nil];
+    [notifCenter addObserver:self
+                    selector:@selector(appBecomingActiveAgain)
+                        name:UIApplicationDidBecomeActiveNotification
+                      object:nil];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle
@@ -122,7 +126,6 @@ short const dummyTabIndex = 2;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
     if([AppEnvironmentConstants areAdsRemoved] && self.adBanner) {
         self.adBanner.delegate = nil;
         self.adBanner = nil;
@@ -131,9 +134,9 @@ short const dummyTabIndex = 2;
         [self.adBanner loadRequest:[MZCommons getNewAdmobRequest]];
     }
     
-    if(numTimesViewHasAppeared != 0)
+    if(numTimesViewHasAppeared != 0) {
         [self replaceNavControllerOnScreenWithNavController:self.currentNavController];
-    else{
+    } else {
         //initial launch...replaceNavController method optimizes and checks if the viewcontrollers
         //match. need to avoid the optimization the first time. setting current nav controller too.
         self.currentNavController = nil;
@@ -142,8 +145,9 @@ short const dummyTabIndex = 2;
     numTimesViewHasAppeared++;
     
     [self setupTabBarAndTabBarView];
-    if(self.tabBarItems == nil)
+    if(self.tabBarItems == nil) {
         [self createTabBarItems];
+    }
     
     [self setTabBarItems];
     self.edgesForExtendedLayout = UIRectEdgeNone;
@@ -170,6 +174,10 @@ short const dummyTabIndex = 2;
 - (void)viewWillLayoutSubviews
 {
     [super viewWillLayoutSubviews];
+    
+    //these checks are needed since viewWillLayoutSubviews is called A LOT. The code in here
+    //is 'expensive' and a waste. This method is how the tab bar 'fixes' its frame when the
+    //user is in a call or using google maps (status bar height expands).
     if(! changingTabs) {
         float duration = [UIApplication sharedApplication].statusBarOrientationAnimationDuration;
         [UIView animateWithDuration:duration
@@ -193,6 +201,32 @@ short const dummyTabIndex = 2;
     }
     
     changingTabs = NO;
+}
+
+static NSTimeInterval prevAppBecameActiveTimeInterval = 0;
+- (void)appBecomingActiveAgain
+{
+    if([AppEnvironmentConstants areAdsRemoved] && self.adBanner) {
+        return;
+    }
+    if(prevAppBecameActiveTimeInterval == 0) {
+        prevAppBecameActiveTimeInterval = [NSDate timeIntervalSinceReferenceDate];
+    } else {
+        NSTimeInterval oldInterval = prevAppBecameActiveTimeInterval;
+        NSTimeInterval newInterval = [NSDate timeIntervalSinceReferenceDate];
+        prevAppBecameActiveTimeInterval = newInterval;
+        if(newInterval - oldInterval <= 20) {
+            //don't want to show ad on app resume if the last app resume was within 30 seconds.
+            return;
+        }
+    }
+    //app not about to launch, and the this VC is visible on screen.
+    if(numTimesViewHasAppeared != 0 && self.isViewLoaded && self.view.window) {
+        if(! [AppEnvironmentConstants areAdsRemoved] && self.adBanner) {
+            //get new ad.
+            [self.adBanner loadRequest:[MZCommons getNewAdmobRequest]];
+        }
+    }
 }
 
 #pragma mark - Tab bar delegates
@@ -654,7 +688,6 @@ short const dummyTabIndex = 2;
                                 duration:(NSTimeInterval)duration
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    
     [self updateAdBannerForOrientation:toInterfaceOrientation];
     
     if([AppEnvironmentConstants isTabBarHidden] && !tabBarAnimationInProgress)
@@ -767,6 +800,16 @@ short const dummyTabIndex = 2;
 #pragma mark - GADBanner delegate
 - (void)adViewDidReceiveAd:(GADBannerView *)bannerView
 {
+    [UIView animateWithDuration:0.5
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         removeAdsShamelessPlug.alpha = 0;
+                     }
+                     completion:^(BOOL finished) {
+                         [removeAdsShamelessPlug removeFromSuperview];
+                         removeAdsShamelessPlug = nil;
+                     }];
     UIView *spinnerView = self.adBannerSpinner.superview;
     [self.adBannerSpinner stopAnimating];
     [self.adBannerSpinner removeFromSuperview];
@@ -774,6 +817,41 @@ short const dummyTabIndex = 2;
         self.adBanner.alpha = 1;
         [spinnerView removeFromSuperview];
     }];
+}
+
+static UILabel *removeAdsShamelessPlug = nil;
+- (void)adView:(GADBannerView *)bannerView didFailToReceiveAdWithError:(GADRequestError *)error
+{
+    UIView *spinnerView = self.adBannerSpinner.superview;
+    [self.adBannerSpinner stopAnimating];
+    [self.adBannerSpinner removeFromSuperview];
+    [UIView animateWithDuration:0.5 animations:^{
+        [spinnerView removeFromSuperview];
+    }];
+    
+    int bannerHeight = bannerView.frame.size.height;
+    CGRect currFrame = self.tabBarView.frame;
+    CGRect newFrame = CGRectMake(0, currFrame.origin.y + currFrame.size.height, currFrame.size.width, bannerHeight);
+    if(removeAdsShamelessPlug == nil) {
+        removeAdsShamelessPlug = [[UILabel alloc] initWithFrame:newFrame];
+        removeAdsShamelessPlug.numberOfLines = 1;
+        removeAdsShamelessPlug.textColor = [AppEnvironmentConstants appTheme].contrastingTextColor;
+        removeAdsShamelessPlug.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:15];
+        removeAdsShamelessPlug.textAlignment = NSTextAlignmentCenter;
+        removeAdsShamelessPlug.text = @"Did you know ads can be removed in settings?";
+    } else {
+        removeAdsShamelessPlug.frame = newFrame;
+    }
+    removeAdsShamelessPlug.alpha = 0;
+    [self.view addSubview:removeAdsShamelessPlug];
+    [UIView animateWithDuration:0.8
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction
+                     animations:^{
+                         removeAdsShamelessPlug.alpha = 1;
+                     }
+                     completion:nil];
+
 }
 
 #pragma mark - CMPopTipView delegate

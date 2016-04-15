@@ -482,7 +482,6 @@ static NSDate *timeSinceLastPageLoaded;
     
     //show the cancel button
     self.displaySearchResults = NO;
-    //_navBar.title = @"Adding Music";
     [_searchBar setShowsCancelButton:YES animated:YES];
 
     if(self.searchInitiatedAlready){
