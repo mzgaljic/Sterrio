@@ -322,7 +322,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
         {
             //app theme color
             
-            cell.textLabel.text = @"App Theme";
+            cell.textLabel.text = @"Theme";
             cell.detailTextLabel.text = nil;
             
             UIImage *colorPaletteImg = [UIImage imageNamed:@"color palette icon"];

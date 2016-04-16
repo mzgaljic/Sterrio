@@ -195,7 +195,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             }
             else{
                 cell.detailTextLabel.text = @"name needed";
-                cell.detailTextLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+                cell.detailTextLabel.textColor = [AppEnvironmentConstants appTheme].contrastingTextColor;
             }
             
             cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR color:[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor]];
@@ -245,13 +245,13 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             if(!_userPickingNewYtVideo && _creatingANewSong
                && _songIAmEditing.songName.length > 0 && canShowAddtoLibButton){
                 cell.textLabel.text = @"Add to library";
-                cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+                cell.textLabel.textColor = [AppEnvironmentConstants appTheme].contrastingTextColor;
                 cell.selectionStyle = UITableViewCellSelectionStyleDefault;
                 [spinner stopAnimating];
                 spinner = nil;
             } else if(_userPickingNewYtVideo && _songIAmEditing.songName > 0) {
                 cell.textLabel.text = @"Save";
-                cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+                cell.textLabel.textColor = [AppEnvironmentConstants appTheme].contrastingTextColor;
                 cell.selectionStyle = UITableViewCellSelectionStyleDefault;
                 [spinner stopAnimating];
                 spinner = nil;
@@ -259,7 +259,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                       && _songIAmEditing.songName.length > 0){
                 //song name provided, but not all video info needed has loaded
                 cell.textLabel.text = @"   Loading additional video info...";
-                cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+                cell.textLabel.textColor = [AppEnvironmentConstants appTheme].contrastingTextColor;
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
                 spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
                 cell.accessoryView = spinner;
@@ -364,7 +364,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     aButton.titleLabel.font = [UIFont fontWithName:regularFont
                                                               size:20];
                 }
-                [popup setButtonTextColor:[AppEnvironmentConstants appTheme].mainGuiTint];
+                [popup setButtonTextColor:[AppEnvironmentConstants appTheme].contrastingTextColor];
                 [popup setTitleTextColor:[UIColor darkGrayColor]];
                 
                 BOOL hasDestructiveButton = (_songIAmEditing.artist != nil);
@@ -407,7 +407,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     aButton.titleLabel.font = [UIFont fontWithName:regularFont
                                                               size:20];
                 }
-                [popup setButtonTextColor:[AppEnvironmentConstants appTheme].mainGuiTint];
+                [popup setButtonTextColor:[AppEnvironmentConstants appTheme].contrastingTextColor];
                 
                 BOOL hasDestructiveButton = (_songIAmEditing.album != nil);
                 if(hasDestructiveButton)
@@ -452,7 +452,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     aButton.titleLabel.font = [UIFont fontWithName:regularFont
                                                               size:20];
                 }
-                [popup setButtonTextColor:[AppEnvironmentConstants appTheme].mainGuiTint];
+                [popup setButtonTextColor:[AppEnvironmentConstants appTheme].contrastingTextColor];
                 
                 BOOL hasDestructiveButton = (_currentAlbumArt != nil);
                 if(hasDestructiveButton)

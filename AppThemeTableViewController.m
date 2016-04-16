@@ -30,7 +30,7 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = @"App Theme";
+    self.title = @"Theme";
     defaultIndex = [MZAppTheme defaultThemeIndex];
     [self initColorArrays];
 }
