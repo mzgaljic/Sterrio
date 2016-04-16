@@ -34,10 +34,13 @@
     CGSize cgSizeMax = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
     UIFont *currFont = self.detailTextLabel.font;
     CGRect detailTextLabelRect;
-    detailTextLabelRect = [self.detailTextLabel.text boundingRectWithSize:cgSizeMax
-                                                           options:NSStringDrawingUsesLineFragmentOrigin
-                                                        attributes:@{NSFontAttributeName : currFont}
-                                                           context:nil];
+    CGRect temp = [self.detailTextLabel.text boundingRectWithSize:cgSizeMax
+                                                          options:NSStringDrawingUsesLineFragmentOrigin
+                                                       attributes:@{NSFontAttributeName : currFont}
+                                                          context:nil];
+    //must round up all float values because then this issue occurrs: http://goo.gl/AWQ0hj
+    detailTextLabelRect = CGRectMake(ceilf(temp.origin.x), ceilf(temp.origin.y), ceilf(temp.size.width), ceilf(temp.size.height));
+    
     CGFloat detailTextLabelWidth = detailTextLabelRect.size.width;
     
     CGRect detailTextLabelFrame;
