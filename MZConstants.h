@@ -45,7 +45,7 @@ extern NSString * const MZAdMobUnitId;
 
 extern NSString * const MZEmailBugReport;
 extern NSString * const MZEmailFeedback;
-#warning before releasing, put together a better PDF.
+#warning before releasing, change link to www.Sterrio.com/terms.pdf
 extern NSString * const MZAppTermsPdfLink;
 extern NSString * const MZAddSongToUpNextString;
 extern NSString * const MZUserCanTransitionToMainInterface;

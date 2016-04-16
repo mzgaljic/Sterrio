@@ -708,7 +708,7 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
         //still scrolling.
         if(! dismissingVc) {
             int numAppRatingCells = (_canShowAppRatingCell) ? 1 : 0;
-            NSString *assertDesc = [NSString stringWithFormat:@"Cell indexpath.row is %li but there are only %lu search results (+ %i app rating cells). last index is %u.", (long)indexPath.row, (unsigned long)_searchResults.count, numAppRatingCells, _searchResults.count-1];
+            NSString *assertDesc = [NSString stringWithFormat:@"Cell indexpath.row is %li but there are only %lu search results (+ %i app rating cells). last index is %lu.", (long)indexPath.row, (unsigned long)_searchResults.count, numAppRatingCells, _searchResults.count-1];
             NSAssert(_searchResults.count-1 + numAppRatingCells >= indexPath.row, assertDesc);
         }
         
