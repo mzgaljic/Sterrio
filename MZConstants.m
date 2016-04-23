@@ -46,7 +46,7 @@ NSString * const MZAdMobUnitId = @"ca-app-pub-3961646861945951/6727549027";
 
 NSString * const MZEmailBugReport = @"bug-report@sterrio.com";
 NSString * const MZEmailFeedback = @"feedback@sterrio.com";
-NSString * const MZAppTermsPdfLink = @"https://dl.dropbox.com/s/wq4j7ee9vorlglu/Terms.pdf?dl=0";
+NSString * const MZAppTermsPdfLink = @"https://www.sterrio.com/terms.pdf";
 NSString * const MZAddSongToUpNextString = @"Play Next";
 NSString * const MZUserCanTransitionToMainInterface = @"user can transition to main interface";
 NSString * const MZUserAboutToDismissFromSettings = @"User going to dismiss Settings VC";
