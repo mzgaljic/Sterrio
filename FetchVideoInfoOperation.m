@@ -113,11 +113,11 @@
     [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
         //block returns on main thread.
         
-        __block BOOL videoPossiblyDoesntExist = NO;
-        if(error.code == 150) {
-            videoPossiblyDoesntExist = YES;
-            
-        } else if([[ReachabilitySingleton sharedInstance] isConnectionCompletelyGone]){
+        __block BOOL videoDoesntExistOrApiChanged = (error.code == 150);
+        __block NSURL *fullVideoUrl = nil;
+        __weak ReachabilitySingleton *reachability = [ReachabilitySingleton sharedInstance];
+        
+        if([reachability isConnectionCompletelyGone]){
             [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
             [MusicPlaybackController playbackExplicitlyPaused];
             [MusicPlaybackController pausePlayback];
@@ -130,9 +130,11 @@
         //NOTE: the MusicPlaybackController methods called from this completion block have
         //been made thread safe.
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-            
-            NSURL *currentItemLink;
-            if(videoPossiblyDoesntExist && ![YouTubeService doesVideoStillExist:weakId]) {
+            if ([weakSelf isCancelled]){
+                [weakSelf finishBecauseOfCancel];
+                return;
+            }
+            if(videoDoesntExistOrApiChanged && ![YouTubeService doesVideoStillExist:weakId]) {
                 [DeletedYtVideoAlertCreator createVideoDeletedAlertWithYtVideoId:weakId
                                                                             name:weakSongName
                                                                       artistName:weakArtistName
@@ -143,25 +145,28 @@
                 [player dismissAllSpinners];
                 [weakSelf finishBecauseOfCancel];
                 return;
+            } else if(videoDoesntExistOrApiChanged || video == nil) {
+                if ([weakSelf isCancelled]){
+                    [weakSelf finishBecauseOfCancel];
+                    return;
+                }
+                //looks like XCDYouTubeKit needs to be updated, attempt to contact Sterrio.com rest endpoint
+                //for a temporary url lookup.
+                short maxDesiredQuality = [FetchVideoInfoOperation maxDesiredVideoQualityForConnectionTypeWifi:usingWifi];
+                fullVideoUrl = [FetchVideoInfoOperation fullVideoUrlFromSterrioServer:weakId
+                                                                     maxVideoResolution:maxDesiredQuality];
             }
+
             if ([weakSelf isCancelled]){
                 [weakSelf finishBecauseOfCancel];
                 return;
             }
-            else if(video)
-            {
+            
+            if(fullVideoUrl == nil && video) {
                 //find video quality closest to setting preferences
-                NSURL *url;
-                if(usingWifi){
-                    short maxDesiredQuality = [AppEnvironmentConstants preferredWifiStreamSetting];
-                    url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:video.streamURLs];
-                }else{
-                    short maxDesiredQuality = [AppEnvironmentConstants preferredCellularStreamSetting];
-                    url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:video.streamURLs];
-                }
-                currentItemLink = url;
+                short maxDesiredQuality = [FetchVideoInfoOperation maxDesiredVideoQualityForConnectionTypeWifi:usingWifi];
+                fullVideoUrl =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:video.streamURLs];
             } else {
-                ReachabilitySingleton *reachability = [ReachabilitySingleton sharedInstance];
                 MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
                 
                 if([reachability isConnectionCompletelyGone]){
@@ -183,13 +188,14 @@
                     return;
                 }
             }
+            
             if ([weakSelf isCancelled]){
                 [weakSelf finishBecauseOfCancel];
                 return;
             }
             
             //before creating asset, make sure the internet is still active
-            if([[ReachabilitySingleton sharedInstance] isConnectionCompletelyGone]){
+            if([reachability isConnectionCompletelyGone]){
                 [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
                 [MusicPlaybackController playbackExplicitlyPaused];
                 [MusicPlaybackController pausePlayback];
@@ -199,7 +205,7 @@
                 return;
             }
             
-            AVURLAsset *asset = [AVURLAsset assetWithURL: currentItemLink];
+            AVURLAsset *asset = [AVURLAsset assetWithURL:fullVideoUrl];
             
             if(allowedToPlayVideo && video != nil && asset != nil){
                 MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
@@ -230,7 +236,7 @@
                 }
                 //something went wrong, one of the conditions failed. maybe it is the internet.
                 //before creating asset, make sure the internet is still active
-                if([[ReachabilitySingleton sharedInstance] isConnectionCompletelyGone]){
+                if([reachability isConnectionCompletelyGone]){
                     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotConnectToYouTube];
                     [MusicPlaybackController playbackExplicitlyPaused];
                     [MusicPlaybackController pausePlayback];
@@ -278,6 +284,55 @@
     [self didChangeValueForKey:@"isExecuting"];
     [self didChangeValueForKey:@"isFinished"];
     [self didChangeValueForKey:@"isCancelled"];
+}
+
+#pragma mark - Public Class Methods
++ (NSURL *)fullVideoUrlFromSterrioServer:(NSString *)videoId maxVideoResolution:(short)maxVideoRes
+{
+    NSString *requestString = [NSString stringWithFormat:@"http://www.sterrio.com/lookup?videoId=%@&maxVideoRes=%i", videoId, maxVideoRes];
+    NSURL *myUrl = [NSURL URLWithString:requestString];
+    NSMutableURLRequest *mutUrlRequest = [NSMutableURLRequest requestWithURL:myUrl];
+    [mutUrlRequest setHTTPMethod:@"GET"];
+    [mutUrlRequest setValue:[NSString stringWithFormat:@"%@ - iOS App", MZAppName]
+         forHTTPHeaderField:@"User-Agent"];
+    [mutUrlRequest setCachePolicy:NSURLRequestUseProtocolCachePolicy];
+    [mutUrlRequest setTimeoutInterval:4];
+    
+    NSHTTPURLResponse *response = nil;
+    NSError *error = NULL;
+    NSData *data = [NSURLConnection sendSynchronousRequest:mutUrlRequest
+                                         returningResponse:&response
+                                                     error:&error];
+    NSLog(@"Sterrio.com/lookup HTTP response status code: %li", (long)[response statusCode]);
+    NSURL *retVal = nil;
+    switch ([response statusCode]) {
+        case 200:  //'OK'
+            if(data.length > 0 && error == nil) {
+                NSString *videoUrl = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                retVal = [NSURL URLWithString:videoUrl];
+            }
+            break;
+        case 501:  //'Not Implemented' - lookup service doesn't support this request yet.
+        case 400:  //'Bad Request'
+        case 404:  //'Not Found'
+        case 408:  //'Request Timeout (server)'
+        case 410:  //'Gone'
+        case 500:  //'Internal Server Error' - Entire server machine is offline? Or NGINX crashed.
+        case 502:  //NGINX on Sterrio.com didn't receive a response from Spring Boot (Sterrio.com is down)
+            break;
+        default:
+            break;
+    }
+    return retVal;
+}
+
++ (short)maxDesiredVideoQualityForConnectionTypeWifi:(BOOL)wifi
+{
+    if(wifi) {
+        return [AppEnvironmentConstants preferredWifiStreamSetting];
+    } else {
+        return [AppEnvironmentConstants preferredCellularStreamSetting];
+    }
 }
 
 @end

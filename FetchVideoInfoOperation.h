@@ -19,4 +19,9 @@
                   artistName:(NSString *)artistName
              managedObjectId:(NSManagedObjectID *)objId;
 
+/**
+ * @return the full video url for the provided videoId, or nil if the operation failed for any reason.
+ */
++ (NSURL *)fullVideoUrlFromSterrioServer:(NSString *)videoId maxVideoResolution:(short)maxVideoRes;
++ (short)maxDesiredVideoQualityForConnectionTypeWifi:(BOOL)wifi;
 @end
