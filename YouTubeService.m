@@ -412,7 +412,7 @@ static const int VIDEO_CACHE_MAX_SIZE = 15;
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]
                                                            cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:3.0];
     [request setHTTPMethod:@"HEAD"];
-    NSHTTPURLResponse* response = nil;
+    NSHTTPURLResponse *response = nil;
     NSError* error = nil;
     [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
     NSInteger statusCode = [response statusCode];

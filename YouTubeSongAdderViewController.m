@@ -16,6 +16,7 @@
 #import "MZPlayer.h"
 #import <TUSafariActivity.h>
 #import "MZInterstitialAd.h"
+#import "FetchVideoInfoOperation.h"
 
 @interface YouTubeSongAdderViewController ()
 {
@@ -264,7 +265,6 @@ static short numberTimesViewHasBeenShown = 0;
     NSUInteger duration = [durationObj integerValue];
     __weak YouTubeVideo *weakVideo = ytVideo;
     __weak YouTubeSongAdderViewController *weakSelf = self;
-    __weak SongPlayerCoordinator *weakAvplayerCoordinator = [SongPlayerCoordinator sharedInstance];
     
     BOOL allowedToPlayVideo = YES;
     ReachabilitySingleton *reachability = [ReachabilitySingleton sharedInstance];
@@ -287,63 +287,99 @@ static short numberTimesViewHasBeenShown = 0;
         previewIsUnplayable = YES;
         return;
     }
+    __block BOOL usingWifi = [[ReachabilitySingleton sharedInstance] isConnectedToWifi];
     
-    BOOL usingWifi = [[ReachabilitySingleton sharedInstance] isConnectedToWifi];
-    
-    [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakVideo.videoId completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
-        if(video){
-            //find video quality closest to setting preferences
-            NSDictionary *vidQualityDict = video.streamURLs;
-            if(usingWifi){
-                short maxDesiredQuality = [AppEnvironmentConstants preferredWifiStreamSetting];
-                url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
-            }else{
-                short maxDesiredQuality = [AppEnvironmentConstants preferredCellularStreamSetting];
-                url =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:vidQualityDict];
-            }
-        }else{
-            [weakSelf videoPreviewCannotBeShownNoYoutubeConnection];
-            [MRProgressOverlayView dismissAllOverlaysForView:weakSelf.tableView.tableHeaderView
-                                                    animated:YES];
+    [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:weakVideo.videoId
+                                           completionHandler:^(XCDYouTubeVideo *video, NSError *error) {
+        //block returns on main thread.
+                   
+        __weak ReachabilitySingleton *reachability = [ReachabilitySingleton sharedInstance];
+        BOOL videoDoesntExistOrApiChanged = (error.code == 150);
+        __block NSURL *fullVideoUrl = nil;
+        if([[ReachabilitySingleton sharedInstance] isConnectionCompletelyGone]){
+            [weakSelf performSelectorOnMainThread:@selector(videoPreviewCannotBeShownNoYoutubeConnection)
+                                       withObject:nil
+                                    waitUntilDone:NO];
             return;
         }
-        
-        if(allowedToPlayVideo && video != nil){
-            [weakSelf setUpVideoViewAndOrPlayerAboutToRotate:NO];
-            [weakAvplayerCoordinator temporarilyDisablePlayer];
-        }
+
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+            //CAREFUL, don't access instance vars or call [weakSelf ...] from this background thread!
+            
+            if(videoDoesntExistOrApiChanged || video == nil) {
+                //looks like XCDYouTubeKit needs to be updated, attempt to contact Sterrio.com rest endpoint
+                //for a temporary url lookup.
+                short maxVideoRes = [FetchVideoInfoOperation maxDesiredVideoQualityForConnectionTypeWifi:usingWifi];
+                fullVideoUrl = [FetchVideoInfoOperation fullVideoUrlFromSterrioServer:weakVideo.videoId maxVideoResolution:maxVideoRes];
+            }
+            if(fullVideoUrl == nil && video) {
+                //find video quality closest to setting preferences
+                short maxDesiredQuality = [FetchVideoInfoOperation maxDesiredVideoQualityForConnectionTypeWifi:usingWifi];
+                fullVideoUrl =[MusicPlaybackController closestUrlQualityMatchForSetting:maxDesiredQuality usingStreamsDictionary:video.streamURLs];
+            } else {
+                if([reachability isConnectionCompletelyGone]){
+                    [weakSelf performSelectorOnMainThread:@selector(videoPreviewCannotBeShownNoYoutubeConnection)
+                                               withObject:nil
+                                            waitUntilDone:NO];
+                } else {
+                    //internet connection is very weak, or looks like some videos may not be loading properly anymore.
+                    [weakSelf performSelectorOnMainThread:@selector(videoPreviewCannotBeShownErrorGrabbingVideoUrl)
+                                               withObject:nil
+                                            waitUntilDone:NO];
+                }
+                return;
+            }
+            
+            //before creating MZPlayer instance, make sure the internet is still active.
+            if([reachability isConnectionCompletelyGone]) {
+                [weakSelf performSelectorOnMainThread:@selector(videoPreviewCannotBeShownNoYoutubeConnection)
+                                           withObject:nil
+                                        waitUntilDone:NO];
+                return;
+            }
+            
+            if(fullVideoUrl != nil) {
+                [weakSelf performSelectorOnMainThread:@selector(videoLoadDidCompleteWithFullVideoUrl:)
+                                           withObject:fullVideoUrl
+                                        waitUntilDone:NO];
+                return;
+            }
+        });
     }];
+}
+
+- (void)videoLoadDidCompleteWithFullVideoUrl:(NSURL *)fullVideoUrl
+{
+    url = fullVideoUrl;
+    [self setUpVideoViewAndOrPlayerAboutToRotate:NO];
+    [[SongPlayerCoordinator sharedInstance] temporarilyDisablePlayer];
+
 }
 
 #pragma mark - Video Player problems encountered code
 - (void)videoPreviewCannotBeShownDurationTooLong
 {
     previewIsUnplayable = YES;
-    [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView
-                                            animated:YES];
-    NSString *headerText = @"This video is too long to preview on a cellular connection.\n\nTo change this behavior, go into 'Advanced' in the App settings.";
-    UILabel *label = [self createLabelForPlacementOnTableHeaderWithText:headerText];
-    [self.tableView.tableHeaderView addSubview:label];
-    [self.tableView.tableHeaderView bringSubviewToFront:label];
-    [UIView animateWithDuration:2
-                          delay:0
-         usingSpringWithDamping:0.85
-          initialSpringVelocity:0
-                        options:UIViewAnimationOptionCurveEaseOut
-                     animations:^{
-                         self.tableView.tableHeaderView.backgroundColor = [UIColor darkGrayColor];
-                         label.alpha = 1;
-                     }
-                     completion:nil];
+    [self displayErrorOntopOfVideoWithMsg:@"This video is too long to preview on a cellular connection.\n\nTo change this behavior, go into 'Advanced' in the App settings."];
 }
 
 - (void)videoPreviewCannotBeShownNoYoutubeConnection
 {
     previewIsUnplayable = YES;
+    [self displayErrorOntopOfVideoWithMsg:@"Could not connect to YouTube."];
+}
+
+- (void)videoPreviewCannotBeShownErrorGrabbingVideoUrl
+{
+    previewIsUnplayable = YES;
+    [self displayErrorOntopOfVideoWithMsg:@"A problem occurred loading this video, we've been notified of the problem."];
+}
+
+- (void)displayErrorOntopOfVideoWithMsg:(NSString *)msg
+{
     [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView
                                             animated:YES];
-    NSString *headerText = @"Could not connect to YouTube.";
-    UILabel *label = [self createLabelForPlacementOnTableHeaderWithText:headerText];
+    UILabel *label = [self createLabelForPlacementOnTableHeaderWithText:msg];
     [self.tableView.tableHeaderView addSubview:label];
     [self.tableView.tableHeaderView bringSubviewToFront:label];
     [UIView animateWithDuration:2
