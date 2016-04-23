@@ -205,7 +205,7 @@ static int numSkippedSongs = 0;
             NSString *title, *msg;
             if(type == ALERT_TYPE_TosAndPrivacyPolicy) {
                 title = @"Terms";
-                msg = [NSString stringWithFormat:@"Please take a minute to review %@'s Terms and Conditions. By tapping \"Accept\", you agree to the terms.", MZAppName];
+                msg = [NSString stringWithFormat:@"Please take a minute to review %@'s Terms and Conditions. By tapping \"Accept\", you agree to these terms.", MZAppName];
             } else {
                 title = @"Updated Terms";
                 msg = @"There are new Terms and Conditions, please take a minute to review them. By tapping \"Accept\", you agree to these updates.";
