@@ -133,6 +133,8 @@ static BOOL skipCertainInitStepsFlag = NO;
     if(preDeallocedAlready)
         return;
     
+    [[SongPlayerCoordinator sharedInstance] enablePlayerAgain];
+    
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     appDelegate.previewPlayer = nil;
     
@@ -158,7 +160,6 @@ static BOOL skipCertainInitStepsFlag = NO;
         [MusicPlaybackController resumePlayback];
         [MusicPlaybackController explicitlyPausePlayback:NO];
     }
-    [[SongPlayerCoordinator sharedInstance] enablePlayerAgain];
 }
 
 - (void)viewDidLoad
