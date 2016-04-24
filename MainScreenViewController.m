@@ -246,6 +246,7 @@ static NSTimeInterval prevAppBecameActiveTimeInterval = 0;
     if(adsRemoved == prevAdsRemovedValue && self.currentNavController == newNavController)
         return;
     
+    adsRemoved = [AppEnvironmentConstants areAdsRemoved];
     BOOL oldNavBarHidden = self.currentNavController.navigationBarHidden;
     [newNavController setNavigationBarHidden:oldNavBarHidden animated:NO];
     changingTabs = YES;
