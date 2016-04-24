@@ -132,6 +132,13 @@
     [self initFetchResultsController];
     self.extendedLayoutIncludesOpaqueBars = YES;
     
+    //tab bar overlaps part of the table, which causes the scroll indicators to get cut off...
+    UIEdgeInsets scrollInsets = UIEdgeInsetsMake(self.tableView.scrollIndicatorInsets.top,
+                                                 self.tableView.scrollIndicatorInsets.left,
+                                                 self.tableView.scrollIndicatorInsets.bottom + MZTabBarHeight,
+                                                 self.tableView.scrollIndicatorInsets.right);
+    self.tableView.scrollIndicatorInsets = scrollInsets;
+    
     [self establishTableViewDataSource];
     self.tableView.allowsSelectionDuringEditing = YES;
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
