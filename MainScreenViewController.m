@@ -617,7 +617,7 @@ static NSTimeInterval prevAppBecameActiveTimeInterval = 0;
 
 - (void)forceTabBarToRedrawFromScratch
 {
-    [[UITabBar appearance] setTintColor:[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor]];
+    [[UITabBar appearance] setTintColor:[AppEnvironmentConstants appTheme].contrastingTextColor];
     
     [self.centerButton removeFromSuperview];
     [self.tabBar removeFromSuperview];
