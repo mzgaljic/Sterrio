@@ -733,9 +733,9 @@ static NSTimer *autoHideTimer;
     //Play-Pause button
     if(self.playPauseButton == nil) {
         self.playPauseButton = [[SSBouncyButton alloc] initAsImage];
-        UIImage *pauseImage = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].navBarToolbarTextTint
+        UIImage *pauseImage = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                              :[UIImage imageNamed:@"Pause"]];
-        UIImage *playImage = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].navBarToolbarTextTint
+        UIImage *playImage = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
                                                             :[UIImage imageNamed:@"Play"]];
         [self.playPauseButton setImage:pauseImage forState:UIControlStateNormal];
         [self.playPauseButton setImage:playImage forState:UIControlStateSelected];
