@@ -53,6 +53,25 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     xValueBeforeDrag = self.frame.origin.x;
 }
 
+- (void)updateCachedHudControlsForThemeChange
+{
+    //in this case the only thing that's cached is the play/pause button.
+    if(self.playPauseButton != nil) {
+        self.playPauseButton = [[SSBouncyButton alloc] initAsImage];
+        UIImage *pauseImage = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
+                                                             :[UIImage imageNamed:@"Pause"]];
+        UIImage *playImage = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
+                                                            :[UIImage imageNamed:@"Play"]];
+        [self.playPauseButton setImage:pauseImage forState:UIControlStateNormal];
+        [self.playPauseButton setImage:playImage forState:UIControlStateSelected];
+        [self.playPauseButton setSelected:NO];
+        [self.playPauseButton setHitTestEdgeInsets:UIEdgeInsetsMake(-30, -30, -30, -25)];
+        [self.playPauseButton addTarget:self
+                                 action:@selector(playButtonTapped:)
+                       forControlEvents:UIControlEventTouchUpInside];
+    }
+}
+
 #pragma mark - UIView lifecycle
 - (id)init
 {
@@ -70,6 +89,10 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(airplayDevicesAvailableChanged:)
                                                      name:MPVolumeViewWirelessRoutesAvailableDidChangeNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(updateCachedHudControlsForThemeChange)
+                                                     name:@"update hud immediately - new theme picked"
                                                    object:nil];
         
         lastOrientation = [UIApplication sharedApplication].statusBarOrientation;

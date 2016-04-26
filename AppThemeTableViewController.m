@@ -240,6 +240,10 @@ int const RESET_DEFUALTS_SECTION_NUM = 1;
                                             };
     self.navigationController.navigationBar.titleTextAttributes = navBarTitleAttributes;
     [[UIApplication sharedApplication] ignoreSnapshotOnNextApplicationLaunch];
+    
+    //Tell the players (that have HUDS) to update immediately so they don't look out of place
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"update hud immediately - new theme picked"
+                                                        object:nil];
 }
 
 
