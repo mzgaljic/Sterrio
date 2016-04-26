@@ -16,6 +16,7 @@
 @property (nonatomic, retain) NSString * artistName;
 @property (nonatomic, retain) NSString * smartSortArtistName;
 @property (nonatomic, retain) NSString * uniqueId;
+@property (nonatomic, retain) NSString *firstSmartChar;
 @property (nonatomic, retain) NSSet *albums;
 @property (nonatomic, retain) NSSet *standAloneSongs;
 @end

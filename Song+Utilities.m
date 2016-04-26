@@ -112,8 +112,12 @@
     song.uniqueId = [[NSObject UUID] copy];
     song.songName = name;
     song.smartSortSongName = [name regularStringToSmartSortString];
-    if(song.smartSortSongName.length == 0)  //edge case...if name itself is just something like 'the', dont remove all characters! Keep original name.
+    if(song.smartSortSongName.length == 0) {
+        //edge case...if name itself is just something like 'the', dont remove all characters!
+        //Keep original name.
         song.smartSortSongName = name;
+    }
+    song.firstSmartChar = [song.smartSortSongName substringToIndex:1];
     return song;
 }
 

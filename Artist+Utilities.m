@@ -52,6 +52,12 @@ NSString * const STANDALONE_SONGS_KEY = @"standAloneSongs";
     artist.uniqueId = [[NSObject UUID] copy];
     artist.artistName = name;
     artist.smartSortArtistName = [name regularStringToSmartSortString];
+    if(artist.smartSortArtistName.length == 0) {
+        //edge case...if name itself is just something like 'the', dont remove all characters!
+        //Keep original name.
+        artist.smartSortArtistName = name;
+    }
+    artist.firstSmartChar = [artist.smartSortArtistName substringToIndex:1];
     return artist;
 }
 
@@ -66,10 +72,13 @@ NSString * const STANDALONE_SONGS_KEY = @"standAloneSongs";
     artist.uniqueId = [[NSObject UUID] copy];
     artist.artistName = name;
     artist.smartSortArtistName = [name regularStringToSmartSortString];
-    if(artist.smartSortArtistName.length == 0)  //edge case,if name itself is something like 'the', dont remove all chars! Keep original name.
+    if(artist.smartSortArtistName.length == 0) {
+        //edge case,if name itself is something like 'the', dont remove all chars!
+        //Keep original name.
         artist.smartSortArtistName = name;
+    }
+    artist.firstSmartChar = [artist.smartSortArtistName substringToIndex:1];
     anAlbum.artist = artist;
-    
     return artist;
 }
 

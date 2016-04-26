@@ -19,6 +19,7 @@
 @property (nonatomic, retain) NSString * songName;
 @property (nonatomic, retain) NSString * uniqueId;
 @property (nonatomic, retain) NSString * youtube_id;
+@property (nonatomic, retain) NSString *firstSmartChar;
 @property (nonatomic, retain) Album *album;
 @property (nonatomic, retain) SongAlbumArt *albumArt;
 @property (nonatomic, retain) Artist *artist;

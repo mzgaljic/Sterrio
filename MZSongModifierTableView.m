@@ -551,7 +551,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             return;
     }
 }
-#pragma mark - Song editing logic
+#pragma mark - Entity (Song, Album, Artist) Editing logic
 #pragma mark - Editing text fields and creating new stuff
 - (void)songNameEditingComplete:(NSNotification *)notification
 {
@@ -567,6 +567,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         if(_creatingANewSong || _userPickingNewYtVideo){
             _songIAmEditing.songName = nil;
             _songIAmEditing.smartSortSongName = nil;
+            _songIAmEditing.firstSmartChar = nil;
         }
         if([self isRowPresentInTableView:0 withSection:1]){
             //delete the add to lib section if song name is non-existant.
@@ -581,9 +582,12 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     
     _songIAmEditing.songName = newName;
     _songIAmEditing.smartSortSongName = [newName regularStringToSmartSortString];
-    //edge case, if name is something like 'the', dont remove all characters! Keep original name.
-    if(_songIAmEditing.smartSortSongName.length == 0)
+    
+    if(_songIAmEditing.smartSortSongName.length == 0) {
+        //edge case, if name is something like 'the', dont remove all characters! Keep original name.
         _songIAmEditing.smartSortSongName = newName;
+    }
+    _songIAmEditing.firstSmartChar = [_songIAmEditing.smartSortSongName substringToIndex:1];
 
     __weak MZSongModifierTableView *weakself = self;
     //animate the song name in place
@@ -645,9 +649,12 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     
     _songIAmEditing.artist.artistName = newName;
     _songIAmEditing.artist.smartSortArtistName = [newName regularStringToSmartSortString];
-    //edge case, if name is something like 'the', dont remove all characters! Keep original name.
-    if(_songIAmEditing.artist.smartSortArtistName.length == 0)
-        _songIAmEditing.smartSortSongName = newName;
+
+    if(_songIAmEditing.artist.smartSortArtistName.length == 0) {
+        //edge case, if name is something like 'the', dont remove all characters! Keep original name.
+        _songIAmEditing.artist.smartSortArtistName = newName;
+    }
+    _songIAmEditing.artist.firstSmartChar = [_songIAmEditing.artist.smartSortArtistName substringToIndex:1];
     
     __weak MZSongModifierTableView *weakself = self;
     //animate the artist name in place
@@ -675,9 +682,12 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     
     _songIAmEditing.album.albumName = newName;
     _songIAmEditing.album.smartSortAlbumName = [newName regularStringToSmartSortString];
-    //edge case, if name is something like 'the', dont remove all characters! Keep original name.
-    if(_songIAmEditing.album.smartSortAlbumName.length == 0)
+    
+    if(_songIAmEditing.album.smartSortAlbumName.length == 0) {
+        //edge case, if name is something like 'the', dont remove all characters! Keep original name.
         _songIAmEditing.album.smartSortAlbumName = newName;
+    }
+    _songIAmEditing.album.firstSmartChar = [_songIAmEditing.album.smartSortAlbumName substringToIndex:1];
     
     __weak MZSongModifierTableView *weakself = self;
     //animate the album name in place

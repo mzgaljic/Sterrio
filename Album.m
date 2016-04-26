@@ -17,6 +17,7 @@
 @dynamic albumName;
 @dynamic smartSortAlbumName;
 @dynamic uniqueId;
+@dynamic firstSmartChar;
 @dynamic albumArt;
 @dynamic albumSongs;
 @dynamic artist;

@@ -41,19 +41,14 @@ NSString * const ARTIST_KEY = @"artist";
     album.uniqueId = [[NSObject UUID] copy];
     album.albumName = name;
     album.smartSortAlbumName = [name regularStringToSmartSortString];
-    if(album.smartSortAlbumName.length == 0)  //edge case,if name itself is something like 'the', dont remove all chars! Keep original name.
+    if(album.smartSortAlbumName.length == 0) {
+        //edge case,if name itself is something like 'the', dont remove all chars! Keep original name.
         album.smartSortAlbumName = name;
+    }
+    album.firstSmartChar = [album.smartSortAlbumName substringToIndex:1];
     album.albumArt = (AlbumAlbumArt *)[NSEntityDescription insertNewObjectForEntityForName:@"AlbumAlbumArt"
                                                    inManagedObjectContext:context];
     return album;
-}
-
-+ (void)updateAlbumSmartSortName:(Album *)anAlbum
-{
-    NSString *originalSmartSortName = anAlbum.albumName;
-    anAlbum.smartSortAlbumName = [anAlbum.albumName regularStringToSmartSortString];
-    if(anAlbum.smartSortAlbumName.length == 0)  //edge case,if name itself is something like 'the', dont remove all chars! Keep original name.
-        anAlbum.smartSortAlbumName = originalSmartSortName;
 }
 
 + (BOOL)isAlbum:(Album *)album1 equalToAlbum:(Album *)album2

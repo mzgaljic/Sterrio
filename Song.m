@@ -21,6 +21,7 @@
 @dynamic songName;
 @dynamic uniqueId;
 @dynamic youtube_id;
+@dynamic firstSmartChar;
 @dynamic album;
 @dynamic albumArt;
 @dynamic artist;
