@@ -842,7 +842,7 @@ static int accomodateInterfaceLabelsCounter = 0;
     else
         btnImgName = TIMER_INACTIVE;
     short paddingFromScreenBottom = 5;
-    UIColor *appTint = [AppEnvironmentConstants appTheme].mainGuiTint;
+    UIColor *appTint = [AppEnvironmentConstants appTheme].contrastingTextColor;
     UIImage *timerImg = [UIImage colorOpaquePartOfImage:appTint :[UIImage imageNamed:btnImgName]];
     CGRect timerBtnFrame = CGRectMake(screenWidth/2 - timerImg.size.width/2,
                                       screenHeight - timerImg.size.height - paddingFromScreenBottom - extraStatusBarHeight,
@@ -870,7 +870,7 @@ static int accomodateInterfaceLabelsCounter = 0;
                                            bottomTextButtonsHeight);
     repeatModeButton.frame = repeatModeBtnFrame;
     repeatModeButton.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
-    repeatModeButton.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+    repeatModeButton.tintColor = [AppEnvironmentConstants appTheme].contrastingTextColor;
     repeatModeButton.alpha = 0;
     [repeatModeButton setHitTestEdgeInsets:UIEdgeInsetsMake(-15, -25, -15, -25)];
     [self.view addSubview:repeatModeButton];
@@ -889,7 +889,7 @@ static int accomodateInterfaceLabelsCounter = 0;
                                            bottomTextButtonsHeight);
     shuffleModeButton.frame = shuffleModeBtnFrame;
     shuffleModeButton.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
-    shuffleModeButton.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+    shuffleModeButton.tintColor = [AppEnvironmentConstants appTheme].contrastingTextColor;
     shuffleModeButton.alpha = 0;
     [shuffleModeButton setHitTestEdgeInsets:UIEdgeInsetsMake(-15, -25, -15, -25)];
     [self.view addSubview:shuffleModeButton];
