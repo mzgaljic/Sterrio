@@ -76,6 +76,8 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
 
 - (void)destroyWindow
 {
+    //restore defaults - to keep other views from getting screwed up.
+    [AppDelegateSetupHelper setGlobalFontsAndColorsForAppGUIComponents];
     if (SWActionSheetWindow)
     {
         [self actionSheetContainer].actionSheet = nil;
@@ -95,13 +97,17 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
     }
     else
     {
-        return SWActionSheetWindow = ({
+        UIWindow *window = SWActionSheetWindow = ({
             UIWindow *window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
             window.windowLevel        = UIWindowLevelAlert;
             window.backgroundColor    = [UIColor clearColor];
             window.rootViewController = [SWActionSheetVC new];
             window;
         });
+        //toolbar button colors - temporarily changed. They are reset when this window is destroyed.
+        [[UIBarButtonItem appearanceWhenContainedIn:[UIToolbar class], nil]
+         setTitleTextAttributes:@{NSForegroundColorAttributeName : [AppEnvironmentConstants appTheme].contrastingTextColor}forState:UIControlStateNormal];
+        return window;
     }
 }
 
@@ -143,7 +149,6 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
 {
     // Make sheet window visible and active
     UIWindow *sheetWindow = [self window];
-    sheetWindow.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
     if (![sheetWindow isKeyWindow])
         [sheetWindow makeKeyAndVisible];
     sheetWindow.hidden = NO;
