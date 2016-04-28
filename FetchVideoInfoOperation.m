@@ -98,7 +98,6 @@
     __weak NSString *weakId = songsYoutubeId;
     __weak NSString *weakSongName = songName;
     __weak NSString *weakArtistName = artistName;
-    __weak NSManagedObjectID *weakSongObjId = songObjId;
     
     __weak SongPlayerCoordinator *weakCoordinator = [SongPlayerCoordinator sharedInstance];
     __weak FetchVideoInfoOperation *weakSelf = self;
@@ -138,7 +137,7 @@
                 [DeletedYtVideoAlertCreator createVideoDeletedAlertWithYtVideoId:weakId
                                                                             name:weakSongName
                                                                       artistName:weakArtistName
-                                                                 managedObjectId:weakSongObjId];
+                                                                 managedObjectId:songObjId];
                 [MusicPlaybackController playbackExplicitlyPaused];
                 [MusicPlaybackController pausePlayback];
                 MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
