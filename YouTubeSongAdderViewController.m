@@ -28,6 +28,7 @@
     BOOL preDeallocedAlready;
     
     BOOL didPresentVc;
+    BOOL swipeToDismissInProgress;
     
     //fixes bug where player is invisible in view if it was added while the user was doing something else
     //(changing song name, etc)
@@ -235,15 +236,26 @@ static short numberTimesViewHasBeenShown = 0;
     [self.tableView viewDidAppear:animated];
     if(self.player){
         if(! self.player.playbackExplicitlyPaused){
-            //if player was playing and we just returned to this VC, pause and play again.
-            //this fixes a bug where cancelling a "slide to pop" gesture would make the player appear "stuck".
-            [self.player pause];
-            [self.player play];
+            if(swipeToDismissInProgress) {
+                //if player was playing and we just returned to this VC, pause and play again.
+                //this fixes a bug where cancelling a "slide to pop" gesture would make the player appear "stuck".
+                [self.player pause];
+                [self.player play];
+            }
             [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
         }
     }
     
     [self showOrUpdatePoweredByYtLogoGivenScreenWidth:self.view.frame.size.width];
+    swipeToDismissInProgress = NO;
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    if ([self isBeingDismissed] || [self isMovingFromParentViewController]) {
+        swipeToDismissInProgress = YES;
+    }
+    [super viewWillDisappear:animated];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
