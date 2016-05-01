@@ -85,12 +85,21 @@
                                                                            if(error)
                                                                                NSLog(@"Failed to remove song from spotlight index.");
                                                                        }];
-    } else{
+    } else if(domainId != nil){
         [[CSSearchableIndex defaultSearchableIndex] deleteSearchableItemsWithDomainIdentifiers:@[domainId]
                                                                              completionHandler:^(NSError * __nullable error) {
                                                                                  if(error)
                                                                                      NSLog(@"Failed to remove song from spotlight index.");
                                                                              }];
+    } else if (songId != nil) {
+        //this case shouldn't happen (first two cases should catch everything, but just in case
+        //there is a bug, lets at least remove the song id from the index...)
+        [[CSSearchableIndex defaultSearchableIndex] deleteSearchableItemsWithIdentifiers:@[songId]
+                                                                       completionHandler:^(NSError * __nullable error) {
+                                                                           if(error)
+                                                                               NSLog(@"Failed to remove song from spotlight index.");
+                                                                       }];
+
     }
 }
 

@@ -1,1 +1,1 @@
-../../../../Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.7.1/GoogleMobileAds.framework/Versions/A/Headers/GADMediatedNativeAdDelegate.h
+../../../../Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.8.0/GoogleMobileAds.framework/Versions/A/Headers/GADMediatedNativeAdDelegate.h

@@ -20,6 +20,9 @@
     NSString *songsYoutubeId;
     NSString *songName;
     NSString *artistName;
+    
+    //Must NOT declare as __weak. Instead
+    //use __unsafe __unretained if REALLY necessary.
     NSManagedObjectID *songObjId;
 }
 @end

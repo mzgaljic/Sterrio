@@ -56,8 +56,6 @@ Fabric: Copyright 2015 Twitter, Inc. All Rights Reserved. Use of this software i
 
 ## FXImageView
 
-FXImageView
-
 Version 1.3.5, September 17th, 2014
 
 Copyright (C) 2011 Charcoal Design
@@ -77,6 +75,7 @@ freely, subject to the following restrictions:
 2. Altered source versions must be plainly marked as such, and must not be
    misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
+
 
 ## Fabric
 
@@ -129,7 +128,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 ## MarqueeLabel
 
-Copyright (c) 2011-2015 Charles Powell
+Copyright (c) 2011-2016 Charles Powell
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the "Software"), to deal in the Software without restriction, including without limitation 
