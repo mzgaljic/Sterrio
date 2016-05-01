@@ -138,6 +138,7 @@ static BOOL skipCertainInitStepsFlag = NO;
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     appDelegate.previewPlayer = nil;
     
+    [self.player pause];
     [self.player destroyPlayer];
     preDeallocedAlready = YES;
     
