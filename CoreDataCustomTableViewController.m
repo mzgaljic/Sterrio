@@ -366,6 +366,18 @@ typedef enum{
         tableView.tableHeaderView = nil;
     }
     
+    if(viewWillAppearCalledAlready && allowNextViewWillAppearTableViewUpdate) {
+        //updating the visible cells to prevent cells accidentally containing outdated data.
+        //this is only done on sub-sequent calls to viewWillApper for efficiency purposes.
+        NSArray *visibleIndexes = [tableView indexPathsForVisibleRows];
+        if(visibleIndexes.count > 0){
+            [tableView beginUpdates];
+            [tableView reloadRowsAtIndexPaths:visibleIndexes
+                             withRowAnimation:UITableViewRowAnimationNone];
+            [tableView endUpdates];
+        }
+    }
+    
     viewWillAppearCalledAlready = YES;
     allowNextViewWillAppearTableViewUpdate = YES;
 }
