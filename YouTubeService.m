@@ -431,7 +431,11 @@ static const int VIDEO_CACHE_MAX_SIZE = 15;
             retVal = YES;
             break;
     }
-    [videoExistsCache addObject:@{youtubeVideoId : [NSNumber numberWithBool:retVal]}];
+    if(youtubeVideoId != nil) {
+        //shouldn't ever be nil in theory but it is in rare cases for some users.
+        //See: https://goo.gl/sdCBMS
+        [videoExistsCache addObject:@{youtubeVideoId : [NSNumber numberWithBool:retVal]}];
+    }
     return retVal;
 }
 
