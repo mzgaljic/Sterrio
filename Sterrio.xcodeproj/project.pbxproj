@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		87059FE61CDEE3860068A1A9 /* InAppProductPriceHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 87059FE51CDEE3860068A1A9 /* InAppProductPriceHelper.m */; };
 		870D06901CB9C61700395F38 /* MZInterstitialAd.m in Sources */ = {isa = PBXBuildFile; fileRef = 870D068F1CB9C61700395F38 /* MZInterstitialAd.m */; };
 		87164E291CB8B3EB0006D53B /* Ensembles.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 87164E271CB8B3EB0006D53B /* Ensembles.bundle */; };
 		87164E2A1CB8B3EB0006D53B /* Ensembles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87164E281CB8B3EB0006D53B /* Ensembles.framework */; };
@@ -246,6 +247,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		87059FE41CDEE3860068A1A9 /* InAppProductPriceHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductPriceHelper.h; sourceTree = "<group>"; };
+		87059FE51CDEE3860068A1A9 /* InAppProductPriceHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductPriceHelper.m; sourceTree = "<group>"; };
 		870D068E1CB9C61700395F38 /* MZInterstitialAd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZInterstitialAd.h; sourceTree = "<group>"; };
 		870D068F1CB9C61700395F38 /* MZInterstitialAd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZInterstitialAd.m; sourceTree = "<group>"; };
 		87164E271CB8B3EB0006D53B /* Ensembles.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Ensembles.bundle; sourceTree = "<group>"; };
@@ -855,6 +858,8 @@
 				873538161B0A9AC7009244E4 /* AppDelegateSetupHelper.m */,
 				873538171B0A9AC7009244E4 /* PreloadedCoreDataModelUtility.h */,
 				873538181B0A9AC7009244E4 /* PreloadedCoreDataModelUtility.m */,
+				87059FE41CDEE3860068A1A9 /* InAppProductPriceHelper.h */,
+				87059FE51CDEE3860068A1A9 /* InAppProductPriceHelper.m */,
 			);
 			name = "App Helpers";
 			sourceTree = "<group>";
@@ -2165,6 +2170,7 @@
 				87A8FC581CBF231A00A43637 /* AutoScrollLabel.m in Sources */,
 				87A8FC361CBF202500A43637 /* MRProgressOverlayView+AFNetworking.m in Sources */,
 				8735388A1B0A9BCA009244E4 /* MZCoreDataModelDeletionService.m in Sources */,
+				87059FE61CDEE3860068A1A9 /* InAppProductPriceHelper.m in Sources */,
 				873538FB1B0A9E95009244E4 /* ArtistItemAlbumViewController.m in Sources */,
 				873538E01B0A9D1F009244E4 /* QueueViewController.m in Sources */,
 				87A8FC301CBF202500A43637 /* MRBlurView.m in Sources */,

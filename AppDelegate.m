@@ -23,6 +23,7 @@
 #import "MainScreenViewController.h"
 #import "MZLaunchScreen.h"
 #import "IntroVideoView.h"
+#import "InAppProductPriceHelper.h"
 
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
@@ -128,6 +129,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     
     [LQAlbumArtBackgroundUpdater beginWaitingForEfficientMomentsToUpdateAlbumArt];
     [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
+    [[InAppProductPriceHelper new] beginFetchingAdRemovalPriceInfoAndSetWhenDone];
 }
 
 - (void)setupMainVC

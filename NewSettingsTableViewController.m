@@ -198,7 +198,15 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
         {
             //Remove ads
             
-            cell.textLabel.text = @"Remove Ads";
+            NSString *removeAdsText = @"Remove Ads";
+            NSString *productPriceText = [InAppPurchaseUtils sharedInstance].adRemovalPriceText;
+            if(productPriceText.length == 0) {
+                //localized price not available
+                cell.textLabel.text = removeAdsText;
+            } else {
+                cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", removeAdsText, productPriceText];
+            }
+            
             overrideCodeAtEndOfMethod = YES;
             float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
             cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]

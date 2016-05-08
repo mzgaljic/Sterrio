@@ -15,9 +15,9 @@
 
 @interface InAppPurchaseUtils ()
 @property (nonatomic, strong) SKProduct *product;  //caching product for logging purposes (Fabric.io)
+@property (nonatomic, strong) SKProductsRequest *productsRequest;
 @end
 @implementation InAppPurchaseUtils
-#define kRemoveAdsProductIdentifier @"com.mzgaljic.sterrio.removeads"
 
 + (instancetype)sharedInstance
 {
@@ -33,6 +33,7 @@
 {
     if(self = [super init]){
         [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+        _adRemovalPriceText = @"";
     }
     return self;
 }
@@ -44,9 +45,9 @@
     
     if([SKPaymentQueue canMakePayments]){
         NSLog(@"User can make payments");
-        SKProductsRequest *productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObject:kRemoveAdsProductIdentifier]];
-        productsRequest.delegate = self;
-        [productsRequest start];
+        self.productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObject:kRemoveAdsProductIdentifier]];
+        self.productsRequest.delegate = self;
+        [self.productsRequest start];
     } else{
         //this is called the user cannot make payments, most likely due to parental controls
         [self showPurchaseFailedAlert];
@@ -65,6 +66,12 @@
 }
 
 #pragma mark - Delegates
+- (void)requestDidFinish:(SKRequest *)request
+{
+    self.productsRequest.delegate = nil;
+    self.productsRequest = nil;
+}
+
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response
 {
     SKProduct *validProduct = nil;
@@ -116,6 +123,18 @@
             break;
         }
     }
+}
+
+- (void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error
+{
+    
+    [self hideSpinner];
+    if(error.code != SKErrorPaymentCancelled) {
+        [self showRestoreFailedAlert];
+        NSLog(@"Transaction state -> Restore failed.");
+        return;
+    }
+    NSLog(@"Transaction state -> Restore cancelled.");
 }
 
 static MRProgressOverlayView *hud;
@@ -213,6 +232,12 @@ static MRProgressOverlayView *hud;
 {
     NSString *msg = @"Your purchase has been restored.";
     [self showAlertWithTitle:@"Success" message:msg btnText:@"OK"];
+}
+
+- (void)showRestoreFailedAlert
+{
+    NSString *msg = @"Restoring purchase failed.";
+    [self showAlertWithTitle:@"Error" message:msg btnText:@"OK"];
 }
 
 - (void)showNothingToRestoreAlert
