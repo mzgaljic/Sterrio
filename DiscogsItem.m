@@ -24,17 +24,23 @@
 + (SMWebRequest *)requestForDiscogsItems:(NSString *)query;
 {
     // Set ourself as the background processing delegate. The caller can still add herself as a listener for the resulting data.
-    NSString *urlString = @"https://api.discogs.com/database/search?type=master&type=album&per_page=8&page=1&q=";
-    query = [query stringForHTTPRequest];
-    NSURL *myUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", urlString, query]];
-    NSMutableURLRequest *mutUrlRequest = [NSMutableURLRequest requestWithURL:myUrl];
+    
+    NSString *baseUrl = @"https://api.discogs.com/database/search";
+    NSURLComponents *components = [NSURLComponents componentsWithString:baseUrl];
+    NSMutableArray *queryItems = [NSMutableArray array];
+    [queryItems addObject:[NSURLQueryItem queryItemWithName:@"q" value:[query stringForHTTPRequest]]];
+    [queryItems addObject:[NSURLQueryItem queryItemWithName:@"type" value:@"master"]];
+    [queryItems addObject:[NSURLQueryItem queryItemWithName:@"type" value:@"album"]];
+    [queryItems addObject:[NSURLQueryItem queryItemWithName:@"page" value:@"1"]];
+    [queryItems addObject:[NSURLQueryItem queryItemWithName:@"per_page" value:@"8"]];
+    components.queryItems = queryItems;
+    
+    NSMutableURLRequest *mutUrlRequest = [NSMutableURLRequest requestWithURL:components.URL];
     [mutUrlRequest setValue:[NSString stringWithFormat:@"%@ - iOS App", MZAppName]
          forHTTPHeaderField:@"User-Agent"];
     [mutUrlRequest setValue:@"Discogs token=CHSGmUCKHjNIOeAKgbuaBZUEldBInAopLpRJiGMc"
          forHTTPHeaderField:@"Authorization"];
     [mutUrlRequest setCachePolicy:NSURLRequestUseProtocolCachePolicy];
-    
-    
     return [SMWebRequest requestWithURLRequest:mutUrlRequest
                                       delegate:(id<SMWebRequestDelegate>)self
                                        context:nil];
