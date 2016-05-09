@@ -322,12 +322,11 @@ typedef enum{
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
-    if(self.tableDataSource.displaySearchResults)
-        return;
-    
     if (self.beganUpdates)
         [tableView endUpdates];
     self.beganUpdates = NO;
+    if(self.tableDataSource.displaySearchResults)
+        return;
 }
 
 #pragma mark - overriden methods for default behavior across tableviews
