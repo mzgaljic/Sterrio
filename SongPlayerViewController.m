@@ -257,7 +257,9 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 - (void)preDealloc
 {
     if([MusicPlaybackController avplayerTimeObserver] != nil) {
+        @try {
             [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
+        } @catch(id anException) { NSLog(@"EXCEPTION THROWN: Removing time observer (MyAVPlayer)");}
     }
     
     [MusicPlaybackController setAVPlayerTimeObserver:nil];
@@ -1602,7 +1604,9 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
             || state == UIApplicationStateInactive
             || ![SongPlayerCoordinator isVideoPlayerExpanded]))
         {
-            [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
+            @try {
+                [[MusicPlaybackController obtainRawAVPlayer] removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
+            } @catch(id anException) { NSLog(@"EXCEPTION THROWN: Removing time observer (MyAVPlayer)");}
             [MusicPlaybackController setAVPlayerTimeObserver:nil];
         }
     }]];

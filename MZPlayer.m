@@ -19,7 +19,6 @@
 
 @interface MZPlayer ()
 {
-    id playbackObserver;
     AVPlayerLayer *playerLayer;
     UIVisualEffectView *visualEffectView;
     
@@ -32,6 +31,7 @@
     BOOL isHudOnScreen;
 }
 
+@property (nonatomic, strong) id playbackObserver;
 @property (strong, nonatomic, readwrite) AVPlayer *avPlayer;
 @property (strong,nonatomic) UIView *controlsHud;
 
@@ -150,9 +150,10 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:AVPlayerItemDidPlayToEndTimeNotification
                                                   object:self.avPlayer.currentItem];
-    [self.avPlayer replaceCurrentItemWithPlayerItem:nil];
     [self removeTimeObserver];
+    _playbackObserver = nil;
     [self removeObservers];
+    [self.avPlayer replaceCurrentItemWithPlayerItem:nil];
     self.avPlayer = nil;
 }
 
@@ -367,14 +368,16 @@ const int BUTTON_AND_LABEL_PADDING = PLAY_PAUSE_BTN_DIAMETER * 0.80;
     CMTime interval = CMTimeMake(1, 8);
     __weak __typeof(self) weakself = self;
     
-    playbackObserver = [self.avPlayer addPeriodicTimeObserverForInterval:interval queue:dispatch_get_main_queue() usingBlock: ^(CMTime time) {
+    _playbackObserver = [self.avPlayer addPeriodicTimeObserverForInterval:interval queue:dispatch_get_main_queue() usingBlock: ^(CMTime time) {
         [weakself updatePlaybackTimeSlider];
     }];
 }
 
 - (void)removeTimeObserver
 {
-    [self.avPlayer removeTimeObserver:playbackObserver];
+    @try {
+        [self.avPlayer removeTimeObserver:_playbackObserver];
+    } @catch(id anException) { NSLog(@"EXCEPTION THROWN: Removing time observer (MZPlayer)");}
 }
 
 - (void)updatePlaybackTimeSlider

@@ -60,7 +60,9 @@ static ReachabilitySingleton *reachability;
 - (void)dealloc
 {
     if([MusicPlaybackController avplayerTimeObserver] != nil) {
-        [self removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
+        @try {
+            [self removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
+        } @catch(id anException) { NSLog(@"EXCEPTION THROWN: Removing time observer (MyAVPlayer)");}
     }
     [MusicPlaybackController setAVPlayerTimeObserver:nil];
     [self deregisterForObservers];
