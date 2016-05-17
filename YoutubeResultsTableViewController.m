@@ -201,7 +201,12 @@ static NSDate *timeSinceLastPageLoaded;
     [super viewDidLoad];
     thumbnailStackController = [[StackController alloc] init];
     
-    UIImage *poweredByYtLogo = [UIImage imageNamed:@"poweredByYtLight"];
+    UIImage *poweredByYtLogo;
+    if([[AppEnvironmentConstants appTheme].navBarToolbarTextTint isEqualToColor:[UIColor blackColor]]) {
+        poweredByYtLogo = [UIImage imageNamed:@"poweredByYtDark"];
+    } else {
+        poweredByYtLogo = [UIImage imageNamed:@"poweredByYtLight"];
+    }
     UIView *navBarView = [[UIView alloc] initWithFrame:CGRectMake(0,
                                                                   0,
                                                                   poweredByYtLogo.size.width,

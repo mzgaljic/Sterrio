@@ -918,7 +918,7 @@ static short numberTimesViewHasBeenShown = 0;
 {
     BOOL animateOnScreen = NO;
     UIButton *btn = self.poweredByYtBtn;
-    UIImage *logo = [UIImage imageNamed:@"poweredByYtDark"];
+    UIImage *logo = [UIImage imageNamed:@"poweredByYtDark-small"];
     if(btn == nil) {
         btn = [[SSBouncyButton alloc] initAsImage];
         [btn setImage:logo forState:UIControlStateNormal];
