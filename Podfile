@@ -7,7 +7,7 @@ pod 'XCDYouTubeKit'
 pod 'SDWebImage', '~>3.6'
 
 #TransitionKit -state machine library
-#pod 'TransitionKit', '~> 2.0.0'  ---not used yet
+pod 'TransitionKit', '~> 2.2.1'
 
 #MSCellAccessory - used for customizable accessory icons
 pod 'MSCellAccessory', '~> 1.1'

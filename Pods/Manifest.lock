@@ -26,15 +26,16 @@ PODS:
   - Fabric (1.6.7)
   - FXImageView (1.3.5)
   - GCDiscreetNotificationView (1.0.2)
-  - Google-Mobile-Ads-SDK (7.8.0)
-  - MarqueeLabel (2.7.2):
-    - MarqueeLabel/ObjC (= 2.7.2)
-  - MarqueeLabel/ObjC (2.7.2)
+  - Google-Mobile-Ads-SDK (7.8.1)
+  - MarqueeLabel (2.7.4):
+    - MarqueeLabel/ObjC (= 2.7.4)
+  - MarqueeLabel/ObjC (2.7.4)
   - MSCellAccessory (1.1.2)
   - Reachability (3.2)
-  - SDWebImage (3.7.5):
-    - SDWebImage/Core (= 3.7.5)
-  - SDWebImage/Core (3.7.5)
+  - SDWebImage (3.7.6):
+    - SDWebImage/Core (= 3.7.6)
+  - SDWebImage/Core (3.7.6)
+  - TransitionKit (2.2.1)
   - TUSafariActivity (1.0.4)
   - Valet (2.2.1)
   - XCDYouTubeKit (2.5.2)
@@ -51,6 +52,7 @@ DEPENDENCIES:
   - MSCellAccessory (~> 1.1)
   - Reachability
   - SDWebImage (~> 3.6)
+  - TransitionKit (~> 2.2.1)
   - TUSafariActivity (~> 1.0)
   - Valet
   - XCDYouTubeKit
@@ -62,11 +64,12 @@ SPEC CHECKSUMS:
   Fabric: caf7580c725e64db144f610ac65cd60956911dc7
   FXImageView: 7d84722b37f0afea9a64f12fdd4a6c7f9ecc4b16
   GCDiscreetNotificationView: b093cce1fe82f6d9784169a156b48ecb1465ad8a
-  Google-Mobile-Ads-SDK: 36b88dd2373f0ee4583e65971cb07b6965c29eef
-  MarqueeLabel: 26ecbdd54105dcb282cd3b56452f891d524b233b
+  Google-Mobile-Ads-SDK: 3c2a6656117989469bfe7645640aa1de024a4c6c
+  MarqueeLabel: c06f6081f9e1da2d1e756ceb9c5fab5bd9c2f57c
   MSCellAccessory: 8265f3cd2386c1f372da00232472605ab11426e4
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  SDWebImage: 69c6303e3348fba97e03f65d65d4fbc26740f461
+  SDWebImage: c325cf02c30337336b95beff20a13df489ec0ec9
+  TransitionKit: 9ceccda4cd0cdc0a05ef85eb235e5a3292c3c250
   TUSafariActivity: afc55a00965377939107ce4fdc7f951f62454546
   Valet: 8873c1f797822a513b5b3b18d19955fc39b22aab
   XCDYouTubeKit: bb81db52d5539f8f34c4081f344980ef38f4644d

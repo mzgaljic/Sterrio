@@ -59,6 +59,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>TransitionKit.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Valet.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -72,7 +77,7 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>0472A63C1CF417C73DF2E2D279BE6DA4</key>
+		<key>1A66654AE3296375D5A37A0B3EA7BB28</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -82,12 +87,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2E3446DA4907BEAD465FD8E3E2B52208</key>
+		<key>406425976CEE94A5F9DD1409B5A229EB</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>565AA5183A09FF0C1DBD3B937D718A8D</key>
+		<key>621DDD3A645B8EC418B540D01D4EFDD3</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -112,12 +117,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>7AD37B4D8A4399C0C1351C961290FE1C</key>
+		<key>AA21790618191B40EB5C351F851DC729</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>89D848CBC5D4E7DD61A2A70D0421B3F6</key>
+		<key>B13C9ACCFC8C36ECB32CFD267C54224E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C3C15690A85F51B61E5435BA52B412CF</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D1FDF9EA3F611B917695049772D05B55</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -127,12 +142,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>E12FCFAD4C7DF5448605033061225660</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>ED4F359543938919BE1FF0B5220A9000</key>
+		<key>E31C7B2E453AFCEDD44899BD54364FE5</key>
 		<dict>
 			<key>primary</key>
 			<true/>
