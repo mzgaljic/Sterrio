@@ -110,7 +110,7 @@
     self.tableViewDataSourceAndDelegate.tableView = self.tableView;
     self.tableViewDataSourceAndDelegate.cellReuseId = @"playlistSongItemPickerCell";
     self.tableViewDataSourceAndDelegate.playlistSongAdderDelegate = self;
-    self.tableViewDataSourceAndDelegate.emptyTableUserMessage = [[NSAttributedString alloc] initWithString:@"No Songs"];
+    self.tableViewDataSourceAndDelegate.emptyTableUserMessage = [MZCommons attributedStringFromString:@"No Songs"];
     self.tableView.dataSource = self.tableViewDataSourceAndDelegate;
     self.tableView.delegate = self.tableViewDataSourceAndDelegate;
 }

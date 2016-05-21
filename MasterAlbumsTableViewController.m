@@ -77,7 +77,7 @@
     self.tableViewDataSourceAndDelegate.tableView = self.tableView;
     self.tableViewDataSourceAndDelegate.playbackContext = self.playbackContext;
     self.tableViewDataSourceAndDelegate.cellReuseId = @"AlbumItemCell";
-    self.tableViewDataSourceAndDelegate.emptyTableUserMessage = [[NSAttributedString alloc] initWithString:@"No Albums"];
+    self.tableViewDataSourceAndDelegate.emptyTableUserMessage = [MZCommons attributedStringFromString:@"No Albums"];
     self.tableViewDataSourceAndDelegate.actionableAlbumDelegate = self;
     self.tableView.dataSource = self.tableViewDataSourceAndDelegate;
     self.tableView.delegate = self.tableViewDataSourceAndDelegate;

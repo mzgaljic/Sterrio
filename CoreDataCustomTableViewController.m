@@ -156,7 +156,7 @@ typedef enum{
         numObjsInTable = [self numObjectsInTable];
         
         if(numObjsInTable == 0){
-            NSAttributedString *text = [[NSAttributedString alloc] initWithString:@"No Search Results"];
+            NSAttributedString *text = [[MZCommons attributedStringFromString:@"No Search Results"];
             tableView.backgroundView = [self friendlyTableEmptyUserMessageWithText:text];
         } else
             [self removeEmptyTableUserMessage];
@@ -219,7 +219,7 @@ typedef enum{
                                                                self.view.bounds.size.width,
                                                                self.view.bounds.size.height)];
     if(text == nil)
-        text = [[NSAttributedString alloc] initWithString:@""];
+        text = [MZCommons makeAttributedString:@""];
     label.attributedText = text;
     label.textColor = [UIColor darkGrayColor];
     //multi lines strings ARE possible, this is just a weird api detail

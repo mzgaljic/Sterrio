@@ -73,6 +73,7 @@
 {
     short srcType = PLAYLIST_DATA_SRC_TYPE_Default;
     AllPlaylistsDataSource *delegate;
+    
     delegate = [[AllPlaylistsDataSource alloc] initWithPlaylisttDataSourceType:srcType
                                                    searchBarDataSourceDelegate:self];
     self.tableViewDataSourceAndDelegate = delegate;
@@ -80,7 +81,7 @@
     self.tableViewDataSourceAndDelegate.tableView = self.tableView;
     self.tableViewDataSourceAndDelegate.playbackContext = nil;
     self.tableViewDataSourceAndDelegate.cellReuseId = @"PlaylistItemCell";
-    self.tableViewDataSourceAndDelegate.emptyTableUserMessage = [self generateEmptyTableUserMessage];
+    self.tableViewDataSourceAndDelegate.emptyTableUserMessage = [MZCommons generateTapPlusToCreateNewPlaylistText];
     self.tableViewDataSourceAndDelegate.actionablePlaylistDelegate = self;
     self.tableView.dataSource = self.tableViewDataSourceAndDelegate;
     self.tableView.delegate = self.tableViewDataSourceAndDelegate;
@@ -93,7 +94,7 @@
 {
     if(self.tableViewDataSourceAndDelegate.tableObjectsCount == 0) {
         //needed because if app theme changes, the + image of the center button needs to get regenerated.
-        self.tableViewDataSourceAndDelegate.emptyTableUserMessage = [self generateEmptyTableUserMessage];
+        self.tableViewDataSourceAndDelegate.emptyTableUserMessage = [MZCommons generateTapPlusToCreateNewPlaylistText];
         [self.tableView reloadData];
     }
     
@@ -367,39 +368,6 @@ static NSString *currentAlertTextFieldText;
                                                                         managedObjectContext:context
                                                                           sectionNameKeyPath:nil
                                                                                    cacheName:nil];
-}
-
-- (NSAttributedString *)generateEmptyTableUserMessage
-{
-    NSTextAttachment *attachment = [self textAttachmentForEmptyTableUserMsg];
-    NSAttributedString *attachmentString = [NSAttributedString attributedStringWithAttachment:attachment];
-    NSMutableAttributedString *retVal= [[NSMutableAttributedString alloc] initWithString:@"Tap "];
-    [retVal appendAttributedString:attachmentString];
-    [retVal appendAttributedString:[[NSAttributedString alloc] initWithString:@" to make a playlist"]];
-    return retVal;
-}
-
-- (NSTextAttachment *)textAttachmentForEmptyTableUserMsg
-{
-    UINavigationController *parentNav = (UINavigationController *)self.parentViewController;
-    MainScreenViewController *mainVc = (MainScreenViewController *)parentNav.parentViewController;
-    UIImage *img = mainVc.centerButtonImg;
-    
-    //resize image so it's not huge.
-    UIFont *font = [PreferredFontSizeUtility actualLabelFontFromCurrentPreferredSize];
-    UIImage *resized = [img imageCroppedAndScaledToSize:CGSizeMake(ceil(font.pointSize * 0.9),
-                                                                   ceil(font.pointSize * 0.9))
-                                            contentMode:UIViewContentModeRedraw
-                                               padToFit:YES];
-    NSTextAttachment *attachment = [NSTextAttachment new];
-    attachment.image = resized;
-
-    //this part centers the attachment on the line so it's even with the text.
-    //see: http://stackoverflow.com/a/34027305/4534674
-    float mid = font.descender + font.capHeight;
-    CGRect temp = CGRectMake(0, font.descender - resized.size.height / 2 + mid + 2, resized.size.width, resized.size.height);
-    attachment.bounds = temp;
-    return attachment;
 }
 
 @end

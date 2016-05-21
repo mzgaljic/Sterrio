@@ -26,6 +26,7 @@ short const dummyTabIndex = 2;
     UIInterfaceOrientation lastVisibleTabBarOrientation;
     NSUInteger heightOfAdBanner;
 }
+@property (nonatomic, strong) UIImage *centerButtonImg;
 @property (nonatomic, strong) GADBannerView *adBanner;
 @property (nonatomic, strong) UIActivityIndicatorView *adBannerSpinner;
 @property (nonatomic, strong) UIView *tabBarView;  //contains the tab bar and center button - the whole visual thing.
@@ -352,8 +353,7 @@ static NSTimeInterval prevAppBecameActiveTimeInterval = 0;
         [self.tabBar setTranslucent:YES];
         self.tabBar.delegate = self;
         
-        self.centerButtonImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
-                                                              :[UIImage imageNamed:CENTER_BTN_IMG_NAME]];
+        self.centerButtonImg = [MZCommons centerButtonImage];
         self.centerButton = [[SSBouncyButton alloc] initAsImage];
         [self.centerButton setImage:self.centerButtonImg forState:UIControlStateNormal];
         [self.centerButton setHitTestEdgeInsets:UIEdgeInsetsMake(-10, -10, -10, -10)];
@@ -629,8 +629,7 @@ static NSTimeInterval prevAppBecameActiveTimeInterval = 0;
     self.tabBar = [[UITabBar alloc] init];
     self.tabBar.delegate = self;
     
-    self.centerButtonImg = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
-                                                          :[UIImage imageNamed:CENTER_BTN_IMG_NAME]];
+    self.centerButtonImg = [MZCommons centerButtonImage];
     self.centerButton = [[SSBouncyButton alloc] initAsImage];
     [self.centerButton setImage:self.centerButtonImg forState:UIControlStateNormal];
     [self.centerButton setHitTestEdgeInsets:UIEdgeInsetsMake(-10, -10, -10, -10)];

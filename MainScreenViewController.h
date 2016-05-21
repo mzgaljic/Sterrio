@@ -22,8 +22,6 @@
                                                         GADBannerViewDelegate,
                                                         CMPopTipViewDelegate>
 
-//exposed so the PlaylistItemTableViewController can use the same image in its own VC.
-@property (nonatomic, strong) UIImage *centerButtonImg;
 @property (nonatomic, assign) BOOL introOnScreen;
 
 - (instancetype)initWithNavControllers:(NSArray *)navControllers

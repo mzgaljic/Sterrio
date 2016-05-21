@@ -73,7 +73,7 @@
     [uniqueID appendString:self.playlist.uniqueId];
     self.playbackContextUniqueId = uniqueID;
     
-    self.emptyTableUserMessage = [[NSAttributedString alloc] initWithString:@"Playlist Empty"];
+    self.emptyTableUserMessage = [MZCommons attributedStringFromString:@"Playlist Empty"];
     [self setUpNavBarItems];
     self.navBar = self.navigationItem;
     [[UITextField appearance] setTintColor:[AppEnvironmentConstants appTheme].mainGuiTint];  //sets the cursor color of the playlist name textbox editor
@@ -839,7 +839,7 @@ static BOOL hidingCenterBtnAnimationComplete = YES;
                                                                        self.tableView.bounds.size.width,
                                                                        self.tableView.bounds.size.height)];
     if(text == nil)
-        text = [[NSAttributedString alloc] initWithString:@""];
+        text = [MZCommons makeAttributedString:@""];
     tableViewEmptyMsgLabel.attributedText = text;
     tableViewEmptyMsgLabel.textColor = [UIColor darkGrayColor];
     //multi lines strings ARE possible, this is just a weird api detail

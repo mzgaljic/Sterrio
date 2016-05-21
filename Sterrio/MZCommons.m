@@ -8,6 +8,9 @@
 
 #import "MZCommons.h"
 #import "AppEnvironmentConstants.h"
+#import "PreferredFontSizeUtility.h"
+#import <FXImageView/UIImage+FX.h>
+#import "UIImage+colorImages.h"
 
 @implementation MZCommons
 
@@ -108,5 +111,48 @@ static UIStoryboard *mainStoryBoard = nil;
     }
     return mainStoryBoard;
 }
+
++ (UIImage *)centerButtonImage
+{
+    return [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint
+                                          :[UIImage imageNamed:@"plus_sign"]];
+}
+
+#pragma mark - Convenience methods/helpers
++ (NSAttributedString *)makeAttributedString:(NSString *)string
+{
+    return [[NSAttributedString alloc] initWithString:string];
+}
+
++ (NSAttributedString *)generateTapPlusToCreateNewPlaylistText
+{
+    NSTextAttachment *attachment = [MZCommons textAttachmentForEmptyTableUserMsg:[MZCommons centerButtonImage]];
+    NSAttributedString *attachmentString = [NSAttributedString attributedStringWithAttachment:attachment];
+    NSMutableAttributedString *retVal= [[NSMutableAttributedString alloc] initWithString:@"Tap "];
+    [retVal appendAttributedString:attachmentString];
+    [retVal appendAttributedString:[MZCommons makeAttributedString:@" to make a playlist"]];
+    return retVal;
+}
+
+//private helper
++ (NSTextAttachment *)textAttachmentForEmptyTableUserMsg:(UIImage *)centerBtnImage
+{
+    //resize image so it's not huge.
+    UIFont *font = [PreferredFontSizeUtility actualLabelFontFromCurrentPreferredSize];
+    UIImage *resized = [centerBtnImage imageCroppedAndScaledToSize:CGSizeMake(ceil(font.pointSize * 0.9),
+                                                                   ceil(font.pointSize * 0.9))
+                                            contentMode:UIViewContentModeRedraw
+                                               padToFit:YES];
+    NSTextAttachment *attachment = [NSTextAttachment new];
+    attachment.image = resized;
+    
+    //this part centers the attachment on the line so it's even with the text.
+    //see: http://stackoverflow.com/a/34027305/4534674
+    float mid = font.descender + font.capHeight;
+    CGRect temp = CGRectMake(0, font.descender - resized.size.height / 2 + mid + 2, resized.size.width, resized.size.height);
+    attachment.bounds = temp;
+    return attachment;
+}
+
 
 @end

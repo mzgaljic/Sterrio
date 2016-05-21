@@ -416,7 +416,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             return 1;
         }
         else{
-            NSAttributedString *text = [[NSAttributedString alloc] initWithString:@"No Search Results"];
+            NSAttributedString *text = [MZCommons makeAttributedString:@"No Search Results"];
             [playableSearchBarDataSourceDelegate displayEmptyTableUserMessageWithText:text];
             return 0;
         }

@@ -12,6 +12,7 @@
 		87164E291CB8B3EB0006D53B /* Ensembles.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 87164E271CB8B3EB0006D53B /* Ensembles.bundle */; };
 		87164E2A1CB8B3EB0006D53B /* Ensembles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87164E281CB8B3EB0006D53B /* Ensembles.framework */; };
 		8716560F1C30AB41000FF02B /* DiscogsItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8716560E1C30AB41000FF02B /* DiscogsItem.m */; };
+		871BDA881CF020C50038C5A1 /* AddToPlaylistViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 871BDA871CF020C50038C5A1 /* AddToPlaylistViewController.m */; };
 		8727A5791C49EC05008FC03E /* CoreDataEntityMappingUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8727A5781C49EC05008FC03E /* CoreDataEntityMappingUtils.m */; };
 		8730C0E11C59B8C0001FC8A6 /* MZCommons.m in Sources */ = {isa = PBXBuildFile; fileRef = 8730C0E01C59B8C0001FC8A6 /* MZCommons.m */; };
 		873537CC1B0A9981009244E4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 873537CB1B0A9981009244E4 /* main.m */; };
@@ -254,6 +255,8 @@
 		87164E271CB8B3EB0006D53B /* Ensembles.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Ensembles.bundle; sourceTree = "<group>"; };
 		87164E281CB8B3EB0006D53B /* Ensembles.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Ensembles.framework; sourceTree = "<group>"; };
 		8716560E1C30AB41000FF02B /* DiscogsItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsItem.m; sourceTree = "<group>"; };
+		871BDA861CF020C50038C5A1 /* AddToPlaylistViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddToPlaylistViewController.h; sourceTree = "<group>"; };
+		871BDA871CF020C50038C5A1 /* AddToPlaylistViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddToPlaylistViewController.m; sourceTree = "<group>"; };
 		871FE2D01BFACDC000588C2B /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMobileAds.framework; path = "Pods/Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.5.2/GoogleMobileAds.framework"; sourceTree = "<group>"; };
 		8727A5771C49EC05008FC03E /* CoreDataEntityMappingUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataEntityMappingUtils.h; sourceTree = "<group>"; };
 		8727A5781C49EC05008FC03E /* CoreDataEntityMappingUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataEntityMappingUtils.m; sourceTree = "<group>"; };
@@ -771,6 +774,15 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		871BDA851CF020310038C5A1 /* Playlist Utils */ = {
+			isa = PBXGroup;
+			children = (
+				871BDA861CF020C50038C5A1 /* AddToPlaylistViewController.h */,
+				871BDA871CF020C50038C5A1 /* AddToPlaylistViewController.m */,
+			);
+			name = "Playlist Utils";
+			sourceTree = "<group>";
+		};
 		873537BD1B0A9981009244E4 = {
 			isa = PBXGroup;
 			children = (
@@ -1071,6 +1083,7 @@
 				873538EC1B0A9E6F009244E4 /* Albums Tab */,
 				873538F61B0A9E84009244E4 /* Artists Tab */,
 				873538FD1B0A9EA6009244E4 /* Playlists Tab */,
+				871BDA851CF020310038C5A1 /* Playlist Utils */,
 				873539071B0A9EC5009244E4 /* Settings VC */,
 				8735391B1B0A9F07009244E4 /* Adding Music VC's */,
 				873539221B0A9F1C009244E4 /* Core Data Error VC */,
@@ -2034,6 +2047,7 @@
 				87A8FCE71CBF29FB00A43637 /* SDCAlertControllerTransition.m in Sources */,
 				8735387C1B0A9B9E009244E4 /* LQAlbumArtBackgroundUpdater.m in Sources */,
 				87A8FC9A1CBF274100A43637 /* ProgressHUD.m in Sources */,
+				871BDA881CF020C50038C5A1 /* AddToPlaylistViewController.m in Sources */,
 				873538A41B0A9C40009244E4 /* PlayableItem.m in Sources */,
 				878488051C6694E200666627 /* MZRegexExp.m in Sources */,
 				873539211B0A9F11009244E4 /* YouTubeSongAdderViewController.m in Sources */,

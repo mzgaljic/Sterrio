@@ -213,7 +213,7 @@
                                                                        self.tableView.bounds.size.width,
                                                                        self.tableView.bounds.size.height)];
     if(text == nil)
-        text = [[NSAttributedString alloc] initWithString:@""];
+        text = [MZCommons makeAttributedString:@""];
     tableViewEmptyMsgLabel.attributedText = text;
     tableViewEmptyMsgLabel.textColor = [UIColor darkGrayColor];
     //multi lines strings ARE possible, this is just a weird api detail

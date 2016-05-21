@@ -31,5 +31,11 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void));
 #pragma mark - GUI Helpers
 + (UIViewController *)topViewController;
 + (UIStoryboard *)mainStoryboard;
++ (UIImage *)centerButtonImage;
+
+#pragma mark - Convenience methods/helpers
++ (NSAttributedString *)makeAttributedString:(NSString *)string;
++ (NSAttributedString *)generateTapPlusToCreateNewPlaylistText;
++ (NSAttributedString *)generateTapPlusToCreateNewPlaylistText;
 
 @end
