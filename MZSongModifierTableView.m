@@ -155,16 +155,22 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if(section == 0)  //rows for editing
-        //return 5;  removed genre row
+    if(section == 0) {  //rows for editing
         return 4;
-    if(section == 1){  //row to delete this song
-        if((_creatingANewSong || _userPickingNewYtVideo) && _songIAmEditing.songName.length > 0)
-            return 1;
-        else if(_creatingANewSong || _userPickingNewYtVideo)
+    }
+    
+    BOOL showAddToPlaylistCell = (!_userPickingNewYtVideo && _creatingANewSong && _songIAmEditing.songName.length > 0 && canShowAddtoLibButton);
+    
+    if(section == 1){
+        if((_creatingANewSong || _userPickingNewYtVideo) && _songIAmEditing.songName.length > 0) {
+            return (showAddToPlaylistCell) ? 2 : 1;
+            
+        } else if(_creatingANewSong || _userPickingNewYtVideo) {
             return 0;
-        else
-            return 1;
+            
+        } else {
+            return (showAddToPlaylistCell) ? 2 : 1;
+        }
     }
     else
         return -1;  //crash the app lol
@@ -244,7 +250,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         if(indexPath.row == 0){
             if(!_userPickingNewYtVideo && _creatingANewSong
                && _songIAmEditing.songName.length > 0 && canShowAddtoLibButton){
-                cell.textLabel.text = @"Add to library";
+                cell.textLabel.text = @"Add to Library";
                 cell.textLabel.textColor = [AppEnvironmentConstants appTheme].contrastingTextColor;
                 cell.selectionStyle = UITableViewCellSelectionStyleDefault;
                 [spinner stopAnimating];
@@ -265,13 +271,16 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 cell.accessoryView = spinner;
                 [spinner startAnimating];
             }
-            
-            cell.textLabel.textAlignment = NSTextAlignmentCenter;
-            int fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-            cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
-                                                  size:fontSize];
+        } else if(indexPath.row == 1) {
+            cell.textLabel.text = @"Add to a Playlist...";
+            cell.textLabel.textColor = [AppEnvironmentConstants appTheme].contrastingTextColor;
+            cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
     }
+    cell.textLabel.textAlignment = NSTextAlignmentCenter;
+    int fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+    cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                          size:fontSize];
     
     return cell;
 }
@@ -472,8 +481,8 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         }
     }
     
-    if(indexPath.section == 1){
-        if(indexPath.row == 0){
+    if(indexPath.section == 1) {
+        if(indexPath.row == 0) {
             if(_creatingANewSong || _userPickingNewYtVideo){
                 
                 if(self.currentAlbumArt){
@@ -547,8 +556,12 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 
             }  //end 'creatingNewSong'
         }  //end indexPath.row == 0
-        else
+        else if(indexPath.row == 1) {
+            //'Add to a Playlist'
+            NSLog(@"Showing 'add to playlist vc now...'");
+        } else {
             return;
+        }
     }
 }
 #pragma mark - Entity (Song, Album, Artist) Editing logic
