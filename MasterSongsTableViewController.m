@@ -80,7 +80,7 @@ static BOOL haveCheckedCoreDataInit = NO;
     self.tableViewDataSourceAndDelegate.tableView = self.tableView;
     self.tableViewDataSourceAndDelegate.playbackContext = self.playbackContext;
     self.tableViewDataSourceAndDelegate.cellReuseId = @"SongItemCell";
-    self.tableViewDataSourceAndDelegate.emptyTableUserMessage = [MZCommons attributedStringFromString:@"No Songs"];
+    self.tableViewDataSourceAndDelegate.emptyTableUserMessage = [MZCommons makeAttributedString:@"No Songs"];
     self.tableViewDataSourceAndDelegate.editableSongDelegate = self;
     self.tableView.dataSource = self.tableViewDataSourceAndDelegate;
     self.tableView.delegate = self.tableViewDataSourceAndDelegate;
@@ -243,7 +243,9 @@ static BOOL haveCheckedCoreDataInit = NO;
     self.fetchedResultsController = nil;
     NSManagedObjectContext *context = [CoreDataManager context];
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = nil;  //means i want all of the songs
+    //means i want all songs in core data that were not added to only a playlist. (i.e. are part of the
+    //general library)
+    request.predicate = [NSPredicate predicateWithFormat:@"smartSortSongName != nil"];
     [request setFetchBatchSize:MZDefaultCoreDataFetchBatchSize];
     //[request setPropertiesToFetch:@[@"songName", @"album", @"artist", @"albumArt"]];
     

@@ -130,7 +130,7 @@ static UIStoryboard *mainStoryBoard = nil;
     NSAttributedString *attachmentString = [NSAttributedString attributedStringWithAttachment:attachment];
     NSMutableAttributedString *retVal= [[NSMutableAttributedString alloc] initWithString:@"Tap "];
     [retVal appendAttributedString:attachmentString];
-    [retVal appendAttributedString:[MZCommons makeAttributedString:@" to make a playlist"]];
+    [retVal appendAttributedString:[MZCommons makeAttributedString:@" to create a playlist"]];
     return retVal;
 }
 

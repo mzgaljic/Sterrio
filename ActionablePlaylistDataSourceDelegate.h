@@ -10,5 +10,7 @@
 
 @class Playlist;
 @protocol ActionablePlaylistDataSourceDelegate <NSObject>
+@optional
+- (void)userSelectedPlaylist:(Playlist *)selectedPlaylist;
 - (void)performPlaylistDetailVCSegueWithPlaylist:(Playlist *)aPlaylist;
 @end

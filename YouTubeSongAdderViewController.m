@@ -147,6 +147,7 @@ static BOOL skipCertainInitStepsFlag = NO;
     if(!userCreatedHisSong)
         [self.tableView cancelEditing];
     
+    [self.tableView cancelEditing];
     self.tableView = nil;  //tableView will pre-dealloc itself.
     lockScreenImg = nil;
     _suggestedItem = nil;

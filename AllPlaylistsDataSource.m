@@ -125,8 +125,7 @@
     cell.usesOnlyTextLabel = YES;
     cell.textLabel.text = playlist.playlistName;
     
-    if(self.dataSourceType == PLAYLIST_DATA_SRC_TYPE_Default)
-    {
+    if(self.dataSourceType == PLAYLIST_DATA_SRC_TYPE_Default) {
         //check if a song in this playlist is the now playing song
         //we dont care if there are duplicates of a song, as long as the song is
         //within the playlist someplace, this check (in code) can be vague...
@@ -158,6 +157,10 @@
         cell.accessoryView = [MSCellAccessory accessoryWithType:FLAT_DISCLOSURE_INDICATOR
                                                           color:[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor]];
 
+    } else if(self.dataSourceType == PLAYLIST_DATA_SRC_TYPE_AddSongToPlaylist) {
+        cell.accessoryView = nil;
+        cell.textLabel.textColor = [UIColor blackColor];
+        cell.isRepresentingANowPlayingItem = NO;
     }
     
     cell.delegate = self;
@@ -169,8 +172,11 @@
     if(self.displaySearchResults)
         return NO;
     
-    if (self.dataSourceType == PLAYLIST_DATA_SRC_TYPE_Default)
+    if (self.dataSourceType == PLAYLIST_DATA_SRC_TYPE_Default) {
         return YES;
+    } else if(self.dataSourceType == PLAYLIST_DATA_SRC_TYPE_AddSongToPlaylist) {
+        return NO;
+    }
     else
         return YES;
 }
@@ -239,9 +245,10 @@
     else
         selectedPlaylist = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
-    if(self.dataSourceType == PLAYLIST_DATA_SRC_TYPE_Default)
-    {
+    if(self.dataSourceType == PLAYLIST_DATA_SRC_TYPE_Default) {
         [self.actionablePlaylistDelegate performPlaylistDetailVCSegueWithPlaylist:selectedPlaylist];
+    } else if(self.dataSourceType == PLAYLIST_DATA_SRC_TYPE_AddSongToPlaylist) {
+        [self.actionablePlaylistDelegate userSelectedPlaylist:selectedPlaylist];
     }
 }
 

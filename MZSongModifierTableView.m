@@ -484,26 +484,11 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     if(indexPath.section == 1) {
         if(indexPath.row == 0) {
             if(_creatingANewSong || _userPickingNewYtVideo){
-                
-                if(self.currentAlbumArt){
-                    _songIAmEditing.albumArt.image = [AlbumArtUtilities compressedDataFromUIImage:self.currentAlbumArt];
-                }
-                if(userReplacedDefaultYoutubeArt) {
-                    _songIAmEditing.nonDefaultArtSpecified = @YES;
-                }
-                
-                //marking songs album album-art as dirty because this song was already added into
-                //the tableview controllers during the editing process (you just can't see it
-                //since this youtube adder VC is blocking everything.) If you don't mark it as
-                //dirty before saving and dismissing this vc, then the album art will be missing
-                //some stuff and will look incomplete (only 3 of 4 images will show in collage.)
-                _songIAmEditing.album.albumArt.isDirty = @YES;
-                
                 //keep strong ref to self until we're done saving.
                 _selfRetainCycle = self;
                 
+                [self preSaveSongProcessing];
                 NSError *error;
-                [self.theDelegate performCleanupBeforeSongIsSaved:_songIAmEditing];
                 if ([[CoreDataManager context] save:&error] == NO) {
                     //save failed
                     [MyAlerts displayAlertWithAlertType:ALERT_TYPE_SongSaveHasFailed];
@@ -558,12 +543,54 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         }  //end indexPath.row == 0
         else if(indexPath.row == 1) {
             //'Add to a Playlist'
-            NSLog(@"Showing 'add to playlist vc now...'");
+            AddToPlaylistViewController *addToPlaylistVc = [[AddToPlaylistViewController alloc] initWithSong:_songIAmEditing];
+            UINavigationController *navVc = [[UINavigationController alloc] initWithRootViewController:addToPlaylistVc];
+            UIBarButtonItem *cancelBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:addToPlaylistVc action:@selector(dismiss)];
+            addToPlaylistVc.navigationItem.leftBarButtonItem = cancelBtn;
+            addToPlaylistVc.delegate = self;
+            [self.theDelegate pushThisVC:navVc];
         } else {
             return;
         }
     }
 }
+
+//Some logic that needs to happen on a Song object before it's saved into core data
+- (void)preSaveSongProcessing
+{
+    if(self.currentAlbumArt){
+        _songIAmEditing.albumArt.image = [AlbumArtUtilities compressedDataFromUIImage:self.currentAlbumArt];
+    }
+    if(userReplacedDefaultYoutubeArt) {
+        _songIAmEditing.nonDefaultArtSpecified = @YES;
+    }
+    
+    //marking songs album album-art as dirty because this song was already added into
+    //the tableview controllers during the editing process (you just can't see it
+    //since this youtube adder VC is blocking everything.) If you don't mark it as
+    //dirty before saving and dismissing this vc, then the album art will be missing
+    //some stuff and will look incomplete (only 3 of 4 images will show in collage.)
+    _songIAmEditing.album.albumArt.isDirty = @YES;
+    [self.theDelegate performCleanupBeforeSongIsSaved:_songIAmEditing];
+}
+
+#pragma mark - AddToPlaylistCallbackDelegate 
+- (void)willSaveSongToPlaylistWithoutAddingToGeneralLib
+{
+    [self preSaveSongProcessing];
+}
+
+- (void)didSaveSongToPlaylistWithoutAddingToGeneralLib
+{
+    if(! userReplacedDefaultYoutubeArt){
+        [LQAlbumArtBackgroundUpdater downloadHqAlbumArtWhenConvenientForSongId:_songIAmEditing.uniqueId];
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
+        });
+    }
+}
+
 #pragma mark - Entity (Song, Album, Artist) Editing logic
 #pragma mark - Editing text fields and creating new stuff
 - (void)songNameEditingComplete:(NSNotification *)notification
@@ -1187,11 +1214,15 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 {
     //now reset any context deletions, insertions, blah blah...
     [[CoreDataManager context] rollback];
+    [[CoreDataManager sharedInstance] saveContext];
     //CONTEXT RESET IS VERY VERY BAD! dont use...this destorys the current playback queue somehow!
     //simple rollback is sufficient.
 
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SongEditDone" object:nil];
-    [self.VC dismissViewControllerAnimated:YES completion:nil];
+    if(! _userPickingNewYtVideo) {
+        //we dont want to dismiss unless the user is editing an existing song.
+        [self.VC dismissViewControllerAnimated:YES completion:nil];
+    }
     [self preDealloc];
 }
 

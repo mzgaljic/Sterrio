@@ -207,14 +207,10 @@
                                                         object:@YES];
 }
 
-#pragma mark - ActionableArtistDataSourceDelegate implementation
+#pragma mark - ActionablePlaylistDataSourceDelegate implementation
 static BOOL didForcefullyCloseSearchBarBeforeSegue = NO;
 static NSString *lastQueryBeforeForceClosingSearchBar;
 
-- (void)performEditSegueWithArtist:(Artist *)artistToBeEdited
-{
-    
-}
 - (void)performPlaylistDetailVCSegueWithPlaylist:(Playlist *)aPlaylist
 {
     if(self.tableView.editing)

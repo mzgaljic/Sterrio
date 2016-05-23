@@ -156,7 +156,7 @@ typedef enum{
         numObjsInTable = [self numObjectsInTable];
         
         if(numObjsInTable == 0){
-            NSAttributedString *text = [[MZCommons attributedStringFromString:@"No Search Results"];
+            NSAttributedString *text = [MZCommons makeAttributedString:@"No Search Results"];
             tableView.backgroundView = [self friendlyTableEmptyUserMessageWithText:text];
         } else
             [self removeEmptyTableUserMessage];

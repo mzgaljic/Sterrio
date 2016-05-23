@@ -38,7 +38,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
     [uniqueID appendString:NSStringFromClass([self class])];
     [uniqueID appendString:self.album.uniqueId];
     self.playbackContextUniqueId = uniqueID;
-    self.emptyTableUserMessage = [MZCommons attributedStringFromString:@"Album Empty"];
+    self.emptyTableUserMessage = [MZCommons makeAttributedString:@"Album Empty"];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self setTableForCoreDataView:self.tableView];

@@ -29,7 +29,8 @@ typedef enum{
 } ARTIST_DATA_SRC_TYPE;
 
 typedef enum{
-    PLAYLIST_DATA_SRC_TYPE_Default
+    PLAYLIST_DATA_SRC_TYPE_Default,
+    PLAYLIST_DATA_SRC_TYPE_AddSongToPlaylist
 } PLAYLIST_DATA_SRC_TYPE;
 
 typedef enum{

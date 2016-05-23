@@ -72,7 +72,7 @@
     self.tableViewDataSourceAndDelegate.tableView = self.tableView;
     self.tableViewDataSourceAndDelegate.playbackContext = self.playbackContext;
     self.tableViewDataSourceAndDelegate.cellReuseId = @"ArtistItemCell";
-    self.tableViewDataSourceAndDelegate.emptyTableUserMessage = [MZCommons attributedStringFromString:@"No Artists"];
+    self.tableViewDataSourceAndDelegate.emptyTableUserMessage = [MZCommons makeAttributedString:@"No Artists"];
     self.tableViewDataSourceAndDelegate.actionableArtistDelegate = self;
     self.tableView.dataSource = self.tableViewDataSourceAndDelegate;
     self.tableView.delegate = self.tableViewDataSourceAndDelegate;

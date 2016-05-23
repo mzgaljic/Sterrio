@@ -30,6 +30,8 @@ typedef enum {
     ALERT_TYPE_NEWTosAndPrivacyPolicy
 } ALERT_TYPE;
 
++ (void)displayTestAlertWithText:(NSString *)alertBody;
+
 + (void)displayAlertWithAlertType:(ALERT_TYPE)type;
 
 //customActions is NSArray of SDCAlertAction objs.

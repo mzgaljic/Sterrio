@@ -73,7 +73,7 @@
     [uniqueID appendString:self.playlist.uniqueId];
     self.playbackContextUniqueId = uniqueID;
     
-    self.emptyTableUserMessage = [MZCommons attributedStringFromString:@"Playlist Empty"];
+    self.emptyTableUserMessage = [MZCommons makeAttributedString:@"Playlist Empty"];
     [self setUpNavBarItems];
     self.navBar = self.navigationItem;
     [[UITextField appearance] setTintColor:[AppEnvironmentConstants appTheme].mainGuiTint];  //sets the cursor color of the playlist name textbox editor
@@ -132,9 +132,7 @@
         dismissingCenterBtnInProgress = NO;
     }
     
-    UINavigationController *parentNav = (UINavigationController *)self.parentViewController;
-    MainScreenViewController *mainVc = (MainScreenViewController *)parentNav.parentViewController;
-    UIImage *img = mainVc.centerButtonImg;
+    UIImage *img =[MZCommons centerButtonImage];
     img = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint :img];
     self.centerButton = [[SSBouncyButton alloc] initAsImage];
     [self.centerButton setImage:img forState:UIControlStateNormal];

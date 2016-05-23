@@ -8,15 +8,25 @@
 
 #import <UIKit/UIKit.h>
 #import "CoreDataCustomTableViewController.h"
+#import "ActionablePlaylistDataSourceDelegate.h"
+
+@protocol AddToPlaylistCallbackDelegate <NSObject>
+- (void)willSaveSongToPlaylistWithoutAddingToGeneralLib;
+- (void)didSaveSongToPlaylistWithoutAddingToGeneralLib;
+@end
 
 /**
  * Present this to the user when you'd like to let them add an entity (Song, Album, Playlist)
  * to an existing or new playlist.
  */
-@interface AddToPlaylistViewController : CoreDataCustomTableViewController
+@interface AddToPlaylistViewController : CoreDataCustomTableViewController <ActionablePlaylistDataSourceDelegate>
+
+@property (nonatomic, strong) id<AddToPlaylistCallbackDelegate> delegate;
 
 - (instancetype)initWithSong:(Song *)aSong;
 //- (instancetype)initWithAlbum:(Album *)anAlbum;
 //- (instancetype)initWithPlaylist:(Playlist *)aPlaylist;
+
+- (void)dismiss;
 
 @end

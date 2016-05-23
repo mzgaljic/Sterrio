@@ -241,6 +241,16 @@ static int numSkippedSongs = 0;
     }
 }
 
++ (void)displayTestAlertWithText:(NSString *)alertBody
+{
+    [MyAlerts launchAlertViewWithDialogTitle:@"TEST Alert"
+                                  andMessage:alertBody
+                               customActions:nil
+                       allowsBasicLocalNotif:NO
+                              makeNotifSound:NO
+                            useAlertAndNotif:NO];
+}
+
 + (void)displayVideoNoLongerAvailableOnYtAlertForSong:(NSString *)name
                                         customActions:(NSArray *)actions
 {

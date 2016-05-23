@@ -36,6 +36,5 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void));
 #pragma mark - Convenience methods/helpers
 + (NSAttributedString *)makeAttributedString:(NSString *)string;
 + (NSAttributedString *)generateTapPlusToCreateNewPlaylistText;
-+ (NSAttributedString *)generateTapPlusToCreateNewPlaylistText;
 
 @end

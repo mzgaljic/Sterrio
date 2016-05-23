@@ -27,13 +27,16 @@
 #import <MSCellAccessory.h>
 #import <FXImageView/UIImage+FX.h>
 #import "ExistingEntityPickerDelegate.h"
+#import "AddToPlaylistViewController.h"
+
 
 //This class breaks so much MVC it's not even funny. it's like a sin...but it works lol
 @interface MZSongModifierTableView : UITableView <UINavigationControllerDelegate,
                                                 UIImagePickerControllerDelegate,
                                                 UITableViewDelegate,
                                                 UITableViewDataSource,
-                                                ExistingEntityPickerDelegate>
+                                                ExistingEntityPickerDelegate,
+                                                AddToPlaylistCallbackDelegate>
 
 @property (nonatomic, assign) BOOL userPickingNewYtVideo;
 @property (nonatomic, strong) Song *songIAmEditing;

@@ -755,7 +755,7 @@ static NSDate *finish;
                 break;
             case 1:
             {
-                NSString *desc = @"Queue songs to make a playlist on the fly!";
+                NSString *desc = @"Easily queue up songs!";
                 videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Queue Songs"
                                                                        ofType:@"mp4"]];
                 page.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
