@@ -28,7 +28,7 @@
     NSString *baseUrl = @"https://api.discogs.com/database/search";
     NSURLComponents *components = [NSURLComponents componentsWithString:baseUrl];
     NSMutableArray *queryItems = [NSMutableArray array];
-    [queryItems addObject:[NSURLQueryItem queryItemWithName:@"q" value:[query stringForHTTPRequest]]];
+    [queryItems addObject:[NSURLQueryItem queryItemWithName:@"q" value:query]];
     [queryItems addObject:[NSURLQueryItem queryItemWithName:@"type" value:@"master"]];
     [queryItems addObject:[NSURLQueryItem queryItemWithName:@"type" value:@"album"]];
     [queryItems addObject:[NSURLQueryItem queryItemWithName:@"page" value:@"1"]];
