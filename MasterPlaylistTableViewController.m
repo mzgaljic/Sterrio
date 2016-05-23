@@ -355,7 +355,7 @@ static NSString *currentAlertTextFieldText;
     [request setFetchBatchSize:MZDefaultCoreDataFetchBatchSize];
     [request setPropertiesToFetch:@[@"playlistName"]];
     
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"creationDate"
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"playlistName"
                                                                      ascending:NO];
     
     request.sortDescriptors = @[sortDescriptor];
