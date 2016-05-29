@@ -41,6 +41,18 @@ static int numSkippedSongs = 0;
     }];
 }
 
++ (void)retrySavingMainContext:(ALERT_TYPE)alertType
+{
+    __block ALERT_TYPE type = alertType;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        NSError *error;
+        if ([[CoreDataManager context] save:&error] == NO) {
+            //save failed, prompt user with the same alert again.
+            [MyAlerts displayAlertWithAlertType:type];
+        }
+    }];
+}
+
 + (void)runDisplayAlertCodeWithAlertType:(ALERT_TYPE)type
 {
     switch (type) {
@@ -118,7 +130,7 @@ static int numSkippedSongs = 0;
         case ALERT_TYPE_TroubleSharingVideo:
         {
             NSString *title = @"Whoops";
-            NSString *msg = @"Something bad happened when trying to share your video.";
+            NSString *msg = @"There was a problem sharing this video.";
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
                                    customActions:nil
@@ -130,7 +142,7 @@ static int numSkippedSongs = 0;
         case ALERT_TYPE_TroubleSharingLibrarySong:
         {
             NSString *title = @"Whoops";
-            NSString *msg = @"Something bad happened when trying to share your song.";
+            NSString *msg = @"There was a problem sharing this song.";
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
                                    customActions:nil
@@ -142,7 +154,7 @@ static int numSkippedSongs = 0;
         case ALERT_TYPE_CannotOpenSafariError:
         {
             NSString *title = @"Whoops";
-            NSString *msg = @"Something went wrong trying to launch Safari.";
+            NSString *msg = @"It seems there is a problem launching Safari.";
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
                                    customActions:nil
@@ -166,13 +178,36 @@ static int numSkippedSongs = 0;
         case ALERT_TYPE_SongSaveHasFailed:
         {
             NSString *title = @"Song Not Saved";
-            NSString *msg = @"Sorry, something bad happened when trying to save your song.";
+            NSString *msg = @"Something bad happened while saving your song.";
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
                                    customActions:nil
                            allowsBasicLocalNotif:NO
                                   makeNotifSound:NO
                                 useAlertAndNotif:NO];
+            break;
+        }
+        case ALERT_TYPE_PlaylistCreationHasFailed:
+        {
+            __block ALERT_TYPE alertType = alertType;
+            SDCAlertAction *retry = [SDCAlertAction actionWithTitle:@"Try Saving Again"
+                                                              style:SDCAlertActionStyleRecommended
+                                                            handler:^(SDCAlertAction *action) {
+                                                                [MyAlerts retrySavingMainContext:alertType];
+                                                            }];
+            SDCAlertAction *ok = [SDCAlertAction actionWithTitle:@"OK"
+                                                           style:SDCAlertActionStyleDefault
+                                                         handler:nil];
+            
+            //actions in array will appear in the same order in the alert on screen...
+            NSArray *actions = @[ok, retry];
+            [self launchAlertViewWithDialogTitle:@"Playlist Not Saved"
+                                      andMessage:@"There was a problem saving your new playlist."
+                                   customActions:actions
+                           allowsBasicLocalNotif:YES
+                                  makeNotifSound:YES
+                                useAlertAndNotif:NO];
+
             break;
         }
         case ALERT_TYPE_WarnUserOfCellularDataFees:

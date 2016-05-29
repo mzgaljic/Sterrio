@@ -230,8 +230,12 @@
     }
 
     [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:NO];
-    [[CoreDataManager sharedInstance] saveContext];  //commit changes
-    
+
+    NSError *error;
+    if ([[CoreDataManager context] save:&error] == NO) {
+        //save failed
+        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_PlaylistCreationHasFailed];
+    }
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

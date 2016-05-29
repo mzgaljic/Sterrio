@@ -19,7 +19,7 @@
  * Present this to the user when you'd like to let them add an entity (Song, Album, Playlist)
  * to an existing or new playlist.
  */
-@interface AddToPlaylistViewController : CoreDataCustomTableViewController <ActionablePlaylistDataSourceDelegate>
+@interface AddToPlaylistViewController : CoreDataCustomTableViewController <ActionablePlaylistDataSourceDelegate, UITextFieldDelegate>
 
 @property (nonatomic, strong) id<AddToPlaylistCallbackDelegate> delegate;
 

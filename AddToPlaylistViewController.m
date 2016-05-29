@@ -17,11 +17,13 @@
 #import "SongPlayerCoordinator.h"
 #import "MusicPlaybackController.h"
 #import "MZInterstitialAd.h"
+#import "SDCAlertController.h"
 
 @interface AddToPlaylistViewController ()
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSManagedObject *entity;
 @property (nonatomic, strong) AllPlaylistsDataSource *tableViewDataSourceAndDelegate;
+@property(nonatomic, strong) SDCAlertController *createPlaylistAlert;
 @end
 
 @implementation AddToPlaylistViewController
@@ -119,6 +121,86 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:MZForceMainVcTabsToUpdateDatasources
                                                         object:nil];
     [self dismissAfterSave];
+}
+
+#pragma mark - Creating New Playlist
+- (void)displayCreatePlaylistAlert
+{
+    __weak AddToPlaylistViewController *weakself = self;
+    _createPlaylistAlert = [SDCAlertController alertControllerWithTitle:@"New Playlist"
+                                                                message:nil
+                                                         preferredStyle:SDCAlertControllerStyleAlert];
+    
+    [_createPlaylistAlert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        int fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+        int minFontSize = 17;
+        if(fontSize < minFontSize)
+            fontSize = minFontSize;
+        UIFont *myFont = [UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:fontSize];
+        textField.font = myFont;
+        textField.placeholder = @"Name me";
+        textField.returnKeyType = UIReturnKeyDone;
+        textField.delegate = weakself;  //delegate for the textField
+        [textField addTarget:weakself
+                      action:@selector(alertTextFieldTextHasChanged:)
+            forControlEvents:UIControlEventEditingChanged];
+    }];
+    [_createPlaylistAlert addAction:[SDCAlertAction actionWithTitle:@"Cancel"
+                                                              style:SDCAlertActionStyleDefault
+                                                            handler:^(SDCAlertAction *action) {
+                                                                //dont do anything
+                                                                currNewPlaylistAlertTextFieldText = @"";
+                                                                return;
+                                                            }]];
+    SDCAlertAction *createAction = [SDCAlertAction actionWithTitle:@"Create"
+                                                             style:SDCAlertActionStyleRecommended
+                                                           handler:^(SDCAlertAction *action) {
+                                                               [weakself handleCreateAlertButtonActionWithPlaylistName:currNewPlaylistAlertTextFieldText];
+                                                               currNewPlaylistAlertTextFieldText = @"";
+                                                           }];
+    createAction.enabled = NO;
+    [_createPlaylistAlert addAction:createAction];
+    [_createPlaylistAlert presentWithCompletion:nil];
+}
+
+static NSString *currNewPlaylistAlertTextFieldText;
+- (void)alertTextFieldTextHasChanged:(UITextField *)sender
+{
+    if (_createPlaylistAlert)
+    {
+        currNewPlaylistAlertTextFieldText = sender.text;
+        
+        NSString *tempString = [currNewPlaylistAlertTextFieldText copy];
+        tempString = [tempString removeIrrelevantWhitespace];
+        BOOL enableCreateButton = (tempString.length != 0);
+        UIAlertAction *createAction = _createPlaylistAlert.actions.lastObject;
+        createAction.enabled = enableCreateButton;
+    }
+}
+
+- (void)handleCreateAlertButtonActionWithPlaylistName:(NSString *)playlistName
+{
+    playlistName = [playlistName removeIrrelevantWhitespace];
+    
+    if(playlistName.length == 0)  //was all whitespace, or user gave us an empty string
+        return;
+    
+    NSError *error;
+    if ([[CoreDataManager context] save:&error] == NO) {
+        //save failed
+        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_PlaylistCreationHasFailed];
+    }
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)alertTextField
+{
+    __weak AddToPlaylistViewController *weakself = self;
+    [_createPlaylistAlert dismissWithCompletion:^{
+        [weakself handleCreateAlertButtonActionWithPlaylistName:alertTextField.text];
+        currNewPlaylistAlertTextFieldText = @"";
+    }];
+    
+    return YES;
 }
 
 
