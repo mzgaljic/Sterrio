@@ -540,7 +540,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (PlaybackContext *)contextForSpecificSong:(Song *)aSong
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"uniqueId == %@", aSong.uniqueId];
+    request.predicate = [NSPredicate predicateWithFormat:@"smartSortSongName != nil && uniqueId == %@", aSong.uniqueId];
     //descriptor doesnt really matter here
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"songName"
                                                                      ascending:YES];
@@ -617,7 +617,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                                    ascending:YES
                                                     selector:@selector(localizedStandardCompare:)];
     request.sortDescriptors = @[sortDescriptor];
-    request.predicate = [self generateCompoundedPredicateGivenQuery:query];
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"smartSortSongName != nil"];
+    NSPredicate *otherPredicates = [self generateCompoundedPredicateGivenQuery:query];
+    request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate, otherPredicates]];
     return request;
 }
 

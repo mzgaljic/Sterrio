@@ -472,7 +472,7 @@
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
     
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY artist.uniqueId == %@", anArtist.uniqueId];
+    request.predicate = [NSPredicate predicateWithFormat:@"smartSortSongName != nil && artist.uniqueId == %@", anArtist.uniqueId];
     NSSortDescriptor *sortDescriptor;
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
                                                    ascending:YES
@@ -551,7 +551,11 @@
     //see: http://stackoverflow.com/questions/15091155/nspredicate-match-any-characters
     NSPredicate *predicate2 = [NSPredicate predicateWithFormat:@"artistName LIKE[cd] %@",  searchWithWildcards];
     
-    request.predicate = [NSCompoundPredicate orPredicateWithSubpredicates:@[predicate1,predicate2]];
+    //same query in MasterArtistsTableViewController
+    NSString *predicateFormat = @"(SUBQUERY(standAloneSongs, $song, $song.smartSortSongName != nil).@count > 0) || (SUBQUERY(albums, $album, SUBQUERY($album.albumSongs, $albumSong, $albumSong.smartSortSongName != nil).@count > 0).@count > 0)";
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:predicateFormat];
+    NSPredicate *otherPredicates = [NSCompoundPredicate orPredicateWithSubpredicates:@[predicate1,predicate2]];
+    request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate, otherPredicates]];
     return request;
 }
 

@@ -537,7 +537,8 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
 - (PlaybackContext *)contextForSpecificAlbum:(Album *)anAlbum
 {
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Song"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY album.uniqueId == %@", anAlbum.uniqueId];
+    NSString *predicateFormat = @"smartSortSongName != nil && album.uniqueId == %@";
+    request.predicate = [NSPredicate predicateWithFormat:predicateFormat, anAlbum.uniqueId];
     
     NSSortDescriptor *sortDescriptor;
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"smartSortSongName"
@@ -604,7 +605,10 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
                                                     selector:@selector(localizedStandardCompare:)];
     
     request.sortDescriptors = @[sortDescriptor];
-    request.predicate = [self generateCompoundedPredicateGivenQuery:query];
+    NSString *predicateFormat = @"SUBQUERY(albumSongs, $song, $song.smartSortSongName != nil).@count > 0";
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:predicateFormat];
+    NSPredicate *otherPredicates = [self generateCompoundedPredicateGivenQuery:query];
+    request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate, otherPredicates]];
     return request;
 }
 
