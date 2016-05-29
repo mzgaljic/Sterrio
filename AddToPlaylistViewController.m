@@ -18,6 +18,7 @@
 #import "MusicPlaybackController.h"
 #import "MZInterstitialAd.h"
 #import "SDCAlertController.h"
+#import "PlaylistItem+Utilities.h"
 
 @interface AddToPlaylistViewController ()
 @property (nonatomic, strong) UITableView *tableView;
@@ -185,8 +186,20 @@ static NSString *currNewPlaylistAlertTextFieldText;
     if(playlistName.length == 0)  //was all whitespace, or user gave us an empty string
         return;
     
+    NSManagedObjectContext *mainContext = [CoreDataManager context];
+    Playlist *playlist = [Playlist createNewPlaylistWithName:playlistName
+                                            inManagedContext:mainContext];
+    
+    if([_entity isMemberOfClass:[Song class]]) {
+        Song *song = (Song *)_entity;
+        int const firstIndex = 0;
+        [PlaylistItem createNewPlaylistItemWithCorrespondingPlaylist:playlist
+                                                                song:song
+                                                     indexInPlaylist:firstIndex
+                                                    inManagedContext:mainContext];
+    }
     NSError *error;
-    if ([[CoreDataManager context] save:&error] == NO) {
+    if ([mainContext save:&error] == NO) {
         //save failed
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_PlaylistCreationHasFailed];
     }
