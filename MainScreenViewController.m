@@ -38,6 +38,8 @@ short const dummyTabIndex = 2;
 @property (nonatomic, strong) NSArray *tabBarSelectedImageNames;
 @property (nonatomic, strong) NSArray *tabBarItems;
 @property (nonatomic, strong) UINavigationController *currentNavController;
+
+@property (nonatomic, strong) NSMutableDictionary *tabsNeedingForcedDataReload;
 @end
 
 
@@ -61,6 +63,7 @@ short const dummyTabIndex = 2;
         changingTabs = NO;
         prevAdsRemovedValue = [AppEnvironmentConstants areAdsRemoved];
         [AppEnvironmentConstants setBannerAdHeight:0];
+        _tabsNeedingForcedDataReload = [NSMutableDictionary new];
     }
     return self;
 }
@@ -102,6 +105,10 @@ short const dummyTabIndex = 2;
     [notifCenter addObserver:self
                     selector:@selector(appBecomingActiveAgain)
                         name:UIApplicationDidBecomeActiveNotification
+                      object:nil];
+    [notifCenter addObserver:self
+                    selector:@selector(everyTabWillNeedAForcedReload)
+                        name:MZForceMainVcTabsToUpdateDatasources
                       object:nil];
 }
 
@@ -243,9 +250,12 @@ static NSTimeInterval prevAppBecameActiveTimeInterval = 0;
 #pragma mark - GUI helpers
 - (void)replaceNavControllerOnScreenWithNavController:(UINavigationController *)newNavController
 {
+    [self forceUpdateVcDataSourceIfNecessary:newNavController];
+    
     BOOL adsRemoved = [AppEnvironmentConstants areAdsRemoved];
-    if(adsRemoved == prevAdsRemovedValue && self.currentNavController == newNavController)
+    if(adsRemoved == prevAdsRemovedValue && self.currentNavController == newNavController) {
         return;
+    }
     
     adsRemoved = [AppEnvironmentConstants areAdsRemoved];
     BOOL oldNavBarHidden = self.currentNavController.navigationBarHidden;
@@ -316,7 +326,7 @@ static NSTimeInterval prevAppBecameActiveTimeInterval = 0;
     
     index = [self.navControllers indexOfObjectIdenticalTo:newNavController];
     UIViewController *newVc = self.viewControllers[index];
-    
+
     [newVc viewWillAppear:YES];
     [self.view addSubview:newNavController.view];
     //make sure tab bar is not covered by the new nav controllers view
@@ -729,6 +739,36 @@ static NSTimeInterval prevAppBecameActiveTimeInterval = 0;
                 [weakSelf setupTabBarAndTabBarViewUsingOrientation:toInterfaceOrientation];
             }];
         });
+    }
+}
+
+#pragma mark - Random Utils
+- (void)everyTabWillNeedAForcedReload
+{
+    //mark each viewController as 'needing a data reload.'
+    for(UIViewController *vc in _viewControllers) {
+        [_tabsNeedingForcedDataReload setObject:@YES
+                                         forKey:[NSValue valueWithNonretainedObject:vc]];
+    }
+}
+
+- (void)forceUpdateVcDataSourceIfNecessary:(UINavigationController *)navVc
+{
+    UIViewController *vc;
+    for(UIViewController *aViewController in self.viewControllers){
+        if(aViewController.navigationController == navVc){
+            vc = aViewController;
+            break;
+        }
+    }
+    BOOL needToUpdateVcData = [_tabsNeedingForcedDataReload[[NSValue valueWithNonretainedObject:vc]] boolValue];
+    if(needToUpdateVcData) {
+        if([vc conformsToProtocol:@protocol(MainScreenViewControllerDelegate)])
+            [vc performSelector:@selector(reloadDataSourceBackingThisVc)
+                     withObject:nil
+                     afterDelay:0];
+        [_tabsNeedingForcedDataReload setObject:@NO
+                                         forKey:[NSValue valueWithNonretainedObject:vc]];
     }
 }
 

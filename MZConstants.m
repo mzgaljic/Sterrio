@@ -27,6 +27,7 @@ NSString * const MZAppWasBackgrounded = @"appEnteredBackgroundState";
 NSString * const MZPlayerToggledOnScreenStatus = @"the status has been toggled";
 NSString * const MZMainScreenVCStatusBarAlwaysInvisible = @"status bar should always be invisible";
 
+NSString * const MZForceMainVcTabsToUpdateDatasources = @"Refetch data for each tab next time its shown";
 NSString * const MZFileNameOfLqAlbumArtObjs = @"Pending Album Art Updates.txt";
 NSString * const MZNewSongLoading = @"AVPlayer will try to load a new song now";
 NSString * const MZAVPlayerStallStateChanged = @"AVPlayer stalls changed";

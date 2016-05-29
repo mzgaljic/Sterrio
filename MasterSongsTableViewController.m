@@ -29,7 +29,7 @@
 @implementation MasterSongsTableViewController
 static BOOL haveCheckedCoreDataInit = NO;
 
-#pragma mark - NavBarItem Delegate
+#pragma mark - MainScreenViewControllerDelegate
 - (NSArray *)leftBarButtonItemsForNavigationBar
 {
     UIImage *image = [UIImage imageNamed:@"Settings-Line"];
@@ -46,6 +46,16 @@ static BOOL haveCheckedCoreDataInit = NO;
     self.editButton = editButton;
     self.rightBarButtonItems = @[self.editButton];
     return self.rightBarButtonItems;
+}
+
+- (void)tabBarAddButtonPressed
+{
+    [self performSegueWithIdentifier:@"addMusicToLibSegue" sender:nil];
+}
+
+- (void)reloadDataSourceBackingThisVc
+{
+    [self.tableView reloadData];
 }
 
 #pragma mark - Miscellaneous
@@ -215,13 +225,6 @@ static BOOL haveCheckedCoreDataInit = NO;
         //refetches all objects again (needed so they dont go "out of context")
         [self.tableView reloadData];
     }
-}
-
-
-#pragma mark - Adding music to library
-- (void)tabBarAddButtonPressed
-{
-    [self performSegueWithIdentifier:@"addMusicToLibSegue" sender:nil];
 }
 
 #pragma mark - Go To Settings

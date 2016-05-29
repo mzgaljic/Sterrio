@@ -33,7 +33,7 @@
 @implementation MasterPlaylistTableViewController
 @synthesize createPlaylistAlert = _createPlaylistAlert;
 
-#pragma mark - NavBarItem Delegate
+#pragma mark - MainScreenViewControllerDelegate
 - (NSArray *)leftBarButtonItemsForNavigationBar
 {
     UIImage *image = [UIImage imageNamed:@"Settings-Line"];
@@ -50,6 +50,17 @@
     self.editButton = editButton;
     self.rightBarButtonItems = @[editButton];
     return self.rightBarButtonItems;
+}
+
+- (void)tabBarAddButtonPressed
+{
+    [self displayCreatePlaylistAlert];
+}
+
+
+- (void)reloadDataSourceBackingThisVc
+{
+    [self.tableView reloadData];
 }
 
 #pragma mark - Miscellaneous
@@ -314,11 +325,6 @@ static NSString *currentAlertTextFieldText;
     
     UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:vc];
     [self presentViewController:navVC animated:YES completion:nil];
-}
-
-- (void)tabBarAddButtonPressed
-{
-    [self displayCreatePlaylistAlert];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)alertTextField

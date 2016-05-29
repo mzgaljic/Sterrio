@@ -28,7 +28,7 @@
 
 @implementation MasterArtistsTableViewController
 
-#pragma mark - NavBarItem Delegate
+#pragma mark - MainScreenViewControllerDelegate
 - (NSArray *)leftBarButtonItemsForNavigationBar
 {
     UIImage *image = [UIImage imageNamed:@"Settings-Line"];
@@ -45,6 +45,16 @@
     self.editButton = editButton;
     self.rightBarButtonItems = @[editButton];
     return self.rightBarButtonItems;
+}
+
+- (void)tabBarAddButtonPressed
+{
+    [self performSegueWithIdentifier:@"addMusicToLibSegue" sender:nil];
+}
+
+- (void)reloadDataSourceBackingThisVc
+{
+    [self.tableView reloadData];
 }
 
 #pragma mark - Miscellaneous
@@ -274,12 +284,6 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
         [[NSNotificationCenter defaultCenter] removeObserver:self name:@"SongSavedDuringEdit" object:nil];
     }
      */
-}
-
-#pragma mark - Adding music to library
-- (void)tabBarAddButtonPressed
-{
-    [self performSegueWithIdentifier:@"addMusicToLibSegue" sender:nil];
 }
 
 #pragma mark - Go To Settings

@@ -116,6 +116,8 @@
         song.smartSortSongName = nil;
         [self addSongToPlaylistAndSave:selectedPlaylist];
     }
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZForceMainVcTabsToUpdateDatasources
+                                                        object:nil];
     [self dismissAfterSave];
 }
 

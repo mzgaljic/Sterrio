@@ -15,5 +15,6 @@
 - (NSArray *)leftBarButtonItemsForNavigationBar;
 - (NSArray *)rightBarButtonItemsForNavigationBar;
 - (void)tabBarAddButtonPressed;
+- (void)reloadDataSourceBackingThisVc;
 
 @end
