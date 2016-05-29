@@ -144,10 +144,12 @@ static BOOL skipCertainInitStepsFlag = NO;
     preDeallocedAlready = YES;
     
     //VC is actually being popped. Must delete the song the user somewhat created
-    if(!userCreatedHisSong)
-        [self.tableView cancelEditing];
+    if(!userCreatedHisSong) {
+        [self.tableView cancelEditing];  //also calls [tableView preDealloc];
+    } else {
+        [self.tableView preDealloc];
+    }
     
-    [self.tableView cancelEditing];
     self.tableView = nil;  //tableView will pre-dealloc itself.
     lockScreenImg = nil;
     _suggestedItem = nil;
@@ -831,7 +833,10 @@ static short numberTimesViewHasBeenShown = 0;
     newLibSong.duration = duration;
     newLibSong.youtube_id = ytVideo.videoId;
     userCreatedHisSong = YES;
-    
+}
+
+- (void)songSaveInitiated
+{
     [self preDealloc];
     [self.navigationController dismissViewControllerAnimated:YES completion:^{
         if([MusicPlaybackController nowPlayingSong]) {

@@ -488,6 +488,8 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 _selfRetainCycle = self;
                 
                 [self preSaveSongProcessing];
+                [self.theDelegate songSaveInitiated];
+                
                 NSError *error;
                 if ([[CoreDataManager context] save:&error] == NO) {
                     //save failed
@@ -542,6 +544,9 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             }  //end 'creatingNewSong'
         }  //end indexPath.row == 0
         else if(indexPath.row == 1) {
+            //keep strong ref to self until we're done saving.
+            _selfRetainCycle = self;
+
             //'Add to a Playlist'
             AddToPlaylistViewController *addToPlaylistVc = [[AddToPlaylistViewController alloc] initWithSong:_songIAmEditing];
             UINavigationController *navVc = [[UINavigationController alloc] initWithRootViewController:addToPlaylistVc];
@@ -589,6 +594,8 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
         });
     }
+    
+    _selfRetainCycle = nil;  //allow this class to be deallocated.
 }
 
 #pragma mark - Entity (Song, Album, Artist) Editing logic
@@ -1214,7 +1221,6 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 {
     //now reset any context deletions, insertions, blah blah...
     [[CoreDataManager context] rollback];
-    [[CoreDataManager sharedInstance] saveContext];
     //CONTEXT RESET IS VERY VERY BAD! dont use...this destorys the current playback queue somehow!
     //simple rollback is sufficient.
 

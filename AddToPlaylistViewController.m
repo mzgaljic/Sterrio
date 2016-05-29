@@ -14,6 +14,9 @@
 #import "PlaylistItem+Utilities.h"
 #import "AppEnvironmentConstants.h"
 #import "SpotlightHelper.h"
+#import "SongPlayerCoordinator.h"
+#import "MusicPlaybackController.h"
+#import "MZInterstitialAd.h"
 
 @interface AddToPlaylistViewController ()
 @property (nonatomic, strong) UITableView *tableView;
@@ -39,6 +42,27 @@
     [super prepareFetchedResultsControllerForDealloc];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)dismissAfterSave
+{
+    self.delegate = nil;
+    [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:NO];
+    [super prepareFetchedResultsControllerForDealloc];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    UIViewController *grandParentVc = self.presentingViewController.presentingViewController;
+    [grandParentVc dismissViewControllerAnimated:YES completion:^{
+        if([MusicPlaybackController nowPlayingSong]) {
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[MusicPlaybackController nowPlayingSong]];
+        }
+    }];
+    
+    [[SongPlayerCoordinator sharedInstance] shrunkenVideoPlayerCanIgnoreToolbar];
+    [AppEnvironmentConstants incrementNumTimesUserAddedSongToLibCount];
+    MainScreenViewController *mainScreenVc = ((AppDelegate *)[[UIApplication sharedApplication] delegate]).mainVC;
+    [[MZInterstitialAd sharedInstance] presentIfReadyWithRootVc:(UIViewController *)mainScreenVc
+                                              withDismissAction:nil];
 }
 
 #pragma mark - VC life cycle
@@ -92,10 +116,7 @@
         song.smartSortSongName = nil;
         [self addSongToPlaylistAndSave:selectedPlaylist];
     }
-    //grandParentNav is the navigation controller that shows the youtube search results, video preview, etc.
-    UINavigationController *parentNav = (UINavigationController *)self.parentViewController;
-    UINavigationController *grandParentNav = (UINavigationController *)parentNav.parentViewController;
-    [grandParentNav dismissViewControllerAnimated:YES completion:nil];
+    [self dismissAfterSave];
 }
 
 
@@ -156,8 +177,6 @@
     else
     {
         //save success
-        [self.delegate didSaveSongToPlaylistWithoutAddingToGeneralLib];
-        
         [SpotlightHelper addSongToSpotlightIndex:(Song *)_entity];
         [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:NO];
         
@@ -175,5 +194,6 @@
             }];
         }
     }
+    [self.delegate didSaveSongToPlaylistWithoutAddingToGeneralLib];
 }
 @end

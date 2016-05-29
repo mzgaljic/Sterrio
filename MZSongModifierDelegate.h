@@ -12,5 +12,5 @@
 
 - (void)pushThisVC:(UIViewController *)vc;
 - (void)performCleanupBeforeSongIsSaved:(Song *)newLibSong;
-
+- (void)songSaveInitiated;
 @end
