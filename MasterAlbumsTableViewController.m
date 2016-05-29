@@ -303,7 +303,11 @@ static NSString *lastQueryBeforeForceClosingSearchBar;
     self.fetchedResultsController = nil;
     NSManagedObjectContext *context = [CoreDataManager context];
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Album"];
-    request.predicate = nil;  //means i want all of the albums
+    //means i only want the albums where at least 1 song was added to the general libary (so not the
+    //songs that were added to 'just a playlist').
+    NSString *predicateFormat = @"SUBQUERY(albumSongs, $song, $song.smartSortSongName != nil).@count > 0";
+    request.predicate = [NSPredicate predicateWithFormat:predicateFormat];
+    
     [request setFetchBatchSize:MZDefaultCoreDataFetchBatchSize];
     [request setPropertiesToFetch:@[@"albumName", @"artist"]];
     
