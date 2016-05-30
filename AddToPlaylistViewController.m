@@ -108,13 +108,7 @@
             }
         }
     }
-    self.segmentbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 50)];
-    self.segmentbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    self.segmentbar.clipsToBounds = YES;  //removes the hairline above the toolbar.
-    
-    _hideFromLibSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
-    UIBarButtonItem *switchBarBtn = [[UIBarButtonItem alloc] initWithCustomView:_hideFromLibSwitch];
-    [self.segmentbar setItems:@[switchBarBtn]];
+    self.segmentbar = [self createExtendedNavToolbar];
     [self.view addSubview:self.segmentbar];
 }
 
@@ -136,6 +130,7 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    [super viewDidAppear:animated];
     [self presentCenterButtonAnimated];
 }
 
@@ -143,6 +138,13 @@
 {
     [super viewWillDisappear:animated];
     self.navHairline.hidden = NO;
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    //so table content doesnt get covered by the extended nav bar. (not sure why but /2 looks great.)
+    self.tableView.contentInset = UIEdgeInsetsMake(self.segmentbar.frame.size.height/2, 0, 0, 0);
 }
 
 - (void)establishTableViewDataSource
@@ -172,7 +174,9 @@
 {
     if([_entity isMemberOfClass:[Song class]]) {
         Song *song = (Song *)_entity;
-        song.smartSortSongName = nil;
+        if(_hideFromLibSwitch.isOn) {
+            song.smartSortSongName = nil;
+        }
         [self addSongToPlaylistAndSave:selectedPlaylist];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:MZForceMainVcTabsToUpdateDatasources
@@ -402,7 +406,6 @@ static BOOL hidingCenterBtnAnimationIsDone = YES;
 - (void)addSongToPlaylistAndSave:(Playlist *)playlist
 {
     [self.delegate willSaveSongToPlaylistWithoutAddingToGeneralLib];
-    
     NSMutableSet *set = [NSMutableSet setWithSet:playlist.playlistItems];
     
     //index at the end of the playlist (if imagined conceptually as an array)
@@ -452,5 +455,30 @@ static BOOL hidingCenterBtnAnimationIsDone = YES;
         }
     }
     [self.delegate didSaveSongToPlaylistWithoutAddingToGeneralLib];
+}
+
+- (UIToolbar *)createExtendedNavToolbar
+{
+    UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
+    toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    toolbar.clipsToBounds = YES;  //removes the hairline above the toolbar.
+    
+    UIBarButtonItem *flexSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0 , 11.0f, self.view.frame.size.width, 21.0f)];
+    [label setFont:[UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18]];
+    [label setBackgroundColor:[UIColor clearColor]];
+    [label setTextColor:[AppEnvironmentConstants appTheme].navBarToolbarTextTint];
+    [label setText:@"Only visible in selected playlist"];
+    [label setTextAlignment:NSTextAlignmentRight];
+    UIBarButtonItem *labelBtn = [[UIBarButtonItem alloc] initWithCustomView:label];
+    
+    if(_hideFromLibSwitch == nil) {
+        _hideFromLibSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+        [_hideFromLibSwitch setOn:NO];  //set default value
+    }
+    UIBarButtonItem *switchBarBtn = [[UIBarButtonItem alloc] initWithCustomView:_hideFromLibSwitch];
+    [toolbar setItems:@[flexSpacer, labelBtn, switchBarBtn]];
+    return toolbar;
 }
 @end
