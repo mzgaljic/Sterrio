@@ -207,7 +207,9 @@ NSString * const MAIN_STORE_ENSEMBLE_ID = @"Main-Store";
         if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) 
         {
             //Need to come up with a better error management here.
+            
             NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            CLS_LOG(@"Unresolved error %@, %@", error, [error userInfo]);
             abort();
         } else{
             [ensemble processPendingChangesWithCompletion:nil];
