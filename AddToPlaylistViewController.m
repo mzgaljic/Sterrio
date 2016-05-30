@@ -116,8 +116,10 @@
 {
     [super viewWillAppear:animated];
     //due to the extended nav bar effect, i'm overriding the nav bar image
-    UIImage *navBarImg = [AppEnvironmentConstants navBarBackgroundImageWithoutGradientFromFrame:self.segmentbar.frame];
-    [self.navigationController.navigationBar setBackgroundImage:navBarImg forBarMetrics:UIBarMetricsDefault];
+    CGRect navBarFrame = CGRectMake(0, 0, self.navigationController.navigationBar.frame.size.width, self.navigationController.navigationBar.bounds.size.height + [AppEnvironmentConstants statusBarHeight]);
+    UIImage *navBarImg = [AppEnvironmentConstants navBarBackgroundImageWithoutGradientFromFrame:navBarFrame];
+    [self.navigationController.navigationBar setBackgroundImage:navBarImg
+                                                  forBarMetrics:UIBarMetricsDefault];
     
     //make toolbar translucent
     self.segmentbar.translucent = NO;
@@ -144,7 +146,7 @@
 {
     [super viewDidLayoutSubviews];
     //so table content doesnt get covered by the extended nav bar. (not sure why but /2 looks great.)
-    self.tableView.contentInset = UIEdgeInsetsMake(self.segmentbar.frame.size.height/2, 0, 0, 0);
+    self.tableView.contentInset = UIEdgeInsetsMake(self.segmentbar.frame.size.height, 0, 0, 0);
 }
 
 - (void)establishTableViewDataSource
@@ -465,8 +467,8 @@ static BOOL hidingCenterBtnAnimationIsDone = YES;
     
     UIBarButtonItem *flexSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0 , 11.0f, self.view.frame.size.width, 21.0f)];
-    [label setFont:[UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:18]];
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0 , 10.0f, self.view.frame.size.width, 21.0f)];
+    [label setFont:[UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:17]];
     [label setBackgroundColor:[UIColor clearColor]];
     [label setTextColor:[AppEnvironmentConstants appTheme].navBarToolbarTextTint];
     [label setText:@"Only visible in selected playlist"];
