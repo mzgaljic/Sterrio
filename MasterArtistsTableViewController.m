@@ -54,7 +54,7 @@
 
 - (void)reloadDataSourceBackingThisVc
 {
-    [self.tableView reloadData];
+    [self performFetch];
 }
 
 #pragma mark - Miscellaneous
