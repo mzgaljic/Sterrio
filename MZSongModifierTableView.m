@@ -138,8 +138,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 {
     canShowAddtoLibButton = YES;
     if([self numberOfSections] == 2){
-        [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:1]]
-                    withRowAnimation:UITableViewRowAnimationMiddle];
+        [self reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -272,7 +271,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                 [spinner startAnimating];
             }
         } else if(indexPath.row == 1) {
-            cell.textLabel.text = @"Add to a Playlist...";
+            cell.textLabel.text = @"Add to a Playlist";
             cell.textLabel.textColor = [AppEnvironmentConstants appTheme].contrastingTextColor;
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
@@ -620,7 +619,7 @@ float const updateCellWithAnimationFadeDelay = 0.4;
             //delete the add to lib section if song name is non-existant.
             [self beginUpdates];
             [self deleteSections:[NSIndexSet indexSetWithIndex:1]
-                withRowAnimation:UITableViewRowAnimationBottom];
+                withRowAnimation:UITableViewRowAnimationMiddle];
             [self endUpdates];
         }
         [self performSelector:@selector(reloadSongNameCell) withObject:nil afterDelay:0.5];
@@ -646,14 +645,8 @@ float const updateCellWithAnimationFadeDelay = 0.4;
                     withRowAnimation:UITableViewRowAnimationFade];
         if(_creatingANewSong || _userPickingNewYtVideo){
             if(! [weakself isRowPresentInTableView:0 withSection:1]){
-                UITableViewRowAnimation animation;
-                if(shouldScrollTableview) {
-                    animation = UITableViewRowAnimationBottom;
-                } else {
-                    animation = UITableViewRowAnimationNone;
-                }
                 [weakself insertSections:[NSIndexSet indexSetWithIndex:1]
-                    withRowAnimation:animation];
+                        withRowAnimation:UITableViewRowAnimationFade];
             }
         }
         [weakself endUpdates];
@@ -759,11 +752,6 @@ float const updateCellWithAnimationFadeDelay = 0.4;
     return NO;
 }
 
-- (void)reloadTableWaitUntilDone
-{
-    [self reloadData];
-}
-
 //added this since it caused a crash on iphone 4s
 - (void)reloadSongNameCell
 {
@@ -815,7 +803,6 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
                         withRowAnimation:UITableViewRowAnimationFade];
         [weakself endUpdates];
-        [weakself reloadData];
     });
 }
 
@@ -853,7 +840,6 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
                         withRowAnimation:UITableViewRowAnimationFade];
         [weakself endUpdates];
-        [weakself reloadData];
     });
 }
 
@@ -890,7 +876,6 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
                         withRowAnimation:UITableViewRowAnimationFade];
         [weakself endUpdates];
-        [weakself reloadData];
     });
 }
 
@@ -926,7 +911,6 @@ float const updateCellWithAnimationFadeDelay = 0.4;
         [weakself reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]]
                         withRowAnimation:UITableViewRowAnimationFade];
         [weakself endUpdates];
-        [weakself reloadData];
     });
 }
 

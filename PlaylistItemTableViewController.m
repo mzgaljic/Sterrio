@@ -776,24 +776,6 @@ static BOOL hidingCenterBtnAnimationComplete = YES;
         return NO;
 }
 
-#pragma mark - Counting Songs in core data
-- (int)numberOfSongsInCoreDataModel
-{
-    //count how many instances there are of the Song entity in core data
-    NSManagedObjectContext *context = [CoreDataManager context];
-    int count = 0;
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Song" inManagedObjectContext:context];
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    [fetchRequest setEntity:entity];
-    [fetchRequest setIncludesPropertyValues:YES];
-    NSError *error = nil;
-    NSUInteger tempCount = [context countForFetchRequest: fetchRequest error: &error];
-    if(error == nil){
-        count = (int)tempCount;
-    }
-    return count;
-}
-
 #pragma mark - Helpers
 - (PlaybackContext *)contextForPlaylistItem:(PlaylistItem *)playlistItem
 {

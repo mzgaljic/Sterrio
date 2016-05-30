@@ -21,6 +21,7 @@
 #import "PlaylistItem+Utilities.h"
 
 @interface AddToPlaylistViewController ()
+@property (nonatomic, strong) SSBouncyButton *centerButton;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSManagedObject *entity;
 @property (nonatomic, strong) AllPlaylistsDataSource *tableViewDataSourceAndDelegate;
@@ -40,7 +41,8 @@
 
 - (void)dismiss
 {
-    self.delegate = nil;
+    _centerButton = nil;
+    _delegate = nil;
     [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:NO];
     [super prepareFetchedResultsControllerForDealloc];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -49,7 +51,8 @@
 
 - (void)dismissAfterSave
 {
-    self.delegate = nil;
+    _centerButton = nil;
+    _delegate = nil;
     [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:NO];
     [super prepareFetchedResultsControllerForDealloc];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -90,6 +93,12 @@
     [self establishTableViewDataSource];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [self presentCenterButtonAnimated];
+    //[self performSelector:@selector(presentCenterButtonAnimated) withObject:nil afterDelay:0.2];
+}
+
 - (void)establishTableViewDataSource
 {
     NSString *cellReuseId = @"PlaylistCell";
@@ -112,6 +121,7 @@
     [self.tableView registerClass:[MZTableViewCell class] forCellReuseIdentifier:cellReuseId];
 }
 
+#pragma mark - ActionablePlaylistDataSourceDelegate
 - (void)userSelectedPlaylist:(Playlist *)selectedPlaylist
 {
     if([_entity isMemberOfClass:[Song class]]) {
@@ -216,6 +226,110 @@ static NSString *currNewPlaylistAlertTextFieldText;
     return YES;
 }
 
+#pragma mark - Center button logic
+- (void)presentCenterButtonAnimated
+{
+    [self.centerButton removeFromSuperview];
+    self.centerButton = nil;
+    UIImage *img =[MZCommons centerButtonImage];
+    img = [UIImage colorOpaquePartOfImage:[AppEnvironmentConstants appTheme].mainGuiTint :img];
+    self.centerButton = [[SSBouncyButton alloc] initAsImage];
+    [self.centerButton setImage:img forState:UIControlStateNormal];
+    [self.centerButton setHitTestEdgeInsets:UIEdgeInsetsMake(-10, -10, -10, -10)];
+    [self.centerButton addTarget:self
+                          action:@selector(tabBarAddButtonWithDelay)
+                forControlEvents:UIControlEventTouchUpInside];
+    int btnDiameter = img.size.width;
+    CGRect beginFrame = CGRectMake(self.view.frame.size.width/2 - btnDiameter/2,
+                                   self.view.frame.size.height,
+                                   btnDiameter,
+                                   btnDiameter);
+    CGRect endFrame = CGRectMake(beginFrame.origin.x,
+                                 beginFrame.origin.y - MZTabBarHeight,
+                                 btnDiameter,
+                                 btnDiameter);
+    self.centerButton.frame = beginFrame;
+    [self.centerButton setBackgroundColor:[UIColor whiteColor]];
+    float cornerRadius = self.centerButton.frame.size.height / 2;
+    [self.centerButton.layer setCornerRadius:cornerRadius];
+    [self.view addSubview:self.centerButton];
+    [UIView animateWithDuration:0.5
+                          delay:0
+         usingSpringWithDamping:0.55
+          initialSpringVelocity:0.8
+                        options:UIViewAnimationOptionAllowUserInteraction
+                     animations:^{
+                         self.centerButton.frame = endFrame;
+                     }
+                     completion:nil];
+}
+
+- (void)tabBarAddButtonWithDelay
+{
+    [self performSelector:@selector(tabBarAddButtonPressed) withObject:nil afterDelay:0.2];
+}
+
+- (void)tabBarAddButtonPressed
+{
+    [self displayCreatePlaylistAlert];
+}
+
+static BOOL hidingCenterBtnAnimationIsDone = YES;
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    hidingCenterBtnAnimationIsDone = NO;
+    [UIView animateWithDuration:0.3
+                          delay:0
+         usingSpringWithDamping:1
+          initialSpringVelocity:1
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         self.centerButton.alpha = 0;
+                         [self.centerButton removeFromSuperview];
+                     } completion:^(BOOL finished) {
+                         hidingCenterBtnAnimationIsDone = YES;
+                     }];
+    
+    [self setNeedsStatusBarAppearanceUpdate];
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [self adjustCenterBtnFrameAfterRotation];
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+}
+
+- (void)adjustCenterBtnFrameAfterRotation
+{
+    int btnDiameter = self.centerButton.frame.size.height;
+    int viewWidth = self.view.frame.size.width;
+    int viewHeight = self.view.frame.size.height;
+    CGRect oldFrame = CGRectMake((viewWidth/2) - (btnDiameter/2),
+                                 viewHeight,
+                                 btnDiameter,
+                                 btnDiameter);
+    CGRect newFrame = CGRectMake((viewWidth/2) - (btnDiameter/2),
+                                 viewHeight - MZTabBarHeight,
+                                 btnDiameter,
+                                 btnDiameter);
+    self.centerButton.frame = oldFrame;
+    
+    [UIView animateWithDuration:0.35
+                          delay:0
+         usingSpringWithDamping:0.55
+          initialSpringVelocity:0.3
+                        options:UIViewAnimationOptionAllowUserInteraction
+                     animations:^{
+                         if(! hidingCenterBtnAnimationIsDone){
+                             [self.centerButton removeFromSuperview];
+                         }
+                         [self.view addSubview:self.centerButton];
+                         self.centerButton.alpha = 1;
+                         self.centerButton.frame = newFrame;
+                     }
+                     completion:nil];
+}
 
 #pragma mark - fetching and sorting
 - (void)initFetchResultsController

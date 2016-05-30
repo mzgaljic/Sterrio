@@ -39,9 +39,6 @@
     BOOL previewPlaybackBegan;
     BOOL previewIsUnplayable;
     
-    BOOL leftAppDuePoweredByYtLogoClick;
-    BOOL playerWasPlayingBeforeTappingPoweredByYt;
-    
     BOOL musicWasPlayingBeforePreviewBegan;
     BOOL previousAllowsExternalPlayback;
     __block NSURL *url;
@@ -248,8 +245,6 @@ static short numberTimesViewHasBeenShown = 0;
             [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
         }
     }
-    
-    [self showOrUpdatePoweredByYtLogoGivenScreenWidth:self.view.frame.size.width];
     swipeToDismissInProgress = NO;
 }
 
@@ -710,7 +705,6 @@ static short numberTimesViewHasBeenShown = 0;
 }
 
 #pragma mark - Rotation Stuff
-
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
@@ -720,7 +714,6 @@ static short numberTimesViewHasBeenShown = 0;
     if(previewIsUnplayable)
         return;
     [self performSelector:@selector(reCenterLoadingSpinner) withObject:nil afterDelay:0.2];
-    [self showOrUpdatePoweredByYtLogoGivenScreenWidth:self.tableView.frame.size.height];
 }
 
 - (void)reCenterLoadingSpinner
@@ -770,7 +763,7 @@ static short numberTimesViewHasBeenShown = 0;
             NSNumber *duration = [details objectForKey:MZKeyVideoDuration];
             NSUInteger twenty_four_hours = 86400;
             if([duration integerValue] > twenty_four_hours){
-                NSString *msg = @"Unfortunately, this App only supports videos with a total duration of 24 hours or less.";
+                NSString *msg = [NSString stringWithFormat:@"Unfortunately, %@ only supports videos with a total duration of 24 hours or less.", MZAppName];
 
                 __weak YouTubeSongAdderViewController *weakself = self;
                 SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK" style:SDCAlertActionStyleRecommended handler:^(SDCAlertAction *action) {
@@ -788,7 +781,7 @@ static short numberTimesViewHasBeenShown = 0;
                 [self loadVideo];
             }
         }
-    }else
+    } else
         return;
 }
 
@@ -806,7 +799,7 @@ static short numberTimesViewHasBeenShown = 0;
                                   andMessage:msg
                                 customAction:okAction];
         [MRProgressOverlayView dismissAllOverlaysForView:self.tableView.tableHeaderView animated:YES];
-    }else
+    } else
         //false alarm about a problem that occured with a previous fetch?
         //who knows when this would happen lol. Disregard this case.
         return;
@@ -920,79 +913,9 @@ static short numberTimesViewHasBeenShown = 0;
     [alert presentWithCompletion:nil];
 }
 
-- (void)showOrUpdatePoweredByYtLogoGivenScreenWidth:(float)width
-{
-    BOOL animateOnScreen = NO;
-    UIButton *btn = self.poweredByYtBtn;
-    UIImage *logo = [UIImage imageNamed:@"poweredByYtDark-small"];
-    if(btn == nil) {
-        btn = [[SSBouncyButton alloc] initAsImage];
-        [btn setImage:logo forState:UIControlStateNormal];
-        animateOnScreen = YES;
-    } else {
-        self.tableView.tableFooterView = nil;
-    }
-    int yPadding = 20;
-    btn.frame = CGRectMake(0, yPadding, logo.size.width, logo.size.height);
-    [btn setImage:logo forState:UIControlStateNormal];
-    [btn addTarget:self
-            action:@selector(poweredByYtTapped)
-  forControlEvents:UIControlEventTouchUpInside];
-    
-    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(width/2 - (logo.size.width/2),
-                                                                 0,
-                                                                 logo.size.width,
-                                                                 logo.size.height + yPadding)];
-    [footerView addSubview:btn];
-    footerView.alpha = 0;
-    footerView.userInteractionEnabled = YES;
-    [self.tableView setTableFooterView:footerView];
-    if(animateOnScreen) {
-        [UIView animateWithDuration:MZCellImageViewFadeDuration
-                         animations:^{
-                             footerView.alpha = 1;
-                         }];
-    }
-}
-
-static BOOL powerByYtHandled = NO;  //needed if user aggressively taps button more than once
-- (void)poweredByYtTapped
-{
-    powerByYtHandled = NO;
-    [self performSelector:@selector(handlePoweredByYtTapped) withObject:nil afterDelay:0.25];
-}
-
-- (void)handlePoweredByYtTapped
-{
-    if(powerByYtHandled)
-        return;
-    if(!self.player.playbackExplicitlyPaused && !self.player.isInStall) {
-        playerWasPlayingBeforeTappingPoweredByYt = YES;
-    }
-    [self.player pause];
-    [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Paused];
-    
-    NSString *youtubeLinkBeginning = @"https://www.youtube.com/watch?v=";
-    NSMutableString *ytWebUrl = [NSMutableString stringWithString:youtubeLinkBeginning];
-    [ytWebUrl appendString:ytVideo.videoId];
-    
-    NSURL *previewYtWebUrl = [NSURL URLWithString:ytWebUrl];
-    leftAppDuePoweredByYtLogoClick = YES;
-    if (![[UIApplication sharedApplication] openURL:previewYtWebUrl]){
-        [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotOpenSafariError];
-        leftAppDuePoweredByYtLogoClick = NO;
-        playerWasPlayingBeforeTappingPoweredByYt = NO;
-    }
-}
-
 - (void)appReturningToForeground
 {
-    if(leftAppDuePoweredByYtLogoClick && playerWasPlayingBeforeTappingPoweredByYt) {
-        [self.player performSelector:@selector(play) withObject:nil afterDelay:0.2];
-        [AppEnvironmentConstants setCurrentPreviewPlayerState:PREVIEW_PLAYBACK_STATE_Playing];
-    }
-    leftAppDuePoweredByYtLogoClick = NO;
-    playerWasPlayingBeforeTappingPoweredByYt = NO;
+    //implement if desired.
 }
 
 #pragma mark - DiscogsSearchDelegate stuff

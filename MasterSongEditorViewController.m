@@ -144,4 +144,9 @@ static int timesVCHasAppeared = 0;
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (void)songSaveInitiated
+{
+    //no implementation necessary at this time.
+}
+
 @end
