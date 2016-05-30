@@ -153,6 +153,7 @@ typedef enum{
 + (void)setStatusBarHeight:(int)height;
 + (void)setBannerAdHeight:(int)height;
 + (int)bannerAdHeight;
++ (UIImage *)navBarBackgroundImageWithoutGradientFromFrame:(CGRect)frame; //only use when absolutely necessary
 + (UIImage *)navBarBackgroundImageFromFrame:(CGRect)frame;
 + (BOOL)isAppStoreBuild;
 + (NSString *)testingAdMobDeviceId;

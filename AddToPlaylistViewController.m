@@ -25,12 +25,17 @@
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSManagedObject *entity;
 @property (nonatomic, strong) AllPlaylistsDataSource *tableViewDataSourceAndDelegate;
-@property(nonatomic, strong) SDCAlertController *createPlaylistAlert;
+@property (nonatomic, strong) SDCAlertController *createPlaylistAlert;
+
+@property (nonatomic, strong) UISwitch *hideFromLibSwitch;
+
+@property (nonatomic, strong) UIImageView *navHairline;  //for the 'extended navigation bar'
+//the toolbar beneath the nav bar, giving it the 'extended' look.
+@property (nonatomic, strong) UIToolbar *segmentbar;
 @end
 
 @implementation AddToPlaylistViewController
 
-#pragma mark - Custom Initializers
 - (instancetype)initWithSong:(Song *)aSong
 {
     if(self = [super init]) {
@@ -80,6 +85,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     [AppEnvironmentConstants setIsBadTimeToMergeEnsemble:YES];
     self.title = @"Add to a Playlist";
     _tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
@@ -91,12 +97,52 @@
     self.tableView.allowsSelectionDuringEditing = NO;
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
     [self establishTableViewDataSource];
+    
+    // find the hairline below the navigationBar
+    for (UIView *aView in self.navigationController.navigationBar.subviews) {
+        for (UIView *bView in aView.subviews) {
+            if ([bView isKindOfClass:[UIImageView class]] &&
+                bView.bounds.size.width == self.navigationController.navigationBar.frame.size.width &&
+                bView.bounds.size.height < 2) {
+                self.navHairline = (UIImageView *)bView;
+            }
+        }
+    }
+    self.segmentbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 50)];
+    self.segmentbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    self.segmentbar.clipsToBounds = YES;  //removes the hairline above the toolbar.
+    
+    _hideFromLibSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+    UIBarButtonItem *switchBarBtn = [[UIBarButtonItem alloc] initWithCustomView:_hideFromLibSwitch];
+    [self.segmentbar setItems:@[switchBarBtn]];
+    [self.view addSubview:self.segmentbar];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    //due to the extended nav bar effect, i'm overriding the nav bar image
+    UIImage *navBarImg = [AppEnvironmentConstants navBarBackgroundImageWithoutGradientFromFrame:self.segmentbar.frame];
+    [self.navigationController.navigationBar setBackgroundImage:navBarImg forBarMetrics:UIBarMetricsDefault];
+    
+    //make toolbar translucent
+    self.segmentbar.translucent = NO;
+    UIImage *toolBarImg = [AppEnvironmentConstants navBarBackgroundImageWithoutGradientFromFrame:self.segmentbar.frame];
+    [self.segmentbar setBackgroundImage:toolBarImg
+                     forToolbarPosition:UIToolbarPositionAny
+                             barMetrics:UIBarMetricsDefault];
+    self.navHairline.hidden = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [self presentCenterButtonAnimated];
-    //[self performSelector:@selector(presentCenterButtonAnimated) withObject:nil afterDelay:0.2];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    self.navHairline.hidden = NO;
 }
 
 - (void)establishTableViewDataSource

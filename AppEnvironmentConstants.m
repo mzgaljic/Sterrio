@@ -815,6 +815,14 @@ static NSLock *lastSuccessfulSyncDateLock;
     return bannerAdHeight;
 }
 
+//only use when absolutely necessary - like when making an extended navigation bar.
++ (UIImage *)navBarBackgroundImageWithoutGradientFromFrame:(CGRect)frame
+{
+    return [UIImage imageWithColor:[AppEnvironmentConstants appTheme].mainGuiTint
+                             width:frame.size.width
+                            height:frame.size.height];
+}
+
 + (UIImage *)navBarBackgroundImageFromFrame:(CGRect)frame
 {
     UIColor *mainBarBackgroundBackground = [AppEnvironmentConstants appTheme].mainGuiTint;
