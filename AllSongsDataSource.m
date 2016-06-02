@@ -286,10 +286,15 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         else
             song = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
-        [MusicPlaybackController songAboutToBeDeleted:song deletionContext:self.playbackContext];
+        CLSLog(@"User trying to delete song: %@ in context:%@", song.songName, self.playbackContext);
         [SpotlightHelper removeSongFromSpotlightIndex:song];
+        [MusicPlaybackController songAboutToBeDeleted:song deletionContext:self.playbackContext];
         [MZCoreDataModelDeletionService prepareSongForDeletion:song];
         
+        if(song == nil) {
+            CLSLog(@"WARNING: Song was nil for some reason. Returning.");
+            return;
+        }
         [[CoreDataManager context] deleteObject:song];
         [[CoreDataManager sharedInstance] saveContext];
         

@@ -189,7 +189,13 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
-        Playlist *playlist = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        //obtain object for the deleted playlist
+        Playlist *playlist;
+        if(self.displaySearchResults)
+            playlist = [self.searchResults objectAtIndex:indexPath.row];
+        else
+            playlist = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        CLSLog(@"User trying to delete playlist: %@ context:%@", playlist.playlistName, self.playbackContext);
         
         NSSet *items = playlist.playlistItems;
         NSMutableArray *songsBeingDeleted = [NSMutableArray array];

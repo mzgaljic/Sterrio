@@ -322,15 +322,20 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         else
              album = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
+        CLSLog(@"User trying to delete album: %@ in context:%@", album.albumName, self.playbackContext);
         [SpotlightHelper removeAlbumSongsFromSpotlightIndex:album];
         [MZCoreDataModelDeletionService prepareAlbumForDeletion:album];
         
         //remove songs from queue if they are in it
-        for(Song *aSong in album.albumSongs)
-        {
+        for(Song *aSong in album.albumSongs){
             [MusicPlaybackController songAboutToBeDeleted:aSong
                                           deletionContext:self.playbackContext];
             aSong.albumArt = nil;
+        }
+        
+        if(album == nil) {
+            CLSLog(@"WARNING: Album was nil for some reason. Returning.");
+            return;
         }
         
         //delete the album and save changes

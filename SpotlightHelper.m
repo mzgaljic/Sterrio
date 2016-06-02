@@ -51,7 +51,7 @@
 
 + (void)removeSongFromSpotlightIndex:(Song *)aSong
 {
-    if(! [AppEnvironmentConstants isUserOniOS9OrAbove])
+    if(! [AppEnvironmentConstants isUserOniOS9OrAbove] || aSong == nil)
         return;
     
     NSString *domainId = [SpotlightHelper spotlightIndexItemDomainIdGivenSong:aSong];
@@ -67,7 +67,7 @@
 }
 + (void)removeArtistSongsFromSpotlightIndex:(Artist *)anArtist
 {
-    if(! [AppEnvironmentConstants isUserOniOS9OrAbove])
+    if(! [AppEnvironmentConstants isUserOniOS9OrAbove] || anArtist == nil)
         return;
     
     NSString *domainId = [SpotlightHelper spotlightIndexItemDomainIdGivenArtist:anArtist];

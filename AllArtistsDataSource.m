@@ -241,24 +241,33 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(editingStyle == UITableViewCellEditingStyleDelete){  //user tapped delete on a row
-        Artist *artist = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        //obtain object for the deleted artist
+        Artist *artist;
+        if(self.displaySearchResults)
+            artist = [self.searchResults objectAtIndex:indexPath.row];
+        else
+            artist = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        
+        CLSLog(@"User trying to delete artist: %@ in context:%@", artist.artistName, self.playbackContext);
+        [SpotlightHelper removeArtistSongsFromSpotlightIndex:artist];
         
         //remove songs from queue
-        for(Song *aSong in artist.standAloneSongs)
-        {
+        for(Song *aSong in artist.standAloneSongs) {
             [MusicPlaybackController songAboutToBeDeleted:aSong
                                           deletionContext:self.playbackContext];
             aSong.albumArt = nil;
         }
-        for(Album *anAlbum in artist.albums)
-        {
+        for(Album *anAlbum in artist.albums) {
             for(Song *aSong in anAlbum.albumSongs)
                 [MusicPlaybackController songAboutToBeDeleted:aSong
                                               deletionContext:self.playbackContext];
             anAlbum.albumArt = nil;
         }
         
-        [SpotlightHelper removeArtistSongsFromSpotlightIndex:artist];
+        if(artist == nil) {
+            CLSLog(@"WARNING: Artist was nil for some reason. Returning.");
+            return;
+        }
         
         //delete the artist and save changes
         [[CoreDataManager context] deleteObject:artist];
