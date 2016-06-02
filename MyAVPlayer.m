@@ -23,6 +23,7 @@
     NSString *CURRENT_SONG_RESUMED_PLAYBACK;
     NSString *PLAYBACK_HAS_BEGUN_NOTIF;
 }
+@property (nonatomic, strong) AVPlayerItem *disabledPlayerItem;
 @end
 
 @implementation MyAVPlayer
@@ -62,8 +63,9 @@ static ReachabilitySingleton *reachability;
     if([MusicPlaybackController avplayerTimeObserver] != nil) {
         @try {
             [self removeTimeObserver:[MusicPlaybackController avplayerTimeObserver]];
-        } @catch(id anException) { NSLog(@"EXCEPTION THROWN: Removing time observer (MyAVPlayer)");}
+        } @catch(id anException) {CLSLog(@"EXCEPTION THROWN: Removing time observer (MyAVPlayer)");}
     }
+    self.disabledPlayerItem = nil;
     [MusicPlaybackController setAVPlayerTimeObserver:nil];
     [self deregisterForObservers];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -277,7 +279,6 @@ static ReachabilitySingleton *reachability;
 }
 
 static CMTime timeAtDisable;
-static AVPlayerItem *disabledPlayerItem;
 static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
 - (void)currentSongPlaybackMustBeDisabled:(NSNotification *)notif
 {
@@ -293,7 +294,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
             [MusicPlaybackController pausePlayback];
             
             //make copy of AVPlayerItem which will retain buffered data
-            disabledPlayerItem = [self.currentItem copy];
+            self.disabledPlayerItem = [self.currentItem copy];
             timeAtDisable = self.currentItem.currentTime;
             valOfAllowSongDidFinishToExecuteBeforeDisabling = _allowSongDidFinishToExecute;
             _allowSongDidFinishToExecute = NO;
@@ -302,7 +303,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
             
         } else{
             //re-insert the disabled player item, with the loaded buffers intact.
-            [self replaceCurrentItemWithPlayerItem:disabledPlayerItem];
+            [self replaceCurrentItemWithPlayerItem:self.disabledPlayerItem];
             [self seekToTime:timeAtDisable toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
             _allowSongDidFinishToExecute = valOfAllowSongDidFinishToExecuteBeforeDisabling;
             if([SongPlayerCoordinator wasPlayerInPlayStateBeforeGUIDisabled]){
@@ -310,7 +311,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
                 [MusicPlaybackController resumePlayback];
             }
             [SongPlayerCoordinator placePlayerInDisabledState:NO];
-            disabledPlayerItem = nil;
+            self.disabledPlayerItem = nil;
             [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
         }
     }

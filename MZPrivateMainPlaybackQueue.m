@@ -47,7 +47,7 @@
 - (NSUInteger)numMoreItemsInMainQueue
 {
     return [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
-                                                nowPlayingInclusive:YES
+                                                nowPlayingInclusive:NO
                                                  onlyUnplayedTracks:YES].count;
 }
 
@@ -292,8 +292,7 @@
             nowPlayingIndex = 0;
         else
             nowPlayingIndex = NSNotFound;
-    }
-    else{
+    } else{
         if([NowPlayingSong sharedInstance].nowPlayingItem.isFromUpNextSongs)
             nowPlayingIndex = [self indexOfItem:mostRecentItem inArray:&array];
         else
