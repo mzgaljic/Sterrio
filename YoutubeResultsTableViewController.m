@@ -995,7 +995,7 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
 - (void)showScrollToTopButton:(BOOL)yes
 {
     NSArray *toolbarItems;
-    if(yes){
+    if(yes) {
         _scrollToTopButton = [[UIBarButtonItem alloc] initWithTitle:@"Scroll to Top"
                                                                               style:UIBarButtonItemStylePlain
                                                                              target:self
@@ -1003,15 +1003,17 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
         //provides spacing so each button is on its respective side of the toolbar.
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         
-        toolbarItems = [NSArray arrayWithObjects:_cancelButton,flexibleSpace, _scrollToTopButton, nil];
+        toolbarItems = @[_cancelButton,flexibleSpace, _scrollToTopButton];
         _scrollToTopButtonVisible = YES;
-        [self.navigationController.toolbar setItems:toolbarItems animated:YES];
-    }
-    else{  //hiding scroll to top button
+        //Bug fix: previously did self.navigationController.toolbar setItems....
+        //this worked but not when calling this method from viewWillAppear. Oddly, doing
+        //[self setToolbarItems...] works all the time.
+        [self setToolbarItems:toolbarItems animated:YES];
+    } else {
+        //hiding scroll to top button
         _scrollToTopButton = nil;
-        toolbarItems = [NSArray arrayWithObjects:_cancelButton, nil];
         _scrollToTopButtonVisible = NO;
-        [self.navigationController.toolbar setItems:toolbarItems animated:YES];
+        [self setToolbarItems:@[_cancelButton] animated:YES];
     }
 }
 
