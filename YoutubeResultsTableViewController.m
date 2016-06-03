@@ -346,55 +346,53 @@ static NSDate *timeSinceLastPageLoaded;
         return;
     }
     
-    if(arrayOfNSStrings.count > 0) {
-        NSString *query = arrayOfNSStrings[0];
-        if(! [_searchBar.text isEqualToString:query]) {
-            //these are old results, don't run the code below to update the tableview - that just
-            //slows down the main thread a lot when the user types fast!!
-            return;
-        }
+    NSString *query = arrayOfNSStrings[0];  //arrayOfNSStrings will ALWAYS have the query string in callback
+    if(! [_searchBar.text isEqualToString:query]) {
+        //these are old results, don't run the code below to update the tableview - that just
+        //slows down the main thread a lot when the user types fast!!
+        return;
     }
-    
+
     NSMutableArray *suggestions = [NSMutableArray arrayWithArray:arrayOfNSStrings];
     [suggestions removeObjectAtIndex:0];  //remove the query text.
+    
+    //remove excess items which we don't intend to use (we dont need more than 5 on screen)
+    while(suggestions.count > 5) {
+        [suggestions removeLastObject];
+    }
     
     //only going to use 5 of the 10 results returned. 10 is too much (searchSuggestions array is already empty-emptied in search bar text did change)
     int searchSuggestionsCountBefore = (int)self.searchSuggestions.count;
     [self.searchSuggestions removeAllObjects];
     [_lastSuccessfullSuggestions removeAllObjects];
     
-    int upperBound = -1;
-    if(suggestions.count >= 5)
-        upperBound = 5;
-    else
-        upperBound = (int)suggestions.count;
-    
-    for(int i = 0; i < upperBound; i++){
+    for(int i = 0; i < suggestions.count; i++){
         [self.searchSuggestions addObject:[suggestions[i] copy]];
         [_lastSuccessfullSuggestions addObject:[suggestions[i] copy]];
     }
+    int upperBound = (int)suggestions.count;
+    
     arrayOfNSStrings = nil;
     suggestions = nil;
     
     if(upperBound != searchSuggestionsCountBefore){
-        //animate the change in number of rows
-        
+        //gather old visible cell paths
         NSMutableArray *oldPaths = [NSMutableArray array];
         for(int i = 0; i < searchSuggestionsCountBefore; i++){
             [oldPaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
         }
-        
+        //construct new visible cell paths
         NSMutableArray *newPaths = [NSMutableArray array];
         for(int i = 0; i < upperBound; i++){
             [newPaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
         }
         
+        //animate the change in number of rows
         [self.tableView beginUpdates];
         [self.tableView deleteRowsAtIndexPaths:oldPaths withRowAnimation:UITableViewRowAnimationNone];
         [self.tableView insertRowsAtIndexPaths:newPaths withRowAnimation:UITableViewRowAnimationMiddle];
         [self.tableView endUpdates];
-    }
-    else{
+    } else {
         //number of rows is the same, dont use any animation (so text doesnt flash like crazy).
         NSMutableArray *allPaths = [NSMutableArray array];
         for(int i = 0; i < upperBound; i++){
