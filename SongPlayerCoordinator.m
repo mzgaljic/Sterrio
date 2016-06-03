@@ -148,13 +148,16 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
         return;
     }
     
-    if(! wasTabBarHiddenBeforePlayerExpansion)
+    if(! wasTabBarHiddenBeforePlayerExpansion) {
         [[NSNotificationCenter defaultCenter] postNotificationName:MZHideTabBarAnimated object:@NO];
+    }
     
     wasTabBarHiddenBeforePlayerExpansion = NO;
-    
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
     currentPlayerFrame = [self smallPlayerFrameBasedOnCurrentOrientation];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:MZExpandedPlayerIsShrinking object:nil];
+    
     [UIView animateWithDuration:0.56f
                           delay:0
          usingSpringWithDamping:0.80f

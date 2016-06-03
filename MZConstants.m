@@ -24,6 +24,7 @@ NSString * const MZPreviewPlayerPlay = @"playVideoPreviewPlayer";
 NSString * const MZPreviewPlayerPause = @"pauseVideoPreviewPlayer";
 NSString * const MZAppWasBackgrounded = @"appEnteredBackgroundState";
 
+NSString * const MZExpandedPlayerIsShrinking = @"the expanded player is shrinking";
 NSString * const MZPlayerToggledOnScreenStatus = @"the status has been toggled";
 NSString * const MZMainScreenVCStatusBarAlwaysInvisible = @"status bar should always be invisible";
 

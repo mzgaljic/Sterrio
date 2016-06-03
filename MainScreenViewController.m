@@ -100,7 +100,8 @@ short const dummyTabIndex = 2;
                         name:MZNewSongLoading
                       object:nil];
     [notifCenter addObserver:self
-                    selector:@selector(dismissPlayerExpandingTip:) name:@"shouldDismissPlayerExpandingTip"
+                    selector:@selector(dismissPlayerExpandingTip:)
+                        name:@"shouldDismissPlayerExpandingTip"
                       object:nil];
     [notifCenter addObserver:self
                     selector:@selector(appBecomingActiveAgain)
@@ -109,6 +110,10 @@ short const dummyTabIndex = 2;
     [notifCenter addObserver:self
                     selector:@selector(everyTabWillNeedAForcedReload)
                         name:MZForceMainVcTabsToUpdateDatasources
+                      object:nil];
+    [notifCenter addObserver:self
+                    selector:@selector(expandedPlayerIsShrinking)
+                        name:MZExpandedPlayerIsShrinking
                       object:nil];
 }
 
@@ -769,6 +774,22 @@ static NSTimeInterval prevAppBecameActiveTimeInterval = 0;
                      afterDelay:0];
         [_tabsNeedingForcedDataReload setObject:@NO
                                          forKey:[NSValue valueWithNonretainedObject:vc]];
+    }
+}
+
+/* 
+ This refreshes the VC currently being displayed when the expanded player shrinks. 
+ viewWillAppear is not normally called when it shrinks, so we needed some way of updating all
+ the visible cells. Doing this helps avoid weird visual bugs - like multiple songs having the
+ 'now playing color'.
+ */
+- (void)expandedPlayerIsShrinking
+{
+    NSUInteger index = [self.navControllers indexOfObjectIdenticalTo:self.currentNavController];
+    if(index != NSNotFound) {
+        UIViewController *vc = self.viewControllers[index];
+        BOOL withAnimation = NO;
+        [vc viewWillAppear:withAnimation];
     }
 }
 

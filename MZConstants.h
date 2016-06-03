@@ -23,6 +23,7 @@ extern NSString * const MZPreviewPlayerPlay;
 extern NSString * const MZPreviewPlayerPause;
 extern NSString * const MZAppWasBackgrounded;
 
+extern NSString * const MZExpandedPlayerIsShrinking;
 extern NSString * const MZPlayerToggledOnScreenStatus;
 extern NSString * const MZMainScreenVCStatusBarAlwaysInvisible;
 
