@@ -1100,14 +1100,14 @@ static NSDate *finish;
 - (void)hideAppRatingCell
 {
     NSAssert(_canShowAppRatingCell, @"Was asked to hide app rating cell but it's not showing!");
-    [self performSelector:@selector(hideAppRatingCellDelayed) withObject:nil afterDelay:0.22];
+    _canShowAppRatingCell = NO;
+    [self performSelector:@selector(hideAppRatingCellDelayed) withObject:nil afterDelay:0.20];
 }
 - (void)hideAppRatingCellDelayed
 {
     [self.tableView beginUpdates];
     NSArray *paths = @[[NSIndexPath indexPathForRow:APP_RATING_CELL_ROW_NUM inSection:0]];
     [self.tableView deleteRowsAtIndexPaths:paths withRowAnimation:UITableViewRowAnimationAutomatic];
-    _canShowAppRatingCell = NO;
     [self.tableView endUpdates];
 }
 

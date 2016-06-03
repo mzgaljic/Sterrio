@@ -114,13 +114,13 @@ static NSString * const NO_THANKS_TEXT = @"No, thanks";
         [_notReallyBtn setTitle:NO_THANKS_TEXT forState:UIControlStateNormal];
         
     } else if([_titleLabel.text isEqualToString:RATE_US_ON_APP_STORE_TEXT]) {
-        [[AppRatingUtils sharedInstance] redirectToMyAppInAppStoreWithDelay:0.40];
         [[NSNotificationCenter defaultCenter] postNotificationName:MZHideAppRatingCell object:nil];
+        [[AppRatingUtils sharedInstance] redirectToMyAppInAppStoreWithDelay:0.60];
     } else if([_titleLabel.text isEqualToString:GIVE_US_SOME_FEEDBACK_TEXT]) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:MZHideAppRatingCell object:nil];
         EmailComposerManager *mailComposer;
         mailComposer = [[EmailComposerManager alloc] initWithEmailComposePurpose:Email_Compose_Purpose_General_Feedback callingVc:[MZCommons topViewController]];
         [mailComposer presentEmailComposerAndOrPhotoPicker];
-        [[NSNotificationCenter defaultCenter] postNotificationName:MZHideAppRatingCell object:nil];
     }
 }
 
