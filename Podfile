@@ -1,7 +1,9 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
 #youtube id video url extractor
-pod 'XCDYouTubeKit'
+#pod 'XCDYouTubeKit'
+#temp bug fix (june 23rd, 2016)
+pod 'XCDYouTubeKit', :git => 'https://github.com/k06a/XCDYouTubeKit.git', :branch => 'patch-1'
 
 #used by very few classes but still necessary (yt result VC, etc)
 pod 'SDWebImage', '~>3.6'
