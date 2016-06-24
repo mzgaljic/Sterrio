@@ -33,7 +33,7 @@ static int numSkippedSongs = 0;
 + (void)retryPlayingCurrentSong
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        Song *nowPlayingSong = [NowPlaying sharedInstance].nowPlayingItem.songForItem;
+        Song *nowPlayingSong = [NowPlaying sharedInstance].playableItem.songForItem;
         PlayableItem *oldItem = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading];
         [VideoPlayerWrapper startPlaybackOfSong:nowPlayingSong
                                    goingForward:YES

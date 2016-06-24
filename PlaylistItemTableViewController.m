@@ -228,7 +228,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     cell.detailTextLabel.text = detailText;
     
     NowPlaying *nowPlayingObj = [NowPlaying sharedInstance];
-    BOOL songIsNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToPlaylistItem:item withContext:self.playbackContext];
+    BOOL songIsNowPlaying = [nowPlayingObj.playableItem isEqualToPlaylistItem:item withContext:self.playbackContext];
     
     if(songIsNowPlaying) {
         cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
@@ -541,7 +541,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     NowPlaying *nowPlaying = [NowPlaying sharedInstance];
     PlayableItem *oldPlayableItem = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading];
     PlaylistItem *oldItem = oldPlayableItem.playlistItemForItem;
-    PlaylistItem *newItem = nowPlaying.nowPlayingItem.playlistItemForItem;
+    PlaylistItem *newItem = nowPlaying.playableItem.playlistItemForItem;
     NSIndexPath *oldPath, *newPath;
     
     if(oldItem)

@@ -110,10 +110,10 @@ const int ALBUM_HEADER_HEIGHT = 120;
                                                 size:detailFontSize];
     
     NowPlaying *nowPlayingObj = [NowPlaying sharedInstance];
-    BOOL isNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToSong:aSong withContext:self.playbackContext];
+    BOOL isNowPlaying = [nowPlayingObj.playableItem isEqualToSong:aSong withContext:self.playbackContext];
     
     if(! isNowPlaying){
-        isNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToSong:aSong withContext:self.parentVcPlaybackContext];
+        isNowPlaying = [nowPlayingObj.playableItem isEqualToSong:aSong withContext:self.parentVcPlaybackContext];
     }
     
     int labelFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
@@ -257,7 +257,7 @@ const int ALBUM_HEADER_HEIGHT = 120;
         return;
     Song *oldSong = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading].songForItem;
     NowPlaying *nowPlaying = [NowPlaying sharedInstance];
-    Song *newSong = nowPlaying.nowPlayingItem.songForItem;
+    Song *newSong = nowPlaying.playableItem.songForItem;
     NSIndexPath *oldPath, *newPath;
     
     //tries to obtain the path to the changed songs if possible.

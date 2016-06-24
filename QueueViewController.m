@@ -272,7 +272,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     int nowPlayingCount = 0;
-    BOOL nowPlayingSongExists = [[NowPlaying sharedInstance] nowPlayingItem] ? YES : NO;
+    BOOL nowPlayingSongExists = [[NowPlaying sharedInstance] playableItem] ? YES : NO;
     if(nowPlayingSongExists)
         nowPlayingCount = 1;
     if(upNextItems.count + mainQueueItemsComingUp.count + nowPlayingCount > 0)
@@ -284,7 +284,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if(section == 0){
-        BOOL nowPlayingSongExists = [[NowPlaying sharedInstance] nowPlayingItem] ? YES : NO;
+        BOOL nowPlayingSongExists = [[NowPlaying sharedInstance] playableItem] ? YES : NO;
         NSUInteger numRows;
         if(nowPlayingSongExists)
             numRows = upNextItems.count + mainQueueItemsComingUp.count +1;
@@ -346,13 +346,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                 MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
                 BOOL allowSongDidFinishNotifToProceed = ([MusicPlaybackController numMoreSongsInQueue] != 0);
                 [player allowSongDidFinishNotificationToProceed:allowSongDidFinishNotifToProceed];
-                PlayableItem *oldItem = [NowPlaying sharedInstance].nowPlayingItem;
+                PlayableItem *oldItem = [NowPlaying sharedInstance].playableItem;
                 PlayableItem *newItem = [[MZPlaybackQueue sharedInstance] skipForward];
                 
                 [VideoPlayerWrapper startPlaybackOfSong:newItem.songForItem
                                            goingForward:YES
                                         oldPlayableItem:oldItem];
-                [[NowPlaying sharedInstance] setNewNowPlayingItem:newItem];
+                [[NowPlaying sharedInstance] setNewPlayableItem:newItem];
             }
             
             //now need to refresh the model so everything matches up
@@ -391,7 +391,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     if(indexPath.section == 0){
         int row = (int)indexPath.row;
         if(row == 0)
-            return [[NowPlaying sharedInstance] nowPlayingItem];
+            return [[NowPlaying sharedInstance] playableItem];
         
         if(! [self isUpNextSongPresentAtIndexPath:indexPath]){
             row -= upNextItems.count;  //1 is for the main now playing song
@@ -422,7 +422,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     if(indexPath.section == 0){
         int row = (int)indexPath.row;
         if(row == 0){
-            if([[NowPlaying sharedInstance] nowPlayingItem].isFromUpNextSongs)
+            if([[NowPlaying sharedInstance] playableItem].isFromUpNextSongs)
                 return YES;
             else
                 return NO;

@@ -170,7 +170,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         cell.detailTextLabel.text = nil;
     }
     
-    BOOL isNowPlaying = [[NowPlaying sharedInstance].nowPlayingItem isEqualToSong:song
+    BOOL isNowPlaying = [[NowPlaying sharedInstance].playableItem isEqualToSong:song
                                                                           withContext:self.playbackContext];
     if(isNowPlaying) {
         cell.textLabel.textColor = [super colorForNowPlayingItem];
@@ -346,7 +346,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             
             BOOL playerEnabled = [SongPlayerCoordinator isPlayerEnabled];
             BOOL playerOnScreen = [SongPlayerCoordinator isPlayerOnScreen];
-            BOOL isNowPlaying = [[NowPlaying sharedInstance].nowPlayingItem isEqualToSong:selectedSong
+            BOOL isNowPlaying = [[NowPlaying sharedInstance].playableItem isEqualToSong:selectedSong
                                                                                   withContext:self.playbackContext];
             BOOL nowPlayingAndActive = (isNowPlaying && playerEnabled && playerOnScreen);
             
@@ -457,7 +457,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         return;
     Song *oldSong = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading].songForItem;
     NowPlaying *nowPlaying = [NowPlaying sharedInstance];
-    Song *newSong = nowPlaying.nowPlayingItem.songForItem;
+    Song *newSong = nowPlaying.playableItem.songForItem;
     NSIndexPath *oldPath, *newPath;
     
     //tries to obtain the path to the changed songs if possible.

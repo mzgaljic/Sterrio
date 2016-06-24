@@ -24,19 +24,19 @@
 - (id)init
 {
     if(self = [super init]){
-        _nowPlayingItem = nil;
+        _playableItem = nil;
     }
     return self;
 }
 
 - (BOOL)isEqualToItem:(PlayableItem *)anItem
 {
-    return [_nowPlayingItem isEqualToItem:anItem];
+    return [_playableItem isEqualToItem:anItem];
 }
 
-- (void)setNewNowPlayingItem:(PlayableItem *)newItem
+- (void)setNewPlayableItem:(PlayableItem *)newItem
 {
-    _nowPlayingItem = newItem;
+    _playableItem = newItem;
 }
 
 @end

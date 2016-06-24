@@ -16,12 +16,12 @@
 @class PlayableItem;
 @interface NowPlaying : NSObject
 
-@property (nonatomic, strong, readonly) PlayableItem *nowPlayingItem;
+@property (nonatomic, strong, readonly) PlayableItem *playableItem;
 
 + (instancetype)sharedInstance;
 
 - (BOOL)isEqualToItem:(PlayableItem *)anItem;
 
-- (void)setNewNowPlayingItem:(PlayableItem *)newItem;
+- (void)setNewPlayableItem:(PlayableItem *)newItem;
 
 @end

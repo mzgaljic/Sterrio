@@ -178,11 +178,11 @@
         PlaybackContext *artistDetailContext = [[PlaybackContext alloc] initWithFetchRequest:nil
                                                                             prettyQueueName:@""
                                                                                    contextId:artistDetailContextId];
-        if(nowPlayingObj.nowPlayingItem != nil
+        if(nowPlayingObj.playableItem != nil
            &&
-           (([nowPlayingObj.nowPlayingItem.contextForItem isEqualToContext:self.playbackContext])
+           (([nowPlayingObj.playableItem.contextForItem isEqualToContext:self.playbackContext])
             ||
-            [nowPlayingObj.nowPlayingItem.contextForItem isEqualToContext:artistDetailContext]))
+            [nowPlayingObj.playableItem.contextForItem isEqualToContext:artistDetailContext]))
         {
             artistHasNowPlaying = YES;
         }
@@ -389,7 +389,7 @@
         return;
     Song *oldsong = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading].songForItem;
     NowPlaying *nowPlaying = [NowPlaying sharedInstance];
-    Song *newSong = nowPlaying.nowPlayingItem.songForItem;
+    Song *newSong = nowPlaying.playableItem.songForItem;
     
     Artist *oldArtist = oldsong.artist;
     Artist *newArtist = newSong.artist;

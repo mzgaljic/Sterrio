@@ -208,9 +208,9 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         {
             //need to check both the general album context and the albumDetailVC context.
             //...since an entire album or just a specific album can be queued up.
-            if([nowPlayingObj.nowPlayingItem isEqualToSong:albumSong withContext:self.playbackContext]
+            if([nowPlayingObj.playableItem isEqualToSong:albumSong withContext:self.playbackContext]
                ||
-               [nowPlayingObj.nowPlayingItem isEqualToSong:albumSong withContext:albumDetailContext])
+               [nowPlayingObj.playableItem isEqualToSong:albumSong withContext:albumDetailContext])
             {
                 albumHasNowPlaying = YES;
                 break;
@@ -451,7 +451,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         return;
     Song *oldsong = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading].songForItem;
     NowPlaying *nowPlaying = [NowPlaying sharedInstance];
-    Song *newSong = nowPlaying.nowPlayingItem.songForItem;
+    Song *newSong = nowPlaying.playableItem.songForItem;
     
     Album *oldAlbum = oldsong.album;
     Album *newAlbum = newSong.album;

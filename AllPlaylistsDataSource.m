@@ -138,9 +138,9 @@
         
         [items enumerateObjectsUsingBlock:^(PlaylistItem *item, BOOL *stop) {
             
-            if([nowPlayingObj.nowPlayingItem isEqualToPlaylistItem:item withContext:playlistDetailContext]
+            if([nowPlayingObj.playableItem isEqualToPlaylistItem:item withContext:playlistDetailContext]
                ||
-               [nowPlayingObj.nowPlayingItem isEqualToPlaylistItem:item withContext:self.playbackContext])
+               [nowPlayingObj.playableItem isEqualToPlaylistItem:item withContext:self.playbackContext])
             {
                 playlistHasNowPlaying = YES;
                 *stop = YES;
@@ -324,7 +324,7 @@
     
     PlaylistItem *oldPlaylistItem = oldItem.playlistItemForItem;
     NowPlaying *nowPlaying = [NowPlaying sharedInstance];
-    PlaylistItem *newPlaylistItem = nowPlaying.nowPlayingItem.playlistItemForItem;
+    PlaylistItem *newPlaylistItem = nowPlaying.playableItem.playlistItemForItem;
     
     //nothing to possibly update
     if(oldPlaylistItem == nil && newPlaylistItem == nil)

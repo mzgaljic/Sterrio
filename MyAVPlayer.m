@@ -105,7 +105,7 @@ static ReachabilitySingleton *reachability;
         movingForward = forward;
         _playbackStarted = NO;
         [self beginLoadingVideoWithSong:aSong];
-        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlaying sharedInstance].nowPlayingItem.songForItem];
+        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlaying sharedInstance].playableItem.songForItem];
     } else{
         //make sure last song doesnt continue playing...
         [self replaceCurrentItemWithPlayerItem:nil];
@@ -312,7 +312,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
             }
             [SongPlayerCoordinator placePlayerInDisabledState:NO];
             self.disabledPlayerItem = nil;
-            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlaying sharedInstance].nowPlayingItem.songForItem];
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlaying sharedInstance].playableItem.songForItem];
         }
     }
 }
