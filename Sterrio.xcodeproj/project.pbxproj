@@ -135,6 +135,8 @@
 		87353A901B0AAA36009244E4 /* Song+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A881B0AAA36009244E4 /* Song+Utilities.m */; };
 		87353A911B0AAA36009244E4 /* SongAlbumArt+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A8A1B0AAA36009244E4 /* SongAlbumArt+Utilities.m */; };
 		8736AA9E1C2613A2005FAE07 /* AppDelegateUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8736AA9D1C2613A2005FAE07 /* AppDelegateUtils.m */; };
+		873EBB231D1CCEB1005F248A /* MZNewPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EBB221D1CCEB1005F248A /* MZNewPlaybackQueue.m */; };
+		873EBB261D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EBB251D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m */; };
 		87414BC41B3FA92500FB8252 /* CoreSpotlight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		87414BC61B3FA93100FB8252 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		87414BC81B3FB85300FB8252 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87414BC71B3FB85300FB8252 /* AppDelegate.m */; };
@@ -513,6 +515,10 @@
 		87353A8A1B0AAA36009244E4 /* SongAlbumArt+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SongAlbumArt+Utilities.m"; sourceTree = "<group>"; };
 		8736AA9C1C2613A2005FAE07 /* AppDelegateUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegateUtils.h; sourceTree = "<group>"; };
 		8736AA9D1C2613A2005FAE07 /* AppDelegateUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegateUtils.m; sourceTree = "<group>"; };
+		873EBB211D1CCEB1005F248A /* MZNewPlaybackQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZNewPlaybackQueue.h; sourceTree = "<group>"; };
+		873EBB221D1CCEB1005F248A /* MZNewPlaybackQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZNewPlaybackQueue.m; sourceTree = "<group>"; };
+		873EBB241D1CD0A1005F248A /* MZPlaybackQueueSnapshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPlaybackQueueSnapshot.h; sourceTree = "<group>"; };
+		873EBB251D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPlaybackQueueSnapshot.m; sourceTree = "<group>"; };
 		87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreSpotlight.framework; path = System/Library/Frameworks/CoreSpotlight.framework; sourceTree = SDKROOT; };
 		87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		87414BC71B3FB85300FB8252 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -1020,6 +1026,7 @@
 				873538921B0A9BFF009244E4 /* PreviousNowPlayingInfo.m */,
 				873538941B0A9C07009244E4 /* NowPlaying.h */,
 				873538951B0A9C07009244E4 /* NowPlaying.m */,
+				873EBB201D1CCC12005F248A /* New Plaback Queue */,
 				873538971B0A9C1D009244E4 /* Playback Queue */,
 				873538A51B0A9C52009244E4 /* OperationQueuesSingeton.h */,
 				873538A61B0A9C52009244E4 /* OperationQueuesSingeton.m */,
@@ -1478,6 +1485,17 @@
 				87353A8A1B0AAA36009244E4 /* SongAlbumArt+Utilities.m */,
 			);
 			name = "Entity Subclass Utils";
+			sourceTree = "<group>";
+		};
+		873EBB201D1CCC12005F248A /* New Plaback Queue */ = {
+			isa = PBXGroup;
+			children = (
+				873EBB211D1CCEB1005F248A /* MZNewPlaybackQueue.h */,
+				873EBB221D1CCEB1005F248A /* MZNewPlaybackQueue.m */,
+				873EBB241D1CD0A1005F248A /* MZPlaybackQueueSnapshot.h */,
+				873EBB251D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m */,
+			);
+			name = "New Plaback Queue";
 			sourceTree = "<group>";
 		};
 		874D99501CB8AD4100FA6BCA /* Ensembles */ = {
@@ -2143,12 +2161,14 @@
 				87353A8D1B0AAA36009244E4 /* Artist+Utilities.m in Sources */,
 				87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */,
 				873539411B0AA00C009244E4 /* EditableCellTableViewController.m in Sources */,
+				873EBB231D1CCEB1005F248A /* MZNewPlaybackQueue.m in Sources */,
 				873539381B0A9FCE009244E4 /* MZPlayer.m in Sources */,
 				87A8FCF51CBF29FB00A43637 /* UIViewController+Current.m in Sources */,
 				87A8FC351CBF202500A43637 /* MRNavigationBarProgressView.m in Sources */,
 				8735390C1B0A9ED2009244E4 /* NewSettingsTableViewController.m in Sources */,
 				873538411B0A9AF4009244E4 /* UIDevice+DeviceName.m in Sources */,
 				87A8FC6F1CBF241600A43637 /* ActionSheetDatePicker.m in Sources */,
+				873EBB261D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m in Sources */,
 				87353A911B0AAA36009244E4 /* SongAlbumArt+Utilities.m in Sources */,
 				87A8FCE31CBF29FB00A43637 /* SDCAlertControllerCollectionViewFlowLayout.m in Sources */,
 				8796B6951C7EA7E000242587 /* DeletedYtVideoAlertCreator.m in Sources */,
