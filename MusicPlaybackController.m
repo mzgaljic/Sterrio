@@ -15,7 +15,7 @@
 static MyAVPlayer *player = nil;
 static PlayerView *playerView = nil;
 static MZPlaybackQueue *playbackQueue = nil;
-static NowPlayingSong *nowPlayingObject;
+static NowPlaying *nowPlayingObject;
 static BOOL explicitlyPausePlayback = NO;
 static BOOL simpleSpinnerOnScreen = NO;
 static BOOL spinnerForWifiNeededOnScreen = NO;
@@ -89,7 +89,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     [player allowSongDidFinishNotificationToProceed:allowSongDidFinishNotifToProceed];
-    PlayableItem *oldItem = [NowPlayingSong sharedInstance].nowPlayingItem;
+    PlayableItem *oldItem = [NowPlaying sharedInstance].nowPlayingItem;
     Song *nextSong = [playbackQueue skipForward].songForItem;
     
     [VideoPlayerWrapper startPlaybackOfSong:nextSong
@@ -111,7 +111,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     [player allowSongDidFinishNotificationToProceed:YES];
-    PlayableItem *oldItem = [NowPlayingSong sharedInstance].nowPlayingItem;
+    PlayableItem *oldItem = [NowPlaying sharedInstance].nowPlayingItem;
     Song *nextSong = [playbackQueue skipForward].songForItem;
     
     [VideoPlayerWrapper startPlaybackOfSong:nextSong
@@ -167,11 +167,11 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             //code to be executed on the main queue after delay
-            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlaying sharedInstance].nowPlayingItem.songForItem];
         });
     } else{
         [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
-        PlayableItem *oldItem = [NowPlayingSong sharedInstance].nowPlayingItem;
+        PlayableItem *oldItem = [NowPlaying sharedInstance].nowPlayingItem;
         Song *previousSong = [playbackQueue skipToPrevious].songForItem;
         
         [VideoPlayerWrapper startPlaybackOfSong:previousSong
@@ -301,10 +301,10 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 #pragma mark - Now Playing Song
 + (Song *)nowPlayingSong
 {
-    return [NowPlayingSong sharedInstance].nowPlayingItem.songForItem;
+    return [NowPlaying sharedInstance].nowPlayingItem.songForItem;
 }
 
-+ (NowPlayingSong *)nowPlayingSongObject
++ (NowPlaying *)nowPlayingSongObject
 {
     return nowPlayingObject;
 }
@@ -336,7 +336,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     if(playbackQueue == nil)
         playbackQueue = [MZPlaybackQueue sharedInstance];
     
-    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+    NowPlaying *nowPlayingObj = [NowPlaying sharedInstance];
     if(nowPlayingObject == nil)
         nowPlayingObject = nowPlayingObj;
     
@@ -375,7 +375,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     if(playbackQueue == nil)
         playbackQueue = [MZPlaybackQueue sharedInstance];
     
-    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+    NowPlaying *nowPlayingObj = [NowPlaying sharedInstance];
     if(nowPlayingObject == nil)
         nowPlayingObject = nowPlayingObj;
     
@@ -387,7 +387,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 + (void)queueUpNextSongsWithContexts:(NSArray *)contexts
 {
     if(contexts.count > 0){
-        NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
+        NowPlaying *nowPlaying = [NowPlaying sharedInstance];
         if(nowPlayingObject == nil)
             nowPlayingObject = nowPlaying;
         

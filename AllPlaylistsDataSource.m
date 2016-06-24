@@ -131,7 +131,7 @@
         //within the playlist someplace, this check (in code) can be vague...
         
         __block BOOL playlistHasNowPlaying = NO;
-        NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+        NowPlaying *nowPlayingObj = [NowPlaying sharedInstance];
         PlaybackContext *playlistDetailContext = [self playlistDetailContextForPlaylist:playlist];
         
         NSSet *items = playlist.playlistItems;
@@ -323,7 +323,7 @@
     PlayableItem *oldItem = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading];
     
     PlaylistItem *oldPlaylistItem = oldItem.playlistItemForItem;
-    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
+    NowPlaying *nowPlaying = [NowPlaying sharedInstance];
     PlaylistItem *newPlaylistItem = nowPlaying.nowPlayingItem.playlistItemForItem;
     
     //nothing to possibly update

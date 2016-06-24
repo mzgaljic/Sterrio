@@ -14,7 +14,7 @@
 #import "PlaybackContext.h"
 
 @class PlayableItem;
-@interface NowPlayingSong : NSObject
+@interface NowPlaying : NSObject
 
 @property (nonatomic, strong, readonly) PlayableItem *nowPlayingItem;
 

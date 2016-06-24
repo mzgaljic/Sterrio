@@ -484,7 +484,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     
     [sliderHint hideAnimated];
     
-    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
+    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlaying sharedInstance].nowPlayingItem.songForItem];
     [self playerControlsShouldBeUpdated];
     
     if(isPlayerOnExternalDisplayWhileScrubbing)
@@ -1120,7 +1120,7 @@ static int accomodateInterfaceLabelsCounter = 0;
 
 - (void)displayTotalSliderAndLabelDuration
 {
-    NSInteger durationInSeconds = [[NowPlayingSong sharedInstance].nowPlayingItem.songForItem.duration integerValue];
+    NSInteger durationInSeconds = [[NowPlaying sharedInstance].nowPlayingItem.songForItem.duration integerValue];
     if(durationInSeconds <= 0.0f || isnan(durationInSeconds)){
         //Don't need to handle error, duration now showing isnt crucial.
         return;
@@ -1461,7 +1461,7 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
     }
     playButton.enabled = YES;
     [self performSelector:@selector(changePlayButtonImageTo:) withObject:newBtnImage afterDelay:0.3];
-    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
+    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlaying sharedInstance].nowPlayingItem.songForItem];
 }
 
 - (void)changePlayButtonImageTo:(UIImage *)newBtnImage

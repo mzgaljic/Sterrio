@@ -6,10 +6,10 @@
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
-#import "NowPlayingSong.h"
+#import "NowPlaying.h"
 #import "PlayableItem.h"
 
-@implementation NowPlayingSong
+@implementation NowPlaying
 
 + (instancetype)sharedInstance
 {

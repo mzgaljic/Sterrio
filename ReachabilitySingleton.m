@@ -150,7 +150,7 @@ typedef NS_ENUM(NSUInteger, Connection_State){
     //obtainRawAVPlayer call is NOT thread safe, using main thread...
     safeSynchronousDispatchToMainQueue(^{
         AVPlayer *player = [MusicPlaybackController obtainRawAVPlayer];
-        retval = ([NowPlayingSong sharedInstance].nowPlayingItem != nil
+        retval = ([NowPlaying sharedInstance].nowPlayingItem != nil
                   && player.rate > 0);
     });
     return retval;

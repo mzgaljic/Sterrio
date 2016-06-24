@@ -272,7 +272,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     int nowPlayingCount = 0;
-    BOOL nowPlayingSongExists = [[NowPlayingSong sharedInstance] nowPlayingItem] ? YES : NO;
+    BOOL nowPlayingSongExists = [[NowPlaying sharedInstance] nowPlayingItem] ? YES : NO;
     if(nowPlayingSongExists)
         nowPlayingCount = 1;
     if(upNextItems.count + mainQueueItemsComingUp.count + nowPlayingCount > 0)
@@ -284,7 +284,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if(section == 0){
-        BOOL nowPlayingSongExists = [[NowPlayingSong sharedInstance] nowPlayingItem] ? YES : NO;
+        BOOL nowPlayingSongExists = [[NowPlaying sharedInstance] nowPlayingItem] ? YES : NO;
         NSUInteger numRows;
         if(nowPlayingSongExists)
             numRows = upNextItems.count + mainQueueItemsComingUp.count +1;
@@ -313,7 +313,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     PlayableItem *tappedItem = [self itemForIndexPath:indexPath];
     if(indexPath.row == 0
-       && [[NowPlayingSong sharedInstance] isEqualToItem:tappedItem])
+       && [[NowPlaying sharedInstance] isEqualToItem:tappedItem])
     {
         [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
         [MusicPlaybackController resumePlayback];
@@ -346,13 +346,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                 MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
                 BOOL allowSongDidFinishNotifToProceed = ([MusicPlaybackController numMoreSongsInQueue] != 0);
                 [player allowSongDidFinishNotificationToProceed:allowSongDidFinishNotifToProceed];
-                PlayableItem *oldItem = [NowPlayingSong sharedInstance].nowPlayingItem;
+                PlayableItem *oldItem = [NowPlaying sharedInstance].nowPlayingItem;
                 PlayableItem *newItem = [[MZPlaybackQueue sharedInstance] skipForward];
                 
                 [VideoPlayerWrapper startPlaybackOfSong:newItem.songForItem
                                            goingForward:YES
                                         oldPlayableItem:oldItem];
-                [[NowPlayingSong sharedInstance] setNewNowPlayingItem:newItem];
+                [[NowPlaying sharedInstance] setNewNowPlayingItem:newItem];
             }
             
             //now need to refresh the model so everything matches up
@@ -391,7 +391,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     if(indexPath.section == 0){
         int row = (int)indexPath.row;
         if(row == 0)
-            return [[NowPlayingSong sharedInstance] nowPlayingItem];
+            return [[NowPlaying sharedInstance] nowPlayingItem];
         
         if(! [self isUpNextSongPresentAtIndexPath:indexPath]){
             row -= upNextItems.count;  //1 is for the main now playing song
@@ -422,7 +422,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     if(indexPath.section == 0){
         int row = (int)indexPath.row;
         if(row == 0){
-            if([[NowPlayingSong sharedInstance] nowPlayingItem].isFromUpNextSongs)
+            if([[NowPlaying sharedInstance] nowPlayingItem].isFromUpNextSongs)
                 return YES;
             else
                 return NO;

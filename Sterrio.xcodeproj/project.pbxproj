@@ -60,7 +60,7 @@
 		8735388B1B0A9BCA009244E4 /* YouTubeService.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538881B0A9BCA009244E4 /* YouTubeService.m */; };
 		873538901B0A9BEE009244E4 /* EnsembleDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735388F1B0A9BEE009244E4 /* EnsembleDelegate.m */; };
 		873538931B0A9BFF009244E4 /* PreviousNowPlayingInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538921B0A9BFF009244E4 /* PreviousNowPlayingInfo.m */; };
-		873538961B0A9C07009244E4 /* NowPlayingSong.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538951B0A9C07009244E4 /* NowPlayingSong.m */; };
+		873538961B0A9C07009244E4 /* NowPlaying.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538951B0A9C07009244E4 /* NowPlaying.m */; };
 		8735389A1B0A9C26009244E4 /* MZPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538991B0A9C26009244E4 /* MZPlaybackQueue.m */; };
 		873538A21B0A9C40009244E4 /* MZPrivateMainPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735389D1B0A9C40009244E4 /* MZPrivateMainPlaybackQueue.m */; };
 		873538A31B0A9C40009244E4 /* MZPrivateUpNextPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735389F1B0A9C40009244E4 /* MZPrivateUpNextPlaybackQueue.m */; };
@@ -355,8 +355,8 @@
 		8735388F1B0A9BEE009244E4 /* EnsembleDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EnsembleDelegate.m; sourceTree = "<group>"; };
 		873538911B0A9BFF009244E4 /* PreviousNowPlayingInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreviousNowPlayingInfo.h; sourceTree = "<group>"; };
 		873538921B0A9BFF009244E4 /* PreviousNowPlayingInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreviousNowPlayingInfo.m; sourceTree = "<group>"; };
-		873538941B0A9C07009244E4 /* NowPlayingSong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NowPlayingSong.h; sourceTree = "<group>"; };
-		873538951B0A9C07009244E4 /* NowPlayingSong.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NowPlayingSong.m; sourceTree = "<group>"; };
+		873538941B0A9C07009244E4 /* NowPlaying.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NowPlaying.h; sourceTree = "<group>"; };
+		873538951B0A9C07009244E4 /* NowPlaying.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NowPlaying.m; sourceTree = "<group>"; };
 		873538981B0A9C26009244E4 /* MZPlaybackQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPlaybackQueue.h; sourceTree = "<group>"; };
 		873538991B0A9C26009244E4 /* MZPlaybackQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPlaybackQueue.m; sourceTree = "<group>"; };
 		8735389C1B0A9C40009244E4 /* MZPrivateMainPlaybackQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPrivateMainPlaybackQueue.h; sourceTree = "<group>"; };
@@ -1018,8 +1018,8 @@
 				8735388D1B0A9BE5009244E4 /* Core Data Stuff */,
 				873538911B0A9BFF009244E4 /* PreviousNowPlayingInfo.h */,
 				873538921B0A9BFF009244E4 /* PreviousNowPlayingInfo.m */,
-				873538941B0A9C07009244E4 /* NowPlayingSong.h */,
-				873538951B0A9C07009244E4 /* NowPlayingSong.m */,
+				873538941B0A9C07009244E4 /* NowPlaying.h */,
+				873538951B0A9C07009244E4 /* NowPlaying.m */,
 				873538971B0A9C1D009244E4 /* Playback Queue */,
 				873538A51B0A9C52009244E4 /* OperationQueuesSingeton.h */,
 				873538A61B0A9C52009244E4 /* OperationQueuesSingeton.m */,
@@ -2232,7 +2232,7 @@
 				87A8FCE51CBF29FB00A43637 /* SDCAlertControllerScrollView.m in Sources */,
 				87A8FCEB1CBF29FB00A43637 /* SDCAlertTextFieldTableViewCell.m in Sources */,
 				87D3281F1C67F6BD001F2081 /* YouTubeSearchSuggestion.m in Sources */,
-				873538961B0A9C07009244E4 /* NowPlayingSong.m in Sources */,
+				873538961B0A9C07009244E4 /* NowPlaying.m in Sources */,
 				873538BD1B0A9CB9009244E4 /* MasterSongEditorViewController.m in Sources */,
 				873538CF1B0A9CFD009244E4 /* DetermineVideoPlayableOperation.m in Sources */,
 				87A8FC3B1CBF202500A43637 /* MRWeakProxy.m in Sources */,

@@ -104,7 +104,7 @@
     if(playbackContext == nil)
         return nil;
     else{
-        if([NowPlayingSong sharedInstance].nowPlayingItem.isFromUpNextSongs){
+        if([NowPlaying sharedInstance].nowPlayingItem.isFromUpNextSongs){
             return mostRecentItem;
         }
         
@@ -293,10 +293,10 @@
         else
             nowPlayingIndex = NSNotFound;
     } else{
-        if([NowPlayingSong sharedInstance].nowPlayingItem.isFromUpNextSongs)
+        if([NowPlaying sharedInstance].nowPlayingItem.isFromUpNextSongs)
             nowPlayingIndex = [self indexOfItem:mostRecentItem inArray:&array];
         else
-            nowPlayingIndex = [self indexOfItem:[NowPlayingSong sharedInstance].nowPlayingItem inArray:&array];
+            nowPlayingIndex = [self indexOfItem:[NowPlaying sharedInstance].nowPlayingItem inArray:&array];
     }
     
     NSArray *desiredSubArray;

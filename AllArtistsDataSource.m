@@ -169,7 +169,7 @@
         
         //check if artist is now playing context, if so make cell changes here...
         BOOL artistHasNowPlaying = NO;
-        NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+        NowPlaying *nowPlayingObj = [NowPlaying sharedInstance];
         
         NSMutableString *artistDetailContextId = [NSMutableString string];
         [artistDetailContextId appendString:NSStringFromClass([ArtistItemAlbumViewController class])];
@@ -388,7 +388,7 @@
     if(self.playbackContext == nil)
         return;
     Song *oldsong = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading].songForItem;
-    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
+    NowPlaying *nowPlaying = [NowPlaying sharedInstance];
     Song *newSong = nowPlaying.nowPlayingItem.songForItem;
     
     Artist *oldArtist = oldsong.artist;

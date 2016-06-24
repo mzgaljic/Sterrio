@@ -120,9 +120,9 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
 //current queue. This does not clear the "up next" section.
 - (void)setMainQueueWithNewNowPlayingItem:(PlayableItem *)item;
 {
-    PlayableItem *oldItem = [NowPlayingSong sharedInstance].nowPlayingItem;
+    PlayableItem *oldItem = [NowPlaying sharedInstance].nowPlayingItem;
     [mainQueue setMainQueueWithNewNowPlayingItem:item];
-    [[NowPlayingSong sharedInstance] setNewNowPlayingItem:item];
+    [[NowPlaying sharedInstance] setNewNowPlayingItem:item];
     
     //start playback in minimzed state
     [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
@@ -141,7 +141,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
         [upNextQueue addItemsToUpNextWithContexts:contexts];
         PlayableItem *item = [upNextQueue obtainAndRemoveNextItem];
         
-        [[NowPlayingSong sharedInstance] setNewNowPlayingItem:item];
+        [[NowPlaying sharedInstance] setNewNowPlayingItem:item];
         
         //start playback in minimzed state
         [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
@@ -159,7 +159,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
             //if so, we can start playback of the new up next items right now!
             
             MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-            Song *nowPlayingSong = [NowPlayingSong sharedInstance].nowPlayingItem.songForItem;
+            Song *nowPlayingSong = [NowPlaying sharedInstance].nowPlayingItem.songForItem;
             NSUInteger elapsedSeconds = ceil(CMTimeGetSeconds(player.currentItem.currentTime));
             
             //comparing if song is either done or VERY VERY VERY close to the end.
@@ -169,7 +169,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
                 [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
                 [upNextQueue addItemsToUpNextWithContexts:contexts];
                 PlayableItem *item = [upNextQueue obtainAndRemoveNextItem];
-                [[NowPlayingSong sharedInstance] setNewNowPlayingItem:item];
+                [[NowPlaying sharedInstance] setNewNowPlayingItem:item];
 
                 [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
                                            goingForward:YES
@@ -199,7 +199,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
      */
     
     [self printQueueContents];
-    [[NowPlayingSong sharedInstance] setNewNowPlayingItem:item];
+    [[NowPlaying sharedInstance] setNewNowPlayingItem:item];
     
     return item;
 }
@@ -212,7 +212,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
         item = [mainQueue skipForward];
     }
     
-    [[NowPlayingSong sharedInstance] setNewNowPlayingItem:item];
+    [[NowPlaying sharedInstance] setNewNowPlayingItem:item];
     
     [self printQueueContents];
     return item;
@@ -225,7 +225,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
     //dont take into account shuffle mode here
     
     PlayableItem *item = [mainQueue skipToBeginningOfQueue];
-    [[NowPlayingSong sharedInstance] setNewNowPlayingItem:item];
+    [[NowPlaying sharedInstance] setNewNowPlayingItem:item];
     return item;
 }
 
@@ -237,7 +237,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
     NSArray *mainQueueSongs = [mainQueue tableViewOptimizedArrayOfMainQueuePlayableItemsComingUp];
     
     NSMutableString *output = [NSMutableString stringWithString:@"\n\nNow Playing: ["];
-    [output appendFormat:@"%@", [NowPlayingSong sharedInstance].nowPlayingItem.songForItem.songName];
+    [output appendFormat:@"%@", [NowPlaying sharedInstance].nowPlayingItem.songForItem.songName];
     [output appendString:@"]\n"];
     
     [output appendString:@"---Queued songs coming up---\n"];

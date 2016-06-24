@@ -196,7 +196,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         
         //check if a song in this album is the now playing song
         BOOL albumHasNowPlaying = NO;
-        NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+        NowPlaying *nowPlayingObj = [NowPlaying sharedInstance];
         
         NSMutableString *albumDetailContextId = [NSMutableString string];
         [albumDetailContextId appendString:NSStringFromClass([AlbumItemViewController class])];
@@ -450,7 +450,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     if(self.playbackContext == nil)
         return;
     Song *oldsong = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading].songForItem;
-    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
+    NowPlaying *nowPlaying = [NowPlaying sharedInstance];
     Song *newSong = nowPlaying.nowPlayingItem.songForItem;
     
     Album *oldAlbum = oldsong.album;

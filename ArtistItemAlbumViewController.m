@@ -163,7 +163,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
     cell.detailTextLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                                 size:detailFontSize];
     
-    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+    NowPlaying *nowPlayingObj = [NowPlaying sharedInstance];
     BOOL isNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToSong:aSong withContext:self.playbackContext];
     if(! isNowPlaying){
         isNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToSong:aSong withContext:self.parentVcPlaybackContext];
@@ -439,7 +439,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
         return;
     
     Song *oldSong = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading].songForItem;
-    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
+    NowPlaying *nowPlaying = [NowPlaying sharedInstance];
     Song *newSong = nowPlaying.nowPlayingItem.songForItem;
     NSIndexPath *oldPath, *newPath;
     

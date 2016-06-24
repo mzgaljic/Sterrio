@@ -22,7 +22,7 @@
 //helps to segue to video player view from anywhere,
 //determine aspect ratio for player based on width, etc.
 #import "SongPlayerViewDisplayUtility.h"
-#import "NowPlayingSong.h"
+#import "NowPlaying.h"
 #import "MZConstants.h"
 #import "UIColor+SystemTintColor.h"
 

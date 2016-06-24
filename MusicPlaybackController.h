@@ -62,7 +62,7 @@
 
 #pragma mark - Now Playing Song
 + (Song *)nowPlayingSong;
-+ (NowPlayingSong *)nowPlayingSongObject;
++ (NowPlaying *)nowPlayingSongObject;
 
 #pragma mark + Gathering playback info
 + (NSUInteger)numMoreSongsInQueue;
