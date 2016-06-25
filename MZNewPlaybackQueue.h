@@ -24,6 +24,6 @@
 - (void)setRepeatMode:(PLABACK_REPEAT_MODE)mode;
 
 #pragma mark - DEBUG
-- (void)printQueueContents;
++ (void)printQueueContents:(MZNewPlaybackQueue *)queue;
 
 @end
