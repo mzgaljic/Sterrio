@@ -27,6 +27,7 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
 {
     if(self = [super init]) {
         _mainContext = item.contextForItem;
+        _mostRecentItem = nil;
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(managedObjectContextDidSave:)
                                                      name:NSManagedObjectContextDidSaveNotification
@@ -77,11 +78,13 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
 
 - (PlayableItem *)seekBackOneItem
 {
-    return [self seekNextItemInDirection:SeekBackwards];
+    _mostRecentItem = [self seekNextItemInDirection:SeekBackwards];
+    return _mostRecentItem;
 }
 - (PlayableItem *)seekForwardOneItem
 {
-    return [self seekNextItemInDirection:SeekForward];
+    _mostRecentItem = [self seekNextItemInDirection:SeekForward];
+    return _mostRecentItem;
 }
 
 - (void)setShuffleState:(SHUFFLE_STATE)state {}
