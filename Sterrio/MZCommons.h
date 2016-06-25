@@ -29,6 +29,7 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void));
 + (GADRequest *)getNewAdmobRequest;
 
 #pragma mark - GUI Helpers
++ (void)presentQueuedHUD;
 + (UIViewController *)topViewController;
 + (UIStoryboard *)mainStoryboard;
 + (UIImage *)centerButtonImage;

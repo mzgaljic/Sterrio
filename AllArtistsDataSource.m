@@ -452,7 +452,7 @@
                                 backgroundColor:initialExpansionColor
                                         padding:MZCellSpotifyStylePaddingValue
                                        callback:^BOOL(MGSwipeTableCell *sender) {
-                                           [MZPlaybackQueue presentQueuedHUD];
+                                           [MZCommons presentQueuedHUD];
                                            PlaybackContext *context = [weakSelf contextForSpecificArtist:weakArtist];
                                            [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];

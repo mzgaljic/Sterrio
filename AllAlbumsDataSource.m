@@ -515,7 +515,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
                                 backgroundColor:initialExpansionColor
                                         padding:MZCellSpotifyStylePaddingValue
                                        callback:^BOOL(MGSwipeTableCell *sender) {
-                                           [MZPlaybackQueue presentQueuedHUD];
+                                           [MZCommons presentQueuedHUD];
                                            PlaybackContext *context = [weakSelf contextForSpecificAlbum:weakAlbum];
                                            NSArray *cnxt = @[context];
                                            [MusicPlaybackController queueUpNextSongsWithContexts:cnxt];

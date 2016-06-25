@@ -35,11 +35,6 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 100;
     return sharedInstance;
 }
 
-+ (void)presentQueuedHUD
-{
-    [ProgressHUD showSuccess:@"Queued" Interaction:YES];
-}
-
 - (instancetype)init
 {
     if(self = [super init]){

@@ -365,7 +365,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
                                 backgroundColor:initialExpansionColor
                                         padding:MZCellSpotifyStylePaddingValue
                                        callback:^BOOL(MGSwipeTableCell *sender) {
-                                           [MZPlaybackQueue presentQueuedHUD];
+                                           [MZCommons presentQueuedHUD];
                                            PlaybackContext *context = [weakself contextForSpecificSong:weakSong];
                                            [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
                                            [weakCell refreshContentView];

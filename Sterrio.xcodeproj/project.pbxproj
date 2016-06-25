@@ -137,6 +137,8 @@
 		8736AA9E1C2613A2005FAE07 /* AppDelegateUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8736AA9D1C2613A2005FAE07 /* AppDelegateUtils.m */; };
 		873EBB231D1CCEB1005F248A /* MZNewPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EBB221D1CCEB1005F248A /* MZNewPlaybackQueue.m */; };
 		873EBB261D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EBB251D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m */; };
+		873EBB2E1D1E2E8C005F248A /* MZEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EBB2D1D1E2E8C005F248A /* MZEnumerator.m */; };
+		873EBB311D1E376E005F248A /* NSArray+MZEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EBB301D1E376E005F248A /* NSArray+MZEnumerator.m */; };
 		87414BC41B3FA92500FB8252 /* CoreSpotlight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		87414BC61B3FA93100FB8252 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		87414BC81B3FB85300FB8252 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87414BC71B3FB85300FB8252 /* AppDelegate.m */; };
@@ -519,6 +521,10 @@
 		873EBB221D1CCEB1005F248A /* MZNewPlaybackQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZNewPlaybackQueue.m; sourceTree = "<group>"; };
 		873EBB241D1CD0A1005F248A /* MZPlaybackQueueSnapshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPlaybackQueueSnapshot.h; sourceTree = "<group>"; };
 		873EBB251D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPlaybackQueueSnapshot.m; sourceTree = "<group>"; };
+		873EBB271D1E2A35005F248A /* MZEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZEnumerator.h; sourceTree = "<group>"; };
+		873EBB2D1D1E2E8C005F248A /* MZEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZEnumerator.m; sourceTree = "<group>"; };
+		873EBB2F1D1E376E005F248A /* NSArray+MZEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+MZEnumerator.h"; sourceTree = "<group>"; };
+		873EBB301D1E376E005F248A /* NSArray+MZEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+MZEnumerator.m"; sourceTree = "<group>"; };
 		87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreSpotlight.framework; path = System/Library/Frameworks/CoreSpotlight.framework; sourceTree = SDKROOT; };
 		87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		87414BC71B3FB85300FB8252 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -918,6 +924,8 @@
 				873538361B0A9AF4009244E4 /* UIView+ScreenshotView.m */,
 				873538371B0A9AF4009244E4 /* UIWindow+VisibleVC.h */,
 				873538381B0A9AF4009244E4 /* UIWindow+VisibleVC.m */,
+				873EBB2F1D1E376E005F248A /* NSArray+MZEnumerator.h */,
+				873EBB301D1E376E005F248A /* NSArray+MZEnumerator.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -931,6 +939,8 @@
 				8735384E1B0A9B23009244E4 /* Queue.m */,
 				8735384F1B0A9B23009244E4 /* Stack.h */,
 				873538501B0A9B23009244E4 /* Stack.m */,
+				873EBB271D1E2A35005F248A /* MZEnumerator.h */,
+				873EBB2D1D1E2E8C005F248A /* MZEnumerator.m */,
 			);
 			name = "Data Structures";
 			sourceTree = "<group>";
@@ -2109,6 +2119,7 @@
 				873538F51B0A9E78009244E4 /* MasterAlbumsTableViewController.m in Sources */,
 				873538C21B0A9CD0009244E4 /* MZSongModifierTableView.m in Sources */,
 				87A8FCE11CBF29FB00A43637 /* SDCAlertCollectionViewCell.m in Sources */,
+				873EBB311D1E376E005F248A /* NSArray+MZEnumerator.m in Sources */,
 				873538931B0A9BFF009244E4 /* PreviousNowPlayingInfo.m in Sources */,
 				873538401B0A9AF4009244E4 /* UIColor+SystemTintColor.m in Sources */,
 				873538EB1B0A9E63009244E4 /* MasterSongsTableViewController.m in Sources */,
@@ -2151,6 +2162,7 @@
 				87A8FC321CBF202500A43637 /* MRIconView.m in Sources */,
 				873539201B0A9F11009244E4 /* YoutubeResultsTableViewController.m in Sources */,
 				8735380D1B0A9A9A009244E4 /* MZConstants.m in Sources */,
+				873EBB2E1D1E2E8C005F248A /* MZEnumerator.m in Sources */,
 				873538E61B0A9D2D009244E4 /* SongPlayerCoordinator.m in Sources */,
 				873537CC1B0A9981009244E4 /* main.m in Sources */,
 				873539651B0AA0CB009244E4 /* AllPlaylistsDataSource.m in Sources */,

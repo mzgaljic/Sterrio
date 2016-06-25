@@ -26,7 +26,6 @@ extern short const EXTERNAL_FETCH_BATCH_SIZE;
 
 + (instancetype)sharedInstance;
 
-+ (void)presentQueuedHUD;
 
 #pragma mark - Get info about queue
 - (NSUInteger)numItemsInEntireMainQueue;

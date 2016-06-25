@@ -14,13 +14,13 @@
 @interface MZPlaybackQueueSnapshot : NSObject
 
 /**
- * @brief Creates a snapshot of the queue in such a way that it becomes trivial to display graphically to the 
- *        user.
+ * @brief Creates a snapshot of the queue in such a way that it becomes trivial to display graphically to 
+ *        the user.
  * @param songs all the songs that are to be displayed (graphically) to the user.
  * @param historySongsIndexSet  identifies which indexes in the 'songs' array are part of the users
- *                              history. Meaning, the user actually played these songs for at least x seconds.
- *                              These songs were previously played (and are not necessarily part of the
- *                              current queue.)
+ *                              history. Meaning, the user actually played these songs for at least x 
+ *                              seconds. These songs were previously played (and are not necessarily part of 
+ *                              the current queue.)
  * @param manuallyQueuedSongsIndexSet  Songs which have been manually queued up by the user.
  * @param index  index of the now playing song (at the time of QueueSnapshot creation.)
  * @param allFutureSongsIndexSet  Songs coming up in the main playback queue (not the temporary queue that

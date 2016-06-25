@@ -18,6 +18,7 @@
 #import "MZRegexExp.h"
 #import <Crashlytics/Crashlytics.h>  //for using CLS_LOG(format, ...) from anywhere.
 #import "MyAlerts.h"  //my custom class for displaying alerts from anywhere
+#import "NSArray+MZEnumerator.h"  //adds lightweight bi-directional enumeration to any array.
 
 //helps to segue to video player view from anywhere,
 //determine aspect ratio for player based on width, etc.
