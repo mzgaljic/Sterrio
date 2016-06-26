@@ -139,6 +139,7 @@
 		873EBB261D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EBB251D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m */; };
 		873EBB2E1D1E2E8C005F248A /* MZEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EBB2D1D1E2E8C005F248A /* MZEnumerator.m */; };
 		873EBB311D1E376E005F248A /* NSArray+MZEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EBB301D1E376E005F248A /* NSArray+MZEnumerator.m */; };
+		873EBB341D202D52005F248A /* MZArrayShuffler.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EBB331D202D52005F248A /* MZArrayShuffler.m */; };
 		87414BC41B3FA92500FB8252 /* CoreSpotlight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		87414BC61B3FA93100FB8252 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		87414BC81B3FB85300FB8252 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87414BC71B3FB85300FB8252 /* AppDelegate.m */; };
@@ -525,6 +526,8 @@
 		873EBB2D1D1E2E8C005F248A /* MZEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZEnumerator.m; sourceTree = "<group>"; };
 		873EBB2F1D1E376E005F248A /* NSArray+MZEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+MZEnumerator.h"; sourceTree = "<group>"; };
 		873EBB301D1E376E005F248A /* NSArray+MZEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+MZEnumerator.m"; sourceTree = "<group>"; };
+		873EBB321D202D52005F248A /* MZArrayShuffler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZArrayShuffler.h; sourceTree = "<group>"; };
+		873EBB331D202D52005F248A /* MZArrayShuffler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZArrayShuffler.m; sourceTree = "<group>"; };
 		87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreSpotlight.framework; path = System/Library/Frameworks/CoreSpotlight.framework; sourceTree = SDKROOT; };
 		87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		87414BC71B3FB85300FB8252 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -1504,6 +1507,8 @@
 				873EBB221D1CCEB1005F248A /* MZNewPlaybackQueue.m */,
 				873EBB241D1CD0A1005F248A /* MZPlaybackQueueSnapshot.h */,
 				873EBB251D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m */,
+				873EBB321D202D52005F248A /* MZArrayShuffler.h */,
+				873EBB331D202D52005F248A /* MZArrayShuffler.m */,
 			);
 			name = "New Plaback Queue";
 			sourceTree = "<group>";
@@ -2094,6 +2099,7 @@
 				873538671B0A9B6D009244E4 /* AlbumAlbumArt.m in Sources */,
 				8735387F1B0A9B9E009244E4 /* YouTubeVideo.m in Sources */,
 				87A8FCF01CBF29FB00A43637 /* SDCAlertViewCoordinator.m in Sources */,
+				873EBB341D202D52005F248A /* MZArrayShuffler.m in Sources */,
 				873538681B0A9B6D009244E4 /* Artist.m in Sources */,
 				873538C91B0A9CEB009244E4 /* SongPlayerViewController.m in Sources */,
 				87A8FCE01CBF29FB00A43637 /* SDCAlertAction.m in Sources */,

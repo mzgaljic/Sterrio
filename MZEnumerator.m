@@ -83,4 +83,10 @@
     }
 }
 
+/** NSArray from the underlying enumerator. Does NOT return a copy.*/
+- (NSArray *)underlyingArray
+{
+    return _array;
+}
+
 @end

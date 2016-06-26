@@ -22,4 +22,7 @@
 /** Moves the hidden 'cursor' into the array backward and retrieves the value at the new location. Nil if no more objects in this direction (out of bounds). */
 - (id)previousObject;
 
+/** NSArray from the underlying enumerator. Does NOT return a copy. */
+- (NSArray *)underlyingArray;
+
 @end

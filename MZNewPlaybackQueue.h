@@ -21,7 +21,6 @@
 - (PlayableItem *)seekForwardOneItem;
 
 - (void)setShuffleState:(SHUFFLE_STATE)state;
-- (void)setRepeatMode:(PLABACK_REPEAT_MODE)mode;
 
 #pragma mark - DEBUG
 + (void)printQueueContents:(MZNewPlaybackQueue *)queue;

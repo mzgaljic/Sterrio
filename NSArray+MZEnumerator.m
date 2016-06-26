@@ -17,7 +17,7 @@
 
 - (MZEnumerator *)biDirectionalEnumeratorAtIndex:(NSUInteger)index
 {
-    
+    return [[MZEnumerator alloc] initWithArray:self andIndex:index];
 }
 
 @end

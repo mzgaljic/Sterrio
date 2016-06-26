@@ -9,12 +9,18 @@
 #import "MZNewPlaybackQueue.h"
 #import "PlaylistItem.h"
 #import "CoreDataManager.h"
+#import "MZArrayShuffler.h"
 
 @interface MZNewPlaybackQueue ()
 @property (nonatomic, strong) PlaybackContext *mainContext;
 @property (nonatomic, strong) MZEnumerator *mainEnumerator;
+@property (nonatomic, strong) MZEnumerator *shuffledMainEnumerator;
+
+//helps when the shuffle state changes.
+@property (nonatomic, strong) MZEnumerator *lastUsedEnumerator;
 
 @property (nonatomic, strong) PlayableItem *mostRecentItem;
+@property (nonatomic, assign) SHUFFLE_STATE shuffleState;
 @end
 @implementation MZNewPlaybackQueue
 
@@ -28,6 +34,7 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
     if(self = [super init]) {
         _mainContext = item.contextForItem;
         _mostRecentItem = nil;
+        _shuffleState = SHUFFLE_STATE_Disabled;
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(managedObjectContextDidSave:)
                                                      name:NSManagedObjectContextDidSaveNotification
@@ -41,20 +48,24 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     _mainContext = nil;
     _mainEnumerator = nil;
+    _shuffledMainEnumerator = nil;
     _mostRecentItem = nil;
 }
 
 /** 
  Attempt to get the new index of the now-playing-song within the results (if they changed after the context 
  was saved.) Then, re-initialize the mainEnumerator so it doesn't get out of sync with the latest changes by 
- the user. */
+ the user. 
+ */
 - (void)managedObjectContextDidSave:(NSNotification *)note
 {
+#warning need to also add logic for shuffled enumerator here.
     //can no longer trust that the array in memory is reflecting what the user saved into the library.
     //Re-fetch & get current index.
     NSArray *results = [MZNewPlaybackQueue attemptFetchRequest:_mainContext.request batchSize:INTERNAL_FETCH_BATCH_SIZE];
     if(results == nil) {
-        return;  //not much we can do at this point. Continue using existing enumerator (not perfect but will do.)
+        //not much we can do at this point. Continue using existing enumerator (not perfect but will do.)
+        return;
     }
     
     NSUInteger nowPlayingIndex = NSNotFound;  //should point to now playing within the new results
@@ -73,6 +84,7 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
 
 - (MZPlaybackQueueSnapshot *)snapshotOfPlaybackQueue
 {
+#warning no implementation.
     return nil;
 }
 
@@ -87,15 +99,36 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
     return _mostRecentItem;
 }
 
-- (void)setShuffleState:(SHUFFLE_STATE)state {}
-- (void)setRepeatMode:(PLABACK_REPEAT_MODE)mode {}
+- (void)setShuffleState:(SHUFFLE_STATE)state
+{
+    SHUFFLE_STATE prevShuffleState = _shuffleState;
+    if(state == prevShuffleState) {
+        return;
+    }
+    _shuffleState = prevShuffleState;
+    if(_shuffleState == SHUFFLE_STATE_Enabled) {
+        if(_shuffledMainEnumerator == nil) {
+            NSMutableArray *shallowCopy = [[_mainEnumerator underlyingArray] mutableCopy];
+            [MZArrayShuffler shuffleArray:&shallowCopy];
+            _shuffledMainEnumerator = [shallowCopy biDirectionalEnumerator];
+        }
+    } else if(_shuffleState == SHUFFLE_STATE_Disabled) {
+        _shuffledMainEnumerator = nil;
+#warning need logic to get the same item in the unshuffled array now (I think.) See how Apple music and itunes do it.
+    }
+}
 
 #pragma mark - DEBUG
-+ (void)printQueueContents:(MZNewPlaybackQueue *)queue {}
++ (void)printQueueContents:(MZNewPlaybackQueue *)queue
+{
+#warning no implementation.
+}
 
 
 
 //---- Utils ----
+// Grabs the next item in the direction specified. Item will be taken from the shuffled enumerator if
+//it exists. Otherwise, from the main-enumerator.
 - (PlayableItem *)seekNextItemInDirection:(enum SeekDirection)direction
 {
     if(_mainContext == nil || _mainContext.request == nil) {
@@ -108,12 +141,17 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
             _mainEnumerator = [results biDirectionalEnumerator];
         }
     }
-    if(_mainEnumerator != nil) {
-        return (direction == SeekForward) ? [_mainEnumerator nextObject] : [_mainEnumerator previousObject];
+    MZEnumerator *enumerator = nil;
+    if(_shuffledMainEnumerator != nil) { enumerator = _shuffledMainEnumerator; }
+    if(_mainEnumerator != nil) { enumerator = _mainEnumerator; }
+    
+    if(enumerator != nil) {
+        return (direction == SeekForward) ? [enumerator nextObject] : [enumerator previousObject];
     }
     return nil;
 }
 
+//Determine the location of the PlayableItem in the core data array, returns index or NSNotFound.
 - (NSUInteger)indexOfItem:(PlayableItem *)item inArray:(NSArray **)array
 {
     NSUInteger index = NSNotFound;
@@ -127,10 +165,14 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
 }
 
 //this is used to make sure we always work with PlayableItem objects.
-- (PlayableItem *)itemAtIndex:(NSUInteger)index inArray:(NSArray **)array withContext:(PlaybackContext *)context queuedSong:(BOOL)queued
+- (PlayableItem *)itemAtIndex:(NSUInteger)index
+                      inArray:(NSArray **)array
+                  withContext:(PlaybackContext *)context
+                   queuedSong:(BOOL)queued
 {
-    if((*array) == nil || index >= (*array).count)
+    if((*array) == nil || index >= (*array).count) {
         return nil;
+    }
     
     id obj = [*array objectAtIndex:index];
     if([obj isMemberOfClass:[PlayableItem class]]) {
@@ -141,7 +183,6 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
         
     } else if([obj isMemberOfClass:[PlaylistItem class]]) {
         return [[PlayableItem alloc] initWithPlaylistItem:(PlaylistItem *)obj context:context fromUpNextSongs:queued];
-        
     } else {
         return nil;
     }
