@@ -61,6 +61,32 @@
     }
 }
 
+/** Returns YES IFF a call to nextObject would return a non-nil result. */
+- (BOOL)hasNext
+{
+    return (_array != nil && _array.count != 0 && _cursor <= _array.count-1) ? YES : NO;
+}
+
+/** Gets the object at the current 'cursor' location in the array. Nil if operation fails. */
+- (id)currentObject
+{
+    NSUInteger arraySize = (_array == nil) ? NSUIntegerMax : _array.count;
+    if(arraySize != _lastKnownArraySize) {
+        @throw NSInternalInconsistencyException;
+    }
+    if(_array == nil || _array.count == 0) {
+        return nil;
+    }
+    
+    return (_cursor > _array.count-1 || _cursor < 0) ? nil : [_array objectAtIndex:_cursor];
+}
+
+/** Returns YES IFF a call to previousObject would return a non-nil result. */
+- (BOOL)hasPrevious
+{
+    return (_array != nil && _array.count != 0 && _cursor > 0) ? YES : NO;
+}
+
 /** Moves the hidden 'cursor' into the array backward and retrieves the value at the new location. Nil if no more objects in this direction (out of bounds). */
 - (id)previousObject
 {
@@ -87,6 +113,12 @@
 - (NSArray *)underlyingArray
 {
     return _array;
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    MZEnumerator *deepCopy = [[MZEnumerator alloc] initWithArray:_array andIndex:_cursor];
+    return deepCopy;
 }
 
 @end

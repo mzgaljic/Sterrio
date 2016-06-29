@@ -23,6 +23,6 @@
 - (void)setShuffleState:(SHUFFLE_STATE)state;
 
 #pragma mark - DEBUG
-+ (void)printQueueContents:(MZNewPlaybackQueue *)queue;
+- (void)printQueueContents;
 
 @end

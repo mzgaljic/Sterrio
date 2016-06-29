@@ -119,11 +119,52 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
 }
 
 #pragma mark - DEBUG
-+ (void)printQueueContents:(MZNewPlaybackQueue *)queue
+- (void)printQueueContents
 {
-#warning no implementation.
+    MZEnumerator *enumeratorCopy = nil;
+    //MZEnumerator performs a somewhat shallow copy. Everything is copied except for the underlying array.
+    //(so a mod to an object in enumerator A will change it in enumerator B.)
+    if(_shuffledMainEnumerator != nil) {
+        enumeratorCopy = [_shuffledMainEnumerator copy];
+    } else if(_mainEnumerator != nil) {
+        enumeratorCopy = [_mainEnumerator copy];
+    }
+    
+    if(enumeratorCopy != nil) {
+        PlayableItem *nowPlaying = [enumeratorCopy currentObject];
+        NSLog(@"-> Now Playing: %@", nowPlaying);
+        
+        int queuedSongCount = 0;
+        if(queuedSongCount) {
+            NSLog(@"-> Queued 'on the fly' songs:");
+            #warning no implementation for on the fly queued songs here.
+        }
+        
+        PlayableItem *item;
+        NSUInteger index = 0;
+        while([enumeratorCopy hasNext]) {
+            if(index == 0) {
+                NSLog(@"\n-> Main queue songs coming up:");
+            }
+            index++;
+            item = [MZNewPlaybackQueue wrapIntoDummyPlayableItemObj:[enumeratorCopy nextObject]];
+            NSLog(@"\n%100lu - %@", (unsigned long)index, item);
+        }
+    }
 }
 
++ (PlayableItem *)wrapIntoDummyPlayableItemObj:(id)object
+{
+    if([object isMemberOfClass:[Song class]]) {
+        return [[PlayableItem alloc] initWithSong:(Song *)object context:nil
+                                  fromUpNextSongs:NO];
+    } else if([object isMemberOfClass:[PlaylistItem class]]) {
+        return [[PlayableItem alloc] initWithPlaylistItem:(PlaylistItem *)object
+                                                  context:nil fromUpNextSongs:NO];
+    } else {
+        return nil;
+    }
+}
 
 
 //---- Utils ----

@@ -10,7 +10,7 @@
 #import <Foundation/Foundation.h>
 
 //WARNING: ENUMERATOR DOES NOT ALLOW ARRAY SIZE TO CHANGE DURING ENUMERATION
-@interface MZEnumerator : NSObject
+@interface MZEnumerator : NSObject <NSCopying>
 
 /** Initialize w/ array. Modification of array during enumeration will result in an exception! */
 - (id)initWithArray:(NSArray *)array;
@@ -18,6 +18,15 @@
 
 /** Advances the hidden 'cursor' into the array and retrieves the value at the new location. Nil if no more objects in this direction (out of bounds). */
 - (id)nextObject;
+
+/** Returns YES IFF a call to nextObject would return a non-nil result. */
+- (BOOL)hasNext;
+
+/** Gets the object at the current 'cursor' location in the array. Nil if operation fails. */
+- (id)currentObject;
+
+/** Returns YES IFF a call to previousObject would return a non-nil result. */
+- (BOOL)hasPrevious;
 
 /** Moves the hidden 'cursor' into the array backward and retrieves the value at the new location. Nil if no more objects in this direction (out of bounds). */
 - (id)previousObject;
