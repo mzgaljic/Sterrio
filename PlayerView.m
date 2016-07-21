@@ -12,6 +12,7 @@
 #import "PlayableItem.h"
 #import "MZSlider.h"
 #import "SongPlayerViewDisplayUtility.h"
+#import "MZNewPlaybackQueue.h"
 
 @interface PlayerView ()
 {
@@ -238,7 +239,7 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     [MusicPlaybackController explicitlyPausePlayback:NO];
     [SongPlayerCoordinator placePlayerInDisabledState:NO];
     [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
-    [[MZPlaybackQueue sharedInstance] clearEntireQueue];
+    [MZNewPlaybackQueue discardInstance];  //clears the entire queue
     
     [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlaying sharedInstance].playableItem.songForItem];
 }

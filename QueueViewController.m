@@ -16,7 +16,7 @@
 {
     UINavigationBar *navBar;
     
-    MZPlaybackQueue *queue;
+    //MZPlaybackQueue *queue;
     
     //data models
     NSArray *mainQueueItemsComingUp;
@@ -37,6 +37,7 @@ short const TABLE_SECTION_FOOTER_HEIGHT = 25;
 short const SECTION_EMPTY = -1;
 
 #pragma mark - View Controller life cycle
+/*
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -587,5 +588,5 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     } else  //case should never happen
         return nil;
 }
-
+*/
 @end

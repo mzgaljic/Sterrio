@@ -12,7 +12,7 @@
 
 @interface PlaybackContext : NSObject
 @property (nonatomic, strong) NSFetchRequest *request;
-@property (nonatomic, strong) NSString *queueName;
+@property (nonatomic, strong, readonly) NSString *queueName;
 @property (nonatomic, strong, readonly) NSString *contextId;
 
 - (instancetype)initWithFetchRequest:(NSFetchRequest *)aRequest

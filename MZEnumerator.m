@@ -39,6 +39,21 @@
     _array = nil;
 }
 
+/** Moves the hidden 'cursor' into the array to position 0, if applicable. Otherwise nil is returned
+ * (out of bounds.)*/
+- (id)moveTofirstObject
+{
+    NSUInteger arraySize = (_array == nil) ? NSUIntegerMax : _array.count;
+    if(arraySize != _lastKnownArraySize) {
+        @throw NSInternalInconsistencyException;
+    }
+    if(_array == nil || _array.count == 0) {
+        return nil;
+    }
+    _cursor = 0;
+    return [_array objectAtIndex:_cursor];
+}
+
 /** Advances the hidden 'cursor' into the array and retrieves the value at the new location. Nil if no more objects in this direction (out of bounds). */
 - (id)nextObject
 {

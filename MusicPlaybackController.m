@@ -11,10 +11,10 @@
 #import "PlayableItem.h"
 #import "PlaylistItem.h"
 #import "PreviousNowPlayingInfo.h"
+#import "MZNewPlaybackQueue.h"
 
 static MyAVPlayer *player = nil;
 static PlayerView *playerView = nil;
-static MZPlaybackQueue *playbackQueue = nil;
 static NowPlaying *nowPlayingObject;
 static BOOL explicitlyPausePlayback = NO;
 static BOOL simpleSpinnerOnScreen = NO;
@@ -82,15 +82,15 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
         return;
     } else if(numMoreSongsInQueue == 0 && [AppEnvironmentConstants playbackRepeatType] == PLABACK_REPEAT_MODE_disabled){
         allowSongDidFinishNotifToProceed = NO;
-    }
-    else
+    } else {
         allowSongDidFinishNotifToProceed = YES;
+    }
     
     [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     [player allowSongDidFinishNotificationToProceed:allowSongDidFinishNotifToProceed];
     PlayableItem *oldItem = [NowPlaying sharedInstance].playableItem;
-    Song *nextSong = [playbackQueue skipForward].songForItem;
+    Song *nextSong = [[MZNewPlaybackQueue sharedInstance] seekForwardOneItem].songForItem;
     
     [VideoPlayerWrapper startPlaybackOfSong:nextSong
                                goingForward:YES
@@ -112,7 +112,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     [player allowSongDidFinishNotificationToProceed:YES];
     PlayableItem *oldItem = [NowPlaying sharedInstance].playableItem;
-    Song *nextSong = [playbackQueue skipForward].songForItem;
+    Song *nextSong = [[MZNewPlaybackQueue sharedInstance] seekForwardOneItem].songForItem;
     
     [VideoPlayerWrapper startPlaybackOfSong:nextSong
                                goingForward:YES
@@ -172,7 +172,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     } else{
         [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
         PlayableItem *oldItem = [NowPlaying sharedInstance].playableItem;
-        Song *previousSong = [playbackQueue skipToPrevious].songForItem;
+        Song *previousSong = [[MZNewPlaybackQueue sharedInstance] seekBackOneItem].songForItem;
         
         [VideoPlayerWrapper startPlaybackOfSong:previousSong
                                    goingForward:NO
@@ -207,42 +207,37 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 + (void)playlistItemAboutToBeDeleted:(PlaylistItem *)item
 {
     if([nowPlayingObject.playableItem.playlistItemForItem.uniqueId isEqualToString:item.uniqueId]){
-        MZPlaybackQueue *queue = [MZPlaybackQueue sharedInstance];
-        if([queue numMoreItemsInMainQueue] + [queue numMoreItemsInUpNext] == 0){
+        if([[MZNewPlaybackQueue sharedInstance] forwardItemsCount] == 0){
             PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
             [playerView userKilledPlayer];
-        }
-        else
+        } else {
             [MusicPlaybackController forcefullySkipToNextTrack];
+        }
     }
 }
 
 + (void)songAboutToBeDeleted:(Song *)song deletionContext:(PlaybackContext *)aContext;
 {
     if([nowPlayingObject.playableItem isEqualToSong:song withContext:aContext]){
-        MZPlaybackQueue *queue = [MZPlaybackQueue sharedInstance];
-        if([queue numMoreItemsInMainQueue] + [queue numMoreItemsInUpNext] == 0){
+        if([[MZNewPlaybackQueue sharedInstance] forwardItemsCount] == 0){
             PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
             [playerView userKilledPlayer];
-        }
-        else
+        } else {
             [MusicPlaybackController forcefullySkipToNextTrack];
+        }
     }
 }
 
 + (void)groupOfSongsAboutToBeDeleted:(NSArray *)songs deletionContext:(PlaybackContext *)context;
 {
     [songs enumerateObjectsUsingBlock:^(Song *someSong, NSUInteger idx, BOOL *stop) {
-        
-        if([nowPlayingObject.playableItem isEqualToSong:someSong withContext:context]){
-            MZPlaybackQueue *queue = [MZPlaybackQueue sharedInstance];
-            if([queue numMoreItemsInMainQueue] + [queue numMoreItemsInUpNext] == 0){
+        if([nowPlayingObject.playableItem isEqualToSong:someSong withContext:context]) {
+            if([[MZNewPlaybackQueue sharedInstance] forwardItemsCount] == 0){
                 PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
                 [playerView userKilledPlayer];
-            }
-            else
+            } else {
                 [MusicPlaybackController forcefullySkipToNextTrack];
-            return;
+            }
         }
     }];
 }
@@ -250,52 +245,31 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 #pragma mark - Gathering playback info
 + (NSUInteger)numMoreSongsInQueue
 {
-    NSUInteger upNextSongCount = [playbackQueue numMoreItemsInUpNext];
-    NSUInteger mainQueueSongCount = [playbackQueue numMoreItemsInMainQueue];
-    return upNextSongCount + mainQueueSongCount;
+    return [[MZNewPlaybackQueue sharedInstance] forwardItemsCount];
 }
 
 //does NOT perform a context comparison.
 + (BOOL)isSongLastInQueue:(Song *)song
 {
-    NSUInteger upNextSongCount = [playbackQueue numMoreItemsInUpNext];
-    NSUInteger mainQueueSongCount = [playbackQueue numMoreItemsInMainQueue];
-    if(upNextSongCount == 0 && mainQueueSongCount == 0){
-        if([nowPlayingObject.playableItem.songForItem.uniqueId isEqualToString:song.uniqueId])
-            return YES;
-    }
-    return NO;
+    BOOL songIdsMatch = [nowPlayingObject.playableItem.songForItem.uniqueId isEqualToString:song.uniqueId];
+    return (songIdsMatch && [[MZNewPlaybackQueue sharedInstance] forwardItemsCount] == 0);
 }
 
 //only need to worry about main queue...can never go backwards in upnext songs anyway.
 + (BOOL)isSongFirstInQueue:(Song *)song
 {
-    if([playbackQueue numItemsInEntireMainQueue] == [playbackQueue numMoreItemsInMainQueue]+1){
-        if([nowPlayingObject.playableItem.songForItem.uniqueId isEqualToString:song.uniqueId])
-            return YES;
-    }
-    return NO;
+    BOOL songIdsMatch = [nowPlayingObject.playableItem.songForItem.uniqueId isEqualToString:song.uniqueId];
+    MZNewPlaybackQueue *playbackQueue = [MZNewPlaybackQueue sharedInstance];
+    return (songIdsMatch && playbackQueue.totalItemsCount == playbackQueue.forwardItemsCount+1);
 }
 
 
 + (NSString *)prettyPrintNavBarTitle
 {
-    if([nowPlayingObject playableItem] == nil)
-        return @"";
-    if([nowPlayingObject playableItem].isFromUpNextSongs){
-        NSUInteger numMoreSongs = [playbackQueue numMoreItemsInUpNext];
-        if(numMoreSongs == 0)
-            return @"";
-        else if(numMoreSongs == 1)
-            return @"1 Song Queued";
-        else
-            return [NSString stringWithFormat:@"%lu Songs Queued", (unsigned long)numMoreSongs];
+    PlayableItem *currentItem = [MZNewPlaybackQueue sharedInstance].currentItem;
+    if(currentItem != nil) {
     }
-    else{
-        NSUInteger mainQueueSongsPlayed = [playbackQueue numItemsInEntireMainQueue] - [playbackQueue numMoreItemsInMainQueue];
-        return [NSString stringWithFormat:@"%lu of %lu", (unsigned long)mainQueueSongsPlayed,
-                                                        (unsigned long)[playbackQueue numItemsInEntireMainQueue]];
-    }
+    return (currentItem == nil) ? @"" : currentItem.contextForItem.queueName;
 }
 
 #pragma mark - Now Playing Song
@@ -331,20 +305,22 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
         }
     }
     
-    //purposely not deleting "playing next" here...it should remain intact.
-    //queue will update the now playing song
-    if(playbackQueue == nil)
-        playbackQueue = [MZPlaybackQueue sharedInstance];
-    
     NowPlaying *nowPlayingObj = [NowPlaying sharedInstance];
     if(nowPlayingObject == nil)
         nowPlayingObject = nowPlayingObj;
     
-    //starts playback with the song that was chosen
     PlayableItem *item = [[PlayableItem alloc] initWithPlaylistItem:playlistItem
                                                             context:aContext
                                                     fromUpNextSongs:NO];
-    [playbackQueue setMainQueueWithNewNowPlayingItem:item];
+    [MZNewPlaybackQueue newInstanceWithNewNowPlayingPlayableItem:item];
+    
+    PlayableItem *oldItem = [NowPlaying sharedInstance].playableItem;
+    [[NowPlaying sharedInstance] setNewPlayableItem:item];
+    //start playback in minimzed state
+    [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
+    [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
+                               goingForward:YES
+                            oldPlayableItem:oldItem];
 }
 
 + (void)newQueueWithSong:(Song *)song
@@ -370,37 +346,82 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
         }
     }
     
-    //purposely not deleting "playing next" here...it should remain intact.
-    //queue will update the now playing song
-    if(playbackQueue == nil)
-        playbackQueue = [MZPlaybackQueue sharedInstance];
-    
     NowPlaying *nowPlayingObj = [NowPlaying sharedInstance];
     if(nowPlayingObject == nil)
         nowPlayingObject = nowPlayingObj;
     
-    //starts playback with the song that was chosen
     PlayableItem *item = [[PlayableItem alloc] initWithSong:song context:aContext fromUpNextSongs:NO];
-    [playbackQueue setMainQueueWithNewNowPlayingItem:item];
+    [MZNewPlaybackQueue newInstanceWithNewNowPlayingPlayableItem:item];
+    
+    PlayableItem *oldItem = [NowPlaying sharedInstance].playableItem;
+    [[NowPlaying sharedInstance] setNewPlayableItem:item];
+    //start playback in minimzed state
+    [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
+    [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
+                               goingForward:YES
+                            oldPlayableItem:oldItem];
 }
 
-+ (void)queueUpNextSongsWithContexts:(NSArray *)contexts
++ (void)queueSongsOnTheFlyWithContext:(PlaybackContext *)context
 {
-    if(contexts.count > 0){
-        NowPlaying *nowPlaying = [NowPlaying sharedInstance];
-        if(nowPlayingObject == nil)
-            nowPlayingObject = nowPlaying;
+    NowPlaying *nowPlaying = [NowPlaying sharedInstance];
+    if(nowPlayingObject == nil) {
+        nowPlayingObject = nowPlaying;
+    }
+    
+    PlayableItem *oldItem = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading];
+    MZNewPlaybackQueue *playbackQueue = [MZNewPlaybackQueue sharedInstance];
+    if(! [SongPlayerCoordinator isPlayerOnScreen]){
+        //no songs currently playing, set defaults...
+        playbackQueue = [MZNewPlaybackQueue newInstanceWithSongsQueuedOnTheFly:context];
+        PlayableItem *item = [playbackQueue currentItem];
         
-        if(playbackQueue == nil)
-            playbackQueue = [MZPlaybackQueue sharedInstance];
-        //playbackQueue will start playback if no songs were playing prior to the songs being queued.
-        [playbackQueue addItemsToPlayingNextWithContexts:contexts];
+        [[NowPlaying sharedInstance] setNewPlayableItem:item];
+        
+        //start playback in minimzed state
+        [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
+        [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
+                                   goingForward:YES
+                                oldPlayableItem:oldItem];
+        NSLog(@"%@", playbackQueue);
+        return;
+    } else {
+        //items were already played, player on screen. is playback of queue finished?
+        if([playbackQueue forwardItemsCount] == 0) {
+            //no more items in queue! is the current item completely finished playing?
+            //if so, we can start playback of the new up next items right now!
+            
+            MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
+            Song *nowPlayingSong = [NowPlaying sharedInstance].playableItem.songForItem;
+            NSUInteger elapsedSeconds = ceil(CMTimeGetSeconds(player.currentItem.currentTime));
+            
+            //comparing if song is either done or VERY VERY VERY close to the end.
+            if(elapsedSeconds == [nowPlayingSong.duration integerValue]
+               || elapsedSeconds +1 == [nowPlayingSong.duration integerValue]){
+                //we can start playing the new queue
+                [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
+                [playbackQueue queueSongsOnTheFlyWithContext:context];
+                PlayableItem *item = [playbackQueue seekForwardOneItem];
+                [[NowPlaying sharedInstance] setNewPlayableItem:item];
+                
+                [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
+                                           goingForward:YES
+                                        oldPlayableItem:oldItem];
+                NSLog(@"%@", playbackQueue);
+                return;
+            }
+        }
+        //dont mess with the current item...queue not finished. Just insert new items.
+        [playbackQueue queueSongsOnTheFlyWithContext:context];
+        NSLog(@"%@", playbackQueue);
     }
 }
 
 + (void)repeatEntireMainQueue
 {
-    Song *firstSong = [playbackQueue skipToBeginningOfQueueReshufflingIfNeeded].songForItem;
+    MZNewPlaybackQueue *playbackQueue = [MZNewPlaybackQueue sharedInstance];
+    PlayableItem *firstItem = [playbackQueue seekToFirstItemInMainQueueAndReshuffleIfNeeded];
+    Song *firstSong = firstItem.songForItem;
     [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
     
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];

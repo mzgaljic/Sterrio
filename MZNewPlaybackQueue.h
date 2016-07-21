@@ -11,18 +11,36 @@
 #import "AppEnvironmentConstants.h"
 @import CoreData;
 
+//NOT thread safe and NOT a singleton. It is a global scoped class though.
 @interface MZNewPlaybackQueue : NSObject
+@property (nonatomic, assign, readonly) SHUFFLE_STATE shuffleState;
 
-- (id)initWithNewNowPlayingPlayableItem:(PlayableItem *)item;
++ (instancetype)sharedInstance;
++ (void)discardInstance;
+//user will just be able to have queued songs (happens if the player was killed and then stuff started
+//being queued on the fly, causing the player to be created on the screen.)
++ (instancetype)newInstanceWithSongsQueuedOnTheFly:(PlaybackContext *)context;
+//user will be able to have a main queue AND queue songs on the fly (see method below.) This typically
+//gets called when a song is tapped in the gui, creating the player...
++ (instancetype)newInstanceWithNewNowPlayingPlayableItem:(PlayableItem *)item;
 
 - (MZPlaybackQueueSnapshot *)snapshotOfPlaybackQueue;
 
+- (PlayableItem *)currentItem;
 - (PlayableItem *)seekBackOneItem;
 - (PlayableItem *)seekForwardOneItem;
+- (PlayableItem *)seekToFirstItemInMainQueueAndReshuffleIfNeeded;
+
+//Queues the stuff described by PlaybackContext to the playback queue.
+- (void)queueSongsOnTheFlyWithContext:(PlaybackContext *)context;
+
+//# of PlayableItem's that still need to play (includes main context and stuff queued by user on the fly.
+- (NSUInteger)forwardItemsCount;
+- (NSUInteger)totalItemsCount;
 
 - (void)setShuffleState:(SHUFFLE_STATE)state;
 
 #pragma mark - DEBUG
-- (void)printQueueContents;
+- (NSString *)description;  //prints the queue contents and class info.
 
 @end

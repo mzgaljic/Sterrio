@@ -16,6 +16,10 @@
 - (id)initWithArray:(NSArray *)array;
 - (id)initWithArray:(NSArray *)array andIndex:(NSUInteger)index;
 
+/** Moves the hidden 'cursor' into the array to position 0, if applicable. Otherwise nil is returned 
+ * (out of bounds.)*/
+- (id)moveTofirstObject;
+
 /** Advances the hidden 'cursor' into the array and retrieves the value at the new location. Nil if no more objects in this direction (out of bounds). */
 - (id)nextObject;
 

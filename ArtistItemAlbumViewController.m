@@ -367,7 +367,7 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
                                        callback:^BOOL(MGSwipeTableCell *sender) {
                                            [MZCommons presentQueuedHUD];
                                            PlaybackContext *context = [weakself contextForSpecificSong:weakSong];
-                                           [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
+                                           [MusicPlaybackController queueSongsOnTheFlyWithContext:context];
                                            [weakCell refreshContentView];
                                            return NO;
                                        }]];

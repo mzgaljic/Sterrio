@@ -10,17 +10,22 @@
 #import "PlaylistItem.h"
 #import "CoreDataManager.h"
 #import "MZArrayShuffler.h"
+#import "Queue.h"
 
 @interface MZNewPlaybackQueue ()
 @property (nonatomic, strong) PlaybackContext *mainContext;
 @property (nonatomic, strong) MZEnumerator *mainEnumerator;
 @property (nonatomic, strong) MZEnumerator *shuffledMainEnumerator;
 
+//user can never go 'back'. Tapping 'back' would take you to the previous song in the mainEnumerator
+//(or main shuffled enumerator.)
+#warning need to change implementation to use the PlaybackContext. See queueSongsOnTheFlyWithContext()
+@property (nonatomic, strong) Queue *upNextQueue;
+
 //helps when the shuffle state changes.
 @property (nonatomic, strong) MZEnumerator *lastUsedEnumerator;
 
 @property (nonatomic, strong) PlayableItem *mostRecentItem;
-@property (nonatomic, assign) SHUFFLE_STATE shuffleState;
 @end
 @implementation MZNewPlaybackQueue
 
@@ -29,11 +34,55 @@ short const EXTERNAL_FETCH_BATCH_SIZE = 150;
 
 typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
 
+
+static id sharedNewPlaybackQueueInstance = nil;
++ (instancetype)sharedInstance
+{
+    return sharedNewPlaybackQueueInstance;
+}
+
++ (void)discardInstance
+{
+    sharedNewPlaybackQueueInstance = nil;
+}
+
++ (instancetype)newInstanceWithSongsQueuedOnTheFly:(PlaybackContext *)context
+{
+    sharedNewPlaybackQueueInstance = nil;
+    sharedNewPlaybackQueueInstance = [[MZNewPlaybackQueue alloc] initWithSongsQueuedOnTheFly:context];
+    return sharedNewPlaybackQueueInstance;
+}
+
++ (instancetype)newInstanceWithNewNowPlayingPlayableItem:(PlayableItem *)item
+{
+    sharedNewPlaybackQueueInstance = nil;
+    sharedNewPlaybackQueueInstance = [[MZNewPlaybackQueue alloc] initWithNewNowPlayingPlayableItem:item];
+    return sharedNewPlaybackQueueInstance;
+}
+
+//private init
+- (id)initWithSongsQueuedOnTheFly:(PlaybackContext *)context
+{
+    if(self = [super init]) {
+        _mainContext = nil;
+#warning some implementation still needed
+        //_context = context;
+        //_mostRecentItem = item;
+        _shuffleState = SHUFFLE_STATE_Disabled;
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(managedObjectContextDidSave:)
+                                                     name:NSManagedObjectContextDidSaveNotification
+                                                   object:[CoreDataManager context]];
+    }
+    return self;
+}
+
+//private init
 - (id)initWithNewNowPlayingPlayableItem:(PlayableItem *)item
 {
     if(self = [super init]) {
         _mainContext = item.contextForItem;
-        _mostRecentItem = nil;
+        _mostRecentItem = item;
         _shuffleState = SHUFFLE_STATE_Disabled;
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(managedObjectContextDidSave:)
@@ -68,14 +117,8 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
         return;
     }
     
-    NSUInteger nowPlayingIndex = NSNotFound;  //should point to now playing within the new results
-    if(![NowPlaying sharedInstance].playableItem.isFromUpNextSongs) {
-        //we can directly get the now-playing-item from the NowPlaying class (more robust approach.)
-        nowPlayingIndex = [self indexOfItem:[NowPlaying sharedInstance].playableItem inArray:&results];
-    } else {
-        //as fallback, use the 'mostRecentItem' to attempt finding the now-playing-item.
-        nowPlayingIndex = [self indexOfItem:_mostRecentItem inArray:&results];
-    }
+    //should point to now playing within the new results (or NSNotFound)
+    NSUInteger nowPlayingIndex = [self computeNowPlayingIndexInCoreDataArray:&results];
     
     if(nowPlayingIndex != NSNotFound) {
         _mainEnumerator = [results biDirectionalEnumeratorAtIndex:nowPlayingIndex];
@@ -88,6 +131,11 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
     return nil;
 }
 
+- (PlayableItem *)currentItem
+{
+    return _mostRecentItem;
+}
+
 - (PlayableItem *)seekBackOneItem
 {
     _mostRecentItem = [self seekNextItemInDirection:SeekBackwards];
@@ -97,6 +145,65 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
 {
     _mostRecentItem = [self seekNextItemInDirection:SeekForward];
     return _mostRecentItem;
+}
+
+- (PlayableItem *)seekToFirstItemInMainQueueAndReshuffleIfNeeded
+{
+    if(_mainContext == nil || _mainContext.request == nil) {
+        return nil;
+    }
+    
+    //toggle shuffle state to trigger a re-shuffle (if shuffle was on to begin with)
+    if(_shuffleState == SHUFFLE_STATE_Enabled) {
+        [self setShuffleState:SHUFFLE_STATE_Disabled];
+        [self setShuffleState:SHUFFLE_STATE_Enabled];
+    }
+    if(_mainEnumerator == nil) {
+        NSArray *results = [MZNewPlaybackQueue attemptFetchRequest:_mainContext.request
+                                                         batchSize:INTERNAL_FETCH_BATCH_SIZE];
+        if(results != nil) {
+            _mainEnumerator = [results biDirectionalEnumerator];
+        }
+    }
+    if(_mainEnumerator != nil) {
+        return [_mainEnumerator moveTofirstObject];
+    }
+    return nil;
+}
+
+//Queues the stuff described by PlaybackContext to the playback queue.
+- (void)queueSongsOnTheFlyWithContext:(PlaybackContext *)context
+{
+    //store context in a field on the class and enumerate through it efficiently like a queue (somehow)
+}
+
+//# of PlayableItem's that still need to play (includes main context and stuff queued by user on the fly.
+- (NSUInteger)forwardItemsCount
+{
+    NSUInteger count = 0;
+    if(_mainContext.request != nil){
+        //gets count from CoreData w/out triggering any 'faults'
+        NSUInteger totalContextCount = [[CoreDataManager context] countForFetchRequest:_mainContext.request
+                                                                                 error:nil];
+        NSArray *fetchResults = [_mainEnumerator underlyingArray];
+        NSUInteger nowPlayingIndex = [self computeNowPlayingIndexInCoreDataArray:&fetchResults];
+        count += (totalContextCount - nowPlayingIndex +1);
+    }
+    count += _upNextQueue.count;
+    return count;
+}
+
+- (NSUInteger)totalItemsCount
+{
+    NSUInteger count = 0;
+    if(_mainContext.request != nil){
+        //gets count from CoreData w/out triggering any 'faults'
+        NSUInteger totalContextCount = [[CoreDataManager context] countForFetchRequest:_mainContext.request
+                                                                                 error:nil];
+        count += totalContextCount;
+    }
+    count += _upNextQueue.count;
+    return count;
 }
 
 - (void)setShuffleState:(SHUFFLE_STATE)state
@@ -119,7 +226,8 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
 }
 
 #pragma mark - DEBUG
-- (void)printQueueContents
+//prints the queue contents and class info.
+- (NSString *)description;
 {
     MZEnumerator *enumeratorCopy = nil;
     //MZEnumerator performs a somewhat shallow copy. Everything is copied except for the underlying array.
@@ -130,13 +238,14 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
         enumeratorCopy = [_mainEnumerator copy];
     }
     
+    NSMutableString *output = [NSMutableString string];
     if(enumeratorCopy != nil) {
         PlayableItem *nowPlaying = [enumeratorCopy currentObject];
-        NSLog(@"-> Now Playing: %@", nowPlaying);
+        [output appendFormat:@"-> Now Playing: %@", nowPlaying];
         
         int queuedSongCount = 0;
         if(queuedSongCount) {
-            NSLog(@"-> Queued 'on the fly' songs:");
+            [output appendString:@"-> Queued 'on the fly' songs:"];
             #warning no implementation for on the fly queued songs here.
         }
         
@@ -144,13 +253,14 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
         NSUInteger index = 0;
         while([enumeratorCopy hasNext]) {
             if(index == 0) {
-                NSLog(@"\n-> Main queue songs coming up:");
+                [output appendString:@"\n-> Main queue songs coming up:"];
             }
             index++;
             item = [MZNewPlaybackQueue wrapIntoDummyPlayableItemObj:[enumeratorCopy nextObject]];
-            NSLog(@"\n%100lu - %@", (unsigned long)index, item);
+            [output appendFormat:@"\n%100lu - %@", (unsigned long)index, item];
         }
     }
+    return output;
 }
 
 + (PlayableItem *)wrapIntoDummyPlayableItemObj:(id)object
@@ -172,6 +282,7 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
 //it exists. Otherwise, from the main-enumerator.
 - (PlayableItem *)seekNextItemInDirection:(enum SeekDirection)direction
 {
+#warning logic needed at this line to first get an item from the 'queued on the fly' area.
     if(_mainContext == nil || _mainContext.request == nil) {
         return nil;
     }
@@ -193,7 +304,7 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
 }
 
 //Determine the location of the PlayableItem in the core data array, returns index or NSNotFound.
-- (NSUInteger)indexOfItem:(PlayableItem *)item inArray:(NSArray **)array
+- (NSUInteger)indexOfItem:(PlayableItem *)item inCoreDataArray:(NSArray **)array
 {
     NSUInteger index = NSNotFound;
     //only 1 of the following should be non-nil: playlistItemForItem | songForItem
@@ -240,6 +351,24 @@ typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
     NSError *error = NULL;
     NSArray *array = [[CoreDataManager context] executeFetchRequest:request error:&error];
     return (error) ? nil : array;
+}
+
+/**
+ * Returns the index of the now playing PlayableItem within the array, or NSNotFound if computation fails.
+ */
+- (NSUInteger)computeNowPlayingIndexInCoreDataArray:(NSArray **)array
+{
+    NSUInteger nowPlayingIndex = NSNotFound;  //should point to now playing within the main context
+    if(![NowPlaying sharedInstance].playableItem.isFromUpNextSongs) {
+        //we can directly get the now-playing-item from the NowPlaying class (more robust approach.)
+        nowPlayingIndex = [self indexOfItem:[NowPlaying sharedInstance].playableItem
+                            inCoreDataArray:array];
+    } else {
+        //as fallback, use the 'mostRecentItem' to attempt finding the now-playing-item.
+        nowPlayingIndex = [self indexOfItem:_mostRecentItem
+                            inCoreDataArray:array];
+    }
+    return nowPlayingIndex;
 }
 
 @end

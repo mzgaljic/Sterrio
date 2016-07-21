@@ -17,7 +17,6 @@
     }
     
     //Fisher-yates algorithm
-
     NSUInteger count = (*arrayToModify).count;
     if(count < 1) {
         return;

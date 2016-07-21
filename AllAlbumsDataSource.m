@@ -517,8 +517,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
                                        callback:^BOOL(MGSwipeTableCell *sender) {
                                            [MZCommons presentQueuedHUD];
                                            PlaybackContext *context = [weakSelf contextForSpecificAlbum:weakAlbum];
-                                           NSArray *cnxt = @[context];
-                                           [MusicPlaybackController queueUpNextSongsWithContexts:cnxt];
+                                           [MusicPlaybackController queueSongsOnTheFlyWithContext:context];
                                            [weakCell refreshContentView];
                                            return NO;
                                        }]];

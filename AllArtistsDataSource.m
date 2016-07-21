@@ -454,7 +454,7 @@
                                        callback:^BOOL(MGSwipeTableCell *sender) {
                                            [MZCommons presentQueuedHUD];
                                            PlaybackContext *context = [weakSelf contextForSpecificArtist:weakArtist];
-                                           [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
+                                           [MusicPlaybackController queueSongsOnTheFlyWithContext:context];
                                            [weakCell refreshContentView];
                                            return NO;
                                        }]];
