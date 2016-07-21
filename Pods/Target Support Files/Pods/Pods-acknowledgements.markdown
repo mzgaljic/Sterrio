@@ -24,6 +24,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 
+## Batch
+
+Copyright © 2015 Batch.com
+
+
 ## CRToast
 
 The MIT License (MIT)
@@ -416,9 +421,10 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## Valet
 
-Apache License
-Version 2.0, January 2004
-http://www.apache.org/licenses/
+
+                              Apache License
+                        Version 2.0, January 2004
+                     http://www.apache.org/licenses/
 
 TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 

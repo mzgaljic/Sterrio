@@ -20,16 +20,17 @@ PODS:
   - AFNetworking/UIKit (2.5.4):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
+  - Batch (1.5.4)
   - Crashlytics (3.7.2):
     - Fabric (~> 1.6.3)
   - CRToast (0.0.9)
   - Fabric (1.6.7)
   - FXImageView (1.3.5)
   - GCDiscreetNotificationView (1.0.2)
-  - Google-Mobile-Ads-SDK (7.8.1)
-  - MarqueeLabel (2.7.5):
-    - MarqueeLabel/ObjC (= 2.7.5)
-  - MarqueeLabel/ObjC (2.7.5)
+  - Google-Mobile-Ads-SDK (7.9.1)
+  - MarqueeLabel (2.7.8):
+    - MarqueeLabel/ObjC (= 2.7.8)
+  - MarqueeLabel/ObjC (2.7.8)
   - MSCellAccessory (1.1.2)
   - Reachability (3.2)
   - SDWebImage (3.8.1):
@@ -37,11 +38,12 @@ PODS:
   - SDWebImage/Core (3.8.1)
   - TransitionKit (2.2.1)
   - TUSafariActivity (1.0.4)
-  - Valet (2.2.1)
-  - XCDYouTubeKit (2.5.2)
+  - Valet (2.2.2)
+  - XCDYouTubeKit (2.5.3)
 
 DEPENDENCIES:
   - AFNetworking (~> 2.5.4)
+  - Batch (~> 1.5.4)
   - Crashlytics
   - CRToast (~> 0.0.7)
   - Fabric
@@ -55,33 +57,24 @@ DEPENDENCIES:
   - TransitionKit (~> 2.2.1)
   - TUSafariActivity (~> 1.0)
   - Valet
-  - XCDYouTubeKit (from `https://github.com/k06a/XCDYouTubeKit.git`, branch `patch-1`)
-
-EXTERNAL SOURCES:
-  XCDYouTubeKit:
-    :branch: patch-1
-    :git: https://github.com/k06a/XCDYouTubeKit.git
-
-CHECKOUT OPTIONS:
-  XCDYouTubeKit:
-    :commit: 509bc1a704da62baeefc2d4a7b582fbb62aef7cf
-    :git: https://github.com/k06a/XCDYouTubeKit.git
+  - XCDYouTubeKit (~> 2.5)
 
 SPEC CHECKSUMS:
   AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
+  Batch: 13083f81837fe1da9ea84b0533a2965c73ff74c6
   Crashlytics: 130ab943f8c78cda7a814b434f270b2e2c8a3cba
   CRToast: 5a78c22b921c5ed3487488af605bc403a9c92fed
   Fabric: caf7580c725e64db144f610ac65cd60956911dc7
   FXImageView: 7d84722b37f0afea9a64f12fdd4a6c7f9ecc4b16
   GCDiscreetNotificationView: b093cce1fe82f6d9784169a156b48ecb1465ad8a
-  Google-Mobile-Ads-SDK: 3c2a6656117989469bfe7645640aa1de024a4c6c
-  MarqueeLabel: bd476f1a91e4414a6aec4ea4096a9979e8c8c2ad
+  Google-Mobile-Ads-SDK: 575583d7eae25793bb81ad8673737d1b4ecbedc5
+  MarqueeLabel: 6fff28d8c12f30b4a8d01a9f5992b4924a857f2b
   MSCellAccessory: 8265f3cd2386c1f372da00232472605ab11426e4
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 35f9627a3e44b4f292a8a8ce6a531fa488239b91
   TransitionKit: 9ceccda4cd0cdc0a05ef85eb235e5a3292c3c250
   TUSafariActivity: afc55a00965377939107ce4fdc7f951f62454546
-  Valet: 8873c1f797822a513b5b3b18d19955fc39b22aab
-  XCDYouTubeKit: bb81db52d5539f8f34c4081f344980ef38f4644d
+  Valet: b16c837ed1b33586c60d3f852c3a23c2efe5c019
+  XCDYouTubeKit: 90690f9e3523735dc93b8024269d991b0cfffe78
 
 COCOAPODS: 0.39.0
