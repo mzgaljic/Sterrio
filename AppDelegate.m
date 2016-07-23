@@ -24,6 +24,7 @@
 #import "MZLaunchScreen.h"
 #import "IntroVideoView.h"
 #import "InAppProductPriceHelper.h"
+#import <Batch/Batch.h>
 
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
@@ -130,6 +131,11 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [LQAlbumArtBackgroundUpdater beginWaitingForEfficientMomentsToUpdateAlbumArt];
     [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
     [[InAppProductPriceHelper new] beginFetchingAdRemovalPriceInfoAndSetWhenDone];
+    
+    // Start Batch SDK.
+#warning using DEV key for Batch!
+    //Live key is: 5790510B0F46A08527EDECA12C135E
+    [Batch startWithAPIKey:@"DEV5790510B1223777A548C7A5F357"];
 }
 
 - (void)setupMainVC

@@ -268,6 +268,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 		</dict>
 		<dict>
 			<key>FooterText</key>
+			<string>Copyright © 2015 Batch.com</string>
+			<key>Title</key>
+			<string>Batch</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
 			<string>The MIT License (MIT)
  
  Copyright (c) 2013 Cezary Wojcik &lt;http://www.cezarywojcik.com&gt;
@@ -480,7 +488,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>Apache License Version 2.0, January 2004 http://www.apache.org/licenses/ 
+			<string>                              Apache License                         Version 2.0, January 2004                      http://www.apache.org/licenses/ 
 
 TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION 
 
