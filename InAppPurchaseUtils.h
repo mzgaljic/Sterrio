@@ -18,6 +18,8 @@
 - (void)purchaseAdRemoval;
 - (void)restoreAdRemoval;
 
+- (void)removeAdsForUserBecauseOfFreeCampaign;
+
 - (void)setAdRemovalPriceText:(NSString *)priceText;
 - (NSString *)adRemovalPriceText;
 

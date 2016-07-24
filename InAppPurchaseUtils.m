@@ -201,6 +201,13 @@ static MRProgressOverlayView *hud;
 }
 
 #pragma mark - Removing ads
+//external, meant to be used throughout app.
+- (void)removeAdsForUserBecauseOfFreeCampaign
+{
+    [self removeAdsForUser];
+}
+
+//don't expose this method.
 - (void)removeAdsForUser
 {
     [AppEnvironmentConstants adsHaveBeenRemoved:YES];

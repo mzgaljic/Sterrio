@@ -24,7 +24,6 @@
 #import "MZLaunchScreen.h"
 #import "IntroVideoView.h"
 #import "InAppProductPriceHelper.h"
-#import <Batch/Batch.h>
 
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
@@ -132,10 +131,14 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
     [[InAppProductPriceHelper new] beginFetchingAdRemovalPriceInfoAndSetWhenDone];
     
+    // Activate Batch unlock, if all 'features' aren't already unlocked.
+    if(! [AppEnvironmentConstants areAdsRemoved]) {
+        [BatchUnlock setupUnlockWithDelegate:self];
+    }
+    
+#warning using LIVE key for Batch!
     // Start Batch SDK.
-#warning using DEV key for Batch!
-    //Live key is: 5790510B0F46A08527EDECA12C135E
-    [Batch startWithAPIKey:@"DEV5790510B1223777A548C7A5F357"];
+    [Batch startWithAPIKey:@"5790510B0F46A08527EDECA12C135E"];
 }
 
 - (void)setupMainVC
@@ -879,6 +882,40 @@ static NSUInteger lastScrollingPageIndex = -1;
         [customView performSelector:@selector(startVideoLooping)];
     }
     lastScrollingPageIndex = pageIndex;
+}
+
+#pragma mark - 'Batch' Stuff
+//BatchUnlockDelegate (called on main thread!)
+- (void)automaticOfferRedeemed:(id<BatchOffer>)offer
+{
+    // Unlock features from offer (AppGratis)
+    for (id<BatchFeature> feature in [offer features])
+    {
+        NSString *reference = feature.reference;
+        if([reference isEqualToString:@"NO_ADS"] && ![AppEnvironmentConstants areAdsRemoved]) {
+            [[InAppPurchaseUtils sharedInstance] removeAdsForUserBecauseOfFreeCampaign];
+            
+            NSDictionary *additionalParams = [offer offerAdditionalParameters];
+            NSString *rewardMessage = [additionalParams objectForKey:@"reward_message"];
+            if(rewardMessage != nil) {
+                //show alert with message
+                //setup the alert in case we want to show it...
+                __block SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:@""
+                                                                                        message:rewardMessage
+                                                                                 preferredStyle:SDCAlertControllerStyleAlert];
+                [alert setActionLayout:SDCAlertControllerActionLayoutAutomatic];
+                [alert presentWithCompletion:^{
+                    [alert performSelector:@selector(dismissWithCompletion:) withObject:nil afterDelay:2.6];
+                }];
+            }
+        }
+    }
+}
+
+//notifications receieved (method called on App resume)
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    [BatchPush dismissNotifications];
 }
 
 @end
