@@ -131,8 +131,11 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
     [[InAppProductPriceHelper new] beginFetchingAdRemovalPriceInfoAndSetWhenDone];
     
-    // Activate Batch unlock, if all 'features' aren't already unlocked.
-    if(! [AppEnvironmentConstants areAdsRemoved]) {
+    if([AppEnvironmentConstants areAdsRemoved]) {
+        //don't track users ad identifier if they already removed ads.
+        [Batch setUseIDFA:NO];
+    } else {
+        // Activate Batch unlock, if all 'features' aren't already unlocked.
         [BatchUnlock setupUnlockWithDelegate:self];
     }
     
@@ -910,12 +913,6 @@ static NSUInteger lastScrollingPageIndex = -1;
             }
         }
     }
-}
-
-//notifications receieved (method called on App resume)
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-{
-    [BatchPush dismissNotifications];
 }
 
 @end
