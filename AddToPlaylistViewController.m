@@ -27,7 +27,7 @@
 @property (nonatomic, strong) AllPlaylistsDataSource *tableViewDataSourceAndDelegate;
 @property (nonatomic, strong) SDCAlertController *createPlaylistAlert;
 
-@property (nonatomic, strong) UISwitch *hideFromLibSwitch;
+@property (nonatomic, strong) UISwitch *addToLibrarySwitch;
 
 @property (nonatomic, strong) UIImageView *navHairline;  //for the 'extended navigation bar'
 //the toolbar beneath the nav bar, giving it the 'extended' look.
@@ -176,7 +176,7 @@
 {
     if([_entity isMemberOfClass:[Song class]]) {
         Song *song = (Song *)_entity;
-        if(_hideFromLibSwitch.isOn) {
+        if(!_addToLibrarySwitch.isOn) {
             song.smartSortSongName = nil;
         }
         [self addSongToPlaylistAndSave:selectedPlaylist];
@@ -471,16 +471,17 @@ static BOOL hidingCenterBtnAnimationIsDone = YES;
     [label setFont:[UIFont fontWithName:[AppEnvironmentConstants regularFontName] size:17]];
     [label setBackgroundColor:[UIColor clearColor]];
     [label setTextColor:[AppEnvironmentConstants appTheme].navBarToolbarTextTint];
-    [label setText:@"Only visible in selected playlist"];
+    [label setText:@"Include in library"];
     [label setTextAlignment:NSTextAlignmentRight];
+    [label sizeToFit];
     UIBarButtonItem *labelBtn = [[UIBarButtonItem alloc] initWithCustomView:label];
     
-    if(_hideFromLibSwitch == nil) {
-        _hideFromLibSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
-        [_hideFromLibSwitch setOn:NO];  //set default value
+    if(_addToLibrarySwitch == nil) {
+        _addToLibrarySwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+        [_addToLibrarySwitch setOn:YES];  //set default value
     }
-    UIBarButtonItem *switchBarBtn = [[UIBarButtonItem alloc] initWithCustomView:_hideFromLibSwitch];
-    [toolbar setItems:@[flexSpacer, labelBtn, switchBarBtn]];
+    UIBarButtonItem *switchBarBtn = [[UIBarButtonItem alloc] initWithCustomView:_addToLibrarySwitch];
+    [toolbar setItems:@[flexSpacer, labelBtn, switchBarBtn, flexSpacer]];
     return toolbar;
 }
 @end
