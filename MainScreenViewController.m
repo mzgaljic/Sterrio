@@ -557,7 +557,7 @@ static NSTimeInterval prevAppBecameActiveTimeInterval = 0;
            ! (UIInterfaceOrientationIsLandscape(lastVisibleTabBarOrientation)
             && UIInterfaceOrientationIsLandscape(currentInterfaceOrientation)))
         {
-            [self setupTabBarAndTabBarViewUsingOrientation:currentInterfaceOrientation];
+            [self forceTabBarToRedrawFromScratch];
             [self.tabBarView setFrame:CGRectMake(self.tabBarView.frame.origin.x,
                                                  self.tabBarView.frame.origin.y + MZTabBarHeight,
                                                  self.tabBarView.frame.size.width,
