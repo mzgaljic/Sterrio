@@ -144,6 +144,7 @@
 		8773AE2D1B509A5500C3E64E /* SpotlightHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8773AE2C1B509A5500C3E64E /* SpotlightHelper.m */; };
 		878488051C6694E200666627 /* MZRegexExp.m in Sources */ = {isa = PBXBuildFile; fileRef = 878488041C6694E200666627 /* MZRegexExp.m */; };
 		8796B6951C7EA7E000242587 /* DeletedYtVideoAlertCreator.m in Sources */ = {isa = PBXBuildFile; fileRef = 8796B6941C7EA7E000242587 /* DeletedYtVideoAlertCreator.m */; };
+		879E623C1D49B71B009DE94A /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 879E623B1D49B71B009DE94A /* CloudKit.framework */; };
 		87A3F0B61C9FA2AD00A2AEDA /* TermsOfServiceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A3F0B51C9FA2AD00A2AEDA /* TermsOfServiceViewController.m */; };
 		87A8FBF41CBF1F8300A43637 /* CMPopTipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A8FBF21CBF1F8300A43637 /* CMPopTipView.m */; };
 		87A8FBFF1CBF1FBA00A43637 /* EAIntroPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A8FBF81CBF1FBA00A43637 /* EAIntroPage.m */; };
@@ -529,6 +530,7 @@
 		878488041C6694E200666627 /* MZRegexExp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZRegexExp.m; sourceTree = "<group>"; };
 		8796B6931C7EA7E000242587 /* DeletedYtVideoAlertCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeletedYtVideoAlertCreator.h; sourceTree = "<group>"; };
 		8796B6941C7EA7E000242587 /* DeletedYtVideoAlertCreator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeletedYtVideoAlertCreator.m; sourceTree = "<group>"; };
+		879E623B1D49B71B009DE94A /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		87A3F0B41C9FA2AD00A2AEDA /* TermsOfServiceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermsOfServiceViewController.h; sourceTree = "<group>"; };
 		87A3F0B51C9FA2AD00A2AEDA /* TermsOfServiceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermsOfServiceViewController.m; sourceTree = "<group>"; };
 		87A8FBF11CBF1F8300A43637 /* CMPopTipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMPopTipView.h; sourceTree = "<group>"; };
@@ -748,6 +750,7 @@
 				87353A761B0AA5C9009244E4 /* CoreGraphics.framework in Frameworks */,
 				87353A6A1B0AA57F009244E4 /* QuartzCore.framework in Frameworks */,
 				87353A6C1B0AA587009244E4 /* CoreData.framework in Frameworks */,
+				879E623C1D49B71B009DE94A /* CloudKit.framework in Frameworks */,
 				87353A6E1B0AA599009244E4 /* AVFoundation.framework in Frameworks */,
 				87164E2A1CB8B3EB0006D53B /* Ensembles.framework in Frameworks */,
 				87353A721B0AA5B6009244E4 /* MessageUI.framework in Frameworks */,
@@ -1824,6 +1827,7 @@
 		95A486A0294577F099EF7326 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				879E623B1D49B71B009DE94A /* CloudKit.framework */,
 				87E152661C0041E100C82737 /* StoreKit.framework */,
 				871FE2D01BFACDC000588C2B /* GoogleMobileAds.framework */,
 				87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */,
