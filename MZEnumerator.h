@@ -12,7 +12,8 @@
 //WARNING: ENUMERATOR DOES NOT ALLOW ARRAY SIZE TO CHANGE DURING ENUMERATION
 @interface MZEnumerator : NSObject <NSCopying>
 
-/** Initialize w/ array. Modification of array during enumeration will result in an exception! */
+/** Initialize w/ array. Modification of array during enumeration will result in an exception! 
+ Starts at index 0.*/
 - (id)initWithArray:(NSArray *)array;
 - (id)initWithArray:(NSArray *)array andIndex:(NSUInteger)index;
 

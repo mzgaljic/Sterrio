@@ -90,9 +90,9 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     [player allowSongDidFinishNotificationToProceed:allowSongDidFinishNotifToProceed];
     PlayableItem *oldItem = [NowPlaying sharedInstance].playableItem;
-    Song *nextSong = [[MZNewPlaybackQueue sharedInstance] seekForwardOneItem].songForItem;
+    PlayableItem *nextItem = [[MZNewPlaybackQueue sharedInstance] seekForwardOneItem];
     
-    [VideoPlayerWrapper startPlaybackOfSong:nextSong
+    [VideoPlayerWrapper startPlaybackOfItem:nextItem
                                goingForward:YES
                             oldPlayableItem:oldItem];
 }
@@ -112,9 +112,9 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     [player allowSongDidFinishNotificationToProceed:YES];
     PlayableItem *oldItem = [NowPlaying sharedInstance].playableItem;
-    Song *nextSong = [[MZNewPlaybackQueue sharedInstance] seekForwardOneItem].songForItem;
+    PlayableItem *nextItem = [[MZNewPlaybackQueue sharedInstance] seekForwardOneItem];
     
-    [VideoPlayerWrapper startPlaybackOfSong:nextSong
+    [VideoPlayerWrapper startPlaybackOfItem:nextItem
                                goingForward:YES
                             oldPlayableItem:oldItem];
 }
@@ -172,9 +172,9 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     } else{
         [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
         PlayableItem *oldItem = [NowPlaying sharedInstance].playableItem;
-        Song *previousSong = [[MZNewPlaybackQueue sharedInstance] seekBackOneItem].songForItem;
+        PlayableItem *previousItem = [[MZNewPlaybackQueue sharedInstance] seekBackOneItem];
         
-        [VideoPlayerWrapper startPlaybackOfSong:previousSong
+        [VideoPlayerWrapper startPlaybackOfItem:previousItem
                                    goingForward:NO
                                 oldPlayableItem:oldItem];
     }
@@ -278,11 +278,6 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     return [NowPlaying sharedInstance].playableItem.songForItem;
 }
 
-+ (NowPlaying *)nowPlayingSongObject
-{
-    return nowPlayingObject;
-}
-
 + (void)newQueueWithPlaylistItem:(PlaylistItem *)playlistItem withContext:(PlaybackContext *)aContext
 {
     BOOL playerEnabled = [SongPlayerCoordinator isPlayerEnabled];
@@ -318,7 +313,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     [[NowPlaying sharedInstance] setNewPlayableItem:item];
     //start playback in minimzed state
     [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
-    [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
+    [VideoPlayerWrapper startPlaybackOfItem:item
                                goingForward:YES
                             oldPlayableItem:oldItem];
 }
@@ -357,7 +352,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
     [[NowPlaying sharedInstance] setNewPlayableItem:item];
     //start playback in minimzed state
     [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
-    [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
+    [VideoPlayerWrapper startPlaybackOfItem:item
                                goingForward:YES
                             oldPlayableItem:oldItem];
 }
@@ -380,7 +375,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
         
         //start playback in minimzed state
         [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
-        [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
+        [VideoPlayerWrapper startPlaybackOfItem:item
                                    goingForward:YES
                                 oldPlayableItem:oldItem];
         NSLog(@"%@", playbackQueue);
@@ -404,7 +399,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
                 PlayableItem *item = [playbackQueue seekForwardOneItem];
                 [[NowPlaying sharedInstance] setNewPlayableItem:item];
                 
-                [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
+                [VideoPlayerWrapper startPlaybackOfItem:item
                                            goingForward:YES
                                         oldPlayableItem:oldItem];
                 NSLog(@"%@", playbackQueue);
@@ -421,14 +416,13 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 {
     MZNewPlaybackQueue *playbackQueue = [MZNewPlaybackQueue sharedInstance];
     PlayableItem *firstItem = [playbackQueue seekToFirstItemInMainQueueAndReshuffleIfNeeded];
-    Song *firstSong = firstItem.songForItem;
     [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
     
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     [player allowSongDidFinishNotificationToProceed:YES];
 
     PlayableItem *oldItem = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading];
-    [VideoPlayerWrapper startPlaybackOfSong:firstSong
+    [VideoPlayerWrapper startPlaybackOfItem:firstItem
                                goingForward:YES
                             oldPlayableItem:oldItem];
 }

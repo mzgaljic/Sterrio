@@ -19,7 +19,7 @@
 - (id)initWithArray:(NSArray *)array
 {
     if(self = [super init]) {
-        _cursor = NSIntegerMax;
+        _cursor = 0;
         _array = array;
         _lastKnownArraySize = (_array == nil) ? NSUIntegerMax : _array.count;
     }

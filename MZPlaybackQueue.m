@@ -121,7 +121,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE_OLD = 100;
     
     //start playback in minimzed state
     [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
-    [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
+    [VideoPlayerWrapper startPlaybackOfItem:item
                                goingForward:YES
                             oldPlayableItem:oldItem];
     [self printQueueContents];
@@ -140,7 +140,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE_OLD = 100;
         
         //start playback in minimzed state
         [SongPlayerViewDisplayUtility animatePlayerIntoMinimzedModeInPrepForPlayback];
-        [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
+        [VideoPlayerWrapper startPlaybackOfItem:item
                                    goingForward:YES
                                 oldPlayableItem:oldItem];
         [self printQueueContents];
@@ -166,7 +166,7 @@ short const EXTERNAL_FETCH_BATCH_SIZE_OLD = 100;
                 PlayableItem *item = [upNextQueue obtainAndRemoveNextItem];
                 [[NowPlaying sharedInstance] setNewPlayableItem:item];
 
-                [VideoPlayerWrapper startPlaybackOfSong:item.songForItem
+                [VideoPlayerWrapper startPlaybackOfItem:item
                                            goingForward:YES
                                         oldPlayableItem:oldItem];
                 [self printQueueContents];

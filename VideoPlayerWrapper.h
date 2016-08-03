@@ -16,7 +16,7 @@
 
 @interface VideoPlayerWrapper : NSObject
 
-+ (void)startPlaybackOfSong:(Song *)aSong
++ (void)startPlaybackOfItem:(PlayableItem *)newItem
                goingForward:(BOOL)forward
             oldPlayableItem:(PlayableItem *)oldItem;
 

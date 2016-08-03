@@ -64,9 +64,8 @@ static id sharedNewPlaybackQueueInstance = nil;
 - (id)initWithSongsQueuedOnTheFly:(PlaybackContext *)context
 {
     if(self = [super init]) {
-        _mainContext = nil;
+        _mainContext = context;
 #warning some implementation still needed
-        //_context = context;
         //_mostRecentItem = item;
         _shuffleState = SHUFFLE_STATE_Disabled;
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -162,7 +161,8 @@ static id sharedNewPlaybackQueueInstance = nil;
         NSArray *results = [MZNewPlaybackQueue attemptFetchRequest:_mainContext.request
                                                          batchSize:INTERNAL_FETCH_BATCH_SIZE];
         if(results != nil) {
-            _mainEnumerator = [results biDirectionalEnumerator];
+            _mainEnumerator = [MZNewPlaybackQueue buildEnumeratorFromArray:&results
+                                                  withCursorPointingToItem:_mostRecentItem];
         }
     }
     if(_mainEnumerator != nil) {
@@ -263,17 +263,23 @@ static id sharedNewPlaybackQueueInstance = nil;
     return output;
 }
 
-+ (PlayableItem *)wrapIntoDummyPlayableItemObj:(id)object
++ (PlayableItem *)wrapAsPlayableItem:(id)obj context:(PlaybackContext *)cntx queuedSong:(BOOL)isQueuedItem
 {
-    if([object isMemberOfClass:[Song class]]) {
-        return [[PlayableItem alloc] initWithSong:(Song *)object context:nil
-                                  fromUpNextSongs:NO];
-    } else if([object isMemberOfClass:[PlaylistItem class]]) {
-        return [[PlayableItem alloc] initWithPlaylistItem:(PlaylistItem *)object
-                                                  context:nil fromUpNextSongs:NO];
+    if([obj isMemberOfClass:[Song class]]) {
+        return [[PlayableItem alloc] initWithSong:(Song *)obj context:cntx fromUpNextSongs:isQueuedItem];
+    } else if([obj isMemberOfClass:[PlaylistItem class]]) {
+        return [[PlayableItem alloc] initWithPlaylistItem:(PlaylistItem *)obj
+                                                  context:cntx
+                                          fromUpNextSongs:isQueuedItem];
     } else {
         return nil;
     }
+
+}
+
++ (PlayableItem *)wrapIntoDummyPlayableItemObj:(id)object
+{
+    return [MZNewPlaybackQueue wrapAsPlayableItem:object context:nil queuedSong:NO];
 }
 
 
@@ -290,7 +296,8 @@ static id sharedNewPlaybackQueueInstance = nil;
         NSArray *results = [MZNewPlaybackQueue attemptFetchRequest:_mainContext.request
                                                          batchSize:INTERNAL_FETCH_BATCH_SIZE];
         if(results != nil) {
-            _mainEnumerator = [results biDirectionalEnumerator];
+            _mainEnumerator = [MZNewPlaybackQueue buildEnumeratorFromArray:&results
+                                                  withCursorPointingToItem:_mostRecentItem];
         }
     }
     MZEnumerator *enumerator = nil;
@@ -298,13 +305,14 @@ static id sharedNewPlaybackQueueInstance = nil;
     if(_mainEnumerator != nil) { enumerator = _mainEnumerator; }
     
     if(enumerator != nil) {
-        return (direction == SeekForward) ? [enumerator nextObject] : [enumerator previousObject];
+        id obj = (direction == SeekForward) ? [enumerator nextObject] : [enumerator previousObject];
+        return [MZNewPlaybackQueue wrapAsPlayableItem:obj context:_mainContext queuedSong:NO];
     }
     return nil;
 }
 
 //Determine the location of the PlayableItem in the core data array, returns index or NSNotFound.
-- (NSUInteger)indexOfItem:(PlayableItem *)item inCoreDataArray:(NSArray **)array
++ (NSUInteger)indexOfItem:(PlayableItem *)item inCoreDataArray:(NSArray **)array
 {
     NSUInteger index = NSNotFound;
     //only 1 of the following should be non-nil: playlistItemForItem | songForItem
@@ -361,14 +369,26 @@ static id sharedNewPlaybackQueueInstance = nil;
     NSUInteger nowPlayingIndex = NSNotFound;  //should point to now playing within the main context
     if(![NowPlaying sharedInstance].playableItem.isFromUpNextSongs) {
         //we can directly get the now-playing-item from the NowPlaying class (more robust approach.)
-        nowPlayingIndex = [self indexOfItem:[NowPlaying sharedInstance].playableItem
+        nowPlayingIndex = [MZNewPlaybackQueue indexOfItem:[NowPlaying sharedInstance].playableItem
                             inCoreDataArray:array];
     } else {
         //as fallback, use the 'mostRecentItem' to attempt finding the now-playing-item.
-        nowPlayingIndex = [self indexOfItem:_mostRecentItem
+        nowPlayingIndex = [MZNewPlaybackQueue indexOfItem:_mostRecentItem
                             inCoreDataArray:array];
     }
     return nowPlayingIndex;
+}
+
++ (MZEnumerator *)buildEnumeratorFromArray:(NSArray **)array
+                  withCursorPointingToItem:(PlayableItem *)playableItem
+{
+    if(playableItem == nil) {
+        return [(*array) biDirectionalEnumerator];
+    } else {
+        NSUInteger idx = [MZNewPlaybackQueue indexOfItem:playableItem
+                                         inCoreDataArray:array];
+        return [(*array) biDirectionalEnumeratorAtIndex:idx];
+    }
 }
 
 @end

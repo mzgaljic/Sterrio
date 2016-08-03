@@ -98,7 +98,6 @@ static ReachabilitySingleton *reachability;
                goingForward:(BOOL)forward
             oldPlayableItem:(PlayableItem *)oldItem
 {
-    [PreviousNowPlayingInfo setPreviousPlayableItem:oldItem];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
                                                         object:nil];
     if(aSong != nil){
