@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		87059FE61CDEE3860068A1A9 /* InAppProductPriceHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 87059FE51CDEE3860068A1A9 /* InAppProductPriceHelper.m */; };
 		870D06901CB9C61700395F38 /* MZInterstitialAd.m in Sources */ = {isa = PBXBuildFile; fileRef = 870D068F1CB9C61700395F38 /* MZInterstitialAd.m */; };
+		870F38841D52EA4200F987B0 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 870F38831D52EA4200F987B0 /* CloudKit.framework */; };
 		87164E291CB8B3EB0006D53B /* Ensembles.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 87164E271CB8B3EB0006D53B /* Ensembles.bundle */; };
 		87164E2A1CB8B3EB0006D53B /* Ensembles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87164E281CB8B3EB0006D53B /* Ensembles.framework */; };
 		8716560F1C30AB41000FF02B /* DiscogsItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8716560E1C30AB41000FF02B /* DiscogsItem.m */; };
@@ -257,6 +258,7 @@
 		87059FE51CDEE3860068A1A9 /* InAppProductPriceHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductPriceHelper.m; sourceTree = "<group>"; };
 		870D068E1CB9C61700395F38 /* MZInterstitialAd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZInterstitialAd.h; sourceTree = "<group>"; };
 		870D068F1CB9C61700395F38 /* MZInterstitialAd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZInterstitialAd.m; sourceTree = "<group>"; };
+		870F38831D52EA4200F987B0 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		87164E271CB8B3EB0006D53B /* Ensembles.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Ensembles.bundle; sourceTree = "<group>"; };
 		87164E281CB8B3EB0006D53B /* Ensembles.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Ensembles.framework; sourceTree = "<group>"; };
 		8716560E1C30AB41000FF02B /* DiscogsItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsItem.m; sourceTree = "<group>"; };
@@ -763,6 +765,7 @@
 				87353A761B0AA5C9009244E4 /* CoreGraphics.framework in Frameworks */,
 				87353A6A1B0AA57F009244E4 /* QuartzCore.framework in Frameworks */,
 				87353A6C1B0AA587009244E4 /* CoreData.framework in Frameworks */,
+				870F38841D52EA4200F987B0 /* CloudKit.framework in Frameworks */,
 				87353A6E1B0AA599009244E4 /* AVFoundation.framework in Frameworks */,
 				87164E2A1CB8B3EB0006D53B /* Ensembles.framework in Frameworks */,
 				87353A721B0AA5B6009244E4 /* MessageUI.framework in Frameworks */,
@@ -1857,6 +1860,7 @@
 		95A486A0294577F099EF7326 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				870F38831D52EA4200F987B0 /* CloudKit.framework */,
 				87E152661C0041E100C82737 /* StoreKit.framework */,
 				871FE2D01BFACDC000588C2B /* GoogleMobileAds.framework */,
 				87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */,
