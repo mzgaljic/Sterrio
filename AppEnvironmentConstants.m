@@ -40,7 +40,6 @@ static BOOL userSawExpandingPlayerTip = NO;
 static NSDate *lastSuccessfulSyncDate;
 static NSInteger activePlaybackTimerThreadNum;
 static PLABACK_REPEAT_MODE repeatType;
-static SHUFFLE_STATE shuffleState;
 static PREVIEW_PLAYBACK_STATE currentPreviewPlayerState = PREVIEW_PLAYBACK_STATE_Uninitialized;
 
 static int statusBarHeight;
@@ -254,16 +253,6 @@ static NSLock *playbackTimerLock;
     repeatType = type;
 }
 
-+ (SHUFFLE_STATE)shuffleState
-{
-    return shuffleState;
-}
-
-+ (void)setShuffleState:(SHUFFLE_STATE)state
-{
-    shuffleState = state;
-}
-
 + (NSString *)stringRepresentationOfRepeatMode
 {
     switch (repeatType)
@@ -281,9 +270,9 @@ static NSLock *playbackTimerLock;
     }
 }
 
-+ (NSString *)stringRepresentationOfShuffleState
++ (NSString *)stringRepresentationOfShuffleState:(SHUFFLE_STATE)state
 {
-    switch (shuffleState)
+    switch (state)
     {
         case SHUFFLE_STATE_Disabled:
             return @"Shuffle Off";

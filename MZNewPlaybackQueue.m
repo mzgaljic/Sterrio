@@ -226,7 +226,7 @@ static id sharedNewPlaybackQueueInstance = nil;
     if(state == prevShuffleState) {
         return;
     }
-    _shuffleState = prevShuffleState;
+    _shuffleState = state;
     //some setup since mainEnumerator is used in a few lines...
     if(_mainEnumerator == nil) {
         NSArray *results = [MZNewPlaybackQueue attemptFetchRequest:_mainContext.request
@@ -245,7 +245,16 @@ static id sharedNewPlaybackQueueInstance = nil;
         }
     } else if(_shuffleState == SHUFFLE_STATE_Disabled) {
         _shuffledMainEnumerator = nil;
-#warning need logic to get the same item in the unshuffled array now (I think.) See how Apple music and itunes do it.
+        //logic to get the same item in the unshuffled array now...
+        NSArray *rawArray = [_mainEnumerator underlyingArray];
+        NSUInteger nowPlayingIndex = [self computeNowPlayingIndexInCoreDataArray:&rawArray];
+        if(nowPlayingIndex != NSNotFound) {
+            _mainEnumerator = [rawArray biDirectionalEnumeratorAtIndex:nowPlayingIndex
+                                             withOutOfBoundsTolerance:1];
+        } else {
+            //fallback for when something bad happens lol.
+            _mainEnumerator = [rawArray biDirectionalEnumerator];
+        }
     }
 }
 
@@ -326,7 +335,7 @@ static id sharedNewPlaybackQueueInstance = nil;
     }
     MZEnumerator *enumerator = nil;
     if(_shuffledMainEnumerator != nil) { enumerator = _shuffledMainEnumerator; }
-    if(_mainEnumerator != nil) { enumerator = _mainEnumerator; }
+    if(_shuffledMainEnumerator == nil && _mainEnumerator != nil) { enumerator = _mainEnumerator; }
     
     if(enumerator != nil) {
         id obj = (direction == SeekForward) ? [enumerator nextObject] : [enumerator previousObject];
