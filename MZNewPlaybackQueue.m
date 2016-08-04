@@ -167,7 +167,10 @@ static id sharedNewPlaybackQueueInstance = nil;
         }
     }
     if(_mainEnumerator != nil) {
-        return [_mainEnumerator moveTofirstObject];
+        id firstObj = [_mainEnumerator moveTofirstObject];
+        return [MZNewPlaybackQueue wrapAsPlayableItem:firstObj
+                                              context:_mainContext
+                                           queuedSong:NO];
     }
     return nil;
 }
@@ -186,9 +189,19 @@ static id sharedNewPlaybackQueueInstance = nil;
         //gets count from CoreData w/out triggering any 'faults'
         NSUInteger totalContextCount = [[CoreDataManager context] countForFetchRequest:_mainContext.request
                                                                                  error:nil];
+        if(_mainEnumerator == nil) {
+            NSArray *results = [MZNewPlaybackQueue attemptFetchRequest:_mainContext.request
+                                                             batchSize:INTERNAL_FETCH_BATCH_SIZE];
+            if(results != nil) {
+                _mainEnumerator = [MZNewPlaybackQueue buildEnumeratorFromArray:&results
+                                                      withCursorPointingToItem:_mostRecentItem];
+            }
+        }
         NSArray *fetchResults = [_mainEnumerator underlyingArray];
         NSUInteger nowPlayingIndex = [self computeNowPlayingIndexInCoreDataArray:&fetchResults];
-        count += (totalContextCount - nowPlayingIndex +1);
+        if(totalContextCount > 0 && nowPlayingIndex != NSNotFound) {
+            count += (totalContextCount - 1 - nowPlayingIndex);
+        }
     }
     count += _upNextQueue.count;
     return count;
@@ -214,6 +227,16 @@ static id sharedNewPlaybackQueueInstance = nil;
         return;
     }
     _shuffleState = prevShuffleState;
+    //some setup since mainEnumerator is used in a few lines...
+    if(_mainEnumerator == nil) {
+        NSArray *results = [MZNewPlaybackQueue attemptFetchRequest:_mainContext.request
+                                                         batchSize:INTERNAL_FETCH_BATCH_SIZE];
+        if(results != nil) {
+            _mainEnumerator = [MZNewPlaybackQueue buildEnumeratorFromArray:&results
+                                                  withCursorPointingToItem:_mostRecentItem];
+        }
+    }
+    
     if(_shuffleState == SHUFFLE_STATE_Enabled) {
         if(_shuffledMainEnumerator == nil) {
             NSMutableArray *shallowCopy = [[_mainEnumerator underlyingArray] mutableCopy];
