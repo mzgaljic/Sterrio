@@ -120,7 +120,8 @@ static id sharedNewPlaybackQueueInstance = nil;
     NSUInteger nowPlayingIndex = [self computeNowPlayingIndexInCoreDataArray:&results];
     
     if(nowPlayingIndex != NSNotFound) {
-        _mainEnumerator = [results biDirectionalEnumeratorAtIndex:nowPlayingIndex];
+        _mainEnumerator = [results biDirectionalEnumeratorAtIndex:nowPlayingIndex
+                                         withOutOfBoundsTolerance:1];
     }
 }
 
@@ -217,7 +218,7 @@ static id sharedNewPlaybackQueueInstance = nil;
         if(_shuffledMainEnumerator == nil) {
             NSMutableArray *shallowCopy = [[_mainEnumerator underlyingArray] mutableCopy];
             [MZArrayShuffler shuffleArray:&shallowCopy];
-            _shuffledMainEnumerator = [shallowCopy biDirectionalEnumerator];
+            _shuffledMainEnumerator = [shallowCopy biDirectionalEnumeratorWithOutOfBoundsTolerance:1];
         }
     } else if(_shuffleState == SHUFFLE_STATE_Disabled) {
         _shuffledMainEnumerator = nil;
@@ -383,11 +384,11 @@ static id sharedNewPlaybackQueueInstance = nil;
                   withCursorPointingToItem:(PlayableItem *)playableItem
 {
     if(playableItem == nil) {
-        return [(*array) biDirectionalEnumerator];
+        return [(*array) biDirectionalEnumeratorWithOutOfBoundsTolerance:1];
     } else {
         NSUInteger idx = [MZNewPlaybackQueue indexOfItem:playableItem
                                          inCoreDataArray:array];
-        return [(*array) biDirectionalEnumeratorAtIndex:idx];
+        return [(*array) biDirectionalEnumeratorAtIndex:idx withOutOfBoundsTolerance:1];
     }
 }
 

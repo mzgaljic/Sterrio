@@ -13,5 +13,8 @@
 
 - (MZEnumerator *)biDirectionalEnumerator;
 - (MZEnumerator *)biDirectionalEnumeratorAtIndex:(NSUInteger)index;
+- (MZEnumerator *)biDirectionalEnumeratorWithOutOfBoundsTolerance:(NSUInteger)tolerance;
+- (MZEnumerator *)biDirectionalEnumeratorAtIndex:(NSUInteger)index
+                        withOutOfBoundsTolerance:(NSUInteger)tolerance;
 
 @end

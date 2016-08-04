@@ -15,7 +15,13 @@
 /** Initialize w/ array. Modification of array during enumeration will result in an exception! 
  Starts at index 0.*/
 - (id)initWithArray:(NSArray *)array;
+
 - (id)initWithArray:(NSArray *)array andIndex:(NSUInteger)index;
+
+/**  Initialize w/ array. Modification of array during enumeration will result in an exception!
+     Starts at specified index.
+     Allows hidden 'cursor' to go out of bounds by a specific amount (the tolerance).*/
+- (id)initWithArray:(NSArray *)array andIndex:(NSUInteger)index outOfBoundsTolerance:(NSUInteger)tolerance;
 
 /** Moves the hidden 'cursor' into the array to position 0, if applicable. Otherwise nil is returned 
  * (out of bounds.)*/

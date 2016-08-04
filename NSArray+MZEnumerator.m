@@ -20,4 +20,15 @@
     return [[MZEnumerator alloc] initWithArray:self andIndex:index];
 }
 
+- (MZEnumerator *)biDirectionalEnumeratorWithOutOfBoundsTolerance:(NSUInteger)tolerance
+{
+    return [[MZEnumerator alloc] initWithArray:self andIndex:0 outOfBoundsTolerance:tolerance];
+}
+
+- (MZEnumerator *)biDirectionalEnumeratorAtIndex:(NSUInteger)index
+                        withOutOfBoundsTolerance:(NSUInteger)tolerance
+{
+    return [[MZEnumerator alloc] initWithArray:self andIndex:index outOfBoundsTolerance:tolerance];
+}
+
 @end
