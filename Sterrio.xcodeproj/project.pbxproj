@@ -407,7 +407,6 @@
 		873538E21B0A9D2D009244E4 /* SongPlayerCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SongPlayerCoordinator.m; sourceTree = "<group>"; };
 		873538E31B0A9D2D009244E4 /* SongPlayerViewDisplayUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SongPlayerViewDisplayUtility.h; sourceTree = "<group>"; };
 		873538E41B0A9D2D009244E4 /* SongPlayerViewDisplayUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SongPlayerViewDisplayUtility.m; sourceTree = "<group>"; };
-		873538E51B0A9D2D009244E4 /* VideoPlayerControlInterfaceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoPlayerControlInterfaceDelegate.h; sourceTree = "<group>"; };
 		873538E91B0A9E63009244E4 /* MasterSongsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterSongsTableViewController.h; sourceTree = "<group>"; };
 		873538EA1B0A9E63009244E4 /* MasterSongsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterSongsTableViewController.m; sourceTree = "<group>"; };
 		873538ED1B0A9E78009244E4 /* AlbumDetailDisplayHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumDetailDisplayHelper.h; sourceTree = "<group>"; };
@@ -1144,7 +1143,6 @@
 				873538E21B0A9D2D009244E4 /* SongPlayerCoordinator.m */,
 				873538E31B0A9D2D009244E4 /* SongPlayerViewDisplayUtility.h */,
 				873538E41B0A9D2D009244E4 /* SongPlayerViewDisplayUtility.m */,
-				873538E51B0A9D2D009244E4 /* VideoPlayerControlInterfaceDelegate.h */,
 			);
 			name = "The Player";
 			sourceTree = "<group>";

@@ -142,7 +142,6 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
                                              selector:@selector(updateSleepTimerIcon)
                                                  name:TIMER_IMG_NEEDS_UPDATE
                                                object:nil];
-    [[SongPlayerCoordinator sharedInstance] setDelegate:self];
     
     _currentTimeLabel.text = @"0:00";
     _totalDurationLabel.text = @"00:00";

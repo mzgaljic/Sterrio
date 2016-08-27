@@ -17,7 +17,6 @@
 @end
 
 @implementation SongPlayerCoordinator
-@synthesize delegate = _delegate;
 static BOOL isVideoPlayerExpanded;
 static BOOL playerIsOnScreen = NO;
 static BOOL playerIsInDisabledState = NO;
@@ -60,11 +59,6 @@ float const amountToShrinkSmallPlayerWhenRespectingToolbar = 35;
 }
 
 #pragma mark - Other
-- (void)setDelegate:(id<VideoPlayerControlInterfaceDelegate>)theDelegate
-{
-    _delegate = theDelegate;
-}
-
 + (BOOL)isVideoPlayerExpanded
 {
     return isVideoPlayerExpanded;

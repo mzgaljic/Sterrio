@@ -30,7 +30,6 @@
 #import "JAMAccurateSlider.h"
 #import <GCDiscreetNotificationView.h>
 #import "ReachabilitySingleton.h"
-#import "VideoPlayerControlInterfaceDelegate.h"
 #import "QueueViewController.h"
 #import "AFBlurSegue.h"
 #import "ActionSheetDatePicker.h"
@@ -46,7 +45,6 @@
 
 @interface SongPlayerViewController : MyViewController <AVAudioSessionDelegate,
                                                         AVAudioPlayerDelegate,
-                                                        VideoPlayerControlInterfaceDelegate,
                                                         UIActionSheetDelegate>
 
 @property (weak, nonatomic) IBOutlet UINavigationItem *navBar;  //really the navBar title item
