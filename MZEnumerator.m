@@ -183,4 +183,9 @@ static NSString * const CANT_INIT_WITH_NIL_ARRAY_MSG = @"Cannot itialize an MZEn
     return deepCopy;
 }
 
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"MZEnumerator - cursor:%li items:%@", (long)_cursor, _originalData];
+}
+
 @end

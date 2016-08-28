@@ -301,7 +301,12 @@ static id sharedNewPlaybackQueueInstance = nil;
         int queuedSongCount = 0;
         if(queuedSongCount) {
             [output appendString:@"-> Queued 'on the fly' songs:"];
-            #warning no implementation for on the fly queued songs here.
+            NSArray *queuedObjs = [_upNextQueue allQueueObjectsAsArray];
+            for(int i = 0; i < queuedObjs.count; i++) {
+                MZEnumerator *enumerator = queuedObjs[i];
+                [output appendFormat:@"\nContext %i:\n", i+1];
+                [output appendString:[enumerator description]];
+            }
         }
         
         PlayableItem *item;
