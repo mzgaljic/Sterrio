@@ -236,6 +236,7 @@
 		87DAA6C51B8AA9FF008D8684 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 87DAA6C21B8AA9FF008D8684 /* Model.xcdatamodeld */; };
 		87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */; };
 		87E152671C0041E100C82737 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87E152661C0041E100C82737 /* StoreKit.framework */; };
+		87E9FAE01D72AF8D00ECCB7A /* UpNextItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E9FADF1D72AF8D00ECCB7A /* UpNextItem.m */; };
 		87EF52551CA4D4EC00D8364D /* UIColor+Strings.m in Sources */ = {isa = PBXBuildFile; fileRef = 87EF52541CA4D4EC00D8364D /* UIColor+Strings.m */; };
 		87EF52581CA4D7DD00D8364D /* MZAppTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 87EF52571CA4D7DD00D8364D /* MZAppTheme.m */; };
 		87F5A8801C9E68FB00C64376 /* credits.py in Resources */ = {isa = PBXBuildFile; fileRef = 87F5A87F1C9E68FB00C64376 /* credits.py */; };
@@ -740,6 +741,8 @@
 		87DAA6C41B8AA9FF008D8684 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailComposerManager.m; sourceTree = "<group>"; };
 		87E152661C0041E100C82737 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		87E9FADE1D72AF8D00ECCB7A /* UpNextItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpNextItem.h; sourceTree = "<group>"; };
+		87E9FADF1D72AF8D00ECCB7A /* UpNextItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpNextItem.m; sourceTree = "<group>"; };
 		87EF52531CA4D4EC00D8364D /* UIColor+Strings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Strings.h"; sourceTree = "<group>"; };
 		87EF52541CA4D4EC00D8364D /* UIColor+Strings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Strings.m"; sourceTree = "<group>"; };
 		87EF52561CA4D7DD00D8364D /* MZAppTheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZAppTheme.h; sourceTree = "<group>"; };
@@ -1512,6 +1515,8 @@
 				873EBB251D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m */,
 				873EBB321D202D52005F248A /* MZArrayShuffler.h */,
 				873EBB331D202D52005F248A /* MZArrayShuffler.m */,
+				87E9FADE1D72AF8D00ECCB7A /* UpNextItem.h */,
+				87E9FADF1D72AF8D00ECCB7A /* UpNextItem.m */,
 			);
 			name = "New Plaback Queue";
 			sourceTree = "<group>";
@@ -2227,6 +2232,7 @@
 				87A8FC361CBF202500A43637 /* MRProgressOverlayView+AFNetworking.m in Sources */,
 				8735388A1B0A9BCA009244E4 /* MZCoreDataModelDeletionService.m in Sources */,
 				87059FE61CDEE3860068A1A9 /* InAppProductPriceHelper.m in Sources */,
+				87E9FAE01D72AF8D00ECCB7A /* UpNextItem.m in Sources */,
 				873538FB1B0A9E95009244E4 /* ArtistItemAlbumViewController.m in Sources */,
 				873538E01B0A9D1F009244E4 /* QueueViewController.m in Sources */,
 				87A8FC301CBF202500A43637 /* MRBlurView.m in Sources */,

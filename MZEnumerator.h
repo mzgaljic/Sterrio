@@ -45,4 +45,9 @@
 /** NSArray from the underlying enumerator. Does NOT return a copy. */
 - (NSArray *)underlyingArray;
 
+
+/** The count of items. In other words, this matches the count of the original
+ * array used to create this enumerator. */
+- (NSUInteger)count;
+
 @end

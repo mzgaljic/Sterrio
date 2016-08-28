@@ -175,6 +175,18 @@ static NSString * const CANT_INIT_WITH_NIL_ARRAY_MSG = @"Cannot itialize an MZEn
     return _originalData;
 }
 
+/*
+ * The count of items which are not NSNUll. In other words, this matches the count of the original
+ * array used to create this enumerator.
+ */
+- (NSUInteger)count
+{
+    if(_originalData == nil) {
+        return 0;
+    }
+    return _originalData.count;
+}
+
 - (id)copyWithZone:(NSZone *)zone
 {
     MZEnumerator *deepCopy = [[MZEnumerator alloc] initWithArray:_originalData

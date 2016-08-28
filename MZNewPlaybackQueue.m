@@ -11,6 +11,7 @@
 #import "CoreDataManager.h"
 #import "MZArrayShuffler.h"
 #import "Queue.h"
+#import "UpNextItem.h"
 
 @interface MZNewPlaybackQueue ()
 @property (nonatomic, strong) PlaybackContext *mainContext;
@@ -18,9 +19,12 @@
 @property (nonatomic, strong) MZEnumerator *mainEnumerator;
 @property (nonatomic, strong) MZEnumerator *shuffledMainEnumerator;
 
-//user can never go 'back'. Tapping 'back' would take you to the previous song in the mainEnumerator
+//Note: user can never go 'back'. Tapping 'back' would take you to the previous song in the mainEnumerator
 //(or main shuffled enumerator.)
-#warning need to change implementation to use the PlaybackContext. See queueSongsOnTheFlyWithContext()
+
+//queue of UpNextItem objs. The current UpNextItem is at the head of the queue. UpNextItem objs are
+//de-queued as they are used. Be VERY careful to not use .count on upNextQueue...it's usually not what
+//you want. See the helper method 'upNextSongsCount' instead.
 @property (nonatomic, strong) Queue *upNextQueue;
 
 //helps when the shuffle state changes.
@@ -66,9 +70,13 @@ static id sharedNewPlaybackQueueInstance = nil;
 {
     if(self = [super init]) {
         _upNextQueue = [[Queue alloc] init];
+        [self queueSongsOnTheFlyWithContext:context];
         _mainContext = context;
-#warning some implementation still needed
-        //_mostRecentItem = item;
+        if(_upNextQueue.count > 0) {
+            UpNextItem *upNextItem = [_upNextQueue peek];
+            id obj = [[upNextItem enumeratorForContext] currentObject];
+            _mostRecentItem = [MZNewPlaybackQueue wrapAsPlayableItem:obj context:context queuedSong:YES];
+        }
         _shuffleState = SHUFFLE_STATE_Disabled;
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(managedObjectContextDidSave:)
@@ -179,7 +187,8 @@ static id sharedNewPlaybackQueueInstance = nil;
                                                          batchSize:INTERNAL_FETCH_BATCH_SIZE];
         if(results != nil) {
             _mainEnumerator = [MZNewPlaybackQueue buildEnumeratorFromArray:&results
-                                                  withCursorPointingToItem:_mostRecentItem];
+                                                  withCursorPointingToItem:_mostRecentItem
+                                                      outOfBoundsTolerance:1];
         }
     }
     if(_mainEnumerator != nil) {
@@ -196,10 +205,11 @@ static id sharedNewPlaybackQueueInstance = nil;
 {
     NSArray *results = [MZNewPlaybackQueue attemptFetchRequest:context.request
                                                      batchSize:INTERNAL_FETCH_BATCH_SIZE];
-    if(results != nil) {
+    if(results != nil && results.count > 0) {
         MZEnumerator *enumeratorForContext = [MZNewPlaybackQueue buildEnumeratorFromArray:&results
-                                                                 withCursorPointingToItem:_mostRecentItem];
-        [_upNextQueue enqueue:enumeratorForContext];
+                                                                 withCursorPointingToItem:_mostRecentItem
+                                                                     outOfBoundsTolerance:0];
+        [_upNextQueue enqueue:[[UpNextItem alloc]initWithContext:context enumerator:enumeratorForContext]];
     }
 }
 
@@ -216,7 +226,8 @@ static id sharedNewPlaybackQueueInstance = nil;
                                                              batchSize:INTERNAL_FETCH_BATCH_SIZE];
             if(results != nil) {
                 _mainEnumerator = [MZNewPlaybackQueue buildEnumeratorFromArray:&results
-                                                      withCursorPointingToItem:_mostRecentItem];
+                                                      withCursorPointingToItem:_mostRecentItem
+                                                          outOfBoundsTolerance:1];
             }
         }
         NSArray *fetchResults = [_mainEnumerator underlyingArray];
@@ -225,7 +236,7 @@ static id sharedNewPlaybackQueueInstance = nil;
             count += (totalContextCount - 1 - nowPlayingIndex);
         }
     }
-    count += _upNextQueue.count;
+    count += [self upNextSongsCount];
     return count;
 }
 
@@ -238,7 +249,7 @@ static id sharedNewPlaybackQueueInstance = nil;
                                                                                  error:nil];
         count += totalContextCount;
     }
-    count += _upNextQueue.count;
+    count += [self upNextSongsCount];
     return count;
 }
 
@@ -255,7 +266,8 @@ static id sharedNewPlaybackQueueInstance = nil;
                                                          batchSize:INTERNAL_FETCH_BATCH_SIZE];
         if(results != nil) {
             _mainEnumerator = [MZNewPlaybackQueue buildEnumeratorFromArray:&results
-                                                  withCursorPointingToItem:_mostRecentItem];
+                                                  withCursorPointingToItem:_mostRecentItem
+                                                      outOfBoundsTolerance:1];
         }
     }
     
@@ -294,6 +306,7 @@ static id sharedNewPlaybackQueueInstance = nil;
     }
     
     NSMutableString *output = [NSMutableString string];
+    [output appendString:@"---Playback Queue State---\n"];
     if(enumeratorCopy != nil) {
         PlayableItem *nowPlaying = [enumeratorCopy currentObject];
         [output appendFormat:@"-> Now Playing: %@", nowPlaying];
@@ -303,7 +316,8 @@ static id sharedNewPlaybackQueueInstance = nil;
             [output appendString:@"-> Queued 'on the fly' songs:"];
             NSArray *queuedObjs = [_upNextQueue allQueueObjectsAsArray];
             for(int i = 0; i < queuedObjs.count; i++) {
-                MZEnumerator *enumerator = queuedObjs[i];
+                UpNextItem *upNextItem = queuedObjs[i];
+                MZEnumerator *enumerator = [upNextItem enumeratorForContext];
                 [output appendFormat:@"\nContext %i:\n", i+1];
                 [output appendString:[enumerator description]];
             }
@@ -323,6 +337,8 @@ static id sharedNewPlaybackQueueInstance = nil;
     return output;
 }
 
+
+#pragma mark - Private helpers
 + (PlayableItem *)wrapAsPlayableItem:(id)obj context:(PlaybackContext *)cntx queuedSong:(BOOL)isQueuedItem
 {
     if([obj isMemberOfClass:[Song class]]) {
@@ -348,10 +364,17 @@ static id sharedNewPlaybackQueueInstance = nil;
 //it exists. Otherwise, from the main-enumerator.
 - (PlayableItem *)seekNextItemInDirection:(enum SeekDirection)direction
 {
-    if(_upNextQueue.count > 0) {
-        MZEnumerator *enumeratorForContext = [_upNextQueue peek];
-        if(enumeratorForContext.hasNext) {
-            return [enumeratorForContext nextObject];
+    if(_upNextQueue.count > 0 && direction == SeekForward) {
+        UpNextItem *upNextItem = [_upNextQueue peek];
+        MZEnumerator *enumerator = [upNextItem enumeratorForContext];
+        if(enumerator.count == 1) {
+            //needed because 'hasNext' is false when there is only 1 item in the enumerator.
+            [_upNextQueue dequeue];
+#warning currentObject is always null in this case. Figure out why and fix.
+            PlayableItem *item = [enumerator currentObject];
+            return [enumerator currentObject];
+        } else if(enumerator.hasNext) {
+            return [enumerator nextObject];
         } else {
             [_upNextQueue dequeue];
             return [self seekNextItemInDirection:direction];  //recursive
@@ -365,7 +388,8 @@ static id sharedNewPlaybackQueueInstance = nil;
                                                          batchSize:INTERNAL_FETCH_BATCH_SIZE];
         if(results != nil) {
             _mainEnumerator = [MZNewPlaybackQueue buildEnumeratorFromArray:&results
-                                                  withCursorPointingToItem:_mostRecentItem];
+                                                  withCursorPointingToItem:_mostRecentItem
+                                                      outOfBoundsTolerance:1];
         }
     }
     MZEnumerator *enumerator = nil;
@@ -449,14 +473,27 @@ static id sharedNewPlaybackQueueInstance = nil;
 
 + (MZEnumerator *)buildEnumeratorFromArray:(NSArray **)array
                   withCursorPointingToItem:(PlayableItem *)playableItem
+                      outOfBoundsTolerance:(NSUInteger)toleranceValue
 {
     if(playableItem == nil) {
-        return [(*array) biDirectionalEnumeratorWithOutOfBoundsTolerance:1];
+        return [(*array) biDirectionalEnumeratorWithOutOfBoundsTolerance:toleranceValue];
     } else {
         NSUInteger idx = [MZNewPlaybackQueue indexOfItem:playableItem
                                          inCoreDataArray:array];
-        return [(*array) biDirectionalEnumeratorAtIndex:idx withOutOfBoundsTolerance:1];
+        return [(*array) biDirectionalEnumeratorAtIndex:idx withOutOfBoundsTolerance:toleranceValue];
     }
+}
+
+- (NSUInteger)upNextSongsCount
+{
+    NSArray *items = [_upNextQueue allQueueObjectsAsArray];
+    NSUInteger count = 0;
+    for(UpNextItem *upNextItem in items) {
+        MZEnumerator *enumerator = [upNextItem enumeratorForContext];
+#warning should actually figure out where the cursor is in the enumerator, and then use that to get 'remaining count'. We should not be blindly taking the enumerator count (which is the count of the entire thing.)
+        count += enumerator.count;
+    }
+    return count;
 }
 
 @end
