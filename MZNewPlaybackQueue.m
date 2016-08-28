@@ -14,6 +14,7 @@
 
 @interface MZNewPlaybackQueue ()
 @property (nonatomic, strong) PlaybackContext *mainContext;
+@property (nonatomic, strong) MZEnumerator *enumerator;
 @property (nonatomic, strong) MZEnumerator *mainEnumerator;
 @property (nonatomic, strong) MZEnumerator *shuffledMainEnumerator;
 
@@ -107,21 +108,34 @@ static id sharedNewPlaybackQueueInstance = nil;
  */
 - (void)managedObjectContextDidSave:(NSNotification *)note
 {
-#warning need to also add logic for shuffled enumerator here.
     //can no longer trust that the array in memory is reflecting what the user saved into the library.
     //Re-fetch & get current index.
     NSArray *results = [MZNewPlaybackQueue attemptFetchRequest:_mainContext.request batchSize:INTERNAL_FETCH_BATCH_SIZE];
-    if(results == nil) {
-        //not much we can do at this point. Continue using existing enumerator (not perfect but will do.)
-        return;
+    if(results != nil) {
+        //should point to now playing within the new results (or NSNotFound)
+        NSUInteger nowPlayingIndex = [self computeNowPlayingIndexInCoreDataArray:&results];
+        if(nowPlayingIndex != NSNotFound) {
+            _mainEnumerator = [results biDirectionalEnumeratorAtIndex:nowPlayingIndex
+                                             withOutOfBoundsTolerance:1];
+        }
     }
     
-    //should point to now playing within the new results (or NSNotFound)
-    NSUInteger nowPlayingIndex = [self computeNowPlayingIndexInCoreDataArray:&results];
-    
-    if(nowPlayingIndex != NSNotFound) {
-        _mainEnumerator = [results biDirectionalEnumeratorAtIndex:nowPlayingIndex
-                                         withOutOfBoundsTolerance:1];
+    if(_shuffledMainEnumerator != nil) {
+        _shuffledMainEnumerator = nil;
+        //shuffle mode is active. Now that the main enumerator has been refetched, lets shuffle it and
+        //keep the cursor pointing to the same NowPlayingItem.
+        NSMutableArray *shallowCopy = [[_mainEnumerator underlyingArray] mutableCopy];
+        [MZArrayShuffler shuffleArray:&shallowCopy];
+        
+        //logic to get the same item in the new array now...
+        NSUInteger nowPlayingIndex = [self computeNowPlayingIndexInCoreDataArray:&shallowCopy];
+        if(nowPlayingIndex != NSNotFound) {
+            _shuffledMainEnumerator = [shallowCopy biDirectionalEnumeratorAtIndex:nowPlayingIndex
+                                                         withOutOfBoundsTolerance:1];
+        } else {
+            //fallback for when something bad happens lol.
+            _shuffledMainEnumerator = [shallowCopy biDirectionalEnumerator];
+        }
     }
 }
 
@@ -244,9 +258,8 @@ static id sharedNewPlaybackQueueInstance = nil;
             _shuffledMainEnumerator = [shallowCopy biDirectionalEnumeratorWithOutOfBoundsTolerance:1];
         }
     } else if(_shuffleState == SHUFFLE_STATE_Disabled) {
-        _shuffledMainEnumerator = nil;
         //logic to get the same item in the unshuffled array now...
-        NSArray *rawArray = [_mainEnumerator underlyingArray];
+        NSArray *rawArray = [_shuffledMainEnumerator underlyingArray];
         NSUInteger nowPlayingIndex = [self computeNowPlayingIndexInCoreDataArray:&rawArray];
         if(nowPlayingIndex != NSNotFound) {
             _mainEnumerator = [rawArray biDirectionalEnumeratorAtIndex:nowPlayingIndex
@@ -255,6 +268,7 @@ static id sharedNewPlaybackQueueInstance = nil;
             //fallback for when something bad happens lol.
             _mainEnumerator = [rawArray biDirectionalEnumerator];
         }
+        _shuffledMainEnumerator = nil;
     }
 }
 

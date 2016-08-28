@@ -34,7 +34,7 @@
 //Queues the stuff described by PlaybackContext to the playback queue.
 - (void)queueSongsOnTheFlyWithContext:(PlaybackContext *)context;
 
-//# of PlayableItem's that still need to play (includes main context and stuff queued by user on the fly.
+//# of PlayableItem's that still need to play (includes main context and stuff queued by user on the fly.)
 - (NSUInteger)forwardItemsCount;
 - (NSUInteger)totalItemsCount;
 
