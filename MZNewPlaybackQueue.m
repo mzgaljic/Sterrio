@@ -65,6 +65,7 @@ static id sharedNewPlaybackQueueInstance = nil;
 - (id)initWithSongsQueuedOnTheFly:(PlaybackContext *)context
 {
     if(self = [super init]) {
+        _upNextQueue = [[Queue alloc] init];
         _mainContext = context;
 #warning some implementation still needed
         //_mostRecentItem = item;
@@ -81,6 +82,7 @@ static id sharedNewPlaybackQueueInstance = nil;
 - (id)initWithNewNowPlayingPlayableItem:(PlayableItem *)item
 {
     if(self = [super init]) {
+        _upNextQueue = [[Queue alloc] init];
         _mainContext = item.contextForItem;
         _mostRecentItem = item;
         _shuffleState = SHUFFLE_STATE_Disabled;
@@ -192,7 +194,13 @@ static id sharedNewPlaybackQueueInstance = nil;
 //Queues the stuff described by PlaybackContext to the playback queue.
 - (void)queueSongsOnTheFlyWithContext:(PlaybackContext *)context
 {
-    //store context in a field on the class and enumerate through it efficiently like a queue (somehow)
+    NSArray *results = [MZNewPlaybackQueue attemptFetchRequest:context.request
+                                                     batchSize:INTERNAL_FETCH_BATCH_SIZE];
+    if(results != nil) {
+        MZEnumerator *enumeratorForContext = [MZNewPlaybackQueue buildEnumeratorFromArray:&results
+                                                                 withCursorPointingToItem:_mostRecentItem];
+        [_upNextQueue enqueue:enumeratorForContext];
+    }
 }
 
 //# of PlayableItem's that still need to play (includes main context and stuff queued by user on the fly.
@@ -331,11 +339,19 @@ static id sharedNewPlaybackQueueInstance = nil;
 
 
 //---- Utils ----
-// Grabs the next item in the direction specified. Item will be taken from the shuffled enumerator if
+// Grabs the next item in the direction specified. Item will be taken from the shuffled-enumerator if
 //it exists. Otherwise, from the main-enumerator.
 - (PlayableItem *)seekNextItemInDirection:(enum SeekDirection)direction
 {
-#warning logic needed at this line to first get an item from the 'queued on the fly' area.
+    if(_upNextQueue.count > 0) {
+        MZEnumerator *enumeratorForContext = [_upNextQueue peek];
+        if(enumeratorForContext.hasNext) {
+            return [enumeratorForContext nextObject];
+        } else {
+            [_upNextQueue dequeue];
+            return [self seekNextItemInDirection:direction];  //recursive
+        }
+    }
     if(_mainContext == nil || _mainContext.request == nil) {
         return nil;
     }
