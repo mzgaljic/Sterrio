@@ -107,9 +107,12 @@ static NSString * const CANT_INIT_WITH_NIL_ARRAY_MSG = @"Cannot itialize an MZEn
 /** Returns YES IFF a call to nextObject would return a non-nil result. */
 - (BOOL)hasNext
 {
+    NSInteger temp = _cursor;
+    temp++;
     if(_arrayWithTolerance.count != 0
-       && _cursor <= _arrayWithTolerance.count-1
-       && _arrayWithTolerance[_cursor] != [NSNull null]) {
+       && temp >= 0
+       && temp <= _arrayWithTolerance.count-1
+       && _arrayWithTolerance[temp] != [NSNull null]) {
         return YES;
     } else {
         return NO;
@@ -141,7 +144,12 @@ static NSString * const CANT_INIT_WITH_NIL_ARRAY_MSG = @"Cannot itialize an MZEn
 /** Returns YES IFF a call to previousObject would return a non-nil result. */
 - (BOOL)hasPrevious
 {
-    if(_arrayWithTolerance.count != 0 && _cursor > 0 && _arrayWithTolerance[_cursor] != [NSNull null]) {
+    NSInteger temp = _cursor;
+    temp--;
+    if(_arrayWithTolerance.count != 0
+       && temp >= 0
+       && temp <= _arrayWithTolerance.count-1
+       && _arrayWithTolerance[temp] != [NSNull null]) {
         return YES;
     } else {
         return NO;
