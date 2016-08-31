@@ -40,9 +40,6 @@
 
 - (void)setShuffleState:(SHUFFLE_STATE)state;
 
-+ (MZEnumerator *)buildEnumeratorFromArray:(NSArray **)array
-                  withCursorPointingToItem:(PlayableItem *)playableItem;
-
 #pragma mark - DEBUG
 - (NSString *)description;  //prints the queue contents and class info.
 

@@ -13,6 +13,7 @@
 #import "Queue.h"
 #import "UpNextItem.h"
 
+
 @interface MZNewPlaybackQueue ()
 @property (nonatomic, strong) PlaybackContext *mainContext;
 @property (nonatomic, strong) MZEnumerator *enumerator;
@@ -26,6 +27,7 @@
 //de-queued as they are used. Be VERY careful to not use .count on upNextQueue...it's usually not what
 //you want. See the helper method 'upNextSongsCount' instead.
 @property (nonatomic, strong) Queue *upNextQueue;
+@property (nonatomic, weak) UpNextItem *lastTouchedUpNextItem;
 
 //helps when the shuffle state changes.
 @property (nonatomic, strong) MZEnumerator *lastUsedEnumerator;
@@ -207,7 +209,7 @@ static id sharedNewPlaybackQueueInstance = nil;
                                                      batchSize:INTERNAL_FETCH_BATCH_SIZE];
     if(results != nil && results.count > 0) {
         MZEnumerator *enumeratorForContext = [MZNewPlaybackQueue buildEnumeratorFromArray:&results
-                                                                 withCursorPointingToItem:_mostRecentItem
+                                                                 withCursorPointingToItem:nil
                                                                      outOfBoundsTolerance:0];
         [_upNextQueue enqueue:[[UpNextItem alloc]initWithContext:context enumerator:enumeratorForContext]];
     }
@@ -216,6 +218,7 @@ static id sharedNewPlaybackQueueInstance = nil;
 //# of PlayableItem's that still need to play (includes main context and stuff queued by user on the fly.
 - (NSUInteger)forwardItemsCount
 {
+#warning should use shuffled enumerator here if not nil.
     NSUInteger count = 0;
     if(_mainContext.request != nil){
         //gets count from CoreData w/out triggering any 'faults'
@@ -367,16 +370,22 @@ static id sharedNewPlaybackQueueInstance = nil;
     if(_upNextQueue.count > 0 && direction == SeekForward) {
         UpNextItem *upNextItem = [_upNextQueue peek];
         MZEnumerator *enumerator = [upNextItem enumeratorForContext];
-        if(enumerator.count == 1) {
-            //needed because 'hasNext' is false when there is only 1 item in the enumerator.
+        BOOL isNewUpNextItem = (_lastTouchedUpNextItem != upNextItem);
+        _lastTouchedUpNextItem = upNextItem;
+        if(enumerator.count == 1 || !enumerator.hasNext) {
+            //this enumerator will no longer be needed in the queue, remove it.
             [_upNextQueue dequeue];
-#warning currentObject is always null in this case. Figure out why and fix.
-            PlayableItem *item = [enumerator currentObject];
-            return [enumerator currentObject];
+        }
+        //special care needed when entire enumerator is size 1. 'hasNext' will never be true.
+        if(enumerator.count == 1 || isNewUpNextItem) {
+            return [MZNewPlaybackQueue wrapAsPlayableItem:[enumerator currentObject]
+                                                  context:upNextItem.context
+                                               queuedSong:YES];
         } else if(enumerator.hasNext) {
-            return [enumerator nextObject];
+            return [MZNewPlaybackQueue wrapAsPlayableItem:[enumerator nextObject]
+                                                  context:upNextItem.context
+                                               queuedSong:YES];
         } else {
-            [_upNextQueue dequeue];
             return [self seekNextItemInDirection:direction];  //recursive
         }
     }
