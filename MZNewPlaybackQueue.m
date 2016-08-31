@@ -19,6 +19,7 @@
 @property (nonatomic, strong) MZEnumerator *enumerator;
 @property (nonatomic, strong) MZEnumerator *mainEnumerator;
 @property (nonatomic, strong) MZEnumerator *shuffledMainEnumerator;
+@property (nonatomic, assign) BOOL usedUpNextQueueInsteadOfMainOrShuffledEnumerator;
 
 //Note: user can never go 'back'. Tapping 'back' would take you to the previous song in the mainEnumerator
 //(or main shuffled enumerator.)
@@ -299,15 +300,10 @@ static id sharedNewPlaybackQueueInstance = nil;
 //prints the queue contents and class info.
 - (NSString *)description;
 {
-    MZEnumerator *enumeratorCopy = nil;
     //MZEnumerator performs a somewhat shallow copy. Everything is copied except for the underlying array.
     //(so a mod to an object in enumerator A will change it in enumerator B.)
-    if(_shuffledMainEnumerator != nil) {
-        enumeratorCopy = [_shuffledMainEnumerator copy];
-    } else if(_mainEnumerator != nil) {
-        enumeratorCopy = [_mainEnumerator copy];
-    }
-    
+    MZEnumerator *enumeratorCopy = [[self initializeAndGetCurrentEnumeratorIfPossible] copy];
+
     NSMutableString *output = [NSMutableString string];
     [output appendString:@"---Playback Queue State---\n"];
     if(enumeratorCopy != nil) {
@@ -376,6 +372,21 @@ static id sharedNewPlaybackQueueInstance = nil;
             //this enumerator will no longer be needed in the queue, remove it.
             [_upNextQueue dequeue];
         }
+        //fixes an issue where going from main/shuffled enumerator to the up-next-queue and
+        //then back to the main/shuffled enumerator (via the back seek button) causes a
+        //'double back' effect to occur, since the cursor never gets updated when the switch
+        //between the main/shuffled enumerator and the up-next-queue happens.
+        if(enumerator.count == 1 || isNewUpNextItem || enumerator.hasNext) {
+            if(_usedUpNextQueueInsteadOfMainOrShuffledEnumerator == NO) {
+                //just switched from main or shuffled enumerator to the up-next-queue
+                MZEnumerator *enumerator = [self initializeAndGetCurrentEnumeratorIfPossible];
+                if(enumerator != nil) {
+                    [enumerator nextObject];
+                }
+            }
+            _usedUpNextQueueInsteadOfMainOrShuffledEnumerator = YES;
+        }
+        
         //special care needed when entire enumerator is size 1. 'hasNext' will never be true.
         if(enumerator.count == 1 || isNewUpNextItem) {
             return [MZNewPlaybackQueue wrapAsPlayableItem:[enumerator currentObject]
@@ -389,6 +400,17 @@ static id sharedNewPlaybackQueueInstance = nil;
             return [self seekNextItemInDirection:direction];  //recursive
         }
     }
+    _usedUpNextQueueInsteadOfMainOrShuffledEnumerator = NO;
+    MZEnumerator *enumerator = [self initializeAndGetCurrentEnumeratorIfPossible];
+    if(enumerator != nil) {
+        id obj = (direction == SeekForward) ? [enumerator nextObject] : [enumerator previousObject];
+        return [MZNewPlaybackQueue wrapAsPlayableItem:obj context:_mainContext queuedSong:NO];
+    }
+    return nil;
+}
+
+- (MZEnumerator *)initializeAndGetCurrentEnumeratorIfPossible
+{
     if(_mainContext == nil || _mainContext.request == nil) {
         return nil;
     }
@@ -404,12 +426,7 @@ static id sharedNewPlaybackQueueInstance = nil;
     MZEnumerator *enumerator = nil;
     if(_shuffledMainEnumerator != nil) { enumerator = _shuffledMainEnumerator; }
     if(_shuffledMainEnumerator == nil && _mainEnumerator != nil) { enumerator = _mainEnumerator; }
-    
-    if(enumerator != nil) {
-        id obj = (direction == SeekForward) ? [enumerator nextObject] : [enumerator previousObject];
-        return [MZNewPlaybackQueue wrapAsPlayableItem:obj context:_mainContext queuedSong:NO];
-    }
-    return nil;
+    return enumerator;
 }
 
 //Determine the location of the PlayableItem in the core data array, returns index or NSNotFound.
