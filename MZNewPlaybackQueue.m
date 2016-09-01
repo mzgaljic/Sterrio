@@ -78,7 +78,9 @@ static id sharedNewPlaybackQueueInstance = nil;
         if(_upNextQueue.count > 0) {
             UpNextItem *upNextItem = [_upNextQueue peek];
             id obj = [[upNextItem enumeratorForContext] currentObject];
+            
             _mostRecentItem = [MZNewPlaybackQueue wrapAsPlayableItem:obj context:context queuedSong:YES];
+            _lastTouchedUpNextItem = upNextItem;
         }
         _shuffleState = SHUFFLE_STATE_Disabled;
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -506,6 +508,11 @@ static id sharedNewPlaybackQueueInstance = nil;
     } else {
         NSUInteger idx = [MZNewPlaybackQueue indexOfItem:playableItem
                                          inCoreDataArray:array];
+        if(idx == NSNotFound) {
+            return [MZNewPlaybackQueue buildEnumeratorFromArray:array
+                                       withCursorPointingToItem:nil
+                                           outOfBoundsTolerance:toleranceValue];
+        }
         return [(*array) biDirectionalEnumeratorAtIndex:idx withOutOfBoundsTolerance:toleranceValue];
     }
 }
