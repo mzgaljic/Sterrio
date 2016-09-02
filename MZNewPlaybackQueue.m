@@ -222,10 +222,8 @@ static id sharedNewPlaybackQueueInstance = nil;
 - (NSUInteger)forwardItemsCount
 {
     NSUInteger count = 0;
-    if(_mainContext.request != nil){
-        MZEnumerator *enumerator = [self initializeAndGetCurrentEnumeratorIfPossible];
-        count += [enumerator numberMoreObjects];
-    }
+    MZEnumerator *enumerator = [self initializeAndGetCurrentEnumeratorIfPossible];
+    count += [enumerator numberMoreObjects];
     count += [self upNextSongsCount];
     return count;
 }
@@ -233,12 +231,8 @@ static id sharedNewPlaybackQueueInstance = nil;
 - (NSUInteger)totalItemsCount
 {
     NSUInteger count = 0;
-    if(_mainContext.request != nil){
-        //gets count from CoreData w/out triggering any 'faults'
-        NSUInteger totalContextCount = [[CoreDataManager context] countForFetchRequest:_mainContext.request
-                                                                                 error:nil];
-        count += totalContextCount;
-    }
+    MZEnumerator *enumerator = [self initializeAndGetCurrentEnumeratorIfPossible];
+    count += enumerator.count;
     count += [self upNextSongsCount];
     return count;
 }
