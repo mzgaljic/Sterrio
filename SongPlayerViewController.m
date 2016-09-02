@@ -610,7 +610,7 @@ static int accomodateInterfaceLabelsCounter = 0;
 
 - (void)currentSongInQueueHasEndedPlayback
 {
-    BOOL moreSongsInQueue = ([MusicPlaybackController numMoreSongsInQueue] != 0);
+    BOOL moreSongsInQueue = ([[MZNewPlaybackQueue sharedInstance] forwardItemsCount] != 0);
     //disabling until the next song in the queue is loaded.
     //another method will reenable it when necessary
     if(moreSongsInQueue)

@@ -183,6 +183,12 @@ static NSString * const CANT_INIT_WITH_NIL_ARRAY_MSG = @"Cannot itialize an MZEn
     return _originalData;
 }
 
+/** Returns the numnber of objects left until nextObject() returns nil. */
+- (NSUInteger)numberMoreObjects
+{
+    return _arrayWithTolerance.count - _outOfBoundsTolerance - _cursor;
+}
+
 /*
  * The count of items which are not NSNUll. In other words, this matches the count of the original
  * array used to create this enumerator.

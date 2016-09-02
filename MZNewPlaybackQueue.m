@@ -221,26 +221,10 @@ static id sharedNewPlaybackQueueInstance = nil;
 //# of PlayableItem's that still need to play (includes main context and stuff queued by user on the fly.
 - (NSUInteger)forwardItemsCount
 {
-#warning should use shuffled enumerator here if not nil.
     NSUInteger count = 0;
     if(_mainContext.request != nil){
-        //gets count from CoreData w/out triggering any 'faults'
-        NSUInteger totalContextCount = [[CoreDataManager context] countForFetchRequest:_mainContext.request
-                                                                                 error:nil];
-        if(_mainEnumerator == nil) {
-            NSArray *results = [MZNewPlaybackQueue attemptFetchRequest:_mainContext.request
-                                                             batchSize:INTERNAL_FETCH_BATCH_SIZE];
-            if(results != nil) {
-                _mainEnumerator = [MZNewPlaybackQueue buildEnumeratorFromArray:&results
-                                                      withCursorPointingToItem:_mostRecentItem
-                                                          outOfBoundsTolerance:1];
-            }
-        }
-        NSArray *fetchResults = [_mainEnumerator underlyingArray];
-        NSUInteger nowPlayingIndex = [self computeNowPlayingIndexInCoreDataArray:&fetchResults];
-        if(totalContextCount > 0 && nowPlayingIndex != NSNotFound) {
-            count += (totalContextCount - 1 - nowPlayingIndex);
-        }
+        MZEnumerator *enumerator = [self initializeAndGetCurrentEnumeratorIfPossible];
+        count += [enumerator numberMoreObjects];
     }
     count += [self upNextSongsCount];
     return count;
@@ -436,9 +420,9 @@ static id sharedNewPlaybackQueueInstance = nil;
 {
     NSUInteger index = NSNotFound;
     //only 1 of the following should be non-nil: playlistItemForItem | songForItem
-    if(item.playlistItemForItem == nil && item.songForItem != nil) {
+    if(item.playlistItemForItem == nil) {
         index = [*array indexOfObject:item.songForItem];
-    } else if(item.playlistItemForItem != nil && item.songForItem == nil) {
+    } else if(item.playlistItemForItem != nil) {
         index = [*array indexOfObject:item.playlistItemForItem];
     }
     return index;
@@ -487,15 +471,8 @@ static id sharedNewPlaybackQueueInstance = nil;
 - (NSUInteger)computeNowPlayingIndexInCoreDataArray:(NSArray **)array
 {
     NSUInteger nowPlayingIndex = NSNotFound;  //should point to now playing within the main context
-    if(![NowPlaying sharedInstance].playableItem.isFromUpNextSongs) {
-        //we can directly get the now-playing-item from the NowPlaying class (more robust approach.)
-        nowPlayingIndex = [MZNewPlaybackQueue indexOfItem:[NowPlaying sharedInstance].playableItem
-                            inCoreDataArray:array];
-    } else {
-        //as fallback, use the 'mostRecentItem' to attempt finding the now-playing-item.
-        nowPlayingIndex = [MZNewPlaybackQueue indexOfItem:_mostRecentItem
-                            inCoreDataArray:array];
-    }
+    nowPlayingIndex = [MZNewPlaybackQueue indexOfItem:[NowPlaying sharedInstance].playableItem
+                                      inCoreDataArray:array];
     return nowPlayingIndex;
 }
 

@@ -74,7 +74,7 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
         return;
     }
     
-    NSUInteger numMoreSongsInQueue = [MusicPlaybackController numMoreSongsInQueue];
+    NSUInteger numMoreSongsInQueue = [[MZNewPlaybackQueue sharedInstance] forwardItemsCount];
     BOOL allowSongDidFinishNotifToProceed;
     if(numMoreSongsInQueue == 0 && [AppEnvironmentConstants playbackRepeatType] == PLABACK_REPEAT_MODE_All){
         //last song in queue reached.
@@ -243,11 +243,6 @@ static id timeObserver;  //watching AVPlayer...for SongPlayerVC
 }
 
 #pragma mark - Gathering playback info
-+ (NSUInteger)numMoreSongsInQueue
-{
-    return [[MZNewPlaybackQueue sharedInstance] forwardItemsCount];
-}
-
 //does NOT perform a context comparison.
 + (BOOL)isSongLastInQueue:(Song *)song
 {

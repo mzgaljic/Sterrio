@@ -45,6 +45,8 @@
 /** NSArray from the underlying enumerator. Does NOT return a copy. */
 - (NSArray *)underlyingArray;
 
+/** Returns the numnber of objects left until nextObject() returns nil. */
+- (NSUInteger)numberMoreObjects;
 
 /** The count of items. In other words, this matches the count of the original
  * array used to create this enumerator. */

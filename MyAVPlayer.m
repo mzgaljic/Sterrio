@@ -9,6 +9,7 @@
 #import "MyAVPlayer.h"
 #import "PreviousNowPlayingInfo.h"
 #import "PlayableItem.h"
+#import "MZNewPlaybackQueue.h"
 
 @interface MyAVPlayer ()
 {
@@ -110,7 +111,7 @@ static ReachabilitySingleton *reachability;
         [self replaceCurrentItemWithPlayerItem:nil];
         [self dismissAllSpinners];
         
-        if([MusicPlaybackController numMoreSongsInQueue] == 0)
+        if([[MZNewPlaybackQueue sharedInstance] forwardItemsCount] == 0)
             canPostLastSongNotification = YES;
         else
             canPostLastSongNotification = NO;
