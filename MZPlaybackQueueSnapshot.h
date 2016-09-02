@@ -41,10 +41,4 @@
 /** Songs which are coming up in the main queue (NOT the queue that can be made on the fly.) */
 - (NSArray<Song*> *)futureSongs;
 
-#pragma mark - Retrieving logic pieces from entire song array
-- (NSIndexSet *)indexSetOfHistorySongs;
-- (NSUInteger)indexOfNowPlayingSong;
-- (NSIndexSet *)indexSetOfManuallyQueuedSongs;
-- (NSIndexSet *)indexSetOfAllFutureSongs;
-
 @end
