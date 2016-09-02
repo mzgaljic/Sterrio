@@ -352,18 +352,9 @@ static id sharedNewPlaybackQueueInstance = nil;
             //this enumerator will no longer be needed in the queue, remove it.
             [_upNextQueue dequeue];
         }
-        //fixes an issue where going from main/shuffled enumerator to the up-next-queue and
-        //then back to the main/shuffled enumerator (via the back seek button) causes a
-        //'double back' effect to occur, since the cursor never gets updated when the switch
-        //between the main/shuffled enumerator and the up-next-queue happens.
         if(enumerator.count == 1 || isNewUpNextItem || enumerator.hasNext) {
-            if(_usedUpNextQueueInsteadOfMainOrShuffledEnumerator == NO) {
-                //just switched from main or shuffled enumerator to the up-next-queue
-                MZEnumerator *enumerator = [self initializeAndGetCurrentEnumeratorIfPossible];
-                if(enumerator != nil) {
-                    [enumerator nextObject];
-                }
-            }
+            //just went from main/shuffled enumerator to the up-next-queue and back to the main/shuffled
+            // enumerator (via the back or forward seek button).
             _usedUpNextQueueInsteadOfMainOrShuffledEnumerator = YES;
         }
         
@@ -380,10 +371,19 @@ static id sharedNewPlaybackQueueInstance = nil;
             return [self seekNextItemInDirection:direction];  //recursive
         }
     }
+    
+    //going from up-next-queue back to the main/shuffled enumerator. will call previousObject()
+    //in a second, but cursor hasn't been updated since we switched queues.
+    BOOL returnCurrentObject = (_usedUpNextQueueInsteadOfMainOrShuffledEnumerator && direction == SeekBackwards);
     _usedUpNextQueueInsteadOfMainOrShuffledEnumerator = NO;
     MZEnumerator *enumerator = [self initializeAndGetCurrentEnumeratorIfPossible];
     if(enumerator != nil) {
-        id obj = (direction == SeekForward) ? [enumerator nextObject] : [enumerator previousObject];
+        id obj = nil;
+        if(returnCurrentObject) {
+            obj =  [enumerator currentObject];
+        } else {
+            obj = (direction == SeekForward) ? [enumerator nextObject] : [enumerator previousObject];
+        }
         return [MZNewPlaybackQueue wrapAsPlayableItem:obj context:_mainContext queuedSong:NO];
     }
     return nil;
