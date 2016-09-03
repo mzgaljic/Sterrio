@@ -9,45 +9,46 @@
 #import "MZPlaybackQueueSnapshot.h"
 
 @interface MZPlaybackQueueSnapshot ()
-@property (nonatomic, strong) NSArray<Song*> *allSnapshotSongs;
-@property (nonatomic, strong) NSIndexSet *historySongsIndexSet;
+@property (nonatomic, strong) NSArray<PlayableItem*> *allSnapshotItems;
+@property (nonatomic, assign) NSRange historyItemsRange;
 @property (nonatomic, assign) NSUInteger nowPlayingIndex;
-@property (nonatomic, strong) NSIndexSet *manuallyQueuedSongsIndexSet;
-@property (nonatomic, strong) NSIndexSet *allFutureSongsIndexSet;
+@property (nonatomic, assign) NSRange upNextQueuedItemsRange;
+@property (nonatomic, assign) NSRange allFutureItemsRange;
 @end
 @implementation MZPlaybackQueueSnapshot
 
 /**
  * @brief Creates a snapshot of the queue in such a way that it becomes trivial to display graphically to
  *        the user.
- * @param songs all the songs that are to be displayed (graphically) to the user.
- * @param historySongsIndexSet  identifies which indexes in the 'songs' array are part of the users
+ * @param items all the PlayableItems that are to be displayed (graphically) to the user.
+ * @param rangeOfHistoryItems   range of the items in the 'songs' array are part of the users
  *                              history. Meaning, the user actually played these songs for at least x
  *                              seconds. These songs were previously played (and are not necessarily part of
  *                              the current queue.)
- * @param manuallyQueuedSongsIndexSet  Songs which have been manually queued up by the user.
+ * @param rangeOfUpNextQueuedItems  Items which have been manually queued up by the user.
  * @param index  index of the now playing song (at the time of QueueSnapshot creation.)
- * @param allFutureSongsIndexSet  Songs coming up in the main playback queue (not the temporary queue that
- *                                the user can build on the fly.) These are songs which have not been 
- *                                played.
+ * @param rangeOfUpNextQueuedItems Range for the items that were queued on the fly by the user.
+ * @param rangeOfAllFutureItems   Range for the items that are coming up in the main playback queue (not the
+ *                                temporary queue that the user can build on the fly.) These are songs which
+ *                                have not been played.
  */
-- (id)initQueueSnapshotWithSongs:(NSArray<Song*> *)songs
-             indxSetHistorySongs:(NSIndexSet *)historySongsIndexSet
+- (id)initQueueSnapshotWithItems:(NSArray<PlayableItem*> *)items
+             rangeOfHistoryItems:(NSRange)historyItemsRange
                  nowPlayingIndex:(NSUInteger)index
-      indxSetManuallyQueuedSongs:(NSIndexSet *)manuallyQueuedSongsIndexSet
-           indxSetAllFutureSongs:(NSIndexSet *)allFutureSongsIndexSet
+        rangeOfUpNextQueuedItems:(NSRange)upNextQueuedItemsRange
+           rangeOfAllFutureItems:(NSRange)allFutureItemsRange
 {
     if(self = [super init]) {
-        NSAssert(songs != nil, @"cannot create queue snapshot with nil songs parameter.");
-        NSAssert(historySongsIndexSet != nil, @"cannot create queue snapshot with nil historSongsIndexSet parameter.");
+        NSAssert(items != nil, @"cannot create queue snapshot with nil items parameter.");
+        NSAssert(historyItemsRange.location != NSNotFound, @"cannot create queue snapshot with invalid historyItemsRange parameter.");
         NSAssert(index != NSNotFound, @"cannot create queue snapshot with nowPlayingIndex == NSNotFound.");
-        NSAssert(manuallyQueuedSongsIndexSet != nil, @"cannot create queue snapshot with nil manuallyQueuedSongsIndexSet parameter.");
-        NSAssert(allFutureSongsIndexSet != nil, @"cannot create queue snapshot with nil allFutureSongsIndexSet parameter.");
-        _allSnapshotSongs = songs;
-        _historySongsIndexSet = historySongsIndexSet;
+        NSAssert(upNextQueuedItemsRange.location != NSNotFound, @"cannot create queue snapshot with invalid upNextQueuedItemsRange parameter.");
+        NSAssert(allFutureItemsRange.location != NSNotFound, @"cannot create queue snapshot with invalid allFutureItemsRange parameter.");
+        _allSnapshotItems = items;
+        _historyItemsRange = historyItemsRange;
         _nowPlayingIndex = index;
-        _manuallyQueuedSongsIndexSet = manuallyQueuedSongsIndexSet;
-        _allFutureSongsIndexSet = allFutureSongsIndexSet;
+        _upNextQueuedItemsRange = upNextQueuedItemsRange;
+        _allFutureItemsRange = allFutureItemsRange;
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(nowPlayingSongChanged)
                                                      name:MZNewSongLoading
@@ -66,28 +67,28 @@
 #warning somehow respond to the fact that the current song has changed. Update NSIndexSets???
 }
 
-/** All the songs in the snapshot. */
-- (NSArray<Song*> *)allSongsInSnapshot
+/** All the items in the snapshot. */
+- (NSArray<PlayableItem*> *)allSongsInSnapshot
 {
-    return _allSnapshotSongs;
+    return _allSnapshotItems;
 }
 
-/** Songs which were previously played (these songs are not necessarily part of the current queue.) */
-- (NSArray<Song*> *)historySongs
+/** Items which were previously played (these items are not necessarily part of the current queue.) */
+- (NSArray<PlayableItem*> *)historySongs
 {
-    return [_allSnapshotSongs objectsAtIndexes:_historySongsIndexSet];
+    return [_allSnapshotItems subarrayWithRange:_historyItemsRange];
 }
 
-/** Songs which have been queued up on the fly. */
-- (NSArray<Song*> *)manuallyQueuedSongs
+/** Items which have been queued up on the fly. */
+- (NSArray<PlayableItem*> *)upNextQueuedSongs
 {
-    return [_allSnapshotSongs objectsAtIndexes:_manuallyQueuedSongsIndexSet];
+    return [_allSnapshotItems subarrayWithRange:_upNextQueuedItemsRange];
 }
 
-/** Songs which are coming up in the main queue (NOT the queue that can be made on the fly.) */
-- (NSArray<Song*> *)futureSongs
+/** Items which are coming up in the main queue (NOT the queue that can be made on the fly.) */
+- (NSArray<PlayableItem*> *)futureSongs
 {
-    return [_allSnapshotSongs objectsAtIndexes:_allFutureSongsIndexSet];
+    return [_allSnapshotItems subarrayWithRange:_allFutureItemsRange];
 }
 
 @end

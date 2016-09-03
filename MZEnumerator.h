@@ -36,6 +36,10 @@
 /** Gets the object at the current 'cursor' location in the array. Nil if operation fails. */
 - (id)currentObject;
 
+/** Returns NSNotFound if currentObject returns nil (tolerance value > 0 specified when enumerator was
+    created.) Otherwise, the index into the source array for the source array.*/
+- (NSUInteger)indexOfCurrentObjectInSourceArray;
+
 /** Returns YES IFF a call to previousObject would return a non-nil result. */
 - (BOOL)hasPrevious;
 

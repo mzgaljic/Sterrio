@@ -14,31 +14,33 @@
 @interface MZPlaybackQueueSnapshot : NSObject
 
 /**
- * @brief Creates a snapshot of the queue in such a way that it becomes trivial to display graphically to 
+ * @brief Creates a snapshot of the queue in such a way that it becomes trivial to display graphically to
  *        the user.
- * @param songs all the songs that are to be displayed (graphically) to the user.
- * @param historySongsIndexSet  identifies which indexes in the 'songs' array are part of the users
- *                              history. Meaning, the user actually played these songs for at least x 
- *                              seconds. These songs were previously played (and are not necessarily part of 
+ * @param items all the PlayableItems that are to be displayed (graphically) to the user.
+ * @param rangeOfHistoryItems   range of the items in the 'songs' array are part of the users
+ *                              history. Meaning, the user actually played these songs for at least x
+ *                              seconds. These songs were previously played (and are not necessarily part of
  *                              the current queue.)
- * @param manuallyQueuedSongsIndexSet  Songs which have been manually queued up by the user.
+ * @param rangeOfUpNextQueuedItems  Items which have been manually queued up by the user.
  * @param index  index of the now playing song (at the time of QueueSnapshot creation.)
- * @param allFutureSongsIndexSet  Songs coming up in the main playback queue (not the temporary queue that
- *                                the user can build on the fly.) These are songs which have not been played.
+ * @param rangeOfUpNextQueuedItems Range for the items that were queued on the fly by the user.
+ * @param rangeOfAllFutureItems   Range for the items that are coming up in the main playback queue (not the 
+ *                                temporary queue that the user can build on the fly.) These are songs which 
+ *                                have not been played.
  */
-- (id)initQueueSnapshotWithSongs:(NSArray<Song*> *)songs
-             indxSetHistorySongs:(NSIndexSet *)historySongsIndexSet
+- (id)initQueueSnapshotWithItems:(NSArray<PlayableItem*> *)items
+             rangeOfHistoryItems:(NSRange)historyItemsRange
                  nowPlayingIndex:(NSUInteger)index
-      indxSetManuallyQueuedSongs:(NSIndexSet *)manuallyQueuedSongsIndexSet
-           indxSetAllFutureSongs:(NSIndexSet *)allFutureSongsIndexSet;
+        rangeOfUpNextQueuedItems:(NSRange)upNextQueuedItemsRange
+           rangeOfAllFutureItems:(NSRange)allFutureItemsRange;
 
 /** All the songs in the snapshot. */
-- (NSArray<Song*> *)allSongsInSnapshot;
-/** Songs which were previously played (these songs are not necessarily part of the current queue.) */
-- (NSArray<Song*> *)historySongs;
-/** Songs which have been queued up on the fly. */
-- (NSArray<Song*> *)manuallyQueuedSongs;
-/** Songs which are coming up in the main queue (NOT the queue that can be made on the fly.) */
-- (NSArray<Song*> *)futureSongs;
+- (NSArray<PlayableItem*> *)allSongsInSnapshot;
+/** Items which were previously played (these items are not necessarily part of the current queue.) */
+- (NSArray<PlayableItem*> *)historySongs;
+/** Items which have been queued up on the fly. */
+- (NSArray<PlayableItem*> *)upNextQueuedSongs;
+/** Items which are coming up in the main queue (NOT the queue that can be made on the fly.) */
+- (NSArray<PlayableItem*> *)futureSongs;
 
 @end

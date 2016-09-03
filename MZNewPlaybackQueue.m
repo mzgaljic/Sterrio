@@ -12,6 +12,7 @@
 #import "MZArrayShuffler.h"
 #import "Queue.h"
 #import "UpNextItem.h"
+#import "NowPlaying.h"
 
 
 @interface MZNewPlaybackQueue ()
@@ -156,8 +157,63 @@ static id sharedNewPlaybackQueueInstance = nil;
 
 - (MZPlaybackQueueSnapshot *)snapshotOfPlaybackQueue
 {
-#warning no implementation.
-    return nil;
+#warning still need to get history items.
+    NSArray *historyItems = @[];
+    
+    NSMutableArray *upNextQueuePlayableItems = [NSMutableArray array];
+    for(UpNextItem *item in [_upNextQueue allQueueObjectsAsArray]) {
+        NSArray *enumeratorsArray = [[item enumeratorForContext] underlyingArray];
+        for(id obj in enumeratorsArray) {
+            PlayableItem *playableItem = [MZNewPlaybackQueue wrapAsPlayableItem:obj
+                                                                        context:item.context
+                                                                     queuedSong:YES];
+            [upNextQueuePlayableItems addObject:playableItem];
+        }
+    }
+    
+    NSMutableArray *unplayedCurrentEnumeratorItems;
+    MZEnumerator *currentEnumerator = [self initializeAndGetCurrentEnumeratorIfPossible];
+    if(currentEnumerator == nil) {
+        unplayedCurrentEnumeratorItems = [NSMutableArray array];
+    } else {
+        NSArray *enumeratorsArray = [currentEnumerator underlyingArray];
+        if(enumeratorsArray.count > 0 && currentEnumerator.hasNext) {
+            NSUInteger nextObjIndex = [currentEnumerator indexOfCurrentObjectInSourceArray] + 1;
+            NSUInteger rangeLength = enumeratorsArray.count-1 - nextObjIndex;
+            unplayedCurrentEnumeratorItems = [NSMutableArray arrayWithCapacity:rangeLength + 1];
+            NSRange unplayedMainOrShuffledObjsRange = NSMakeRange(nextObjIndex, rangeLength);
+            NSArray *unplayedObjs = [enumeratorsArray subarrayWithRange:unplayedMainOrShuffledObjsRange];
+            for(id obj in unplayedObjs) {
+                //Reminder: Main AND shuffled enumerators both originate from _mainContext.
+                PlayableItem *playableItem = [MZNewPlaybackQueue wrapAsPlayableItem:obj
+                                                                            context:_mainContext
+                                                                         queuedSong:NO];
+                [unplayedCurrentEnumeratorItems addObject:playableItem];
+            }
+        }
+    }
+    
+    PlayableItem *nowPlayingItem = [[NowPlaying sharedInstance] playableItem];
+    
+    //added 1 for 'now playing'. Look at the order the capacity is computed if you forget how the contents
+    //are organized in the 'items' array.
+    NSMutableArray<PlayableItem*> *items = [NSMutableArray arrayWithCapacity:historyItems.count + 1 + upNextQueuePlayableItems.count + unplayedCurrentEnumeratorItems.count];
+    [items addObjectsFromArray:historyItems];
+    [items addObject:nowPlayingItem];
+    [items addObjectsFromArray:upNextQueuePlayableItems];
+    [items addObjectsFromArray:unplayedCurrentEnumeratorItems];
+    NSUInteger nowPlayingIndex = historyItems.count;
+#warning set values for these range variables. Should be straightforward?
+    NSRange historyItemsRange;
+    NSRange upNextQueuedItemsRange;
+    NSRange futureItemsRange;
+    MZPlaybackQueueSnapshot *snapshot;
+    snapshot = [[MZPlaybackQueueSnapshot alloc] initQueueSnapshotWithItems:items
+                                                       rangeOfHistoryItems:historyItemsRange
+                                                           nowPlayingIndex:nowPlayingIndex
+                                                  rangeOfUpNextQueuedItems:upNextQueuedItemsRange
+                                                     rangeOfAllFutureItems:futureItemsRange];
+    return snapshot;
 }
 
 - (PlayableItem *)currentItem

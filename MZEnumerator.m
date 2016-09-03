@@ -141,6 +141,22 @@ static NSString * const CANT_INIT_WITH_NIL_ARRAY_MSG = @"Cannot itialize an MZEn
     }
 }
 
+/** Returns NSNotFound if currentObject returns nil (tolerance value > 0 specified when enumerator was
+    created.) Otherwise, the index into the source array for the source array.*/
+- (NSUInteger)indexOfCurrentObjectInSourceArray
+{
+    if(_arrayWithTolerance.count != _lastKnownArraySize) {
+        @throw NSInternalInconsistencyException;
+    }
+    if(_arrayWithTolerance.count == 0) {
+        return NSNotFound;
+    }
+    if([self currentObject] != nil) {
+        return _cursor - _outOfBoundsTolerance;
+    }
+    return NSNotFound;
+}
+
 /** Returns YES IFF a call to previousObject would return a non-nil result. */
 - (BOOL)hasPrevious
 {
