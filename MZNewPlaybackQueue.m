@@ -494,8 +494,7 @@ static id sharedNewPlaybackQueueInstance = nil;
     NSUInteger count = 0;
     for(UpNextItem *upNextItem in items) {
         MZEnumerator *enumerator = [upNextItem enumeratorForContext];
-#warning should actually figure out where the cursor is in the enumerator, and then use that to get 'remaining count'. We should not be blindly taking the enumerator count (which is the count of the entire thing.)
-        count += enumerator.count;
+        count += enumerator.numberMoreObjects;
     }
     return count;
 }
