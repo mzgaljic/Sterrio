@@ -150,22 +150,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     cell.textLabel.text = song.songName;
     
     if(![reuseID isEqualToString:cellReuseIdDetailLabelNull]){
-        //cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringForSong:song];
-        NSMutableString *detailText = [NSMutableString new];
-        NSString *artistName = song.artist.artistName;
-        NSString *albumName = song.album.albumName;
-        if(artistName != nil && albumName != nil){
-            [detailText appendString:artistName];
-            [detailText appendString:@" — "];
-            [detailText appendString:albumName];
-        } else if(artistName == nil && albumName == nil){
-            detailText = nil;
-        } else if(artistName == nil && albumName != nil){
-            [detailText appendString:albumName];
-        } else if(artistName != nil && albumName == nil){
-            [detailText appendString:artistName];
-        } //else  --case should never happen
-        cell.detailTextLabel.text = detailText;
+        cell.detailTextLabel.text = [AllSongsDataSource generateLabelStringForSong:song];
     } else {
         cell.detailTextLabel.text = nil;
     }
@@ -711,53 +696,24 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     }
 }
 
-- (NSAttributedString *)generateDetailLabelAttrStringForSong:(Song *)aSong
+//exposed helper
++ (NSString *)generateLabelStringForSong:(Song *)aSong
 {
-    NSString *artistString = aSong.artist.artistName;
-    NSString *albumString = aSong.album.albumName;
-    if(artistString != nil && albumString != nil){
-        NSMutableString *newArtistString = [NSMutableString stringWithString:artistString];
-        [newArtistString appendString:@" — "];  //this is a special dash called an 'em dash'.
-        
-        NSMutableString *entireString = [NSMutableString stringWithString:newArtistString];
-        [entireString appendString:albumString];
-        NSRange grayRange = [entireString rangeOfString:entireString];
-        
-        NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
-        
-        [attrString beginEditing];
-        [attrString addAttribute: NSForegroundColorAttributeName
-                           value:[UIColor grayColor]
-                           range:grayRange];
-        [attrString endEditing];
-        return attrString;
-        
-    } else if(artistString == nil && albumString == nil)
-        return nil;
-    
-    else if(artistString == nil && albumString != nil){
-        NSMutableString *entireString = [NSMutableString stringWithString:albumString];
-        
-        NSArray *components = @[albumString];
-        NSRange grayRange = [entireString rangeOfString:[components objectAtIndex:0]];
-        
-        NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
-        
-        [attrString beginEditing];
-        [attrString addAttribute: NSForegroundColorAttributeName
-                           value:[UIColor grayColor]
-                           range:grayRange];
-        [attrString endEditing];
-        return attrString;
-        
-    } else if(artistString != nil && albumString == nil){
-        
-        NSMutableString *entireString = [NSMutableString stringWithString:artistString];
-        NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
-        return attrString;
-        
-    } else  //case should never happen
-        return nil;
+    NSMutableString *text = [NSMutableString new];
+    NSString *artistName = aSong.artist.artistName;
+    NSString *albumName = aSong.album.albumName;
+    if(artistName != nil && albumName != nil){
+        [text appendString:artistName];
+        [text appendString:@" — "];
+        [text appendString:albumName];
+    } else if(artistName == nil && albumName == nil){
+        text = nil;
+    } else if(artistName == nil && albumName != nil){
+        [text appendString:albumName];
+    } else if(artistName != nil && albumName == nil){
+        [text appendString:artistName];
+    } //else  --case should never happen
+    return text;
 }
 
 @end

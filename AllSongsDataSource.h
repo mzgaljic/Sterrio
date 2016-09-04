@@ -40,4 +40,7 @@
 - (instancetype)initWithSongDataSourceType:(SONG_DATA_SRC_TYPE)type
                searchBarDataSourceDelegate:(id<SearchBarDataSourceDelegate>)delegate;
 
+//Exposed helper
++ (NSString *)generateLabelStringForSong:(Song *)aSong;
+
 @end

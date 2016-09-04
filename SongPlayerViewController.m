@@ -1684,10 +1684,9 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
 
 - (void)viewPlaybackQueue
 {
-#warning playback queue temporarily disabled
-    [MyAlerts displayTestAlertWithText:@"Playback queue temporarily disabled (shuffle features not finished for that screen yet.)"];
-    /*
-    QueueViewController *vc = [[QueueViewController alloc] init];
+    MZPlaybackQueueSnapshot *snapshot = [[MZNewPlaybackQueue sharedInstance] snapshotOfPlaybackQueue];
+    QueueViewController *vc = [[QueueViewController alloc] initWithPlaybackQueueSnapshot:snapshot];
+#warning remove this AFBlurSegue nonsense - should manually display a modal UINavigationController.
     AFBlurSegue *segue = [[AFBlurSegue alloc] initWithIdentifier:@"showQueueSEgue"
                                                           source:self
                                                      destination:vc];
@@ -1695,7 +1694,6 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
     segue.blurRadius = 50;
     segue.saturationDeltaFactor = .1;
     [segue perform];
-     */
 }
 
 @end

@@ -19,6 +19,7 @@
 #import "MusicPlaybackController.h"
 #import <FXImageView/UIImage+FX.h>
 #import "UIColor+LighterAndDarker.h"
+#import "MZPlaybackQueueSnapshot.h"
 
 @interface QueueViewController : UIViewController
                                 <UITableViewDataSource,
@@ -27,6 +28,7 @@
     StackController *stackController;
 }
 
+- (id)initWithPlaybackQueueSnapshot:(MZPlaybackQueueSnapshot *)snapshot;
 - (void)preDealloc;
 
 @end

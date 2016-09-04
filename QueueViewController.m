@@ -11,49 +11,36 @@
 #import "SongAlbumArt+Utilities.h"
 #import "PlayableItem.h"
 #import "PlaylistItem.h"
+#import "AllSongsDataSource.h"
 
 @interface QueueViewController ()
-{
-    UINavigationBar *navBar;
-    
-    //MZPlaybackQueue *queue;
-    
-    //data models
-    NSArray *mainQueueItemsComingUp;
-    PlaybackContext *mainQueueContext;
-    
-    NSArray *upNextPlaybackContexts;
-    NSArray *upNextItems;
-    
-    BOOL skippingToTappedSong;
-    UIView *cellBackgroundBlurView;
-    UIView *sectionHeaderBackgroundBlurView;
-}
 @property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) MZPlaybackQueueSnapshot *snapshot;
+@property (nonatomic, strong) UINavigationBar *navBar;
+@property (nonatomic, strong) UIView *cellBackgroundBlurView;
+@property (nonatomic, strong) UIView *sectionHeaderBackgroundBlurView;
 @end
 
 @implementation QueueViewController : UIViewController
 short const TABLE_SECTION_FOOTER_HEIGHT = 25;
-short const SECTION_EMPTY = -1;
 
 #pragma mark - View Controller life cycle
-/*
+- (id)initWithPlaybackQueueSnapshot:(MZPlaybackQueueSnapshot *)snapshot
+{
+    if(self = [super init]) {
+        _snapshot = snapshot;
+    }
+    return nil;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     stackController = [[StackController alloc] init];
-    
-    queue = [MZPlaybackQueue sharedInstance];
-    mainQueueItemsComingUp = [queue tableViewOptimizedArrayOfMainQueueItemsComingUp];
-    mainQueueContext = [queue mainQueuePlaybackContext];
-    upNextItems = [queue tableViewOptimizedArrayOfUpNextItems];
-    upNextPlaybackContexts = [queue tableViewOptimizedArrayOfUpNextItemsContexts];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(newSongsIsLoading)
                                                  name:MZNewSongLoading
                                                object:nil];
-    
-    skippingToTappedSong = NO;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -61,7 +48,7 @@ short const SECTION_EMPTY = -1;
     [super viewWillAppear:animated];
     [self setUpCustomNavBar];
     
-    if(self.tableView == nil){
+    if(self.tableView == nil) {
         int y = [AppEnvironmentConstants navBarHeight] + [AppEnvironmentConstants statusBarHeight];
         int navBarHeight = [AppEnvironmentConstants navBarHeight];
         self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0,
@@ -79,23 +66,21 @@ short const SECTION_EMPTY = -1;
     self.tableView.dataSource = self;
 }
 
+//FYI: another class assumes this method exists so don't delete this method.
 - (void)preDealloc
 {
-    //implemented to avoid crash (another class assumes this class exists lol.)
+    _tableView.delegate = nil;
+    _tableView = nil;
+    _snapshot = nil;
+    _navBar = nil;
+    _cellBackgroundBlurView = nil;
+    _sectionHeaderBackgroundBlurView = nil;
+    stackController = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)dealloc
 {
-    self.tableView.delegate = nil;
-    self.tableView = nil;
-    cellBackgroundBlurView = nil;
-    sectionHeaderBackgroundBlurView = nil;
-    mainQueueContext = nil;
-    mainQueueItemsComingUp = nil;
-    upNextPlaybackContexts = nil;
-    upNextItems = nil;
-    stackController = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"Dealloc'ed in %@", NSStringFromClass([self class]));
 }
 
@@ -105,28 +90,29 @@ short const SECTION_EMPTY = -1;
     int y = [AppEnvironmentConstants statusBarHeight];
     int vcWidth = self.view.frame.size.width;
     int navBarHeight = [AppEnvironmentConstants navBarHeight];
-    navBar = [[UINavigationBar alloc]initWithFrame:CGRectMake(0, y, vcWidth, navBarHeight)];
+    _navBar = [[UINavigationBar alloc]initWithFrame:CGRectMake(0, y, vcWidth, navBarHeight)];
     
     //this VC has a very dark theme, make nav bar buttons and text white.
-    navBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor whiteColor]};
-    navBar.tintColor = [UIColor whiteColor];
-    [self.view addSubview:navBar];
+    _navBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor whiteColor]};
+    _navBar.tintColor = [UIColor whiteColor];
+    [self.view addSubview:_navBar];
     
     //make nav bar transparent, let blurred one show through.
-    [navBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-    navBar.shadowImage = [UIImage new];
-    navBar.translucent = YES;
+    [_navBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    _navBar.shadowImage = [UIImage new];
+    _navBar.translucent = YES;
     self.view.backgroundColor = [UIColor clearColor];
-    navBar.backgroundColor = [UIColor clearColor];
+    _navBar.backgroundColor = [UIColor clearColor];
     
-    UIBarButtonItem *closeBtn = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"UIButtonBarArrowDown"]
+    UIImage *arrowDownImg = [UIImage imageNamed:@"UIButtonBarArrowDown"];
+    UIBarButtonItem *closeBtn = [[UIBarButtonItem alloc] initWithImage:arrowDownImg
                                                                  style:UIBarButtonItemStylePlain
                                                                 target:self
                                                                 action:@selector(dismissQueueTapped)];
     
     UINavigationItem *navigItem = [[UINavigationItem alloc] initWithTitle:@"Playback Queue"];
     navigItem.leftBarButtonItem = closeBtn;
-    navBar.items = @[navigItem];
+    _navBar.items = @[navigItem];
 }
 
 #pragma mark - Table View Data Source
@@ -145,12 +131,12 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     cell.backgroundColor = [UIColor clearColor];
     
     //make the selection style blurred
-    if(cellBackgroundBlurView == nil){
+    if(_cellBackgroundBlurView == nil){
         UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-        cellBackgroundBlurView = [[UIVisualEffectView alloc] initWithEffect:effect];
-        cellBackgroundBlurView.frame = cell.contentView.bounds;
+        _cellBackgroundBlurView = [[UIVisualEffectView alloc] initWithEffect:effect];
+        _cellBackgroundBlurView.frame = cell.contentView.bounds;
     }
-    [cell setSelectedBackgroundView:cellBackgroundBlurView];
+    [cell setSelectedBackgroundView:_cellBackgroundBlurView];
 
     // Set up other aspects of the cell content.
     PlayableItem *item = [self itemForIndexPath:indexPath];
@@ -158,7 +144,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     //init cell fields
     cell.textLabel.text = song.songName;
-    cell.detailTextLabel.attributedText = [self generateDetailLabelAttrStringForSong:song];
+    cell.detailTextLabel.text = [AllSongsDataSource generateLabelStringForSong:song];
     
     if(indexPath.row == 0) {
         cell.textLabel.textColor = [[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor] lighterColor];
@@ -192,8 +178,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                     albumArt = [weaksong.albumArt imageFromImageData];
                 }];
                 
-                if(albumArt == nil)
+                if(albumArt == nil) {
                     albumArt = [UIImage imageNamed:@"Sample Album Art"];
+                }
             }
         }
         
@@ -204,7 +191,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             if ([indexPath isEqual:cellIndexPath]) {
                 // Only set cell image if the cell currently being displayed is the one that actually required this image.
                 // Prevents reused cells from receiving images back from rendering that were requested for that cell in a previous life.
-                
                 [UIView transitionWithView:cell.imageView
                                   duration:MZCellImageViewFadeDuration
                                    options:UIViewAnimationOptionTransitionCrossDissolve
@@ -220,13 +206,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    if(section == 0){
-        if(mainQueueContext.queueName == nil)
-            return @"";
-        return [NSString stringWithFormat:@"  %@",mainQueueContext.queueName];
-    }
-    else
-        return @"";
+    //if(section == 0 && mainQueueContext.queueName != nil){
+      //  return [NSString stringWithFormat:@"  %@",mainQueueContext.queueName];
+    //}
+    return @"";
 }
 
 //setting section header background and text color
@@ -238,24 +221,25 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     header.textLabel.backgroundColor = [UIColor clearColor];
     int headerFontSize;
     if([AppEnvironmentConstants preferredSongCellHeight]
-         < [AppEnvironmentConstants maximumSongCellHeight] - 18)
+       < [AppEnvironmentConstants maximumSongCellHeight] - 18) {
         headerFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-    else
+    } else {
         headerFontSize = [PreferredFontSizeUtility hypotheticalLabelFontSizeForPreferredSize:[AppEnvironmentConstants maximumSongCellHeight] - 18];
+    }
     header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                             size:headerFontSize];
     
     //making background clear, and then placing a blur view across the entire header (execpt the uilabel)
-    if(sectionHeaderBackgroundBlurView == nil){
+    if(_sectionHeaderBackgroundBlurView == nil) {
         view.tintColor = [UIColor clearColor];
         UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-        sectionHeaderBackgroundBlurView = [[UIVisualEffectView alloc] initWithEffect:effect];
-        sectionHeaderBackgroundBlurView.frame = view.bounds;
-        sectionHeaderBackgroundBlurView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        _sectionHeaderBackgroundBlurView = [[UIVisualEffectView alloc] initWithEffect:effect];
+        _sectionHeaderBackgroundBlurView.frame = view.bounds;
+        _sectionHeaderBackgroundBlurView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     }
-    [view addSubview:sectionHeaderBackgroundBlurView];
+    [view addSubview:_sectionHeaderBackgroundBlurView];
     [view bringSubviewToFront:header.textLabel];
-    [view sendSubviewToBack:sectionHeaderBackgroundBlurView];
+    [view sendSubviewToBack:_sectionHeaderBackgroundBlurView];
 }
 
 //setting footer header background (using footer view to pad between sections in this case)
@@ -272,28 +256,12 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    int nowPlayingCount = 0;
-    BOOL nowPlayingSongExists = [[NowPlaying sharedInstance] playableItem] ? YES : NO;
-    if(nowPlayingSongExists)
-        nowPlayingCount = 1;
-    if(upNextItems.count + mainQueueItemsComingUp.count + nowPlayingCount > 0)
-        return 1;
-    else
-        return 0;
+
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if(section == 0){
-        BOOL nowPlayingSongExists = [[NowPlaying sharedInstance] playableItem] ? YES : NO;
-        NSUInteger numRows;
-        if(nowPlayingSongExists)
-            numRows = upNextItems.count + mainQueueItemsComingUp.count +1;
-        else
-            numRows = upNextItems.count + mainQueueItemsComingUp.count;
-        return numRows;
-    } else
-        return 0;
+    
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -303,81 +271,16 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    float height = [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel];
-    return height * 1.2;
+    return [PreferredFontSizeUtility recommendedRowHeightForCellWithSingleLabel] * 1.2;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    skippingToTappedSong = YES;
     
-    PlayableItem *tappedItem = [self itemForIndexPath:indexPath];
-    if(indexPath.row == 0
-       && [[NowPlaying sharedInstance] isEqualToItem:tappedItem])
-    {
-        [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
-        [MusicPlaybackController resumePlayback];
-    }
-    else
-    {
-        if(indexPath.section == 0)
-        {
-            NSUInteger numRowsInTableBeforeDeletion = [self.tableView numberOfRowsInSection:0];
-            NSUInteger numRowsDeleted = 0;
-            
-            [self.tableView beginUpdates];
-            //erase all rows before the tapped one in the tapped section
-            NSMutableArray *deletePaths = [NSMutableArray array];
-            for(int i = 0; i < indexPath.row; i++){
-                [deletePaths addObject:[NSIndexPath indexPathForRow:i inSection:indexPath.section]];
-                numRowsDeleted++;
-            }
-            [self.tableView deleteRowsAtIndexPaths:deletePaths
-                                  withRowAnimation:UITableViewRowAnimationTop];
-            
-            if(numRowsDeleted == 1){
-                [MusicPlaybackController skipToNextTrack];
-            } else{
-                [[MZPlaybackQueue sharedInstance] skipOverThisManyQueueItemsEfficiently:numRowsDeleted -1];
-                
-                //skip forward in the queue (custom logic here...thats why we're not using
-                //the MusicPlaybackController class to help us here.)
-                [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
-                MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
-                BOOL allowSongDidFinishNotifToProceed = ([MusicPlaybackController numMoreSongsInQueue] != 0);
-                [player allowSongDidFinishNotificationToProceed:allowSongDidFinishNotifToProceed];
-                PlayableItem *oldItem = [NowPlaying sharedInstance].playableItem;
-                PlayableItem *newItem = [[MZPlaybackQueue sharedInstance] skipForward];
-                
-                [VideoPlayerWrapper startPlaybackOfSong:newItem.songForItem
-                                           goingForward:YES
-                                        oldPlayableItem:oldItem];
-                [[NowPlaying sharedInstance] setNewPlayableItem:newItem];
-            }
-            
-            //now need to refresh the model so everything matches up
-#warning Inefficient code
-            //would be more efficient to manually delete the relevant objects within these data sources.
-            mainQueueItemsComingUp = [queue tableViewOptimizedArrayOfMainQueueItemsComingUp];
-            mainQueueContext = [queue mainQueuePlaybackContext];
-            upNextItems = [queue tableViewOptimizedArrayOfUpNextItems];
-            upNextPlaybackContexts = [queue tableViewOptimizedArrayOfUpNextItemsContexts];
-            
-            
-            
-            BOOL atLeast1RowRemainingInTable = (numRowsInTableBeforeDeletion - numRowsDeleted > 0);
-            if(atLeast1RowRemainingInTable)
-            {
-                NSIndexPath *newFirstRowPathAfterUpdates = [NSIndexPath indexPathForRow:numRowsDeleted
-                                                                              inSection:0];
-                [self.tableView reloadRowsAtIndexPaths:@[newFirstRowPathAfterUpdates]
-                                      withRowAnimation:UITableViewRowAnimationFade];
-            }
-            [self.tableView endUpdates];
-        }
-    }
-    skippingToTappedSong = NO;
+    //PlayableItem *tappedItem = [self itemForIndexPath:indexPath];
+    //[MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
+    //[MusicPlaybackController resumePlayback];
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView
@@ -389,101 +292,22 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 #pragma mark - Tableview datasource helper
 - (PlayableItem *)itemForIndexPath:(NSIndexPath *)indexPath
 {
-    if(indexPath.section == 0){
-        int row = (int)indexPath.row;
-        if(row == 0)
-            return [[NowPlaying sharedInstance] playableItem];
-        
-        if(! [self isUpNextSongPresentAtIndexPath:indexPath]){
-            row -= upNextItems.count;  //1 is for the main now playing song
-            row--;
-            id obj = mainQueueItemsComingUp[row];
-            if([obj isMemberOfClass:[PlayableItem class]])
-                return obj;
-            else{
-                if([obj isMemberOfClass:[PlaylistItem class]]) {
-                    return [[PlayableItem alloc] initWithPlaylistItem:obj context:mainQueueContext fromUpNextSongs:NO];
-                } else if([obj isMemberOfClass:[Song class]]){
-                    return [[PlayableItem alloc] initWithSong:obj context:mainQueueContext fromUpNextSongs:NO];
-                }
-            }
-            
-        } else{
-            row--;
-            //not checking if return type is a PlayableItem because it is always of that
-            //type from the upNextItems array.
-            return upNextItems[row];
-        }
-    }
-    return nil;
+
 }
 
 - (BOOL)isUpNextSongPresentAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(indexPath.section == 0){
-        int row = (int)indexPath.row;
-        if(row == 0){
-            if([[NowPlaying sharedInstance] playableItem].isFromUpNextSongs)
-                return YES;
-            else
-                return NO;
-        }
-        
-        row--;  //take into account the now playing song.
-        int lastUpNextSongArrayIndex = (int)upNextItems.count - 1;
-        if(row > lastUpNextSongArrayIndex)
-            return NO;
-        else
-            return YES;
-    }
-    return NO;
+
 }
-
-- (PlaybackContext *)contextForIndexPath:(NSIndexPath *)indexPath
-{
-    if(indexPath.section == 0){
-
-        if(! [self isUpNextSongPresentAtIndexPath:indexPath]){
-            return mainQueueContext;
-        } else{
-            //NEED to differentiate between a context being one row (representing one song)
-            //and a context in the table representing a bunch of songs from an album, etc.
-            
-            PlayableItem *item = [self itemForIndexPath:indexPath];
-            return item.contextForItem;
-        }
-    }
-    return nil;
-}
-
 
 - (void)newSongsIsLoading
 {
-    if(skippingToTappedSong)
-        return;
     
-    if(mainQueueItemsComingUp.count + upNextItems.count > 0){
-#warning Inefficient code
-        //would be more efficient to manually delete the relevant objects within these data sources.
-        mainQueueItemsComingUp = [queue tableViewOptimizedArrayOfMainQueueItemsComingUp];
-        upNextItems = [queue tableViewOptimizedArrayOfUpNextItems];
-        upNextPlaybackContexts = [queue tableViewOptimizedArrayOfUpNextItemsContexts];
-        
-        [self.tableView beginUpdates];
-        [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]]
-                              withRowAnimation:UITableViewRowAnimationTop];
-        [self.tableView endUpdates];
-        
-        
-        [self.tableView beginUpdates];
-        //must be in seperate begin and end update block.
-        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
-        [self.tableView endUpdates];
-    }
 }
 
 #pragma mark - Rotation status bar methods
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                duration:(NSTimeInterval)duration
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     
@@ -491,13 +315,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     float heightOfScreenRotationIndependant;
     float  a = [[UIScreen mainScreen] bounds].size.height;
     float b = [[UIScreen mainScreen] bounds].size.width;
-    if(a < b)
-    {
+    if(a < b) {
         heightOfScreenRotationIndependant = b;
         widthOfScreenRoationIndependant = a;
-    }
-    else
-    {
+    } else {
         widthOfScreenRoationIndependant = b;
         heightOfScreenRotationIndependant = a;
     }
@@ -509,84 +330,25 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         int vcHeight = widthOfScreenRoationIndependant;
         //smaller landscape nav bar
         int navBarHeight = [AppEnvironmentConstants navBarHeight] - 4;
-        navBar.frame = CGRectMake(0, y, vcWidth, navBarHeight);
+        _navBar.frame = CGRectMake(0, y, vcWidth, navBarHeight);
         
-        self.tableView.frame = CGRectMake(0,
-                                          navBarHeight,
-                                          vcWidth,
-                                          vcHeight - navBarHeight);
-    } else{
+        self.tableView.frame = CGRectMake(0, navBarHeight, vcWidth, vcHeight - navBarHeight);
+    } else {
         int y = [AppEnvironmentConstants statusBarHeight];
         int vcWidth = widthOfScreenRoationIndependant;
         int vcHeight = heightOfScreenRotationIndependant;
         int navBarHeight = [AppEnvironmentConstants navBarHeight];
-        navBar.frame = CGRectMake(0, y, vcWidth, navBarHeight);
+        _navBar.frame = CGRectMake(0, y, vcWidth, navBarHeight);
         
         y = [AppEnvironmentConstants navBarHeight] + [AppEnvironmentConstants statusBarHeight];
-        self.tableView.frame = CGRectMake(0,
-                                          y,
-                                          vcWidth,
-                                          vcHeight - navBarHeight);
+        self.tableView.frame = CGRectMake(0, y, vcWidth, vcHeight - navBarHeight);
     }
 }
 
 - (void)dismissQueueTapped
 {
+    [self preDealloc];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark - Othe stuff
-//copy and pasted from AllSongsDataSource.m
-- (NSAttributedString *)generateDetailLabelAttrStringForSong:(Song *)aSong
-{
-    NSString *artistString = aSong.artist.artistName;
-    NSString *albumString = aSong.album.albumName;
-    if(artistString != nil && albumString != nil){
-        NSMutableString *newArtistString = [NSMutableString stringWithString:artistString];
-        [newArtistString appendString:@" "];
-        
-        NSMutableString *entireString = [NSMutableString stringWithString:newArtistString];
-        [entireString appendString:albumString];
-        
-        NSArray *components = @[newArtistString, albumString];
-        //NSRange untouchedRange = [entireString rangeOfString:[components objectAtIndex:0]];
-        NSRange grayRange = [entireString rangeOfString:[components objectAtIndex:1]];
-        
-        NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
-        
-        [attrString beginEditing];
-        [attrString addAttribute: NSForegroundColorAttributeName
-                           value:[UIColor grayColor]
-                           range:grayRange];
-        [attrString endEditing];
-        return attrString;
-        
-    } else if(artistString == nil && albumString == nil)
-        return nil;
-    
-    else if(artistString == nil && albumString != nil){
-        NSMutableString *entireString = [NSMutableString stringWithString:albumString];
-        
-        NSArray *components = @[albumString];
-        NSRange grayRange = [entireString rangeOfString:[components objectAtIndex:0]];
-        
-        NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
-        
-        [attrString beginEditing];
-        [attrString addAttribute: NSForegroundColorAttributeName
-                           value:[UIColor grayColor]
-                           range:grayRange];
-        [attrString endEditing];
-        return attrString;
-        
-    } else if(artistString != nil && albumString == nil){
-        
-        NSMutableString *entireString = [NSMutableString stringWithString:artistString];
-        NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:entireString];
-        return attrString;
-        
-    } else  //case should never happen
-        return nil;
-}
-*/
 @end
