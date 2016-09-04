@@ -32,7 +32,7 @@
  *                                temporary queue that the user can build on the fly.) These are songs which
  *                                have not been played.
  */
-- (id)initQueueSnapshotWithItems:(NSArray<PlayableItem*> *)items
+- (id)initQueueSnapshotWithItems:(NSMutableArray<PlayableItem*> *)items
              rangeOfHistoryItems:(NSRange)historyItemsRange
                  nowPlayingIndex:(NSUInteger)index
         rangeOfUpNextQueuedItems:(NSRange)upNextQueuedItemsRange
@@ -64,6 +64,7 @@
 
 - (void)nowPlayingSongChanged
 {
+    
 #warning somehow respond to the fact that the current song has changed. Update NSIndexSets???
 }
 

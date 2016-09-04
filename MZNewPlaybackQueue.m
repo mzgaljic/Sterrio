@@ -160,14 +160,14 @@ static id sharedNewPlaybackQueueInstance = nil;
 #warning still need to get history items.
     NSArray *historyItems = @[];
     
-    NSMutableArray *upNextQueuePlayableItems = [NSMutableArray array];
+    NSMutableArray *upNextQueueItems = [NSMutableArray array];
     for(UpNextItem *item in [_upNextQueue allQueueObjectsAsArray]) {
         NSArray *enumeratorsArray = [[item enumeratorForContext] underlyingArray];
         for(id obj in enumeratorsArray) {
             PlayableItem *playableItem = [MZNewPlaybackQueue wrapAsPlayableItem:obj
                                                                         context:item.context
                                                                      queuedSong:YES];
-            [upNextQueuePlayableItems addObject:playableItem];
+            [upNextQueueItems addObject:playableItem];
         }
     }
     
@@ -197,16 +197,34 @@ static id sharedNewPlaybackQueueInstance = nil;
     
     //added 1 for 'now playing'. Look at the order the capacity is computed if you forget how the contents
     //are organized in the 'items' array.
-    NSMutableArray<PlayableItem*> *items = [NSMutableArray arrayWithCapacity:historyItems.count + 1 + upNextQueuePlayableItems.count + unplayedCurrentEnumeratorItems.count];
+    NSMutableArray<PlayableItem*> *items = [NSMutableArray arrayWithCapacity:historyItems.count + 1 + upNextQueueItems.count + unplayedCurrentEnumeratorItems.count];
     [items addObjectsFromArray:historyItems];
     [items addObject:nowPlayingItem];
-    [items addObjectsFromArray:upNextQueuePlayableItems];
+    [items addObjectsFromArray:upNextQueueItems];
     [items addObjectsFromArray:unplayedCurrentEnumeratorItems];
-    NSUInteger nowPlayingIndex = historyItems.count;
-#warning set values for these range variables. Should be straightforward?
+    
     NSRange historyItemsRange;
+    if(historyItems.count == 0) {
+        historyItemsRange = NSMakeRange(NSNotFound, 0);
+    } else {
+        historyItemsRange = NSMakeRange(0, historyItems.count - 1);
+    }
+    NSUInteger nowPlayingIndex = historyItems.count;
     NSRange upNextQueuedItemsRange;
+    if(upNextQueueItems.count == 0) {
+        upNextQueuedItemsRange = NSMakeRange(NSNotFound, 0);
+    } else {
+        upNextQueuedItemsRange = NSMakeRange(historyItems.count + 1, upNextQueueItems.count - 1);
+    }
+    //'future' means future songs in the main/shuffled enumerator. NOT the up-next-queue.
     NSRange futureItemsRange;
+    if(unplayedCurrentEnumeratorItems.count == 0) {
+        futureItemsRange = NSMakeRange(NSNotFound, 0);
+    } else if(upNextQueueItems.count == 0) {
+        futureItemsRange = NSMakeRange(historyItems.count + 1, unplayedCurrentEnumeratorItems.count - 1);
+    } else {
+        futureItemsRange = NSMakeRange(upNextQueuedItemsRange.location + upNextQueuedItemsRange.length + 1, unplayedCurrentEnumeratorItems.count - 1);
+    }
     MZPlaybackQueueSnapshot *snapshot;
     snapshot = [[MZPlaybackQueueSnapshot alloc] initQueueSnapshotWithItems:items
                                                        rangeOfHistoryItems:historyItemsRange
