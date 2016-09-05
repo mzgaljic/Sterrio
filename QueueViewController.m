@@ -23,6 +23,7 @@
 
 @implementation QueueViewController : UIViewController
 short const TABLE_SECTION_FOOTER_HEIGHT = 25;
+short const UP_NEXT_SONGS_SECTION = 2;
 
 #pragma mark - View Controller life cycle
 - (id)initWithPlaybackQueueSnapshot:(MZPlaybackQueueSnapshot *)snapshot
@@ -38,7 +39,7 @@ short const TABLE_SECTION_FOOTER_HEIGHT = 25;
     [super viewDidLoad];
     stackController = [[StackController alloc] init];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(newSongsIsLoading)
+                                             selector:@selector(handleNewSongLoading)
                                                  name:MZNewSongLoading
                                                object:nil];
 }
@@ -121,11 +122,14 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 {
     static NSString *cellIdentifier = @"SongQueueItemCell";
     MZTableViewCell *cell = (MZTableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    if (!cell)
+    if (!cell) {
         cell = [[MZTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                       reuseIdentifier:cellIdentifier];
-
-    cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor] width:cell.frame.size.height height:cell.frame.size.height];
+    }
+    
+    cell.imageView.image = [UIImage imageWithColor:[UIColor clearColor]
+                                             width:cell.frame.size.height
+                                            height:cell.frame.size.height];
     cell.displayQueueSongsMode = YES;
     cell.contentView.backgroundColor = [UIColor clearColor];
     cell.backgroundColor = [UIColor clearColor];
@@ -256,12 +260,12 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-
+    return 4;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    
+    return [self itemArrayForSection:section].count;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -277,7 +281,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
+#warning implementation needed
     //PlayableItem *tappedItem = [self itemForIndexPath:indexPath];
     //[MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
     //[MusicPlaybackController resumePlayback];
@@ -292,15 +296,38 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 #pragma mark - Tableview datasource helper
 - (PlayableItem *)itemForIndexPath:(NSIndexPath *)indexPath
 {
+    return [[self itemArrayForSection:indexPath.section] objectAtIndex:indexPath.row];
+}
 
+- (NSArray *)itemArrayForSection:(NSUInteger)section
+{
+    switch (section) {
+        case 0: {
+            return _snapshot.historySongs;
+        }
+        case 1: {
+            PlayableItem *item = [[NowPlaying sharedInstance] playableItem];
+            return (item == nil) ? @[] : @[item];
+        }
+        case 2: {
+            return _snapshot.upNextQueuedSongs;
+        }
+        case 3: {
+            return _snapshot.futureSongs;
+        }
+        default:
+            NSLog(@"switch statement is missing case %lu.", (unsigned long)section);
+            @throw NSInternalInconsistencyException;
+            break;
+    }
 }
 
 - (BOOL)isUpNextSongPresentAtIndexPath:(NSIndexPath *)indexPath
 {
-
+    return indexPath.section == UP_NEXT_SONGS_SECTION;
 }
 
-- (void)newSongsIsLoading
+- (void)handleNewSongLoading
 {
     
 }

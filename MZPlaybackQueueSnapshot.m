@@ -69,7 +69,7 @@
 }
 
 /** All the items in the snapshot. */
-- (NSArray<PlayableItem*> *)allSongsInSnapshot
+- (NSArray<PlayableItem*> *)allItemsInSnapshot
 {
     return _allSnapshotItems;
 }
@@ -90,6 +90,24 @@
 - (NSArray<PlayableItem*> *)futureSongs
 {
     return [_allSnapshotItems subarrayWithRange:_allFutureItemsRange];
+}
+
+
+- (NSRange)rangeOfHistoryItems
+{
+    return _historyItemsRange;
+}
+- (NSUInteger)nowPlayingIndex
+{
+    return _nowPlayingIndex;
+}
+- (NSRange)upNextQueuedItemsRange
+{
+    return _upNextQueuedItemsRange;
+}
+- (NSRange)futureItemsRange
+{
+    return _allFutureItemsRange;
 }
 
 @end

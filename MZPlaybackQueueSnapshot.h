@@ -34,13 +34,19 @@
         rangeOfUpNextQueuedItems:(NSRange)upNextQueuedItemsRange
            rangeOfAllFutureItems:(NSRange)allFutureItemsRange;
 
-/** All the songs in the snapshot. */
-- (NSArray<PlayableItem*> *)allSongsInSnapshot;
+/** All the items in the snapshot. */
+- (NSArray<PlayableItem*> *)allItemsInSnapshot;
 /** Items which were previously played (these items are not necessarily part of the current queue.) */
 - (NSArray<PlayableItem*> *)historySongs;
 /** Items which have been queued up on the fly. */
 - (NSArray<PlayableItem*> *)upNextQueuedSongs;
 /** Items which are coming up in the main queue (NOT the queue that can be made on the fly.) */
 - (NSArray<PlayableItem*> *)futureSongs;
+
+
+- (NSRange)rangeOfHistoryItems;
+- (NSUInteger)nowPlayingIndex;
+- (NSRange)upNextQueuedItemsRange;
+- (NSRange)futureItemsRange;
 
 @end
