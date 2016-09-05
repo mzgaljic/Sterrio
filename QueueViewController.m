@@ -31,7 +31,7 @@ short const UP_NEXT_SONGS_SECTION = 2;
     if(self = [super init]) {
         _snapshot = snapshot;
     }
-    return nil;
+    return self;
 }
 
 - (void)viewDidLoad

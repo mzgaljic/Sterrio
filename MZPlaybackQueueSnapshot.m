@@ -40,10 +40,6 @@
 {
     if(self = [super init]) {
         NSAssert(items != nil, @"cannot create queue snapshot with nil items parameter.");
-        NSAssert(historyItemsRange.location != NSNotFound, @"cannot create queue snapshot with invalid historyItemsRange parameter.");
-        NSAssert(index != NSNotFound, @"cannot create queue snapshot with nowPlayingIndex == NSNotFound.");
-        NSAssert(upNextQueuedItemsRange.location != NSNotFound, @"cannot create queue snapshot with invalid upNextQueuedItemsRange parameter.");
-        NSAssert(allFutureItemsRange.location != NSNotFound, @"cannot create queue snapshot with invalid allFutureItemsRange parameter.");
         _allSnapshotItems = items;
         _historyItemsRange = historyItemsRange;
         _nowPlayingIndex = index;
