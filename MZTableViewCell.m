@@ -20,6 +20,7 @@
 }
 @end
 @implementation MZTableViewCell
+static
 short const textLabelsPaddingFromImgView = 10;
 short const editingModeChevronWidthCompensation = 55;
 short const imgPaddingFromLeft = 5;
@@ -67,7 +68,7 @@ short const dotLabelPadding = 20;
                                           cellHeight - imgPaddingFromLeft);
         self.imageView.contentMode = UIViewContentModeScaleAspectFit;
         
-        if(self.isRepresentingAQueuedSong){
+        if(self.isRepresentingAQueuedSong && coloredDotLabel.superview == nil){
             CGRect frame = self.contentView.frame;
             coloredDotLabel = [[UILabel alloc] initWithFrame:CGRectMake(4,
                                                                         frame.size.height/2 - 10,
