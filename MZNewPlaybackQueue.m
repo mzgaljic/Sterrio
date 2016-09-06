@@ -177,10 +177,10 @@ static id sharedNewPlaybackQueueInstance = nil;
         unplayedCurrentEnumeratorItems = [NSMutableArray array];
     } else {
         NSArray *enumeratorsArray = [currentEnumerator underlyingArray];
-        if(enumeratorsArray.count > 0 && currentEnumerator.hasNext) {
+        if(currentEnumerator.hasNext) {
             NSUInteger nextObjIndex = [currentEnumerator indexOfCurrentObjectInSourceArray] + 1;
-            NSUInteger rangeLength = enumeratorsArray.count-1 - nextObjIndex;
-            unplayedCurrentEnumeratorItems = [NSMutableArray arrayWithCapacity:rangeLength + 1];
+            NSUInteger rangeLength = enumeratorsArray.count - nextObjIndex;
+            unplayedCurrentEnumeratorItems = [NSMutableArray arrayWithCapacity:rangeLength];
             NSRange unplayedMainOrShuffledObjsRange = NSMakeRange(nextObjIndex, rangeLength);
             NSArray *unplayedObjs = [enumeratorsArray subarrayWithRange:unplayedMainOrShuffledObjsRange];
             for(id obj in unplayedObjs) {
@@ -207,23 +207,23 @@ static id sharedNewPlaybackQueueInstance = nil;
     if(historyItems.count == 0) {
         historyItemsRange = NSMakeRange(NSNotFound, 0);
     } else {
-        historyItemsRange = NSMakeRange(0, historyItems.count - 1);
+        historyItemsRange = NSMakeRange(0, historyItems.count);
     }
     NSUInteger nowPlayingIndex = historyItems.count;
     NSRange upNextQueuedItemsRange;
     if(upNextQueueItems.count == 0) {
         upNextQueuedItemsRange = NSMakeRange(NSNotFound, 0);
     } else {
-        upNextQueuedItemsRange = NSMakeRange(historyItems.count + 1, upNextQueueItems.count - 1);
+        upNextQueuedItemsRange = NSMakeRange(historyItems.count + 1, upNextQueueItems.count);
     }
     //'future' means future songs in the main/shuffled enumerator. NOT the up-next-queue.
     NSRange futureItemsRange;
     if(unplayedCurrentEnumeratorItems.count == 0) {
         futureItemsRange = NSMakeRange(NSNotFound, 0);
     } else if(upNextQueueItems.count == 0) {
-        futureItemsRange = NSMakeRange(historyItems.count + 1, unplayedCurrentEnumeratorItems.count - 1);
+        futureItemsRange = NSMakeRange(historyItems.count + 1, unplayedCurrentEnumeratorItems.count);
     } else {
-        futureItemsRange = NSMakeRange(upNextQueuedItemsRange.location + upNextQueuedItemsRange.length + 1, unplayedCurrentEnumeratorItems.count - 1);
+        futureItemsRange = NSMakeRange(upNextQueuedItemsRange.location + upNextQueuedItemsRange.length, unplayedCurrentEnumeratorItems.count);
     }
     MZPlaybackQueueSnapshot *snapshot;
     snapshot = [[MZPlaybackQueueSnapshot alloc] initQueueSnapshotWithItems:items
