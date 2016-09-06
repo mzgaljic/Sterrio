@@ -73,18 +73,27 @@
 /** Items which were previously played (these items are not necessarily part of the current queue.) */
 - (NSArray<PlayableItem*> *)historySongs
 {
+    if(_historyItemsRange.location == NSNotFound) {
+        return @[];
+    }
     return [_allSnapshotItems subarrayWithRange:_historyItemsRange];
 }
 
 /** Items which have been queued up on the fly. */
 - (NSArray<PlayableItem*> *)upNextQueuedSongs
 {
+    if(_upNextQueuedItemsRange.location == NSNotFound) {
+        return @[];
+    }
     return [_allSnapshotItems subarrayWithRange:_upNextQueuedItemsRange];
 }
 
 /** Items which are coming up in the main queue (NOT the queue that can be made on the fly.) */
 - (NSArray<PlayableItem*> *)futureSongs
 {
+    if(_allFutureItemsRange.location == NSNotFound) {
+        return @[];
+    }
     return [_allSnapshotItems subarrayWithRange:_allFutureItemsRange];
 }
 
