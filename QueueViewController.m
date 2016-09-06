@@ -14,16 +14,18 @@
 #import "AllSongsDataSource.h"
 
 @interface QueueViewController ()
+{
+    UIView *cellBackgroundBlurView;
+    UIView *sectionHeaderBackgroundBlurView;
+}
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) MZPlaybackQueueSnapshot *snapshot;
 @property (nonatomic, strong) UINavigationBar *navBar;
-@property (nonatomic, strong) UIView *cellBackgroundBlurView;
-@property (nonatomic, strong) UIView *sectionHeaderBackgroundBlurView;
+@property (nonatomic, strong) NSMutableDictionary *cachedBlurViewsSectionDict;
 @end
 
 @implementation QueueViewController : UIViewController
-short const TABLE_SECTION_FOOTER_HEIGHT = 25;
-short const UP_NEXT_SONGS_SECTION = 2;
+short const TABLE_SECTION_FOOTER_HEIGHT = 10;
 
 #pragma mark - View Controller life cycle
 - (id)initWithPlaybackQueueSnapshot:(MZPlaybackQueueSnapshot *)snapshot
@@ -38,6 +40,7 @@ short const UP_NEXT_SONGS_SECTION = 2;
 {
     [super viewDidLoad];
     stackController = [[StackController alloc] init];
+    _cachedBlurViewsSectionDict = [NSMutableDictionary new];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleNewSongLoading)
                                                  name:MZNewSongLoading
@@ -74,8 +77,8 @@ short const UP_NEXT_SONGS_SECTION = 2;
     _tableView = nil;
     _snapshot = nil;
     _navBar = nil;
-    _cellBackgroundBlurView = nil;
-    _sectionHeaderBackgroundBlurView = nil;
+    cellBackgroundBlurView = nil;
+    sectionHeaderBackgroundBlurView = nil;
     stackController = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -135,12 +138,12 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     cell.backgroundColor = [UIColor clearColor];
     
     //make the selection style blurred
-    if(_cellBackgroundBlurView == nil){
+    if(cellBackgroundBlurView == nil){
         UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-        _cellBackgroundBlurView = [[UIVisualEffectView alloc] initWithEffect:effect];
-        _cellBackgroundBlurView.frame = cell.contentView.bounds;
+        cellBackgroundBlurView = [[UIVisualEffectView alloc] initWithEffect:effect];
+        cellBackgroundBlurView.frame = cell.contentView.bounds;
     }
-    [cell setSelectedBackgroundView:_cellBackgroundBlurView];
+    [cell setSelectedBackgroundView:cellBackgroundBlurView];
 
     // Set up other aspects of the cell content.
     PlayableItem *item = [self itemForIndexPath:indexPath];
@@ -150,7 +153,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     cell.textLabel.text = song.songName;
     cell.detailTextLabel.text = [AllSongsDataSource generateLabelStringForSong:song];
     
-    if(indexPath.row == 0) {
+    if(indexPath.section == [self nowplayingSectionNumber]) {
         cell.textLabel.textColor = [[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor] lighterColor];
         cell.isRepresentingANowPlayingItem = YES;
     } else {
@@ -210,10 +213,21 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    //if(section == 0 && mainQueueContext.queueName != nil){
-      //  return [NSString stringWithFormat:@"  %@",mainQueueContext.queueName];
-    //}
-    return @"";
+    if(section == [self historyItemsSectionNumber]) {
+        return @"History";
+    } else if(section == [self nowplayingSectionNumber]) {
+        return @"Now Playing";
+    } else if(section == [self upNextItemsSectionNumber]) {
+        return @"Up Next";
+    } else if(section == [self futureItemsSectionNumber]) {
+        //NSArray *items = [self itemArrayForSection:section];
+        //if(items.count > 0) {
+        //    return ((PlayableItem *)items[0]).contextForItem.queueName;
+        //}
+        return @"";  //looks cleaner if there is no title for this section.
+    }
+    NSLog(@"Missing if statement for 'titleForHeaderInSection' method. Section value: %li.", (long)section);
+    @throw NSInternalInconsistencyException;
 }
 
 //setting section header background and text color
@@ -233,17 +247,26 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                             size:headerFontSize];
     
-    //making background clear, and then placing a blur view across the entire header (execpt the uilabel)
-    if(_sectionHeaderBackgroundBlurView == nil) {
-        view.tintColor = [UIColor clearColor];
+    NSNumber *key = [NSNumber numberWithInteger:section];
+    UIView *blurView = _cachedBlurViewsSectionDict[key];
+    if(blurView == nil) {
+        //make background clear, place blur view across the entire header (execpt the uilabel)
         UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-        _sectionHeaderBackgroundBlurView = [[UIVisualEffectView alloc] initWithEffect:effect];
-        _sectionHeaderBackgroundBlurView.frame = view.bounds;
-        _sectionHeaderBackgroundBlurView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        blurView = [[UIVisualEffectView alloc] initWithEffect:effect];
+        blurView.frame = view.bounds;
+        blurView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        
+        //1st time setting up this tableview section header. Lets cache blurView for performance.
+        //(so we don't need to recreate it each time user scrolls into new section.)
+        _cachedBlurViewsSectionDict[key] = blurView;
     }
-    [view addSubview:_sectionHeaderBackgroundBlurView];
-    [view bringSubviewToFront:header.textLabel];
-    [view sendSubviewToBack:_sectionHeaderBackgroundBlurView];
+    view.tintColor = [UIColor clearColor];
+    if(blurView.superview == nil) {
+        //don't want duplicates in the view tree - bad for performance!
+        [view addSubview:blurView];
+        [view sendSubviewToBack:blurView];
+        [view bringSubviewToFront:header.textLabel];
+    }
 }
 
 //setting footer header background (using footer view to pad between sections in this case)
@@ -260,7 +283,12 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 4;
+    NSUInteger sectionCount = 0;
+    sectionCount += ([self historyItemsSectionNumber] == NSNotFound) ? 0 : 1;
+    sectionCount += ([self nowplayingSectionNumber] == NSNotFound) ? 0 : 1;
+    sectionCount += ([self upNextItemsSectionNumber] == NSNotFound) ? 0 : 1;
+    sectionCount += ([self futureItemsSectionNumber] == NSNotFound) ? 0 : 1;
+    return sectionCount;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -301,35 +329,70 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (NSArray *)itemArrayForSection:(NSUInteger)section
 {
-    switch (section) {
-        case 0: {
-            return _snapshot.historySongs;
-        }
-        case 1: {
-            PlayableItem *item = [[NowPlaying sharedInstance] playableItem];
-            return (item == nil) ? @[] : @[item];
-        }
-        case 2: {
-            return _snapshot.upNextQueuedSongs;
-        }
-        case 3: {
-            return _snapshot.futureSongs;
-        }
-        default:
-            NSLog(@"switch statement is missing case %lu.", (unsigned long)section);
-            @throw NSInternalInconsistencyException;
-            break;
+    NSUInteger historyItemsSection = [self historyItemsSectionNumber];
+    NSUInteger nowPlayingSection = [self nowplayingSectionNumber];
+    NSUInteger upNextSectionNumber = [self upNextItemsSectionNumber];
+    NSUInteger futureItemsSectionNumber = [self futureItemsSectionNumber];
+    if(section == historyItemsSection) {
+        return _snapshot.historySongs;
+    } else if(section == nowPlayingSection) {
+        PlayableItem *item = [[NowPlaying sharedInstance] playableItem];
+        return (item == nil) ? @[] : @[item];
+    } else if(section == upNextSectionNumber) {
+        return _snapshot.upNextQueuedSongs;
+    } else if(section == futureItemsSectionNumber) {
+        return _snapshot.futureSongs;
+    } else {
+        NSLog(@"if statement is missing a case.");
+        @throw NSInternalInconsistencyException;
     }
 }
 
 - (BOOL)isUpNextSongPresentAtIndexPath:(NSIndexPath *)indexPath
 {
-    return indexPath.section == UP_NEXT_SONGS_SECTION;
+    NSUInteger upNextSectionNumber = [self upNextItemsSectionNumber];
+    return indexPath.section == upNextSectionNumber;
 }
 
 - (void)handleNewSongLoading
 {
     
+}
+
+#pragma mark - Section helpers
+- (NSUInteger)historyItemsSectionNumber
+{
+    return (_snapshot.rangeOfHistoryItems.location == NSNotFound) ? NSNotFound : 0;
+}
+
+- (NSUInteger)nowplayingSectionNumber
+{
+    if([self historyItemsSectionNumber] == NSNotFound) {
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
+- (NSUInteger)upNextItemsSectionNumber
+{
+    if(_snapshot.upNextQueuedItemsRange.location == NSNotFound) {
+        return NSNotFound;
+    }
+    return [self nowplayingSectionNumber] + 1;
+}
+
+- (NSUInteger)futureItemsSectionNumber
+{
+    if(_snapshot.futureItemsRange.location == NSNotFound) {
+        return NSNotFound;
+    }
+    NSUInteger upNextItemsSectionNumber = [self upNextItemsSectionNumber];
+    if(upNextItemsSectionNumber == NSNotFound) {
+        return [self nowplayingSectionNumber] + 1;
+    } else {
+        return upNextItemsSectionNumber + 1;
+    }
 }
 
 #pragma mark - Rotation status bar methods
