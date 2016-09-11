@@ -10,6 +10,8 @@
 
 @interface MZConstants : NSObject
 
+extern long const MZ_ITUNES_APP_ID;
+
 //backgrounding
 extern NSString * const MZStartBackgroundTaskHandlerIfInactive;
 

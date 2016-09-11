@@ -10,6 +10,8 @@
 
 @implementation MZConstants
 
+long const MZ_ITUNES_APP_ID = 993519283;
+
 //backgrounding
 NSString * const MZStartBackgroundTaskHandlerIfInactive = @"background handler will begin if not running";
 

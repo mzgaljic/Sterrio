@@ -13,7 +13,6 @@
 
 @implementation AppRatingUtils
 
-static long const ITUNES_APP_ID = 993519283;
 NSString *templateReviewURL = @"itms-apps://ax.itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=APP_ID";
 
 + (instancetype)sharedInstance
@@ -45,7 +44,7 @@ NSString *templateReviewURL = @"itms-apps://ax.itunes.apple.com/WebObjects/MZSto
     [AppEnvironmentConstants setUserHasRatedMyApp:YES];
     [Answers logCustomEventWithName:@"AppStore rating/review redirect" customAttributes:nil];
     
-    NSString *urlString = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=%ld", ITUNES_APP_ID];
+    NSString *urlString = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=%ld", MZ_ITUNES_APP_ID];
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString]];
 }
 
