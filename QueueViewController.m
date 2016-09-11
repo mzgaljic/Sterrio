@@ -264,12 +264,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         _cachedBlurViewsSectionDict[key] = blurView;
     }
     view.tintColor = [UIColor clearColor];
-    if(blurView.superview == nil) {
-        //don't want duplicates in the view tree - bad for performance!
-        [view addSubview:blurView];
-        [view sendSubviewToBack:blurView];
-        [view bringSubviewToFront:header.textLabel];
+    //don't want duplicates in the view tree - bad for performance!
+    if(blurView.superview != nil) {
+        [blurView removeFromSuperview];
     }
+    [view addSubview:blurView];
+    [view sendSubviewToBack:blurView];
+    [view bringSubviewToFront:header.textLabel];
 }
 
 //setting footer header background (using footer view to pad between sections in this case)
