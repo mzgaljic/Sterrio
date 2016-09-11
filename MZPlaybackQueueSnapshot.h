@@ -49,4 +49,8 @@
 - (NSRange)upNextQueuedItemsRange;
 - (NSRange)futureItemsRange;
 
+/** Call this when you no longer need to maintain the actual items from this snapshot in memory,
+    and you only want the NSRanges and now playing index. */
+- (void)prepareForDeletion;
+
 @end

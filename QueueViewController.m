@@ -154,7 +154,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     cell.textLabel.text = song.songName;
     cell.detailTextLabel.text = [AllSongsDataSource generateLabelStringForSong:song];
     
-    if(indexPath.section == [self nowplayingSectionNumber]) {
+    if(indexPath.section == [QueueViewController nowplayingSectionNumber:_snapshot]) {
         cell.textLabel.textColor = [[[AppEnvironmentConstants appTheme].mainGuiTint lighterColor] lighterColor];
         cell.isRepresentingANowPlayingItem = YES;
     } else {
@@ -214,13 +214,13 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    if(section == [self historyItemsSectionNumber]) {
+    if(section == [QueueViewController historyItemsSectionNumber:_snapshot]) {
         return @"History";
-    } else if(section == [self nowplayingSectionNumber]) {
+    } else if(section == [QueueViewController nowplayingSectionNumber:_snapshot]) {
         return @"";
-    } else if(section == [self upNextItemsSectionNumber]) {
+    } else if(section == [QueueViewController upNextItemsSectionNumber:_snapshot]) {
         return ([_snapshot upNextQueuedItemsRange].location != NSNotFound) ? @"Up Next" : @"";
-    } else if(section == [self futureItemsSectionNumber]) {
+    } else if(section == [QueueViewController futureItemsSectionNumber:_snapshot]) {
         return ([_snapshot upNextQueuedItemsRange].location == NSNotFound) ? @"Up Next" : @"";
     }
     NSLog(@"Missing if statement for 'titleForHeaderInSection' method. Section value: %li.", (long)section);
@@ -281,7 +281,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
     BOOL futureItemsExist = [_snapshot futureItemsRange].location != NSNotFound;
-    if(section == [self upNextItemsSectionNumber] && futureItemsExist) {
+    if(section == [QueueViewController upNextItemsSectionNumber:_snapshot] && futureItemsExist) {
         return 0;
     }
     return TABLE_SECTION_FOOTER_HEIGHT;
@@ -290,10 +290,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     NSUInteger sectionCount = 0;
-    sectionCount += ([self historyItemsSectionNumber] == NSNotFound) ? 0 : 1;
-    sectionCount += ([self nowplayingSectionNumber] == NSNotFound) ? 0 : 1;
-    sectionCount += ([self upNextItemsSectionNumber] == NSNotFound) ? 0 : 1;
-    sectionCount += ([self futureItemsSectionNumber] == NSNotFound) ? 0 : 1;
+    sectionCount += ([QueueViewController historyItemsSectionNumber:_snapshot] == NSNotFound) ? 0 : 1;
+    sectionCount += ([QueueViewController nowplayingSectionNumber:_snapshot] == NSNotFound) ? 0 : 1;
+    sectionCount += ([QueueViewController upNextItemsSectionNumber:_snapshot] == NSNotFound) ? 0 : 1;
+    sectionCount += ([QueueViewController futureItemsSectionNumber:_snapshot] == NSNotFound) ? 0 : 1;
     return sectionCount;
 }
 
@@ -315,7 +315,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    NSUInteger nowPlayingSectionNumber = [self nowplayingSectionNumber];
+    NSUInteger nowPlayingSectionNumber = [QueueViewController nowplayingSectionNumber:_snapshot];
     if(indexPath.section == nowPlayingSectionNumber) {
         [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
         [MusicPlaybackController resumePlayback];
@@ -344,23 +344,20 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                        goingForward:YES
                                     oldPlayableItem:oldItem];
             
+            MZPlaybackQueueSnapshot *oldSnapshot = _snapshot;
+            [oldSnapshot prepareForDeletion];
             _snapshot = [[MZNewPlaybackQueue sharedInstance] snapshotOfPlaybackQueue];
             //figure out which sections will cease to exist...
-            NSMutableIndexSet *deletedSections = [[NSMutableIndexSet alloc]init];
-            [sectionsToUpdate enumerateIndexesUsingBlock:^(NSUInteger section, BOOL *stop) {
-                NSInteger newLargestSectionValue = [self numberOfSectionsInTableView:tableView] - 1;
-                if(section > newLargestSectionValue) {
-                    [deletedSections addIndex:section];
-                }
-            }];
-            [sectionsToUpdate removeIndexes:deletedSections];
+            NSIndexSet *sectionsToDelete = [QueueViewController sectionsToDeleteByComparing:oldSnapshot
+                                                                              toNewSnapshot:_snapshot];
+            [sectionsToUpdate removeIndexes:sectionsToDelete];
             
             //now update the UI
             [self.tableView beginUpdates];
             NSIndexPath *nowPlayingPath = [NSIndexPath indexPathForRow:0 inSection:nowPlayingSectionNumber];
             [self.tableView reloadRowsAtIndexPaths:@[nowPlayingPath]
                                   withRowAnimation:UITableViewRowAnimationFade];
-            [self.tableView deleteSections:deletedSections
+            [self.tableView deleteSections:sectionsToDelete
                           withRowAnimation:UITableViewRowAnimationBottom];
             [self.tableView reloadSections:sectionsToUpdate
                           withRowAnimation:UITableViewRowAnimationFade];
@@ -386,10 +383,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (NSArray *)itemArrayForSection:(NSUInteger)section
 {
-    NSUInteger historyItemsSection = [self historyItemsSectionNumber];
-    NSUInteger nowPlayingSection = [self nowplayingSectionNumber];
-    NSUInteger upNextSectionNumber = [self upNextItemsSectionNumber];
-    NSUInteger futureItemsSectionNumber = [self futureItemsSectionNumber];
+    NSUInteger historyItemsSection = [QueueViewController historyItemsSectionNumber:_snapshot];
+    NSUInteger nowPlayingSection = [QueueViewController nowplayingSectionNumber:_snapshot];
+    NSUInteger upNextSectionNumber = [QueueViewController upNextItemsSectionNumber:_snapshot];
+    NSUInteger futureItemsSectionNumber = [QueueViewController futureItemsSectionNumber:_snapshot];
     if(section == historyItemsSection) {
         return _snapshot.historySongs;
     } else if(section == nowPlayingSection) {
@@ -407,7 +404,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (BOOL)isUpNextSongPresentAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSUInteger upNextSectionNumber = [self upNextItemsSectionNumber];
+    NSUInteger upNextSectionNumber = [QueueViewController upNextItemsSectionNumber:_snapshot];
     return indexPath.section == upNextSectionNumber;
 }
 
@@ -417,36 +414,61 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 }
 
 #pragma mark - Section helpers
-- (NSUInteger)historyItemsSectionNumber
+//a brute-force (and surprisingly efficient) way of determing which sections need to be deleted
+//when the model (queue-snapshot) changes.
++ (NSIndexSet *)sectionsToDeleteByComparing:(MZPlaybackQueueSnapshot *)oldSnapshot
+                              toNewSnapshot:(MZPlaybackQueueSnapshot *)newSnapshot
 {
-    return (_snapshot.rangeOfHistoryItems.location == NSNotFound) ? NSNotFound : 0;
+    NSMutableIndexSet *sectionsToDelete = [NSMutableIndexSet new];
+    if([QueueViewController historyItemsSectionNumber:oldSnapshot] != NSNotFound
+       && [QueueViewController historyItemsSectionNumber:newSnapshot] == NSNotFound) {
+        [sectionsToDelete addIndex:[QueueViewController historyItemsSectionNumber:oldSnapshot]];
+    }
+    if([QueueViewController nowplayingSectionNumber:oldSnapshot] != NSNotFound
+       && [QueueViewController nowplayingSectionNumber:newSnapshot] == NSNotFound) {
+        [sectionsToDelete addIndex:[QueueViewController nowplayingSectionNumber:oldSnapshot]];
+    }
+    if([QueueViewController upNextItemsSectionNumber:oldSnapshot] != NSNotFound
+       && [QueueViewController upNextItemsSectionNumber:newSnapshot] == NSNotFound) {
+        [sectionsToDelete addIndex:[QueueViewController upNextItemsSectionNumber:oldSnapshot]];
+    }
+    if([QueueViewController futureItemsSectionNumber:oldSnapshot] != NSNotFound
+       && [QueueViewController futureItemsSectionNumber:newSnapshot] == NSNotFound) {
+        [sectionsToDelete addIndex:[QueueViewController futureItemsSectionNumber:oldSnapshot]];
+    }
+    return sectionsToDelete;
 }
 
-- (NSUInteger)nowplayingSectionNumber
++ (NSUInteger)historyItemsSectionNumber:(MZPlaybackQueueSnapshot *)queueSnapshot
 {
-    if([self historyItemsSectionNumber] == NSNotFound) {
+    return (queueSnapshot.rangeOfHistoryItems.location == NSNotFound) ? NSNotFound : 0;
+}
+
++ (NSUInteger)nowplayingSectionNumber:(MZPlaybackQueueSnapshot *)queueSnapshot
+{
+    if([self historyItemsSectionNumber:queueSnapshot] == NSNotFound) {
         return 0;
     } else {
         return 1;
     }
 }
 
-- (NSUInteger)upNextItemsSectionNumber
++ (NSUInteger)upNextItemsSectionNumber:(MZPlaybackQueueSnapshot *)queueSnapshot
 {
-    if(_snapshot.upNextQueuedItemsRange.location == NSNotFound) {
+    if(queueSnapshot.upNextQueuedItemsRange.location == NSNotFound) {
         return NSNotFound;
     }
-    return [self nowplayingSectionNumber] + 1;
+    return [self nowplayingSectionNumber:queueSnapshot] + 1;
 }
 
-- (NSUInteger)futureItemsSectionNumber
++ (NSUInteger)futureItemsSectionNumber:(MZPlaybackQueueSnapshot *)queueSnapshot
 {
-    if(_snapshot.futureItemsRange.location == NSNotFound) {
+    if(queueSnapshot.futureItemsRange.location == NSNotFound) {
         return NSNotFound;
     }
-    NSUInteger upNextItemsSectionNumber = [self upNextItemsSectionNumber];
+    NSUInteger upNextItemsSectionNumber = [self upNextItemsSectionNumber:queueSnapshot];
     if(upNextItemsSectionNumber == NSNotFound) {
-        return [self nowplayingSectionNumber] + 1;
+        return [self nowplayingSectionNumber:queueSnapshot] + 1;
     } else {
         return upNextItemsSectionNumber + 1;
     }

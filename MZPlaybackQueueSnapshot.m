@@ -14,6 +14,7 @@
 @property (nonatomic, assign) NSUInteger nowPlayingIndex;
 @property (nonatomic, assign) NSRange upNextQueuedItemsRange;
 @property (nonatomic, assign) NSRange allFutureItemsRange;
+@property (nonatomic, assign) BOOL didPrepareForDeletion;
 @end
 @implementation MZPlaybackQueueSnapshot
 
@@ -69,12 +70,14 @@
 /** All the items in the snapshot. */
 - (NSArray<PlayableItem*> *)allItemsInSnapshot
 {
+    NSAssert(!_didPrepareForDeletion, @"Can't access items in snapshot after preparing for deletion!");
     return _allSnapshotItems;
 }
 
 /** Items which were previously played (these items are not necessarily part of the current queue.) */
 - (NSArray<PlayableItem*> *)historySongs
 {
+    NSAssert(!_didPrepareForDeletion, @"Can't access items in snapshot after preparing for deletion!");
     if(_historyItemsRange.location == NSNotFound) {
         return @[];
     }
@@ -84,6 +87,7 @@
 /** Items which have been queued up on the fly. */
 - (NSArray<PlayableItem*> *)upNextQueuedSongs
 {
+    NSAssert(!_didPrepareForDeletion, @"Can't access items in snapshot after preparing for deletion!");
     if(_upNextQueuedItemsRange.location == NSNotFound) {
         return @[];
     }
@@ -93,6 +97,7 @@
 /** Items which are coming up in the main queue (NOT the queue that can be made on the fly.) */
 - (NSArray<PlayableItem*> *)futureSongs
 {
+    NSAssert(!_didPrepareForDeletion, @"Can't access items in snapshot after preparing for deletion!");
     if(_allFutureItemsRange.location == NSNotFound) {
         return @[];
     }
@@ -115,6 +120,15 @@
 - (NSRange)futureItemsRange
 {
     return _allFutureItemsRange;
+}
+
+/** Call this when you no longer need to maintain the actual items from this snapshot in memory,
+ and you only want the NSRanges and now playing index. */
+- (void)prepareForDeletion
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:MZNewSongLoading];
+    _allSnapshotItems = nil;
+    _didPrepareForDeletion = YES;
 }
 
 @end
