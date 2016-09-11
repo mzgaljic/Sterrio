@@ -160,7 +160,13 @@ static id sharedNewPlaybackQueueInstance = nil;
     NSMutableArray *upNextQueueItems = [NSMutableArray array];
     for(UpNextItem *item in [_upNextQueue allQueueObjectsAsArray]) {
         NSArray *enumeratorsArray = [[item enumeratorForContext] underlyingArray];
-        for(id obj in enumeratorsArray) {
+        for(int i = 0 ; i < enumeratorsArray.count; i++) {
+            if(i == 0 && [self initializeAndGetCurrentEnumeratorIfPossible] == nil) {
+                //the first item in the up-next queue is actually the now playing item. Don't add it to the
+                //upNextQueueItems array!
+                continue;
+            }
+            id obj = enumeratorsArray[i];
             PlayableItem *playableItem = [MZNewPlaybackQueue wrapAsPlayableItem:obj
                                                                         context:item.context
                                                                      queuedSong:YES];
@@ -269,7 +275,7 @@ static id sharedNewPlaybackQueueInstance = nil;
         #warning make this more efficient! Refactor the up-next items logic in seekNextItemInDirection to easily jump x amount in the up-next-items queue. Instead of 1 at a time...
         PlayableItem *item = nil;
         for(int i = 0; i < value; i++) {
-            item = [self seekNextItemInDirection:direction];
+            item = [self seekForwardOneItem];
         }
         return item;
     }
