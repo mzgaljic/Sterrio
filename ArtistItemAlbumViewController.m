@@ -163,10 +163,10 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
     cell.detailTextLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                                 size:detailFontSize];
     
-    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-    BOOL isNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToSong:aSong withContext:self.playbackContext];
+    NowPlaying *nowPlayingObj = [NowPlaying sharedInstance];
+    BOOL isNowPlaying = [nowPlayingObj.playableItem isEqualToSong:aSong withContext:self.playbackContext];
     if(! isNowPlaying){
-        isNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToSong:aSong withContext:self.parentVcPlaybackContext];
+        isNowPlaying = [nowPlayingObj.playableItem isEqualToSong:aSong withContext:self.parentVcPlaybackContext];
     }
     
     int labelFontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
@@ -365,9 +365,9 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
                                 backgroundColor:initialExpansionColor
                                         padding:MZCellSpotifyStylePaddingValue
                                        callback:^BOOL(MGSwipeTableCell *sender) {
-                                           [MZPlaybackQueue presentQueuedHUD];
+                                           [MZCommons presentQueuedHUD];
                                            PlaybackContext *context = [weakself contextForSpecificSong:weakSong];
-                                           [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
+                                           [MusicPlaybackController queueSongsOnTheFlyWithContext:context];
                                            [weakCell refreshContentView];
                                            return NO;
                                        }]];
@@ -439,8 +439,8 @@ const int ARTISTS_ALBUM_HEADER_HEIGHT = 120;
         return;
     
     Song *oldSong = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading].songForItem;
-    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
-    Song *newSong = nowPlaying.nowPlayingItem.songForItem;
+    NowPlaying *nowPlaying = [NowPlaying sharedInstance];
+    Song *newSong = nowPlaying.playableItem.songForItem;
     NSIndexPath *oldPath, *newPath;
     
     //tries to obtain the path to the changed songs if possible.

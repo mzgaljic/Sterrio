@@ -227,8 +227,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
     cell.detailTextLabel.text = detailText;
     
-    NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
-    BOOL songIsNowPlaying = [nowPlayingObj.nowPlayingItem isEqualToPlaylistItem:item withContext:self.playbackContext];
+    NowPlaying *nowPlayingObj = [NowPlaying sharedInstance];
+    BOOL songIsNowPlaying = [nowPlayingObj.playableItem isEqualToPlaylistItem:item withContext:self.playbackContext];
     
     if(songIsNowPlaying) {
         cell.textLabel.textColor = [AppEnvironmentConstants appTheme].mainGuiTint;
@@ -496,9 +496,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
                                 backgroundColor:initialExpansionColor
                                         padding:MZCellSpotifyStylePaddingValue
                                        callback:^BOOL(MGSwipeTableCell *sender) {
-                                           [MZPlaybackQueue presentQueuedHUD];
+                                           [MZCommons presentQueuedHUD];
                                            PlaybackContext *context = [weakself contextForPlaylistItem:weakItem];
-                                           [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
+                                           [MusicPlaybackController queueSongsOnTheFlyWithContext:context];
                                            [weakCell refreshContentView];
                                            return NO;
                                        }]];
@@ -538,10 +538,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (void)reflectNowPlayingChangesInTableview:(NSNotification *)notification
 {
-    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
+    NowPlaying *nowPlaying = [NowPlaying sharedInstance];
     PlayableItem *oldPlayableItem = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading];
     PlaylistItem *oldItem = oldPlayableItem.playlistItemForItem;
-    PlaylistItem *newItem = nowPlaying.nowPlayingItem.playlistItemForItem;
+    PlaylistItem *newItem = nowPlaying.playableItem.playlistItemForItem;
     NSIndexPath *oldPath, *newPath;
     
     if(oldItem)

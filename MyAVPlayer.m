@@ -9,6 +9,7 @@
 #import "MyAVPlayer.h"
 #import "PreviousNowPlayingInfo.h"
 #import "PlayableItem.h"
+#import "MZNewPlaybackQueue.h"
 
 @interface MyAVPlayer ()
 {
@@ -98,20 +99,19 @@ static ReachabilitySingleton *reachability;
                goingForward:(BOOL)forward
             oldPlayableItem:(PlayableItem *)oldItem
 {
-    [PreviousNowPlayingInfo setPreviousPlayableItem:oldItem];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
                                                         object:nil];
     if(aSong != nil){
         movingForward = forward;
         _playbackStarted = NO;
         [self beginLoadingVideoWithSong:aSong];
-        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
+        [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlaying sharedInstance].playableItem.songForItem];
     } else{
         //make sure last song doesnt continue playing...
         [self replaceCurrentItemWithPlayerItem:nil];
         [self dismissAllSpinners];
         
-        if([MusicPlaybackController numMoreSongsInQueue] == 0)
+        if([[MZNewPlaybackQueue sharedInstance] forwardItemsCount] == 0)
             canPostLastSongNotification = YES;
         else
             canPostLastSongNotification = NO;
@@ -312,7 +312,7 @@ static BOOL valOfAllowSongDidFinishToExecuteBeforeDisabling;
             }
             [SongPlayerCoordinator placePlayerInDisabledState:NO];
             self.disabledPlayerItem = nil;
-            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
+            [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlaying sharedInstance].playableItem.songForItem];
         }
     }
 }

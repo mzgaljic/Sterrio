@@ -33,9 +33,9 @@ static int numSkippedSongs = 0;
 + (void)retryPlayingCurrentSong
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        Song *nowPlayingSong = [NowPlayingSong sharedInstance].nowPlayingItem.songForItem;
+        PlayableItem *nowPlayingItem = [NowPlaying sharedInstance].playableItem;
         PlayableItem *oldItem = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading];
-        [VideoPlayerWrapper startPlaybackOfSong:nowPlayingSong
+        [VideoPlayerWrapper startPlaybackOfItem:nowPlayingItem
                                    goingForward:YES
                                 oldPlayableItem:oldItem];
     }];
@@ -143,6 +143,18 @@ static int numSkippedSongs = 0;
         {
             NSString *title = @"Whoops";
             NSString *msg = @"There was a problem sharing this song.";
+            [self launchAlertViewWithDialogTitle:title
+                                      andMessage:msg
+                                   customActions:nil
+                           allowsBasicLocalNotif:NO
+                                  makeNotifSound:NO
+                                useAlertAndNotif:NO];
+            break;
+        }
+        case ALERT_TYPE_Issue_Tapping_Song_InQueue:
+        {
+            NSString *title = @"Uh oh";
+            NSString *msg = @"An unknown problem occurred playing the song you selected.";
             [self launchAlertViewWithDialogTitle:title
                                       andMessage:msg
                                    customActions:nil

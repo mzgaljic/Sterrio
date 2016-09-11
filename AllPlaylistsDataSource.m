@@ -131,16 +131,16 @@
         //within the playlist someplace, this check (in code) can be vague...
         
         __block BOOL playlistHasNowPlaying = NO;
-        NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+        NowPlaying *nowPlayingObj = [NowPlaying sharedInstance];
         PlaybackContext *playlistDetailContext = [self playlistDetailContextForPlaylist:playlist];
         
         NSSet *items = playlist.playlistItems;
         
         [items enumerateObjectsUsingBlock:^(PlaylistItem *item, BOOL *stop) {
             
-            if([nowPlayingObj.nowPlayingItem isEqualToPlaylistItem:item withContext:playlistDetailContext]
+            if([nowPlayingObj.playableItem isEqualToPlaylistItem:item withContext:playlistDetailContext]
                ||
-               [nowPlayingObj.nowPlayingItem isEqualToPlaylistItem:item withContext:self.playbackContext])
+               [nowPlayingObj.playableItem isEqualToPlaylistItem:item withContext:self.playbackContext])
             {
                 playlistHasNowPlaying = YES;
                 *stop = YES;
@@ -323,8 +323,8 @@
     PlayableItem *oldItem = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading];
     
     PlaylistItem *oldPlaylistItem = oldItem.playlistItemForItem;
-    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
-    PlaylistItem *newPlaylistItem = nowPlaying.nowPlayingItem.playlistItemForItem;
+    NowPlaying *nowPlaying = [NowPlaying sharedInstance];
+    PlaylistItem *newPlaylistItem = nowPlaying.playableItem.playlistItemForItem;
     
     //nothing to possibly update
     if(oldPlaylistItem == nil && newPlaylistItem == nil)
@@ -395,9 +395,9 @@
                                 backgroundColor:initialExpansionColor
                                         padding:MZCellSpotifyStylePaddingValue
                                        callback:^BOOL(MGSwipeTableCell *sender) {
-                                           [MZPlaybackQueue presentQueuedHUD];
+                                           [MZCommons presentQueuedHUD];
                                            PlaybackContext *context = [weakSelf contextForPlaylist:weakPlaylist];
-                                           [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
+                                           [MusicPlaybackController queueSongsOnTheFlyWithContext:context];
                                            [weakCell refreshContentView];
                                            return NO;
                                        }]];

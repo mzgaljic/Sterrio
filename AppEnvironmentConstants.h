@@ -88,10 +88,8 @@ typedef enum{
 
 + (PLABACK_REPEAT_MODE)playbackRepeatType;
 + (void)setPlaybackRepeatType:(PLABACK_REPEAT_MODE)type;
-+ (SHUFFLE_STATE)shuffleState;
-+ (void)setShuffleState:(SHUFFLE_STATE)state;
 + (NSString *)stringRepresentationOfRepeatMode;
-+ (NSString *)stringRepresentationOfShuffleState;
++ (NSString *)stringRepresentationOfShuffleState:(SHUFFLE_STATE)state;
 
 //fonts
 + (NSString *)regularFontName;

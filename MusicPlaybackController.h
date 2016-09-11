@@ -13,8 +13,6 @@
 #import <MediaPlayer/MediaPlayer.h>  //needed for placing info/media on lock screen
 #import "Song.h"
 #import "Playlist.h"
-//#import "PlaybackQueue.h"
-#import "MZPlaybackQueue.h"
 #import "MyAVPlayer.h"  //custom AVPlayer class
 #import "PlaybackContext.h"
 #import "VideoPlayerWrapper.h"
@@ -62,7 +60,6 @@
 
 #pragma mark - Now Playing Song
 + (Song *)nowPlayingSong;
-+ (NowPlayingSong *)nowPlayingSongObject;
 
 #pragma mark + Gathering playback info
 + (NSUInteger)numMoreSongsInQueue;
@@ -80,7 +77,7 @@
 + (void)newQueueWithPlaylistItem:(PlaylistItem *)playlistItem
                      withContext:(PlaybackContext *)aContext;
 
-+ (void)queueUpNextSongsWithContexts:(NSArray *)contexts;
++ (void)queueSongsOnTheFlyWithContext:(PlaybackContext *)context;
 + (void)repeatEntireMainQueue;
 
 #pragma mark - Playback status

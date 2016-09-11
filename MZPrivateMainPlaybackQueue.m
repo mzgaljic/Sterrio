@@ -46,7 +46,7 @@
 
 - (NSUInteger)numMoreItemsInMainQueue
 {
-    return [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
+    return [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE_OLD
                                                 nowPlayingInclusive:NO
                                                  onlyUnplayedTracks:YES].count;
 }
@@ -59,7 +59,7 @@
     userWentBeyondStartOfQueue = NO;
     userWentBeyondEndOfQueue = NO;
     
-    NSArray *items = [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
+    NSArray *items = [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE_OLD
                                                           nowPlayingInclusive:YES
                                                            onlyUnplayedTracks:NO];
     if(items > 0){
@@ -79,7 +79,7 @@
 
 - (NSArray *)tableViewOptimizedArrayOfMainQueuePlayableItemsComingUp
 {
-    return [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:EXTERNAL_FETCH_BATCH_SIZE
+    return [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:EXTERNAL_FETCH_BATCH_SIZE_OLD
                                                 nowPlayingInclusive:YES
                                                  onlyUnplayedTracks:YES];
 }
@@ -104,11 +104,11 @@
     if(playbackContext == nil)
         return nil;
     else{
-        if([NowPlayingSong sharedInstance].nowPlayingItem.isFromUpNextSongs){
+        if([NowPlaying sharedInstance].playableItem.isFromUpNextSongs){
             return mostRecentItem;
         }
         
-        NSArray *items = [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
+        NSArray *items = [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE_OLD
                                                               nowPlayingInclusive:YES
                                                                onlyUnplayedTracks:NO];
         if(items.count > 0){
@@ -162,7 +162,7 @@
     if(playbackContext == nil)
         return nil;
     else{
-        NSArray *items = [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
+        NSArray *items = [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE_OLD
                                                               nowPlayingInclusive:YES
                                                                onlyUnplayedTracks:NO];
         if(items.count > 0){
@@ -206,7 +206,7 @@
     if(playbackContext == nil)
         return nil;
     else{
-        NSArray *items = [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE
+        NSArray *items = [self minimallyFaultedArrayOfMainQueueItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE_OLD
                                                               nowPlayingInclusive:YES
                                                                onlyUnplayedTracks:NO];
         if(items.count > 0){
@@ -284,7 +284,7 @@
     NSFetchRequest *request = playbackContext.request;
     if(request == nil)
         return compiledItems;
-    [request setFetchBatchSize:INTERNAL_FETCH_BATCH_SIZE];
+    [request setFetchBatchSize:INTERNAL_FETCH_BATCH_SIZE_OLD];
     NSArray *array = [[CoreDataManager context] executeFetchRequest:request error:nil];
     NSUInteger nowPlayingIndex;
     if(userWentBeyondStartOfQueue){
@@ -293,10 +293,10 @@
         else
             nowPlayingIndex = NSNotFound;
     } else{
-        if([NowPlayingSong sharedInstance].nowPlayingItem.isFromUpNextSongs)
+        if([NowPlaying sharedInstance].playableItem.isFromUpNextSongs)
             nowPlayingIndex = [self indexOfItem:mostRecentItem inArray:&array];
         else
-            nowPlayingIndex = [self indexOfItem:[NowPlayingSong sharedInstance].nowPlayingItem inArray:&array];
+            nowPlayingIndex = [self indexOfItem:[NowPlaying sharedInstance].playableItem inArray:&array];
     }
     
     NSArray *desiredSubArray;

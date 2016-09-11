@@ -111,7 +111,7 @@ static MRProgressOverlayView *hud;
             
             [setOfDeletedObjects enumerateObjectsUsingBlock:^(id  __nonnull obj, BOOL * __nonnull stop) {
                 if([obj isMemberOfClass:[Song class]]){
-                    PlayableItem *currSong = [NowPlayingSong sharedInstance].nowPlayingItem;
+                    PlayableItem *currSong = [NowPlaying sharedInstance].playableItem;
                     if([currSong isEqualToSong:(Song *)obj withContext:currSong.contextForItem]){
                         nowPlayingDeleted = YES;
                     }

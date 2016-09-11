@@ -11,6 +11,7 @@
 #import "PreferredFontSizeUtility.h"
 #import <FXImageView/UIImage+FX.h>
 #import "UIImage+colorImages.h"
+#import "ProgressHUD.h"
 
 @implementation MZCommons
 
@@ -80,6 +81,11 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void))
 }
 
 #pragma mark - GUI Helpers
++ (void)presentQueuedHUD
+{
+    [ProgressHUD showSuccess:@"Queued" Interaction:YES];
+}
+
 + (UIViewController *)topViewController
 {
     return [self topViewController:[UIApplication sharedApplication].keyWindow.rootViewController];

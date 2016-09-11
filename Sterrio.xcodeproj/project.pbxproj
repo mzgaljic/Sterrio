@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		87059FE61CDEE3860068A1A9 /* InAppProductPriceHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 87059FE51CDEE3860068A1A9 /* InAppProductPriceHelper.m */; };
 		870D06901CB9C61700395F38 /* MZInterstitialAd.m in Sources */ = {isa = PBXBuildFile; fileRef = 870D068F1CB9C61700395F38 /* MZInterstitialAd.m */; };
+		870F38841D52EA4200F987B0 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 870F38831D52EA4200F987B0 /* CloudKit.framework */; };
 		87164E291CB8B3EB0006D53B /* Ensembles.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 87164E271CB8B3EB0006D53B /* Ensembles.bundle */; };
 		87164E2A1CB8B3EB0006D53B /* Ensembles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87164E281CB8B3EB0006D53B /* Ensembles.framework */; };
 		8716560F1C30AB41000FF02B /* DiscogsItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8716560E1C30AB41000FF02B /* DiscogsItem.m */; };
@@ -60,7 +61,7 @@
 		8735388B1B0A9BCA009244E4 /* YouTubeService.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538881B0A9BCA009244E4 /* YouTubeService.m */; };
 		873538901B0A9BEE009244E4 /* EnsembleDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735388F1B0A9BEE009244E4 /* EnsembleDelegate.m */; };
 		873538931B0A9BFF009244E4 /* PreviousNowPlayingInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538921B0A9BFF009244E4 /* PreviousNowPlayingInfo.m */; };
-		873538961B0A9C07009244E4 /* NowPlayingSong.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538951B0A9C07009244E4 /* NowPlayingSong.m */; };
+		873538961B0A9C07009244E4 /* NowPlaying.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538951B0A9C07009244E4 /* NowPlaying.m */; };
 		8735389A1B0A9C26009244E4 /* MZPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538991B0A9C26009244E4 /* MZPlaybackQueue.m */; };
 		873538A21B0A9C40009244E4 /* MZPrivateMainPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735389D1B0A9C40009244E4 /* MZPrivateMainPlaybackQueue.m */; };
 		873538A31B0A9C40009244E4 /* MZPrivateUpNextPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735389F1B0A9C40009244E4 /* MZPrivateUpNextPlaybackQueue.m */; };
@@ -135,6 +136,11 @@
 		87353A901B0AAA36009244E4 /* Song+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A881B0AAA36009244E4 /* Song+Utilities.m */; };
 		87353A911B0AAA36009244E4 /* SongAlbumArt+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 87353A8A1B0AAA36009244E4 /* SongAlbumArt+Utilities.m */; };
 		8736AA9E1C2613A2005FAE07 /* AppDelegateUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8736AA9D1C2613A2005FAE07 /* AppDelegateUtils.m */; };
+		873EBB231D1CCEB1005F248A /* MZNewPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EBB221D1CCEB1005F248A /* MZNewPlaybackQueue.m */; };
+		873EBB261D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EBB251D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m */; };
+		873EBB2E1D1E2E8C005F248A /* MZEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EBB2D1D1E2E8C005F248A /* MZEnumerator.m */; };
+		873EBB311D1E376E005F248A /* NSArray+MZEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EBB301D1E376E005F248A /* NSArray+MZEnumerator.m */; };
+		873EBB341D202D52005F248A /* MZArrayShuffler.m in Sources */ = {isa = PBXBuildFile; fileRef = 873EBB331D202D52005F248A /* MZArrayShuffler.m */; };
 		87414BC41B3FA92500FB8252 /* CoreSpotlight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		87414BC61B3FA93100FB8252 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		87414BC81B3FB85300FB8252 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87414BC71B3FB85300FB8252 /* AppDelegate.m */; };
@@ -231,6 +237,7 @@
 		87DAA6C51B8AA9FF008D8684 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 87DAA6C21B8AA9FF008D8684 /* Model.xcdatamodeld */; };
 		87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */; };
 		87E152671C0041E100C82737 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87E152661C0041E100C82737 /* StoreKit.framework */; };
+		87E9FAE01D72AF8D00ECCB7A /* UpNextItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E9FADF1D72AF8D00ECCB7A /* UpNextItem.m */; };
 		87EF52551CA4D4EC00D8364D /* UIColor+Strings.m in Sources */ = {isa = PBXBuildFile; fileRef = 87EF52541CA4D4EC00D8364D /* UIColor+Strings.m */; };
 		87EF52581CA4D7DD00D8364D /* MZAppTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 87EF52571CA4D7DD00D8364D /* MZAppTheme.m */; };
 		87F5A8801C9E68FB00C64376 /* credits.py in Resources */ = {isa = PBXBuildFile; fileRef = 87F5A87F1C9E68FB00C64376 /* credits.py */; };
@@ -253,6 +260,7 @@
 		87059FE51CDEE3860068A1A9 /* InAppProductPriceHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductPriceHelper.m; sourceTree = "<group>"; };
 		870D068E1CB9C61700395F38 /* MZInterstitialAd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZInterstitialAd.h; sourceTree = "<group>"; };
 		870D068F1CB9C61700395F38 /* MZInterstitialAd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZInterstitialAd.m; sourceTree = "<group>"; };
+		870F38831D52EA4200F987B0 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		87164E271CB8B3EB0006D53B /* Ensembles.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Ensembles.bundle; sourceTree = "<group>"; };
 		87164E281CB8B3EB0006D53B /* Ensembles.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Ensembles.framework; sourceTree = "<group>"; };
 		8716560E1C30AB41000FF02B /* DiscogsItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsItem.m; sourceTree = "<group>"; };
@@ -356,8 +364,8 @@
 		8735388F1B0A9BEE009244E4 /* EnsembleDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EnsembleDelegate.m; sourceTree = "<group>"; };
 		873538911B0A9BFF009244E4 /* PreviousNowPlayingInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreviousNowPlayingInfo.h; sourceTree = "<group>"; };
 		873538921B0A9BFF009244E4 /* PreviousNowPlayingInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreviousNowPlayingInfo.m; sourceTree = "<group>"; };
-		873538941B0A9C07009244E4 /* NowPlayingSong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NowPlayingSong.h; sourceTree = "<group>"; };
-		873538951B0A9C07009244E4 /* NowPlayingSong.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NowPlayingSong.m; sourceTree = "<group>"; };
+		873538941B0A9C07009244E4 /* NowPlaying.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NowPlaying.h; sourceTree = "<group>"; };
+		873538951B0A9C07009244E4 /* NowPlaying.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NowPlaying.m; sourceTree = "<group>"; };
 		873538981B0A9C26009244E4 /* MZPlaybackQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPlaybackQueue.h; sourceTree = "<group>"; };
 		873538991B0A9C26009244E4 /* MZPlaybackQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPlaybackQueue.m; sourceTree = "<group>"; };
 		8735389C1B0A9C40009244E4 /* MZPrivateMainPlaybackQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPrivateMainPlaybackQueue.h; sourceTree = "<group>"; };
@@ -513,6 +521,16 @@
 		87353A8A1B0AAA36009244E4 /* SongAlbumArt+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SongAlbumArt+Utilities.m"; sourceTree = "<group>"; };
 		8736AA9C1C2613A2005FAE07 /* AppDelegateUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegateUtils.h; sourceTree = "<group>"; };
 		8736AA9D1C2613A2005FAE07 /* AppDelegateUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegateUtils.m; sourceTree = "<group>"; };
+		873EBB211D1CCEB1005F248A /* MZNewPlaybackQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZNewPlaybackQueue.h; sourceTree = "<group>"; };
+		873EBB221D1CCEB1005F248A /* MZNewPlaybackQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZNewPlaybackQueue.m; sourceTree = "<group>"; };
+		873EBB241D1CD0A1005F248A /* MZPlaybackQueueSnapshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPlaybackQueueSnapshot.h; sourceTree = "<group>"; };
+		873EBB251D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPlaybackQueueSnapshot.m; sourceTree = "<group>"; };
+		873EBB271D1E2A35005F248A /* MZEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZEnumerator.h; sourceTree = "<group>"; };
+		873EBB2D1D1E2E8C005F248A /* MZEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZEnumerator.m; sourceTree = "<group>"; };
+		873EBB2F1D1E376E005F248A /* NSArray+MZEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+MZEnumerator.h"; sourceTree = "<group>"; };
+		873EBB301D1E376E005F248A /* NSArray+MZEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+MZEnumerator.m"; sourceTree = "<group>"; };
+		873EBB321D202D52005F248A /* MZArrayShuffler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZArrayShuffler.h; sourceTree = "<group>"; };
+		873EBB331D202D52005F248A /* MZArrayShuffler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZArrayShuffler.m; sourceTree = "<group>"; };
 		87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreSpotlight.framework; path = System/Library/Frameworks/CoreSpotlight.framework; sourceTree = SDKROOT; };
 		87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		87414BC71B3FB85300FB8252 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -724,6 +742,8 @@
 		87DAA6C41B8AA9FF008D8684 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailComposerManager.m; sourceTree = "<group>"; };
 		87E152661C0041E100C82737 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		87E9FADE1D72AF8D00ECCB7A /* UpNextItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpNextItem.h; sourceTree = "<group>"; };
+		87E9FADF1D72AF8D00ECCB7A /* UpNextItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpNextItem.m; sourceTree = "<group>"; };
 		87EF52531CA4D4EC00D8364D /* UIColor+Strings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Strings.h"; sourceTree = "<group>"; };
 		87EF52541CA4D4EC00D8364D /* UIColor+Strings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Strings.m"; sourceTree = "<group>"; };
 		87EF52561CA4D7DD00D8364D /* MZAppTheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZAppTheme.h; sourceTree = "<group>"; };
@@ -914,6 +934,8 @@
 				873538361B0A9AF4009244E4 /* UIView+ScreenshotView.m */,
 				873538371B0A9AF4009244E4 /* UIWindow+VisibleVC.h */,
 				873538381B0A9AF4009244E4 /* UIWindow+VisibleVC.m */,
+				873EBB2F1D1E376E005F248A /* NSArray+MZEnumerator.h */,
+				873EBB301D1E376E005F248A /* NSArray+MZEnumerator.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -927,6 +949,8 @@
 				8735384E1B0A9B23009244E4 /* Queue.m */,
 				8735384F1B0A9B23009244E4 /* Stack.h */,
 				873538501B0A9B23009244E4 /* Stack.m */,
+				873EBB271D1E2A35005F248A /* MZEnumerator.h */,
+				873EBB2D1D1E2E8C005F248A /* MZEnumerator.m */,
 			);
 			name = "Data Structures";
 			sourceTree = "<group>";
@@ -1020,8 +1044,9 @@
 				8735388D1B0A9BE5009244E4 /* Core Data Stuff */,
 				873538911B0A9BFF009244E4 /* PreviousNowPlayingInfo.h */,
 				873538921B0A9BFF009244E4 /* PreviousNowPlayingInfo.m */,
-				873538941B0A9C07009244E4 /* NowPlayingSong.h */,
-				873538951B0A9C07009244E4 /* NowPlayingSong.m */,
+				873538941B0A9C07009244E4 /* NowPlaying.h */,
+				873538951B0A9C07009244E4 /* NowPlaying.m */,
+				873EBB201D1CCC12005F248A /* New Plaback Queue */,
 				873538971B0A9C1D009244E4 /* Playback Queue */,
 				873538A51B0A9C52009244E4 /* OperationQueuesSingeton.h */,
 				873538A61B0A9C52009244E4 /* OperationQueuesSingeton.m */,
@@ -1479,6 +1504,21 @@
 				87353A8A1B0AAA36009244E4 /* SongAlbumArt+Utilities.m */,
 			);
 			name = "Entity Subclass Utils";
+			sourceTree = "<group>";
+		};
+		873EBB201D1CCC12005F248A /* New Plaback Queue */ = {
+			isa = PBXGroup;
+			children = (
+				873EBB211D1CCEB1005F248A /* MZNewPlaybackQueue.h */,
+				873EBB221D1CCEB1005F248A /* MZNewPlaybackQueue.m */,
+				873EBB241D1CD0A1005F248A /* MZPlaybackQueueSnapshot.h */,
+				873EBB251D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m */,
+				873EBB321D202D52005F248A /* MZArrayShuffler.h */,
+				873EBB331D202D52005F248A /* MZArrayShuffler.m */,
+				87E9FADE1D72AF8D00ECCB7A /* UpNextItem.h */,
+				87E9FADF1D72AF8D00ECCB7A /* UpNextItem.m */,
+			);
+			name = "New Plaback Queue";
 			sourceTree = "<group>";
 		};
 		874D99501CB8AD4100FA6BCA /* Ensembles */ = {
@@ -2072,6 +2112,7 @@
 				873538671B0A9B6D009244E4 /* AlbumAlbumArt.m in Sources */,
 				8735387F1B0A9B9E009244E4 /* YouTubeVideo.m in Sources */,
 				87A8FCF01CBF29FB00A43637 /* SDCAlertViewCoordinator.m in Sources */,
+				873EBB341D202D52005F248A /* MZArrayShuffler.m in Sources */,
 				873538681B0A9B6D009244E4 /* Artist.m in Sources */,
 				873538C91B0A9CEB009244E4 /* SongPlayerViewController.m in Sources */,
 				87A8FCE01CBF29FB00A43637 /* SDCAlertAction.m in Sources */,
@@ -2097,6 +2138,7 @@
 				873538F51B0A9E78009244E4 /* MasterAlbumsTableViewController.m in Sources */,
 				873538C21B0A9CD0009244E4 /* MZSongModifierTableView.m in Sources */,
 				87A8FCE11CBF29FB00A43637 /* SDCAlertCollectionViewCell.m in Sources */,
+				873EBB311D1E376E005F248A /* NSArray+MZEnumerator.m in Sources */,
 				873538931B0A9BFF009244E4 /* PreviousNowPlayingInfo.m in Sources */,
 				873538401B0A9AF4009244E4 /* UIColor+SystemTintColor.m in Sources */,
 				873538EB1B0A9E63009244E4 /* MasterSongsTableViewController.m in Sources */,
@@ -2139,6 +2181,7 @@
 				87A8FC321CBF202500A43637 /* MRIconView.m in Sources */,
 				873539201B0A9F11009244E4 /* YoutubeResultsTableViewController.m in Sources */,
 				8735380D1B0A9A9A009244E4 /* MZConstants.m in Sources */,
+				873EBB2E1D1E2E8C005F248A /* MZEnumerator.m in Sources */,
 				873538E61B0A9D2D009244E4 /* SongPlayerCoordinator.m in Sources */,
 				873537CC1B0A9981009244E4 /* main.m in Sources */,
 				873539651B0AA0CB009244E4 /* AllPlaylistsDataSource.m in Sources */,
@@ -2149,12 +2192,14 @@
 				87353A8D1B0AAA36009244E4 /* Artist+Utilities.m in Sources */,
 				87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */,
 				873539411B0AA00C009244E4 /* EditableCellTableViewController.m in Sources */,
+				873EBB231D1CCEB1005F248A /* MZNewPlaybackQueue.m in Sources */,
 				873539381B0A9FCE009244E4 /* MZPlayer.m in Sources */,
 				87A8FCF51CBF29FB00A43637 /* UIViewController+Current.m in Sources */,
 				87A8FC351CBF202500A43637 /* MRNavigationBarProgressView.m in Sources */,
 				8735390C1B0A9ED2009244E4 /* NewSettingsTableViewController.m in Sources */,
 				873538411B0A9AF4009244E4 /* UIDevice+DeviceName.m in Sources */,
 				87A8FC6F1CBF241600A43637 /* ActionSheetDatePicker.m in Sources */,
+				873EBB261D1CD0A1005F248A /* MZPlaybackQueueSnapshot.m in Sources */,
 				87353A911B0AAA36009244E4 /* SongAlbumArt+Utilities.m in Sources */,
 				87A8FCE31CBF29FB00A43637 /* SDCAlertControllerCollectionViewFlowLayout.m in Sources */,
 				8796B6951C7EA7E000242587 /* DeletedYtVideoAlertCreator.m in Sources */,
@@ -2191,6 +2236,7 @@
 				87A8FC361CBF202500A43637 /* MRProgressOverlayView+AFNetworking.m in Sources */,
 				8735388A1B0A9BCA009244E4 /* MZCoreDataModelDeletionService.m in Sources */,
 				87059FE61CDEE3860068A1A9 /* InAppProductPriceHelper.m in Sources */,
+				87E9FAE01D72AF8D00ECCB7A /* UpNextItem.m in Sources */,
 				873538FB1B0A9E95009244E4 /* ArtistItemAlbumViewController.m in Sources */,
 				873538E01B0A9D1F009244E4 /* QueueViewController.m in Sources */,
 				87A8FC301CBF202500A43637 /* MRBlurView.m in Sources */,
@@ -2238,7 +2284,7 @@
 				87A8FCE51CBF29FB00A43637 /* SDCAlertControllerScrollView.m in Sources */,
 				87A8FCEB1CBF29FB00A43637 /* SDCAlertTextFieldTableViewCell.m in Sources */,
 				87D3281F1C67F6BD001F2081 /* YouTubeSearchSuggestion.m in Sources */,
-				873538961B0A9C07009244E4 /* NowPlayingSong.m in Sources */,
+				873538961B0A9C07009244E4 /* NowPlaying.m in Sources */,
 				873538BD1B0A9CB9009244E4 /* MasterSongEditorViewController.m in Sources */,
 				873538CF1B0A9CFD009244E4 /* DetermineVideoPlayableOperation.m in Sources */,
 				87A8FC3B1CBF202500A43637 /* MRWeakProxy.m in Sources */,

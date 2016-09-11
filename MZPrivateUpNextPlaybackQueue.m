@@ -47,7 +47,7 @@
 
 - (NSUInteger)numMoreUpNextItemsCount
 {
-    NSArray *array = [self minimallyFaultedArrayOfUpNextItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE];
+    NSArray *array = [self minimallyFaultedArrayOfUpNextItemsWithBatchSize:INTERNAL_FETCH_BATCH_SIZE_OLD];
     if(array.count > 0){
         return array.count;
     } else
@@ -58,7 +58,7 @@
 {
     //dont need to insert a fake item in the front to represent now playing like we
     //needed to in the private main queue (implementation detail...)
-    return [self minimallyFaultedArrayOfUpNextItemsWithBatchSize:EXTERNAL_FETCH_BATCH_SIZE];
+    return [self minimallyFaultedArrayOfUpNextItemsWithBatchSize:EXTERNAL_FETCH_BATCH_SIZE_OLD];
 }
 
 - (NSArray *)tableViewOptimizedArrayOfUpNextItemsContexts
@@ -80,7 +80,7 @@
     {
         aContext = playbackContexts[i];
         aRequest = aContext.request;
-        [aRequest setFetchBatchSize:INTERNAL_FETCH_BATCH_SIZE];
+        [aRequest setFetchBatchSize:INTERNAL_FETCH_BATCH_SIZE_OLD];
         
         NSUInteger itemIndex = 0;
         NSArray *array = [[CoreDataManager context] executeFetchRequest:aRequest error:nil];
@@ -183,7 +183,7 @@
     {
         aContext = playbackContexts[i];
         aRequest = aContext.request;
-        [aRequest setFetchBatchSize:INTERNAL_FETCH_BATCH_SIZE];
+        [aRequest setFetchBatchSize:INTERNAL_FETCH_BATCH_SIZE_OLD];
         
         NSUInteger songIndex = 0;
         NSArray *array = [[CoreDataManager context] executeFetchRequest:aRequest error:nil];

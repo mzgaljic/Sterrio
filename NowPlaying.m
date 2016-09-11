@@ -6,10 +6,10 @@
 //  Copyright (c) 2015 Mark Zgaljic. All rights reserved.
 //
 
-#import "NowPlayingSong.h"
+#import "NowPlaying.h"
 #import "PlayableItem.h"
 
-@implementation NowPlayingSong
+@implementation NowPlaying
 
 + (instancetype)sharedInstance
 {
@@ -24,19 +24,19 @@
 - (id)init
 {
     if(self = [super init]){
-        _nowPlayingItem = nil;
+        _playableItem = nil;
     }
     return self;
 }
 
 - (BOOL)isEqualToItem:(PlayableItem *)anItem
 {
-    return [_nowPlayingItem isEqualToItem:anItem];
+    return [_playableItem isEqualToItem:anItem];
 }
 
-- (void)setNewNowPlayingItem:(PlayableItem *)newItem
+- (void)setNewPlayableItem:(PlayableItem *)newItem
 {
-    _nowPlayingItem = newItem;
+    _playableItem = newItem;
 }
 
 @end

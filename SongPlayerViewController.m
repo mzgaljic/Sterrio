@@ -11,6 +11,7 @@
 #import "SDCAlertController.h"
 #import <TUSafariActivity.h>
 #import "SongPlayerViewDisplayUtility.h"
+#import "MZNewPlaybackQueue.h"
 
 typedef enum{
     DurationLabelStateNotSet,
@@ -483,7 +484,7 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
     
     [sliderHint hideAnimated];
     
-    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
+    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlaying sharedInstance].playableItem.songForItem];
     [self playerControlsShouldBeUpdated];
     
     if(isPlayerOnExternalDisplayWhileScrubbing)
@@ -608,7 +609,7 @@ static int accomodateInterfaceLabelsCounter = 0;
 
 - (void)currentSongInQueueHasEndedPlayback
 {
-    BOOL moreSongsInQueue = ([MusicPlaybackController numMoreSongsInQueue] != 0);
+    BOOL moreSongsInQueue = ([[MZNewPlaybackQueue sharedInstance] forwardItemsCount] != 0);
     //disabling until the next song in the queue is loaded.
     //another method will reenable it when necessary
     if(moreSongsInQueue)
@@ -741,7 +742,7 @@ static int accomodateInterfaceLabelsCounter = 0;
                           action:@selector(shuffleModeButtonTapped)
                 forControlEvents:UIControlEventTouchUpInside];
     [self updateRepeatButtonGivenNewRepeatState];
-    [self updateShuffleButtonGivenNewShuffleState];
+    [self updateShuffleButtonGivenShuffleState:[MZNewPlaybackQueue sharedInstance].shuffleState];
     
     musicButtons = @[backwardButton, playButton, forwardButton];
 }
@@ -1119,7 +1120,7 @@ static int accomodateInterfaceLabelsCounter = 0;
 
 - (void)displayTotalSliderAndLabelDuration
 {
-    NSInteger durationInSeconds = [[NowPlayingSong sharedInstance].nowPlayingItem.songForItem.duration integerValue];
+    NSInteger durationInSeconds = [[NowPlaying sharedInstance].playableItem.songForItem.duration integerValue];
     if(durationInSeconds <= 0.0f || isnan(durationInSeconds)){
         //Don't need to handle error, duration now showing isnt crucial.
         return;
@@ -1363,40 +1364,30 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
 
 - (void)shuffleModeButtonTapped
 {
-    NSString *msg = @"This feature is coming soon.";
-    SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:@"Shuffle"
-                                                                    message:msg
-                                                             preferredStyle:SDCAlertControllerStyleAlert];
-    [alert addAction:[SDCAlertAction actionWithTitle:@"OK"
-                                               style:SDCAlertActionStyleRecommended
-                                             handler:nil]];
-    [alert presentWithCompletion:nil];
-    return;
-    
-#warning Shuffle feature unfinished.
-    /*
-    switch ([AppEnvironmentConstants shuffleState])
+    SHUFFLE_STATE newState;
+    switch ([MZNewPlaybackQueue sharedInstance].shuffleState)
     {
         case SHUFFLE_STATE_Disabled:
         {
-            [AppEnvironmentConstants setShuffleState:SHUFFLE_STATE_Enabled];
+            newState = SHUFFLE_STATE_Enabled;
+            [[MZNewPlaybackQueue sharedInstance] setShuffleState:SHUFFLE_STATE_Enabled];
             break;
         }
         case SHUFFLE_STATE_Enabled:
         {
-            [AppEnvironmentConstants setShuffleState:SHUFFLE_STATE_Disabled];
+            newState = SHUFFLE_STATE_Disabled;
+            [[MZNewPlaybackQueue sharedInstance] setShuffleState:SHUFFLE_STATE_Disabled];
             break;
         }
         default:
             break;
     }
-    [self updateShuffleButtonGivenNewShuffleState];
-    */
+    [self updateShuffleButtonGivenShuffleState:newState];
 }
 
-- (void)updateShuffleButtonGivenNewShuffleState
+- (void)updateShuffleButtonGivenShuffleState:(SHUFFLE_STATE)state
 {
-    switch ([AppEnvironmentConstants shuffleState])
+    switch (state)
     {
         case SHUFFLE_STATE_Disabled:
         {
@@ -1417,7 +1408,7 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
     else
         controlState = UIControlStateNormal;
     
-    [shuffleModeButton setTitle:[AppEnvironmentConstants stringRepresentationOfShuffleState]
+    [shuffleModeButton setTitle:[AppEnvironmentConstants stringRepresentationOfShuffleState:state]
                        forState:controlState];
 }
 
@@ -1460,7 +1451,7 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
     }
     playButton.enabled = YES;
     [self performSelector:@selector(changePlayButtonImageTo:) withObject:newBtnImage afterDelay:0.3];
-    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
+    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlaying sharedInstance].playableItem.songForItem];
 }
 
 - (void)changePlayButtonImageTo:(UIImage *)newBtnImage
@@ -1692,7 +1683,9 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
 
 - (void)viewPlaybackQueue
 {
-    QueueViewController *vc = [[QueueViewController alloc] init];
+    MZPlaybackQueueSnapshot *snapshot = [[MZNewPlaybackQueue sharedInstance] snapshotOfPlaybackQueue];
+    QueueViewController *vc = [[QueueViewController alloc] initWithPlaybackQueueSnapshot:snapshot];
+#warning remove this AFBlurSegue nonsense - should manually display a modal UINavigationController.
     AFBlurSegue *segue = [[AFBlurSegue alloc] initWithIdentifier:@"showQueueSEgue"
                                                           source:self
                                                      destination:vc];

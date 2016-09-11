@@ -169,7 +169,7 @@
         
         //check if artist is now playing context, if so make cell changes here...
         BOOL artistHasNowPlaying = NO;
-        NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+        NowPlaying *nowPlayingObj = [NowPlaying sharedInstance];
         
         NSMutableString *artistDetailContextId = [NSMutableString string];
         [artistDetailContextId appendString:NSStringFromClass([ArtistItemAlbumViewController class])];
@@ -178,11 +178,11 @@
         PlaybackContext *artistDetailContext = [[PlaybackContext alloc] initWithFetchRequest:nil
                                                                             prettyQueueName:@""
                                                                                    contextId:artistDetailContextId];
-        if(nowPlayingObj.nowPlayingItem != nil
+        if(nowPlayingObj.playableItem != nil
            &&
-           (([nowPlayingObj.nowPlayingItem.contextForItem isEqualToContext:self.playbackContext])
+           (([nowPlayingObj.playableItem.contextForItem isEqualToContext:self.playbackContext])
             ||
-            [nowPlayingObj.nowPlayingItem.contextForItem isEqualToContext:artistDetailContext]))
+            [nowPlayingObj.playableItem.contextForItem isEqualToContext:artistDetailContext]))
         {
             artistHasNowPlaying = YES;
         }
@@ -388,8 +388,8 @@
     if(self.playbackContext == nil)
         return;
     Song *oldsong = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading].songForItem;
-    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
-    Song *newSong = nowPlaying.nowPlayingItem.songForItem;
+    NowPlaying *nowPlaying = [NowPlaying sharedInstance];
+    Song *newSong = nowPlaying.playableItem.songForItem;
     
     Artist *oldArtist = oldsong.artist;
     Artist *newArtist = newSong.artist;
@@ -452,9 +452,9 @@
                                 backgroundColor:initialExpansionColor
                                         padding:MZCellSpotifyStylePaddingValue
                                        callback:^BOOL(MGSwipeTableCell *sender) {
-                                           [MZPlaybackQueue presentQueuedHUD];
+                                           [MZCommons presentQueuedHUD];
                                            PlaybackContext *context = [weakSelf contextForSpecificArtist:weakArtist];
-                                           [MusicPlaybackController queueUpNextSongsWithContexts:@[context]];
+                                           [MusicPlaybackController queueSongsOnTheFlyWithContext:context];
                                            [weakCell refreshContentView];
                                            return NO;
                                        }]];

@@ -12,6 +12,7 @@
 #import "PlayableItem.h"
 #import "MZSlider.h"
 #import "SongPlayerViewDisplayUtility.h"
+#import "MZNewPlaybackQueue.h"
 
 @interface PlayerView ()
 {
@@ -223,8 +224,8 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     
     //This lets the tableview data sources figure out that there is no new song playing when
     //efficiently updating the tableview cells.
-    [PreviousNowPlayingInfo setPreviousPlayableItem:[NowPlayingSong sharedInstance].nowPlayingItem];
-    [[NowPlayingSong sharedInstance] setNewNowPlayingItem:nil];
+    [PreviousNowPlayingInfo setPreviousPlayableItem:[NowPlaying sharedInstance].playableItem];
+    [[NowPlaying sharedInstance] setNewPlayableItem:nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:MZNewSongLoading
                                                         object:songWeAreKilling];
     [self performSelector:@selector(resetLastPlayableItem) withObject:nil afterDelay:0.2];
@@ -232,15 +233,15 @@ typedef enum {leftDirection, rightDirection} HorizontalDirection;
     [player dismissAllSpinners];
     [player replaceCurrentItemWithPlayerItem:nil];
     [SongPlayerCoordinator playerWasKilled:YES];
-    [[NowPlayingSong sharedInstance] setNewNowPlayingItem:nil];
+    [[NowPlaying sharedInstance] setNewPlayableItem:nil];
     
     //reset player state to defaults
     [MusicPlaybackController explicitlyPausePlayback:NO];
     [SongPlayerCoordinator placePlayerInDisabledState:NO];
     [[[OperationQueuesSingeton sharedInstance] loadingSongsOpQueue] cancelAllOperations];
-    [[MZPlaybackQueue sharedInstance] clearEntireQueue];
+    [MZNewPlaybackQueue discardInstance];  //clears the entire queue
     
-    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlayingSong sharedInstance].nowPlayingItem.songForItem];
+    [MusicPlaybackController updateLockScreenInfoAndArtForSong:[NowPlaying sharedInstance].playableItem.songForItem];
 }
 
 - (void)resetLastPlayableItem
@@ -774,7 +775,7 @@ static NSTimer *autoHideTimer;
                                             PLAY_PAUSE_BTN_DIAMETER,
                                             PLAY_PAUSE_BTN_DIAMETER);
     
-    Song *song = [NowPlayingSong sharedInstance].nowPlayingItem.songForItem;
+    Song *song = [NowPlaying sharedInstance].playableItem.songForItem;
     totalDuration = [song.duration integerValue];
     NSString *totalDurationString = [SongPlayerViewDisplayUtility convertSecondsToPrintableNSStringWithSliderValue:totalDuration];
     

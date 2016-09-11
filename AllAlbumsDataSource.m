@@ -196,7 +196,7 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         
         //check if a song in this album is the now playing song
         BOOL albumHasNowPlaying = NO;
-        NowPlayingSong *nowPlayingObj = [NowPlayingSong sharedInstance];
+        NowPlaying *nowPlayingObj = [NowPlaying sharedInstance];
         
         NSMutableString *albumDetailContextId = [NSMutableString string];
         [albumDetailContextId appendString:NSStringFromClass([AlbumItemViewController class])];
@@ -208,9 +208,9 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
         {
             //need to check both the general album context and the albumDetailVC context.
             //...since an entire album or just a specific album can be queued up.
-            if([nowPlayingObj.nowPlayingItem isEqualToSong:albumSong withContext:self.playbackContext]
+            if([nowPlayingObj.playableItem isEqualToSong:albumSong withContext:self.playbackContext]
                ||
-               [nowPlayingObj.nowPlayingItem isEqualToSong:albumSong withContext:albumDetailContext])
+               [nowPlayingObj.playableItem isEqualToSong:albumSong withContext:albumDetailContext])
             {
                 albumHasNowPlaying = YES;
                 break;
@@ -450,8 +450,8 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
     if(self.playbackContext == nil)
         return;
     Song *oldsong = [PreviousNowPlayingInfo playableItemBeforeNewSongBeganLoading].songForItem;
-    NowPlayingSong *nowPlaying = [NowPlayingSong sharedInstance];
-    Song *newSong = nowPlaying.nowPlayingItem.songForItem;
+    NowPlaying *nowPlaying = [NowPlaying sharedInstance];
+    Song *newSong = nowPlaying.playableItem.songForItem;
     
     Album *oldAlbum = oldsong.album;
     Album *newAlbum = newSong.album;
@@ -515,10 +515,9 @@ static char albumIndexPathAssociationKey;  //used to associate cells with images
                                 backgroundColor:initialExpansionColor
                                         padding:MZCellSpotifyStylePaddingValue
                                        callback:^BOOL(MGSwipeTableCell *sender) {
-                                           [MZPlaybackQueue presentQueuedHUD];
+                                           [MZCommons presentQueuedHUD];
                                            PlaybackContext *context = [weakSelf contextForSpecificAlbum:weakAlbum];
-                                           NSArray *cnxt = @[context];
-                                           [MusicPlaybackController queueUpNextSongsWithContexts:cnxt];
+                                           [MusicPlaybackController queueSongsOnTheFlyWithContext:context];
                                            [weakCell refreshContentView];
                                            return NO;
                                        }]];

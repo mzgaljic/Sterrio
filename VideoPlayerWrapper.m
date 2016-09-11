@@ -7,10 +7,12 @@
 //
 
 #import "VideoPlayerWrapper.h"
+#import "PreviousNowPlayingInfo.h"
+#import "PlayableItem.h"
 
 @implementation VideoPlayerWrapper
 
-+ (void)startPlaybackOfSong:(Song *)aSong
++ (void)startPlaybackOfItem:(PlayableItem *)newItem
                goingForward:(BOOL)forward
             oldPlayableItem:(PlayableItem *)oldItem
 {
@@ -18,7 +20,10 @@
                                                         object:nil];
     MyAVPlayer *player = (MyAVPlayer *)[MusicPlaybackController obtainRawAVPlayer];
     [player replaceCurrentItemWithPlayerItem:nil];  //stop any ongoing playback
-    [player startPlaybackOfSong:aSong
+    
+    [PreviousNowPlayingInfo setPreviousPlayableItem:oldItem];
+    [[NowPlaying sharedInstance] setNewPlayableItem:newItem];
+    [player startPlaybackOfSong:newItem.songForItem
                       goingForward:forward
                    oldPlayableItem:oldItem];
 }
