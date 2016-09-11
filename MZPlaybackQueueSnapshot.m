@@ -46,25 +46,8 @@
         _nowPlayingIndex = index;
         _upNextQueuedItemsRange = upNextQueuedItemsRange;
         _allFutureItemsRange = allFutureItemsRange;
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(nowPlayingSongChanged)
-                                                     name:MZNewSongLoading
-                                                   object:nil];
     }
     return self;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:MZNewSongLoading];
-}
-
-- (void)nowPlayingSongChanged
-{
-    //might be better to actually create an interface and use a delegate to inform the snapshot which
-    //index was tapped in the 'all_items' array that is exposed...would make it much easier to update the
-    //index, and more reliable if the user can go backwards now as well...with the history section.
-#warning somehow respond to the fact that the current song has changed. Update NSIndexSets???
 }
 
 /** All the items in the snapshot. */
@@ -126,7 +109,6 @@
  and you only want the NSRanges and now playing index. */
 - (void)prepareForDeletion
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:MZNewSongLoading];
     _allSnapshotItems = nil;
     _didPrepareForDeletion = YES;
 }

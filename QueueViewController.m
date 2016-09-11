@@ -23,6 +23,7 @@
 @property (nonatomic, strong) MZPlaybackQueueSnapshot *snapshot;
 @property (nonatomic, strong) UINavigationBar *navBar;
 @property (nonatomic, strong) NSMutableDictionary *cachedBlurViewsSectionDict;
+@property (nonatomic, assign) BOOL didLoadNewSongByTappingInQueue;
 @end
 
 @implementation QueueViewController : UIViewController
@@ -320,18 +321,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
         [MusicPlaybackController resumePlayback];
     } else {
+        _didLoadNewSongByTappingInQueue = YES;
         @try {
             PlayableItem *tappedItem = [self itemForIndexPath:indexPath];
             NSUInteger indexesToMove = 0;
-            NSMutableIndexSet *sectionsToUpdate = [[NSMutableIndexSet alloc]init];
-            
-            NSUInteger sectionIndex = nowPlayingSectionNumber + 1;
-            [sectionsToUpdate addIndex:sectionIndex];
-            while(sectionIndex != indexPath.section) {
-                indexesToMove += [self tableView:tableView numberOfRowsInSection:sectionIndex];
-                sectionIndex++;
-                [sectionsToUpdate addIndex:sectionIndex];
-            }
             indexesToMove += indexPath.row + 1;
             PlayableItem *oldItem = [[NowPlaying sharedInstance] playableItem];
             PlayableItem *item = [[MZNewPlaybackQueue sharedInstance] seekBy:indexesToMove
@@ -350,6 +343,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
             //figure out which sections will cease to exist...
             NSIndexSet *sectionsToDelete = [QueueViewController sectionsToDeleteByComparing:oldSnapshot
                                                                               toNewSnapshot:_snapshot];
+            
+            NSMutableIndexSet *sectionsToUpdate = [NSMutableIndexSet indexSetWithIndex:indexPath.section];
+            //just in case the new model makes the tapped section cease to exist...
             [sectionsToUpdate removeIndexes:sectionsToDelete];
             
             //now update the UI
@@ -365,6 +361,7 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         } @catch (NSException *exception) {
             [MyAlerts displayAlertWithAlertType:ALERT_TYPE_Issue_Tapping_Song_InQueue];
         }
+        _didLoadNewSongByTappingInQueue = NO;
     }
 }
 
@@ -410,7 +407,48 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (void)handleNewSongLoading
 {
+    if(_didLoadNewSongByTappingInQueue == YES) {
+        return;
+    }
+    MZPlaybackQueueSnapshot *oldSnapshot = _snapshot;
+    [oldSnapshot prepareForDeletion];
+    _snapshot = [[MZNewPlaybackQueue sharedInstance] snapshotOfPlaybackQueue];
+    //figure out which sections will cease to exist...
+    NSIndexSet *sectionsToDelete = [QueueViewController sectionsToDeleteByComparing:oldSnapshot
+                                                                      toNewSnapshot:_snapshot];
+    NSUInteger nowPlayingSectionNumber = [QueueViewController nowplayingSectionNumber:oldSnapshot];
+    NSUInteger historyItemsSectionNumber = [QueueViewController historyItemsSectionNumber:oldSnapshot];
+    NSUInteger upNextItemsSectionNumber = [QueueViewController upNextItemsSectionNumber:oldSnapshot];
+    NSUInteger futureItemsSectionNumber = [QueueViewController futureItemsSectionNumber:oldSnapshot];
+    NSMutableIndexSet *sectionsToUpdate = [NSMutableIndexSet new];
+    if(historyItemsSectionNumber != NSNotFound) {
+        [sectionsToUpdate addIndex:historyItemsSectionNumber];
+    }
+    if(nowPlayingSectionNumber != NSNotFound) {
+        [sectionsToUpdate addIndex:nowPlayingSectionNumber];
+    }
+    if(upNextItemsSectionNumber != NSNotFound) {
+        [sectionsToUpdate addIndex:upNextItemsSectionNumber];
+    }
+    if(futureItemsSectionNumber != NSNotFound) {
+        [sectionsToUpdate addIndex:futureItemsSectionNumber];
+    }
+    //just in case the new model makes the tapped section cease to exist...
+    [sectionsToUpdate removeIndexes:sectionsToDelete];
     
+    //now update the UI
+    [self.tableView beginUpdates];
+    NSIndexPath *nowPlayingPath = [NSIndexPath indexPathForRow:0 inSection:nowPlayingSectionNumber];
+    if(! [sectionsToDelete containsIndex:nowPlayingSectionNumber]) {
+        [self.tableView reloadRowsAtIndexPaths:@[nowPlayingPath]
+                              withRowAnimation:UITableViewRowAnimationFade];
+
+    }
+    [self.tableView deleteSections:sectionsToDelete
+                  withRowAnimation:UITableViewRowAnimationBottom];
+    [self.tableView reloadSections:sectionsToUpdate
+                  withRowAnimation:UITableViewRowAnimationFade];
+    [self.tableView endUpdates];
 }
 
 #pragma mark - Section helpers
