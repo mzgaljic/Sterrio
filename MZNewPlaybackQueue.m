@@ -137,18 +137,7 @@ static id sharedNewPlaybackQueueInstance = nil;
         _shuffledMainEnumerator = nil;
         //shuffle mode is active. Now that the main enumerator has been refetched, lets shuffle it and
         //keep the cursor pointing to the same NowPlayingItem.
-        NSMutableArray *shallowCopy = [[_mainEnumerator underlyingArray] mutableCopy];
-        [MZArrayShuffler shuffleArray:&shallowCopy];
-        
-        //logic to get the same item in the new array now...
-        NSUInteger nowPlayingIndex = [self computeNowPlayingIndexInCoreDataArray:&shallowCopy];
-        if(nowPlayingIndex != NSNotFound) {
-            _shuffledMainEnumerator = [shallowCopy biDirectionalEnumeratorAtIndex:nowPlayingIndex
-                                                         withOutOfBoundsTolerance:1];
-        } else {
-            //fallback for when something bad happens lol.
-            _shuffledMainEnumerator = [shallowCopy biDirectionalEnumerator];
-        }
+        [self reshuffleShuffledEnumeratorUsingMainEnumerator];
     }
 }
 
@@ -362,13 +351,11 @@ static id sharedNewPlaybackQueueInstance = nil;
     
     if(_shuffleState == SHUFFLE_STATE_Enabled) {
         if(_shuffledMainEnumerator == nil) {
-            NSMutableArray *shallowCopy = [[_mainEnumerator underlyingArray] mutableCopy];
-            [MZArrayShuffler shuffleArray:&shallowCopy];
-            _shuffledMainEnumerator = [shallowCopy biDirectionalEnumeratorWithOutOfBoundsTolerance:1];
+            [self reshuffleShuffledEnumeratorUsingMainEnumerator];
         }
     } else if(_shuffleState == SHUFFLE_STATE_Disabled) {
         //logic to get the same item in the unshuffled array now...
-        NSArray *rawArray = [_shuffledMainEnumerator underlyingArray];
+        NSArray *rawArray = [_mainEnumerator underlyingArray];
         NSUInteger nowPlayingIndex = [self computeNowPlayingIndexInCoreDataArray:&rawArray];
         if(nowPlayingIndex != NSNotFound) {
             _mainEnumerator = [rawArray biDirectionalEnumeratorAtIndex:nowPlayingIndex
@@ -602,6 +589,19 @@ static id sharedNewPlaybackQueueInstance = nil;
         count += enumerator.numberMoreObjects;
     }
     return count;
+}
+
+- (void)reshuffleShuffledEnumeratorUsingMainEnumerator
+{
+    NSMutableArray *shallowCopy = [[_mainEnumerator underlyingArray] mutableCopy];
+    NSUInteger nowPlayingIndex = [_mainEnumerator indexOfCurrentObjectInSourceArray];
+    if(nowPlayingIndex == NSNotFound) {
+        //brute force way of finding it lol.
+        nowPlayingIndex = [self computeNowPlayingIndexInCoreDataArray:&shallowCopy];;
+    }
+    [MZArrayShuffler shuffleArray:&shallowCopy moveItemAtIndexToFront:nowPlayingIndex];
+    _shuffledMainEnumerator = [shallowCopy biDirectionalEnumeratorAtIndex:0
+                                                 withOutOfBoundsTolerance:1];
 }
 
 @end

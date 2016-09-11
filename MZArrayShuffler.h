@@ -11,5 +11,6 @@
 @interface MZArrayShuffler : NSObject
 
 + (void)shuffleArray:(NSMutableArray **)arrayToModify;
++ (void)shuffleArray:(NSMutableArray **)arrayToModify moveItemAtIndexToFront:(NSUInteger)index;
 
 @end
