@@ -1613,8 +1613,7 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
         
         //temporarily changing app default colors for the activityviewcontroller.
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
-        [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[AppEnvironmentConstants appTheme].mainGuiTint, NSForegroundColorAttributeName, nil]];
+        appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].navBarToolbarTextTint;
         
         TUSafariActivity *openInSafariActivity = [[TUSafariActivity alloc] init];
         NSArray *activities = @[openInSafariActivity];
