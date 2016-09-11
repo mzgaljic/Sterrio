@@ -26,13 +26,11 @@
 #import "MasterArtistsTableViewController.h"
 #import "MasterPlaylistTableViewController.h"
 #import "MZPlayer.h"
-#import <Batch/Batch.h>
 
 @class MainScreenViewController;
 @interface AppDelegate : UIResponder <UIApplicationDelegate,
                                         AVAudioSessionDelegate,
-                                        AVAudioPlayerDelegate,
-                                        BatchUnlockDelegate>
+                                        AVAudioPlayerDelegate>
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) MZPlayer *previewPlayer;
 

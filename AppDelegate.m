@@ -130,18 +130,6 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
     [LQAlbumArtBackgroundUpdater beginWaitingForEfficientMomentsToUpdateAlbumArt];
     [LQAlbumArtBackgroundUpdater forceCheckIfItsAnEfficientTimeToUpdateAlbumArt];
     [[InAppProductPriceHelper new] beginFetchingAdRemovalPriceInfoAndSetWhenDone];
-    
-    if([AppEnvironmentConstants areAdsRemoved]) {
-        //don't track users ad identifier if they already removed ads.
-        [Batch setUseIDFA:NO];
-    } else {
-        // Activate Batch unlock, if all 'features' aren't already unlocked.
-        [BatchUnlock setupUnlockWithDelegate:self];
-    }
-    
-#warning using LIVE key for Batch!
-    // Start Batch SDK.
-    [Batch startWithAPIKey:@"5790510B0F46A08527EDECA12C135E"];
 }
 
 - (void)setupMainVC
@@ -885,34 +873,6 @@ static NSUInteger lastScrollingPageIndex = -1;
         [customView performSelector:@selector(startVideoLooping)];
     }
     lastScrollingPageIndex = pageIndex;
-}
-
-#pragma mark - 'Batch' Stuff
-//BatchUnlockDelegate (called on main thread!)
-- (void)automaticOfferRedeemed:(id<BatchOffer>)offer
-{
-    // Unlock features from offer (AppGratis)
-    for (id<BatchFeature> feature in [offer features])
-    {
-        NSString *reference = feature.reference;
-        if([reference isEqualToString:@"NO_ADS"] && ![AppEnvironmentConstants areAdsRemoved]) {
-            [[InAppPurchaseUtils sharedInstance] removeAdsForUserBecauseOfFreeCampaign];
-            
-            NSDictionary *additionalParams = [offer offerAdditionalParameters];
-            NSString *rewardMessage = [additionalParams objectForKey:@"reward_message"];
-            if(rewardMessage != nil) {
-                //show alert with message
-                //setup the alert in case we want to show it...
-                __block SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:@""
-                                                                                        message:rewardMessage
-                                                                                 preferredStyle:SDCAlertControllerStyleAlert];
-                [alert setActionLayout:SDCAlertControllerActionLayoutAutomatic];
-                [alert presentWithCompletion:^{
-                    [alert performSelector:@selector(dismissWithCompletion:) withObject:nil afterDelay:2.6];
-                }];
-            }
-        }
-    }
 }
 
 @end
