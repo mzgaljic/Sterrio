@@ -191,7 +191,10 @@ static id sharedNewPlaybackQueueInstance = nil;
     //are organized in the 'items' array.
     NSMutableArray<PlayableItem*> *items = [NSMutableArray arrayWithCapacity:historyItems.count + 1 + upNextQueueItems.count + unplayedCurrentEnumeratorItems.count];
     [items addObjectsFromArray:historyItems];
-    [items addObject:nowPlayingItem];
+    if(nowPlayingItem != nil) {
+        //is nil if the snapshot is built after the last song in the queue ends.
+        [items addObject:nowPlayingItem];
+    }
     [items addObjectsFromArray:upNextQueueItems];
     [items addObjectsFromArray:unplayedCurrentEnumeratorItems];
     
@@ -201,7 +204,7 @@ static id sharedNewPlaybackQueueInstance = nil;
     } else {
         historyItemsRange = NSMakeRange(0, historyItems.count);
     }
-    NSUInteger nowPlayingIndex = historyItems.count;
+    NSUInteger nowPlayingIndex = (nowPlayingItem == nil) ? NSNotFound : historyItems.count;
     NSRange upNextQueuedItemsRange;
     if(upNextQueueItems.count == 0) {
         upNextQueuedItemsRange = NSMakeRange(NSNotFound, 0);

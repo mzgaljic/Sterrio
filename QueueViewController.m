@@ -439,8 +439,8 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     
     //now update the UI
     [self.tableView beginUpdates];
-    NSIndexPath *nowPlayingPath = [NSIndexPath indexPathForRow:0 inSection:nowPlayingSectionNumber];
-    if(! [sectionsToDelete containsIndex:nowPlayingSectionNumber]) {
+    if(nowPlayingSectionNumber != NSNotFound && ![sectionsToDelete containsIndex:nowPlayingSectionNumber]) {
+        NSIndexPath *nowPlayingPath = [NSIndexPath indexPathForRow:0 inSection:nowPlayingSectionNumber];
         [self.tableView reloadRowsAtIndexPaths:@[nowPlayingPath]
                               withRowAnimation:UITableViewRowAnimationFade];
 
@@ -485,6 +485,9 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 + (NSUInteger)nowplayingSectionNumber:(MZPlaybackQueueSnapshot *)queueSnapshot
 {
+    if([queueSnapshot nowPlayingIndex] == NSNotFound) {
+        return NSNotFound;
+    }
     if([self historyItemsSectionNumber:queueSnapshot] == NSNotFound) {
         return 0;
     } else {
@@ -497,7 +500,12 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     if(queueSnapshot.upNextQueuedItemsRange.location == NSNotFound) {
         return NSNotFound;
     }
-    return [self nowplayingSectionNumber:queueSnapshot] + 1;
+    NSUInteger temp = [self nowplayingSectionNumber:queueSnapshot];
+    if(temp == NSNotFound) {
+        return NSNotFound;
+    } else {
+        return temp + 1;
+    }
 }
 
 + (NSUInteger)futureItemsSectionNumber:(MZPlaybackQueueSnapshot *)queueSnapshot
@@ -507,7 +515,12 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     }
     NSUInteger upNextItemsSectionNumber = [self upNextItemsSectionNumber:queueSnapshot];
     if(upNextItemsSectionNumber == NSNotFound) {
-        return [self nowplayingSectionNumber:queueSnapshot] + 1;
+        NSUInteger temp = [self nowplayingSectionNumber:queueSnapshot];
+        if(temp == NSNotFound) {
+            return NSNotFound;
+        } else {
+           return [self nowplayingSectionNumber:queueSnapshot] + 1;
+        }
     } else {
         return upNextItemsSectionNumber + 1;
     }
