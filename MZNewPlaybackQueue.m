@@ -72,7 +72,7 @@ static id sharedNewPlaybackQueueInstance = nil;
     if(self = [super init]) {
         _upNextQueue = [[Queue alloc] init];
         [self queueSongsOnTheFlyWithContext:context];
-        _mainContext = context;
+        _mainContext = nil;  //main context should be nil here!
         if(_upNextQueue.count > 0) {
             UpNextItem *upNextItem = [_upNextQueue peek];
             id obj = [[upNextItem enumeratorForContext] currentObject];
