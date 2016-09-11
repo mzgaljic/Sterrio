@@ -17,6 +17,7 @@
 #import "StreamQualityPickerTableViewController.h"
 #import "InAppPurchaseUtils.h"
 #import "TOMSMorphingLabel.h"
+#import "AppDelegate.h"
 
 @interface NewSettingsTableViewController ()
 {
@@ -147,7 +148,7 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
     } else if(section == ADVANCED_AND_ABOUT_SECTION_NUM) {
         return 2;
     } else if(section == FEEDBACK_SECTION_NUM) {
-        return 1;
+        return 2;
     } else {
         return -1;
     }
@@ -382,21 +383,27 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
         cell = [tableView dequeueReusableCellWithIdentifier:@"settingBasicDetailCell"
                                                forIndexPath:indexPath];
         
+        overrideCodeAtEndOfMethod = YES;
+        float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
+        cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
+                                              size:fontSize];
+        cell.textLabel.textColor = [UIColor blackColor];
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
+        cell.detailTextLabel.text = nil;
+        cell.imageView.image = nil;
+
         if(indexPath.row == 0)
+        {
+           //Share sterrio w/ friends
+            
+            cell.textLabel.text = [NSString stringWithFormat:@"Share %@", MZAppName];
+        }
+        else if(indexPath.row == 1)
         {
             //user Feedback
             
             cell.textLabel.text = @"Feedback";
-            overrideCodeAtEndOfMethod = YES;
-            float fontSize = [PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize];
-            cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants boldFontName]
-                                                  size:fontSize];
-            cell.textLabel.textColor = [UIColor blackColor];
-            cell.textLabel.textAlignment = NSTextAlignmentCenter;
-            cell.detailTextLabel.text = nil;
-            cell.imageView.image = nil;
         }
-        
         cell.selectionStyle = UITableViewCellSelectionStyleDefault;
     }
 
@@ -477,11 +484,58 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
     {
         if(indexPath.row == 0)
         {
+            //Share app w/ friends
+            [self presentShareSheetToShareApp];
+        }
+        else if(indexPath.row == 1)
+        {
             //user Feedback
             feedbackBtnActionSheet = [self actionSheetForFeedbackButton];
             [feedbackBtnActionSheet showInView:[UIApplication sharedApplication].keyWindow];
         }
     }
+}
+
+- (void)presentShareSheetToShareApp
+{
+    NSString *appUrlString = @"https://itunes.apple.com/us/app/keynote/id993519283?mt=8";
+    NSURL *shareUrl = [NSURL URLWithString:appUrlString];
+    NSArray *activityItems = @[shareUrl];
+    
+    //temporarily changing app default colors for the activityviewcontroller.
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].navBarToolbarTextTint;
+    
+    __block UIActivityViewController *activityVC = [[UIActivityViewController alloc]
+                                                    initWithActivityItems:activityItems
+                                                    applicationActivities:@[]];
+    __weak UIActivityViewController *weakActivityVC = activityVC;
+    __weak NewSettingsTableViewController *weakSelf = self;
+    
+    activityVC.excludedActivityTypes = @[UIActivityTypePrint,
+                                         UIActivityTypeAssignToContact,
+                                         UIActivityTypeSaveToCameraRoll,
+                                         UIActivityTypeAirDrop,
+                                         UIActivityTypeAddToReadingList];
+    //set tint color specifically for this VC so that the text and buttons are visible
+    [activityVC.view setTintColor:[AppEnvironmentConstants appTheme].mainGuiTint];
+    [activityVC setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed,  NSArray *returnedItems, NSError *activityError) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+            //restoring default button and title font colors in the app.
+            AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+            appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].navBarToolbarTextTint;
+            [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[AppEnvironmentConstants appTheme].navBarToolbarTextTint, NSForegroundColorAttributeName, nil]];
+            [weakSelf.navigationController.navigationBar setTitleTextAttributes:
+             @{NSForegroundColorAttributeName:[AppEnvironmentConstants appTheme].navBarToolbarTextTint}];
+        }];
+    }];
+    [self presentViewController:activityVC
+                       animated:YES
+                     completion:^{
+                         //fixes memory leak
+                         weakActivityVC.excludedActivityTypes = nil;
+                         activityVC = nil;
+                     }];
 }
 
 #pragma mark - Segue Helper
