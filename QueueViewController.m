@@ -12,6 +12,7 @@
 #import "PlayableItem.h"
 #import "PlaylistItem.h"
 #import "AllSongsDataSource.h"
+#import "MZNewPlaybackQueue.h"
 
 @interface QueueViewController ()
 {
@@ -25,7 +26,7 @@
 @end
 
 @implementation QueueViewController : UIViewController
-short const TABLE_SECTION_FOOTER_HEIGHT = 10;
+short const TABLE_SECTION_FOOTER_HEIGHT = 25;
 
 #pragma mark - View Controller life cycle
 - (id)initWithPlaybackQueueSnapshot:(MZPlaybackQueueSnapshot *)snapshot
@@ -216,15 +217,11 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     if(section == [self historyItemsSectionNumber]) {
         return @"History";
     } else if(section == [self nowplayingSectionNumber]) {
-        return @"Now Playing";
+        return @"";
     } else if(section == [self upNextItemsSectionNumber]) {
-        return @"Up Next";
+        return ([_snapshot upNextQueuedItemsRange].location != NSNotFound) ? @"Up Next" : @"";
     } else if(section == [self futureItemsSectionNumber]) {
-        //NSArray *items = [self itemArrayForSection:section];
-        //if(items.count > 0) {
-        //    return ((PlayableItem *)items[0]).contextForItem.queueName;
-        //}
-        return @"";  //looks cleaner if there is no title for this section.
+        return ([_snapshot upNextQueuedItemsRange].location == NSNotFound) ? @"Up Next" : @"";
     }
     NSLog(@"Missing if statement for 'titleForHeaderInSection' method. Section value: %li.", (long)section);
     @throw NSInternalInconsistencyException;
@@ -246,7 +243,12 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
     }
     header.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                             size:headerFontSize];
-    
+    CGRect oldFrame = header.textLabel.frame;
+    header.textLabel.frame = CGRectMake(oldFrame.origin.x + 10,
+                                        oldFrame.origin.y,
+                                        oldFrame.size.width - 10,
+                                        oldFrame.size.height);
+
     NSNumber *key = [NSNumber numberWithInteger:section];
     UIView *blurView = _cachedBlurViewsSectionDict[key];
     if(blurView == nil) {
@@ -278,6 +280,10 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
+    BOOL futureItemsExist = [_snapshot futureItemsRange].location != NSNotFound;
+    if(section == [self upNextItemsSectionNumber] && futureItemsExist) {
+        return 0;
+    }
     return TABLE_SECTION_FOOTER_HEIGHT;
 }
 
@@ -309,11 +315,62 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-#warning implementation needed
-    //PlayableItem *tappedItem = [self itemForIndexPath:indexPath];
-    //[MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
-    //[MusicPlaybackController resumePlayback];
+    NSUInteger nowPlayingSectionNumber = [self nowplayingSectionNumber];
+    if(indexPath.section == nowPlayingSectionNumber) {
+        [MusicPlaybackController seekToVideoSecond:[NSNumber numberWithInt:0]];
+        [MusicPlaybackController resumePlayback];
+    } else {
+        @try {
+            PlayableItem *tappedItem = [self itemForIndexPath:indexPath];
+            NSUInteger indexesToMove = 0;
+            NSMutableIndexSet *sectionsToUpdate = [[NSMutableIndexSet alloc]init];
+            
+            NSUInteger sectionIndex = nowPlayingSectionNumber + 1;
+            [sectionsToUpdate addIndex:sectionIndex];
+            while(sectionIndex != indexPath.section) {
+                indexesToMove += [self tableView:tableView numberOfRowsInSection:sectionIndex];
+                sectionIndex++;
+                [sectionsToUpdate addIndex:sectionIndex];
+            }
+            indexesToMove += indexPath.row + 1;
+            PlayableItem *oldItem = [[NowPlaying sharedInstance] playableItem];
+            PlayableItem *item = [[MZNewPlaybackQueue sharedInstance] seekBy:indexesToMove
+                                                                 inDirection:SeekForward];
+            if(![tappedItem isEqualToItem:item]) {
+                [MyAlerts displayAlertWithAlertType:ALERT_TYPE_Issue_Tapping_Song_InQueue];
+            }
+            [[NowPlaying sharedInstance] setNewPlayableItem:item];
+            [VideoPlayerWrapper startPlaybackOfItem:item
+                                       goingForward:YES
+                                    oldPlayableItem:oldItem];
+            
+            _snapshot = [[MZNewPlaybackQueue sharedInstance] snapshotOfPlaybackQueue];
+            //figure out which sections will cease to exist...
+            NSMutableIndexSet *deletedSections = [[NSMutableIndexSet alloc]init];
+            [sectionsToUpdate enumerateIndexesUsingBlock:^(NSUInteger section, BOOL *stop) {
+                NSInteger newLargestSectionValue = [self numberOfSectionsInTableView:tableView] - 1;
+                if(section > newLargestSectionValue) {
+                    [deletedSections addIndex:section];
+                }
+            }];
+            [sectionsToUpdate removeIndexes:deletedSections];
+            
+            //now update the UI
+            [self.tableView beginUpdates];
+            NSIndexPath *nowPlayingPath = [NSIndexPath indexPathForRow:0 inSection:nowPlayingSectionNumber];
+            [self.tableView reloadRowsAtIndexPaths:@[nowPlayingPath]
+                                  withRowAnimation:UITableViewRowAnimationFade];
+            [self.tableView deleteSections:deletedSections
+                          withRowAnimation:UITableViewRowAnimationBottom];
+            [self.tableView reloadSections:sectionsToUpdate
+                          withRowAnimation:UITableViewRowAnimationFade];
+            [self.tableView endUpdates];
+        } @catch (NSException *exception) {
+            [MyAlerts displayAlertWithAlertType:ALERT_TYPE_Issue_Tapping_Song_InQueue];
+        }
+    }
 }
+
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView
            editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath

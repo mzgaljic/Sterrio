@@ -21,6 +21,8 @@ typedef enum {
     ALERT_TYPE_TroubleSharingVideo,
     ALERT_TYPE_TroubleSharingLibrarySong,
     
+    ALERT_TYPE_Issue_Tapping_Song_InQueue,
+    
     ALERT_TYPE_CannotOpenSafariError,
     ALERT_TYPE_CannotOpenSelectedImageError,
     ALERT_TYPE_SongSaveHasFailed,

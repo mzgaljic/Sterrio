@@ -157,6 +157,23 @@ static NSString * const CANT_INIT_WITH_NIL_ARRAY_MSG = @"Cannot itialize an MZEn
     return NSNotFound;
 }
 
+/**
+ * Moves the internal cursor x amount of places in the requested direction, and returns the object
+ * at the new location for convenience. May be nil if you go out of bounds or ask for something stupid.
+ */
+- (id)moveCursor:(NSUInteger)indexChange direction:(CursorDirection)direction
+{
+    if(_arrayWithTolerance.count != _lastKnownArraySize) {
+        @throw NSInternalInconsistencyException;
+    }
+    if(direction == CursorForward) {
+        _cursor += indexChange;
+    } else {
+        _cursor -= indexChange;
+    }
+    return [self currentObject];
+}
+
 /** Returns YES IFF a call to previousObject would return a non-nil result. */
 - (BOOL)hasPrevious
 {

@@ -13,6 +13,8 @@
 
 //NOT thread safe and NOT a singleton. It is a global scoped class though.
 @interface MZNewPlaybackQueue : NSObject
+typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
+
 @property (nonatomic, assign, readonly) SHUFFLE_STATE shuffleState;
 
 + (instancetype)sharedInstance;
@@ -29,6 +31,7 @@
 - (PlayableItem *)currentItem;
 - (PlayableItem *)seekBackOneItem;
 - (PlayableItem *)seekForwardOneItem;
+- (PlayableItem *)seekBy:(NSUInteger)value inDirection:(SeekDirection)direction;
 - (PlayableItem *)seekToFirstItemInMainQueueAndReshuffleIfNeeded;
 
 //Queues the stuff described by PlaybackContext to the playback queue.

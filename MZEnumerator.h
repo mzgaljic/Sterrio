@@ -11,6 +11,7 @@
 
 //WARNING: ENUMERATOR DOES NOT ALLOW ARRAY SIZE TO CHANGE DURING ENUMERATION
 @interface MZEnumerator : NSObject <NSCopying>
+typedef NS_ENUM(NSInteger, CursorDirection) { CursorForward, CursorBackwards };
 
 /** Initialize w/ array. Modification of array during enumeration will result in an exception! 
  Starts at index 0.*/
@@ -39,6 +40,12 @@
 /** Returns NSNotFound if currentObject returns nil (tolerance value > 0 specified when enumerator was
     created.) Otherwise, the index into the source array for the source array.*/
 - (NSUInteger)indexOfCurrentObjectInSourceArray;
+
+/**
+ * Moves the internal cursor x amount of places in the requested direction, and returns the object
+ * at the new location for convenience. May be nil if you go out of bounds or ask for something stupid.
+ */
+- (id)moveCursor:(NSUInteger)indexChange direction:(CursorDirection)direction;
 
 /** Returns YES IFF a call to previousObject would return a non-nil result. */
 - (BOOL)hasPrevious;

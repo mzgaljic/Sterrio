@@ -17,7 +17,6 @@
 
 @interface MZNewPlaybackQueue ()
 @property (nonatomic, strong) PlaybackContext *mainContext;
-@property (nonatomic, strong) MZEnumerator *enumerator;
 @property (nonatomic, strong) MZEnumerator *mainEnumerator;
 @property (nonatomic, strong) MZEnumerator *shuffledMainEnumerator;
 @property (nonatomic, assign) BOOL usedUpNextQueueInsteadOfMainOrShuffledEnumerator;
@@ -40,8 +39,6 @@
 
 short const INTERNAL_FETCH_BATCH_SIZE = 5;
 short const EXTERNAL_FETCH_BATCH_SIZE = 150;
-
-typedef NS_ENUM(NSInteger, SeekDirection) { SeekForward, SeekBackwards };
 
 
 static id sharedNewPlaybackQueueInstance = nil;
@@ -248,6 +245,34 @@ static id sharedNewPlaybackQueueInstance = nil;
 {
     _mostRecentItem = [self seekNextItemInDirection:SeekForward];
     return _mostRecentItem;
+}
+
+- (PlayableItem *)seekBy:(NSUInteger)value inDirection:(SeekDirection)direction
+{
+    if(value <= 0) {
+        return nil;
+    }
+    
+    NSUInteger upNextSongsCount = [self upNextSongsCount];
+    if(value > upNextSongsCount) {
+        value -= upNextSongsCount;
+        MZEnumerator *enumerator = [self initializeAndGetCurrentEnumeratorIfPossible];
+        if(enumerator != nil) {
+            CursorDirection cursorDirection = (direction == SeekForward) ? CursorForward : CursorBackwards;
+            id obj = [enumerator moveCursor:value direction:cursorDirection];
+            if(obj != nil) {
+                return [MZNewPlaybackQueue wrapAsPlayableItem:obj context:_mainContext queuedSong:NO];
+            }
+        }
+        return nil;
+    } else {
+        #warning make this more efficient! Refactor the up-next items logic in seekNextItemInDirection to easily jump x amount in the up-next-items queue. Instead of 1 at a time...
+        PlayableItem *item = nil;
+        for(int i = 0; i < value; i++) {
+            item = [self seekNextItemInDirection:direction];
+        }
+        return item;
+    }
 }
 
 - (PlayableItem *)seekToFirstItemInMainQueueAndReshuffleIfNeeded
