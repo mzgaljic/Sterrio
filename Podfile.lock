@@ -21,21 +21,21 @@ PODS:
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - Batch (1.5.4)
-  - Crashlytics (3.7.2):
+  - Crashlytics (3.8.1):
     - Fabric (~> 1.6.3)
   - CRToast (0.0.9)
-  - Fabric (1.6.7)
+  - Fabric (1.6.8)
   - FXImageView (1.3.5)
   - GCDiscreetNotificationView (1.0.2)
-  - Google-Mobile-Ads-SDK (7.9.1)
-  - MarqueeLabel (2.7.8):
-    - MarqueeLabel/ObjC (= 2.7.8)
-  - MarqueeLabel/ObjC (2.7.8)
+  - Google-Mobile-Ads-SDK (7.10.1)
+  - MarqueeLabel (2.7.9):
+    - MarqueeLabel/ObjC (= 2.7.9)
+  - MarqueeLabel/ObjC (2.7.9)
   - MSCellAccessory (1.1.2)
   - Reachability (3.2)
-  - SDWebImage (3.8.1):
-    - SDWebImage/Core (= 3.8.1)
-  - SDWebImage/Core (3.8.1)
+  - SDWebImage (3.8.2):
+    - SDWebImage/Core (= 3.8.2)
+  - SDWebImage/Core (3.8.2)
   - TransitionKit (2.2.1)
   - TUSafariActivity (1.0.4)
   - Valet (2.2.2)
@@ -62,16 +62,16 @@ DEPENDENCIES:
 SPEC CHECKSUMS:
   AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
   Batch: 13083f81837fe1da9ea84b0533a2965c73ff74c6
-  Crashlytics: 130ab943f8c78cda7a814b434f270b2e2c8a3cba
+  Crashlytics: 4391d8df0b125345e9f209c5db6e7f40a6a8435d
   CRToast: 5a78c22b921c5ed3487488af605bc403a9c92fed
-  Fabric: caf7580c725e64db144f610ac65cd60956911dc7
+  Fabric: 5755268d0171435ab167e3d0878a28a777deaf10
   FXImageView: 7d84722b37f0afea9a64f12fdd4a6c7f9ecc4b16
   GCDiscreetNotificationView: b093cce1fe82f6d9784169a156b48ecb1465ad8a
-  Google-Mobile-Ads-SDK: 575583d7eae25793bb81ad8673737d1b4ecbedc5
-  MarqueeLabel: 6fff28d8c12f30b4a8d01a9f5992b4924a857f2b
+  Google-Mobile-Ads-SDK: c8da9e592fe43d9b47ef86b018cadb71af53f6b3
+  MarqueeLabel: 645cf4be33f8dca66fd7b15471e331d5a8d378df
   MSCellAccessory: 8265f3cd2386c1f372da00232472605ab11426e4
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  SDWebImage: 35f9627a3e44b4f292a8a8ce6a531fa488239b91
+  SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
   TransitionKit: 9ceccda4cd0cdc0a05ef85eb235e5a3292c3c250
   TUSafariActivity: afc55a00965377939107ce4fdc7f951f62454546
   Valet: b16c837ed1b33586c60d3f852c3a23c2efe5c019
