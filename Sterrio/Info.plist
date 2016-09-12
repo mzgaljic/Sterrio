@@ -52,14 +52,11 @@
 		<true/>
 	</dict>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>$(PRODUCT_NAME) only uses the selected photo for album art.</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Ubuntu.ttf</string>
-		<string>Ubuntu-Italic.ttf</string>
-		<string>Ubuntu-Bold.ttf</string>
-		<string>Ubuntu-BoldItalic.ttf</string>
-	</array>
+	<string>Used for album art.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Used by Google AdMob (for serving Ads to users.)</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Used by Google AdMob (for serving Ads to users.)</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
