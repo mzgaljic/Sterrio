@@ -61,9 +61,6 @@
 		873538901B0A9BEE009244E4 /* EnsembleDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735388F1B0A9BEE009244E4 /* EnsembleDelegate.m */; };
 		873538931B0A9BFF009244E4 /* PreviousNowPlayingInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538921B0A9BFF009244E4 /* PreviousNowPlayingInfo.m */; };
 		873538961B0A9C07009244E4 /* NowPlaying.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538951B0A9C07009244E4 /* NowPlaying.m */; };
-		8735389A1B0A9C26009244E4 /* MZPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538991B0A9C26009244E4 /* MZPlaybackQueue.m */; };
-		873538A21B0A9C40009244E4 /* MZPrivateMainPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735389D1B0A9C40009244E4 /* MZPrivateMainPlaybackQueue.m */; };
-		873538A31B0A9C40009244E4 /* MZPrivateUpNextPlaybackQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735389F1B0A9C40009244E4 /* MZPrivateUpNextPlaybackQueue.m */; };
 		873538A41B0A9C40009244E4 /* PlayableItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538A11B0A9C40009244E4 /* PlayableItem.m */; };
 		873538A91B0A9C52009244E4 /* OperationQueuesSingeton.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538A61B0A9C52009244E4 /* OperationQueuesSingeton.m */; };
 		873538AA1B0A9C52009244E4 /* ReachabilitySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538A81B0A9C52009244E4 /* ReachabilitySingleton.m */; };
@@ -364,12 +361,6 @@
 		873538921B0A9BFF009244E4 /* PreviousNowPlayingInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreviousNowPlayingInfo.m; sourceTree = "<group>"; };
 		873538941B0A9C07009244E4 /* NowPlaying.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NowPlaying.h; sourceTree = "<group>"; };
 		873538951B0A9C07009244E4 /* NowPlaying.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NowPlaying.m; sourceTree = "<group>"; };
-		873538981B0A9C26009244E4 /* MZPlaybackQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPlaybackQueue.h; sourceTree = "<group>"; };
-		873538991B0A9C26009244E4 /* MZPlaybackQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPlaybackQueue.m; sourceTree = "<group>"; };
-		8735389C1B0A9C40009244E4 /* MZPrivateMainPlaybackQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPrivateMainPlaybackQueue.h; sourceTree = "<group>"; };
-		8735389D1B0A9C40009244E4 /* MZPrivateMainPlaybackQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPrivateMainPlaybackQueue.m; sourceTree = "<group>"; };
-		8735389E1B0A9C40009244E4 /* MZPrivateUpNextPlaybackQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZPrivateUpNextPlaybackQueue.h; sourceTree = "<group>"; };
-		8735389F1B0A9C40009244E4 /* MZPrivateUpNextPlaybackQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZPrivateUpNextPlaybackQueue.m; sourceTree = "<group>"; };
 		873538A01B0A9C40009244E4 /* PlayableItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayableItem.h; sourceTree = "<group>"; };
 		873538A11B0A9C40009244E4 /* PlayableItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayableItem.m; sourceTree = "<group>"; };
 		873538A51B0A9C52009244E4 /* OperationQueuesSingeton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OperationQueuesSingeton.h; sourceTree = "<group>"; };
@@ -1045,7 +1036,6 @@
 				873538941B0A9C07009244E4 /* NowPlaying.h */,
 				873538951B0A9C07009244E4 /* NowPlaying.m */,
 				873EBB201D1CCC12005F248A /* New Plaback Queue */,
-				873538971B0A9C1D009244E4 /* Playback Queue */,
 				873538A51B0A9C52009244E4 /* OperationQueuesSingeton.h */,
 				873538A61B0A9C52009244E4 /* OperationQueuesSingeton.m */,
 				873538A71B0A9C52009244E4 /* ReachabilitySingleton.h */,
@@ -1067,29 +1057,6 @@
 				8735388F1B0A9BEE009244E4 /* EnsembleDelegate.m */,
 			);
 			name = "Core Data Stuff";
-			sourceTree = "<group>";
-		};
-		873538971B0A9C1D009244E4 /* Playback Queue */ = {
-			isa = PBXGroup;
-			children = (
-				873538981B0A9C26009244E4 /* MZPlaybackQueue.h */,
-				873538991B0A9C26009244E4 /* MZPlaybackQueue.m */,
-				8735389B1B0A9C36009244E4 /* Private Queue Helpers */,
-			);
-			name = "Playback Queue";
-			sourceTree = "<group>";
-		};
-		8735389B1B0A9C36009244E4 /* Private Queue Helpers */ = {
-			isa = PBXGroup;
-			children = (
-				8735389C1B0A9C40009244E4 /* MZPrivateMainPlaybackQueue.h */,
-				8735389D1B0A9C40009244E4 /* MZPrivateMainPlaybackQueue.m */,
-				8735389E1B0A9C40009244E4 /* MZPrivateUpNextPlaybackQueue.h */,
-				8735389F1B0A9C40009244E4 /* MZPrivateUpNextPlaybackQueue.m */,
-				873538A01B0A9C40009244E4 /* PlayableItem.h */,
-				873538A11B0A9C40009244E4 /* PlayableItem.m */,
-			);
-			name = "Private Queue Helpers";
 			sourceTree = "<group>";
 		};
 		873538AE1B0A9C7E009244E4 /* GUI & GUI Controllers */ = {
@@ -1515,6 +1482,8 @@
 				873EBB331D202D52005F248A /* MZArrayShuffler.m */,
 				87E9FADE1D72AF8D00ECCB7A /* UpNextItem.h */,
 				87E9FADF1D72AF8D00ECCB7A /* UpNextItem.m */,
+				873538A01B0A9C40009244E4 /* PlayableItem.h */,
+				873538A11B0A9C40009244E4 /* PlayableItem.m */,
 			);
 			name = "New Plaback Queue";
 			sourceTree = "<group>";
@@ -2081,7 +2050,6 @@
 			files = (
 				87C67B9F1C9F26A000E2FCB8 /* LicensesViewController.m in Sources */,
 				87A8FD001CBF2A7800A43637 /* UIColor+Hex.m in Sources */,
-				873538A21B0A9C40009244E4 /* MZPrivateMainPlaybackQueue.m in Sources */,
 				873538B91B0A9CB3009244E4 /* ExistingArtistPickerTableViewController.m in Sources */,
 				87A8FCED1CBF29FB00A43637 /* SDCAlertViewBackgroundView.m in Sources */,
 				873539051B0A9EBB009244E4 /* PlaylistItemTableViewController.m in Sources */,
@@ -2121,7 +2089,6 @@
 				873539391B0A9FCE009244E4 /* MZSlider.m in Sources */,
 				87F84E741C74123C000D7D4E /* AppRatingUtils.m in Sources */,
 				873539191B0A9EF6009244E4 /* FontSizeTableViewController.m in Sources */,
-				8735389A1B0A9C26009244E4 /* MZPlaybackQueue.m in Sources */,
 				873538F31B0A9E78009244E4 /* AlbumDetailDisplayHelper.m in Sources */,
 				87A8FC341CBF202500A43637 /* MRMethodCopier.m in Sources */,
 				873538451B0A9AF4009244E4 /* UIView+ScreenshotView.m in Sources */,
@@ -2158,7 +2125,6 @@
 				87A8FC6D1CBF241600A43637 /* AbstractActionSheetPicker.m in Sources */,
 				87A8FC391CBF202500A43637 /* MRProgressView.m in Sources */,
 				87EF52581CA4D7DD00D8364D /* MZAppTheme.m in Sources */,
-				873538A31B0A9C40009244E4 /* MZPrivateUpNextPlaybackQueue.m in Sources */,
 				873538DA1B0A9D0B009244E4 /* MyAVPlayer.m in Sources */,
 				8735381A1B0A9AC7009244E4 /* PreloadedCoreDataModelUtility.m in Sources */,
 				87A8FC791CBF24A900A43637 /* IBActionSheet.m in Sources */,

@@ -40,8 +40,13 @@
     [AppEnvironmentConstants setShouldOnlyAirplayAudio:[AppEnvironmentConstants shouldOnlyAirplayAudio]];
     
     PlayerView *playerView = [MusicPlaybackController obtainRawPlayerView];
-    if(! [SongPlayerCoordinator isVideoPlayerExpanded])
+    if(! [SongPlayerCoordinator isVideoPlayerExpanded]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnonnull"
+        //custom logic in PlayerView.m doesn't ever look at the arguments here...so passing nil is fine.
         [playerView touchesCancelled:nil withEvent:nil];
+        #pragma clang diagnostic pop
+    }
     
     BOOL airplayActive = player.externalPlaybackActive;
     [[MusicPlaybackController obtainRawPlayerView] showAirPlayInUseMsg:airplayActive];

@@ -7,7 +7,6 @@
 //
 
 #import "ReachabilitySingleton.h"
-#import <AVFoundation/AVAudioPlayer.h>
 #import "AppEnvironmentConstants.h"
 #import "MusicPlaybackController.h"
 

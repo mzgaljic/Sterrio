@@ -62,8 +62,6 @@
 + (Song *)nowPlayingSong;
 
 #pragma mark + Gathering playback info
-+ (NSUInteger)numMoreSongsInQueue;
-
 //does NOT perform a context comparison.
 + (BOOL)isSongLastInQueue:(Song *)song;
 //does NOT perform a context comparison.

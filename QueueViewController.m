@@ -443,7 +443,6 @@ static char songIndexPathAssociationKey;  //used to associate cells with images 
         NSIndexPath *nowPlayingPath = [NSIndexPath indexPathForRow:0 inSection:nowPlayingSectionNumber];
         [self.tableView reloadRowsAtIndexPaths:@[nowPlayingPath]
                               withRowAnimation:UITableViewRowAnimationFade];
-
     }
     [self.tableView deleteSections:sectionsToDelete
                   withRowAnimation:UITableViewRowAnimationBottom];
