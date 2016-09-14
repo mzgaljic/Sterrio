@@ -504,7 +504,8 @@ int const BUG_FOUND_ACTION_SHEET_TAG = 102;
     
     //temporarily changing app default colors for the activityviewcontroller.
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].navBarToolbarTextTint;
+    appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+    [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[AppEnvironmentConstants appTheme].mainGuiTint, NSForegroundColorAttributeName, nil]];
     
     __block UIActivityViewController *activityVC = [[UIActivityViewController alloc]
                                                     initWithActivityItems:activityItems
