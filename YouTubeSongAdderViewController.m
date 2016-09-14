@@ -642,7 +642,8 @@ static short numberTimesViewHasBeenShown = 0;
         
         //temporarily changing app default colors for the activityviewcontroller.
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].navBarToolbarTextTint;
+        appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
+        [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[AppEnvironmentConstants appTheme].mainGuiTint, NSForegroundColorAttributeName, nil]];
         
         TUSafariActivity *openInSafariActivity = [[TUSafariActivity alloc] init];
         NSArray *activities = @[openInSafariActivity];
