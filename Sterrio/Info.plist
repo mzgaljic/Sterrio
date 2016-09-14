@@ -21,7 +21,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>50</string>
+	<string>51</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -51,12 +51,12 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Used for album art.</string>
-	<key>NSCalendarsUsageDescription</key>
-	<string>Used by Google AdMob (for serving Ads to users.)</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Used by Google AdMob (for serving Ads to users.)</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Used by Google AdMob (for serving Ads to users.)</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Used for album art.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
