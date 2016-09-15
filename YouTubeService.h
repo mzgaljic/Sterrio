@@ -33,6 +33,14 @@
 - (void)setVideoDetailLookupDelegate:(id<YouTubeVideoDetailLookupDelegate>)delegate;
 - (void)removeVideoDetailLookupDelegate;
 
+#pragma mark - Managing recent YT searches
+/** Sets the most recent searches by the user locally on this device (async). Array must be non-nil.
+    First object in the array is the newest search, the last is the oldest search.*/
++ (void)setRecentYoutubeSearches:(NSArray *)searches;
+/** Gets the most recent searches by the user (saved locally on this device) - synchronously. 
+ Guranteed to be non-nil.First object in the array is the newest search, the last is the oldest search. */
++ (NSArray *)getRecentYoutubeSearches;
+
 #pragma mark - Video Presence on Youtube.com
 /*
  * Blocks the caller. 

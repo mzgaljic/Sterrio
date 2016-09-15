@@ -87,4 +87,10 @@
     return newSearchBarHeight;
 }
 
+- (NSString *)trimmedText
+{
+    return [self.text stringByTrimmingCharactersInSet:
+            [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
 @end

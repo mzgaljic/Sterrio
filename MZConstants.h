@@ -63,6 +63,9 @@ extern NSString * const MZTurningOffIcloudFailed;
 extern NSString * const MZTurningOnIcloudSuccess;
 extern NSString * const MZIcloudSyncStateHasChanged;
 
+//youtube recent searches
+extern NSString * const MZRecentYTSearchesUserDefaultsKey;
+
 extern short const MZMinutesInAnHour;
 extern short const MZSecondsInAMinute;
 extern short const MZLongestCellularPlayableDuration;

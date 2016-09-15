@@ -16,4 +16,7 @@
 
 - (void)updateFontSizeIfNecessary;
 
+/** the text without whitespace and newlines. */
+- (NSString *)trimmedText;
+
 @end

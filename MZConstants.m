@@ -64,6 +64,9 @@ NSString * const MZTurningOffIcloudFailed = @"icloud is on";
 NSString * const MZTurningOnIcloudSuccess = @"icloud is on";
 NSString * const MZIcloudSyncStateHasChanged = @"icloud state of app has changed";
 
+//youtube recent searches
+NSString * const MZRecentYTSearchesUserDefaultsKey = @"sterrio-recent-yt-searches";
+
 
 short const MZMinutesInAnHour = 60;
 short const MZSecondsInAMinute = 60;

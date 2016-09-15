@@ -21,6 +21,12 @@
 #import "AppRatingTableViewCell.h"
 #import "MZInterstitialAd.h"
 
+typedef NS_ENUM(NSInteger, TableSectionHeaderMode)
+{
+    TableSectionHeaderModeRecentSearches = 1,
+    TableSectionHeaderModeTopHits
+};
+
 //NOTE loadingMoreResultsSpinner is not currently used. To use again, call "reload" on tableview
 //right before loading more results.
 @interface YoutubeResultsTableViewController ()
@@ -32,6 +38,7 @@
 @property (nonatomic, strong) MySearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray *searchResults;
 @property (nonatomic, strong) NSMutableArray *searchSuggestions;
+@property (nonatomic, strong) NSMutableArray *recentSearches;
 @property (nonatomic, assign) BOOL displaySearchResults;
 @property (nonatomic, assign) BOOL searchInitiatedAlready;
 @property (nonatomic, strong) NSString *lastSuccessfullSearchString;
@@ -51,6 +58,8 @@
 
 @property (nonatomic, assign) BOOL canShowAppRatingCell;
 
+@property (nonatomic, assign) TableSectionHeaderMode tableSectionHeaderMode;
+
 //non-nil if it was specified when VC was created. For opening VC modally and forcing a query.
 @property (nonatomic, strong) NSString *forcedSearchQuery;
 //pass the id of the object for which you are doing a 'forced search query'.
@@ -62,6 +71,7 @@ static const float MINIMUM_DURATION_OF_LOADING_POPUP = 0.3f;
 static NSString *Network_Error_Loading_More_Results_Msg = @"Network error";
 static NSString *No_More_Results_To_Display_Msg = @"No more results";
 static const int APP_RATING_CELL_ROW_NUM = 2;
+static const int NUM_RECENT_SEARCHES = 5;
 
 + (instancetype)initWithSearchQuery:(NSString *)query replacementObjId:(NSManagedObjectID *)objId
 {
@@ -106,8 +116,9 @@ static NSDate *timeSinceLastPageLoaded;
     _searchBar = nil;
     _forcedSearchQuery = nil;
     _searchResults = nil;
+    _recentSearches = nil;
     _replacementObjId = nil;
-    self.searchSuggestions = nil;
+    _searchSuggestions = nil;
     _lastSuccessfullSuggestions = nil;
     _cancelButton = nil;
     _scrollToTopButton = nil;
@@ -200,6 +211,9 @@ static NSDate *timeSinceLastPageLoaded;
 {
     [super viewDidLoad];
     thumbnailStackController = [[StackController alloc] init];
+    
+    _tableSectionHeaderMode = TableSectionHeaderModeRecentSearches;
+    _recentSearches = [NSMutableArray arrayWithArray:[YouTubeService getRecentYoutubeSearches]];
     
     UIImage *poweredByYtLogo;
     if([[AppEnvironmentConstants appTheme].navBarToolbarTextTint isEqualToColor:[UIColor blackColor]]) {
@@ -342,7 +356,7 @@ static NSDate *timeSinceLastPageLoaded;
 {
     //maybe its possible that this response could come in AFTER the user already pressed the search
     //button and displayed search results in his table? if thats the case, we simply ignore this.
-    if(self.displaySearchResults){
+    if(self.displaySearchResults || _tableSectionHeaderMode == TableSectionHeaderModeRecentSearches) {
         return;
     }
     
@@ -480,7 +494,7 @@ static NSDate *timeSinceLastPageLoaded;
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
     self.navigationController.toolbarHidden = YES;
-    if(searchBar.text.length == 0)
+    if(self.searchBar.trimmedText.length == 0)
         self.tableView.scrollEnabled = NO;
     
     //show the cancel button
@@ -508,7 +522,10 @@ static NSDate *timeSinceLastPageLoaded;
     self.displaySearchResults = YES;
     self.waitingOnYoutubeResults = YES;
     self.tableView.scrollEnabled = YES;
-    _lastSuccessfullSearchString = searchBar.text;
+    if(![_lastSuccessfullSearchString isEqual:_searchBar.trimmedText]) {
+        [self updateRecentSearchesArrayAndSaveWithNewQuery:searchBar.text];
+    }
+    _lastSuccessfullSearchString = _searchBar.trimmedText;
     self.navigationController.navigationBar.topItem.title = @"Search Results";
     [_searchBar resignFirstResponder];
     self.navigationController.toolbarHidden = NO;
@@ -522,7 +539,7 @@ static NSDate *timeSinceLastPageLoaded;
     
     [self startTimingExecution];
     
-    [[YouTubeService sharedInstance] searchYouTubeForVideosUsingString: searchBar.text];
+    [[YouTubeService sharedInstance] searchYouTubeForVideosUsingString:searchBar.text];
     _noMoreResultsToDisplay = NO;
     _networkErrorLoadingMoreResults = NO;
 }
@@ -578,35 +595,33 @@ static BOOL userClearedTextField = NO;
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     [[YouTubeService sharedInstance] cancelAllYtAutoCompletePendingRequests];
-    
-    if(searchText.length != 0){
-        if(! self.displaySearchResults)
+    if(_searchBar.trimmedText.length > 0){
+        if(! self.displaySearchResults) {
             self.tableView.scrollEnabled = YES;
-        
+        }
         [[YouTubeService sharedInstance] fetchYouTubeAutoCompleteResultsForString:searchText];
         self.displaySearchResults = NO;
-    }
-    else{  //user cleared the textField
+    } else {
+        //user cleared the textField
         userClearedTextField = YES;
-        if(! self.displaySearchResults)
+        if(! self.displaySearchResults) {
             self.tableView.scrollEnabled = NO;
-        
-        int numSearchSuggestions = (int)self.searchSuggestions.count;
-        
+        }
         if(! [searchBar isFirstResponder]) {
             [searchBar becomeFirstResponder];  //bring up keyboard
         }
-        [self.searchSuggestions removeAllObjects];
-        self.displaySearchResults = NO;
-        
-        NSMutableArray *paths = [NSMutableArray array];
-        for(int i = 0; i < numSearchSuggestions; i++)
-            [paths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
-        
-        [self.tableView beginUpdates];
-        [self.tableView deleteRowsAtIndexPaths:paths withRowAnimation:UITableViewRowAnimationFade];
-        [self.tableView endUpdates];
     }
+    if(self.searchBar.trimmedText.length > 0) {
+        _tableSectionHeaderMode = TableSectionHeaderModeTopHits;
+    } else {
+        _tableSectionHeaderMode = TableSectionHeaderModeRecentSearches;
+    }
+    
+    [self.tableView beginUpdates];
+    //so the section title updates
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0]
+                  withRowAnimation:UITableViewRowAnimationFade];
+    [self.tableView endUpdates];
 }
 
 #pragma mark - TableView deleagte
@@ -639,7 +654,13 @@ static BOOL userClearedTextField = NO;
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     if(! self.displaySearchResults){
-        return @"Top Hits";
+        if(_tableSectionHeaderMode == TableSectionHeaderModeTopHits) {
+            return @"Top Hits";
+        } else if(_tableSectionHeaderMode == TableSectionHeaderModeRecentSearches) {
+            if(_recentSearches.count > 0) {
+                return @"Recent searches";
+            }
+        }
     }
     return @"";
 }
@@ -690,9 +711,15 @@ static BOOL userClearedTextField = NO;
             numRows++;
         }
         return numRows;
-    }else{
-        //user has not pressed "search" yet, only showing autosuggestions
-        return self.searchSuggestions.count;
+    } else {
+        //user has not pressed "search" yet, only showing suggestions or recent searches
+        if(_tableSectionHeaderMode == TableSectionHeaderModeTopHits) {
+            return _searchSuggestions.count;
+        } else if(_tableSectionHeaderMode == TableSectionHeaderModeRecentSearches) {
+            return (_recentSearches.count > NUM_RECENT_SEARCHES) ? NUM_RECENT_SEARCHES
+                                                                : _recentSearches.count;
+        }
+        return 0;
     }
 }
 
@@ -791,15 +818,24 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
         return customCell;
         
     } else {
-        //auto suggestions will populate the table
         UITableViewCell *cell;
         cell = [tableView dequeueReusableCellWithIdentifier:@"youtubeQuerySuggestCell"
                                                forIndexPath:indexPath];
-        cell.textLabel.text = [self.searchSuggestions objectAtIndex:indexPath.row];
         cell.textLabel.font = [UIFont fontWithName:[AppEnvironmentConstants regularFontName]
                                               size:[PreferredFontSizeUtility actualLabelFontSizeFromCurrentPreferredSize]];
         cell.imageView.image = nil;
-        return cell;
+        if(_tableSectionHeaderMode == TableSectionHeaderModeTopHits) {
+            //suggestions will populate the table
+            cell.textLabel.text = [_searchSuggestions objectAtIndex:indexPath.row];
+            return cell;
+        } else if(_tableSectionHeaderMode == TableSectionHeaderModeRecentSearches) {
+            //recent searches will populate the table
+            cell.textLabel.text = [_recentSearches objectAtIndex:indexPath.row];
+            return cell;
+        } else {
+            NSAssert(false, @"Unhandled TableSectionHeaderMode in cellForRowAtIndexPath...");
+            @throw NSInternalInconsistencyException;
+        }
     }
 }
 
@@ -837,7 +873,7 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    if(self.displaySearchResults){  //video search results in table
+    if(self.displaySearchResults) {  //video search results in table
         if(indexPath.section == 0){
             NSInteger arrayIndex = [self rowNumFromIndexPathTakingAppRatingCellIntoAccount:indexPath];
             YouTubeVideo *ytVideo = [_searchResults objectAtIndex:arrayIndex];
@@ -863,16 +899,25 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
                                                      animated:YES];
             }
         }
-    }
-    else{  //auto suggestions in table
-        int index = (int)indexPath.row;
-        NSString *chosenSuggestion = self.searchSuggestions[index];
-        
-        if(chosenSuggestion.length != 0){
-            self.waitingOnYoutubeResults = YES;
-
-            [_searchBar setText:chosenSuggestion];
-            [self searchBarSearchButtonClicked:_searchBar];
+    } else {
+        NSString *chosenQuery = nil;
+        if(_tableSectionHeaderMode == TableSectionHeaderModeTopHits) {
+            //suggestions in table
+            chosenQuery = _searchSuggestions[(int)indexPath.row];
+            if(chosenQuery.length != 0){
+                _waitingOnYoutubeResults = YES;
+                [_searchBar setText:chosenQuery];
+                [self searchBarSearchButtonClicked:_searchBar];
+            }
+        } else if(_tableSectionHeaderMode == TableSectionHeaderModeRecentSearches) {
+            //recent searches in table
+            chosenQuery = _recentSearches[(int)indexPath.row];
+            if(chosenQuery.length != 0){
+                _waitingOnYoutubeResults = YES;
+                [_searchBar setText:chosenQuery];
+                //will also update the recent searches array if needed, save it, etc.
+                [self searchBarSearchButtonClicked:_searchBar];
+            }
         }
     }
 }
@@ -884,6 +929,17 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
                                             size:headerFontSize];
 }
 
+#pragma mark - Managing Recent Searches
+- (void)updateRecentSearchesArrayAndSaveWithNewQuery:(NSString *)query
+{
+    if(query != nil) {
+        while(_recentSearches.count >= NUM_RECENT_SEARCHES) {
+            [_recentSearches removeLastObject];
+        }
+        [_recentSearches insertObject:query atIndex:0];
+        [YouTubeService setRecentYoutubeSearches:_recentSearches];
+    }
+}
 
 #pragma mark - TableView custom view toggler/creator
 - (void)showLoadingIndicatorInCenterOfTable:(BOOL)yes

@@ -87,6 +87,32 @@ const int time_out_interval_seconds = 10;
     return self;
 }
 
+#pragma mark - Managing recent YT searches
++ (void)setRecentYoutubeSearches:(NSArray *)searches
+{
+    cachedRecentSearches = searches;
+    //save on background thread since NSUserDefaults (slow)
+    __weak NSArray *weakRecentSearches = searches;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSAssert(weakRecentSearches != nil, @"Recent searches array must not be nil!");
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        [userDefaults setObject:weakRecentSearches forKey:MZRecentYTSearchesUserDefaultsKey];
+        [userDefaults synchronize];
+    });
+}
+
+static NSArray *cachedRecentSearches = nil;
++ (NSArray *)getRecentYoutubeSearches
+{
+    if(cachedRecentSearches != nil) {
+        return cachedRecentSearches;
+    }
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSArray *searches = [userDefaults objectForKey:MZRecentYTSearchesUserDefaultsKey];
+    cachedRecentSearches = (searches == nil) ? @[] : searches;
+    return cachedRecentSearches;
+}
+
 #pragma mark - Performing a query
 - (void)searchYouTubeForVideosUsingString:(NSString *)searchString
 {
