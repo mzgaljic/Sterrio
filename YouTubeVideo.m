@@ -38,8 +38,8 @@
         return self.cachedSanitizedTitle;
     }
     
-    NSString *temp = [self replaceWhitespacePaddedWordsWithSingleWhitespace:[self.videoName copy]];
-    NSMutableString *title = [NSMutableString stringWithString:temp];
+    __strong NSString *temp = [self replaceWhitespacePaddedWordsWithSingleWhitespace:[self.videoName copy]];
+    __strong NSMutableString *title = [NSMutableString stringWithString:temp];
     
     BOOL liveTextFound = NO;
     [self removeExtraHypensOnTarget:&title];
