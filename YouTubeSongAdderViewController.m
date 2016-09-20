@@ -519,7 +519,7 @@ static short numberTimesViewHasBeenShown = 0;
     
     if(self.player.isInStall)
         [MRProgressOverlayView showOverlayAddedTo:self.tableView.tableHeaderView
-                                            title:@"Loading Preview"
+                                            title:@"Loading preview"
                                              mode:MRProgressOverlayViewModeIndeterminateSmall
                                          animated:YES];
 }
