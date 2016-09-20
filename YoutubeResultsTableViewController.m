@@ -287,11 +287,18 @@ static NSDate *timeSinceLastPageLoaded;
     
     if(_searchResults.count == 0){  //special case
         //display alert saying no results found
-        
-        [self launchAlertViewWithDialogTitle:@"No Search Results Found" andMessage:nil];
-        [_searchBar setText:@""];
-    }else
+        [self launchAlertViewWithDialogTitle:@"No Search Results Found"
+                                  andMessage:nil
+                                    okAction:^(SDCAlertAction *action) {
+                                        //force keyboard to be active again so user doesn't need to
+                                        //tap the search bar  again. OK to use ivars in block here,
+                                        //view should always live longer than this block...
+                                        [_searchBar becomeFirstResponder];
+                                        [self searchBarTextDidBeginEditing:_searchBar];
+                                    }];
+    } else {
         [self showLoadingIndicatorInCenterOfTable:NO];
+    }
     [_searchBar setText:_lastSuccessfullSearchString];
     
     self.searchInitiatedAlready = YES;
@@ -432,7 +439,9 @@ static NSDate *timeSinceLastPageLoaded;
 
     [self showLoadingIndicatorInCenterOfTable:NO];
     
-    [self launchAlertViewWithDialogTitle:@"Network Problem" andMessage:@"Cannot establish connection with YouTube."];
+    [self launchAlertViewWithDialogTitle:@"Network Problem"
+                              andMessage:@"Cannot establish connection with YouTube."
+                                okAction:nil];
     
     self.searchInitiatedAlready = NO;
     self.waitingOnYoutubeResults = NO;
@@ -458,14 +467,16 @@ static NSDate *timeSinceLastPageLoaded;
 }
 
 #pragma mark - AlertView
-- (void)launchAlertViewWithDialogTitle:(NSString *)title andMessage:(NSString *)message
+- (void)launchAlertViewWithDialogTitle:(NSString *)title
+                            andMessage:(NSString *)message
+                              okAction:(void (^)(SDCAlertAction *))handler
 {
     SDCAlertController *alert =[SDCAlertController alertControllerWithTitle:title
                                                                     message:message
                                                              preferredStyle:SDCAlertControllerStyleAlert];
     SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK"
                                                          style:SDCAlertActionStyleRecommended
-                                                       handler:nil];
+                                                       handler:handler];
     [alert addAction:okAction];
     [self slightlyDelayPresentationOfAlertController:alert];
     
