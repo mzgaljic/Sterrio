@@ -522,7 +522,9 @@ static NSDate *timeSinceLastPageLoaded;
     self.displaySearchResults = YES;
     self.waitingOnYoutubeResults = YES;
     self.tableView.scrollEnabled = YES;
-    if(![_lastSuccessfullSearchString isEqual:_searchBar.trimmedText]) {
+    NSString *mostRecentQuery = (_recentSearches.count > 0) ? _recentSearches[0]
+                                                            : _lastSuccessfullSuggestions;
+    if(![mostRecentQuery isEqual:_searchBar.trimmedText]) {
         [self updateRecentSearchesArrayAndSaveWithNewQuery:searchBar.text];
     }
     _lastSuccessfullSearchString = _searchBar.trimmedText;
@@ -873,10 +875,12 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    if(self.displaySearchResults) {  //video search results in table
-        if(indexPath.section == 0){
+    if(self.displaySearchResults) {
+        if(indexPath.section == 0) {
+            //video search results in table
             NSInteger arrayIndex = [self rowNumFromIndexPathTakingAppRatingCellIntoAccount:indexPath];
             YouTubeVideo *ytVideo = [_searchResults objectAtIndex:arrayIndex];
+            CLSNSLog(@"User tapped on video with YT id: %@ title:%@", ytVideo.videoId, ytVideo.videoName);
             CustomYoutubeTableViewCell *cell;
             cell = (CustomYoutubeTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
             UIImage *img = [UIImage imageWithCGImage:cell.videoThumbnail.image.CGImage];
@@ -904,20 +908,16 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
         if(_tableSectionHeaderMode == TableSectionHeaderModeTopHits) {
             //suggestions in table
             chosenQuery = _searchSuggestions[(int)indexPath.row];
-            if(chosenQuery.length != 0){
-                _waitingOnYoutubeResults = YES;
-                [_searchBar setText:chosenQuery];
-                [self searchBarSearchButtonClicked:_searchBar];
-            }
+            CLSNSLog(@"User tapped google suggested query: %@", chosenQuery);
         } else if(_tableSectionHeaderMode == TableSectionHeaderModeRecentSearches) {
             //recent searches in table
             chosenQuery = _recentSearches[(int)indexPath.row];
-            if(chosenQuery.length != 0){
-                _waitingOnYoutubeResults = YES;
-                [_searchBar setText:chosenQuery];
-                //will also update the recent searches array if needed, save it, etc.
-                [self searchBarSearchButtonClicked:_searchBar];
-            }
+            CLSNSLog(@"User tapped suggested query (recent searches): %@", chosenQuery);
+        }
+        if(chosenQuery.length != 0){
+            _waitingOnYoutubeResults = YES;
+            [_searchBar setText:chosenQuery];
+            [self searchBarSearchButtonClicked:_searchBar];
         }
     }
 }
