@@ -1152,7 +1152,6 @@ float const updateCellWithAnimationFadeDelay = 0.4;
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     [picker dismissViewControllerAnimated:YES completion:nil];
-    picker = nil;
     UIImage *img = [info objectForKey:UIImagePickerControllerOriginalImage];
     if(img == nil)
         [MyAlerts displayAlertWithAlertType:ALERT_TYPE_CannotOpenSelectedImageError];

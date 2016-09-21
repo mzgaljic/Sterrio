@@ -10,36 +10,14 @@
 #import "YouTubeVideo.h"
 
 @interface YouTubeVideo ()
-@property (nonatomic, strong) NSString *cachedSanitizedTitle;
 @end
 
 @implementation YouTubeVideo
 
-//useful when you need a temporary copy that keeps its own cachedSanitizedTitle ivar.
-- (id)copyWithZone:(NSZone *)zone
-{
-    // Copying code here.
-    YouTubeVideo *copy = [[[self class] allocWithZone:zone] init];
-    if (copy) {
-        copy.videoName = [self.videoName copyWithZone:zone];
-        copy.videoId = [self.videoId copyWithZone:zone];
-        copy.videoThumbnailUrl = [self.videoThumbnailUrl copyWithZone:zone];
-        copy.videoThumbnailUrlHighQuality = [self.videoThumbnailUrlHighQuality copyWithZone:zone];
-        copy.channelTitle = [self.channelTitle copyWithZone:zone];
-        copy.publishDate = self.publishDate;
-        copy.duration = self.duration;
-    }
-    return copy;
-}
-
 - (NSString *)sanitizedTitle
 {
-    if(self.cachedSanitizedTitle) {
-        return self.cachedSanitizedTitle;
-    }
-    
-    __strong NSString *temp = [self replaceWhitespacePaddedWordsWithSingleWhitespace:[self.videoName copy]];
-    __strong NSMutableString *title = [NSMutableString stringWithString:temp];
+    NSString *temp = [self replaceWhitespacePaddedWordsWithSingleWhitespace:[self.videoName copy]];
+    NSMutableString *title = [NSMutableString stringWithString:temp];
     
     BOOL liveTextFound = NO;
     [self removeExtraHypensOnTarget:&title];
@@ -112,7 +90,6 @@
     [self removeEmptyParensBracesOrBracketsOnTarget:&title];
     
     self.isLivePerformance = (liveTextFound) ? YES : NO;
-    self.cachedSanitizedTitle = title;
     return title;
 }
 

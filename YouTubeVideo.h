@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface YouTubeVideo : NSObject <NSCopying>
+@interface YouTubeVideo : NSObject
 @property (nonatomic, strong) NSString *videoName;
 @property (nonatomic, strong) NSString *videoId;
 @property (nonatomic, strong) NSString *videoThumbnailUrl;  //this is really "medium" quality in YT apis
@@ -23,8 +23,8 @@
 /**
  *Removes as much garbage from the video title as possible. (ie: "[HQ]", "Lyrics", etc.)
  
- Calling this method multiple times does not incur a noticeable performance penalty,
- the sanitized title is cached.
+ Calling this method multiple times will incur decent performance penalty as the title is
+ recomputed each time.
  */
 - (NSString *)sanitizedTitle;
 

@@ -276,14 +276,14 @@ static NSDate *timeSinceLastPageLoaded;
     NSTimeInterval additionalDelay;
     if(executionTime < MINIMUM_DURATION_OF_LOADING_POPUP && executionTime != 0){
         additionalDelay = (MINIMUM_DURATION_OF_LOADING_POPUP - executionTime);
-        [self performSelector:@selector(ytVideoSearchDidCompleteWithResults:) withObject:youTubeVideoObjects afterDelay:additionalDelay];
-        youTubeVideoObjects = nil;
+        [self performSelector:@selector(ytVideoSearchDidCompleteWithResults:)
+                   withObject:youTubeVideoObjects
+                   afterDelay:additionalDelay];
         return;
     }
     
     [_searchResults removeAllObjects];
     [_searchResults addObjectsFromArray:youTubeVideoObjects];
-    youTubeVideoObjects = nil;
     
     if(_searchResults.count == 0){  //special case
         //display alert saying no results found
@@ -682,13 +682,13 @@ static BOOL userClearedTextField = NO;
     float defaultFooterHeight = 90.0f;
     int numResultsInEachResultsPage = 15;
     if(_displaySearchResults){
-        if(_networkErrorLoadingMoreResults || _noMoreResultsToDisplay || self.searchResults.count < numResultsInEachResultsPage){
+        if(_networkErrorLoadingMoreResults || _noMoreResultsToDisplay || _searchResults.count < numResultsInEachResultsPage){
             UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, defaultFooterHeight)];
             if(_networkErrorLoadingMoreResults){
                 label.text = Network_Error_Loading_More_Results_Msg;
                 label.textColor = [UIColor redColor];
             }
-            else if(_noMoreResultsToDisplay || self.searchResults.count < numResultsInEachResultsPage){
+            else if(_noMoreResultsToDisplay || _searchResults.count < numResultsInEachResultsPage){
                 label.text = No_More_Results_To_Display_Msg;
                 label.textColor = [UIColor blackColor];
             }

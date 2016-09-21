@@ -141,7 +141,7 @@ static NSArray *cachedRecentSearches = nil;
                 });
             } else{
                 //data received...continue processing
-                NSArray *parsedContent = [weakSelf parseYouTubeVideoResultsResponse:data];
+                __block NSArray *parsedContent = [weakSelf parseYouTubeVideoResultsResponse:data];
                 dispatch_sync(dispatch_get_main_queue(), ^{
                     [weakSelf.queryDelegate ytVideoSearchDidCompleteWithResults:parsedContent];
                 });

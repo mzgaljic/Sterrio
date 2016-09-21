@@ -20,7 +20,6 @@
 
 @interface YouTubeSongAdderViewController ()
 {
-    YouTubeVideo *ytVideo;
     UIImage *lockScreenImg;
     UIView *placeHolderView;
     BOOL enoughSongInformationGiven;
@@ -44,6 +43,7 @@
     __block NSURL *url;
 }
 
+@property (nonatomic, strong) YouTubeVideo *ytVideo;
 @property (nonatomic, strong) SSBouncyButton *poweredByYtBtn;
 @property (nonatomic, strong) MZPlayer *player;
 @property (nonatomic, strong) MZSongModifierTableView *tableView;
@@ -75,14 +75,12 @@ static BOOL skipCertainInitStepsFlag = NO;
         if(youtubeVideoObject == nil)
             return nil;
     
-        //copying since certain internal ivars are cached, can mess up behavior of program if reused
-        //across multiple inits of YouTubeSongAdderViewController.
-        ytVideo = [youtubeVideoObject copy];
-        NSString *sanitizedTitle = [ytVideo sanitizedTitle];
+        _ytVideo = youtubeVideoObject;
+        NSString *sanitizedTitle = [_ytVideo sanitizedTitle];
         
         if(! skipCertainInitStepsFlag) {
             [[DiscogsSearchService sharedInstance] queryWithTitle:sanitizedTitle
-                                                          videoId:ytVideo.videoId
+                                                          videoId:_ytVideo.videoId
                                                  callbackDelegate:self];
         }
 
@@ -107,7 +105,7 @@ static BOOL skipCertainInitStepsFlag = NO;
         
         //fire off network request for video duration ASAP
         [[YouTubeService sharedInstance] setVideoDetailLookupDelegate:self];
-        [[YouTubeService sharedInstance] fetchDetailsForVideo:ytVideo];
+        [[YouTubeService sharedInstance] fetchDetailsForVideo:_ytVideo];
 
         //provide default album art (making deep copy of album art)
         [self.tableView provideDefaultAlbumArt:lockScreenImg];
@@ -136,6 +134,8 @@ static BOOL skipCertainInitStepsFlag = NO;
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     appDelegate.previewPlayer = nil;
     
+    _ytVideo = nil;
+    [self.player setStallValueChangedDelegate:nil];
     [self.player pause];
     [self.player destroyPlayer];
     preDeallocedAlready = YES;
@@ -203,13 +203,13 @@ static short numberTimesViewHasBeenShown = 0;
     
     //set nav bar title
     if(numberTimesViewHasBeenShown == 0){
-        self.navigationItem.title = ytVideo.videoName;
+        self.navigationItem.title = _ytVideo.videoName;
     } else{
         CATransition *fade = [CATransition animation];
         fade.type = kCATransitionFade;
         fade.duration = 1.0;
         [self.navigationController.navigationBar.layer addAnimation: fade forKey: @"fadeText"];
-        self.navigationItem.title = ytVideo.videoName;
+        self.navigationItem.title = _ytVideo.videoName;
     }
     
     if(numberTimesViewHasBeenShown == 0)
@@ -275,7 +275,7 @@ static short numberTimesViewHasBeenShown = 0;
 {
     NSNumber *durationObj = [videoDetails valueForKey:MZKeyVideoDuration];
     NSUInteger duration = [durationObj integerValue];
-    __weak YouTubeVideo *weakVideo = ytVideo;
+    __weak YouTubeVideo *weakVideo = _ytVideo;
     __weak YouTubeSongAdderViewController *weakSelf = self;
     
     BOOL allowedToPlayVideo = YES;
@@ -579,13 +579,13 @@ static short numberTimesViewHasBeenShown = 0;
         if(_suggestedItem && _suggestedItem.songName) {
             [songInfo setObject:_suggestedItem.songName forKey:MPMediaItemPropertyTitle];
         } else {
-            [songInfo setObject:ytVideo.videoName forKey:MPMediaItemPropertyTitle];
+            [songInfo setObject:_ytVideo.videoName forKey:MPMediaItemPropertyTitle];
         }
         if(_suggestedItem) {
             NSString *artistAndAlbum = [NSString stringWithFormat:@"%@ - %@", _suggestedItem.artistName, _suggestedItem.albumName];
             [songInfo setObject:artistAndAlbum forKey:MPMediaItemPropertyArtist];
-        } else if(ytVideo.channelTitle)
-            [songInfo setObject:ytVideo.channelTitle forKey:MPMediaItemPropertyArtist];
+        } else if(_ytVideo.channelTitle)
+            [songInfo setObject:_ytVideo.channelTitle forKey:MPMediaItemPropertyArtist];
         
         if(albumArt)
             [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
@@ -633,7 +633,7 @@ static short numberTimesViewHasBeenShown = 0;
 - (void)shareButtonTapped
 {
     didPresentVc = YES;
-    YouTubeVideo *currentVideo = ytVideo;
+    YouTubeVideo *currentVideo = _ytVideo;
     __weak YouTubeVideo *weakCurrentVideo;
     if(currentVideo){
         NSString *youtubeLink = [NSString stringWithFormat:@"http://www.youtube.com/watch?v=%@", currentVideo.videoId];
@@ -758,7 +758,7 @@ static short numberTimesViewHasBeenShown = 0;
 #pragma mark - Managing video detail fetch response
 - (void)detailsHaveBeenFetchedForYouTubeVideo:(YouTubeVideo *)video details:(NSDictionary *)details
 {
-    if([video.videoId isEqualToString:ytVideo.videoId]){
+    if([video.videoId isEqualToString:_ytVideo.videoId]){
         if(details){
             NSNumber *duration = [details objectForKey:MZKeyVideoDuration];
             NSUInteger twenty_four_hours = 86400;
@@ -787,7 +787,7 @@ static short numberTimesViewHasBeenShown = 0;
 
 - (void)networkErrorHasOccuredFetchingVideoDetailsForVideo:(YouTubeVideo *)video
 {
-    if([video.videoId isEqualToString:ytVideo.videoId]){
+    if([video.videoId isEqualToString:_ytVideo.videoId]){
         __weak YouTubeSongAdderViewController *weakself = self;
         SDCAlertAction *okAction = [SDCAlertAction actionWithTitle:@"OK"
                                                              style:SDCAlertActionStyleRecommended
@@ -824,7 +824,7 @@ static short numberTimesViewHasBeenShown = 0;
 {
     NSNumber *duration = [videoDetails valueForKey:MZKeyVideoDuration];
     newLibSong.duration = duration;
-    newLibSong.youtube_id = ytVideo.videoId;
+    newLibSong.youtube_id = _ytVideo.videoId;
     userCreatedHisSong = YES;
 }
 
@@ -921,14 +921,14 @@ static short numberTimesViewHasBeenShown = 0;
 #pragma mark - DiscogsSearchDelegate stuff
 - (void)videoSongSuggestionsRequestComplete:(NSArray *)theItems
 {
-    [DiscogsResultsUtils applyConfidenceLevelsToDiscogsItemsForResults:&theItems youtubeVideo:ytVideo];
+    [DiscogsResultsUtils applyConfidenceLevelsToDiscogsItemsForResults:&theItems youtubeVideo:_ytVideo];
     NSUInteger bestMatchIndex = [DiscogsResultsUtils indexOfBestMatchFromResults:theItems];
     DiscogsItem *item = (bestMatchIndex == NSNotFound) ? nil : theItems[bestMatchIndex];
     
     if(item) {
         //good suggestion for user found!
         if(! item.itemGuranteedCorrect) {
-            [DiscogsResultsUtils applySongNameToDiscogsItem:&item youtubeVideo:ytVideo];
+            [DiscogsResultsUtils applySongNameToDiscogsItem:&item youtubeVideo:_ytVideo];
             [DiscogsResultsUtils applyFinalArtistNameLogicForPresentation:&item];
         }
         [self.tableView newSongNameGuessed:item.songName
