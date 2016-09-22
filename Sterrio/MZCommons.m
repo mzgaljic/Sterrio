@@ -42,7 +42,7 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void))
                      withTemplate:replacementChars];
 }
 
-+ (NSString *)replaceCharsMatchingRegex:(NSString *)pattern
++ (NSMutableString *)replaceCharsMatchingRegex:(NSString *)pattern
                               withChars:(NSString *)replacementChars
                         usingString:(NSString *)regexMe
 {
@@ -63,7 +63,7 @@ void safeSynchronousDispatchToMainQueue(void (^block)(void))
     return (numMatches > 0) ? YES : NO;
 }
 
-+ (NSString *)deleteCharsMatchingRegex:(NSString *)pattern usingString:(NSString *)regexMe
++ (NSMutableString *)deleteCharsMatchingRegex:(NSString *)pattern usingString:(NSString *)regexMe
 {
     NSMutableString *returnMe = [NSMutableString stringWithString:regexMe];
     [MZCommons deleteCharsMatchingRegex:pattern onString:&returnMe];

@@ -16,8 +16,7 @@
 
 - (NSString *)sanitizedTitle
 {
-    NSString *temp = [self replaceWhitespacePaddedWordsWithSingleWhitespace:[self.videoName copy]];
-    NSMutableString *title = [NSMutableString stringWithString:temp];
+    NSMutableString *title = [self replaceWhitespacePaddedWordsWithSingleWhitespace:[self.videoName copy]];
     
     BOOL liveTextFound = NO;
     [self removeExtraHypensOnTarget:&title];
@@ -287,7 +286,7 @@
     [MZCommons replaceCharsMatchingRegex:emDash withChars:@"—" onString:aString];
 }
 
-- (NSString *)replaceWhitespacePaddedWordsWithSingleWhitespace:(NSString *)aString
+- (NSMutableString *)replaceWhitespacePaddedWordsWithSingleWhitespace:(NSString *)aString
 {
     //from: http://stackoverflow.com/a/12137128/4534674
     NSString *regexExp = @"  +";
