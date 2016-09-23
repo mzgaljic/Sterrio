@@ -741,54 +741,43 @@ static NSDate *finish;
     NSAssert(introAppThemes.count == desiredThemes.count, @"An app theme name has changed, causing showIntroTutorial() to break.");
     
     NSBundle *mainBundle = [NSBundle mainBundle];
-    NSURL *videoUrl = nil;
     for(int i = 0; i < pages.count; i++) {
         EAIntroPage *page = pages[i];
         MZAppTheme *theme = introAppThemes[i];
         page.bgColor = theme.mainGuiTint;
         
         switch (i) {
-            case 0:
-            {
+            case 0: {
                 page.customView = [self viewForFirstPageOfIntro];
-            }
                 break;
-            case 1:
-            {
+            }
+            case 1: {
                 NSString *desc = @"Easily queue up songs!";
-                videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Queue Songs"
-                                                                       ofType:@"mp4"]];
                 page.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
                                                                   title:@"Queing Up Songs"
                                                             description:desc
-                                                               videoUrl:videoUrl
+                                                     introVideoRecordId:@"queueSongs"
                                                              mzAppTheme:theme];
-            }
                 break;
-            case 2:
-            {
+            }
+            case 2:{
                 NSString *desc = [NSString stringWithFormat:@"%@ makes editing songs easy.", MZAppName];
-                videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Editing A Song"
-                                                                       ofType:@"mp4"]];
                 page.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
                                                                   title:@"Editing a Song"
                                                             description:desc
-                                                               videoUrl:videoUrl
+                                                     introVideoRecordId:@"editSong"
                                                              mzAppTheme:theme];
-            }
                 break;
-            case 3:
-            {
+            }
+            case 3: {
                 NSString *desc = @"When you're finished, swipe the player off the screen.";
-                videoUrl = [NSURL fileURLWithPath:[mainBundle pathForResource:@"Killing Player"
-                                                                       ofType:@"mp4"]];
                 page.customView = [[IntroVideoView alloc] initWithFrame:self.mainVC.view.frame
                                                                   title:@"Closing the Player"
                                                             description:desc
-                                                               videoUrl:videoUrl
+                                                     introVideoRecordId:@"killPlayer"
                                                              mzAppTheme:theme];
-            }
                 break;
+            }
             default:
                 break;
         }
@@ -865,6 +854,7 @@ static NSUInteger lastScrollingPageIndex = -1;
     }
     lastScrollingPageIndex = pageIndex;
 }
+//NOTE: may be called multiple times. This is okay since implementation isn't cpu expensive.
 - (void)intro:(EAIntroView *)introView pageAppeared:(EAIntroPage *)page withIndex:(NSUInteger)pageIndex
 {
     //page appeared, start playing!

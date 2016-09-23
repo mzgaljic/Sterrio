@@ -14,7 +14,7 @@
 - (instancetype)initWithFrame:(CGRect)frame
                         title:(NSString *)title
                   description:(NSString *)desc
-                     videoUrl:(NSURL *)url
+           introVideoRecordId:(NSString *)recordId
                    mzAppTheme:(MZAppTheme *)anAppTheme;
 - (void)startVideoLooping;
 - (void)stopPlaybackAndResetToBeginning;
