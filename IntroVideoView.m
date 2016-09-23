@@ -295,7 +295,8 @@ static int const paddingFromScreenEdge = 18;
                                                                              extension:videoExtension];
                     usableUrl = weakself.hardVideoUrl;
                     if(usableUrl == nil) {
-#warning copy file on disk and then get url since the hard link failed.
+                        usableUrl = [IntroVideoView createCopyOfCkAssetAtUrl:videoAsset.fileURL
+                                                                addExtension:videoExtension];
                     }
                     [weakself helpSetupVideoPlayerWithUrl:usableUrl beginPlayback:shouldPlayOnLoad];
                 }
@@ -307,8 +308,22 @@ static int const paddingFromScreenEdge = 18;
     [publicDB addOperation:fetchOperation];
 }
 
++ (NSURL *)createCopyOfCkAssetAtUrl:(NSURL *)url addExtension:(NSString *)extension
+{
+    NSString *destPath = [NSTemporaryDirectory() stringByAppendingPathComponent:[url lastPathComponent]];
+    NSError *error = nil;
+    [[NSFileManager defaultManager] copyItemAtPath:url.absoluteString toPath:destPath error:&error];
+    if(error) {
+        return nil;
+    }
+    return [NSURL URLWithString:destPath];
+}
+
 + (NSURL *)createHardLinkToCKAssetUrl:(NSURL *)url extension:(NSString *)extension {
     NSError *err;
+    if([url.absoluteString hasSuffix:extension]) {
+        extension = @"";
+    }
     NSURL *hardUrl = [IntroVideoView generateHardUrlPathToCloudkitAssetUrl:url extension:extension];
     if (![hardUrl checkResourceIsReachableAndReturnError:nil]) {
         if (![[NSFileManager defaultManager] linkItemAtURL:url toURL:hardUrl error:&err]) {
