@@ -15,9 +15,10 @@
 		871BDA881CF020C50038C5A1 /* AddToPlaylistViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 871BDA871CF020C50038C5A1 /* AddToPlaylistViewController.m */; };
 		8727A5791C49EC05008FC03E /* CoreDataEntityMappingUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8727A5781C49EC05008FC03E /* CoreDataEntityMappingUtils.m */; };
 		8730C0E11C59B8C0001FC8A6 /* MZCommons.m in Sources */ = {isa = PBXBuildFile; fileRef = 8730C0E01C59B8C0001FC8A6 /* MZCommons.m */; };
+		87329C751D8B9125008463E1 /* SnapshotHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 87329C741D8B9125008463E1 /* SnapshotHelper.m */; };
+		87329C761D8BA656008463E1 /* AppEnvironmentConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538131B0A9AC1009244E4 /* AppEnvironmentConstants.m */; };
 		873537CC1B0A9981009244E4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 873537CB1B0A9981009244E4 /* main.m */; };
 		873537D71B0A9981009244E4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 873537D61B0A9981009244E4 /* Images.xcassets */; };
-		873537E61B0A9981009244E4 /* SterrioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 873537E51B0A9981009244E4 /* SterrioTests.m */; };
 		873538091B0A9A80009244E4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873538071B0A9A80009244E4 /* LaunchScreen.storyboard */; };
 		8735380A1B0A9A80009244E4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873538081B0A9A80009244E4 /* Main.storyboard */; };
 		8735380D1B0A9A9A009244E4 /* MZConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 8735380C1B0A9A9A009244E4 /* MZConstants.m */; };
@@ -221,6 +222,7 @@
 		87A8FD001CBF2A7800A43637 /* UIColor+Hex.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A8FCFB1CBF2A7800A43637 /* UIColor+Hex.m */; };
 		87A8FD011CBF2A7800A43637 /* UIImage+BetterAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A8FCFD1CBF2A7800A43637 /* UIImage+BetterAdditions.m */; };
 		87A953621B3E1E54002E9872 /* DiscogsSearchService.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9535E1B3E1E54002E9872 /* DiscogsSearchService.m */; };
+		87ACBEAE1D8B840F004BA6A6 /* SterrioUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 87ACBEAD1D8B840F004BA6A6 /* SterrioUITests.m */; };
 		87B723651CA2462800370CA3 /* MZLaunchScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B723641CA2462800370CA3 /* MZLaunchScreen.m */; };
 		87B8219D1C7915A000640BF6 /* AppRatingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B8219C1C7915A000640BF6 /* AppRatingTableViewCell.m */; };
 		87B916C81C60467E00CAEDB8 /* MZRightDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B916C71C60467E00CAEDB8 /* MZRightDetailCell.m */; };
@@ -242,7 +244,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		873537E01B0A9981009244E4 /* PBXContainerItemProxy */ = {
+		87ACBEB01D8B840F004BA6A6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 873537BE1B0A9981009244E4 /* Project object */;
 			proxyType = 1;
@@ -266,13 +268,12 @@
 		8727A5781C49EC05008FC03E /* CoreDataEntityMappingUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataEntityMappingUtils.m; sourceTree = "<group>"; };
 		8730C0DF1C59B8C0001FC8A6 /* MZCommons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZCommons.h; sourceTree = "<group>"; };
 		8730C0E01C59B8C0001FC8A6 /* MZCommons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZCommons.m; sourceTree = "<group>"; };
+		87329C731D8B9125008463E1 /* SnapshotHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SnapshotHelper.h; sourceTree = "<group>"; };
+		87329C741D8B9125008463E1 /* SnapshotHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SnapshotHelper.m; sourceTree = "<group>"; };
 		873537C61B0A9981009244E4 /* Sterrio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sterrio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		873537CA1B0A9981009244E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		873537CB1B0A9981009244E4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		873537D61B0A9981009244E4 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Sterrio/Images.xcassets; sourceTree = "<group>"; };
-		873537DF1B0A9981009244E4 /* Sterrio.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Sterrio.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		873537E41B0A9981009244E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		873537E51B0A9981009244E4 /* SterrioTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SterrioTests.m; sourceTree = "<group>"; };
 		873538071B0A9A80009244E4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		873538081B0A9A80009244E4 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		8735380B1B0A9A9A009244E4 /* MZConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZConstants.h; sourceTree = "<group>"; };
@@ -527,7 +528,6 @@
 		87494D3C1C27476A00AA9637 /* IntroVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntroVideoView.m; sourceTree = "<group>"; };
 		8755545C1C1DF6EA00259CA8 /* InAppPurchaseUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppPurchaseUtils.h; sourceTree = "<group>"; };
 		8755545D1C1DF6EA00259CA8 /* InAppPurchaseUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppPurchaseUtils.m; sourceTree = "<group>"; };
-		876C53CC1C2A12A1007AFC3C /* Sterrio-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Sterrio-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
 		876C53D51C2A557A007AFC3C /* PushNotificationsHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PushNotificationsHelper.h; sourceTree = "<group>"; };
 		876C53D61C2A557A007AFC3C /* PushNotificationsHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushNotificationsHelper.m; sourceTree = "<group>"; };
 		8773AE2B1B509A5500C3E64E /* SpotlightHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpotlightHelper.h; sourceTree = "<group>"; };
@@ -709,6 +709,9 @@
 		87A9535D1B3E1E54002E9872 /* DiscogsSearchService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscogsSearchService.h; sourceTree = "<group>"; };
 		87A9535E1B3E1E54002E9872 /* DiscogsSearchService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsSearchService.m; sourceTree = "<group>"; };
 		87A953601B3E1E54002E9872 /* DiscogsItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscogsItem.h; sourceTree = "<group>"; };
+		87ACBEAB1D8B840F004BA6A6 /* SterrioUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SterrioUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		87ACBEAD1D8B840F004BA6A6 /* SterrioUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SterrioUITests.m; sourceTree = "<group>"; };
+		87ACBEAF1D8B840F004BA6A6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		87B723631CA2462800370CA3 /* MZLaunchScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZLaunchScreen.h; sourceTree = "<group>"; };
 		87B723641CA2462800370CA3 /* MZLaunchScreen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZLaunchScreen.m; sourceTree = "<group>"; };
 		87B8219B1C7915A000640BF6 /* AppRatingTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppRatingTableViewCell.h; sourceTree = "<group>"; };
@@ -766,7 +769,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		873537DC1B0A9981009244E4 /* Frameworks */ = {
+		87ACBEA81D8B840F004BA6A6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -821,7 +824,7 @@
 				874D99501CB8AD4100FA6BCA /* Ensembles */,
 				873537D61B0A9981009244E4 /* Images.xcassets */,
 				873537C91B0A9981009244E4 /* Supporting Files */,
-				873537E21B0A9981009244E4 /* SterrioTests */,
+				87ACBEAC1D8B840F004BA6A6 /* SterrioUITests */,
 				873537C71B0A9981009244E4 /* Products */,
 				2E224104911CDDD080509713 /* Pods */,
 				95A486A0294577F099EF7326 /* Frameworks */,
@@ -832,7 +835,7 @@
 			isa = PBXGroup;
 			children = (
 				873537C61B0A9981009244E4 /* Sterrio.app */,
-				873537DF1B0A9981009244E4 /* Sterrio.xctest */,
+				87ACBEAB1D8B840F004BA6A6 /* SterrioUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -840,7 +843,6 @@
 		873537C91B0A9981009244E4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				876C53CC1C2A12A1007AFC3C /* Sterrio-Bridging-Header.h */,
 				873537CA1B0A9981009244E4 /* Info.plist */,
 				873537CB1B0A9981009244E4 /* main.m */,
 				87353A7B1B0AA96F009244E4 /* PrefixHeader.pch */,
@@ -849,23 +851,6 @@
 			);
 			name = "Supporting Files";
 			path = Sterrio;
-			sourceTree = "<group>";
-		};
-		873537E21B0A9981009244E4 /* SterrioTests */ = {
-			isa = PBXGroup;
-			children = (
-				873537E51B0A9981009244E4 /* SterrioTests.m */,
-				873537E31B0A9981009244E4 /* Supporting Files */,
-			);
-			path = SterrioTests;
-			sourceTree = "<group>";
-		};
-		873537E31B0A9981009244E4 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				873537E41B0A9981009244E4 /* Info.plist */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		873538111B0A9AAC009244E4 /* App Helpers */ = {
@@ -1816,6 +1801,17 @@
 			path = "3rd Party Libraries/SSBouncyButton";
 			sourceTree = "<group>";
 		};
+		87ACBEAC1D8B840F004BA6A6 /* SterrioUITests */ = {
+			isa = PBXGroup;
+			children = (
+				87ACBEAD1D8B840F004BA6A6 /* SterrioUITests.m */,
+				87329C731D8B9125008463E1 /* SnapshotHelper.h */,
+				87329C741D8B9125008463E1 /* SnapshotHelper.m */,
+				87ACBEAF1D8B840F004BA6A6 /* Info.plist */,
+			);
+			path = SterrioUITests;
+			sourceTree = "<group>";
+		};
 		87C67B9C1C9F267C00E2FCB8 /* About */ = {
 			isa = PBXGroup;
 			children = (
@@ -1875,23 +1871,23 @@
 			productReference = 873537C61B0A9981009244E4 /* Sterrio.app */;
 			productType = "com.apple.product-type.application";
 		};
-		873537DE1B0A9981009244E4 /* SterrioTests */ = {
+		87ACBEAA1D8B840F004BA6A6 /* SterrioUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 873537EC1B0A9981009244E4 /* Build configuration list for PBXNativeTarget "SterrioTests" */;
+			buildConfigurationList = 87ACBEB21D8B840F004BA6A6 /* Build configuration list for PBXNativeTarget "SterrioUITests" */;
 			buildPhases = (
-				873537DB1B0A9981009244E4 /* Sources */,
-				873537DC1B0A9981009244E4 /* Frameworks */,
-				873537DD1B0A9981009244E4 /* Resources */,
+				87ACBEA71D8B840F004BA6A6 /* Sources */,
+				87ACBEA81D8B840F004BA6A6 /* Frameworks */,
+				87ACBEA91D8B840F004BA6A6 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				873537E11B0A9981009244E4 /* PBXTargetDependency */,
+				87ACBEB11D8B840F004BA6A6 /* PBXTargetDependency */,
 			);
-			name = SterrioTests;
-			productName = SterrioTests;
-			productReference = 873537DF1B0A9981009244E4 /* Sterrio.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
+			name = SterrioUITests;
+			productName = SterrioUITests;
+			productReference = 87ACBEAB1D8B840F004BA6A6 /* SterrioUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
@@ -1919,8 +1915,11 @@
 							};
 						};
 					};
-					873537DE1B0A9981009244E4 = {
-						CreatedOnToolsVersion = 6.3.1;
+					87ACBEAA1D8B840F004BA6A6 = {
+						CreatedOnToolsVersion = 8.0;
+						DevelopmentTeam = N9Y36W264B;
+						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
 						TestTargetID = 873537C51B0A9981009244E4;
 					};
 				};
@@ -1939,7 +1938,7 @@
 			projectRoot = "";
 			targets = (
 				873537C51B0A9981009244E4 /* Sterrio */,
-				873537DE1B0A9981009244E4 /* SterrioTests */,
+				87ACBEAA1D8B840F004BA6A6 /* SterrioUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -1960,7 +1959,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		873537DD1B0A9981009244E4 /* Resources */ = {
+		87ACBEA91D8B840F004BA6A6 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2261,21 +2260,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		873537DB1B0A9981009244E4 /* Sources */ = {
+		87ACBEA71D8B840F004BA6A6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				873537E61B0A9981009244E4 /* SterrioTests.m in Sources */,
+				87329C761D8BA656008463E1 /* AppEnvironmentConstants.m in Sources */,
+				87ACBEAE1D8B840F004BA6A6 /* SterrioUITests.m in Sources */,
+				87329C751D8B9125008463E1 /* SnapshotHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		873537E11B0A9981009244E4 /* PBXTargetDependency */ = {
+		87ACBEB11D8B840F004BA6A6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 873537C51B0A9981009244E4 /* Sterrio */;
-			targetProxy = 873537E01B0A9981009244E4 /* PBXContainerItemProxy */;
+			targetProxy = 87ACBEB01D8B840F004BA6A6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2303,6 +2304,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -2324,6 +2326,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "${PROJECT_NAME}/Sterrio-Bridging-Header.h";
 			};
 			name = Debug;
 		};
@@ -2350,6 +2353,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -2363,6 +2367,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "${PROJECT_NAME}/Sterrio-Bridging-Header.h";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -2391,7 +2396,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.mzgaljic.Sterrio;
 				PRODUCT_NAME = Sterrio;
 				PROVISIONING_PROFILE = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "Sterrio-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "arm64 armv7s armv7";
@@ -2423,45 +2428,49 @@
 				PRODUCT_NAME = Sterrio;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "Sterrio-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "arm64 armv7s armv7";
 			};
 			name = Release;
 		};
-		873537ED1B0A9981009244E4 /* Debug */ = {
+		87ACBEB31D8B840F004BA6A6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = SterrioTests/Info.plist;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = N9Y36W264B;
+				INFOPLIST_FILE = SterrioUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.mzgaljic.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = Sterrio;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Sterrio.app/Sterrio";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mzgaljic.sterrio.SterrioUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+				TEST_TARGET_NAME = Sterrio;
 			};
 			name = Debug;
 		};
-		873537EE1B0A9981009244E4 /* Release */ = {
+		87ACBEB41D8B840F004BA6A6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = SterrioTests/Info.plist;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				DEVELOPMENT_TEAM = N9Y36W264B;
+				INFOPLIST_FILE = SterrioUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.mzgaljic.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = Sterrio;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Sterrio.app/Sterrio";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mzgaljic.sterrio.SterrioUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_VERSION = 3.0;
+				TEST_TARGET_NAME = Sterrio;
 			};
 			name = Release;
 		};
@@ -2486,11 +2495,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		873537EC1B0A9981009244E4 /* Build configuration list for PBXNativeTarget "SterrioTests" */ = {
+		87ACBEB21D8B840F004BA6A6 /* Build configuration list for PBXNativeTarget "SterrioUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				873537ED1B0A9981009244E4 /* Debug */,
-				873537EE1B0A9981009244E4 /* Release */,
+				87ACBEB31D8B840F004BA6A6 /* Debug */,
+				87ACBEB41D8B840F004BA6A6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
