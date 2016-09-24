@@ -11,7 +11,7 @@
 
 @interface DiscogsItem : NSObject
 
-typedef enum {
+typedef NS_ENUM(NSInteger, MatchConfidence)  {
     MatchConfidence_UNDEFINED,
     MatchConfidence_LOW,
     MatchConfidence_MEDIUM_LOW,
@@ -21,7 +21,7 @@ typedef enum {
     MatchConfidence_HIGH_MEDIUM,
     MatchConfidence_HIGH_HIGH,
     MatchConfidence_VERY_HIGH
-} MatchConfidence;
+};
 
 @property (nonatomic, strong) NSString *songName;
 @property (nonatomic, strong) NSString *artistName;

@@ -89,7 +89,7 @@
     [self removeEmptyParensBracesOrBracketsOnTarget:&title];
     
     self.isLivePerformance = (liveTextFound) ? YES : NO;
-    return title;
+    return [title copy];
 }
 
 #pragma mark - Sub-routines

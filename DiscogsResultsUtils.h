@@ -12,12 +12,23 @@
 
 @interface DiscogsResultsUtils : NSObject
 
-+ (void)applyConfidenceLevelsToDiscogsItemsForResults:(NSArray **)discogsItems
-                                         youtubeVideo:(YouTubeVideo *)ytVideo;
+/** 
+ * @return an array of NSNumbers, with the underlying numbers being MatchConfidence enum values. The order
+ * matches that of the discog item array parameter.
+ */
++ (NSArray<NSNumber*> *)getConfidenceLevelsForDiscogsItemResults:(NSArray *)discogsItems
+                                                    youtubeVideo:(YouTubeVideo *)ytVideo;
 + (NSUInteger)indexOfBestMatchFromResults:(NSArray *)discogsItems;
 
-+ (void)applySongNameToDiscogsItem:(DiscogsItem **)discogsItem youtubeVideo:(YouTubeVideo *)ytVideo;
+/**
+ * Performs analysis on a DiscogsItem to generate a clean song name.
+ */
++ (NSString *)analyzeAndGenerateCleanedSongNameWithItem:(DiscogsItem *)item
+                                           youtubeVideo:(YouTubeVideo *)ytVideo;
 
-+ (void)applyFinalArtistNameLogicForPresentation:(DiscogsItem **)discogsItem;
+/**
+ * Performs analysis on a DiscogsItem to generate a clean artist name.
+ */
++ (NSString *)analyzeAndGenerateCleanedArtistNameWithItem:(DiscogsItem *)item;
 
 @end

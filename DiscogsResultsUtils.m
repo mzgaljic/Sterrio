@@ -11,16 +11,17 @@
 
 @implementation DiscogsResultsUtils
 
-+ (void)applyConfidenceLevelsToDiscogsItemsForResults:(NSArray **)discogsItems
-                                         youtubeVideo:(YouTubeVideo *)ytVideo
++ (NSArray<NSNumber*> *)getConfidenceLevelsForDiscogsItemResults:(NSArray *)discogsItems
+                                                    youtubeVideo:(YouTubeVideo *)ytVideo
 {
-    NSString *videoTitle = ytVideo.videoName;
-    for(NSUInteger i = 0; i < (*discogsItems).count; i++) {
-        DiscogsItem *item = (*discogsItems)[i];
+    NSMutableArray *confidenceLevels = [NSMutableArray arrayWithCapacity:discogsItems.count];
+    for(DiscogsItem *item in discogsItems) {
         if(item.matchConfidence != MatchConfidence_UNDEFINED) {
+            [confidenceLevels addObject:@(item.matchConfidence)];
             continue;
         }
         
+        NSString *videoTitle = ytVideo.videoName;
         NSRange albumNameRange = [videoTitle rangeOfString:item.albumName
                                                    options:NSCaseInsensitiveSearch];
         NSRange artistNameRange = [videoTitle rangeOfString:item.artistName
@@ -33,7 +34,7 @@
         //case we still consider it in case it was a pre-release on VEVO, etc.)
         int videoPublishYear = [self yearFromNSDate:ytVideo.publishDate];
         if(videoPublishYear < item.releaseYear && abs(videoPublishYear - item.releaseYear) > 1) {
-            item.matchConfidence = MatchConfidence_LOW;
+            [confidenceLevels addObject:@(MatchConfidence_LOW)];
             continue;
         }
         
@@ -50,35 +51,36 @@
             && albumNameInTitle && artistNameInTitle
             && liveAtRange.location == NSNotFound
             && liveInRange.location == NSNotFound) {
-            item.matchConfidence = MatchConfidence_VERY_HIGH;
+            [confidenceLevels addObject:@(MatchConfidence_VERY_HIGH)];
             
         } else if([item isAlbumVinylCDOrEP] && ![item isASingle]
                   && albumNameInTitle && artistNameInTitle) {
-            item.matchConfidence = MatchConfidence_HIGH_HIGH;
+            [confidenceLevels addObject:@(MatchConfidence_HIGH_HIGH)];
             
         } else if([item isAlbumVinylCDOrEP] && ![item isASingle] && artistNameInTitle) {
-            item.matchConfidence = MatchConfidence_HIGH_MEDIUM;
-            
+            [confidenceLevels addObject:@(MatchConfidence_HIGH_MEDIUM)];
+
         } else if([item isAlbumVinylCDOrEP] && albumNameInTitle && artistNameInTitle) {
-            item.matchConfidence = MatchConfidence_HIGH_LOW;
+            [confidenceLevels addObject:@(MatchConfidence_HIGH_LOW)];
             
         } else if([item isAlbumVinylCDOrEP] && ![item isASingle]
                   && (albumNameInTitle || artistNameInTitle)) {
-            item.matchConfidence = MatchConfidence_MEDIUM_HIGH;
+            [confidenceLevels addObject:@(MatchConfidence_MEDIUM_HIGH)];
             
         } else if([item isAlbumVinylCDOrEP] && (albumNameInTitle || artistNameInTitle)) {
-            item.matchConfidence = MatchConfidence_MEDIUM;
+            [confidenceLevels addObject:@(MatchConfidence_MEDIUM)];
             
         } else if(albumNameInTitle && artistNameInTitle) {
-            item.matchConfidence = MatchConfidence_MEDIUM;
+            [confidenceLevels addObject:@(MatchConfidence_MEDIUM)];
             
         }  else if(albumNameInTitle || artistNameInTitle) {
-            item.matchConfidence = MatchConfidence_MEDIUM_LOW;
+            [confidenceLevels addObject:@(MatchConfidence_MEDIUM_LOW)];
             
         } else {
-            item.matchConfidence = MatchConfidence_LOW;
+            [confidenceLevels addObject:@(MatchConfidence_LOW)];
         }
     }
+    return confidenceLevels;
 }
 
 + (NSUInteger)indexOfBestMatchFromResults:(NSArray *)discogsItems
@@ -145,12 +147,16 @@
     return firstMediumLowConfidenceIndex;
 }
 
-+ (void)applySongNameToDiscogsItem:(DiscogsItem **)discogsItem youtubeVideo:(YouTubeVideo *)ytVideo
++ (NSString *)analyzeAndGenerateCleanedSongNameWithItem:(DiscogsItem *)discogsItem
+                                           youtubeVideo:(YouTubeVideo *)ytVideo
 {
     //copy so we don't pollute internal cache
-    NSMutableString *sanitizedTitle = [NSMutableString stringWithString:[[[ytVideo sanitizedTitle] removeIrrelevantWhitespace] copy]];
-    [DiscogsResultsUtils deleteSubstring:(*discogsItem).artistName onTarget:&sanitizedTitle];
-    [DiscogsResultsUtils deleteSubstring:(*discogsItem).albumName onTarget:&sanitizedTitle];
+    NSString *temp = ytVideo.sanitizedTitle;
+    NSMutableString *sanitizedTitle = [[NSMutableString alloc] initWithString:[temp removeIrrelevantWhitespace]];
+    sanitizedTitle = [DiscogsResultsUtils deleteSubstring:discogsItem.artistName
+                                               fromString:sanitizedTitle];
+    sanitizedTitle = [DiscogsResultsUtils deleteSubstring:discogsItem.albumName
+                                               fromString:sanitizedTitle];
     [DiscogsResultsUtils removeRandomHyphensIfPresent:&sanitizedTitle];
     
     //some video titles contain 1 char or more of whitespace in front which the method
@@ -180,10 +186,9 @@
     if([sanitizedTitle isEqualToString:hypen]
        || [sanitizedTitle isEqualToString:enDash]
        || [sanitizedTitle isEqualToString:emDash]) {
-        (*discogsItem).songName = @"";
-        return;
+        return @"";
     }
-    
+
     //remove '-' from song name if it got there (can be missed by parsing - usually if
     //video title has poor punctuation.
     if([sanitizedTitle hasPrefix:hypen]) {
@@ -211,8 +216,18 @@
             [sanitizedTitle appendString:@" [live]"];
         }
     }
-    
-    (*discogsItem).songName = sanitizedTitle;
+    return sanitizedTitle;
+}
+
++ (NSString *)analyzeAndGenerateCleanedArtistNameWithItem:(DiscogsItem *)item
+{
+    NSString *artistSuggestion;
+    if(item.featuredArtists.count == 0) {
+        artistSuggestion = item.artistName;
+    } else {
+        artistSuggestion = [NSString stringWithFormat:@"%@ ft. %@", item.artistName, item.featuredArtists[0]];
+    }
+    return artistSuggestion;
 }
 
 + (void)applyFinalArtistNameLogicForPresentation:(DiscogsItem **)discogsItem
@@ -229,17 +244,18 @@
 }
 
 #pragma mark - utility methods
-+ (void)deleteSubstring:(NSString *)subStringToRemove onTarget:(NSMutableString **)aString
++ (NSMutableString *)deleteSubstring:(NSString *)subStringToRemove fromString:(NSMutableString *)aString
 {
     if(subStringToRemove == nil){
-        return;
+        return nil;
     }
     
-    NSRange range = [*aString rangeOfString:subStringToRemove options:NSCaseInsensitiveSearch];
+    NSRange range = [aString rangeOfString:subStringToRemove options:NSCaseInsensitiveSearch];
     if(range.location == NSNotFound) {
-        return;
+        return aString;
     }
-    [*aString deleteCharactersInRange:range];
+    [aString deleteCharactersInRange:range];
+    return aString;
 }
 
 + (void)removeRandomHyphensIfPresent:(NSMutableString **)aString

@@ -921,15 +921,21 @@ static short numberTimesViewHasBeenShown = 0;
 #pragma mark - DiscogsSearchDelegate stuff
 - (void)videoSongSuggestionsRequestComplete:(NSArray *)theItems
 {
-    [DiscogsResultsUtils applyConfidenceLevelsToDiscogsItemsForResults:&theItems youtubeVideo:_ytVideo];
+    NSArray<NSNumber*> *confidenceLevels = [DiscogsResultsUtils getConfidenceLevelsForDiscogsItemResults:theItems youtubeVideo:_ytVideo];
+    for(NSInteger i = 0; i < confidenceLevels.count; i++) {
+        DiscogsItem *item = theItems[i];
+        MatchConfidence confidence = (MatchConfidence)[confidenceLevels[i] integerValue];
+        item.matchConfidence = confidence;
+    }
     NSUInteger bestMatchIndex = [DiscogsResultsUtils indexOfBestMatchFromResults:theItems];
     DiscogsItem *item = (bestMatchIndex == NSNotFound) ? nil : theItems[bestMatchIndex];
     
     if(item) {
         //good suggestion for user found!
         if(! item.itemGuranteedCorrect) {
-            [DiscogsResultsUtils applySongNameToDiscogsItem:&item youtubeVideo:_ytVideo];
-            [DiscogsResultsUtils applyFinalArtistNameLogicForPresentation:&item];
+            item.songName = [DiscogsResultsUtils analyzeAndGenerateCleanedSongNameWithItem:item
+                                                                              youtubeVideo:_ytVideo];
+            item.artistName = [DiscogsResultsUtils analyzeAndGenerateCleanedArtistNameWithItem:item];
         }
         [self.tableView newSongNameGuessed:item.songName
                                artistGuess:item.artistName
