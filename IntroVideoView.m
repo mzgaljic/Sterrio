@@ -29,6 +29,7 @@
 @property (nonatomic, strong) UIView *placeholderVideoView;
 @property (nonatomic, strong) MRProgressOverlayView *overlay;
 @property (nonatomic, assign) BOOL playerInPlaybackBeforeGoingToBackground;
+@property (nonatomic, assign) BOOL userIsWaitingForPlayback;
 @end
 
 @implementation IntroVideoView
@@ -136,7 +137,7 @@ static int const paddingFromScreenEdge = 18;
                          _player.alpha = 1;
                      }
                      completion:nil];
-    if(play) {
+    if(_userIsWaitingForPlayback || play) {
         [_player play];
     }
 }
@@ -144,10 +145,12 @@ static int const paddingFromScreenEdge = 18;
 - (void)startVideoLooping
 {
     [self.player play];
+    _userIsWaitingForPlayback = YES;
 }
 
 - (void)stopPlaybackAndResetToBeginning
 {
+    _userIsWaitingForPlayback = NO;
     if(self.player != nil) {
         [self.player pause];
         //reset beginning
