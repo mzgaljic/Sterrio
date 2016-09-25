@@ -62,13 +62,13 @@
 }
 
 -(void)willTransitionToPresentationStyle:(MSMessagesAppPresentationStyle)presentationStyle {
-    // Called before the extension transitions to a new presentation style.
+    // Called before the UI reacts to the user expanding or minimizing the app extension
     
     // Use this method to prepare for the change in presentation style.
 }
 
 -(void)didTransitionToPresentationStyle:(MSMessagesAppPresentationStyle)presentationStyle {
-    // Called after the extension transitions to a new presentation style.
+    // Called when user expands or minimized the app extension
     
     // Use this method to finalize any behaviors associated with the change in presentation style.
 }

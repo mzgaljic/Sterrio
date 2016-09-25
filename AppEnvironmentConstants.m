@@ -63,18 +63,22 @@ static BOOL shouldOnlyAirplayAudio;
     return [[[UIDevice currentDevice] systemVersion] intValue];
 }
 
-static BOOL userOnIos9OrAboveCached = NO;
-+ (BOOL)isUserOniOS9OrAbove
++ (BOOL)isUserOniOS9OrHigher
 {
-    if(userOnIos9OrAboveCached) {
-        return YES;
-    }
     NSOperatingSystemVersion ios9;
     ios9.majorVersion = 9;
     ios9.minorVersion = 0;
     ios9.patchVersion = 0;
-    userOnIos9OrAboveCached = [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:ios9];
-    return userOnIos9OrAboveCached;
+    return [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:ios9];
+}
+
++ (BOOL)isUserOniOS10OrHigher
+{
+    NSOperatingSystemVersion ios10;
+    ios10.majorVersion = 10;
+    ios10.minorVersion = 0;
+    ios10.patchVersion = 0;
+    return [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:ios10];
 }
 
 

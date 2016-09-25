@@ -7,11 +7,21 @@
 		<key>Sterrio.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>14</integer>
+			<integer>0</integer>
+		</dict>
+		<key>SterrioMessageExtension.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>15</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>871321F61D978ADA0002FFB3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>873537C51B0A9981009244E4</key>
 		<dict>
 			<key>primary</key>

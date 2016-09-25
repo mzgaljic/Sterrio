@@ -23,7 +23,7 @@
     _videoChannel.numberOfLines = 0;
     _videoTitle.lineBreakMode = NSLineBreakByTruncatingTail;
     _videoChannel.lineBreakMode = NSLineBreakByTruncatingTail;
-    if([AppEnvironmentConstants isUserOniOS9OrAbove]) {
+    if([AppEnvironmentConstants isUserOniOS9OrHigher]) {
         [_videoChannel setAllowsDefaultTighteningForTruncation:YES];
         [_videoTitle setAllowsDefaultTighteningForTruncation:YES];
     }

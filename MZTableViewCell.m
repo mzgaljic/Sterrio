@@ -98,7 +98,7 @@ short const dotLabelPadding = 20;
     self.detailTextLabel.font = [MZTableViewCell findAdaptiveFontWithName:regularFontName
                                                            forUILabelSize:detailTextSize
                                                           withMinimumSize:16];
-    if([AppEnvironmentConstants isUserOniOS9OrAbove]) {
+    if([AppEnvironmentConstants isUserOniOS9OrHigher]) {
         [self.textLabel setAllowsDefaultTighteningForTruncation:YES];
         [self.detailTextLabel setAllowsDefaultTighteningForTruncation:YES];
     }

@@ -629,7 +629,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 //----Spotlight upgrade helper code----
 + (void)upgradeLibraryToUseSpotlightIfApplicable
 {
-    if(! [AppEnvironmentConstants isUserOniOS9OrAbove]) {
+    if(! [AppEnvironmentConstants isUserOniOS9OrHigher]) {
         return;  //users device is below ios 9 right now. no change in spotlight is possible.
     }
     

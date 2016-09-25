@@ -391,7 +391,7 @@ static int numSkippedSongs = 0;
 + (void)presentAppTermsModally
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        if([AppEnvironmentConstants isUserOniOS9OrAbove]) {
+        if([AppEnvironmentConstants isUserOniOS9OrHigher]) {
             SFSafariViewController *safController = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:MZAppTermsPdfLink]];
             //set toolbar & navbar button color
             safController.view.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;

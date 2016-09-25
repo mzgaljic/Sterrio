@@ -48,7 +48,8 @@ typedef enum{
 
 //runtime configuration
 + (int)usersMajorIosVersion;
-+ (BOOL)isUserOniOS9OrAbove;
++ (BOOL)isUserOniOS9OrHigher;
++ (BOOL)isUserOniOS10OrHigher;
 
 /**
  Returns YES if the user is currently on a phone call

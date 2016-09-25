@@ -636,7 +636,7 @@ static short numberTimesViewHasBeenShown = 0;
     YouTubeVideo *currentVideo = _ytVideo;
     __weak YouTubeVideo *weakCurrentVideo;
     if(currentVideo){
-        NSString *youtubeLink = [NSString stringWithFormat:@"http://www.youtube.com/watch?v=%@", currentVideo.videoId];
+        NSString *youtubeLink = [NSString stringWithFormat:@"https://www.youtube.com/watch?v=%@", currentVideo.videoId];
         NSURL *shareUrl = [NSURL URLWithString:youtubeLink];
         NSArray *activityItems = @[shareUrl];
         

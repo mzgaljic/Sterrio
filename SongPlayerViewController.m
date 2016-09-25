@@ -12,6 +12,8 @@
 #import <TUSafariActivity.h>
 #import "SongPlayerViewDisplayUtility.h"
 #import "MZNewPlaybackQueue.h"
+#import "MZMsMessageActivity.h"
+#import "SongAlbumArt+Utilities.h"
 
 typedef enum{
     DurationLabelStateNotSet,
@@ -1606,8 +1608,9 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
 - (void)shareButtonTapped
 {
     Song *nowPlayingSong = [MusicPlaybackController nowPlayingSong];
+    UIImage *thumbnail = [[nowPlayingSong albumArt] imageFromImageData];
     if(nowPlayingSong){
-        NSString *youtubeLink = [NSString stringWithFormat:@"http://www.youtube.com/watch?v=%@", nowPlayingSong.youtube_id];
+        NSString *youtubeLink = [NSString stringWithFormat:@"https://www.youtube.com/watch?v=%@", nowPlayingSong.youtube_id];
         NSURL *shareUrl = [NSURL URLWithString:youtubeLink];
         NSArray *activityItems = @[shareUrl];
         
@@ -1616,19 +1619,26 @@ static NSString * const TIMER_IMG_NEEDS_UPDATE = @"sleep timer needs update";
         appDelegate.window.tintColor = [AppEnvironmentConstants appTheme].mainGuiTint;
         [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[AppEnvironmentConstants appTheme].mainGuiTint, NSForegroundColorAttributeName, nil]];
         
-        TUSafariActivity *openInSafariActivity = [[TUSafariActivity alloc] init];
-        NSArray *activities = @[openInSafariActivity];
+        TUSafariActivity *openInSafariActivity = [TUSafariActivity new];
+        MZMsMessageActivity *messageActivity = [[MZMsMessageActivity alloc] initWithUrl:shareUrl
+                                                                            thumbnailImage:thumbnail];
+        NSMutableArray *activities = [NSMutableArray arrayWithObject:openInSafariActivity];
+        NSMutableArray *excludedActivities = [NSMutableArray arrayWithArray:@[UIActivityTypePrint,
+                                                                              UIActivityTypeAssignToContact,
+                                                                              UIActivityTypeSaveToCameraRoll,
+                                                                              UIActivityTypeAirDrop,
+                                                                              UIActivityTypeAddToReadingList]];
+        if([AppEnvironmentConstants isUserOniOS10OrHigher]) {
+            [activities addObject:messageActivity];
+            [excludedActivities addObject:UIActivityTypeMessage];
+        }
         __block UIActivityViewController *activityVC = [[UIActivityViewController alloc]
                                                         initWithActivityItems:activityItems
                                                         applicationActivities:activities];
+        activityVC.excludedActivityTypes = excludedActivities;
+
         __weak UIActivityViewController *weakActivityVC = activityVC;
         __weak SongPlayerViewController *weakSelf = self;
-        
-        activityVC.excludedActivityTypes = @[UIActivityTypePrint,
-                                             UIActivityTypeAssignToContact,
-                                             UIActivityTypeSaveToCameraRoll,
-                                             UIActivityTypeAirDrop,
-                                             UIActivityTypeAddToReadingList];
         //set tint color specifically for this VC so that the text and buttons are visible
         [activityVC.view setTintColor:[AppEnvironmentConstants appTheme].mainGuiTint];
         

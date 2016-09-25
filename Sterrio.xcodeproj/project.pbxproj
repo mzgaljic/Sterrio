@@ -9,10 +9,16 @@
 /* Begin PBXBuildFile section */
 		87059FE61CDEE3860068A1A9 /* InAppProductPriceHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 87059FE51CDEE3860068A1A9 /* InAppProductPriceHelper.m */; };
 		870D06901CB9C61700395F38 /* MZInterstitialAd.m in Sources */ = {isa = PBXBuildFile; fileRef = 870D068F1CB9C61700395F38 /* MZInterstitialAd.m */; };
+		871321F91D978ADB0002FFB3 /* Messages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 871321F81D978ADB0002FFB3 /* Messages.framework */; };
+		871321FD1D978ADB0002FFB3 /* MessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 871321FC1D978ADB0002FFB3 /* MessagesViewController.m */; };
+		871322001D978ADB0002FFB3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 871321FE1D978ADB0002FFB3 /* MainInterface.storyboard */; };
+		871322021D978ADB0002FFB3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 871322011D978ADB0002FFB3 /* Assets.xcassets */; };
+		871322061D978ADB0002FFB3 /* MessageExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 871321F71D978ADA0002FFB3 /* MessageExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		87164E291CB8B3EB0006D53B /* Ensembles.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 87164E271CB8B3EB0006D53B /* Ensembles.bundle */; };
 		87164E2A1CB8B3EB0006D53B /* Ensembles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87164E281CB8B3EB0006D53B /* Ensembles.framework */; };
 		8716560F1C30AB41000FF02B /* DiscogsItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8716560E1C30AB41000FF02B /* DiscogsItem.m */; };
 		871BDA881CF020C50038C5A1 /* AddToPlaylistViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 871BDA871CF020C50038C5A1 /* AddToPlaylistViewController.m */; };
+		8726E5281D976E7700FE399E /* MZMsMessageActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = 8726E5271D976E7700FE399E /* MZMsMessageActivity.m */; };
 		8727A5791C49EC05008FC03E /* CoreDataEntityMappingUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8727A5781C49EC05008FC03E /* CoreDataEntityMappingUtils.m */; };
 		8730C0E11C59B8C0001FC8A6 /* MZCommons.m in Sources */ = {isa = PBXBuildFile; fileRef = 8730C0E01C59B8C0001FC8A6 /* MZCommons.m */; };
 		87329C751D8B9125008463E1 /* SnapshotHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 87329C741D8B9125008463E1 /* SnapshotHelper.m */; };
@@ -244,6 +250,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		871322041D978ADB0002FFB3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 873537BE1B0A9981009244E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 871321F61D978ADA0002FFB3;
+			remoteInfo = SterrioMessageExtension;
+		};
 		87ACBEB01D8B840F004BA6A6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 873537BE1B0A9981009244E4 /* Project object */;
@@ -253,17 +266,40 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		8713220A1D978ADB0002FFB3 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				871322061D978ADB0002FFB3 /* MessageExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		87059FE41CDEE3860068A1A9 /* InAppProductPriceHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductPriceHelper.h; sourceTree = "<group>"; };
 		87059FE51CDEE3860068A1A9 /* InAppProductPriceHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductPriceHelper.m; sourceTree = "<group>"; };
 		870D068E1CB9C61700395F38 /* MZInterstitialAd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZInterstitialAd.h; sourceTree = "<group>"; };
 		870D068F1CB9C61700395F38 /* MZInterstitialAd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZInterstitialAd.m; sourceTree = "<group>"; };
+		871321F71D978ADA0002FFB3 /* MessageExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MessageExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		871321F81D978ADB0002FFB3 /* Messages.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Messages.framework; path = System/Library/Frameworks/Messages.framework; sourceTree = SDKROOT; };
+		871321FB1D978ADB0002FFB3 /* MessagesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessagesViewController.h; sourceTree = "<group>"; };
+		871321FC1D978ADB0002FFB3 /* MessagesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MessagesViewController.m; sourceTree = "<group>"; };
+		871321FF1D978ADB0002FFB3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		871322011D978ADB0002FFB3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		871322031D978ADB0002FFB3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		87164E271CB8B3EB0006D53B /* Ensembles.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Ensembles.bundle; sourceTree = "<group>"; };
 		87164E281CB8B3EB0006D53B /* Ensembles.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Ensembles.framework; sourceTree = "<group>"; };
 		8716560E1C30AB41000FF02B /* DiscogsItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsItem.m; sourceTree = "<group>"; };
 		871BDA861CF020C50038C5A1 /* AddToPlaylistViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddToPlaylistViewController.h; sourceTree = "<group>"; };
 		871BDA871CF020C50038C5A1 /* AddToPlaylistViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddToPlaylistViewController.m; sourceTree = "<group>"; };
 		871FE2D01BFACDC000588C2B /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMobileAds.framework; path = "Pods/Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.5.2/GoogleMobileAds.framework"; sourceTree = "<group>"; };
+		8726E5261D976E7700FE399E /* MZMsMessageActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZMsMessageActivity.h; sourceTree = "<group>"; };
+		8726E5271D976E7700FE399E /* MZMsMessageActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZMsMessageActivity.m; sourceTree = "<group>"; };
 		8727A5771C49EC05008FC03E /* CoreDataEntityMappingUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataEntityMappingUtils.h; sourceTree = "<group>"; };
 		8727A5781C49EC05008FC03E /* CoreDataEntityMappingUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataEntityMappingUtils.m; sourceTree = "<group>"; };
 		8730C0DF1C59B8C0001FC8A6 /* MZCommons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZCommons.h; sourceTree = "<group>"; };
@@ -749,6 +785,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		871321F41D978ADA0002FFB3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				871321F91D978ADB0002FFB3 /* Messages.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		873537C31B0A9981009244E4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -788,6 +832,18 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		871321FA1D978ADB0002FFB3 /* SterrioMessageExtension */ = {
+			isa = PBXGroup;
+			children = (
+				871321FB1D978ADB0002FFB3 /* MessagesViewController.h */,
+				871321FC1D978ADB0002FFB3 /* MessagesViewController.m */,
+				871321FE1D978ADB0002FFB3 /* MainInterface.storyboard */,
+				871322011D978ADB0002FFB3 /* Assets.xcassets */,
+				871322031D978ADB0002FFB3 /* Info.plist */,
+			);
+			path = SterrioMessageExtension;
+			sourceTree = "<group>";
+		};
 		871BDA851CF020310038C5A1 /* Playlist Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -795,6 +851,15 @@
 				871BDA871CF020C50038C5A1 /* AddToPlaylistViewController.m */,
 			);
 			name = "Playlist Utils";
+			sourceTree = "<group>";
+		};
+		8726E5251D976E4000FE399E /* Custom UIActivities */ = {
+			isa = PBXGroup;
+			children = (
+				8726E5261D976E7700FE399E /* MZMsMessageActivity.h */,
+				8726E5271D976E7700FE399E /* MZMsMessageActivity.m */,
+			);
+			name = "Custom UIActivities";
 			sourceTree = "<group>";
 		};
 		873537BD1B0A9981009244E4 = {
@@ -825,6 +890,7 @@
 				873537D61B0A9981009244E4 /* Images.xcassets */,
 				873537C91B0A9981009244E4 /* Supporting Files */,
 				87ACBEAC1D8B840F004BA6A6 /* SterrioUITests */,
+				871321FA1D978ADB0002FFB3 /* SterrioMessageExtension */,
 				873537C71B0A9981009244E4 /* Products */,
 				2E224104911CDDD080509713 /* Pods */,
 				95A486A0294577F099EF7326 /* Frameworks */,
@@ -836,6 +902,7 @@
 			children = (
 				873537C61B0A9981009244E4 /* Sterrio.app */,
 				87ACBEAB1D8B840F004BA6A6 /* SterrioUITests.xctest */,
+				871321F71D978ADA0002FFB3 /* MessageExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1271,6 +1338,7 @@
 		873539321B0A9FA1009244E4 /* Custom GUI Classes */ = {
 			isa = PBXGroup;
 			children = (
+				8726E5251D976E4000FE399E /* Custom UIActivities */,
 				873539331B0A9FC0009244E4 /* Preview AV-Player */,
 				8735393A1B0A9FD9009244E4 /* Album Section Header */,
 				8735393E1B0A9FF7009244E4 /* Text Input/Edit VC */,
@@ -1842,6 +1910,7 @@
 				87353A691B0AA57F009244E4 /* QuartzCore.framework */,
 				87353A671B0AA576009244E4 /* Foundation.framework */,
 				8B206C6594633BB85400EBDC /* libPods.a */,
+				871321F81D978ADB0002FFB3 /* Messages.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1849,6 +1918,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		871321F61D978ADA0002FFB3 /* MessageExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 871322091D978ADB0002FFB3 /* Build configuration list for PBXNativeTarget "MessageExtension" */;
+			buildPhases = (
+				871321F31D978ADA0002FFB3 /* Sources */,
+				871321F41D978ADA0002FFB3 /* Frameworks */,
+				871321F51D978ADA0002FFB3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MessageExtension;
+			productName = SterrioMessageExtension;
+			productReference = 871321F71D978ADA0002FFB3 /* MessageExtension.appex */;
+			productType = "com.apple.product-type.app-extension.messages";
+		};
 		873537C51B0A9981009244E4 /* Sterrio */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 873537E91B0A9981009244E4 /* Build configuration list for PBXNativeTarget "Sterrio" */;
@@ -1861,10 +1947,12 @@
 				32B1B3098074F62664B2C165 /* Copy Pods Resources */,
 				87353A661B0AA4E2009244E4 /* ShellScript */,
 				290F8AA7B53267613C7CF185 /* Embed Pods Frameworks */,
+				8713220A1D978ADB0002FFB3 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				871322051D978ADB0002FFB3 /* PBXTargetDependency */,
 			);
 			name = Sterrio;
 			productName = Sterrio;
@@ -1899,6 +1987,11 @@
 				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Mark Zgaljic Apps";
 				TargetAttributes = {
+					871321F61D978ADA0002FFB3 = {
+						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = N9Y36W264B;
+						ProvisioningStyle = Automatic;
+					};
 					873537C51B0A9981009244E4 = {
 						CreatedOnToolsVersion = 6.3.1;
 						DevelopmentTeam = N9Y36W264B;
@@ -1939,11 +2032,21 @@
 			targets = (
 				873537C51B0A9981009244E4 /* Sterrio */,
 				87ACBEAA1D8B840F004BA6A6 /* SterrioUITests */,
+				871321F61D978ADA0002FFB3 /* MessageExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		871321F51D978ADA0002FFB3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				871322021D978ADB0002FFB3 /* Assets.xcassets in Resources */,
+				871322001D978ADB0002FFB3 /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		873537C41B0A9981009244E4 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2043,6 +2146,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		871321F31D978ADA0002FFB3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				871321FD1D978ADB0002FFB3 /* MessagesViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		873537C21B0A9981009244E4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2220,6 +2331,7 @@
 				8735387E1B0A9B9E009244E4 /* PlaybackContext.m in Sources */,
 				87A8FCE41CBF29FB00A43637 /* SDCAlertControllerDefaultVisualStyle.m in Sources */,
 				87A8FC311CBF202500A43637 /* MRCircularProgressView.m in Sources */,
+				8726E5281D976E7700FE399E /* MZMsMessageActivity.m in Sources */,
 				87A953621B3E1E54002E9872 /* DiscogsSearchService.m in Sources */,
 				87A8FC831CBF254100A43637 /* UIImage+ImageEffects.m in Sources */,
 				87A8FCDD1CBF29FB00A43637 /* RBBBlockBasedArray.m in Sources */,
@@ -2273,6 +2385,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		871322051D978ADB0002FFB3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 871321F61D978ADA0002FFB3 /* MessageExtension */;
+			targetProxy = 871322041D978ADB0002FFB3 /* PBXContainerItemProxy */;
+		};
 		87ACBEB11D8B840F004BA6A6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 873537C51B0A9981009244E4 /* Sterrio */;
@@ -2280,7 +2397,57 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXVariantGroup section */
+		871321FE1D978ADB0002FFB3 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				871321FF1D978ADB0002FFB3 /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
+		871322071D978ADB0002FFB3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "iMessage App Icon";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = N9Y36W264B;
+				INFOPLIST_FILE = SterrioMessageExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mzgaljic.Sterrio.MessageExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		871322081D978ADB0002FFB3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "iMessage App Icon";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = N9Y36W264B;
+				INFOPLIST_FILE = SterrioMessageExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mzgaljic.Sterrio.MessageExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 		873537E71B0A9981009244E4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2477,6 +2644,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		871322091D978ADB0002FFB3 /* Build configuration list for PBXNativeTarget "MessageExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				871322071D978ADB0002FFB3 /* Debug */,
+				871322081D978ADB0002FFB3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		873537C11B0A9981009244E4 /* Build configuration list for PBXProject "Sterrio" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

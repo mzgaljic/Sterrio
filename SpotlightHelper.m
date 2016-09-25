@@ -16,7 +16,7 @@
 
 + (void)addSongToSpotlightIndex:(Song *)aSong
 {
-    if(! [AppEnvironmentConstants isUserOniOS9OrAbove])
+    if(! [AppEnvironmentConstants isUserOniOS9OrHigher])
         return;
     
     // Create an attribute set for an item that represents audio-visual content.
@@ -51,7 +51,7 @@
 
 + (void)removeSongFromSpotlightIndex:(Song *)aSong
 {
-    if(! [AppEnvironmentConstants isUserOniOS9OrAbove] || aSong == nil)
+    if(! [AppEnvironmentConstants isUserOniOS9OrHigher] || aSong == nil)
         return;
     
     NSString *domainId = [SpotlightHelper spotlightIndexItemDomainIdGivenSong:aSong];
@@ -59,7 +59,7 @@
 }
 + (void)removeAlbumSongsFromSpotlightIndex:(Album *)anAlbum
 {
-    if(! [AppEnvironmentConstants isUserOniOS9OrAbove])
+    if(! [AppEnvironmentConstants isUserOniOS9OrHigher])
         return;
     
     NSString *domainId = [SpotlightHelper spotlightIndexItemDomainIdGivenAlbum:anAlbum];
@@ -67,7 +67,7 @@
 }
 + (void)removeArtistSongsFromSpotlightIndex:(Artist *)anArtist
 {
-    if(! [AppEnvironmentConstants isUserOniOS9OrAbove] || anArtist == nil)
+    if(! [AppEnvironmentConstants isUserOniOS9OrHigher] || anArtist == nil)
         return;
     
     NSString *domainId = [SpotlightHelper spotlightIndexItemDomainIdGivenArtist:anArtist];
@@ -76,7 +76,7 @@
 
 + (void)removeSongIndexFromSpotlightWithDomainId:(NSString *)domainId songId:(NSString *)songId
 {
-    if(! [AppEnvironmentConstants isUserOniOS9OrAbove])
+    if(! [AppEnvironmentConstants isUserOniOS9OrHigher])
         return;
     
     if(domainId == nil && songId != nil){
@@ -105,7 +105,7 @@
 
 + (void)updateSpotlightIndexForSong:(Song *)aSong
 {
-    if(! [AppEnvironmentConstants isUserOniOS9OrAbove])
+    if(! [AppEnvironmentConstants isUserOniOS9OrHigher])
         return;
     
     //CoreSpotlight seems to update the existing indexed item if you re-add it.
@@ -114,7 +114,7 @@
 
 + (void)updateSpotlightIndexForAlbum:(Album *)anAlbum
 {
-    if(! [AppEnvironmentConstants isUserOniOS9OrAbove])
+    if(! [AppEnvironmentConstants isUserOniOS9OrHigher])
         return;
     
     NSSet *albumSongs = anAlbum.albumSongs;
@@ -128,7 +128,7 @@
 
 + (void)updateSpotlightIndexForArtist:(Artist *)anArtist
 {
-    if(! [AppEnvironmentConstants isUserOniOS9OrAbove])
+    if(! [AppEnvironmentConstants isUserOniOS9OrHigher])
         return;
     NSSet *artistStandaloneSongs = anArtist.standAloneSongs;
     NSSet *artistAlbums = anArtist.albums;

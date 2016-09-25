@@ -10,4 +10,6 @@
 
 @interface MZMsMessageActivity : UIActivity
 
+- (instancetype)initWithUrl:(NSURL *)url thumbnailImage:(UIImage *)thumbnail;
+
 @end
