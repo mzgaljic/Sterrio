@@ -20,7 +20,11 @@ PODS:
   - AFNetworking/UIKit (2.5.4):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - Batch (1.5.4)
+  - Branch (0.12.11):
+    - Branch/Core (= 0.12.11)
+    - Branch/without-IDFA (= 0.12.11)
+  - Branch/Core (0.12.11)
+  - Branch/without-IDFA (0.12.11)
   - Crashlytics (3.8.2):
     - Fabric (~> 1.6.3)
   - CRToast (0.0.9)
@@ -43,7 +47,7 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (~> 2.5.4)
-  - Batch (~> 1.5.4)
+  - Branch
   - Crashlytics
   - CRToast (~> 0.0.7)
   - Fabric
@@ -57,11 +61,11 @@ DEPENDENCIES:
   - TransitionKit (~> 2.2.1)
   - TUSafariActivity (~> 1.0)
   - Valet
-  - XCDYouTubeKit (~> 2.5)
+  - XCDYouTubeKit
 
 SPEC CHECKSUMS:
   AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
-  Batch: 13083f81837fe1da9ea84b0533a2965c73ff74c6
+  Branch: a620b19dc96fffabb7873a86c80c77c75395a664
   Crashlytics: 27acca95a01b042a8294291dd6dff27f8f6af6d7
   CRToast: 5a78c22b921c5ed3487488af605bc403a9c92fed
   Fabric: 5755268d0171435ab167e3d0878a28a777deaf10

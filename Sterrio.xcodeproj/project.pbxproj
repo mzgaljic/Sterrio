@@ -2651,6 +2651,7 @@
 				871322081D978ADB0002FFB3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		873537C11B0A9981009244E4 /* Build configuration list for PBXProject "Sterrio" */ = {
 			isa = XCConfigurationList;

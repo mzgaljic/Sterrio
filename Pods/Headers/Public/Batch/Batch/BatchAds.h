@@ -1,1 +1,0 @@
-../../../../Batch/Batch.embeddedframework/Batch.framework/Headers/BatchAds.h

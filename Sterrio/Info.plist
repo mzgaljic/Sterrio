@@ -40,6 +40,12 @@
 				<key>KitName</key>
 				<string>Answers</string>
 			</dict>
+            <dict>
+                <key>KitInfo</key>
+                <dict/>
+                <key>KitName</key>
+                <string>Branch</string>
+            </dict>
 		</array>
 	</dict>
 	<key>ITSAppUsesNonExemptEncryption</key>

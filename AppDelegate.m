@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 
 #import <Fabric/Fabric.h>
+#import <Branch/Branch.h>
 #import <Crashlytics/Crashlytics.h>
 #import "GSTouchesShowingWindow.h"
 #import "PreloadedCoreDataModelUtility.h"
@@ -91,7 +92,7 @@ static NSString * const playlistsVcSbId = @"playlists view controller storyboard
 - (void)setupApplicationAndMainVc
 {
     //set up Crashlytics immediately so any crashes are recorded.
-    [Fabric with:@[[Answers class], [Crashlytics class]]];
+    [Fabric with:@[[Answers class], [Crashlytics class], [Branch class]]];
     [AppDelegateSetupHelper loadUsersSettingsFromNSUserDefaults];
     [self setupMainVC];
     
@@ -740,7 +741,6 @@ static NSDate *finish;
     NSArray *introAppThemes = [MZAppTheme appThemesMatchingThemeNames:desiredThemes];
     NSAssert(introAppThemes.count == desiredThemes.count, @"An app theme name has changed, causing showIntroTutorial() to break.");
     
-    NSBundle *mainBundle = [NSBundle mainBundle];
     for(int i = 0; i < pages.count; i++) {
         EAIntroPage *page = pages[i];
         MZAppTheme *theme = introAppThemes[i];

@@ -1,8 +1,8 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
 #youtube id video url extractor
-#pod 'XCDYouTubeKit'
-pod "XCDYouTubeKit", "~> 2.5"
+pod 'XCDYouTubeKit'
+#pod "XCDYouTubeKit", "~> 2.5"
 
 #used by very few classes but still necessary (yt result VC, etc)
 pod 'SDWebImage', '~>3.6'
@@ -43,10 +43,8 @@ pod 'Valet'
 #Fabrio.io stuff (crashlytics & answers)
 pod 'Fabric'
 pod 'Crashlytics'
+pod 'Branch'
 
 #Subclass of UIActivity which add the 'open in safari' option to the share
 #sheet.
 pod 'TUSafariActivity', '~> 1.0'
-
-#for AppGratis promotion stuff...
-pod 'Batch', '~>1.5.4'
