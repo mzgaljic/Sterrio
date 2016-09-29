@@ -741,7 +741,7 @@ static NSDate *finish;
     NSArray *introAppThemes = [MZAppTheme appThemesMatchingThemeNames:desiredThemes];
     NSAssert(introAppThemes.count == desiredThemes.count, @"An app theme name has changed, causing showIntroTutorial() to break.");
     
-    for(int i = 0; i < pages.count; i++) {
+    for(NSInteger i = 0; i < pages.count; i++) {
         EAIntroPage *page = pages[i];
         MZAppTheme *theme = introAppThemes[i];
         page.bgColor = theme.mainGuiTint;
@@ -786,7 +786,7 @@ static NSDate *finish;
                                            andPages:pages];
     self.intro.hideSkipButton = NO;
     self.intro.delegate = self;
-    [self.intro showInView:self.mainVC.view animateDuration:1.5];
+    [self.intro showInView:self.mainVC.view animateDuration:1];
 }
 
 - (UIView *)viewForFirstPageOfIntro
