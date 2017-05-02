@@ -86,13 +86,18 @@
     playlist.playlistItems = [NSSet setWithArray:allItems];
     //end PlaylistItem incrementing logic.
     
-    if(deleteSongWithDelay) {
+    if(deleteSongWithDelay && self.song != nil) {
         int delaySeconds = 1;
-        __weak __block Song *weakSong = self.song;
+        //blockSong must NOT be __weak. this is because of this issue (paraphrased):
+        /*
+         Marking it as __weak causes the variable not to be retained, so the block directly refers to it but without retaining it. This is potentially dangerous since in case the block lives longer than the variable, since it will be referring to garbage memory (and likely to crash).
+         */
+        __block Song *blockSong = self.song;
         dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, delaySeconds * NSEC_PER_SEC);
         dispatch_after(delayTime, dispatch_get_main_queue(), ^(void) {
-            NSLog(@"Deleting song w/ name: '%@' from entire library.", weakSong.songName);
-            [context deleteObject:weakSong];
+            CLSLog(@"Deleting song w/ name: '%@' from entire library.", blockSong.songName);
+            [context deleteObject:blockSong];
+            blockSong = nil;
             context = nil;
         });
     }

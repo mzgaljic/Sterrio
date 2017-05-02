@@ -96,6 +96,8 @@
     //plus sign at bottom of screen can cut off the last cell if there are enough songs in the playlist.
     int buttonOffsetFromBottom = (MZTabBarHeight - self.centerButton.frame.size.height)/2;
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, MZTabBarHeight + buttonOffsetFromBottom, 0);
+    
+    [self fixPlaylistItemIndexGapBug];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -186,6 +188,45 @@ static BOOL dismissingCenterBtnInProgress = NO;
                          self.centerButton = nil;
                          dismissingCenterBtnInProgress = NO;
                      }];
+}
+
+- (void)fixPlaylistItemIndexGapBug
+{
+#warning eventually should make this code smarter so that it only runs on startup or once and then sets a flag in nsuserdefaults?
+    //before build 56, a bug caused indexes to become corrupt in certain PlaylistItems. This code corrects
+    //this problem for those upgrading from an old version, or for those editing this playlist for the
+    //first time since the bug occurred. This will VERY rare so I don't care if it hangs the main thread for
+    //2-3 seconds.
+    NSManagedObjectContext *context = [CoreDataManager context];
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"PlaylistItem"];
+    request.predicate = [NSPredicate predicateWithFormat:@"ANY playlist.uniqueId == %@", _playlist.uniqueId];
+    [request setPropertiesToFetch:@[@"index"]];
+    NSSortDescriptor *sortByIndex = [NSSortDescriptor sortDescriptorWithKey:@"index"
+                                                                     ascending:YES];
+    NSSortDescriptor *sortByCreationDate = [NSSortDescriptor sortDescriptorWithKey:@"creationDate"
+                                                                         ascending:YES];
+    [request setSortDescriptors:@[sortByIndex, sortByCreationDate]];
+    NSArray<PlaylistItem *> *playlistItems = [context executeFetchRequest:request error:NULL];
+    
+    if(playlistItems.count > 0
+       && playlistItems.count-1 != [playlistItems[playlistItems.count-1].index integerValue]) {
+        //a gap was found in the PlaylistItem indexes!
+        short index = 0;
+        NSInteger prevIndex = NSNotFound;
+        for(PlaylistItem *item in playlistItems) {
+            if(prevIndex == NSNotFound) {
+                prevIndex = [item.index integerValue];
+            } else if([item.index integerValue] == prevIndex) {
+                //two PlaylistItems claimed to be at this index. We're letting the oldest one "win"
+                //(it was processed in the previous loop iteration since array is sorted by creationDate).
+                continue;
+            }
+            item.index = [NSNumber numberWithShort:index];
+            index++;
+        }
+        _playlist.playlistItems = [NSSet setWithArray:playlistItems];
+        [[CoreDataManager sharedInstance] saveContext];
+    }
 }
 
 #pragma mark - Table View Data Source

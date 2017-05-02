@@ -891,7 +891,7 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
             //video search results in table
             NSInteger arrayIndex = [self rowNumFromIndexPathTakingAppRatingCellIntoAccount:indexPath];
             YouTubeVideo *ytVideo = [_searchResults objectAtIndex:arrayIndex];
-            CLSNSLog(@"User tapped on video with YT id: %@ title:%@", ytVideo.videoId, ytVideo.videoName);
+            CLSLog(@"User tapped on video with YT id: %@ title:%@", ytVideo.videoId, ytVideo.videoName);
             CustomYoutubeTableViewCell *cell;
             cell = (CustomYoutubeTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
             UIImage *img = [UIImage imageWithCGImage:cell.videoThumbnail.image.CGImage];
@@ -919,11 +919,11 @@ static char ytCellIndexPathAssociationKey;  //used to associate cells with image
         if(_tableSectionHeaderMode == TableSectionHeaderModeTopHits) {
             //suggestions in table
             chosenQuery = _searchSuggestions[(int)indexPath.row];
-            CLSNSLog(@"User tapped google suggested query: %@", chosenQuery);
+            CLSLog(@"User tapped google suggested query: %@", chosenQuery);
         } else if(_tableSectionHeaderMode == TableSectionHeaderModeRecentSearches) {
             //recent searches in table
             chosenQuery = _recentSearches[(int)indexPath.row];
-            CLSNSLog(@"User tapped suggested query (recent searches): %@", chosenQuery);
+            CLSLog(@"User tapped suggested query (recent searches): %@", chosenQuery);
         }
         if(chosenQuery.length != 0){
             _waitingOnYoutubeResults = YES;
