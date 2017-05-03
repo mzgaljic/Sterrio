@@ -12,9 +12,10 @@
 #import "BNCError.h"
 #import "BranchConstants.h"
 #import "BNCDeviceInfo.h"
+#import "NSMutableDictionary+Branch.h"
 
-void (^NSURLSessionCompletionHandler) (NSData *data, NSURLResponse *response, NSError *error);
-void (^NSURLConnectionCompletionHandler) (NSURLResponse *response, NSData *responseData, NSError *error);
+typedef void (^NSURLSessionCompletionHandler) (NSData *data, NSURLResponse *response, NSError *error);
+typedef void (^NSURLConnectionCompletionHandler) (NSURLResponse *response, NSData *responseData, NSError *error);
 
 @implementation BNCServerInterface
 
@@ -90,7 +91,7 @@ NSString *requestEndpoint;
     // This method uses NSURLConnection for iOS 6 and NSURLSession for iOS 7 and above
     // Assigning completion handlers blocks to variables eliminates redundancy 
     // Defining both completion handlers before the request methods otherwise they won't be called
-    NSURLSessionCompletionHandler = ^void(NSData *data, NSURLResponse *response, NSError *error) {
+    NSURLSessionCompletionHandler sessionHandler = ^void(NSData *data, NSURLResponse *response, NSError *error) {
         BNCServerResponse *serverResponse = [self processServerResponse:response data:data error:error log:log];
         NSInteger status = [serverResponse.statusCode integerValue];
         // If the phone is in a poor network condition,
@@ -138,15 +139,14 @@ NSString *requestEndpoint;
             }
             
         }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (callback)
-                callback(serverResponse, error);
-        });
+		//	Don't call on the main queue since it might be blocked.
+        if (callback)
+            callback(serverResponse, error);
     };
     
-    NSURLConnectionCompletionHandler = ^void(NSURLResponse *response, NSData *responseData, NSError *error) {
+    NSURLConnectionCompletionHandler connectionHandler = ^void(NSURLResponse *response, NSData *responseData, NSError *error) {
         // NSURLConnection and NSURLSession expect the same arguments for completion handlers but in different order
-        NSURLSessionCompletionHandler(responseData, response, error);
+        sessionHandler(responseData, response, error);
     };
     
     // start the reqeust timer here. This will account for retries.
@@ -155,11 +155,14 @@ NSString *requestEndpoint;
     // NSURLSession is available in iOS 7 and above
     if (NSFoundationVersionNumber >= NSFoundationVersionNumber_iOS_7_0) {
         NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-        NSURLSessionDataTask *task = [session dataTaskWithRequest:request.copy completionHandler:NSURLSessionCompletionHandler];
+        NSURLSessionDataTask *task = [session dataTaskWithRequest:request.copy completionHandler:sessionHandler];
         [task resume];
         [session finishTasksAndInvalidate];
     } else {
-        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:NSURLConnectionCompletionHandler];
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:connectionHandler];
+        #pragma clang diagnostic pop
     }
 }
 
@@ -182,7 +185,10 @@ NSString *requestEndpoint;
         [session finishTasksAndInvalidate];
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     } else {
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
         _respData = [NSURLConnection sendSynchronousRequest:request returningResponse:&_response error:&_error];
+        #pragma clang diagnostic pop
     }
     return [self processServerResponse:_response data:_respData error:_error log:log];
 }
@@ -191,7 +197,7 @@ NSString *requestEndpoint;
 #pragma mark - Internals
 
 - (NSURLRequest *)prepareGetRequest:(NSDictionary *)params url:(NSString *)url key:(NSString *)key retryNumber:(NSInteger)retryNumber log:(BOOL)log {
-    NSDictionary *preparedParams = [self prepareParamDict:params key:key retryNumber:retryNumber];
+    NSDictionary *preparedParams = [self prepareParamDict:params key:key retryNumber:retryNumber requestType:@"GET"];
     
     NSString *requestUrlString = [NSString stringWithFormat:@"%@%@", url, [BNCEncodingUtils encodeDictionaryToQueryString:preparedParams]];
     
@@ -208,7 +214,7 @@ NSString *requestEndpoint;
 }
 
 - (NSURLRequest *)preparePostRequest:(NSDictionary *)params url:(NSString *)url key:(NSString *)key retryNumber:(NSInteger)retryNumber log:(BOOL)log {
-    NSDictionary *preparedParams = [self prepareParamDict:params key:key retryNumber:retryNumber];
+    NSDictionary *preparedParams = [self prepareParamDict:params key:key retryNumber:retryNumber requestType:@"POST"];
 
     NSData *postData = [BNCEncodingUtils encodeDictionaryToJsonData:preparedParams];
     NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
@@ -228,10 +234,13 @@ NSString *requestEndpoint;
     return request;
 }
 
-- (NSDictionary *)prepareParamDict:(NSDictionary *)params key:(NSString *)key retryNumber:(NSInteger)retryNumber {
+- (NSDictionary *)prepareParamDict:(NSDictionary *)params
+							   key:(NSString *)key
+					   retryNumber:(NSInteger)retryNumber requestType:(NSString *)reqType {
+
     NSMutableDictionary *fullParamDict = [[NSMutableDictionary alloc] init];
-    [fullParamDict addEntriesFromDictionary:params];
-    fullParamDict[@"sdk"] = [NSString stringWithFormat:@"ios%@", SDK_VERSION];
+    [fullParamDict bnc_safeAddEntriesFromDictionary:params];
+    fullParamDict[@"sdk"] = [NSString stringWithFormat:@"ios%@", BNC_SDK_VERSION];
     
     // using rangeOfString instead of containsString to support devices running pre iOS 8
     if ([[[NSBundle mainBundle] executablePath] rangeOfString:@".appex/"].location != NSNotFound) {
@@ -241,10 +250,13 @@ NSString *requestEndpoint;
     fullParamDict[@"branch_key"] = key;
 
     NSMutableDictionary *metadata = [[NSMutableDictionary alloc] init];
-    [metadata addEntriesFromDictionary:self.preferenceHelper.requestMetadataDictionary];
-    [metadata addEntriesFromDictionary:fullParamDict[BRANCH_REQUEST_KEY_STATE]];
-    fullParamDict[BRANCH_REQUEST_KEY_STATE] = metadata;
-    if (self.preferenceHelper.instrumentationDictionary.count) {
+    [metadata bnc_safeAddEntriesFromDictionary:self.preferenceHelper.requestMetadataDictionary];
+    [metadata bnc_safeAddEntriesFromDictionary:fullParamDict[BRANCH_REQUEST_KEY_STATE]];
+    if (metadata.count) {
+        fullParamDict[BRANCH_REQUEST_KEY_STATE] = metadata;
+    }
+    // we only send instrumentation info in the POST body request
+    if (self.preferenceHelper.instrumentationDictionary.count && [reqType isEqualToString:@"POST"]) {
         fullParamDict[BRANCH_REQUEST_KEY_INSTRUMENTATION] = self.preferenceHelper.instrumentationDictionary;
     }
    
@@ -281,11 +293,15 @@ NSString *requestEndpoint;
 }
 - (void)updateDeviceInfoToMutableDictionary:(NSMutableDictionary *)dict {
     BNCDeviceInfo *deviceInfo  = [BNCDeviceInfo getInstance];
-   
-    if (deviceInfo.hardwareId) {
-        dict[BRANCH_REQUEST_KEY_HARDWARE_ID] = deviceInfo.hardwareId;
-        dict[BRANCH_REQUEST_KEY_HARDWARE_ID_TYPE] = deviceInfo.hardwareIdType;
-        dict[BRANCH_REQUEST_KEY_IS_HARDWARE_ID_REAL] = @(deviceInfo.isRealHardwareId);
+
+    NSString *hardwareId = [deviceInfo.hardwareId copy];
+    NSString *hardwareIdType = [deviceInfo.hardwareIdType copy];
+    NSNumber *isRealHardwareId = @(deviceInfo.isRealHardwareId);
+
+    if (hardwareId && hardwareIdType && isRealHardwareId) {
+        dict[BRANCH_REQUEST_KEY_HARDWARE_ID] = hardwareId;
+        dict[BRANCH_REQUEST_KEY_HARDWARE_ID_TYPE] = hardwareIdType;
+        dict[BRANCH_REQUEST_KEY_IS_HARDWARE_ID_REAL] = isRealHardwareId;
     }
     
     [self safeSetValue:deviceInfo.vendorId forKey:BRANCH_REQUEST_KEY_IOS_VENDOR_ID onDict:dict];
@@ -295,7 +311,11 @@ NSString *requestEndpoint;
     [self safeSetValue:deviceInfo.osVersion forKey:BRANCH_REQUEST_KEY_OS_VERSION onDict:dict];
     [self safeSetValue:deviceInfo.screenWidth forKey:BRANCH_REQUEST_KEY_SCREEN_WIDTH onDict:dict];
     [self safeSetValue:deviceInfo.screenHeight forKey:BRANCH_REQUEST_KEY_SCREEN_HEIGHT onDict:dict];
-    
+
+    [self safeSetValue:deviceInfo.browserUserAgent forKey:@"user_agent" onDict:dict];
+    [self safeSetValue:deviceInfo.country forKey:@"country" onDict:dict];
+    [self safeSetValue:deviceInfo.language forKey:@"language" onDict:dict];
+
     dict[BRANCH_REQUEST_KEY_AD_TRACKING_ENABLED] = @(deviceInfo.isAdTrackingEnabled);
     
 }

@@ -15,7 +15,7 @@
 
 @property (strong, nonatomic) NSString *branchKey;
 @property (strong, nonatomic) NSString *lastRunBranchKey;
-@property (strong, nonatomic) NSDate *lastStrongMatchDate;
+@property (strong, nonatomic) NSDate   *lastStrongMatchDate;
 @property (strong, nonatomic) NSString *appVersion;
 @property (strong, nonatomic) NSString *deviceFingerprintID;
 @property (strong, nonatomic) NSString *sessionID;
@@ -31,14 +31,20 @@
 @property (assign, nonatomic) BOOL shouldWaitForInit;
 @property (assign, nonatomic) BOOL suppressWarningLogs;
 @property (assign, nonatomic) BOOL checkedFacebookAppLinks;
+@property (assign, nonatomic) BOOL checkedAppleSearchAdAttribution;
 @property (assign, nonatomic) NSInteger retryCount;
 @property (assign, nonatomic) NSTimeInterval retryInterval;
 @property (assign, nonatomic) NSTimeInterval timeout;
 @property (strong, nonatomic) NSString *externalIntentURI;
 @property (strong, nonatomic) NSMutableDictionary *savedAnalyticsData;
 @property (assign, nonatomic) NSInteger installRequestDelay;
+@property (strong, nonatomic) NSDictionary *appleSearchAdDetails;
+@property (strong, nonatomic) NSString *lastSystemBuildVersion;
+@property (strong, nonatomic) NSString *browserUserAgentString;
+@property (strong) NSString *branchAPIURL;
 
 + (BNCPreferenceHelper *)preferenceHelper;
++ (NSURL*) URLForBranchDirectory;
 
 - (NSString *)getAPIBaseURL;
 - (NSString *)getAPIURL:(NSString *)endpoint;
@@ -76,4 +82,7 @@
 - (NSMutableDictionary *)getBranchAnalyticsData;
 - (NSDictionary *)getContentAnalyticsManifest;
 - (void)saveContentAnalyticsManifest:(NSDictionary *)cdManifest;
+
+- (void) synchronize;  //  Flushes preference queue to persistence.
+
 @end

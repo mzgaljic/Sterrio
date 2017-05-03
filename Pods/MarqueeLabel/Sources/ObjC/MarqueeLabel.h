@@ -31,7 +31,7 @@ typedef NS_ENUM(NSUInteger, MarqueeType) {
  */
 
 IB_DESIGNABLE
-@interface MarqueeLabel : UILabel
+@interface MarqueeLabel : UILabel <CAAnimationDelegate>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @name Creating MarqueeLabels
@@ -271,6 +271,18 @@ IB_DESIGNABLE
 /** The length of delay in seconds that the label pauses at the completion of a scroll. */
 
 @property (nonatomic, assign) IBInspectable CGFloat animationDelay;
+
+
+/** The read-only duration of the scroll animation (not including delay). 
+ 
+ The value of this property is calculated when using the `scrollRate` property to set label animation speed. The value of this property
+ is equal to the value of `scrollDuration` property when using the `scrollDuration` property to set label animation speed.
+ 
+ @see scrollDuration
+ @see scrollRate
+ */
+
+@property (nonatomic, readonly) NSTimeInterval animationDuration;
 
 
 

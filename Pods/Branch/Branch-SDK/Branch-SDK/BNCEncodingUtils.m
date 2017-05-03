@@ -244,7 +244,7 @@ static const short _base64DecodingTable[256] = {
         }
         else {
             // If this type is not a known type, don't attempt to encode it.
-            NSLog(@"Cannot encode value for key %@, type is in list of accepted types", key);
+            NSLog(@"[encodeDictionaryToJsonString] Cannot encode value for key %@, type is not in list of accepted types", key);
             continue;
         }
         
@@ -311,7 +311,7 @@ static const short _base64DecodingTable[256] = {
         }
         else {
             // If this type is not a known type, don't attempt to encode it.
-            NSLog(@"Cannot encode value %@, type is not in list of accepted types", obj);
+            NSLog(@"[encodedArray] Cannot encode value %@, type is not in list of accepted types", obj);
             continue;
         }
         
@@ -365,7 +365,7 @@ static const short _base64DecodingTable[256] = {
             }
             else {
                 // If this type is not a known type, don't attempt to encode it.
-                NSLog(@"Cannot encode value %@, type is in not list of accepted types", obj);
+                NSLog(@"[encodeDictionaryToQueryString] Cannot encode value %@, type is not in list of accepted types", obj);
                 continue;
             }
             
@@ -426,7 +426,11 @@ static const short _base64DecodingTable[256] = {
             
             //Pre iOS 7, stringByReplacingPercentEscapesUsingEncoding was deprecated in iOS 9
             if (NSFoundationVersionNumber < NSFoundationVersionNumber_iOS_7_0) {
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Wdeprecated-declarations"
                 val = [kv[1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                #pragma clang diagnostic pop
+
             } else { //iOS 7 and later
                 val = [kv[1] stringByRemovingPercentEncoding]; // uses the default UTF-8 encoding, introduced in iOS 7
             }

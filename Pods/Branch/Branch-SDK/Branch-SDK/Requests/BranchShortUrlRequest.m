@@ -56,7 +56,7 @@
     BNCPreferenceHelper *preferenceHelper = [BNCPreferenceHelper preferenceHelper];
     params[BRANCH_REQUEST_KEY_DEVICE_FINGERPRINT_ID] = preferenceHelper.deviceFingerprintID;
     
-    if (!_isSpotlightRequest) {
+    if (!_isSpotlightRequest && _alias.length == 0) {
         params[BRANCH_REQUEST_KEY_BRANCH_IDENTITY] = preferenceHelper.identityID;
     }
     params[BRANCH_REQUEST_KEY_SESSION_ID] = preferenceHelper.sessionID;
@@ -72,10 +72,8 @@
             if (userUrl) {
                 failedUrl = [self createLongUrlForUserUrl:userUrl];
             }
-            
             self.callback(failedUrl, error);
         }
-        
         return;
     }
     
@@ -85,7 +83,6 @@
     if (url) {
         [self.linkCache setObject:url forKey:self.linkData];
     }
-    
     if (self.callback) {
         self.callback(url, nil);
     }
@@ -113,10 +110,13 @@
     if ([self.stage length]) {
         [longUrl appendFormat:@"stage=%@&", self.stage];
     }
-    
-    [longUrl appendFormat:@"type=%ld&", (long)self.type];
-    [longUrl appendFormat:@"duration=%ld&", (long)self.matchDuration];
-    
+    if (self.type) {
+        [longUrl appendFormat:@"type=%ld&", (long)self.type];
+    }
+    if (self.matchDuration) {
+        [longUrl appendFormat:@"duration=%ld&", (long)self.matchDuration];
+    }
+
     NSData *jsonData = [BNCEncodingUtils encodeDictionaryToJsonData:self.params];
     NSString *base64EncodedParams = [BNCEncodingUtils base64EncodeData:jsonData];
     [longUrl appendFormat:@"source=ios&data=%@", base64EncodedParams];
@@ -150,13 +150,11 @@
         [self.linkData setupMatchDuration:_matchDuration];
         [self.linkData setupParams:_params];
     }
-    
     return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {
     [super encodeWithCoder:coder];
-    
     [coder encodeObject:self.tags forKey:@"tags"];
     [coder encodeObject:self.alias forKey:@"alias"];
     [coder encodeInteger:self.type forKey:@"type"];

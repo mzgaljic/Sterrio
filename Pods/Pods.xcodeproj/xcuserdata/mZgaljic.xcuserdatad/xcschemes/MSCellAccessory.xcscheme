@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '6CE37631E91E73398BD65911'
+               BlueprintIdentifier = '9A6D6019101D3799868BBBCC9EDDEBBA'
                BlueprintName = 'MSCellAccessory'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'libMSCellAccessory.a'>

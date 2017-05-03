@@ -6,15 +6,16 @@
 //  Copyright (c) 2015 Branch Metrics. All rights reserved.
 //
 
+
 #import "BranchLogoutRequest.h"
 #import "BNCPreferenceHelper.h"
 #import "BranchConstants.h"
 
+
 @interface BranchLogoutRequest ()
-
-@property (strong, nonatomic) callbackWithStatus callback;
-
+@property (copy) callbackWithStatus callback;
 @end
+
 
 @implementation BranchLogoutRequest
 

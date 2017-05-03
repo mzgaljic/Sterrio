@@ -12,7 +12,7 @@
 
 @interface BranchLoadRewardsRequest ()
 
-@property (strong, nonatomic) callbackWithStatus callback;
+@property (copy) callbackWithStatus callback;
 
 @end
 
@@ -42,6 +42,7 @@
 
     BOOL hasUpdated = NO;
     BNCPreferenceHelper *preferenceHelper = [BNCPreferenceHelper preferenceHelper];
+    [preferenceHelper synchronize];
     NSDictionary *currentCreditDictionary = [preferenceHelper getCreditDictionary];
     NSArray *responseKeys = [response.data allKeys];
     NSArray *storedKeys = [currentCreditDictionary allKeys];
@@ -78,6 +79,7 @@
         }
     }
 
+    [preferenceHelper synchronize];
     if (self.callback) {
         self.callback(hasUpdated, nil);
     }

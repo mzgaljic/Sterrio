@@ -20,21 +20,21 @@ PODS:
   - AFNetworking/UIKit (2.5.4):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - Branch (0.12.11):
-    - Branch/Core (= 0.12.11)
-    - Branch/without-IDFA (= 0.12.11)
-  - Branch/Core (0.12.11)
-  - Branch/without-IDFA (0.12.11)
-  - Crashlytics (3.8.2):
+  - Branch (0.14.12):
+    - Branch/Core (= 0.14.12)
+    - Branch/without-IDFA (= 0.14.12)
+  - Branch/Core (0.14.12)
+  - Branch/without-IDFA (0.14.12)
+  - Crashlytics (3.8.4):
     - Fabric (~> 1.6.3)
   - CRToast (0.0.9)
-  - Fabric (1.6.8)
-  - FXImageView (1.3.5)
+  - Fabric (1.6.11)
+  - FXImageView (1.3.6)
   - GCDiscreetNotificationView (1.0.2)
-  - Google-Mobile-Ads-SDK (7.11.0)
-  - MarqueeLabel (2.8.0):
-    - MarqueeLabel/ObjC (= 2.8.0)
-  - MarqueeLabel/ObjC (2.8.0)
+  - Google-Mobile-Ads-SDK (7.20.0)
+  - MarqueeLabel (3.0.3):
+    - MarqueeLabel/ObjC (= 3.0.3)
+  - MarqueeLabel/ObjC (3.0.3)
   - MSCellAccessory (1.1.2)
   - Reachability (3.2)
   - SDWebImage (3.8.2):
@@ -42,8 +42,8 @@ PODS:
   - SDWebImage/Core (3.8.2)
   - TransitionKit (2.2.1)
   - TUSafariActivity (1.0.4)
-  - Valet (2.2.2)
-  - XCDYouTubeKit (2.5.3)
+  - Valet (2.4.0)
+  - XCDYouTubeKit (2.5.5)
 
 DEPENDENCIES:
   - AFNetworking (~> 2.5.4)
@@ -65,20 +65,22 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
-  Branch: a620b19dc96fffabb7873a86c80c77c75395a664
-  Crashlytics: 27acca95a01b042a8294291dd6dff27f8f6af6d7
+  Branch: f63d9cf82ac09747349a73184a0b739d28781c4d
+  Crashlytics: 79e236942ca1e7fc641df1feb9a275360a78ab6a
   CRToast: 5a78c22b921c5ed3487488af605bc403a9c92fed
-  Fabric: 5755268d0171435ab167e3d0878a28a777deaf10
-  FXImageView: 7d84722b37f0afea9a64f12fdd4a6c7f9ecc4b16
+  Fabric: 5911403591946b8228ab1c51d98f1d7137e863c6
+  FXImageView: 34792b9c9bbdbfed70ff33cb015cc4d333daac34
   GCDiscreetNotificationView: b093cce1fe82f6d9784169a156b48ecb1465ad8a
-  Google-Mobile-Ads-SDK: 0e864ab93ba1ff8afe92e16de0e4e883f581ed33
-  MarqueeLabel: 73b52d7558241ece6391e9c566edb56b269883e2
+  Google-Mobile-Ads-SDK: 168312cdc167fa22746d4ea8e839fc4825dd2966
+  MarqueeLabel: 355b604a19c16a8736194a21327fadccc41b9160
   MSCellAccessory: 8265f3cd2386c1f372da00232472605ab11426e4
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
   TransitionKit: 9ceccda4cd0cdc0a05ef85eb235e5a3292c3c250
   TUSafariActivity: afc55a00965377939107ce4fdc7f951f62454546
-  Valet: b16c837ed1b33586c60d3f852c3a23c2efe5c019
-  XCDYouTubeKit: 90690f9e3523735dc93b8024269d991b0cfffe78
+  Valet: e4cbde64b8cbbad4d6610fc10d4473502ba1548e
+  XCDYouTubeKit: 86f4e7a9c2baa7b7adf6abfc28ac3ab34927be2d
 
-COCOAPODS: 0.39.0
+PODFILE CHECKSUM: fc258b1d881dc67ad7f2fb0c32036b77e1f87795
+
+COCOAPODS: 1.2.1

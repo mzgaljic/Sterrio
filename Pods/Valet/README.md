@@ -103,7 +103,13 @@ This instance can be used to store and retrieve data that can be retrieved by th
 VALSecureEnclaveValet *mySecureEnclaveValet = [[VALSecureEnclaveValet alloc] initWithIdentifier:@"Druidia" accessControl:VALAccessControlUserPresence];
 ```
 
-This instance can be used to store and retrieve data in the Secure Enclave (available on iOS 8.0 and later and Mac OS 10.11 and later). Reading or modifying items in this Valet will require the user to confirm their presence via Touch ID on iOS or by entering their device passcode. *If no passcode is set on the device, this instance will be unable to access or store data.* Data is removed from the Secure Enclave when the user removes a passcode from the device. Storing data using VALSecureEnclaveValet is the most secure way to store data on either iOS or Mac OS.
+This instance can be used to store and retrieve data in the Secure Enclave (available on iOS 8.0 and later and Mac OS 10.11 and later). Each time data is retrieved from this Valet, the user will be prompted to confirm their presence via Touch ID or by entering their device passcode. *If no passcode is set on the device, this instance will be unable to access or store data.* Data is removed from the Secure Enclave when the user removes a passcode from the device. Storing data using VALSecureEnclaveValet is the most secure way to store data on either iOS or Mac OS.
+
+```objc
+VALSinglePromptSecureEnclaveValet *mySecureEnclaveValet = [[VALSinglePromptSecureEnclaveValet alloc] initWithIdentifier:@"Druidia" accessControl:VALAccessControlUserPresence];
+```
+
+This instance also stores and retrieves data in the Secure Enclave, but does not require the user to confirm their presence each time data is retrieved. Instead, the user will be prompted to confirm their presence only on the first data retrieval. A `VALSinglePromptSecureEnclaveValet` instance can be forced to prompt the user on the next data retrieval by calling the instance method `requirePromptOnNextAccess`.
 
 ### Migrating Existing Keychain Values into Valet
 
@@ -118,6 +124,7 @@ Valet guarantees it will never fail to write to or read from the keychain unless
 3. Using `VALSecureEnclaveValet` on an iOS device that doesn't have a Secure Enclave. The Secure Enclave was introduced with the [A7 chip](https://www.apple.com/business/docs/iOS_Security_Guide.pdf), which [first appeared](https://en.wikipedia.org/wiki/Apple_A7#Products_that_include_the_Apple_A7) in the iPhone 5S, iPad Air, and iPad Mini 2.
 4. Running your app in DEBUG from Xcode. Xcode sometimes does not properly sign your app, which causes a [failure to access keychain](https://github.com/square/Valet/issues/10#issuecomment-114408954) due to entitlements. If you run into this issue, just hit Run in Xcode again. This signing issue will not occur in properly signed (not DEBUG) builds.
 5. Running your app on device or in the simulator with a debugger attached may also [cause an entitlements error](https://forums.developer.apple.com/thread/4743) to be returned when reading from or writing to the keychain. To work around this issue on device, run the app without the debugger attached. After running once without the debugger attached the keychain will usually behave properly for a few runs with the debugger attached before the process needs to be repeated.
+6. Running your app or unit tests without the application-identifier entitlement. Xcode 8 introduced a requirement that all schemes must be signed with the application-identifier entitlement to access the keychain. To satisfy this requirement when running unit tests, your unit tests must be run inside of a host application.
 
 ## Requirements
 

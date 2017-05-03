@@ -51,6 +51,7 @@ NSString * const BRANCH_REQUEST_KEY_URI_SCHEME = @"uri_scheme";
 NSString * const BRANCH_REQUEST_KEY_UPDATE = @"update";
 NSString * const BRANCH_REQUEST_KEY_LINK_IDENTIFIER = @"link_identifier";
 NSString * const BRANCH_REQUEST_KEY_CHECKED_FACEBOOK_APPLINKS = @"facebook_app_link_checked";
+NSString * const BRANCH_REQUEST_KEY_CHECKED_APPLE_AD_ATTRIBUTION = @"apple_ad_attribution_checked";
 NSString * const BRANCH_REQUEST_KEY_SPOTLIGHT_IDENTIFIER = @"spotlight_identifier";
 NSString * const BRANCH_REQUEST_KEY_UNIVERSAL_LINK_URL = @"universal_link_url";
 NSString * const BRANCH_REQUEST_KEY_BRAND = @"brand";
@@ -86,6 +87,7 @@ NSString * const BRANCH_RESPONSE_KEY_DEVICE_FINGERPRINT_ID = @"device_fingerprin
 NSString * const BRANCH_RESPONSE_KEY_SESSION_DATA = @"data";
 NSString * const BRANCH_RESPONSE_KEY_CLICKED_BRANCH_LINK = @"+clicked_branch_link";
 NSString * const BRANCH_RESPONSE_KEY_BRANCH_VIEW_DATA = @"branch_view_data";
+NSString * const BRANCH_RESPONSE_KEY_BRANCH_REFERRING_LINK = @"~referring_link";
 
 NSString * const BRANCH_LINK_DATA_KEY_OG_TITLE = @"$og_title";
 NSString * const BRANCH_LINK_DATA_KEY_OG_DESCRIPTION = @"$og_description";
@@ -125,3 +127,6 @@ NSString * const BRANCH_CONTENT_DATA_KEY = @"cd";
 NSString * const BRANCH_CONTENT_KEYS_KEY = @"ck";
 NSString * const BRANCH_PACKAGE_NAME_KEY = @"p";
 NSString * const BRANCH_ENTITIES_KEY = @"e";
+
+NSString * const BRANCH_REQUEST_KEY_SEARCH_AD = @"search_ad_encoded";
+

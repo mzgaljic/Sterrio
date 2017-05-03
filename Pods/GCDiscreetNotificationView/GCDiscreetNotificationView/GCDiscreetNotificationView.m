@@ -20,11 +20,6 @@ NSString* const GCDiscreetNotificationViewTextKey = @"text";
 NSString* const GCDiscreetNotificationViewActivityKey = @"activity";
 
 @interface GCDiscreetNotificationView ()
-{
-    NSString *boldFontSetByProgrammer;
-}
-@end
-@interface GCDiscreetNotificationView ()
 
 @property (nonatomic, readonly) CGPoint showingCenter;
 @property (nonatomic, readonly) CGPoint hidingCenter;
@@ -97,11 +92,6 @@ NSString* const GCDiscreetNotificationViewActivityKey = @"activity";
     activityIndicator = nil;
     
     [super dealloc];
-}
-
-- (void)setBoldTextFontName:(NSString *)fontName
-{
-    boldFontSetByProgrammer = fontName;
 }
 
 #pragma mark -
