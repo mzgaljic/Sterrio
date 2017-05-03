@@ -319,7 +319,6 @@ static void *kTotalDurationLabelDidChange = &kTotalDurationLabelDidChange;
 
 - (void)setupSliderHintView
 {
-    [sliderHint setBoldTextFontName:[AppEnvironmentConstants boldFontName]];
     short statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
     short navBarHeight = self.navigationController.navigationBar.frame.size.height;
     

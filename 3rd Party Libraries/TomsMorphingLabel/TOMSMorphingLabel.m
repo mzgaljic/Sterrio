@@ -108,7 +108,7 @@
 - (void)numberOfAttributionStagesShouldChange
 {
     if (self.displayLinkDuration > 0) {
-        _numberOfAttributionStages = (NSInteger) ((1.f / self.displayLinkDuration) * _animationDuration);
+        _numberOfAttributionStages = (NSInteger) ((1.f / self.displayLinkDuration) * self.animationDuration);
         _attributionStages = nil;
         if (self.nextText) {
             [self beginMorphing];
@@ -148,7 +148,7 @@
 - (void)setAnimationDuration:(CGFloat)animationDuration
 {
     if (!self.isAnimating) {
-        _animationDuration = animationDuration;
+        animationDuration = animationDuration;
         [self numberOfAttributionStagesShouldChange];
     }
 }

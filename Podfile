@@ -1,8 +1,11 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
+platform :ios, ‘8.0’
+
+target 'Sterrio' do 
+
 #youtube id video url extractor
 pod 'XCDYouTubeKit'
-#pod "XCDYouTubeKit", "~> 2.5"
 
 #used by very few classes but still necessary (yt result VC, etc)
 pod 'SDWebImage', '~>3.6'
@@ -34,7 +37,7 @@ pod 'Reachability'
 #needed for MRProgressView...dont ask lol.
 pod "AFNetworking" , '~> 2.5.4'
 
-#ads
+#pod 'Google/AdMob'
 pod 'Google-Mobile-Ads-SDK'
 
 #keychain stuff
@@ -45,6 +48,7 @@ pod 'Fabric'
 pod 'Crashlytics'
 pod 'Branch'
 
-#Subclass of UIActivity which add the 'open in safari' option to the share
-#sheet.
+#Subclass of UIActivity which add the 'open in safari' option to the share sheet.
 pod 'TUSafariActivity', '~> 1.0'
+
+end

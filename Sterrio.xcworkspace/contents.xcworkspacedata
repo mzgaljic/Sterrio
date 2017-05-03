@@ -2,12 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/mzgaljic/Library/Mobile Documents/com~apple~CloudDocs/Developer/Xcode/Sterrio/Sterrio.xcodeproj">
+      location = "group:Sterrio.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Sterrio.xcodeproj">
    </FileRef>
 </Workspace>

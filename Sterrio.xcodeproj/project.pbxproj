@@ -13,7 +13,6 @@
 		871321FD1D978ADB0002FFB3 /* MessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 871321FC1D978ADB0002FFB3 /* MessagesViewController.m */; };
 		871322001D978ADB0002FFB3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 871321FE1D978ADB0002FFB3 /* MainInterface.storyboard */; };
 		871322021D978ADB0002FFB3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 871322011D978ADB0002FFB3 /* Assets.xcassets */; };
-		871322061D978ADB0002FFB3 /* MessageExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 871321F71D978ADA0002FFB3 /* MessageExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		87164E291CB8B3EB0006D53B /* Ensembles.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 87164E271CB8B3EB0006D53B /* Ensembles.bundle */; };
 		87164E2A1CB8B3EB0006D53B /* Ensembles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87164E281CB8B3EB0006D53B /* Ensembles.framework */; };
 		8716560F1C30AB41000FF02B /* DiscogsItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8716560E1C30AB41000FF02B /* DiscogsItem.m */; };
@@ -21,7 +20,6 @@
 		8726E5281D976E7700FE399E /* MZMsMessageActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = 8726E5271D976E7700FE399E /* MZMsMessageActivity.m */; };
 		8727A5791C49EC05008FC03E /* CoreDataEntityMappingUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8727A5781C49EC05008FC03E /* CoreDataEntityMappingUtils.m */; };
 		8730C0E11C59B8C0001FC8A6 /* MZCommons.m in Sources */ = {isa = PBXBuildFile; fileRef = 8730C0E01C59B8C0001FC8A6 /* MZCommons.m */; };
-		87329C751D8B9125008463E1 /* SnapshotHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 87329C741D8B9125008463E1 /* SnapshotHelper.m */; };
 		87329C761D8BA656008463E1 /* AppEnvironmentConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 873538131B0A9AC1009244E4 /* AppEnvironmentConstants.m */; };
 		873537CC1B0A9981009244E4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 873537CB1B0A9981009244E4 /* main.m */; };
 		873537D71B0A9981009244E4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 873537D61B0A9981009244E4 /* Images.xcassets */; };
@@ -228,7 +226,6 @@
 		87A8FD001CBF2A7800A43637 /* UIColor+Hex.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A8FCFB1CBF2A7800A43637 /* UIColor+Hex.m */; };
 		87A8FD011CBF2A7800A43637 /* UIImage+BetterAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A8FCFD1CBF2A7800A43637 /* UIImage+BetterAdditions.m */; };
 		87A953621B3E1E54002E9872 /* DiscogsSearchService.m in Sources */ = {isa = PBXBuildFile; fileRef = 87A9535E1B3E1E54002E9872 /* DiscogsSearchService.m */; };
-		87ACBEAE1D8B840F004BA6A6 /* SterrioUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 87ACBEAD1D8B840F004BA6A6 /* SterrioUITests.m */; };
 		87B723651CA2462800370CA3 /* MZLaunchScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B723641CA2462800370CA3 /* MZLaunchScreen.m */; };
 		87B8219D1C7915A000640BF6 /* AppRatingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B8219C1C7915A000640BF6 /* AppRatingTableViewCell.m */; };
 		87B916C81C60467E00CAEDB8 /* MZRightDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B916C71C60467E00CAEDB8 /* MZRightDetailCell.m */; };
@@ -242,21 +239,14 @@
 		87DD3AB71B0AB050003AFC9B /* EmailComposerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DD3AB61B0AB050003AFC9B /* EmailComposerManager.m */; };
 		87E152671C0041E100C82737 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87E152661C0041E100C82737 /* StoreKit.framework */; };
 		87E9FAE01D72AF8D00ECCB7A /* UpNextItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E9FADF1D72AF8D00ECCB7A /* UpNextItem.m */; };
+		87EC4EE11EB9539C0060A1C7 /* GoogleMobileAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87EC4EE01EB9539C0060A1C7 /* GoogleMobileAds.framework */; };
 		87EF52551CA4D4EC00D8364D /* UIColor+Strings.m in Sources */ = {isa = PBXBuildFile; fileRef = 87EF52541CA4D4EC00D8364D /* UIColor+Strings.m */; };
 		87EF52581CA4D7DD00D8364D /* MZAppTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 87EF52571CA4D7DD00D8364D /* MZAppTheme.m */; };
 		87F5A8801C9E68FB00C64376 /* credits.py in Resources */ = {isa = PBXBuildFile; fileRef = 87F5A87F1C9E68FB00C64376 /* credits.py */; };
 		87F84E741C74123C000D7D4E /* AppRatingUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F84E731C74123C000D7D4E /* AppRatingUtils.m */; };
-		CC4EB50DFF2CD80A06134B69 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B206C6594633BB85400EBDC /* libPods.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		871322041D978ADB0002FFB3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 873537BE1B0A9981009244E4 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 871321F61D978ADA0002FFB3;
-			remoteInfo = SterrioMessageExtension;
-		};
 		87ACBEB01D8B840F004BA6A6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 873537BE1B0A9981009244E4 /* Project object */;
@@ -266,21 +256,8 @@
 		};
 /* End PBXContainerItemProxy section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		8713220A1D978ADB0002FFB3 /* Embed App Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 13;
-			files = (
-				871322061D978ADB0002FFB3 /* MessageExtension.appex in Embed App Extensions */,
-			);
-			name = "Embed App Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
+		13F432DAA8B94F9580B7E4F9 /* Pods-Sterrio.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sterrio.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Sterrio/Pods-Sterrio.debug.xcconfig"; sourceTree = "<group>"; };
 		87059FE41CDEE3860068A1A9 /* InAppProductPriceHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductPriceHelper.h; sourceTree = "<group>"; };
 		87059FE51CDEE3860068A1A9 /* InAppProductPriceHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductPriceHelper.m; sourceTree = "<group>"; };
 		870D068E1CB9C61700395F38 /* MZInterstitialAd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZInterstitialAd.h; sourceTree = "<group>"; };
@@ -297,15 +274,12 @@
 		8716560E1C30AB41000FF02B /* DiscogsItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsItem.m; sourceTree = "<group>"; };
 		871BDA861CF020C50038C5A1 /* AddToPlaylistViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddToPlaylistViewController.h; sourceTree = "<group>"; };
 		871BDA871CF020C50038C5A1 /* AddToPlaylistViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddToPlaylistViewController.m; sourceTree = "<group>"; };
-		871FE2D01BFACDC000588C2B /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMobileAds.framework; path = "Pods/Google-Mobile-Ads-SDK/GoogleMobileAdsSdkiOS-7.5.2/GoogleMobileAds.framework"; sourceTree = "<group>"; };
 		8726E5261D976E7700FE399E /* MZMsMessageActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZMsMessageActivity.h; sourceTree = "<group>"; };
 		8726E5271D976E7700FE399E /* MZMsMessageActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZMsMessageActivity.m; sourceTree = "<group>"; };
 		8727A5771C49EC05008FC03E /* CoreDataEntityMappingUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataEntityMappingUtils.h; sourceTree = "<group>"; };
 		8727A5781C49EC05008FC03E /* CoreDataEntityMappingUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataEntityMappingUtils.m; sourceTree = "<group>"; };
 		8730C0DF1C59B8C0001FC8A6 /* MZCommons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZCommons.h; sourceTree = "<group>"; };
 		8730C0E01C59B8C0001FC8A6 /* MZCommons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZCommons.m; sourceTree = "<group>"; };
-		87329C731D8B9125008463E1 /* SnapshotHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SnapshotHelper.h; sourceTree = "<group>"; };
-		87329C741D8B9125008463E1 /* SnapshotHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SnapshotHelper.m; sourceTree = "<group>"; };
 		873537C61B0A9981009244E4 /* Sterrio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sterrio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		873537CA1B0A9981009244E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		873537CB1B0A9981009244E4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -746,8 +720,6 @@
 		87A9535E1B3E1E54002E9872 /* DiscogsSearchService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscogsSearchService.m; sourceTree = "<group>"; };
 		87A953601B3E1E54002E9872 /* DiscogsItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscogsItem.h; sourceTree = "<group>"; };
 		87ACBEAB1D8B840F004BA6A6 /* SterrioUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SterrioUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		87ACBEAD1D8B840F004BA6A6 /* SterrioUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SterrioUITests.m; sourceTree = "<group>"; };
-		87ACBEAF1D8B840F004BA6A6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		87B723631CA2462800370CA3 /* MZLaunchScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZLaunchScreen.h; sourceTree = "<group>"; };
 		87B723641CA2462800370CA3 /* MZLaunchScreen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZLaunchScreen.m; sourceTree = "<group>"; };
 		87B8219B1C7915A000640BF6 /* AppRatingTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppRatingTableViewCell.h; sourceTree = "<group>"; };
@@ -772,6 +744,7 @@
 		87E152661C0041E100C82737 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		87E9FADE1D72AF8D00ECCB7A /* UpNextItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpNextItem.h; sourceTree = "<group>"; };
 		87E9FADF1D72AF8D00ECCB7A /* UpNextItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpNextItem.m; sourceTree = "<group>"; };
+		87EC4EE01EB9539C0060A1C7 /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMobileAds.framework; sourceTree = "<group>"; };
 		87EF52531CA4D4EC00D8364D /* UIColor+Strings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Strings.h"; sourceTree = "<group>"; };
 		87EF52541CA4D4EC00D8364D /* UIColor+Strings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Strings.m"; sourceTree = "<group>"; };
 		87EF52561CA4D7DD00D8364D /* MZAppTheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZAppTheme.h; sourceTree = "<group>"; };
@@ -779,9 +752,7 @@
 		87F5A87F1C9E68FB00C64376 /* credits.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = credits.py; sourceTree = "<group>"; };
 		87F84E721C74123C000D7D4E /* AppRatingUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppRatingUtils.h; sourceTree = "<group>"; };
 		87F84E731C74123C000D7D4E /* AppRatingUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppRatingUtils.m; sourceTree = "<group>"; };
-		8B206C6594633BB85400EBDC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		92B6CB546F4E7E88A9974B8F /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
-		C79109650D7488FFD1AB95FF /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		A97B640AEAE0B428ED70C0C9 /* Pods-Sterrio.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sterrio.release.xcconfig"; path = "Pods/Target Support Files/Pods-Sterrio/Pods-Sterrio.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -799,6 +770,7 @@
 			files = (
 				87E152671C0041E100C82737 /* StoreKit.framework in Frameworks */,
 				87414BC61B3FA93100FB8252 /* MobileCoreServices.framework in Frameworks */,
+				87EC4EE11EB9539C0060A1C7 /* GoogleMobileAds.framework in Frameworks */,
 				87414BC41B3FA92500FB8252 /* CoreSpotlight.framework in Frameworks */,
 				87353A681B0AA576009244E4 /* Foundation.framework in Frameworks */,
 				87353A741B0AA5C4009244E4 /* UIKit.framework in Frameworks */,
@@ -809,7 +781,6 @@
 				87353A6E1B0AA599009244E4 /* AVFoundation.framework in Frameworks */,
 				87164E2A1CB8B3EB0006D53B /* Ensembles.framework in Frameworks */,
 				87353A721B0AA5B6009244E4 /* MessageUI.framework in Frameworks */,
-				CC4EB50DFF2CD80A06134B69 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -823,15 +794,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2E224104911CDDD080509713 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				92B6CB546F4E7E88A9974B8F /* Pods.debug.xcconfig */,
-				C79109650D7488FFD1AB95FF /* Pods.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		871321FA1D978ADB0002FFB3 /* SterrioMessageExtension */ = {
 			isa = PBXGroup;
 			children = (
@@ -889,11 +851,10 @@
 				874D99501CB8AD4100FA6BCA /* Ensembles */,
 				873537D61B0A9981009244E4 /* Images.xcassets */,
 				873537C91B0A9981009244E4 /* Supporting Files */,
-				87ACBEAC1D8B840F004BA6A6 /* SterrioUITests */,
 				871321FA1D978ADB0002FFB3 /* SterrioMessageExtension */,
 				873537C71B0A9981009244E4 /* Products */,
-				2E224104911CDDD080509713 /* Pods */,
 				95A486A0294577F099EF7326 /* Frameworks */,
+				A33A2417F16527C3495E50F5 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1482,6 +1443,7 @@
 		8735397B1B0AA14E009244E4 /* Imported Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				87EC4EE01EB9539C0060A1C7 /* GoogleMobileAds.framework */,
 				87A8FCF61CBF2A7800A43637 /* SSBouncyButton */,
 				87A8FCA41CBF29FB00A43637 /* SDCAlertView */,
 				87A8FC9B1CBF280500A43637 /* ColorCube */,
@@ -1869,17 +1831,6 @@
 			path = "3rd Party Libraries/SSBouncyButton";
 			sourceTree = "<group>";
 		};
-		87ACBEAC1D8B840F004BA6A6 /* SterrioUITests */ = {
-			isa = PBXGroup;
-			children = (
-				87ACBEAD1D8B840F004BA6A6 /* SterrioUITests.m */,
-				87329C731D8B9125008463E1 /* SnapshotHelper.h */,
-				87329C741D8B9125008463E1 /* SnapshotHelper.m */,
-				87ACBEAF1D8B840F004BA6A6 /* Info.plist */,
-			);
-			path = SterrioUITests;
-			sourceTree = "<group>";
-		};
 		87C67B9C1C9F267C00E2FCB8 /* About */ = {
 			isa = PBXGroup;
 			children = (
@@ -1898,7 +1849,6 @@
 			children = (
 				879E623B1D49B71B009DE94A /* CloudKit.framework */,
 				87E152661C0041E100C82737 /* StoreKit.framework */,
-				871FE2D01BFACDC000588C2B /* GoogleMobileAds.framework */,
 				87414BC51B3FA93100FB8252 /* MobileCoreServices.framework */,
 				87414BC31B3FA92500FB8252 /* CoreSpotlight.framework */,
 				87353A751B0AA5C9009244E4 /* CoreGraphics.framework */,
@@ -1909,10 +1859,18 @@
 				87353A6B1B0AA587009244E4 /* CoreData.framework */,
 				87353A691B0AA57F009244E4 /* QuartzCore.framework */,
 				87353A671B0AA576009244E4 /* Foundation.framework */,
-				8B206C6594633BB85400EBDC /* libPods.a */,
 				871321F81D978ADB0002FFB3 /* Messages.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A33A2417F16527C3495E50F5 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				13F432DAA8B94F9580B7E4F9 /* Pods-Sterrio.debug.xcconfig */,
+				A97B640AEAE0B428ED70C0C9 /* Pods-Sterrio.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1939,20 +1897,18 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 873537E91B0A9981009244E4 /* Build configuration list for PBXNativeTarget "Sterrio" */;
 			buildPhases = (
-				C40FBC495E44D2F698A962A2 /* Check Pods Manifest.lock */,
+				41B4F7A13FB7AC3878288C83 /* [CP] Check Pods Manifest.lock */,
 				873537C21B0A9981009244E4 /* Sources */,
 				873537C31B0A9981009244E4 /* Frameworks */,
 				875681CF1C82356D00FD3E1A /* ShellScript */,
 				873537C41B0A9981009244E4 /* Resources */,
-				32B1B3098074F62664B2C165 /* Copy Pods Resources */,
 				87353A661B0AA4E2009244E4 /* ShellScript */,
-				290F8AA7B53267613C7CF185 /* Embed Pods Frameworks */,
-				8713220A1D978ADB0002FFB3 /* Embed App Extensions */,
+				9E98269E87EE0AA109E7A54C /* [CP] Embed Pods Frameworks */,
+				B649B865C8EEB0BCE616E4D7 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				871322051D978ADB0002FFB3 /* PBXTargetDependency */,
 			);
 			name = Sterrio;
 			productName = Sterrio;
@@ -2075,34 +2031,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		290F8AA7B53267613C7CF185 /* Embed Pods Frameworks */ = {
+		41B4F7A13FB7AC3878288C83 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		32B1B3098074F62664B2C165 /* Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		87353A661B0AA4E2009244E4 /* ShellScript */ = {
@@ -2131,19 +2072,34 @@
 			shellPath = /bin/sh;
 			shellScript = "./credits.py -s \"$SRCROOT\" -o \"$SRCROOT/Licenses.plist\"";
 		};
-		C40FBC495E44D2F698A962A2 /* Check Pods Manifest.lock */ = {
+		9E98269E87EE0AA109E7A54C /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Sterrio/Pods-Sterrio-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B649B865C8EEB0BCE616E4D7 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Sterrio/Pods-Sterrio-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -2380,19 +2336,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				87329C761D8BA656008463E1 /* AppEnvironmentConstants.m in Sources */,
-				87ACBEAE1D8B840F004BA6A6 /* SterrioUITests.m in Sources */,
-				87329C751D8B9125008463E1 /* SnapshotHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		871322051D978ADB0002FFB3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 871321F61D978ADA0002FFB3 /* MessageExtension */;
-			targetProxy = 871322041D978ADB0002FFB3 /* PBXContainerItemProxy */;
-		};
 		87ACBEB11D8B840F004BA6A6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 873537C51B0A9981009244E4 /* Sterrio */;
@@ -2544,13 +2493,14 @@
 		};
 		873537EA1B0A9981009244E4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 92B6CB546F4E7E88A9974B8F /* Pods.debug.xcconfig */;
+			baseConfigurationReference = 13F432DAA8B94F9580B7E4F9 /* Pods-Sterrio.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Sterrio/Sterrio.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = N9Y36W264B;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2575,13 +2525,14 @@
 		};
 		873537EB1B0A9981009244E4 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C79109650D7488FFD1AB95FF /* Pods.release.xcconfig */;
+			baseConfigurationReference = A97B640AEAE0B428ED70C0C9 /* Pods-Sterrio.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Sterrio/Sterrio.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = N9Y36W264B;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
