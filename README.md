@@ -1,7 +1,9 @@
-# Sterrio
-iOS App for creating a free music video library with content from YouTube.
+<img src="https://dl.dropbox.com/s/vhqjrunicc8ze2p/readme%20image.png" width="1425">
 
-Key features:
+#### Screenshots
+<img src="https://dl.dropbox.com/s/j7yvr3etjz350ni/1.png" width="215"> <img src="https://dl.dropbox.com/s/44wucerrml3e53x/2.png" width="215"> <img src="https://dl.dropbox.com/s/uqv0jqlox3n2xnq/3.png" width="215"> <img src="https://dl.dropbox.com/s/nt15grcvwt7es0z/4.png" width="215">
+
+**Key features**:
 - Intelligent song meta-data tagging. (powered by Discogs API)
 - Listen to songs while Sterrio is in the background.
 - Easily organize music videos and create playlists.
@@ -15,7 +17,6 @@ Sterrio was a side project I started in May 2014 because I wanted to learn mobil
 
 ------------
 
-
 This project does not have a single unit test. 85% of the app was complete by the time I learned how to properly unit test my code. However, Sterrio was remarkably stable during it's time on the iOS App Store considering all testing was manual. Fabric metrics indicate Approx. 90% of installs were crash free.
 
 #### Coming soon: 
@@ -25,5 +26,5 @@ Need to make it easy for anyone to specify their own YouTube and Discogs API key
 <br/>**Discogs API key**
 ` DiscogsItem.m - line 41`
 
-##### API keys Note: 
+##### API Keys: 
 YouTube and Discogs API keys found in the repo were used in production but have since been disabled because Sterrio was taken off of the iOS App Store.
