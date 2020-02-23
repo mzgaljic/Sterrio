@@ -1,7 +1,7 @@
-<img src="https://dl.dropbox.com/s/vhqjrunicc8ze2p/readme%20image.png" width="1425">
+<img src="https://dl.dropbox.com/s/o3u1le1iczv741q/iOS_icon%4087.png" width="87">
 
 #### Screenshots
-<img src="https://dl.dropbox.com/s/j7yvr3etjz350ni/1.png" width="215"> <img src="https://dl.dropbox.com/s/44wucerrml3e53x/2.png" width="215"> <img src="https://dl.dropbox.com/s/uqv0jqlox3n2xnq/3.png" width="215"> <img src="https://dl.dropbox.com/s/nt15grcvwt7es0z/4.png" width="215">
+<img src="https://dl.dropbox.com/s/3xp0k34tdi763ei/0x0ss-P3.jpg" width="215"> <img src="https://dl.dropboxusercontent.com/s/yf7k5cjkwbbh9um/0x0ss-P3-2.jpg" width="215"> <img src="https://dl.dropbox.com/s/58zlw8zrzweix61/0x0ss-P3-3.jpg" width="215"> <img src="https://dl.dropbox.com/s/x7lvz3swtji1kzl/0x0ss-P3-4.jpg" width="215">
 
 **Key features**:
 - Intelligent song meta-data tagging. (powered by Discogs API)
